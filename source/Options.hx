@@ -7,12 +7,6 @@ import Controls.KeyboardScheme;
 import flixel.FlxG;
 import openfl.display.FPS;
 import openfl.Lib;
-import openfl.Assets;
-
-
-
-private var charList:String = Assets.getText(Paths.txt('characterList'));
-private var _characterList:Array<String> = charList.split('\n'); // Loads the character list for player/opponent character select
 
 class OptionCategory
 {
@@ -531,12 +525,13 @@ class AccuracyDOption extends Option
 }
 class PlayerOption extends Option
 {
-	
+	private var _PlayerOptions:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf"];
 	public function new(desc:String)
 	{
 		super();
 		description = desc;
 		acceptValues = true;
+
 	}
 
 	public override function press():Bool
@@ -546,35 +541,35 @@ class PlayerOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Right Char: " + FlxG.save.data.opponent;
+		return "Player Character";
 	}
 
 	override function right():Bool {
 		FlxG.save.data.playerCharIndex += 1;
-		if (FlxG.save.data.playerCharIndex > _characterList.length - 1){
+		if (FlxG.save.data.playerCharIndex > _PlayerOptions.length - 1){
 			FlxG.save.data.playerCharIndex = 0;
 		}
- 		FlxG.save.data.playerChar = _characterList[FlxG.save.data.playerCharIndex];
+ 		FlxG.save.data.playerChar = _PlayerOptions[FlxG.save.data.playerCharIndex];
 		return true;
 	}
 
-	// override function getValue():String {
-	// 	return "Current Player: " + FlxG.save.data.playerChar;
-	// }
+	override function getValue():String {
+		return "Current Player: " + FlxG.save.data.playerChar;
+	}
 
 	override function left():Bool {
 		FlxG.save.data.playerCharIndex -= 1;
 		if (FlxG.save.data.playerCharIndex < 0){
-			FlxG.save.data.playerCharIndex = _characterList.length - 1;
+			FlxG.save.data.playerCharIndex = _PlayerOptions.length - 1;
 		}
- 		FlxG.save.data.playerChar = _characterList[FlxG.save.data.playerCharIndex];
+ 		FlxG.save.data.playerChar = _PlayerOptions[FlxG.save.data.playerCharIndex];
 
 		return true;
 	}
 }
 class OpponentOption extends Option
 {
-	
+	private var _OpponentOptions:Array<String> = ["dad","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","bf","gf"];
 	public function new(desc:String)
 	{
 		super();
@@ -590,28 +585,28 @@ class OpponentOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Left Char: " + FlxG.save.data.opponent;
+		return "Opponent Character";
 	}
 
 	override function right():Bool {
 		FlxG.save.data.opponentIndex += 1;
-		if (FlxG.save.data.opponentIndex > _characterList.length - 1){
+		if (FlxG.save.data.opponentIndex > _OpponentOptions.length - 1){
 			FlxG.save.data.opponentIndex = 0;
 		}
- 		FlxG.save.data.opponent = _characterList[FlxG.save.data.opponentIndex];
+ 		FlxG.save.data.opponent = _OpponentOptions[FlxG.save.data.opponentIndex];
 		return true;
 	}
 
-	// override function getValue():String {
-	// 	return "Current Opponent: " + FlxG.save.data.opponent;
-	// }
+	override function getValue():String {
+		return "Current Opponent: " + FlxG.save.data.opponent;
+	}
 
 	override function left():Bool {
 		FlxG.save.data.opponentIndex -= 1;
 		if (FlxG.save.data.opponentIndex < 0){
-			FlxG.save.data.opponentIndex = _characterList.length - 1;
+			FlxG.save.data.opponentIndex = _OpponentOptions.length - 1;
 		}
- 		FlxG.save.data.opponent = _characterList[FlxG.save.data.opponentIndex];
+ 		FlxG.save.data.opponent = _OpponentOptions[FlxG.save.data.opponentIndex];
 
 		return true;
 	}
