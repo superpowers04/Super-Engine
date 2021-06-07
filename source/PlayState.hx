@@ -93,7 +93,7 @@ class PlayState extends MusicBeatState
 
 	public static var dad:Character;
 	public static var gf:Character;
-	public static var boyfriend:Boyfriend;
+	public static var boyfriend:Character;
 
 	public var notes:FlxTypedGroup<Note>;
 	private var unspawnNotes:Array<Note> = [];
@@ -3106,13 +3106,6 @@ class PlayState extends MusicBeatState
 		{
 			resyncVocals();
 		}
-
-
-
-
-		// yes this updates every step.
-		// yes this is bad
-		// but i'm doing it to update misses and accuracy
 
 
 	}
