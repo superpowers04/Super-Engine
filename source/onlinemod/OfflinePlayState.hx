@@ -158,12 +158,7 @@ class OfflinePlayState extends PlayState
 
   override function openSubState(SubState:FlxSubState)
   {
-    if (Type.getClass(SubState) == GameOverSubstate)
-    {
-      // super.openSubState(new OfflineGameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-      return;
-    }
-    else if (Type.getClass(SubState) == PauseSubState)
+    if (Type.getClass(SubState) == PauseSubState)
     {
       super.openSubState(new OnlinePauseSubState(true));
       return;

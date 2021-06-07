@@ -324,7 +324,7 @@ class OnlinePlayState extends PlayState
         waitingText.text = 'Waiting for players ($count/${clientCount})';
       case Packets.EVERYONE_READY:
         var safeFrames:Int = data[0];
-
+        waitingText.text = 'Ready!';
         ready = true;
         startCountdown();
         FlxTween.tween(waitingBg, {alpha: 0}, 0.5);
