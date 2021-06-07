@@ -525,7 +525,7 @@ class AccuracyDOption extends Option
 }
 class PlayerOption extends Option
 {
-	private var _PlayerOptions:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf"];
+	private var _PlayerOptions:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad"];
 	public function new(desc:String)
 	{
 		super();
