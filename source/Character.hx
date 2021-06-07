@@ -26,7 +26,7 @@ class Character extends FlxSprite
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 
-		var tex:FlxAtlasFrames = null;
+		var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
 		antialiasing = true;
 		switch (curCharacter) // Seperate statement for duplicated character paths
 		{
@@ -425,13 +425,17 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+		if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
+		{
+			playAnim('idle', true, false, 10);
+		}
 		if (animation.curAnim.name.startsWith('sing'))
 		{
 			holdTimer += elapsed;
 		}
 		else
 			holdTimer = 0;
-		if (!curCharacter.startsWith('bf'))
+		if (!isPlayer)
 		{
 
 			var dadVar:Float = 4;
