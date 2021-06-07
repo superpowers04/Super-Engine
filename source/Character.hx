@@ -26,7 +26,7 @@ class Character extends FlxSprite
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 
-		var tex:FlxAtlasFrames;
+		var tex:FlxAtlasFrames = null;
 		antialiasing = true;
 		switch (curCharacter) // Seperate statement for duplicated character paths
 		{
@@ -44,7 +44,7 @@ class Character extends FlxSprite
 			case 'monster':
 				tex = Paths.getSparrowAtlas('characters/Monster_Assets');
 			case 'bf':
-				tex = Paths.getSparrowAtlas('characters/BOYFRIEND', 'shared');
+				tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
 			case 'bf-christmas':
 				tex = Paths.getSparrowAtlas('characters/bfChristmas');
 			case 'bf-car':
@@ -217,8 +217,6 @@ class Character extends FlxSprite
 				flipX = true;
 			case 'bf','bf-christmas','bf-car':// Condensed to reduce duplicate code
 				frames = tex;
-
-				trace(tex.frames.length);
 
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
@@ -418,14 +416,14 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+		if (animation.curAnim.name.startsWith('sing'))
+		{
+			holdTimer += elapsed;
+		}
+		else
+			holdTimer = 0;
 		if (!curCharacter.startsWith('bf'))
 		{
-			if (animation.curAnim.name.startsWith('sing'))
-			{
-				holdTimer += elapsed;
-			}
-			else
-				holdTimer = 0;
 
 			var dadVar:Float = 4;
 
@@ -509,6 +507,9 @@ class Character extends FlxSprite
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
+		if (curCharacter.startsWith('bf')){
+			y+=330;
+		}
 		animOffsets[name] = [x, y];
 	}
 }
