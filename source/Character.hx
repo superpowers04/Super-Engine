@@ -235,6 +235,7 @@ class Character extends FlxSprite
 
 				animation.addByPrefix('scared', 'BF idle shaking', 24);
 
+				addOffset('all',0,330); // Offsets for every animation
 				addOffset('idle', -5);
 				addOffset("singUP", -29, 27);
 				addOffset("singRIGHT", -38, -7);
@@ -265,6 +266,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
 
+				addOffset('all',0,330); // Offsets for every animation
 				addOffset('idle');
 				addOffset("singUP");
 				addOffset("singRIGHT");
@@ -390,7 +392,11 @@ class Character extends FlxSprite
 		}
 
 		dance();
-
+		var alloffset = animOffsets.get("all");
+		if (animOffsets.exists('all'))
+		{
+			this.setPosition(x+alloffset[0],y+alloffset[1]);
+		}
 		if (isPlayer)
 		{
 			flipX = !flipX;
@@ -480,12 +486,14 @@ class Character extends FlxSprite
 		animation.play(AnimName, Force, Reversed, Frame);
 
 		var daOffset = animOffsets.get(AnimName);
+		var offsets:Array<Float> = [0,0];
 		if (animOffsets.exists(AnimName))
 		{
-			offset.set(daOffset[0], daOffset[1]);
+			offsets[0]+=daOffset[0];
+			offsets[1]+=daOffset[1];
 		}
-		else
-			offset.set(0, 0);
+			
+		offset.set(offsets[0], offsets[1]);
 
 		if (curCharacter == 'gf')
 		{
@@ -507,9 +515,6 @@ class Character extends FlxSprite
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
-		if (curCharacter.startsWith('bf')){
-			y+=330;
-		}
 		animOffsets[name] = [x, y];
 	}
 }
