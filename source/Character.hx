@@ -8,6 +8,9 @@ import haxe.Json;
 import haxe.format.JsonParser;
 import haxe.DynamicAccess;
 import lime.utils.Assets;
+import sys.io.File;
+import flash.display.BitmapData;
+// import lime.graphics.Image as LimeImage;
 
 using StringTools;
 
@@ -399,53 +402,50 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			default: // Custom characters pog
-				try{
-					tex = Paths.getSparrowAtlas('characters/'+curCharacter+'/character','mods');
-					frames = tex;
-					var charPropJson = Assets.getText(Paths.file('characters/'+curCharacter+'/config.json','mods')).trim();
-					var charProperties:haxe.DynamicAccess<Dynamic> = haxe.Json.parse(charPropJson);
+				trace('Loading a custom character "$curCharacter"! ');
+				tex = FlxAtlasFrames.fromSparrow(BitmapData.fromFile('mods/characters/$curCharacter/character.png'),File.getContent('mods/characters/$curCharacter/character.xml'));
+				trace('Loaded character sheet');
+				// Paths.getSparrowAtlas('characters/'+curCharacter+'/character','mods');
+				frames = tex;
+				var charPropJson = File.getContent('mods/characters/$curCharacter/config.json').trim();
+				var charProperties:haxe.DynamicAccess<Dynamic> = haxe.Json.parse(charPropJson);
+				trace('Loaded and parsed JSON');
+				// BF's animations?
 
-					// BF's animations?
+				animation.addByPrefix('idle', 'BF idle dance', 24, false);
+				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+				animation.addByPrefix('hey', 'BF HEY', 24, false);
+				dadVar = charProperties.get("sing_duration");
+				flipX = charProperties.get("flip_x");
+				antialiasing = !charProperties.get("no_antialiasing");
+				var animatjson = charProperties.get("animations");
+				var anioffjson = charProperties.get("animations_offsets");
+				// for (key in animatjson){
+				// 	var anima = animatjson.get(key);
+				// 	if (anima.indices.exists(0)) {
+				// 		animation.addByPrefix(anima.anim, anima.name,anima.indices,"", anima.fps, animaloop);
+				// 	}else{
+				// 		animation.addByPrefix(anima.anim, anima.name, anima.fps, animaloop);
+				// 	}
+				// }
+				// for (key in anioffjson){
+				// 	var offset= anioffjson.get(key);
+				// 	addOffset(offset.anim,offset.player1[0],offset.player1[2]);
+				// }
 
-					animation.addByPrefix('idle', 'BF idle dance', 24, false);
-					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-					animation.addByPrefix('hey', 'BF HEY', 24, false);
-					dadVar = charProperties.get("sing_duration");
-					flipX = charProperties.get("flip_x");
-					antialiasing = !charProperties.get("no_antialiasing");
-					var animatjson = charProperties.get("animations");
-					var anioffjson = charProperties.get("animations_offsets");
-
-					// for (key in animatjson){
-					// 	var anima = animatjson.get(key);
-					// 	if (anima.indices.exists(0)) {
-					// 		animation.addByPrefix(anima.anim, anima.name,anima.indices,"", anima.fps, animaloop);
-					// 	}else{
-					// 		animation.addByPrefix(anima.anim, anima.name, anima.fps, animaloop);
-					// 	}
-					// }
-					// for (key in anioffjson){
-					// 	var offset= anioffjson.get(key);
-					// 	addOffset(offset.anim,offset.player1[0],offset.player1[2]);
-					// }
-
-					if (charProperties.get("dance_idle")){
-						playAnim('danceRight');
-					}else{
-						playAnim('idle');
-					}
-				}catch(e){
-					trace(e.message);
-
-					FlxG.switchState(new MainMenuState());
-				};
+				trace('Finished loading character, Lets get funky!');
+				if (charProperties.get("dance_idle")){
+					playAnim('danceRight');
+				}else{
+					playAnim('idle');
+				}
 				
 		}
 
