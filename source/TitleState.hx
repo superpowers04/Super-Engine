@@ -23,7 +23,8 @@ import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
-
+import sys.io.File;
+import sys.FileSystem;
 
 
 using StringTools;
@@ -37,6 +38,8 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
+	public static var choosableCharacters:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad"];
+
 
 	var curWacky:Array<String> = [];
 
@@ -44,9 +47,6 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-		#end
 		
 		#if sys
 		if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays"))
@@ -79,6 +79,21 @@ class TitleState extends MusicBeatState
 		KadeEngineData.initSave();
 
 		Highscore.load();
+		#if sys
+		// Loading like this is probably not a good idea
+	    var dataDir:String = "mods/characters/";
+	    if (FileSystem.exists(dataDir))
+	    {
+	      for (directory in FileSystem.readDirectory(dataDir))
+	      {
+	      	if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml"))
+	      	{
+	       		choosableCharacters.push(directory);  
+	      	
+	        }
+	      }
+	    }
+	    #end
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{

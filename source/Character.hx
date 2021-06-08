@@ -4,6 +4,10 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
+import haxe.Json;
+import haxe.format.JsonParser;
+import haxe.DynamicAccess;
+import lime.utils.Assets;
 
 using StringTools;
 
@@ -11,6 +15,8 @@ class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
+	var dadVar:Float = 4;
+	
 
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
@@ -21,7 +27,7 @@ class Character extends FlxSprite
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
-
+		if (curCharacter == 'dad'){dadVar = 6.1;}
 		animOffsets = new Map<String, Array<Dynamic>>();
 		curCharacter = character;
 		this.isPlayer = isPlayer;
@@ -392,6 +398,55 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+			default: // Custom characters pog
+				try{
+					tex = Paths.getSparrowAtlas('characters/'+curCharacter+'/character','mods');
+					frames = tex;
+					var charPropJson = Assets.getText(Paths.file('characters/'+curCharacter+'/config.json','mods')).trim();
+					var charProperties:haxe.DynamicAccess<Dynamic> = haxe.Json.parse(charPropJson);
+
+					// BF's animations?
+
+					animation.addByPrefix('idle', 'BF idle dance', 24, false);
+					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+					animation.addByPrefix('hey', 'BF HEY', 24, false);
+					dadVar = charProperties.get("sing_duration");
+					flipX = charProperties.get("flip_x");
+					antialiasing = !charProperties.get("no_antialiasing");
+					var animatjson = charProperties.get("animations");
+					var anioffjson = charProperties.get("animations_offsets");
+
+					// for (key in animatjson){
+					// 	var anima = animatjson.get(key);
+					// 	if (anima.indices.exists(0)) {
+					// 		animation.addByPrefix(anima.anim, anima.name,anima.indices,"", anima.fps, animaloop);
+					// 	}else{
+					// 		animation.addByPrefix(anima.anim, anima.name, anima.fps, animaloop);
+					// 	}
+					// }
+					// for (key in anioffjson){
+					// 	var offset= anioffjson.get(key);
+					// 	addOffset(offset.anim,offset.player1[0],offset.player1[2]);
+					// }
+
+					if (charProperties.get("dance_idle")){
+						playAnim('danceRight');
+					}else{
+						playAnim('idle');
+					}
+				}catch(e){
+					trace(e.message);
+
+					FlxG.switchState(new MainMenuState());
+				};
+				
 		}
 
 		dance();
@@ -437,14 +492,8 @@ class Character extends FlxSprite
 			holdTimer = 0;
 		if (!isPlayer)
 		{
-
-			var dadVar:Float = 4;
-
-			if (curCharacter == 'dad')
-				dadVar = 6.1;
 			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 			{
-				trace('dance');
 				dance();
 				holdTimer = 0;
 			}

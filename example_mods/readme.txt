@@ -1,2 +1,1 @@
-THIS MOD FOLDER DOES NOT ENTIRELY WORK JUST YET!!!
-DONT EXPECT MUCH OUT OF IT RIGHT NOW!!!
+Characters work like FNF Multi, add their name to characters.txt

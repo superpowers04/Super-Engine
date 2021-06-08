@@ -525,7 +525,6 @@ class AccuracyDOption extends Option
 }
 class PlayerOption extends Option
 {
-	private var _PlayerOptions:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad"];
 	public function new(desc:String)
 	{
 		super();
@@ -546,10 +545,10 @@ class PlayerOption extends Option
 
 	override function right():Bool {
 		FlxG.save.data.playerCharIndex += 1;
-		if (FlxG.save.data.playerCharIndex > _PlayerOptions.length - 1){
+		if (FlxG.save.data.playerCharIndex > TitleState.choosableCharacters.length - 1){
 			FlxG.save.data.playerCharIndex = 0;
 		}
- 		FlxG.save.data.playerChar = _PlayerOptions[FlxG.save.data.playerCharIndex];
+ 		FlxG.save.data.playerChar = TitleState.choosableCharacters[FlxG.save.data.playerCharIndex];
 		return true;
 	}
 
@@ -560,16 +559,15 @@ class PlayerOption extends Option
 	override function left():Bool {
 		FlxG.save.data.playerCharIndex -= 1;
 		if (FlxG.save.data.playerCharIndex < 0){
-			FlxG.save.data.playerCharIndex = _PlayerOptions.length - 1;
+			FlxG.save.data.playerCharIndex = TitleState.choosableCharacters.length - 1;
 		}
- 		FlxG.save.data.playerChar = _PlayerOptions[FlxG.save.data.playerCharIndex];
+ 		FlxG.save.data.playerChar = TitleState.choosableCharacters[FlxG.save.data.playerCharIndex];
 
 		return true;
 	}
 }
 class OpponentOption extends Option
 {
-	private var _OpponentOptions:Array<String> = ["dad","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","bf","gf"];
 	public function new(desc:String)
 	{
 		super();
@@ -590,10 +588,10 @@ class OpponentOption extends Option
 
 	override function right():Bool {
 		FlxG.save.data.opponentIndex += 1;
-		if (FlxG.save.data.opponentIndex > _OpponentOptions.length - 1){
+		if (FlxG.save.data.opponentIndex > TitleState.choosableCharacters.length - 1){
 			FlxG.save.data.opponentIndex = 0;
 		}
- 		FlxG.save.data.opponent = _OpponentOptions[FlxG.save.data.opponentIndex];
+ 		FlxG.save.data.opponent = TitleState.choosableCharacters[FlxG.save.data.opponentIndex];
 		return true;
 	}
 
@@ -604,9 +602,9 @@ class OpponentOption extends Option
 	override function left():Bool {
 		FlxG.save.data.opponentIndex -= 1;
 		if (FlxG.save.data.opponentIndex < 0){
-			FlxG.save.data.opponentIndex = _OpponentOptions.length - 1;
+			FlxG.save.data.opponentIndex = TitleState.choosableCharacters.length - 1;
 		}
- 		FlxG.save.data.opponent = _OpponentOptions[FlxG.save.data.opponentIndex];
+ 		FlxG.save.data.opponent = TitleState.choosableCharacters[FlxG.save.data.opponentIndex];
 
 		return true;
 	}
