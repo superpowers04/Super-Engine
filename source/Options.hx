@@ -525,6 +525,7 @@ class AccuracyDOption extends Option
 }
 class PlayerOption extends Option
 {
+	public static var playerEdit:Bool = true;
 	public function new(desc:String)
 	{
 		super();
@@ -535,7 +536,9 @@ class PlayerOption extends Option
 
 	public override function press():Bool
 	{
-		return false;
+		playerEdit = true;
+		FlxG.switchState(new CharSelection());
+		return true;
 	}
 
 	private override function updateDisplay():String
@@ -578,7 +581,9 @@ class OpponentOption extends Option
 
 	public override function press():Bool
 	{
-		return false;
+		PlayerOption.playerEdit = false;
+		FlxG.switchState(new CharSelection());
+		return true;
 	}
 
 	private override function updateDisplay():String

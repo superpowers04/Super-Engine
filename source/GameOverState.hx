@@ -30,7 +30,7 @@ class GameOverState extends FlxTransitionableState
 			loser.animation.play('lose');
 			add(loser);
 
-		var bf:Boyfriend = new Boyfriend(bfX, bfY);
+		var bf:Character = new Character(bfX, bfY);
 		// bf.scrollFactor.set();
 		add(bf);
 		bf.playAnim('firstDeath');

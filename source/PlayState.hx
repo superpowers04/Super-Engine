@@ -718,7 +718,7 @@ class PlayState extends MusicBeatState
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 		}
-		boyfriend = new Boyfriend(770, 100, SONG.player1);
+		boyfriend = new Character(770, 100, SONG.player1);
 
 		switch (SONG.player1) // The above but for Player 1
 		{

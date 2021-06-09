@@ -28,7 +28,7 @@ class GameplayCustomizeState extends MusicBeatState
     var text:FlxText;
     var blackBorder:FlxSprite;
 
-    var bf:Boyfriend;
+    var bf:Character;
     var dad:Character;
 
     var strumLine:FlxSprite;
@@ -66,7 +66,7 @@ class GameplayCustomizeState extends MusicBeatState
 
 		dad = new Character(100, 100, 'dad');
 
-        bf = new Boyfriend(770, 450, 'bf');
+        bf = new Character(770, 450, 'bf');
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x + 400, dad.getGraphicMidpoint().y);
 
