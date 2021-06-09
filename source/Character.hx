@@ -25,7 +25,6 @@ class Character extends FlxSprite
 	public var debugMode:Bool = false;
 	var dadVar:Float = 4;
 	
-
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 
@@ -454,9 +453,9 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 				animation.addByPrefix('hey', 'BF HEY', 24, false);
-				
+
 				dadVar = charProperties.sing_duration;
-				flipX = !charProperties.flip_x;
+				flipX=charProperties.flip_x;
 				antialiasing = !charProperties.no_antialiasing;
 				for (anima in charProperties.animations){
 					if (anima.indices.length > 0) {
