@@ -467,6 +467,12 @@ class Character extends FlxSprite
 				for (offset in charProperties.animations_offsets){
 					addOffset(offset.anim,offset.player1[0],offset.player1[2]);
 				}
+				if (animOffsets["all"] != null) {
+					charProperties.common_stage_offset[0] += animOffsets["all"][0];
+					charProperties.common_stage_offset[1] += animOffsets["all"][1];
+
+				}
+				addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]);
 				trace('Getting idle animation for $curCharacter');
 				if (charProperties.dance_idle){
 					playAnim('danceRight');

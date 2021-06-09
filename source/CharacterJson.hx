@@ -11,6 +11,7 @@ typedef CharacterJson =
 	var no_antialiasing:Bool;
 	var dance_idle:Bool;
 	var bpm:Float;
+	var common_stage_offset:Array<Int>;
 }
 typedef CharJsonAnimation ={
 	var anim:String;
