@@ -60,10 +60,9 @@ class CharSelection extends MusicBeatState
       FlxG.switchState(new OptionsMenu());
     }
 
-    if (controls.UP_P)
-      changeSelection(-1);
-    if (controls.DOWN_P)
-      changeSelection(1);
+
+    if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
+    if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
 
     if (controls.ACCEPT && songs.length > 0)
     {
