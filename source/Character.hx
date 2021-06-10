@@ -467,7 +467,7 @@ class Character extends FlxSprite
 					}
 				}
 				for (offset in charProperties.animations_offsets){
-					addOffset(offset.anim,offset.player1[0],offset.player1[2]);
+					addOffset(offset.anim,offset.player1[0],offset.player1[1]);
 				}
 				if (animOffsets["all"] != null) {
 					charProperties.common_stage_offset[0] += animOffsets["all"][0];

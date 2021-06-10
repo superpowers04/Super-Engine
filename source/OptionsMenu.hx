@@ -49,7 +49,6 @@ class OptionsMenu extends MusicBeatState
 			#else
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay.")
 			#end
-			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 		]),
 		
 		new OptionCategory("Misc", [
@@ -63,8 +62,11 @@ class OptionsMenu extends MusicBeatState
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
 			new BotPlay("Showcase your charts and mods with autoplay."),
 			new AnimDebugOption("Access animation debug in a offline session using 9 for P1 or 8 or P2 when enabled")
+		]),
+		new OptionCategory("Preformance", [
+			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
+			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
 		])
-		
 	];
 
 	public var acceptInput:Bool = true;

@@ -481,46 +481,7 @@ class NPSDisplayOption extends Option
 		return "NPS Display " + (!FlxG.save.data.npsDisplay ? "off" : "on");
 	}
 }
-class AnimDebugOption extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-	}
 
-	public override function press():Bool
-	{
-		FlxG.save.data.animDebug = !FlxG.save.data.animDebug;
-		display = updateDisplay();
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return "Anim Debug " + (!FlxG.save.data.animDebug ? "off" : "on");
-	}
-}
-class NoteSplashOption extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-	}
-
-	public override function press():Bool
-	{
-		FlxG.save.data.noteSplash = !FlxG.save.data.noteSplash;
-		display = updateDisplay();
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return "Note Splashes " + (!FlxG.save.data.noteSplash ? "off" : "on");
-	}
-}
 class ReplayOption extends Option
 {
 	public function new(desc:String)
@@ -562,97 +523,7 @@ class AccuracyDOption extends Option
 		return "Accuracy Mode: " + (FlxG.save.data.accuracyMod == 0 ? "Accurate" : "Complex");
 	}
 }
-class PlayerOption extends Option
-{
-	public static var playerEdit:Bool = true;
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-		acceptValues = true;
 
-	}
-
-	public override function press():Bool
-	{
-		playerEdit = true;
-		FlxG.switchState(new CharSelection());
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return "Player Character";
-	}
-
-	override function right():Bool {
-		FlxG.save.data.playerCharIndex += 1;
-		if (FlxG.save.data.playerCharIndex > TitleState.choosableCharacters.length - 1){
-			FlxG.save.data.playerCharIndex = 0;
-		}
- 		FlxG.save.data.playerChar = TitleState.choosableCharacters[FlxG.save.data.playerCharIndex];
-		return true;
-	}
-
-	override function getValue():String {
-		return "Current Player: " + FlxG.save.data.playerChar;
-	}
-
-	override function left():Bool {
-		FlxG.save.data.playerCharIndex -= 1;
-		if (FlxG.save.data.playerCharIndex < 0){
-			FlxG.save.data.playerCharIndex = TitleState.choosableCharacters.length - 1;
-		}
- 		FlxG.save.data.playerChar = TitleState.choosableCharacters[FlxG.save.data.playerCharIndex];
-
-		return true;
-	}
-}
-class OpponentOption extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-		acceptValues = true;
-
-	}
-
-	public override function press():Bool
-	{
-		PlayerOption.playerEdit = false;
-		FlxG.switchState(new CharSelection());
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return "Opponent Character";
-	}
-
-	override function right():Bool {
-		FlxG.save.data.opponentIndex += 1;
-		if (FlxG.save.data.opponentIndex > TitleState.choosableCharacters.length - 1){
-			FlxG.save.data.opponentIndex = 0;
-		}
- 		FlxG.save.data.opponent = TitleState.choosableCharacters[FlxG.save.data.opponentIndex];
-		return true;
-	}
-
-	override function getValue():String {
-		return "Current Opponent: " + FlxG.save.data.opponent;
-	}
-
-	override function left():Bool {
-		FlxG.save.data.opponentIndex -= 1;
-		if (FlxG.save.data.opponentIndex < 0){
-			FlxG.save.data.opponentIndex = TitleState.choosableCharacters.length - 1;
-		}
- 		FlxG.save.data.opponent = TitleState.choosableCharacters[FlxG.save.data.opponentIndex];
-
-		return true;
-	}
-}
 class CustomizeGameplay extends Option
 {
 	public function new(desc:String)
@@ -742,4 +613,156 @@ class BotPlay extends Option
 	
 	private override function updateDisplay():String
 		return "BotPlay " + (FlxG.save.data.botplay ? "on" : "off");
+}
+class PlayerOption extends Option
+{
+	public static var playerEdit:Bool = true;
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+
+	}
+
+	public override function press():Bool
+	{
+		playerEdit = true;
+		FlxG.switchState(new CharSelection());
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Player Character";
+	}
+
+	override function right():Bool {
+		FlxG.save.data.playerCharIndex += 1;
+		if (FlxG.save.data.playerCharIndex > TitleState.choosableCharacters.length - 1){
+			FlxG.save.data.playerCharIndex = 0;
+		}
+ 		FlxG.save.data.playerChar = TitleState.choosableCharacters[FlxG.save.data.playerCharIndex];
+		return true;
+	}
+
+	override function getValue():String {
+		return "Current Player: " + FlxG.save.data.playerChar;
+	}
+
+	override function left():Bool {
+		FlxG.save.data.playerCharIndex -= 1;
+		if (FlxG.save.data.playerCharIndex < 0){
+			FlxG.save.data.playerCharIndex = TitleState.choosableCharacters.length - 1;
+		}
+ 		FlxG.save.data.playerChar = TitleState.choosableCharacters[FlxG.save.data.playerCharIndex];
+
+		return true;
+	}
+}
+// Added options
+class OpponentOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+
+	}
+
+	public override function press():Bool
+	{
+		PlayerOption.playerEdit = false;
+		FlxG.switchState(new CharSelection());
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Opponent Character";
+	}
+
+	override function right():Bool {
+		FlxG.save.data.opponentIndex += 1;
+		if (FlxG.save.data.opponentIndex > TitleState.choosableCharacters.length - 1){
+			FlxG.save.data.opponentIndex = 0;
+		}
+ 		FlxG.save.data.opponent = TitleState.choosableCharacters[FlxG.save.data.opponentIndex];
+		return true;
+	}
+
+	override function getValue():String {
+		return "Current Opponent: " + FlxG.save.data.opponent;
+	}
+
+	override function left():Bool {
+		FlxG.save.data.opponentIndex -= 1;
+		if (FlxG.save.data.opponentIndex < 0){
+			FlxG.save.data.opponentIndex = TitleState.choosableCharacters.length - 1;
+		}
+ 		FlxG.save.data.opponent = TitleState.choosableCharacters[FlxG.save.data.opponentIndex];
+
+		return true;
+	}
+}
+class AnimDebugOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.animDebug = !FlxG.save.data.animDebug;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Anim Debug " + (!FlxG.save.data.animDebug ? "off" : "on");
+	}
+}
+class NoteSplashOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.noteSplash = !FlxG.save.data.noteSplash;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Note Splashes " + (!FlxG.save.data.noteSplash ? "off" : "on");
+	}
+}
+class ShitQualityOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.preformance = !FlxG.save.data.preformance;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Shit Quality " + (!FlxG.save.data.preformance ? "off" : "on");
+	}
 }

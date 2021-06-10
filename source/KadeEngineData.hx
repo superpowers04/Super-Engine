@@ -93,6 +93,10 @@ class KadeEngineData
 		if (FlxG.save.data.noteSplash == null)
 			FlxG.save.data.noteSplash = true;
 
+		// Preformance
+		if (FlxG.save.data.preformance == null)
+			FlxG.save.data.preformance = false;
+
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();
 		KeyBinds.keyCheck();
