@@ -90,6 +90,8 @@ class KadeEngineData
 			FlxG.save.data.playerCharIndex = 0;
 		if (FlxG.save.data.animDebug == null)
 			FlxG.save.data.animDebug = false;
+		if (FlxG.save.data.noteSplash == null)
+			FlxG.save.data.noteSplash = true;
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();

@@ -49,6 +49,7 @@ class OptionsMenu extends MusicBeatState
 			#else
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay.")
 			#end
+			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 		]),
 		
 		new OptionCategory("Misc", [

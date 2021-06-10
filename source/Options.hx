@@ -501,6 +501,26 @@ class AnimDebugOption extends Option
 		return "Anim Debug " + (!FlxG.save.data.animDebug ? "off" : "on");
 	}
 }
+class NoteSplashOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.noteSplash = !FlxG.save.data.noteSplash;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Note Splashes " + (!FlxG.save.data.noteSplash ? "off" : "on");
+	}
+}
 class ReplayOption extends Option
 {
 	public function new(desc:String)

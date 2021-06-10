@@ -138,6 +138,10 @@ class PlayState extends MusicBeatState
 
 	public static var offsetTesting:Bool = false;
 
+
+	// Note Splash group
+	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
+
 	var notesHitArray:Array<Date> = [];
 	var currentFrames:Int = 0;
 
@@ -236,6 +240,13 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
+
+		// Note splashes
+
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		var noteSplash0:NoteSplash = new NoteSplash();
+		noteSplash0.setupNoteSplash(100, 100, 0);
+		grpNoteSplashes.add(noteSplash0);
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
@@ -841,6 +852,9 @@ class PlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
+		add(grpNoteSplashes);
+
+
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		cpuStrums = new FlxTypedGroup<FlxSprite>();
 
@@ -951,6 +965,7 @@ class PlayState extends MusicBeatState
 		add(iconP2);
 
 		strumLineNotes.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
@@ -2377,7 +2392,11 @@ class PlayState extends MusicBeatState
 						totalNotesHit += 1;
 					sicks++;
 			}
-
+			if (daRating == 'sick' && FlxG.save.data.noteSplash){
+				var a:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
+				a.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+				grpNoteSplashes.add(a);
+			}
 			// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
 
 			if (daRating != 'shit' || daRating != 'bad')
