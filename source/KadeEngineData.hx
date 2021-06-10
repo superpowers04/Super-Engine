@@ -88,6 +88,8 @@ class KadeEngineData
 			FlxG.save.data.playerChar = "bf";
 		if (FlxG.save.data.playerCharIndex == null)
 			FlxG.save.data.playerCharIndex = 0;
+		if (FlxG.save.data.animDebug == null)
+			FlxG.save.data.animDebug = false;
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();

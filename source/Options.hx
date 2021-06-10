@@ -481,7 +481,26 @@ class NPSDisplayOption extends Option
 		return "NPS Display " + (!FlxG.save.data.npsDisplay ? "off" : "on");
 	}
 }
+class AnimDebugOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
 
+	public override function press():Bool
+	{
+		FlxG.save.data.animDebug = !FlxG.save.data.animDebug;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Anim Debug " + (!FlxG.save.data.animDebug ? "off" : "on");
+	}
+}
 class ReplayOption extends Option
 {
 	public function new(desc:String)

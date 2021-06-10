@@ -399,4 +399,7 @@ class OnlinePlayState extends PlayState
 
     super.destroy();
   }
+  override function testanimdebug(){
+    return;
+  }
 }

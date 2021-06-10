@@ -1,6 +1,9 @@
 package;
 
 import flixel.FlxSprite;
+import flixel.graphics.FlxGraphic;
+import sys.FileSystem;
+import flash.display.BitmapData;
 
 class HealthIcon extends FlxSprite
 {
@@ -13,32 +16,35 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		var chars:Array<String> = ["bf","spooky","pico","mom","mom-car",'parents-christmas',"senpai","senpai-angry","spirit","spooky","bf-pixel","gf","dad","monster","monster-christmas","parents-christmas","bf-old","gf-pixel","gf-christmas","face","tankman"];
+		if (!chars.contains(char) && FileSystem.exists(Sys.getCwd() + "mods/characters/"+char+"/healthicon.png")){
+			trace('Custom character with custom icon! Loading custom icon.');
+			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$char/healthicon.png')), true, 150, 150);
+		}else{loadGraphic(Paths.image('iconGrid'), true, 150, 150);}
 		
-		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 
 		antialiasing = true;
 		animation.add('bf', [0, 1], 0, false, isPlayer);
-		animation.add('bf-car', [0, 1], 0, false, isPlayer);
-		animation.add('bf-christmas', [0, 1], 0, false, isPlayer);
-		animation.add('bf-pixel', [21, 21], 0, false, isPlayer);
-		animation.add('spooky', [2, 3], 0, false, isPlayer);
-		animation.add('pico', [4, 5], 0, false, isPlayer);
-		animation.add('mom', [6, 7], 0, false, isPlayer);
-		animation.add('mom-car', [6, 7], 0, false, isPlayer);
-		animation.add('tankman', [8, 9], 0, false, isPlayer);
-		animation.add('face', [10, 11], 0, false, isPlayer);
-		animation.add('dad', [12, 13], 0, false, isPlayer);
-		animation.add('senpai', [22, 22], 0, false, isPlayer);
-		animation.add('senpai-angry', [22, 22], 0, false, isPlayer);
-		animation.add('spirit', [23, 23], 0, false, isPlayer);
-		animation.add('bf-old', [14, 15], 0, false, isPlayer);
-		animation.add('gf', [16], 0, false, isPlayer);
-		animation.add('gf-christmas', [16], 0, false, isPlayer);
-		animation.add('gf-pixel', [16], 0, false, isPlayer);
-		animation.add('parents-christmas', [17, 18], 0, false, isPlayer);
-		animation.add('monster', [19, 20], 0, false, isPlayer);
-		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
-		if(chars.contains(char)){
+		if(chars.contains(char)){ // For vanilla characters
+			animation.add('bf-car', [0, 1], 0, false, isPlayer);
+			animation.add('bf-christmas', [0, 1], 0, false, isPlayer);
+			animation.add('bf-pixel', [21, 21], 0, false, isPlayer);
+			animation.add('spooky', [2, 3], 0, false, isPlayer);
+			animation.add('pico', [4, 5], 0, false, isPlayer);
+			animation.add('mom', [6, 7], 0, false, isPlayer);
+			animation.add('mom-car', [6, 7], 0, false, isPlayer);
+			animation.add('tankman', [8, 9], 0, false, isPlayer);
+			animation.add('face', [10, 11], 0, false, isPlayer);
+			animation.add('dad', [12, 13], 0, false, isPlayer);
+			animation.add('senpai', [22, 22], 0, false, isPlayer);
+			animation.add('senpai-angry', [22, 22], 0, false, isPlayer);
+			animation.add('spirit', [23, 23], 0, false, isPlayer);
+			animation.add('bf-old', [14, 15], 0, false, isPlayer);
+			animation.add('gf', [16], 0, false, isPlayer);
+			animation.add('gf-christmas', [16], 0, false, isPlayer);
+			animation.add('gf-pixel', [16], 0, false, isPlayer);
+			animation.add('parents-christmas', [17, 18], 0, false, isPlayer);
+			animation.add('monster', [19, 20], 0, false, isPlayer);
+			animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
 			animation.play(char);
 		}else{trace('Invalid character icon $char, Using BF!');animation.play("bf");}
 		switch(char)

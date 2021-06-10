@@ -1708,18 +1708,7 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
-		#if debug
-		if (FlxG.keys.justPressed.EIGHT)
-		{
-			FlxG.switchState(new AnimationDebug(SONG.player2));
-		}
-
-		if (FlxG.keys.justPressed.ZERO)
-		{
-			FlxG.switchState(new AnimationDebug(SONG.player1));
-		}
-
-		#end
+		testanimdebug();
 
 		if (startingSong)
 		{
@@ -3247,6 +3236,18 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
+	public function testanimdebug(){
+		if (FlxG.save.data.animDebug) {
+			if (FlxG.keys.justPressed.EIGHT)
+			{
+				FlxG.switchState(new AnimationDebug(SONG.player2));
+			}
 
+			if (FlxG.keys.justPressed.NINE)
+			{
+				FlxG.switchState(new AnimationDebug(SONG.player1));
+			}
+		}
+	}
 	var curLight:Int = 0;
 }

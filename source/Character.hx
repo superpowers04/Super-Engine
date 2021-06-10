@@ -454,9 +454,9 @@ class Character extends FlxSprite
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 				animation.addByPrefix('hey', 'BF HEY', 24, false);
 
-				dadVar = charProperties.sing_duration;
+				dadVar = charProperties.sing_duration; 
 				flipX=charProperties.flip_x;
-				antialiasing = !charProperties.no_antialiasing;
+				antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 				for (anima in charProperties.animations){
 					if (anima.indices.length > 0) {
 						animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
@@ -480,7 +480,6 @@ class Character extends FlxSprite
 					playAnim('idle');
 				}
 				if (charProperties.clone != "") {
-					trace("Character clones " + charProperties.clone + ", Impersonating them >:)");
 					curCharacter = charProperties.clone;
 					addOffsets(charProperties.clone);
 				}else{curCharacter='bf';}
@@ -500,7 +499,7 @@ class Character extends FlxSprite
 			flipX = !flipX;
 
 			// Doesn't flip for BF, since his are already in the right place???
-			if (!curCharacter.startsWith('bf'))
+			if (!curCharacter.startsWith('bf') || flipX)
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;

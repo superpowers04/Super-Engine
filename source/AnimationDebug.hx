@@ -19,6 +19,7 @@ class AnimationDebug extends FlxState
 	var char:Character;
 	var textAnim:FlxText;
 	var dumbTexts:FlxTypedGroup<FlxText>;
+	var dumbTexts2:FlxTypedGroup<FlxText>;
 	var animList:Array<String> = [];
 	var curAnim:Int = 0;
 	var isDad:Bool = true;
@@ -65,6 +66,8 @@ class AnimationDebug extends FlxState
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
+		dumbTexts2 = new FlxTypedGroup<FlxText>();
+		add(dumbTexts2);
 
 		textAnim = new FlxText(300, 16);
 		textAnim.size = 26;
@@ -93,7 +96,12 @@ class AnimationDebug extends FlxState
 			text.color = FlxColor.BLUE;
 			dumbTexts.add(text);
 
+
 			if (pushList)
+				var text:FlxText = new FlxText(10,120 + (18 * daLoop), 0, anim + ": " + offsets, 15);
+				text.scrollFactor.set();
+				text.color = FlxColor.BLUE;
+				dumbTexts2.add(text);
 				animList.push(anim);
 
 			daLoop++;
