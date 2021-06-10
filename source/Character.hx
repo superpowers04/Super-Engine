@@ -23,6 +23,7 @@ class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
+	public var spiritTrail = false;
 	var dadVar:Float = 4;
 	
 	public var isPlayer:Bool = false;
@@ -411,7 +412,7 @@ class Character extends FlxSprite
 				addOffsets('spirit');
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
-
+				spiritTrail = true;
 				playAnim('idle');
 
 				antialiasing = false;
@@ -456,6 +457,7 @@ class Character extends FlxSprite
 
 				dadVar = charProperties.sing_duration; 
 				flipX=charProperties.flip_x;
+				spiritTrail=charProperties.spirit_trail;
 				antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 				for (anima in charProperties.animations){
 					if (anima.indices.length > 0) {

@@ -2,6 +2,7 @@ package;
 
 typedef CharacterJson =
 {
+	var spirit_trail:Bool;
 	var flip_x:Bool;
 	var clone:String;
 	var animations:Array<CharJsonAnimation>;

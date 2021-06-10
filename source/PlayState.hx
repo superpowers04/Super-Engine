@@ -228,7 +228,9 @@ class PlayState extends MusicBeatState
 		#if !cpp
 		executeModchart = false; // FORCE disable for non cpp targets
 		#end
-
+		if (FlxG.save.data.playerChar != "bf"){
+			SONG.player2 = FlxG.save.data.playerChar;
+		}
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -779,14 +781,7 @@ class PlayState extends MusicBeatState
 				gf.x += 180;
 				gf.y += 300;
 			case 'schoolEvil':
-				if(FlxG.save.data.distractions){
-				// trailArea.scrollFactor.set();
-				var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-				// evilTrail.changeValuesEnabled(false, false, false, false);
-				// evilTrail.changeGraphic()
-				add(evilTrail);
-				// evilTrail.scrollFactor.set(1.1, 1.1);
-				}
+
 
 
 				boyfriend.x += 200;
@@ -794,7 +789,22 @@ class PlayState extends MusicBeatState
 				gf.x += 180;
 				gf.y += 300;
 		}
-
+		if (dad.spiritTrail && FlxG.save.data.distractions){
+			// trailArea.scrollFactor.set();
+			var dadTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+			// evilTrail.changeValuesEnabled(false, false, false, false);
+			// evilTrail.changeGraphic()
+			add(dadTrail);
+			// evilTrail.scrollFactor.set(1.1, 1.1);
+		}
+		if (boyfriend.spiritTrail && FlxG.save.data.distractions){
+			// trailArea.scrollFactor.set();
+			var bfTrail = new FlxTrail(boyfriend, null, 4, 24, 0.3, 0.069);
+			// evilTrail.changeValuesEnabled(false, false, false, false);
+			// evilTrail.changeGraphic()
+			add(bfTrail);
+			// evilTrail.scrollFactor.set(1.1, 1.1);
+		}
 		add(gf);
 
 		// Shitty layering but whatev it works LOL
