@@ -233,7 +233,7 @@ class PlayState extends MusicBeatState
 		executeModchart = false; // FORCE disable for non cpp targets
 		#end
 		if (FlxG.save.data.playerChar != "bf"){
-			SONG.player2 = FlxG.save.data.playerChar;
+			SONG.player1 = FlxG.save.data.playerChar;
 		}
 
 		// var gameCam:FlxCamera = FlxG.camera;
