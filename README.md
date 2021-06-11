@@ -2,9 +2,17 @@
 This is a mod of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/) to allow custom characters, and has some other changes.<br>
 This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine).<br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
+This is client aims for customisability besides providing backwards compatibility with normal Funkin Battle Royale servers
 
 ## Compiling
-To prevent assets from being outdated and for compatibility with custom assets, this repo does not contain any assets. You need to grab assets from Kade Engine and then replace them with the assets from Funkin Battle Royale. Then compile like any other mod, You can find compilation instructions in the readme for [the original source code for Friday Night Funkin on Github](https://github.com/ninjamuffin99/Funkin)
+To prevent assets from being outdated and for compatibility with custom assets, this repo does not contain any assets besides note splashes. You need to grab assets from Kade Engine and then replace them with the assets from Funkin Battle Royale, then replace Funkin Battle Royale's assets with the ones from here. Then compile like any other mod, You can find compilation instructions in the readme for [the original source code for Friday Night Funkin on Github](https://github.com/ninjamuffin99/Funkin)
+
+How it should be layered:
+
+This(Installed into the folder last)
+Funkin Battle Royale
+Kade Engine(Installed into the folder first)
+
 
 # [Kade Engine](https://github.com/KadeDev/Kade-Engine)
 ![Kade Engine logo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
