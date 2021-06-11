@@ -42,6 +42,7 @@ class MainMenuState extends MusicBeatState
 
 	public static var kadeEngineVer:String = "1.5.1" + nightly;
 	public static var gameVer:String = "0.2.7.1";
+	public static var errorMessage:String = "";
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -129,6 +130,12 @@ class MainMenuState extends MusicBeatState
 		changeItem();
 
 		super.create();
+		if (errorMessage != ""){
+			var errorText = new FlxText(0, FlxG.height * 0.175, FlxG.width, errorMessage);
+		    errorText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.RED, CENTER);
+		    add(errorText);
+		    errorMessage="";
+		}
 	}
 
 	var selectedSomethin:Bool = false;

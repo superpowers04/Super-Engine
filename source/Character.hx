@@ -434,58 +434,63 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			default: // Custom characters pog
-				trace('Loading a custom character "$curCharacter"! ');				
-				var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml');
+				try{
+					trace('Loading a custom character "$curCharacter"! ');				
+					var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml');
 
-				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), charXml);
-				trace('Loaded character sheet');
-				frames = tex;
-				var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json'),
-					charProperties:CharacterJson = haxe.Json.parse(charPropJson);
-				trace('Loaded and parsed JSON ');
-				// BF's animations, Adding because they're used by default to provide support with FNF Multi
-				animation.addByPrefix('idle', 'BF idle dance', 24, false);
-				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				animation.addByPrefix('hey', 'BF HEY', 24, false);
+					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), charXml);
+					trace('Loaded character sheet');
+					frames = tex;
+					var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json'),
+						charProperties:CharacterJson = haxe.Json.parse(charPropJson);
+					trace('Loaded and parsed JSON ');
+					// BF's animations, Adding because they're used by default to provide support with FNF Multi
+					animation.addByPrefix('idle', 'BF idle dance', 24, false);
+					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+					animation.addByPrefix('hey', 'BF HEY', 24, false);
 
-				dadVar = charProperties.sing_duration; 
-				flipX=charProperties.flip_x;
-				spiritTrail=charProperties.spirit_trail;
-				antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
-				for (anima in charProperties.animations){
-					if (anima.indices.length > 0) {
-						animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
-					}else{
-						animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);
+					dadVar = charProperties.sing_duration; 
+					flipX=charProperties.flip_x;
+					spiritTrail=charProperties.spirit_trail;
+					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
+					for (anima in charProperties.animations){
+						if (anima.indices.length > 0) {
+							animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
+						}else{
+							animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);
+						}
 					}
-				}
-				for (offset in charProperties.animations_offsets){
-					addOffset(offset.anim,offset.player1[0],offset.player1[1]);
-				}
-				if (animOffsets["all"] != null) {
-					charProperties.common_stage_offset[0] += animOffsets["all"][0];
-					charProperties.common_stage_offset[1] += animOffsets["all"][1];
+					for (offset in charProperties.animations_offsets){
+						addOffset(offset.anim,offset.player1[0],offset.player1[1]);
+					}
+					if (animOffsets["all"] != null) {
+						charProperties.common_stage_offset[0] += animOffsets["all"][0];
+						charProperties.common_stage_offset[1] += animOffsets["all"][1];
 
+					}
+					addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]);
+					trace('Getting idle animation for $curCharacter');
+					if (charProperties.dance_idle){
+						playAnim('danceRight');
+					}else{
+						playAnim('idle');
+					}
+					if (charProperties.clone != "") {
+						curCharacter = charProperties.clone;
+						addOffsets(charProperties.clone);
+					}else{curCharacter='bf';}
+					trace('Finished loading character, Lets get funky!');
+				}catch(e){
+					trace('Error with $curCharacter: ' + e.message + " Using BF to prevent crashing");
+					return;
 				}
-				addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]);
-				trace('Getting idle animation for $curCharacter');
-				if (charProperties.dance_idle){
-					playAnim('danceRight');
-				}else{
-					playAnim('idle');
-				}
-				if (charProperties.clone != "") {
-					curCharacter = charProperties.clone;
-					addOffsets(charProperties.clone);
-				}else{curCharacter='bf';}
-				trace('Finished loading character, Lets get funky!');
 
 				
 		}

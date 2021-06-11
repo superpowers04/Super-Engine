@@ -82,6 +82,9 @@ class PlayState extends MusicBeatState
 	public static var loadRep:Bool = false;
 
 	public static var noteBools:Array<Bool> = [false, false, false, false];
+	public static var p2presses:Array<Bool> = [false, false, false, false];
+	public static var p1presses:Array<Bool> = [false, false, false, false];
+	public static var p2canplay = false;
 
 	var halloweenLevel:Bool = false;
 
@@ -116,7 +119,7 @@ class PlayState extends MusicBeatState
 	public var health:Float = 1; //making public because sethealth doesnt work without it
 	private var combo:Int = 0;
 	public static var misses:Int = 0;
-	private var accuracy:Float = 0.00;
+	public static var accuracy:Float = 0.00;
 	private var accuracyDefault:Float = 0.00;
 	private var totalNotesHit:Float = 0;
 	private var totalNotesHitDefault:Float = 0;
@@ -1561,7 +1564,7 @@ class PlayState extends MusicBeatState
 
 			switch (player)
 			{
-				case 0:
+				case 0: 
 					cpuStrums.add(babyArrow);
 				case 1:
 					playerStrums.add(babyArrow);
@@ -2121,11 +2124,12 @@ class PlayState extends MusicBeatState
 								dad.playAnim('singLEFT' + altAnim, true);
 						}
 						
-						if (FlxG.save.data.cpuStrums)
+						if (FlxG.save.data.cpuStrums && !p2canplay)
 						{
 							cpuStrums.forEach(function(spr:FlxSprite)
 							{
-								if (Math.abs(daNote.noteData) == spr.ID)
+
+								if (Math.abs(daNote.noteData) == spr.ID )
 								{
 									spr.animation.play('confirm', true);
 								}
@@ -2628,11 +2632,15 @@ class PlayState extends MusicBeatState
 		var downHold:Bool = false;
 		var rightHold:Bool = false;
 		var leftHold:Bool = false;	
+		private function fromBool(?input:Bool = false):Int{
+			if(input){return 1;}else{return 0;}
+		}
 
 		private function keyShit():Void // I've invested in emma stocks
 			{
 				// control arrays, order L D R U
 				var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+				p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 				var pressArray:Array<Bool> = [
 					controls.LEFT_P,
 					controls.DOWN_P,
@@ -2811,6 +2819,24 @@ class PlayState extends MusicBeatState
 					else
 						spr.centerOffsets();
 				});
+				if (p2canplay){
+				cpuStrums.forEach(function(spr:FlxSprite)
+				{
+					if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
+						spr.animation.play('pressed');
+					if (!p2presses[spr.ID])
+						spr.animation.play('static');
+		 
+					if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+					{
+						spr.centerOffsets();
+						spr.offset.x -= 13;
+						spr.offset.y -= 13;
+					}
+					else
+						spr.centerOffsets();
+				});
+				}
 			}
 
 	function noteMiss(direction:Int = 1, daNote:Note):Void

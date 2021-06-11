@@ -45,7 +45,7 @@ class OnlineResultState extends MusicBeatState
     for (i in orderedKeys)
     {
       var name:String = clients[i];
-      var score = OnlinePlayState.clientScores[i];
+      var score = OnlinePlayState.clientText[i];
       var text:FlxText = new FlxText(0, FlxG.height*0.2 + 30*x, '${x+1}. $name: $score');
 
       if (i == -1)

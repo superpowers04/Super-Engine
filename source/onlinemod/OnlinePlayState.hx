@@ -21,6 +21,8 @@ class OnlinePlayState extends PlayState
 {
   var clients:Map<Int, String> = [];
   public static var clientScores:Map<Int, Int> = [];
+  public static var clientText:Map<Int, String> = [];
+  public static var lastPressed:Array<Bool> = [false,false,false,false];
   var clientTexts:Map<Int, Int> = [];
   var clientsGroup:FlxTypedGroup<FlxText>;
 
@@ -60,6 +62,7 @@ class OnlinePlayState extends PlayState
 
     clients = OnlineLobbyState.clients.copy();
     clientScores = [];
+    clientText = [];
     clientsGroup = new FlxTypedGroup<FlxText>();
 
     // Add the score UI for other players
@@ -118,6 +121,11 @@ class OnlinePlayState extends PlayState
     new FlxTimer().start(transIn.duration, (timer:FlxTimer) -> Sender.SendPacket(Packets.GAME_READY, [], OnlinePlayMenuState.socket));
 
 
+    if (clientCount == 2 && TitleState.supported) {
+      PlayState.p2canplay = true;
+    }else{
+      PlayState.p2canplay = false;
+    }
     FlxG.mouse.visible = false;
     FlxG.autoPause = false;
   }
@@ -281,6 +289,12 @@ class OnlinePlayState extends PlayState
       return;
 
     super.keyShit();
+    if (PlayState.p2canplay){
+      if (lastPressed != PlayState.p1presses){
+        Sender.SendPacket(Packets.KEYPRESS, [this.fromBool(controls.LEFT), this.fromBool(controls.DOWN), this.fromBool(controls.UP), this.fromBool(controls.RIGHT)], OnlinePlayMenuState.socket);
+        lastPressed = PlayState.p1presses;
+      }
+    }
   }
 
   override function openSubState(SubState:FlxSubState)
@@ -337,7 +351,17 @@ class OnlinePlayState extends PlayState
         var score:Int = data[1];
 
         clientScores[id] = score;
+        clientText[id] = "S:" + score+ " M:n/a A:n/a";
         clientsGroup.members[clientTexts[id]].text = OnlineLobbyState.clients[id] + ": " + score;
+      case Packets.BROADCAST_CURRENT_INFO:
+        var id:Int = data[0];
+        var score:Int = data[1];
+        var misses:Int = data[2];
+        var accuracy:Int = data[3];
+
+        clientScores[id] = score;
+        clientText[id] = "S:" + score+ " M:" + misses+ " A:" + accuracy;
+        clientsGroup.members[clientTexts[id]].text = OnlineLobbyState.clients[id] + " Score:" + score+ " Misses:" + misses+ " Accuracy:" + accuracy;
 
       case Packets.PLAYER_LEFT:
         var id:Int = data[0];
@@ -357,6 +381,20 @@ class OnlinePlayState extends PlayState
 
       case Packets.FORCE_GAME_END:
         FlxG.switchState(new OnlineLobbyState(true));
+      case Packets.KEYPRESS:
+        if (PlayState.p2canplay){
+          for (i in 0 ... data.length) {
+            if (data[i] == 1 ){
+              PlayState.p2presses[i] = true;
+            }else{
+              PlayState.p2presses[i] = false;
+
+            }
+            
+            
+          }
+
+        }
 
       case Packets.DISCONNECT:
         FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
@@ -365,7 +403,10 @@ class OnlinePlayState extends PlayState
 
   function SendScore()
   {
-    Sender.SendPacket(Packets.SEND_SCORE, [songScore], OnlinePlayMenuState.socket);
+    if (TitleState.supported){
+      Sender.SendPacket(Packets.SEND_CURRENT_INFO, [songScore,PlayState.misses,Std.int(PlayState.accuracy)], OnlinePlayMenuState.socket);
+    }else{Sender.SendPacket(Packets.SEND_SCORE, [songScore], OnlinePlayMenuState.socket);}
+
   }
 
   override function update(elapsed:Float)

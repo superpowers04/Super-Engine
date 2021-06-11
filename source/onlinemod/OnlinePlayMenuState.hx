@@ -28,6 +28,7 @@ class OnlinePlayMenuState extends MusicBeatState
 
 	public static var socket:Socket;
 	public static var receiver:Receiver;
+  
 
   public static var muteKeys:Array<Int>;
   public static var volumeUpKeys:Array<Int>;
@@ -43,6 +44,7 @@ class OnlinePlayMenuState extends MusicBeatState
 
 	override function create()
 	{
+    TitleState.supported = false;
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
     bg.color = 0xFFFF6E6E;
 		add(bg);

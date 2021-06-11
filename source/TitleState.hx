@@ -39,7 +39,7 @@ class TitleState extends MusicBeatState
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
 	public static var choosableCharacters:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster"];
-
+	public static var supported:Bool = false;
 
 	var curWacky:Array<String> = [];
 
@@ -82,17 +82,27 @@ class TitleState extends MusicBeatState
 		#if sys
 		// Loading like this is probably not a good idea
 	    var dataDir:String = "mods/characters/";
+	    var customCharacters:Array<String> = [];
 	    if (FileSystem.exists(dataDir))
 	    {
 	      for (directory in FileSystem.readDirectory(dataDir))
 	      {
 	      	if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml"))
 	      	{
-	       		choosableCharacters.push(directory);  
+	       		customCharacters.push(directory);  
 	      	
 	        }
 	      }
 	    }
+		// customCharacters.sort((a, b) -> );
+		haxe.ds.ArraySort.sort(customCharacters, function(a, b) {
+           if(a < b) return -1;
+           else if(b > a) return 1;
+           else return 0;
+        });
+		for (char in customCharacters){
+			choosableCharacters.push(char);
+		}
 	    #end
 
 		if (FlxG.save.data.weekUnlocked != null)

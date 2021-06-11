@@ -26,13 +26,11 @@ class Packets
   public static var PASSWORD_CONFIRM(default, never) = new Packet([DataTypes.UBYTE]).id;
   public static var SEND_NICKNAME(default, never) = new Packet([DataTypes.STRING]).id;
   public static var NICKNAME_CONFIRM(default, never) = new Packet([DataTypes.UBYTE]).id;
-
   public static var BROADCAST_NEW_PLAYER(default, never) = new Packet([DataTypes.UBYTE, DataTypes.STRING]).id;
   public static var END_PREV_PLAYERS(default, never) = new Packet([]).id;
   public static var JOINED_LOBBY(default, never) = new Packet([]).id;
   public static var PLAYER_LEFT(default, never) = new Packet([DataTypes.UBYTE]).id;
   public static var GAME_START(default, never) = new Packet([DataTypes.STRING, DataTypes.STRING]).id;
-
   public static var GAME_READY(default, never) = new Packet([]).id;
   public static var PLAYERS_READY(default, never) = new Packet([DataTypes.UBYTE]).id;
   public static var EVERYONE_READY(default, never) = new Packet([DataTypes.UBYTE]).id;
@@ -40,13 +38,11 @@ class Packets
   public static var BROADCAST_SCORE(default, never) = new Packet([DataTypes.UBYTE, DataTypes.INT]).id;
   public static var GAME_END(default, never) = new Packet([]).id;
   public static var FORCE_GAME_END(default, never) = new Packet([]).id;
-
   public static var SEND_CHAT_MESSAGE(default, never) = new Packet([DataTypes.UBYTE, DataTypes.STRING]).id;
   public static var REJECT_CHAT_MESSAGE(default, never) = new Packet([DataTypes.UBYTE]).id;
   public static var MUTED(default, never) = new Packet([]).id;
   public static var BROADCAST_CHAT_MESSAGE(default, never) = new Packet([DataTypes.UBYTE, DataTypes.STRING]).id;
   public static var SERVER_CHAT_MESSAGE(default, never) = new Packet([DataTypes.STRING]).id;
-
   public static var READY_DOWNLOAD(default, never) = new Packet([]).id;
   public static var SEND_CHART(default, never) = new Packet([DataTypes.FILE]).id;
   public static var SEND_VOICES(default, never) = new Packet([DataTypes.FILE]).id;
@@ -54,11 +50,15 @@ class Packets
   public static var REQUEST_VOICES(default, never) = new Packet([]).id;
   public static var REQUEST_INST(default, never) = new Packet([]).id;
   public static var DENY(default, never) = new Packet([]).id;
-
   public static var KEEP_ALIVE(default, never) = new Packet([]).id;
-
   public static var DISCONNECT(default, never) = new Packet([]).id;
+  // Custom packets for custom server
+  public static var SUPPORTED(default, never) = new Packet([]).id;
+  public static var SEND_CURRENT_INFO(default, never) = new Packet([DataTypes.INT, DataTypes.INT, DataTypes.INT]).id;
+  public static var BROADCAST_CURRENT_INFO(default, never) = new Packet([DataTypes.UBYTE, DataTypes.INT, DataTypes.INT, DataTypes.INT]).id;
+  public static var KEYPRESS(default, never) = new Packet([DataTypes.INT,DataTypes.INT,DataTypes.INT,DataTypes.INT]).id;
 }
+
 
 class PacketsShit
 {

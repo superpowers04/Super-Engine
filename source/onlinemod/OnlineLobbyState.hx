@@ -141,7 +141,11 @@ class OnlineLobbyState extends MusicBeatState
       case Packets.MUTED:
         Chat.MUTED();
       case Packets.SERVER_CHAT_MESSAGE:
-        Chat.SERVER_MESSAGE(data[0]);
+        if(data[0] == "'ceabf544' This is a compatibility message, Ignore me!"){
+          TitleState.supported = true;
+          Sender.SendPacket(Packets.SUPPORTED, [], OnlinePlayMenuState.socket);
+          Chat.SERVER_MESSAGE("This server is compatible with extra features!");
+        }else{Chat.SERVER_MESSAGE(data[0]);}
 
       case Packets.DISCONNECT:
         FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
