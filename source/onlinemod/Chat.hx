@@ -39,7 +39,7 @@ class Chat
 
   public static inline function SERVER_MESSAGE(message:String)
   {
-    Chat.OutputChatMessage('[SERVER] $message');
+    Chat.OutputChatMessage('| $message', 0xFF40FF40);
   }
 
   public static inline function SPEED_LIMIT()
