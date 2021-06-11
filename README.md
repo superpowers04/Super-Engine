@@ -1,5 +1,5 @@
 # FunkinBattleRoyale-Mod
-[![Build status](https://ci.appveyor.com/api/projects/status/ckxrg3qg9s33vem4?svg=true)](https://ci.appveyor.com/project/superpowers04/funkinbattleroyale-mod)
+[![Build status](https://ci.appveyor.com/api/projects/status/ckxrg3qg9s33vem4?svg=true)](https://ci.appveyor.com/project/superpowers04/funkinbattleroyale-mod)<br>
 This is a mod of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/) to allow custom characters, and has some other changes.<br>
 This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine).<br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
