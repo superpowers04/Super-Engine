@@ -84,7 +84,7 @@ class PlayState extends MusicBeatState
 	public static var noteBools:Array<Bool> = [false, false, false, false];
 	public static var p2presses:Array<Bool> = [false, false, false, false];
 	public static var p1presses:Array<Bool> = [false, false, false, false];
-	public static var p2canplay = false;
+	public static var p2canplay = false;//TitleState.p2canplay
 
 	var halloweenLevel:Bool = false;
 
@@ -1365,7 +1365,6 @@ class PlayState extends MusicBeatState
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
-
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset + songOffset;
@@ -1379,7 +1378,7 @@ class PlayState extends MusicBeatState
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
-
+				if (TitleState.p2canplay && (!gottaHitNote) ){continue;}
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -1421,6 +1420,7 @@ class PlayState extends MusicBeatState
 				{
 				}
 			}
+
 			daBeats += 1;
 		}
 
@@ -2635,6 +2635,9 @@ class PlayState extends MusicBeatState
 		private function fromBool(?input:Bool = false):Int{
 			if(input){return 1;}else{return 0;}
 		}
+		private function fromInt(?input:Int = 0):Bool{
+			if(input == 1){return true;}else{return false;}
+		}
 
 		private function keyShit():Void // I've invested in emma stocks
 			{
@@ -2820,22 +2823,22 @@ class PlayState extends MusicBeatState
 						spr.centerOffsets();
 				});
 				if (p2canplay){
-				cpuStrums.forEach(function(spr:FlxSprite)
-				{
-					if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
-						spr.animation.play('pressed');
-					if (!p2presses[spr.ID])
-						spr.animation.play('static');
-		 
-					if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+					cpuStrums.forEach(function(spr:FlxSprite)
 					{
-						spr.centerOffsets();
-						spr.offset.x -= 13;
-						spr.offset.y -= 13;
-					}
-					else
-						spr.centerOffsets();
-				});
+						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
+							spr.animation.play('pressed');
+						if (!p2presses[spr.ID])
+							spr.animation.play('static');
+			 
+						if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+						{
+							spr.centerOffsets();
+							spr.offset.x -= 13;
+							spr.offset.y -= 13;
+						}
+						else
+							spr.centerOffsets();
+					});
 				}
 			}
 

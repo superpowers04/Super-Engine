@@ -57,7 +57,7 @@ class CharSelection extends MusicBeatState
 
     if (controls.BACK)
     {
-      FlxG.switchState(new OptionsMenu());
+      ret();
     }
 
 
@@ -73,11 +73,12 @@ class CharSelection extends MusicBeatState
         FlxG.save.data.opponentIndex = curSelected;
         FlxG.save.data.opponent = songs[curSelected];
       }
-
-      FlxG.switchState(new OptionsMenu());
+      ret();
     }
   }
-
+  function ret(){
+    if (onlinemod.OnlinePlayMenuState.socket != null){FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{FlxG.switchState(new OptionsMenu());}
+  }
   function changeSelection(change:Int = 0)
 	{
 		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);

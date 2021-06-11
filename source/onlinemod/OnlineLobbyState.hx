@@ -20,6 +20,7 @@ class OnlineLobbyState extends MusicBeatState
   var clientTexts:Map<Int, Int> = []; // Maps a player ID to the corresponding index in clientsGroup
   var clientsGroup:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
   var clientCount:Int = 0; // Amount of clients in the lobby
+  public static var optionsButton:FlxUIButton;
 
   static inline var NAMES_PER_ROW:Int = 5;
   static inline var NAMES_SIZE:Int = 32;
@@ -84,6 +85,13 @@ class OnlineLobbyState extends MusicBeatState
     if (!keepClients)
       Sender.SendPacket(Packets.JOINED_LOBBY, [], OnlinePlayMenuState.socket);
 
+    optionsButton = new FlxUIButton(10 + 1152 + 9, 40, "Options", () -> {
+      FlxG.switchState(new OnlineOptionsMenu());
+    });
+    optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+    optionsButton.resize(150, Chat.chatField.height);
+    add(optionsButton);
+
 
     super.create();
   }
@@ -128,6 +136,11 @@ class OnlineLobbyState extends MusicBeatState
       case Packets.GAME_START:
         var jsonInput:String = data[0];
         var folder:String = data[1];
+        // var count = 0;
+        // for (i in clients.keys())
+        // {
+        //   count++;
+        // }
 
         StartGame(jsonInput, folder);
 
@@ -148,6 +161,7 @@ class OnlineLobbyState extends MusicBeatState
         }else{Chat.SERVER_MESSAGE(data[0]);}
 
       case Packets.DISCONNECT:
+        TitleState.p2canplay = false;
         FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
     }
   }

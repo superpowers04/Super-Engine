@@ -48,6 +48,7 @@ class OnlinePlayState extends PlayState
     this.customSong = customSong;
     this.loadedVoices = voices;
     this.loadedInst = inst;
+
   }
 
   override function create()
@@ -85,7 +86,11 @@ class OnlinePlayState extends PlayState
       text.cameras = [camHUD];
     }
     add(clientsGroup);
-
+    if (clientCount == 2 && TitleState.supported) {
+      PlayState.p2canplay = true;
+    }else{
+      PlayState.p2canplay = false;
+    }
 
     // Add XieneDev watermark
     var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.9 + 50, FlxG.width, "XieneDev Battle Royale", 16);
@@ -109,8 +114,7 @@ class OnlinePlayState extends PlayState
 
 
     // Remove healthbar
-    if (FlxG.save.data.downscroll)
-      scoreTxt.y = 10;
+    if (FlxG.save.data.downscroll){scoreTxt.y = 10;}
     remove(healthBarBG);
     remove(healthBar);
     remove(iconP1);
@@ -121,11 +125,7 @@ class OnlinePlayState extends PlayState
     new FlxTimer().start(transIn.duration, (timer:FlxTimer) -> Sender.SendPacket(Packets.GAME_READY, [], OnlinePlayMenuState.socket));
 
 
-    if (clientCount == 2 && TitleState.supported) {
-      PlayState.p2canplay = true;
-    }else{
-      PlayState.p2canplay = false;
-    }
+
     FlxG.mouse.visible = false;
     FlxG.autoPause = false;
   }
@@ -197,6 +197,7 @@ class OnlinePlayState extends PlayState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 				else
 					oldNote = null;
+
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
 				swagNote.sustainLength = songNotes[2];
@@ -271,6 +272,7 @@ class OnlinePlayState extends PlayState
   {
     clients[-1] = OnlineNickState.nickname;
     clientScores[-1] = songScore;
+    clientText[-1] = "S:" + songScore+ " M:" + PlayState.misses+ " A:" + PlayState.accuracy;
 
     canPause = false;
     FlxG.sound.music.onComplete = null;
@@ -383,16 +385,7 @@ class OnlinePlayState extends PlayState
         FlxG.switchState(new OnlineLobbyState(true));
       case Packets.KEYPRESS:
         if (PlayState.p2canplay){
-          for (i in 0 ... data.length) {
-            if (data[i] == 1 ){
-              PlayState.p2presses[i] = true;
-            }else{
-              PlayState.p2presses[i] = false;
-
-            }
-            
-            
-          }
+          PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
 
         }
 
