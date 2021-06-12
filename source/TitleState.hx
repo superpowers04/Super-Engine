@@ -40,7 +40,11 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
 	public static var choosableCharacters:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster"];
+	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
+	public static var returnStateID:Int = 0;
 	public static var supported:Bool = false;
+	public static var outdated:Bool = true;
+	public static var updatedVer:String = "";
 
 	var curWacky:Array<String> = [];
 
@@ -332,14 +336,16 @@ class TitleState extends MusicBeatState
 				  	if (!MainMenuState.kadeEngineVer.contains(returnedData[0].trim()) && !OutdatedSubState.leftState && MainMenuState.nightly == "")
 					{
 						trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.kadeEngineVer);
-						OutdatedSubState.needVer = returnedData[0];
-						OutdatedSubState.currChanges = returnedData[1];
-						FlxG.switchState(new OutdatedSubState());
+						// OutdatedSubState.needVer = returnedData[0];
+						// OutdatedSubState.currChanges = returnedData[1];
+						outdated = true;
+						updatedVer = returnedData[0];
+						// FlxG.switchState(new OutdatedSubState());
 					}
 					else
 					{
-						FlxG.switchState(new MainMenuState());
 					}
+					FlxG.switchState(new MainMenuState());
 				}
 				
 				http.onError = function (error) {

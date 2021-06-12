@@ -25,9 +25,10 @@ class Character extends FlxSprite
 	public var debugMode:Bool = false;
 	public var spiritTrail = false;
 	var dadVar:Float = 4;
-	
+	// public var charProperties:CharacterJson = [];
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
+	public var hasAlts:Bool = false;
 
 	public var holdTimer:Float = 0;
 	public var stunned:Bool = false; // Why was this specific to BF?
@@ -78,15 +79,27 @@ class Character extends FlxSprite
 				addOffset("singLEFT", 130, -10);
 				addOffset("singDOWN", -50, -130);
 			case "pico":
+
 				addOffset('idle');
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -68, -7);
-				addOffset("singLEFT", 65, 9);
-				addOffset("singDOWN", 200, -70);
-				addOffset("singUPmiss", -19, 67);
-				addOffset("singRIGHTmiss", -60, 41);
-				addOffset("singLEFTmiss", 62, 64);
-				addOffset("singDOWNmiss", 210, -28);
+				if (isPlayer){ // Why is this needed?
+					addOffset("singUP", 29, 27);
+					addOffset("singRIGHT", 68, -7);
+					addOffset("singLEFT", -65, 9);
+					addOffset("singDOWN", -200, -70);
+					addOffset("singUPmiss", 19, 67);
+					addOffset("singRIGHTmiss", 60, 41);
+					addOffset("singLEFTmiss", -62, 64);
+					addOffset("singDOWNmiss", -210, -28);
+				}else{
+					addOffset("singUP", -29, 27);
+					addOffset("singRIGHT", -68, -7);
+					addOffset("singLEFT", 65, 9);
+					addOffset("singDOWN", 200, -70);
+					addOffset("singUPmiss", -19, 67);
+					addOffset("singRIGHTmiss", -60, 41);
+					addOffset("singLEFTmiss", 62, 64);
+					addOffset("singDOWNmiss", 210, -28);					
+				}
 			case 'bf','bf-christmas','bf-car':
 				addOffset('all',0,330); // Offsets for every animation
 				addOffset('idle', -5);
@@ -148,10 +161,11 @@ class Character extends FlxSprite
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
-		if (curCharacter == 'dad'){dadVar = 6.1;}
 		animOffsets = new Map<String, Array<Dynamic>>();
 		curCharacter = character;
+		if (curCharacter == 'dad'){dadVar = 6.1;}
 		this.isPlayer = isPlayer;
+
 
 		var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
 		antialiasing = true;
@@ -431,6 +445,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
 
 				addOffsets('parents-christmas');
+				hasAlts=true;
 
 				playAnim('idle');
 			default: // Custom characters pog
@@ -460,23 +475,29 @@ class Character extends FlxSprite
 					flipX=charProperties.flip_x;
 					spiritTrail=charProperties.spirit_trail;
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
+					hasAlts =  charProperties.alt_anims;
 					for (anima in charProperties.animations){
+						if (anima.anim.substr(-4) == "-alt"){hasAlts=true;}
 						if (anima.indices.length > 0) {
 							animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
 						}else{
 							animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);
 						}
 					}
+					var offsetCount = 0;
 					for (offset in charProperties.animations_offsets){
+						offsetCount++;
 						addOffset(offset.anim,offset.player1[0],offset.player1[1]);
 					}
+					trace('Loaded ${offsetCount} offsets!');
 					if (animOffsets["all"] != null) {
 						charProperties.common_stage_offset[0] += animOffsets["all"][0];
 						charProperties.common_stage_offset[1] += animOffsets["all"][1];
-
-					}
+					}			
 					addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]);
 					trace('Getting idle animation for $curCharacter');
+					setGraphicSize(Std.int(width * charProperties.scale));
+					updateHitbox();
 					if (charProperties.dance_idle){
 						playAnim('danceRight');
 					}else{
@@ -488,7 +509,7 @@ class Character extends FlxSprite
 					}else{curCharacter='bf';}
 					trace('Finished loading character, Lets get funky!');
 				}catch(e){
-					trace('Error with $curCharacter: ' + e.message + " Using BF to prevent crashing");
+					trace('Error with $curCharacter: ' + e.message + "");
 					return;
 				}
 
@@ -500,6 +521,13 @@ class Character extends FlxSprite
 		if (animOffsets.exists('all'))
 		{
 			this.setPosition(x+alloffset[0],y+alloffset[1]);
+		}
+		if (!hasAlts && animation.getByName('singRIGHT-alt') == null){ // Add main animations over alts if no alt's present
+			animation.addByPrefix('singUP-alt', 'singUP', 24, false);
+			animation.addByPrefix('singDOWN-alt', 'singDOWN', 24, false);
+			animation.addByPrefix('singLEFT-alt', 'singLEFT', 24, false);
+			animation.addByPrefix('singRIGHT-alt', 'singRIGHT', 24, false);
+
 		}
 		if (isPlayer)
 		{

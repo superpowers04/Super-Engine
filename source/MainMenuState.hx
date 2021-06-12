@@ -40,8 +40,8 @@ class MainMenuState extends MusicBeatState
 
 	public static var nightly:String = "";
 
-	public static var kadeEngineVer:String = "1.5.1" + nightly;
-	public static var gameVer:String = "0.2.7.1";
+	public static var kadeEngineVer:String = "1.5.2" + nightly;
+	public static var gameVer:String = "0.2.7.1/0.2.8";
 	public static var errorMessage:String = "";
 
 	var magenta:FlxSprite;
@@ -120,7 +120,26 @@ class MainMenuState extends MusicBeatState
 		add(versionShit);
 
 		// NG.core.calls.event.logEvent('swag').send();
-
+		if (TitleState.outdated){
+			var outdatedLMAO:FlxText = new FlxText(5, FlxG.height - 32, 0, 	'Kade is outdated: ${TitleState.updatedVer}', 12);
+			outdatedLMAO.scrollFactor.set();
+			outdatedLMAO.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			add(outdatedLMAO);
+		}
+		if (!TitleState.choosableCharacters.contains(FlxG.save.data.playerChar)){
+			errorMessage += '${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
+			FlxG.save.data.playerChar = "bf";
+		}
+		if (!TitleState.choosableCharacters.contains(FlxG.save.data.opponent)){
+			errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to Dad!';
+			FlxG.save.data.opponent = "dad";
+		}
+		if (errorMessage != ""){
+			var errorText = new FlxText(0, 18, FlxG.width, errorMessage);
+		    errorText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.RED, CENTER);
+		    add(errorText);
+		    errorMessage="";
+		}
 
 		if (FlxG.save.data.dfjk)
 			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
@@ -130,12 +149,6 @@ class MainMenuState extends MusicBeatState
 		changeItem();
 
 		super.create();
-		if (errorMessage != ""){
-			var errorText = new FlxText(0, FlxG.height * 0.175, FlxG.width, errorMessage);
-		    errorText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.RED, CENTER);
-		    add(errorText);
-		    errorMessage="";
-		}
 	}
 
 	var selectedSomethin:Bool = false;

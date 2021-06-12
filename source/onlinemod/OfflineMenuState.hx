@@ -3,6 +3,7 @@ package onlinemod;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.addons.ui.FlxUIButton;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
@@ -17,6 +18,7 @@ class OfflineMenuState extends MusicBeatState
 
   var songs:Array<String> = [];
   var grpSongs:FlxTypedGroup<Alphabet>;
+  public static var optionsButton:FlxUIButton;
 
   override function create()
   {
@@ -54,11 +56,20 @@ class OfflineMenuState extends MusicBeatState
     }
 
 
-    FlxG.mouse.visible = false;
+    FlxG.mouse.visible = true;
     FlxG.autoPause = true;
 
 
     super.create();
+
+    optionsButton = new FlxUIButton(1100, 40, "Options", () -> {
+
+      FlxG.mouse.visible = false;
+      FlxG.switchState(new OptionsMenu());
+    });
+    optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+    optionsButton.resize(150, 30);
+    add(optionsButton);
   }
 
   override function update(elapsed:Float)

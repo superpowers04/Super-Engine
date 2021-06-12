@@ -15,6 +15,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import flixel.addons.ui.FlxUIState;
 
 class OptionsMenu extends MusicBeatState
 {
@@ -79,6 +80,7 @@ class OptionsMenu extends MusicBeatState
 	var blackBorder:FlxSprite;
 	override function create()
 	{
+
 		instance = this;
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 
@@ -129,8 +131,18 @@ class OptionsMenu extends MusicBeatState
 
 		if (acceptInput)
 		{
-			if (controls.BACK && !isCat)
+			if (controls.BACK && !isCat){
+				// var id = TitleState.returnStateID;
+				// TitleState.returnStateID = 0; // Reset
+				// switch(id){
+				// 	case 0:
+				// 		FlxG.switchState(new MainMenuState());
+
+				// 	case 1:
+				// 		FlxG.switchState(new onlinemod.OfflineMenuState());
+				// } Broken at the moment 
 				FlxG.switchState(new MainMenuState());
+			}
 			else if (controls.BACK)
 			{
 				isCat = false;

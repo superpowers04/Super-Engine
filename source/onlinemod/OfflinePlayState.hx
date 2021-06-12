@@ -20,7 +20,7 @@ class OfflinePlayState extends PlayState
     PlayState.SONG.player1 = FlxG.save.data.playerChar;
     PlayState.SONG.player2 = FlxG.save.data.opponent;
 
-
+    
     loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg'));
     loadedInst = Sound.fromFile('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg');
 
