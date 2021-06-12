@@ -616,7 +616,7 @@ class BotPlay extends Option
 }
 class PlayerOption extends Option
 {
-	public static var playerEdit:Bool = true;
+	public static var playerEdit:Int = 0;
 	public function new(desc:String)
 	{
 		super();
@@ -627,7 +627,7 @@ class PlayerOption extends Option
 
 	public override function press():Bool
 	{
-		playerEdit = true;
+		playerEdit = 0;
 		FlxG.switchState(new CharSelection());
 		return true;
 	}
@@ -638,12 +638,7 @@ class PlayerOption extends Option
 	}
 
 	override function right():Bool {
-		FlxG.save.data.playerCharIndex += 1;
-		if (FlxG.save.data.playerCharIndex > TitleState.choosableCharacters.length - 1){
-			FlxG.save.data.playerCharIndex = 0;
-		}
- 		FlxG.save.data.playerChar = TitleState.choosableCharacters[FlxG.save.data.playerCharIndex];
-		return true;
+		return false;
 	}
 
 	override function getValue():String {
@@ -651,13 +646,8 @@ class PlayerOption extends Option
 	}
 
 	override function left():Bool {
-		FlxG.save.data.playerCharIndex -= 1;
-		if (FlxG.save.data.playerCharIndex < 0){
-			FlxG.save.data.playerCharIndex = TitleState.choosableCharacters.length - 1;
-		}
- 		FlxG.save.data.playerChar = TitleState.choosableCharacters[FlxG.save.data.playerCharIndex];
 
-		return true;
+		return false;
 	}
 }
 // Added options
@@ -673,7 +663,7 @@ class OpponentOption extends Option
 
 	public override function press():Bool
 	{
-		PlayerOption.playerEdit = false;
+		PlayerOption.playerEdit = 1;
 		FlxG.switchState(new CharSelection());
 		return true;
 	}
@@ -684,12 +674,7 @@ class OpponentOption extends Option
 	}
 
 	override function right():Bool {
-		FlxG.save.data.opponentIndex += 1;
-		if (FlxG.save.data.opponentIndex > TitleState.choosableCharacters.length - 1){
-			FlxG.save.data.opponentIndex = 0;
-		}
- 		FlxG.save.data.opponent = TitleState.choosableCharacters[FlxG.save.data.opponentIndex];
-		return true;
+		return false;
 	}
 
 	override function getValue():String {
@@ -697,13 +682,8 @@ class OpponentOption extends Option
 	}
 
 	override function left():Bool {
-		FlxG.save.data.opponentIndex -= 1;
-		if (FlxG.save.data.opponentIndex < 0){
-			FlxG.save.data.opponentIndex = TitleState.choosableCharacters.length - 1;
-		}
- 		FlxG.save.data.opponent = TitleState.choosableCharacters[FlxG.save.data.opponentIndex];
 
-		return true;
+		return false;
 	}
 }
 class AnimDebugOption extends Option

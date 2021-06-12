@@ -66,7 +66,7 @@ class OnlinePlayMenuState extends MusicBeatState
     ipText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(ipText);
 
-		ipField = new FlxInputText(0, FlxG.height * 0.3, 700, 32);
+		ipField = new FlxInputText(0, FlxG.height * 0.3, 700, 32,FlxG.save.data.lastServer);
 		ipField.setFormat(32, FlxColor.BLACK, CENTER);
 		ipField.screenCenter(FlxAxes.X);
 		ipField.customFilterPattern = ~/[^A-Za-z0-9.-]/;
@@ -78,7 +78,7 @@ class OnlinePlayMenuState extends MusicBeatState
     portText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(portText);
 
-		portField = new FlxInputText(0, FlxG.height * 0.5, 700, 32);
+		portField = new FlxInputText(0, FlxG.height * 0.5, 700, 32,FlxG.save.data.lastServerPort);
 		portField.setFormat(32, FlxColor.BLACK, CENTER);
 		portField.screenCenter(FlxAxes.X);
 		portField.customFilterPattern = ~/[^0-9]/;
@@ -101,6 +101,7 @@ class OnlinePlayMenuState extends MusicBeatState
       try
   		{
   			socket.connect(ipField.text, Std.parseInt(portField.text));
+
   		}catch (e: Dynamic){
   			trace(e);
   		}

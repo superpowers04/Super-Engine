@@ -69,7 +69,7 @@ class KadeEngineData
 		if (FlxG.save.data.resetButton == null)
 			FlxG.save.data.resetButton = false;
 		
-		if (FlxG.save.data.botplay == null)
+		if (FlxG.save.data.botplay != false)
 			FlxG.save.data.botplay = false;
 
 		if (FlxG.save.data.cpuStrums == null)
@@ -80,22 +80,28 @@ class KadeEngineData
 		
 		if (FlxG.save.data.customStrumLine == null)
 			FlxG.save.data.customStrumLine = 0;
+
 		if (FlxG.save.data.opponent == null)
 			FlxG.save.data.opponent = "dad";
-		if (FlxG.save.data.opponentIndex == null)
-			FlxG.save.data.opponentIndex = 0;
+
+
 		if (FlxG.save.data.playerChar == null)
 			FlxG.save.data.playerChar = "bf";
-		if (FlxG.save.data.playerCharIndex == null)
-			FlxG.save.data.playerCharIndex = 0;
+
 		if (FlxG.save.data.animDebug == null)
 			FlxG.save.data.animDebug = false;
+		// Note Splash
 		if (FlxG.save.data.noteSplash == null)
 			FlxG.save.data.noteSplash = true;
 
 		// Preformance
 		if (FlxG.save.data.preformance == null)
 			FlxG.save.data.preformance = false;
+
+		// if (FlxG.save.data.lastServer == null)
+		// 	FlxG.save.data.lastServer = "";
+		// if (FlxG.save.data.lastServerPort == null)
+		// 	FlxG.save.data.lastServerPort = "";		
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();
