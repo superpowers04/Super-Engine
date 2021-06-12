@@ -61,7 +61,7 @@ class OptionsMenu extends MusicBeatState
 			new PlayerOption("Change the opponent used in Online/Offline"),
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
-			new BotPlay("Showcase your charts and mods with autoplay."),
+			// new BotPlay("Showcase your charts and mods with autoplay."), what online rhythm game would have this?
 			new AnimDebugOption("Access animation debug in a offline session using 9 for P1 or 8 or P2 when enabled")
 		]),
 		new OptionCategory("Preformance", [
