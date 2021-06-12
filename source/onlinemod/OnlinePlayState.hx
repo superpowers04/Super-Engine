@@ -275,6 +275,7 @@ class OnlinePlayState extends PlayState
     clientText[-1] = "S:" + songScore+ " M:" + PlayState.misses+ " A:" + PlayState.accuracy;
 
     canPause = false;
+    FlxG.sound.playMusic(loadedInst, 1, true);
     FlxG.sound.music.onComplete = null;
     FlxG.sound.music.pause();
 		vocals.volume = 0;
