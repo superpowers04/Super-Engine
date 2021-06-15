@@ -25,8 +25,10 @@ class Character extends FlxSprite
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
 	public var spiritTrail = false;
-	var dadVar:Float = 4;
-	// public var charProperties:CharacterJson = [];
+	public var camPos:Array<Int> = [0,0];
+	public var charX:Int = 0;
+	public var charY:Int = 0;
+	var dadVar:Float = 4; // Singduration?
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 	public var hasAlts:Bool = false;
@@ -94,21 +96,21 @@ class Character extends FlxSprite
 				addOffset("singLEFTmiss", 62, 64);
 				addOffset("singDOWNmiss", 210, -28);					
 			case 'bf','bf-christmas','bf-car':
-				addOffset('all',0,330); // Offsets for every animation
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -38, -7);
-				addOffset("singLEFT", 12, -6);
-				addOffset("singDOWN", -10, -50);
-				addOffset("singUPmiss", -29, 27);
-				addOffset("singRIGHTmiss", -30, 21);
-				addOffset("singLEFTmiss", 12, 24);
-				addOffset("singDOWNmiss", -11, -19);
-				addOffset("hey", 7, 4);
-				addOffset('firstDeath', 37, 11);
-				addOffset('deathLoop', 37, 5);
-				addOffset('deathConfirm', 37, 69);
-				addOffset('scared', -4);
+				addOffset('idle', -5,isPlayer);
+				addOffset("singUP", -29, 27,isPlayer);
+				addOffset("singRIGHT", -38, -7,isPlayer);
+				addOffset("singLEFT", 12, -6,isPlayer);
+				addOffset("singDOWN", -10, -50,isPlayer);
+				addOffset("singUPmiss", -29, 27,isPlayer);
+				addOffset("singRIGHTmiss", -30, 21,isPlayer);
+				addOffset("singLEFTmiss", 12, 24,isPlayer);
+				addOffset("singDOWNmiss", -11, -19,isPlayer);
+				addOffset("hey", 7, 4,isPlayer);
+				addOffset('firstDeath', 37, 11,isPlayer);
+				addOffset('deathLoop', 37, 5,isPlayer);
+				addOffset('deathConfirm', 37, 69,isPlayer);
+				addOffset('scared', -4,0,isPlayer);
+				charY = 300;
 			case "bf-pixel":
 				addOffset('all',0,330); // Offsets for every animation
 				addOffset('idle');
@@ -155,6 +157,7 @@ class Character extends FlxSprite
 	{
 		super(x, y);
 		animOffsets = new Map<String, Array<Dynamic>>();
+		animOffsets['all'] = [0, 0];
 		curCharacter = character;
 		charType = char_type;
 		if (curCharacter == 'dad'){dadVar = 6.1;}
@@ -437,12 +440,14 @@ class Character extends FlxSprite
 			default: // Custom characters pog
 				try{
 					trace('Loading a custom character "$curCharacter"! ');				
-					var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml');
+					var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml'); // Loads the XML as a string
+					if (charXml == null){MainMenuState.errorMessage = '$curCharacter is missing their XML!';FlxG.switchState(new MainMenuState());} // Boot to main menu if character's XML can't be loaded
 					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), charXml);
+					if (tex == null){MainMenuState.errorMessage = '$curCharacter is missing their XML!';FlxG.switchState(new MainMenuState());} // Boot to main menu if character's texture can't be loaded
 					trace('Loaded character sheet');
 					frames = tex;
-					var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json'),
-						charProperties:CharacterJson = haxe.Json.parse(charPropJson);
+					var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json');
+					var charProperties:CharacterJson = haxe.Json.parse(charPropJson);
 					trace('Loaded and parsed JSON ');
 					// BF's animations, Adding because they're used by default to provide support with FNF Multi
 					animation.addByPrefix('idle', 'BF idle dance', 24, false);
@@ -456,44 +461,47 @@ class Character extends FlxSprite
 					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 					animation.addByPrefix('hey', 'BF HEY', 24, false);
 
-					dadVar = charProperties.sing_duration; 
-					flipX=charProperties.flip_x;
-					spiritTrail=charProperties.spirit_trail;
+					dadVar = charProperties.sing_duration;
+					flipX=charProperties.flip_x; // Flip for BF clones
+					spiritTrail=charProperties.spirit_trail; // Spirit TraiL
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
-					hasAlts =  charProperties.alt_anims;
-					dance_idle = charProperties.dance_idle;
+					hasAlts =  charProperties.alt_anims; // Handles alt animations
+					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+					trace('Loading Animations!');
 					for (anima in charProperties.animations){
-						if (anima.anim.substr(-4) == "-alt"){hasAlts=true;}
-						if (anima.indices.length > 0) {
+						if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
+						if (anima.stage != "" && anima.stage != null){if(PlayState.curStage != anima.stage){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
+						if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
+
+						if (anima.indices.length > 0) { // Add using indices if specified
 							animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
 						}else{
 							animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);
 						}
 					}
 					
-					
-					trace('Getting idle animation for $curCharacter');
-					setGraphicSize(Std.int(width * charProperties.scale));
-					updateHitbox();
+				
+					setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
+					updateHitbox();// I honestly don't know what this does, other resized characters use it so ¯\_(ツ)_/¯
 
 					clonedChar = '${charProperties.clone}';
 					if (clonedChar != "") {
 						trace('Character clones $clonedChar copying their offsets!');
 						addOffsets(clonedChar);
-					}else{curCharacter='bf';}
-					trace('Loading normal offsets');
+					}
+					trace('Adding custom offsets');
 					var offsetCount = 0;
-					for (offset in charProperties.animations_offsets){
+					for (offset in charProperties.animations_offsets){ // Custom offsets
 						offsetCount++;
 						addOffset(offset.anim,offset.player1[0],offset.player1[1]);
 					}	
-					addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]);
+					addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
 					trace('Loaded ${offsetCount} offsets!');
 					if (charProperties.dance_idle){
 						playAnim('danceRight');
 					}else{
 						playAnim('idle');
-					}
+					} // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
 					trace('Finished loading character, Lets get funky!');
 				}catch(e){
@@ -518,25 +526,25 @@ class Character extends FlxSprite
 			animation.addByPrefix('singRIGHT-alt', 'singRIGHT', 24, false);
 
 		}
-		if (charType == 2 && !curCharacter.startsWith("gf")){
+		if (charType == 2 && !curCharacter.startsWith("gf")){ // Checks if GF is not girlfriend
 			this.curCharacter = "gf";
-			if(animation.getByName('danceRight') == null){
-				// animation.addByPrefix('danceRight', 'singRIGHT', 24, false);
-				// animation.addByPrefix('danceLeft', 'singLEFT', 24, false);
+			if(animation.getByName('danceRight') == null){ // Convert sing animations into dance animations for when put as GF
 				cloneAnimation('danceRight',animation.getByName('singRIGHT'));
 				cloneAnimation('danceLeft',animation.getByName('singLEFT'));
 				
 			}	
-			if (!clonedChar.startsWith("gf")){
+			if (!clonedChar.startsWith("gf")){ // Force offset if clone is not GF
 				addOffset("all",0,300);
 			}
 		}
+		this.y += charY;
+		this.x += charX;
 		if (isPlayer)
 		{
 			flipX = !flipX;
 
 			// Doesn't flip for BF, since his are already in the right place???
-			if (!curCharacter.startsWith('bf') || flipX)
+			if (!curCharacter.startsWith('bf') || !flipX)
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -556,39 +564,35 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{	
-		try{
-		if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
-		{
-			playAnim('idle', true, false, 10);
-		}
-		if (animation.curAnim.name.startsWith('sing'))
-		{
-			holdTimer += elapsed;
-		}
-		else
-			holdTimer = 0;
-		if (!isPlayer)
-		{
-			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
+			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
 			{
-				dance();
-				holdTimer = 0;
+				playAnim('idle', true, false, 10);
 			}
-		}
+			if (animation.curAnim.name.startsWith('sing'))
+			{
+				holdTimer += elapsed;
+			}
+			else
+				holdTimer = 0;
+			if (!isPlayer)
+			{
+				if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
+				{
+					dance();
+					holdTimer = 0;
+				}
+			}
 
-		switch (curCharacter)
-		{
-			case 'gf':
+			switch (curCharacter)
+			{
+				case 'gf':
+					if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+						playAnim('danceRight');
+			}
+			if(dance_idle || charType == 2){
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
-		}
-		if(dance_idle || charType == 2){
-			if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-				playAnim('danceRight');
-		}
-		}catch(e){
-			trace(e.message);
-		}
+			}
 
 		super.update(elapsed);
 	}
@@ -605,7 +609,7 @@ class Character extends FlxSprite
 			if(dance_idle || charType == 2 || curCharacter == "spooky"){ // And I condensed it even more by providing a dance_idle option...
 				if (!animation.curAnim.name.startsWith('hair'))
 				{
-					danced = !danced;
+					// danced = !danced;
 
 					if (danced)
 						playAnim('danceRight');
@@ -621,42 +625,41 @@ class Character extends FlxSprite
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		animation.play(AnimName, Force, Reversed, Frame);
+		// if (animation.curAnim != null && animation.curAnim.name == AnimName){return;} // Skip if already playing, no need to calculate offsets and such
 
-		var daOffset = animOffsets.get(AnimName);
+		var daOffset = animOffsets.get(AnimName); // Get offsets
 		var offsets:Array<Float> = [0,0];
-		if (animOffsets.exists(AnimName))
+		if (animOffsets.exists(AnimName)) // Set offsets if animation has any
 		{
 			offsets[0]+=daOffset[0];
 			offsets[1]+=daOffset[1];
 		}
-		offsets[0]+=animOffsets["all"][0];
+		offsets[0]+=animOffsets["all"][0]; // Add "all" offsets
 		offsets[1]+=animOffsets["all"][1];
-		offset.set(offsets[0], offsets[1]);
+		offset.set(offsets[0], offsets[1]); // Set offsets
 
-		if (curCharacter == 'gf')
+		if (dance_idle || curCharacter == 'gf' || clonedChar == "gf")
 		{
-			if (AnimName == 'singLEFT')
-			{
-				danced = true;
-			}
-			else if (AnimName == 'singRIGHT')
-			{
-				danced = false;
-			}
-
-			if (AnimName == 'singUP' || AnimName == 'singDOWN')
-			{
-				danced = !danced;
+			switch(AnimName){
+				case 'singLEFT', 'danceLeft':
+					danced = true;
+				case 'singRIGHT', 'danceRight':
+					danced = false;
+				case 'singUP', 'singDOWN':
+					danced = !danced;
 			}
 		}
 	}
 	public function cloneAnimation(name:String,anim:FlxAnimation){
-		animation.add('danceRight',anim.frames,anim.frameRate,anim.flipX);
+		animation.add(name,anim.frames,anim.frameRate,anim.flipX);
 	}
-	public function addOffset(name:String, x:Float = 0, y:Float = 0)
+	public function addOffset(name:String, x:Float = 0, y:Float = 0,?flip = false)
 	{
-		trace('Adding to offset $name:$x/$y');
-
-		if (animOffsets[name] == null){animOffsets[name] = [x, y];}else{animOffsets[name] = [animOffsets[name][0] + x, animOffsets[name][1] + y];}
+		if(flip){x=-x;}
+		if (animOffsets[name] == null){ // If animation is null, just add the offsets out right
+			animOffsets[name] = [x, y];
+		}else{ // If animation is not null, add the offsets to the existing ones
+			animOffsets[name] = [animOffsets[name][0] + x, animOffsets[name][1] + y];
+		}
 	}
 }

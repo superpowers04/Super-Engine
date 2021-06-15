@@ -26,7 +26,8 @@ typedef CharJsonAnimation ={
 	var fps:Int;
 	var loop:Bool;
 	var indices:Array<Int>;
-	var ifState:Array<IfStatement>;
+	var stage:String; // Set on specific stage
+	var ifstate:Array<IfStatement>;
 }
 typedef CharJsonAnimOffsets ={
 	var anim:String;

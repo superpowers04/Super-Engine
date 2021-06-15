@@ -746,40 +746,38 @@ class PlayState extends MusicBeatState
 		}
 		boyfriend = new Character(770, 100, SONG.player1,true,0);
 
-		switch (SONG.player1) // The above but for Player 1
-		{
-			case 'gf':
-				if (SONG.player2 != 'gf'){		// Don't hide GF if player 2 is GF
-					boyfriend.setPosition(gf.x, gf.y);
-					gf.visible = false;
-				}
+		// switch (SONG.player1) // The above but for Player 1
+		// {
+		// 	case 'gf':
+		// 		if (SONG.player2 != 'gf'){		// Don't hide GF if player 2 is GF
+		// 			boyfriend.setPosition(gf.x, gf.y);
+		// 			gf.visible = false;
+		// 		}
 
-			case "spooky":
-				boyfriend.y += 200;
-			case "monster":
-				boyfriend.y += 100;
-			case 'monster-christmas':
-				boyfriend.y += 130;
-			case 'boyfriend':
-				camPos.x += 400;
-			case 'pico':
-				camPos.x += 600;
-				boyfriend.y += 300;
-			case 'parents-christmas':
-				boyfriend.x -= 500;
-			case 'senpai':
-				boyfriend.x += 150;
-				boyfriend.y += 360;
-				camPos.set(boyfriend.getGraphicMidpoint().x + 300, boyfriend.getGraphicMidpoint().y);
-			case 'senpai-angry':
-				boyfriend.x += 150;
-				boyfriend.y += 360;
-				camPos.set(boyfriend.getGraphicMidpoint().x + 300, boyfriend.getGraphicMidpoint().y);
-			case 'spirit':
-				boyfriend.x -= 150;
-				boyfriend.y += 100;
-				camPos.set(boyfriend.getGraphicMidpoint().x + 300, boyfriend.getGraphicMidpoint().y);
-		}
+		// 	case "spooky":
+		// 		boyfriend.y += 200;
+		// 	case "monster":
+		// 		boyfriend.y += 100;
+		// 	case 'monster-christmas':
+		// 		boyfriend.y += 130;
+		// 	case 'pico':
+		// 		camPos.x += 600;
+		// 		boyfriend.y += 300;
+		// 	case 'parents-christmas':
+		// 		boyfriend.x -= 500;
+		// 	case 'senpai':
+		// 		boyfriend.x += 150;
+		// 		boyfriend.y += 360;
+		// 		camPos.set(boyfriend.getGraphicMidpoint().x + 300, boyfriend.getGraphicMidpoint().y);
+		// 	case 'senpai-angry':
+		// 		boyfriend.x += 150;
+		// 		boyfriend.y += 360;
+		// 		camPos.set(boyfriend.getGraphicMidpoint().x + 300, boyfriend.getGraphicMidpoint().y);
+		// 	case 'spirit':
+		// 		boyfriend.x -= 150;
+		// 		boyfriend.y += 100;
+		// 		camPos.set(boyfriend.getGraphicMidpoint().x + 300, boyfriend.getGraphicMidpoint().y);
+		// }
 		
 
 		// REPOSITIONING PER STAGE
