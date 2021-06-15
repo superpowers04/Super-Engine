@@ -134,6 +134,10 @@ class MainMenuState extends MusicBeatState
 			errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to Dad!';
 			FlxG.save.data.opponent = "dad";
 		}
+		if (!TitleState.choosableCharacters.contains(FlxG.save.data.gfChar)){
+			errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to GF!';
+			FlxG.save.data.gfChar = "GF";
+		}
 		if (errorMessage != ""){
 			var errorText = new FlxText(0, 18, FlxG.width, errorMessage);
 		    errorText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.RED, CENTER);
