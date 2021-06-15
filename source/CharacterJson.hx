@@ -15,12 +15,18 @@ typedef CharacterJson =
 	var bpm:Float;
 	var common_stage_offset:Array<Int>;
 }
+typedef IfStatement = {
+	var	type:String;
+	var	integer:Int;
+	var str:String;
+} // Does nothing at the moment but planned to provide the abilty to play animations on certain conditions, for example the Hey thing
 typedef CharJsonAnimation ={
 	var anim:String;
 	var name:String;
 	var fps:Int;
 	var loop:Bool;
 	var indices:Array<Int>;
+	var ifState:Array<IfStatement>;
 }
 typedef CharJsonAnimOffsets ={
 	var anim:String;
