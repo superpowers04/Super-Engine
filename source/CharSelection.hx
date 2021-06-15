@@ -68,11 +68,11 @@ class CharSelection extends MusicBeatState
     {
       switch (Options.PlayerOption.playerEdit){
         case 0:
-          FlxG.save.data.playerCharIndex = curSelected;
           FlxG.save.data.playerChar = songs[curSelected];
         case 1:
-          FlxG.save.data.opponentIndex = curSelected;
           FlxG.save.data.opponent = songs[curSelected];
+        case 2:
+          FlxG.save.data.gfChar = songs[curSelected];
       }
       ret();
     }

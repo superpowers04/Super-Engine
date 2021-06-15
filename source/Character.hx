@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
+import flixel.animation.FlxAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -29,6 +30,9 @@ class Character extends FlxSprite
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 	public var hasAlts:Bool = false;
+	public var clonedChar:String = "";
+	public var charType:Int = 0;
+	public var dance_idle:Bool = false;
 
 	public var holdTimer:Float = 0;
 	public var stunned:Bool = false; // Why was this specific to BF?
@@ -81,25 +85,14 @@ class Character extends FlxSprite
 			case "pico":
 
 				addOffset('idle');
-				if (isPlayer){ // Why is this needed?
-					addOffset("singUP", 29, 27);
-					addOffset("singRIGHT", 68, -7);
-					addOffset("singLEFT", -65, 9);
-					addOffset("singDOWN", -200, -70);
-					addOffset("singUPmiss", 19, 67);
-					addOffset("singRIGHTmiss", 60, 41);
-					addOffset("singLEFTmiss", -62, 64);
-					addOffset("singDOWNmiss", -210, -28);
-				}else{
-					addOffset("singUP", -29, 27);
-					addOffset("singRIGHT", -68, -7);
-					addOffset("singLEFT", 65, 9);
-					addOffset("singDOWN", 200, -70);
-					addOffset("singUPmiss", -19, 67);
-					addOffset("singRIGHTmiss", -60, 41);
-					addOffset("singLEFTmiss", 62, 64);
-					addOffset("singDOWNmiss", 210, -28);					
-				}
+				addOffset("singUP", -29, 27);
+				addOffset("singRIGHT", -68, -7);
+				addOffset("singLEFT", 65, 9);
+				addOffset("singDOWN", 200, -70);
+				addOffset("singUPmiss", -19, 67);
+				addOffset("singRIGHTmiss", -60, 41);
+				addOffset("singLEFTmiss", 62, 64);
+				addOffset("singDOWNmiss", 210, -28);					
 			case 'bf','bf-christmas','bf-car':
 				addOffset('all',0,330); // Offsets for every animation
 				addOffset('idle', -5);
@@ -158,11 +151,12 @@ class Character extends FlxSprite
 		}
 	}
 
-	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
+	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false,?char_type:Int = 0) // CharTypes: 0=BF 1=Dad 2=GF
 	{
 		super(x, y);
 		animOffsets = new Map<String, Array<Dynamic>>();
 		curCharacter = character;
+		charType = char_type;
 		if (curCharacter == 'dad'){dadVar = 6.1;}
 		this.isPlayer = isPlayer;
 
@@ -218,7 +212,7 @@ class Character extends FlxSprite
 				animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
 					false);
-
+				dance_idle = true;
 
 				addOffsets('gf-car');
 				playAnim('danceRight');
@@ -228,9 +222,10 @@ class Character extends FlxSprite
 				animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
 				animation.addByIndices('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 				animation.addByIndices('danceRight', 'GF IDLE', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-
+				dance_idle = true;
 				addOffsets('gf-pixel');
 				playAnim('danceRight');
+				
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
@@ -258,6 +253,7 @@ class Character extends FlxSprite
 				animation.addByIndices('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
 				animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
 
+				dance_idle = true;
 				addOffsets('spooky');
 
 				playAnim('danceRight');
@@ -295,21 +291,11 @@ class Character extends FlxSprite
 				animation.addByPrefix('idle', "Pico Idle Dance", 24);
 				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
 				animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
-				if (isPlayer)
-				{
-					animation.addByPrefix('singLEFT', 'Pico NOTE LEFT0', 24, false);
-					animation.addByPrefix('singRIGHT', 'Pico Note Right0', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'Pico Note Right Miss', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'Pico NOTE LEFT miss', 24, false);
-				}
-				else
-				{
-					// Need to be flipped! REDO THIS LATER!
-					animation.addByPrefix('singLEFT', 'Pico Note Right0', 24, false);
-					animation.addByPrefix('singRIGHT', 'Pico NOTE LEFT0', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'Pico NOTE LEFT miss', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'Pico Note Right Miss', 24, false);
-				}
+
+				animation.addByPrefix('singLEFT', 'Pico NOTE LEFT0', 24, false);
+				animation.addByPrefix('singRIGHT', 'Pico Note Right0', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'Pico Note Right Miss', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'Pico NOTE LEFT miss', 24, false);
 
 				animation.addByPrefix('singUPmiss', 'pico Up note miss', 24);
 				animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24);
@@ -452,7 +438,6 @@ class Character extends FlxSprite
 				try{
 					trace('Loading a custom character "$curCharacter"! ');				
 					var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml');
-
 					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), charXml);
 					trace('Loaded character sheet');
 					frames = tex;
@@ -476,6 +461,7 @@ class Character extends FlxSprite
 					spiritTrail=charProperties.spirit_trail;
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					hasAlts =  charProperties.alt_anims;
+					dance_idle = charProperties.dance_idle;
 					for (anima in charProperties.animations){
 						if (anima.anim.substr(-4) == "-alt"){hasAlts=true;}
 						if (anima.indices.length > 0) {
@@ -484,43 +470,46 @@ class Character extends FlxSprite
 							animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);
 						}
 					}
+					
+					
+					trace('Getting idle animation for $curCharacter');
+					setGraphicSize(Std.int(width * charProperties.scale));
+					updateHitbox();
+
+					clonedChar = '${charProperties.clone}';
+					if (clonedChar != "") {
+						trace('Character clones $clonedChar copying their offsets!');
+						addOffsets(clonedChar);
+					}else{curCharacter='bf';}
+					trace('Loading normal offsets');
 					var offsetCount = 0;
 					for (offset in charProperties.animations_offsets){
 						offsetCount++;
 						addOffset(offset.anim,offset.player1[0],offset.player1[1]);
-					}
-					trace('Loaded ${offsetCount} offsets!');
-					if (animOffsets["all"] != null) {
-						charProperties.common_stage_offset[0] += animOffsets["all"][0];
-						charProperties.common_stage_offset[1] += animOffsets["all"][1];
-					}			
+					}	
 					addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]);
-					trace('Getting idle animation for $curCharacter');
-					setGraphicSize(Std.int(width * charProperties.scale));
-					updateHitbox();
+					trace('Loaded ${offsetCount} offsets!');
 					if (charProperties.dance_idle){
 						playAnim('danceRight');
 					}else{
 						playAnim('idle');
 					}
-					if (charProperties.clone != "") {
-						curCharacter = charProperties.clone;
-						addOffsets(charProperties.clone);
-					}else{curCharacter='bf';}
+
 					trace('Finished loading character, Lets get funky!');
 				}catch(e){
 					trace('Error with $curCharacter: ' + e.message + "");
 					return;
-				}
-
-				
+				}			
 		}
 
 		dance();
 		var alloffset = animOffsets.get("all");
-		if (animOffsets.exists('all'))
-		{
-			this.setPosition(x+alloffset[0],y+alloffset[1]);
+		// if (animOffsets.exists('all'))
+		// {
+		// 	this.setPosition(x+alloffset[0],y+alloffset[1]);
+		// }
+		if (clonedChar == ""){
+			clonedChar = curCharacter;
 		}
 		if (!hasAlts && animation.getByName('singRIGHT-alt') == null){ // Add main animations over alts if no alt's present
 			animation.addByPrefix('singUP-alt', 'singUP', 24, false);
@@ -528,6 +517,19 @@ class Character extends FlxSprite
 			animation.addByPrefix('singLEFT-alt', 'singLEFT', 24, false);
 			animation.addByPrefix('singRIGHT-alt', 'singRIGHT', 24, false);
 
+		}
+		if (charType == 2 && !curCharacter.startsWith("gf")){
+			this.curCharacter = "gf";
+			if(animation.getByName('danceRight') == null){
+				// animation.addByPrefix('danceRight', 'singRIGHT', 24, false);
+				// animation.addByPrefix('danceLeft', 'singLEFT', 24, false);
+				cloneAnimation('danceRight',animation.getByName('singRIGHT'));
+				cloneAnimation('danceLeft',animation.getByName('singLEFT'));
+				
+			}	
+			if (!clonedChar.startsWith("gf")){
+				addOffset("all",0,300);
+			}
 		}
 		if (isPlayer)
 		{
@@ -580,6 +582,10 @@ class Character extends FlxSprite
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
 		}
+		if(dance_idle || charType == 2){
+			if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+				playAnim('danceRight');
+		}
 		}catch(e){
 			trace(e.message);
 		}
@@ -596,20 +602,17 @@ class Character extends FlxSprite
 	{
 		if (!debugMode)
 		{
-			switch (curCharacter)
-			{
-				case 'gf','gf-christmas','gf-car','gf-pixel','spooky': // Why was this not one statement before?
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
+			if(dance_idle || charType == 2 || curCharacter == "spooky"){ // And I condensed it even more by providing a dance_idle option...
+				if (!animation.curAnim.name.startsWith('hair'))
+				{
+					danced = !danced;
 
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-
-				default:
+					if (danced)
+						playAnim('danceRight');
+					else
+						playAnim('danceLeft');
+				}
+			}else{
 					playAnim('idle');
 			}
 		}
@@ -626,7 +629,8 @@ class Character extends FlxSprite
 			offsets[0]+=daOffset[0];
 			offsets[1]+=daOffset[1];
 		}
-			
+		offsets[0]+=animOffsets["all"][0];
+		offsets[1]+=animOffsets["all"][1];
 		offset.set(offsets[0], offsets[1]);
 
 		if (curCharacter == 'gf')
@@ -646,9 +650,13 @@ class Character extends FlxSprite
 			}
 		}
 	}
-
+	public function cloneAnimation(name:String,anim:FlxAnimation){
+		animation.add('danceRight',anim.frames,anim.frameRate,anim.flipX);
+	}
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
-		animOffsets[name] = [x, y];
+		trace('Adding to offset $name:$x/$y');
+
+		if (animOffsets[name] == null){animOffsets[name] = [x, y];}else{animOffsets[name] = [animOffsets[name][0] + x, animOffsets[name][1] + y];}
 	}
 }

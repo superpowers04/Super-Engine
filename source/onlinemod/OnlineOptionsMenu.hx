@@ -24,6 +24,11 @@ class OnlineOptionsMenu extends MusicBeatState
 	var curSelected:Int = 0;
 
 	var options:Array<OptionCategory> = [
+		new OptionCategory("Character Selection", [
+			new OpponentOption("Change the opponent used in Online/Offline"),
+			new PlayerOption("Change the player used in Online/Offline"),
+			new GFOption("Change the GF used"),
+		]),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
 			new DownscrollOption("Change the layout of the strumline."),
@@ -56,8 +61,7 @@ class OnlineOptionsMenu extends MusicBeatState
 			new FPSOption("Toggle the FPS Counter"),
 			new ReplayOption("View replays"),
 			#end
-			new OpponentOption("Change the opponent used in Online/Offline"),
-			new PlayerOption("Change the opponent used in Online/Offline"),
+
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
 			new AnimDebugOption("Access animation debug in a offline session using 9 for P1 or 8 or P2 when enabled")

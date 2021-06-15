@@ -697,11 +697,11 @@ class PlayState extends MusicBeatState
 			default:
 				gfVersion = 'gf';
 		}
-
-		gf = new Character(400, 100, gfVersion);
+		if (FlxG.save.data.gfChar != "gf"){gfVersion=FlxG.save.data.gfChar;}
+		gf = new Character(400, 100, gfVersion,false,2);
 		gf.scrollFactor.set(0.95, 0.95);
 
-		dad = new Character(100, 100, SONG.player2);
+		dad = new Character(100, 100, SONG.player2,false,1);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
@@ -744,7 +744,7 @@ class PlayState extends MusicBeatState
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 		}
-		boyfriend = new Character(770, 100, SONG.player1,true);
+		boyfriend = new Character(770, 100, SONG.player1,true,0);
 
 		switch (SONG.player1) // The above but for Player 1
 		{
@@ -3177,7 +3177,7 @@ class PlayState extends MusicBeatState
 
 
 
-		if (curSong == 'Tutorial' && dad.curCharacter == 'gf') {
+		if (dad.dance_idle || dad.curCharacter == 'gf') {
 			if (curBeat % 2 == 1 && dad.animOffsets.exists('danceLeft'))
 				dad.playAnim('danceLeft');
 			if (curBeat % 2 == 0 && dad.animOffsets.exists('danceRight'))

@@ -54,7 +54,9 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (controls.ACCEPT)
 		{
-			endBullshit();
+			FlxG.sound.music.stop();
+			FlxG.switchState(new onlinemod.OfflineMenuState());
+			PlayState.loadRep = false;
 		}
 
 		if (controls.BACK)

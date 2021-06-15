@@ -614,6 +614,7 @@ class BotPlay extends Option
 	private override function updateDisplay():String
 		return "BotPlay " + (FlxG.save.data.botplay ? "on" : "off");
 }
+// Added options
 class PlayerOption extends Option
 {
 	public static var playerEdit:Int = 0;
@@ -623,6 +624,12 @@ class PlayerOption extends Option
 		description = desc;
 		acceptValues = true;
 
+	}
+	override function right():Bool {
+		return false;
+	}
+	override function left():Bool {
+		return false;
 	}
 
 	public override function press():Bool
@@ -637,20 +644,42 @@ class PlayerOption extends Option
 		return "Player Character";
 	}
 
-	override function right():Bool {
-		return false;
-	}
-
 	override function getValue():String {
 		return "Current Player: " + FlxG.save.data.playerChar;
 	}
+}
+class GFOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
 
-	override function left():Bool {
-
+	}
+	override function right():Bool {
 		return false;
 	}
+	override function left():Bool {
+		return false;
+	}
+
+	public override function press():Bool
+	{
+		PlayerOption.playerEdit = 2;
+		FlxG.switchState(new CharSelection());
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "GF Character";
+	}
+
+	override function getValue():String {
+		return "Current GF: " + FlxG.save.data.gfChar;
+	}
 }
-// Added options
 class OpponentOption extends Option
 {
 	public function new(desc:String)
@@ -660,7 +689,12 @@ class OpponentOption extends Option
 		acceptValues = true;
 
 	}
-
+	override function right():Bool {
+		return false;
+	}
+	override function left():Bool {
+		return false;
+	}
 	public override function press():Bool
 	{
 		PlayerOption.playerEdit = 1;
@@ -673,18 +707,10 @@ class OpponentOption extends Option
 		return "Opponent Character";
 	}
 
-	override function right():Bool {
-		return false;
-	}
-
 	override function getValue():String {
 		return "Current Opponent: " + FlxG.save.data.opponent;
 	}
 
-	override function left():Bool {
-
-		return false;
-	}
 }
 class AnimDebugOption extends Option
 {

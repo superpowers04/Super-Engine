@@ -88,6 +88,9 @@ class KadeEngineData
 		if (FlxG.save.data.playerChar == null)
 			FlxG.save.data.playerChar = "bf";
 
+		if (FlxG.save.data.gfChar == null)
+			FlxG.save.data.gfChar = "gf";
+
 		if (FlxG.save.data.animDebug == null)
 			FlxG.save.data.animDebug = false;
 		// Note Splash
