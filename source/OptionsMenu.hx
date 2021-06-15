@@ -51,15 +51,17 @@ class OptionsMenu extends MusicBeatState
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay.")
 			#end
 		]),
-		
+		new OptionCategory("Character Selection", [
+			new OpponentOption("Change the player character"),
+			new PlayerOption("Change the opponent used in Online/Offline"),
+			new GFOption("Change the GF used"),
+		]),
 		new OptionCategory("Misc", [
 			#if desktop
 			new FPSOption("Toggle the FPS Counter"),
 			new ReplayOption("View replays"),
 			#end
-			new OpponentOption("Change the opponent used in Online/Offline"),
-			new PlayerOption("Change the opponent used in Online/Offline"),
-			new GFOption("Change the opponent used in Online/Offline"),
+
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
 			new BotPlay("Showcase your charts and mods with autoplay."),
