@@ -43,7 +43,7 @@ class TitleState extends MusicBeatState
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;
 	public static var supported:Bool = false;
-	public static var outdated:Bool = true;
+	public static var outdated:Bool = false;
 	public static var updatedVer:String = "";
 
 	var curWacky:Array<String> = [];
@@ -271,7 +271,7 @@ class TitleState extends MusicBeatState
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
-		if (FlxG.keys.justPressed.F)
+		if (FlxG.keys.justPressed.F11)
 		{
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
