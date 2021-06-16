@@ -100,6 +100,9 @@ class KadeEngineData
 		// Preformance
 		if (FlxG.save.data.preformance == null)
 			FlxG.save.data.preformance = false;
+		// View Character on Character Select
+		if (FlxG.save.data.charSelShow == null)
+			FlxG.save.data.charSelShow = false;
 
 		// if (FlxG.save.data.lastServer == null)
 		// 	FlxG.save.data.lastServer = "";

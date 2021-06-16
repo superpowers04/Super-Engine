@@ -70,6 +70,7 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Preformance", [
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
+			new CharOnSelOption("Toggle the ability to see the chosen character on Char Select"),
 		])
 	];
 

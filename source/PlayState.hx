@@ -718,32 +718,39 @@ class PlayState extends MusicBeatState
 					tweenCamIn();
 				}
 
-			case "spooky":
-				dad.y += 200;
-			case "monster":
-				dad.y += 100;
-			case 'monster-christmas':
-				dad.y += 130;
-			case 'dad':
-				camPos.x += 400;
-			case 'pico':
-				camPos.x += 600;
-				dad.y += 300;
-			case 'parents-christmas':
-				dad.x -= 500;
-			case 'senpai':
-				dad.x += 150;
-				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'senpai-angry':
-				dad.x += 150;
-				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'spirit':
-				dad.x -= 150;
-				dad.y += 100;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			// case "spooky":
+			// 	dad.y += 200;
+			// case "monster":
+			// 	dad.y += 100;
+			// case 'monster-christmas':
+			// 	dad.y += 130;
+			// case 'dad':
+			// 	camPos.x += 400;
+			// case 'pico':
+			// 	camPos.x += 600;
+			// 	dad.y += 300;
+			// case 'parents-christmas':
+			// 	dad.x -= 500;
+			// case 'senpai':
+			// 	dad.x += 150;
+			// 	dad.y += 360;
+			// 	camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			// case 'senpai-angry':
+			// 	dad.x += 150;
+			// 	dad.y += 360;
+			// 	camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			// case 'spirit':
+			// 	dad.x -= 150;
+			// 	dad.y += 100;
+			// 	camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 		}
+		if (dad.camX != 0) {
+			camPos.x +=dad.camX;
+		}
+		if(dad.camY !=0){
+			camPos.y +=dad.camY;
+		}
+
 		boyfriend = new Character(770, 100, SONG.player1,true,0);
 
 		// switch (SONG.player1) // The above but for Player 1

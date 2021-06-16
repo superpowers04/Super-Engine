@@ -17,6 +17,9 @@ class CharSelection extends MusicBeatState
 
   var songs:Array<String> = [];
   var grpSongs:FlxTypedGroup<Alphabet>;
+  var char:Character;
+  var posX:Int = Std.int(FlxG.width * 0.7);
+  var posY:Int = 0;
 
   override function create()
   {
@@ -42,13 +45,29 @@ class CharSelection extends MusicBeatState
 
       i++;
     }
+    var infotexttxt:String = "Hold shift to scroll faster";
+    if(FlxG.save.data.charSelShow){infotexttxt+=", press Right to update the charater preview";}
+    var infotext = new FlxText(5, FlxG.height + 40, 0, infotexttxt, 12);
+    infotext.scrollFactor.set();
+    infotext.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    var blackBorder = new FlxSprite(-30,FlxG.height + 40).makeGraphic((Std.int(infotext.width + 900)),Std.int(infotext.height + 600),FlxColor.BLACK);
+    blackBorder.alpha = 0.5;
 
-
+    add(blackBorder);
+    add(infotext);
+    if(FlxG.save.data.charSelShow){addChar();}
     FlxG.mouse.visible = false;
     FlxG.autoPause = true;
 
-
     super.create();
+  }
+
+  public function addChar(?spr = 'bf'){
+    char = new Character(posX,posY,spr,Options.PlayerOption.playerEdit == 0,Options.PlayerOption.playerEdit,true);
+    char.debugMode = true;
+    // char.screenCenter();
+    add(char);
+    if(char.dance_idle){char.playAnim('danceRight');}else{char.playAnim('idle');}
   }
 
   override function update(elapsed:Float)
@@ -60,7 +79,11 @@ class CharSelection extends MusicBeatState
       ret();
     }
 
-
+    if (controls.RIGHT_P && FlxG.save.data.charSelShow){
+      char.destroy();
+      addChar(songs[curSelected]);
+      
+    }
     if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
     if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
 

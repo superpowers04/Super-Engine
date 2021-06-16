@@ -28,6 +28,8 @@ class Character extends FlxSprite
 	public var camPos:Array<Int> = [0,0];
 	public var charX:Int = 0;
 	public var charY:Int = 0;
+	public var camX = 0;
+	public var camY = 0;
 	var dadVar:Float = 4; // Singduration?
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
@@ -35,6 +37,8 @@ class Character extends FlxSprite
 	public var clonedChar:String = "";
 	public var charType:Int = 0;
 	public var dance_idle:Bool = false;
+	public var amPreview:Bool = false;
+	public var needsInverted:Bool= false;
 
 	public var holdTimer:Float = 0;
 	public var stunned:Bool = false; // Why was this specific to BF?
@@ -70,6 +74,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", 0, 27);
 				addOffset("singLEFT", -10, 10);
 				addOffset("singDOWN", 0, -30);
+				camX=400;
 			case 'mom','mom-car':
 				addOffset('idle');
 				addOffset("singUP", 14, 71);
@@ -84,35 +89,38 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", -130, -14);
 				addOffset("singLEFT", 130, -10);
 				addOffset("singDOWN", -50, -130);
+				charY+=200;
 			case "pico":
-
+				if(isPlayer){needsInverted = true;}
 				addOffset('idle');
 				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -68, -7);
+				addOffset("singRIGHT", if(isPlayer) 0 else -68, -7);
 				addOffset("singLEFT", 65, 9);
-				addOffset("singDOWN", 200, -70);
+				addOffset("singDOWN", if(isPlayer) -40 else 200 , -70);
 				addOffset("singUPmiss", -19, 67);
 				addOffset("singRIGHTmiss", -60, 41);
 				addOffset("singLEFTmiss", 62, 64);
-				addOffset("singDOWNmiss", 210, -28);					
+				addOffset("singDOWNmiss", if(isPlayer) -40 else 210, -28);
+				if(isPlayer){charY=330;}
+				if(!isPlayer){camX=600;}
 			case 'bf','bf-christmas','bf-car':
-				addOffset('idle', -5,isPlayer);
-				addOffset("singUP", -29, 27,isPlayer);
-				addOffset("singRIGHT", -38, -7,isPlayer);
-				addOffset("singLEFT", 12, -6,isPlayer);
-				addOffset("singDOWN", -10, -50,isPlayer);
-				addOffset("singUPmiss", -29, 27,isPlayer);
-				addOffset("singRIGHTmiss", -30, 21,isPlayer);
-				addOffset("singLEFTmiss", 12, 24,isPlayer);
-				addOffset("singDOWNmiss", -11, -19,isPlayer);
-				addOffset("hey", 7, 4,isPlayer);
-				addOffset('firstDeath', 37, 11,isPlayer);
-				addOffset('deathLoop', 37, 5,isPlayer);
-				addOffset('deathConfirm', 37, 69,isPlayer);
-				addOffset('scared', -4,0,isPlayer);
-				charY = 300;
+				addOffset('idle', -5);
+				addOffset("singUP", -29, 27);
+				addOffset("singRIGHT", -38, -7);
+				addOffset("singLEFT", 12, -6);
+				addOffset("singDOWN", -10, -50);
+				addOffset("singUPmiss", -29, 27);
+				addOffset("singRIGHTmiss", -30, 21);
+				addOffset("singLEFTmiss", 12, 24);
+				addOffset("singDOWNmiss", -11, -19);
+				addOffset("hey", 7, 4);
+				addOffset('firstDeath', 37, 11);
+				addOffset('deathLoop', 37, 5);
+				addOffset('deathConfirm', 37, 69);
+				addOffset('scared', -4);
+				charY=330;
+				if(!isPlayer){needsInverted = true;}
 			case "bf-pixel":
-				addOffset('all',0,330); // Offsets for every animation
 				addOffset('idle');
 				addOffset("singUP");
 				addOffset("singRIGHT");
@@ -122,24 +130,36 @@ class Character extends FlxSprite
 				addOffset("singRIGHTmiss");
 				addOffset("singLEFTmiss");
 				addOffset("singDOWNmiss");
+				charY=330;
 			case 'spirit':
 				addOffset('idle', -220, -280);
 				addOffset('singUP', -220, -240);
 				addOffset("singRIGHT", -220, -280);
 				addOffset("singLEFT", -200, -280);
 				addOffset("singDOWN", 170, 110);
+				charX=150;
+				charY=100;
+				camX=300;
+
 			case 'senpai':
 				addOffset('idle');
 				addOffset("singUP", 5, 37);
 				addOffset("singRIGHT");
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
+				charX=150;
+				charY=360;
+				camX=300;
+
 			case 'senpai-angry':
 				addOffset('idle');
 				addOffset("singUP", 5, 37);
 				addOffset("singRIGHT");
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
+				charX=150;
+				charY=360;
+				camX=300;
 			case 'parents-christmas':
 				addOffset('idle');
 				addOffset("singUP", -47, 24);
@@ -150,10 +170,25 @@ class Character extends FlxSprite
 				addOffset("singRIGHT-alt", -1, -24);
 				addOffset("singLEFT-alt", -30, 15);
 				addOffset("singDOWN-alt", -30, -27);
+				charY=-500;
+			case 'monster':
+				addOffset('idle');
+				addOffset("singUP", -20, 50);
+				addOffset("singRIGHT", -51);
+				addOffset("singLEFT", -30);
+				addOffset("singDOWN", -30, -40);
+				charY=-100;
+			case 'monster-christmas':
+				addOffset('idle');
+				addOffset("singUP", -20, 50);
+				addOffset("singRIGHT", -51);
+				addOffset("singLEFT", -30);
+				addOffset("singDOWN", -30, -40);
+				charY=-130;
 		}
 	}
 
-	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false,?char_type:Int = 0) // CharTypes: 0=BF 1=Dad 2=GF
+	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false) // CharTypes: 0=BF 1=Dad 2=GF
 	{
 		super(x, y);
 		animOffsets = new Map<String, Array<Dynamic>>();
@@ -162,7 +197,7 @@ class Character extends FlxSprite
 		charType = char_type;
 		if (curCharacter == 'dad'){dadVar = 6.1;}
 		this.isPlayer = isPlayer;
-
+		amPreview = preview;
 
 		var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
 		antialiasing = true;
@@ -282,11 +317,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singLEFT', 'Monster left note', 24, false);
 				animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
 
-				addOffset('idle');
-				addOffset("singUP", -20, 50);
-				addOffset("singRIGHT", -51);
-				addOffset("singLEFT", -30);
-				addOffset("singDOWN", -30, -40);
+				addOffsets('monster');
 				playAnim('idle');
 			case 'pico':
 				tex = Paths.getSparrowAtlas('characters/Pico_FNF_assetss');
@@ -376,6 +407,7 @@ class Character extends FlxSprite
 				flipX = true;
 			case 'senpai':
 				frames = Paths.getSparrowAtlas('characters/senpai');
+
 				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
 				animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);
 				animation.addByPrefix('singLEFT', 'SENPAI LEFT NOTE', 24, false);
@@ -467,6 +499,7 @@ class Character extends FlxSprite
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					hasAlts =  charProperties.alt_anims; // Handles alt animations
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+					
 					trace('Loading Animations!');
 					for (anima in charProperties.animations){
 						if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
@@ -493,15 +526,11 @@ class Character extends FlxSprite
 					var offsetCount = 0;
 					for (offset in charProperties.animations_offsets){ // Custom offsets
 						offsetCount++;
-						addOffset(offset.anim,offset.player1[0],offset.player1[1]);
+						addOffset(offset.anim,offset.player1[0],offset.player1[1],true);
 					}	
 					addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
 					trace('Loaded ${offsetCount} offsets!');
-					if (charProperties.dance_idle){
-						playAnim('danceRight');
-					}else{
-						playAnim('idle');
-					} // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
+					 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
 					trace('Finished loading character, Lets get funky!');
 				}catch(e){
@@ -544,7 +573,7 @@ class Character extends FlxSprite
 			flipX = !flipX;
 
 			// Doesn't flip for BF, since his are already in the right place???
-			if (!curCharacter.startsWith('bf') || !flipX)
+			if ((!curCharacter.startsWith('bf') || !flipX) && !amPreview )
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -560,10 +589,16 @@ class Character extends FlxSprite
 				}
 			}
 		}
+		if (dance_idle || charType == 2 || curCharacter == "spooky"){
+			playAnim('danceRight');
+		}else{
+			playAnim('idle');
+		}
 	}
 
 	override function update(elapsed:Float)
 	{	
+		if(!amPreview){
 			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
 			{
 				playAnim('idle', true, false, 10);
@@ -593,8 +628,8 @@ class Character extends FlxSprite
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
 			}
-
 		super.update(elapsed);
+		}
 	}
 
 	private var danced:Bool = false;
@@ -604,7 +639,12 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
-		if (!debugMode)
+		if (amPreview){
+			if (dance_idle || charType == 2 || curCharacter == "spooky"){
+				playAnim('danceRight');
+			}else{playAnim('idle');}
+		}
+		else if (!debugMode && !amPreview)
 		{
 			if(dance_idle || charType == 2 || curCharacter == "spooky"){ // And I condensed it even more by providing a dance_idle option...
 				if (!animation.curAnim.name.startsWith('hair'))
@@ -651,11 +691,13 @@ class Character extends FlxSprite
 		}
 	}
 	public function cloneAnimation(name:String,anim:FlxAnimation){
-		animation.add(name,anim.frames,anim.frameRate,anim.flipX);
+		if(!amPreview){animation.add(name,anim.frames,anim.frameRate,anim.flipX);}
 	}
-	public function addOffset(name:String, x:Float = 0, y:Float = 0,?flip = false)
+	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false)
 	{
-		if(flip){x=-x;}
+		if (needsInverted && !custom){
+			x=-x;
+		}	
 		if (animOffsets[name] == null){ // If animation is null, just add the offsets out right
 			animOffsets[name] = [x, y];
 		}else{ // If animation is not null, add the offsets to the existing ones
