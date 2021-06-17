@@ -89,7 +89,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", -130, -14);
 				addOffset("singLEFT", 130, -10);
 				addOffset("singDOWN", -50, -130);
-				charY+=200;
+				charY=200;
 			case "pico":
 				if(isPlayer){needsInverted = true;}
 				addOffset('idle');
@@ -104,20 +104,32 @@ class Character extends FlxSprite
 				charY=330;
 				if(!isPlayer){camX=600;}
 			case 'bf','bf-christmas','bf-car':
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -38, -7);
-				addOffset("singLEFT", 12, -6);
-				addOffset("singDOWN", -10, -50);
-				addOffset("singUPmiss", -29, 27);
-				addOffset("singRIGHTmiss", -30, 21);
-				addOffset("singLEFTmiss", 12, 24);
-				addOffset("singDOWNmiss", -11, -19);
-				addOffset("hey", 7, 4);
-				addOffset('firstDeath', 37, 11);
-				addOffset('deathLoop', 37, 5);
-				addOffset('deathConfirm', 37, 69);
-				addOffset('scared', -4);
+				// addOffset('idle', -5);
+				// addOffset("singUP", -29, 27);
+				// addOffset("singRIGHT", -38, -7);
+				// addOffset("singLEFT", 12, -6);
+				// addOffset("singDOWN", -10, -50);
+				// addOffset("singUPmiss", -29, 27);
+				// addOffset("singRIGHTmiss", -30, 21);
+				// addOffset("singLEFTmiss", 12, 24);
+				// addOffset("singDOWNmiss", -11, -19);
+				// addOffset("hey", 7, 4);
+				// addOffset('firstDeath', 37, 11);
+				// addOffset('deathLoop', 37, 5);
+				// addOffset('deathConfirm', 37, 69);
+				// addOffset('scared', -4);				
+				addOffset("singUP", 0, 27);
+				addOffset("singRIGHT", 0, -7);
+				addOffset("singLEFT", 0, -6);
+				addOffset("singDOWN", 0, -50);
+				addOffset("singUPmiss", 0, 27);
+				addOffset("singRIGHTmiss", 0, 21);
+				addOffset("singLEFTmiss", 0, 24);
+				addOffset("singDOWNmiss", 0, -19);
+				addOffset("hey",0, 4);
+				addOffset('firstDeath', 0, 11);
+				addOffset('deathLoop', 0, 5);
+				addOffset('deathConfirm', 0, 69);
 				charY=330;
 				needsInverted = true;
 			case "bf-pixel":
@@ -170,7 +182,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT-alt", -1, -24);
 				addOffset("singLEFT-alt", -30, 15);
 				addOffset("singDOWN-alt", -30, -27);
-				charY=-500;
+				charX=-500;
 			case 'monster':
 				addOffset('idle');
 				addOffset("singUP", -20, 50);
@@ -270,7 +282,7 @@ class Character extends FlxSprite
 				antialiasing = false;
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
-				tex = Paths.getSparrowAtlas('characters/DADDY_DEAREST', 'shared');
+				tex = Paths.getSparrowAtlas('characters/DADDY_DEAREST');
 				frames = tex;
 				animation.addByPrefix('idle', 'Dad idle dance', 24);
 				animation.addByPrefix('singUP', 'Dad Sing Note UP', 24);
@@ -665,7 +677,7 @@ class Character extends FlxSprite
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		var lastAnim = "";
-		if (animation.curAnim != null){lastAnim = animation.curAnim.name}
+		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
 		animation.play(AnimName, Force, Reversed, Frame);
 		// if (animation.curAnim != null && animation.curAnim.name == AnimName){return;} // Skip if already playing, no need to calculate offsets and such
 

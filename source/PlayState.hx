@@ -1383,7 +1383,7 @@ class PlayState extends MusicBeatState
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
-				if (TitleState.p2canplay && (!gottaHitNote) ){continue;}
+				if (p2canplay && !gottaHitNote ){continue;}
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
