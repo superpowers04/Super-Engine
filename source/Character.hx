@@ -119,7 +119,7 @@ class Character extends FlxSprite
 				addOffset('deathConfirm', 37, 69);
 				addOffset('scared', -4);
 				charY=330;
-				if(!isPlayer){needsInverted = true;}
+				needsInverted = true;
 			case "bf-pixel":
 				addOffset('idle');
 				addOffset("singUP");
@@ -664,6 +664,8 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
+		var lastAnim = "";
+		if (animation.curAnim != null){lastAnim = animation.curAnim.name}
 		animation.play(AnimName, Force, Reversed, Frame);
 		// if (animation.curAnim != null && animation.curAnim.name == AnimName){return;} // Skip if already playing, no need to calculate offsets and such
 
@@ -678,7 +680,7 @@ class Character extends FlxSprite
 		offsets[1]+=animOffsets["all"][1];
 		offset.set(offsets[0], offsets[1]); // Set offsets
 
-		if (dance_idle || curCharacter == 'gf' || clonedChar == "gf")
+		if ((dance_idle || curCharacter == 'gf' || clonedChar == "gf") && lastAnim != AnimName )
 		{
 			switch(AnimName){
 				case 'singLEFT', 'danceLeft':
