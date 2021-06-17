@@ -605,7 +605,7 @@ class BotPlay extends Option
 	
 	public override function press():Bool
 	{
-		FlxG.save.data.botplay = !FlxG.save.data.botplay;
+		FlxG.save.data.botplay = false;
 		trace('BotPlay : ' + FlxG.save.data.botplay);
 		display = updateDisplay();
 		return true;
