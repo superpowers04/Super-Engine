@@ -52,8 +52,8 @@ class OptionsMenu extends MusicBeatState
 			#end
 		]),
 		new OptionCategory("Character Selection", [
-			new OpponentOption("Change the player character"),
-			new PlayerOption("Change the opponent used in Online/Offline"),
+			new OpponentOption("Change the opponent used in Online/Offline"),
+			new PlayerOption("Change the player character"),
 			new GFOption("Change the GF used"),
 		]),
 		new OptionCategory("Misc", [

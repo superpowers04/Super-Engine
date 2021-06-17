@@ -5,6 +5,9 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
+import flixel.addons.ui.FlxUIButton;
+import flixel.addons.ui.FlxInputText;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -20,43 +23,40 @@ class CharSelection extends MusicBeatState
   var char:Character;
   var posX:Int = Std.int(FlxG.width * 0.7);
   var posY:Int = 0;
+  var searchField:FlxInputText;
+  var searchButton:FlxUIButton;
 
   override function create()
   {
     var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
     bg.color = 0xFFFF6E6E;
     add(bg);
+    reloadCharList();
+    //Searching
+    searchField = new FlxInputText(10, 100, 1152, 20);
+    searchField.maxLength = 81;
+    add(searchField);
 
+    searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", () -> {
+      reloadCharList(true,searchField.text);
+      searchField.hasFocus = false;
+    });
+    searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+    searchButton.resize(100, searchField.height);
+    add(searchButton);
 
-    grpSongs = new FlxTypedGroup<Alphabet>();
-    add(grpSongs);
-
-    var i:Int = 0;
-    for (char in TitleState.choosableCharacters)
-    {
-      songs.push(char);
-
-      var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false);
-			controlLabel.isMenuItem = true;
-			controlLabel.targetY = i;
-      if (i != 0)
-        controlLabel.alpha = 0.6;
-			grpSongs.add(controlLabel);
-
-      i++;
-    }
     var infotexttxt:String = "Hold shift to scroll faster";
     if(FlxG.save.data.charSelShow){infotexttxt+=", press Right to update the charater preview";}
-    var infotext = new FlxText(5, FlxG.height + 40, 0, infotexttxt, 12);
+    var infotext = new FlxText(5, FlxG.height - 40, 0, infotexttxt, 12);
     infotext.scrollFactor.set();
     infotext.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    var blackBorder = new FlxSprite(-30,FlxG.height + 40).makeGraphic((Std.int(infotext.width + 900)),Std.int(infotext.height + 600),FlxColor.BLACK);
+    var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(infotext.width + 900)),Std.int(infotext.height + 600),FlxColor.BLACK);
     blackBorder.alpha = 0.5;
 
     add(blackBorder);
     add(infotext);
     if(FlxG.save.data.charSelShow){addChar();}
-    FlxG.mouse.visible = false;
+    FlxG.mouse.visible = true;
     FlxG.autoPause = true;
 
     super.create();
@@ -69,35 +69,59 @@ class CharSelection extends MusicBeatState
     add(char);
     if(char.dance_idle){char.playAnim('danceRight');}else{char.playAnim('idle');}
   }
+  function reloadCharList(?reload = false,?search=""){
+    curSelected = 0;
+    if(reload){grpSongs.destroy();}
+    grpSongs = new FlxTypedGroup<Alphabet>();
+    add(grpSongs);
+    songs = [];
 
+    var i:Int = 0;
+
+    for (char in TitleState.choosableCharacters){
+      if(search == "" || FlxStringUtil.contains(char.toLowerCase(),search.toLowerCase())){
+          songs.push(char);
+    
+          var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false);
+          controlLabel.isMenuItem = true;
+          controlLabel.targetY = i;
+          if (i != 0)
+            controlLabel.alpha = 0.6;
+          grpSongs.add(controlLabel);
+    
+          i++;
+      }
+    }
+  }
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-
-    if (controls.BACK)
-    {
-      ret();
-    }
-
-    if (controls.RIGHT_P && FlxG.save.data.charSelShow){
-      char.destroy();
-      addChar(songs[curSelected]);
-      
-    }
-    if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
-    if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
-
-    if (controls.ACCEPT && songs.length > 0)
-    {
-      switch (Options.PlayerOption.playerEdit){
-        case 0:
-          FlxG.save.data.playerChar = songs[curSelected];
-        case 1:
-          FlxG.save.data.opponent = songs[curSelected];
-        case 2:
-          FlxG.save.data.gfChar = songs[curSelected];
+    if (!searchField.hasFocus){
+      if (controls.BACK)
+      {
+        ret();
       }
-      ret();
+
+      if (controls.RIGHT_P && FlxG.save.data.charSelShow){
+        char.destroy();
+        addChar(songs[curSelected]);
+        
+      }
+      if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
+      if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
+
+      if (controls.ACCEPT && songs.length > 0)
+      {
+        switch (Options.PlayerOption.playerEdit){
+          case 0:
+            FlxG.save.data.playerChar = songs[curSelected];
+          case 1:
+            FlxG.save.data.opponent = songs[curSelected];
+          case 2:
+            FlxG.save.data.gfChar = songs[curSelected];
+        }
+        ret();
+      }
     }
   }
   function ret(){

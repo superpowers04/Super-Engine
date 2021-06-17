@@ -101,7 +101,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHTmiss", -60, 41);
 				addOffset("singLEFTmiss", 62, 64);
 				addOffset("singDOWNmiss", if(isPlayer) -40 else 210, -28);
-				if(isPlayer){charY=330;}
+				charY=330;
 				if(!isPlayer){camX=600;}
 			case 'bf','bf-christmas','bf-car':
 				addOffset('idle', -5);
@@ -563,7 +563,7 @@ class Character extends FlxSprite
 				
 			}	
 			if (!clonedChar.startsWith("gf")){ // Force offset if clone is not GF
-				addOffset("all",0,300);
+				charY+=200;
 			}
 		}
 		this.y += charY;
@@ -647,7 +647,7 @@ class Character extends FlxSprite
 		else if (!debugMode && !amPreview)
 		{
 			if(dance_idle || charType == 2 || curCharacter == "spooky"){ // And I condensed it even more by providing a dance_idle option...
-				if (!animation.curAnim.name.startsWith('hair'))
+				if (animation.curAnim == null || !animation.curAnim.name.startsWith('hair'))
 				{
 					// danced = !danced;
 
