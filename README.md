@@ -9,8 +9,8 @@ To prevent assets from being outdated and for compatibility with custom assets, 
 
 How it should be layered:
 
-This(Installed into the folder last)
-Funkin Battle Royale
+This(Installed into the folder last)<br>
+Funkin Battle Royale<br>
 Kade Engine(Installed into the folder first)
 
 
