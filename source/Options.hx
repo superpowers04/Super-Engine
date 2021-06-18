@@ -790,6 +790,6 @@ class CharOnSelOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return (!FlxG.save.data.charSelShow ? "Hide" : "Show") + " Character on Char Selection";
+		return (!FlxG.save.data.charSelShow ? "Hide" : "Show") + " Char on Char Selection";
 	}
 }
