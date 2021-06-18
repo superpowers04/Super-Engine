@@ -137,15 +137,6 @@ class Character extends FlxSprite
 					addOffset('scared', -4);
 				}
 			case "bf-pixel":
-				addOffset('idle');
-				addOffset("singUP");
-				addOffset("singRIGHT");
-				addOffset("singLEFT");
-				addOffset("singDOWN");
-				addOffset("singUPmiss");
-				addOffset("singRIGHTmiss");
-				addOffset("singLEFTmiss");
-				addOffset("singDOWNmiss");
 				charY=330;
 			case 'spirit':
 				addOffset('idle', -220, -280);
@@ -385,8 +376,9 @@ class Character extends FlxSprite
 				frames = Paths.getSparrowAtlas('characters/bfPixel');
 				animation.addByPrefix('idle', 'BF IDLE', 24, false);
 				animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
-				animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF RIGHT NOTE', 24, false);
+				// Flipped for some reason
+				animation.addByPrefix('singLEFT', 'BF RIGHT NOTE', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF LEFT NOTE', 24, false);
 				animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
 				animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
 				animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
