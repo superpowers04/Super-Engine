@@ -104,34 +104,38 @@ class Character extends FlxSprite
 				charY=330;
 				if(!isPlayer){camX=600;}
 			case 'bf','bf-christmas','bf-car':
-				// addOffset('idle', -5);
-				// addOffset("singUP", -29, 27);
-				// addOffset("singRIGHT", -38, -7);
-				// addOffset("singLEFT", 12, -6);
-				// addOffset("singDOWN", -10, -50);
-				// addOffset("singUPmiss", -29, 27);
-				// addOffset("singRIGHTmiss", -30, 21);
-				// addOffset("singLEFTmiss", 12, 24);
-				// addOffset("singDOWNmiss", -11, -19);
-				// addOffset("hey", 7, 4);
-				// addOffset('firstDeath', 37, 11);
-				// addOffset('deathLoop', 37, 5);
-				// addOffset('deathConfirm', 37, 69);
-				// addOffset('scared', -4);				
-				addOffset("singUP", 0, 27);
-				addOffset("singRIGHT", 0, -7);
-				addOffset("singLEFT", 0, -6);
-				addOffset("singDOWN", 0, -50);
-				addOffset("singUPmiss", 0, 27);
-				addOffset("singRIGHTmiss", 0, 21);
-				addOffset("singLEFTmiss", 0, 24);
-				addOffset("singDOWNmiss", 0, -19);
-				addOffset("hey",0, 4);
-				addOffset('firstDeath', 0, 11);
-				addOffset('deathLoop', 0, 5);
-				addOffset('deathConfirm', 0, 69);
 				charY=330;
 				needsInverted = true;
+				if (isPlayer){			
+					addOffset("singUP", 0, 27);
+					// This game is handled terribly....					
+					addOffset("singLEFT", -38, -7);
+					addOffset("singRIGHT", 12, -6);
+					addOffset("singDOWN", 0, -50);
+					addOffset("singUPmiss", 0, 27);
+					addOffset("singRIGHTmiss", 0, 21);
+					addOffset("singLEFTmiss", 0, 24);
+					addOffset("singDOWNmiss", 0, -19);
+					addOffset("hey",0, 4);
+					addOffset('firstDeath', 0, 11);
+					addOffset('deathLoop', 0, 5);
+					addOffset('deathConfirm', 0, 69);
+				}else{ // Why the hell is this needed on the left but not the right?
+					addOffset('idle', -5);
+					addOffset("singUP", -29, 27);
+					addOffset("singLEFT", -38, -7);
+					addOffset("singRIGHT", 12, -6);
+					addOffset("singDOWN", -10, -50);
+					addOffset("singUPmiss", -29, 27);
+					addOffset("singRIGHTmiss", -30, 21);
+					addOffset("singLEFTmiss", 12, 24);
+					addOffset("singDOWNmiss", -11, -19);
+					addOffset("hey", 7, 4);
+					addOffset('firstDeath', 37, 11);
+					addOffset('deathLoop', 37, 5);
+					addOffset('deathConfirm', 37, 69);
+					addOffset('scared', -4);
+				}
 			case "bf-pixel":
 				addOffset('idle');
 				addOffset("singUP");
@@ -356,8 +360,9 @@ class Character extends FlxSprite
 
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+				// WHY DO THESE NEED TO BE FLIPPED?
+				animation.addByPrefix('singLEFT', 'BF NOTE RIGHT0', 24, false); 
+				animation.addByPrefix('singRIGHT', 'BF NOTE LEFT0', 24, false);
 				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
 				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
 				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
@@ -496,8 +501,9 @@ class Character extends FlxSprite
 					// BF's animations, Adding because they're used by default to provide support with FNF Multi
 					animation.addByPrefix('idle', 'BF idle dance', 24, false);
 					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+					// WHY DO THESE NEED TO BE FLIPPED?
+					animation.addByPrefix('singLEFT', 'BF NOTE RIGHT0', 24, false); 
+					animation.addByPrefix('singRIGHT', 'BF NOTE LEFT0', 24, false);
 					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
 					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
 					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
@@ -584,21 +590,17 @@ class Character extends FlxSprite
 		{
 			flipX = !flipX;
 
-			// Doesn't flip for BF, since his are already in the right place???
-			if ((!curCharacter.startsWith('bf') || !flipX) && !amPreview )
-			{
 				// var animArray
-				var oldRight = animation.getByName('singRIGHT').frames;
-				animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
-				animation.getByName('singLEFT').frames = oldRight;
+			var oldRight = animation.getByName('singRIGHT').frames;
+			animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
+			animation.getByName('singLEFT').frames = oldRight;
 
-				// IF THEY HAVE MISS ANIMATIONS??
-				if (animation.getByName('singRIGHTmiss') != null)
-				{
-					var oldMiss = animation.getByName('singRIGHTmiss').frames;
-					animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
-					animation.getByName('singLEFTmiss').frames = oldMiss;
-				}
+			// IF THEY HAVE MISS ANIMATIONS??
+			if (animation.getByName('singRIGHTmiss') != null)
+			{
+				var oldMiss = animation.getByName('singRIGHTmiss').frames;
+				animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
+				animation.getByName('singLEFTmiss').frames = oldMiss;
 			}
 		}
 		if (dance_idle || charType == 2 || curCharacter == "spooky"){
