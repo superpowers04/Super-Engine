@@ -294,8 +294,18 @@ class PlayState extends MusicBeatState
 			case 'thorns':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
 		}
-		if (!FlxG.save.data.preformance){
-			switch(SONG.stage){
+		if (FlxG.save.data.preformance){
+			defaultCamZoom = 0.9;
+			curStage = 'stage';
+			var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+			stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+			stageFront.updateHitbox();
+			stageFront.antialiasing = false;
+			stageFront.scrollFactor.set(0.9, 0.9);
+			stageFront.active = false;
+			add(stageFront);
+		}else{
+			switch(SONG.stage.toLowerCase()){
 					case 'halloween': 
 					{
 						curStage = 'spooky';
@@ -471,7 +481,7 @@ class PlayState extends MusicBeatState
 								add(santa);
 							}
 					}
-					case 'mallEvil':
+					case 'mallevil':
 					{
 							curStage = 'mallEvil';
 							var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(Paths.image('christmas/evilBG','week5'));
@@ -562,7 +572,7 @@ class PlayState extends MusicBeatState
 								add(bgGirls);
 						}
 					}
-					case 'schoolEvil':
+					case 'schoolevil':
 					{
 							curStage = 'schoolEvil';
 		
@@ -619,7 +629,7 @@ class PlayState extends MusicBeatState
 								*/
 					}
 					case 'stage':
-						{
+					{
 								defaultCamZoom = 0.9;
 								curStage = 'stage';
 								var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
@@ -644,45 +654,36 @@ class PlayState extends MusicBeatState
 								stageCurtains.active = false;
 			
 								add(stageCurtains);
-						}
+					}
 					default:
 					{
-							defaultCamZoom = 0.9;
-							curStage = 'stage';
-							var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
-							bg.antialiasing = true;
-							bg.scrollFactor.set(0.9, 0.9);
-							bg.active = false;
-							add(bg);
-		
-							var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
-							stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-							stageFront.updateHitbox();
-							stageFront.antialiasing = true;
-							stageFront.scrollFactor.set(0.9, 0.9);
-							stageFront.active = false;
-							add(stageFront);
-		
-							var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
-							stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-							stageCurtains.updateHitbox();
-							stageCurtains.antialiasing = true;
-							stageCurtains.scrollFactor.set(1.3, 1.3);
-							stageCurtains.active = false;
-		
-							add(stageCurtains);
+						trace('No stage?');
+						defaultCamZoom = 0.9;
+						curStage = 'stage';
+						var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+						bg.antialiasing = true;
+						bg.scrollFactor.set(0.9, 0.9);
+						bg.active = false;
+						add(bg);
+	
+						var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+						stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+						stageFront.updateHitbox();
+						stageFront.antialiasing = true;
+						stageFront.scrollFactor.set(0.9, 0.9);
+						stageFront.active = false;
+						add(stageFront);
+	
+						var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+						stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+						stageCurtains.updateHitbox();
+						stageCurtains.antialiasing = true;
+						stageCurtains.scrollFactor.set(1.3, 1.3);
+						stageCurtains.active = false;
+	
+						add(stageCurtains);
 					}
 				}
-		}else{
-			defaultCamZoom = 0.9;
-			curStage = 'stage';
-			var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
-			stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-			stageFront.updateHitbox();
-			stageFront.antialiasing = false;
-			stageFront.scrollFactor.set(0.9, 0.9);
-			stageFront.active = false;
-			add(stageFront);
 		}
 		var gfVersion:String = 'gf';
 
