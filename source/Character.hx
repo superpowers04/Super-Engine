@@ -509,6 +509,8 @@ class Character extends FlxSprite
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					hasAlts =  charProperties.alt_anims; // Handles alt animations
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+					if (charProperties.charPos != null){charX+=charProperties.charPos[0];charY+=charProperties.charPos[1];}
+					if (charProperties.camPos != null){camX+=charProperties.camPos[0];camY+=charProperties.camPos[1];}
 					
 					trace('Loading Animations!');
 					for (anima in charProperties.animations){
@@ -523,7 +525,6 @@ class Character extends FlxSprite
 						}
 					}
 					
-				
 					setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
 					updateHitbox();// I honestly don't know what this does, other resized characters use it so ¯\_(ツ)_/¯
 
@@ -538,7 +539,8 @@ class Character extends FlxSprite
 						offsetCount++;
 						addOffset(offset.anim,offset.player1[0],offset.player1[1],true);
 					}	
-					addOffset("all",charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
+					charX=charProperties.common_stage_offset[0];charY+=charProperties.common_stage_offset[1]; // Load common stage offset
+					camX=charProperties.common_stage_offset[0];camY+=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
 					trace('Loaded ${offsetCount} offsets!');
 					 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
@@ -578,7 +580,7 @@ class Character extends FlxSprite
 		}
 		this.y += charY;
 		this.x += charX;
-		if (isPlayer)
+		if (isPlayer && !amPreview)
 		{
 			flipX = !flipX;
 
