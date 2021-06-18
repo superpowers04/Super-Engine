@@ -559,10 +559,10 @@ class Character extends FlxSprite
 			clonedChar = curCharacter;
 		}
 		if (!hasAlts && animation.getByName('singRIGHT-alt') == null){ // Add main animations over alts if no alt's present
-			animation.addByPrefix('singUP-alt', 'singUP', 24, false);
-			animation.addByPrefix('singDOWN-alt', 'singDOWN', 24, false);
-			animation.addByPrefix('singLEFT-alt', 'singLEFT', 24, false);
-			animation.addByPrefix('singRIGHT-alt', 'singRIGHT', 24, false);
+			cloneAnimation('singUP-alt', animation.getByName('singUP'));
+			cloneAnimation('singDOWN-alt', animation.getByName('singDOWN'));
+			cloneAnimation('singLEFT-alt', animation.getByName('singLEFT'));
+			cloneAnimation('singRIGHT-alt', animation.getByName('singRIGHT'));
 
 		}
 		if (charType == 2 && !curCharacter.startsWith("gf")){ // Checks if GF is not girlfriend
