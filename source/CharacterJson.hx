@@ -14,8 +14,8 @@ typedef CharacterJson =
 	var alt_anims:Bool;
 	var bpm:Float;
 	var common_stage_offset:Array<Int>;
-	var camPos:Array<Int>;
-	var charPos:Array<Int>;
+	var cam_pos:Array<Int>;
+	var char_pos:Array<Int>;
 }
 typedef IfStatement = {
 	var	type:String;
