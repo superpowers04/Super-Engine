@@ -91,16 +91,15 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -50, -130);
 				charY=200;
 			case "pico":
-				if(isPlayer){needsInverted = true;}
 				addOffset('idle');
 				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", if(isPlayer) 0 else -68, -7);
-				addOffset("singLEFT", 65, 9);
-				addOffset("singDOWN", if(isPlayer) -40 else 200 , -70);
+				addOffset("singLEFT", -68, -7);
+				addOffset("singRIGHT", 65, 9);
+				addOffset("singDOWN", 200, -70);
 				addOffset("singUPmiss", -19, 67);
 				addOffset("singRIGHTmiss", -60, 41);
 				addOffset("singLEFTmiss", 62, 64);
-				addOffset("singDOWNmiss", if(isPlayer) -40 else 210, -28);
+				addOffset("singDOWNmiss", 210, -28);
 				charY=330;
 				if(!isPlayer){camX=600;}
 			case 'bf','bf-christmas','bf-car':
@@ -333,8 +332,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
 				animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
 
-				animation.addByPrefix('singLEFT', 'Pico NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'Pico Note Right0', 24, false);
+				animation.addByPrefix('singLEFT', 'Pico Note Right0', 24, false);
+				animation.addByPrefix('singRIGHT', 'Pico NOTE LEFT0', 24, false);
 				animation.addByPrefix('singRIGHTmiss', 'Pico Note Right Miss', 24, false);
 				animation.addByPrefix('singLEFTmiss', 'Pico NOTE LEFT miss', 24, false);
 
@@ -509,8 +508,8 @@ class Character extends FlxSprite
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					hasAlts =  charProperties.alt_anims; // Handles alt animations
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
-					if (charProperties.charPos != null){charX+=charProperties.charPos[0];charY+=charProperties.charPos[1];}
-					if (charProperties.camPos != null){camX+=charProperties.camPos[0];camY+=charProperties.camPos[1];}
+					if (charProperties.char_pos != null){charX+=charProperties.char_pos[0];charY+=charProperties.char_pos[1];}
+					if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 					
 					trace('Loading Animations!');
 					for (anima in charProperties.animations){
@@ -539,7 +538,7 @@ class Character extends FlxSprite
 						offsetCount++;
 						addOffset(offset.anim,offset.player1[0],offset.player1[1],true);
 					}	
-					charX=charProperties.common_stage_offset[0];charY+=charProperties.common_stage_offset[1]; // Load common stage offset
+					addOffset('all',charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
 					camX=charProperties.common_stage_offset[0];camY+=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
 					trace('Loaded ${offsetCount} offsets!');
 					 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
@@ -655,7 +654,7 @@ class Character extends FlxSprite
 		else if (!debugMode && !amPreview)
 		{
 			if(dance_idle || charType == 2 || curCharacter == "spooky"){ // And I condensed it even more by providing a dance_idle option...
-				if (animation.curAnim == null || !animation.curAnim.name.startsWith('hair'))
+				if (animation.curAnim == null || (!animation.curAnim.name.startsWith('hair') && animation.curAnim.finished))
 				{
 					// danced = !danced;
 
@@ -701,7 +700,9 @@ class Character extends FlxSprite
 		}
 	}
 	public function cloneAnimation(name:String,anim:FlxAnimation){
-		if(!amPreview){animation.add(name,anim.frames,anim.frameRate,anim.flipX);}
+		if(!amPreview && anim != null){
+			animation.add(name,anim.frames,anim.frameRate,anim.flipX);
+		}
 	}
 	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false)
 	{
