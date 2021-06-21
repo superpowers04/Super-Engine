@@ -14,12 +14,13 @@ class OfflinePlayState extends PlayState
 {
   var loadedVoices:FlxSound;
   var loadedInst:Sound;
+  
 
   override function create()
   {
     PlayState.SONG.player1 = FlxG.save.data.playerChar;
     PlayState.SONG.player2 = FlxG.save.data.opponent;
-
+    PlayState.stateType =2;
     
     loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg'));
     loadedInst = Sound.fromFile('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg');
@@ -150,10 +151,14 @@ class OfflinePlayState extends PlayState
   {
     canPause = false;
     FlxG.sound.music.onComplete = null;
-    FlxG.sound.music.pause();
-		vocals.volume = 0;
+		persistentUpdate = false;
+		persistentDraw = true;
+		paused = true;
 
-    FlxG.switchState(new OfflineMenuState());
+		vocals.stop();
+		FlxG.sound.music.stop();
+
+    super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
   }
 
   override function openSubState(SubState:FlxSubState)

@@ -74,6 +74,7 @@ class PlayState extends MusicBeatState
 	public static var bads:Int = 0;
 	public static var goods:Int = 0;
 	public static var sicks:Int = 0;
+	public static var stateType=0;
 
 	public static var songPosBG:FlxSprite;
 	public static var songPosBar:FlxBar;
@@ -92,7 +93,7 @@ class PlayState extends MusicBeatState
 	var kadeEngineWatermark:FlxText;
 	
 
-	private var vocals:FlxSound;
+	var vocals:FlxSound;
 
 	public static var dad:Character;
 	public static var gf:Character;
@@ -171,7 +172,7 @@ class PlayState extends MusicBeatState
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 
 	var talking:Bool = true;
-	var songScore:Int = 0;
+	public static var songScore:Int = 0;
 	var songScoreDef:Int = 0;
 	var scoreTxt:FlxText;
 	var replayTxt:FlxText;
@@ -1650,6 +1651,17 @@ class PlayState extends MusicBeatState
 
 	public static var songRate = 1.5;
 
+	function finishSong(?win=true):Void{
+		this.persistentUpdate = false;
+		this.persistentDraw = true;
+		this.paused = true;
+
+		this.vocals.stop();
+		FlxG.sound.music.stop();
+		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
+	
+	}
+
 	override public function update(elapsed:Float)
 	{
 		#if !debug
@@ -1973,16 +1985,10 @@ class PlayState extends MusicBeatState
 
 		if (health <= 0)
 		{
-			boyfriend.stunned = true;
 
-			persistentUpdate = false;
-			persistentDraw = false;
-			paused = true;
 
-			vocals.stop();
-			FlxG.sound.music.stop();
 
-			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			finishSong(false);
 
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -1991,16 +1997,16 @@ class PlayState extends MusicBeatState
 		{
 			if(FlxG.keys.justPressed.R)
 				{
-					boyfriend.stunned = true;
+					// boyfriend.stunned = true;
 
-					persistentUpdate = false;
-					persistentDraw = false;
-					paused = true;
+					// persistentUpdate = false;
+					// persistentDraw = true;
+					// paused = true;
 		
-					vocals.stop();
-					FlxG.sound.music.stop();
-		
-					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+					// vocals.stop();
+					// FlxG.sound.music.stop();
+					finishSong(false);
+
 
 					// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 				}
@@ -2333,8 +2339,10 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				trace('WENT BACK TO FREEPLAY??');
-				FlxG.switchState(new FreeplayState());
+				// trace('WENT BACK TO FREEPLAY??');
+				// Switches to the win state
+				// openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,true));
+				finishSong(true);
 			}
 		}
 	}
