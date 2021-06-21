@@ -1,6 +1,6 @@
 # FunkinBattleRoyale-Mod
 This is a mod of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/) to allow custom characters, and has some other changes.<br>
-This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine).<br>
+This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine) with some of [FPSPlus](https://github.com/ThatRozebudDude/FPS-Plus-Public/) added in.<br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
 This is client aims for customisability besides providing backwards compatibility with normal Funkin Battle Royale servers
 
