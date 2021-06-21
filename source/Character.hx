@@ -91,21 +91,33 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -50, -130);
 				charY=200;
 			case "pico":
-				addOffset('idle');
-				addOffset("singUP", -29, 27);
-				addOffset("singLEFT", -68, -7);
-				addOffset("singRIGHT", 65, 9);
-				addOffset("singDOWN", 200, -70);
-				addOffset("singUPmiss", -19, 67);
-				addOffset("singRIGHTmiss", -60, 41);
-				addOffset("singLEFTmiss", 62, 64);
-				addOffset("singDOWNmiss", 210, -28);
+				if(isPlayer){
+					needsInverted = true;
+					addOffset("singUP", 0, 29);
+					addOffset("singRIGHT", 0, -11);
+					addOffset("singLEFT", 0, 2);
+					addOffset("singDOWN", 0, -76);
+					addOffset("singUPmiss", 0, 67);
+					addOffset("singRIGHTmiss", 0, 28);
+					addOffset("singLEFTmiss", 0, 50);
+					addOffset("singDOWNmiss", 0, -34);
+				}else{
+					addOffset("singUP", -43, 29);
+					addOffset("singRIGHT", -85, -11);
+					addOffset("singLEFT", 54, 2);
+					addOffset("singDOWN", 198, -76);
+					addOffset("singUPmiss", -29, 67);
+					addOffset("singRIGHTmiss", -70, 28);
+					addOffset("singLEFTmiss", 62, 50);
+					addOffset("singDOWNmiss", 200, -34);}
+
 				charY=330;
 				if(!isPlayer){camX=600;}
 			case 'bf','bf-christmas','bf-car':
 				charY=330;
 				needsInverted = true;
 				if (isPlayer){			
+					addOffset('idle', -5);
 					addOffset("singUP", 0, 27);
 					// This game is handled terribly....					
 					addOffset("singLEFT", -38, -7);
@@ -194,11 +206,18 @@ class Character extends FlxSprite
 		}
 	}
 
-	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false) // CharTypes: 0=BF 1=Dad 2=GF
+	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false) // CharTypes: 0=BF 1=Dad 2=GF
 	{
 		super(x, y);
 		animOffsets = new Map<String, Array<Dynamic>>();
 		animOffsets['all'] = [0, 0];
+		if (character == ""){
+			switch(char_type){
+				case 0:character = "bf";
+				case 1:character = "dad";
+				case 2:character = "gf";
+			}
+		}
 		curCharacter = character;
 		charType = char_type;
 		if (curCharacter == 'dad'){dadVar = 6.1;}
@@ -579,7 +598,7 @@ class Character extends FlxSprite
 		}
 		this.y += charY;
 		this.x += charX;
-		if (isPlayer && !amPreview)
+		if (isPlayer && !amPreview && animation.getByName('singRIGHT') != null)
 		{
 			flipX = !flipX;
 
@@ -605,7 +624,7 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{	
-		if(!amPreview){
+		if(!amPreview && animation.curAnim != null){			// WHY IS CURANIM NEVER SET?
 			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
 			{
 				playAnim('idle', true, false, 10);
@@ -635,8 +654,8 @@ class Character extends FlxSprite
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
 			}
-		super.update(elapsed);
 		}
+		super.update(elapsed);
 	}
 
 	private var danced:Bool = false;
@@ -644,15 +663,16 @@ class Character extends FlxSprite
 	/**
 	 * FOR GF DANCING SHIT
 	 */
-	public function dance()
+	public function dance(?ignoreDebug:Bool = false)
 	{
 		if (amPreview){
 			if (dance_idle || charType == 2 || curCharacter == "spooky"){
 				playAnim('danceRight');
 			}else{playAnim('idle');}
 		}
-		else if (!debugMode && !amPreview)
+		else if ((!debugMode || ignoreDebug) && !amPreview)
 		{
+
 			if(dance_idle || charType == 2 || curCharacter == "spooky"){ // And I condensed it even more by providing a dance_idle option...
 				if (animation.curAnim == null || (!animation.curAnim.name.startsWith('hair') && animation.curAnim.finished))
 				{
@@ -668,7 +688,23 @@ class Character extends FlxSprite
 			}
 		}
 	}
-
+	// Added for Animation debug
+	public function idleEnd(?ignoreDebug:Bool = false)
+	{
+		if (!debugMode || ignoreDebug)
+		{
+			if (dance_idle || charType == 2){
+				playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
+			}else{
+						switch (curCharacter)
+						{
+							case 'gf' | 'gf-car' | 'gf-christmas' | 'gf-pixel' | "spooky":
+								playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
+							default:
+								playAnim('idle', true, false, animation.getByName('idle').numFrames - 1);
+						}}
+		}
+	}
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		var lastAnim = "";
