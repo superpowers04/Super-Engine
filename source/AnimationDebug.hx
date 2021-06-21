@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -9,69 +10,82 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
+using StringTools;
+
 /**
 	*DEBUG MODE
  */
 class AnimationDebug extends FlxState
 {
-	var bf:Character;
 	var dad:Character;
-	var char:Character;
+	var dadBG:Character;
+	//var char:Character;
 	var textAnim:FlxText;
 	var dumbTexts:FlxTypedGroup<FlxText>;
-	var dumbTexts2:FlxTypedGroup<FlxText>;
 	var animList:Array<String> = [];
 	var curAnim:Int = 0;
 	var isDad:Bool = true;
 	var daAnim:String = 'spooky';
 	var camFollow:FlxObject;
 
-	public function new(daAnim:String = 'spooky')
+	private var camHUD:FlxCamera;
+	private var camGame:FlxCamera;
+
+	var flippedChars:Array<String> = ["pico"];
+
+	var charType:Int = 1;
+
+	public function new(daAnim:String = 'spooky',?isPlayer=false,?charType:Int=1)
 	{
 		super();
 		this.daAnim = daAnim;
+		this.isDad = !isPlayer;
+		this.charType = charType;
 	}
 
 	override function create()
 	{
+
+		openfl.Lib.current.stage.frameRate = 144;
+
+		camGame = new FlxCamera();
+		camHUD = new FlxCamera();
+		camHUD.bgColor.alpha = 0;
+
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camHUD);
+
+		FlxCamera.defaultCameras = [camGame];
+
 		FlxG.sound.music.stop();
 
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
 		gridBG.scrollFactor.set(0.5, 0.5);
 		add(gridBG);
 
-		if (daAnim == 'bf')
-			isDad = false;
+		dad = new Character(0, 0, daAnim,isDad,charType);
+		dad.screenCenter();
+		dad.debugMode = true;
 
-		if (isDad)
-		{
-			dad = new Character(0, 0, daAnim);
-			dad.screenCenter();
-			dad.debugMode = true;
-			add(dad);
+		dadBG = new Character(0, 0, daAnim,isDad,charType);
+		dadBG.screenCenter();
+		dadBG.debugMode = true;
+		dadBG.alpha = 0.75;
+		dadBG.color = 0xFF000000;
 
-			char = dad;
-			dad.flipX = false;
-		}
-		else
-		{
-			bf = new Character(0, 0);
-			bf.screenCenter();
-			bf.debugMode = true;
-			add(bf);
+		add(dadBG);
+		add(dad);
 
-			char = bf;
-			bf.flipX = false;
-		}
+		// dad.flipX = flippedChars.contains(dad.curCharacter);
+		// dadBG.flipX = flippedChars.contains(dadBG.curCharacter);   Handled by character.hx, Not needed here
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
-		dumbTexts2 = new FlxTypedGroup<FlxText>();
-		add(dumbTexts2);
 
 		textAnim = new FlxText(300, 16);
 		textAnim.size = 26;
-		textAnim.scrollFactor.set();
+		textAnim.scrollFactor.set(0);
+		textAnim.cameras = [camHUD];
 		add(textAnim);
 
 		genBoyOffsets();
@@ -89,19 +103,15 @@ class AnimationDebug extends FlxState
 	{
 		var daLoop:Int = 0;
 
-		for (anim => offsets in char.animOffsets)
+		for (anim => offsets in dad.animOffsets)
 		{
 			var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, anim + ": " + offsets, 15);
-			text.scrollFactor.set();
+			text.scrollFactor.set(0);
 			text.color = FlxColor.BLUE;
+			text.cameras = [camHUD];
 			dumbTexts.add(text);
 
-
 			if (pushList)
-				var text:FlxText = new FlxText(10,120 + (18 * daLoop), 0, anim + ": " + offsets, 15);
-				text.scrollFactor.set();
-				text.color = FlxColor.BLUE;
-				dumbTexts2.add(text);
 				animList.push(anim);
 
 			daLoop++;
@@ -119,26 +129,26 @@ class AnimationDebug extends FlxState
 
 	override function update(elapsed:Float)
 	{
-		textAnim.text = char.animation.curAnim.name;
+		textAnim.text = dad.animation.curAnim.name;
 
-		if (FlxG.keys.justPressed.E)
-			FlxG.camera.zoom += 0.25;
-		if (FlxG.keys.justPressed.Q)
-			FlxG.camera.zoom -= 0.25;
+		if (FlxG.keys.pressed.E)
+			FlxG.camera.zoom += 0.0025;
+		if (FlxG.keys.pressed.Q)
+			FlxG.camera.zoom -= 0.0025;
 
 		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
 		{
 			if (FlxG.keys.pressed.I)
-				camFollow.velocity.y = -90;
+				camFollow.velocity.y = -150;
 			else if (FlxG.keys.pressed.K)
-				camFollow.velocity.y = 90;
+				camFollow.velocity.y = 150;
 			else
 				camFollow.velocity.y = 0;
 
 			if (FlxG.keys.pressed.J)
-				camFollow.velocity.x = -90;
+				camFollow.velocity.x = -150;
 			else if (FlxG.keys.pressed.L)
-				camFollow.velocity.x = 90;
+				camFollow.velocity.x = 150;
 			else
 				camFollow.velocity.x = 0;
 		}
@@ -165,10 +175,20 @@ class AnimationDebug extends FlxState
 
 		if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
 		{
-			char.playAnim(animList[curAnim]);
+			dad.playAnim(animList[curAnim], true);
+
+			if(animList[curAnim].endsWith("miss"))
+				dadBG.playAnim(animList[curAnim].substring(0, animList[curAnim].length - 4), true);
+			else
+				dadBG.idleEnd(true);
 
 			updateTexts();
 			genBoyOffsets(false);
+		}
+		
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			FlxG.switchState(new PlayState());
 		}
 
 		var upP = FlxG.keys.anyJustPressed([UP]);
@@ -185,17 +205,17 @@ class AnimationDebug extends FlxState
 		{
 			updateTexts();
 			if (upP)
-				char.animOffsets.get(animList[curAnim])[1] += 1 * multiplier;
+				dad.animOffsets.get(animList[curAnim])[1] += 1 * multiplier;
 			if (downP)
-				char.animOffsets.get(animList[curAnim])[1] -= 1 * multiplier;
+				dad.animOffsets.get(animList[curAnim])[1] -= 1 * multiplier;
 			if (leftP)
-				char.animOffsets.get(animList[curAnim])[0] += 1 * multiplier;
+				dad.animOffsets.get(animList[curAnim])[0] += 1 * multiplier;
 			if (rightP)
-				char.animOffsets.get(animList[curAnim])[0] -= 1 * multiplier;
+				dad.animOffsets.get(animList[curAnim])[0] -= 1 * multiplier;
 
 			updateTexts();
 			genBoyOffsets(false);
-			char.playAnim(animList[curAnim]);
+			dad.playAnim(animList[curAnim]);
 		}
 
 		super.update(elapsed);
