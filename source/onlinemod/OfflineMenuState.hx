@@ -95,32 +95,33 @@ class OfflineMenuState extends MusicBeatState
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-
-    if (controls.BACK)
-    {
-      FlxG.switchState(new OnlineMenuState());
-    }
-
-      if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
-      if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
-
-    if (controls.ACCEPT && songs.length > 0)
-    {
-      PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
-      PlayState.isStoryMode = false;
-
-      // Set difficulty
-      PlayState.storyDifficulty = 1;
-      if (StringTools.endsWith(songs[curSelected], '-hard.json'))
+    if (!searchField.hasFocus){
+      if (controls.BACK)
       {
-        PlayState.storyDifficulty = 2;
-      }
-      else if (StringTools.endsWith(songs[curSelected], '-easy.json'))
-      {
-        PlayState.storyDifficulty = 0;
+        FlxG.switchState(new OnlineMenuState());
       }
 
-      LoadingState.loadAndSwitchState(new OfflinePlayState());
+        if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
+        if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
+
+      if (controls.ACCEPT && songs.length > 0)
+      {
+        PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
+        PlayState.isStoryMode = false;
+
+        // Set difficulty
+        PlayState.storyDifficulty = 1;
+        if (StringTools.endsWith(songs[curSelected], '-hard.json'))
+        {
+          PlayState.storyDifficulty = 2;
+        }
+        else if (StringTools.endsWith(songs[curSelected], '-easy.json'))
+        {
+          PlayState.storyDifficulty = 0;
+        }
+
+        LoadingState.loadAndSwitchState(new OfflinePlayState());
+      }
     }
   }
 

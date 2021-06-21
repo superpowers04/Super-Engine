@@ -43,7 +43,9 @@ class OnlinePlayState extends PlayState
 
   public function new(customSong:Bool, voices:FlxSound, inst:Sound)
   {
+    PlayState.stateType =3;
     super();
+
 
     this.customSong = customSong;
     this.loadedVoices = voices;
@@ -271,8 +273,8 @@ class OnlinePlayState extends PlayState
   override function endSong():Void
   {
     clients[-1] = OnlineNickState.nickname;
-    clientScores[-1] = songScore;
-    clientText[-1] = "S:" + songScore+ " M:" + PlayState.misses+ " A:" + PlayState.accuracy;
+    clientScores[-1] = PlayState.songScore;
+    clientText[-1] = "S:" + PlayState.songScore+ " M:" + PlayState.misses+ " A:" + PlayState.accuracy;
 
     canPause = false;
     FlxG.sound.playMusic(loadedInst, 1, true);
@@ -398,8 +400,8 @@ class OnlinePlayState extends PlayState
   function SendScore()
   {
     if (TitleState.supported){
-      Sender.SendPacket(Packets.SEND_CURRENT_INFO, [songScore,PlayState.misses,Std.int(PlayState.accuracy)], OnlinePlayMenuState.socket);
-    }else{Sender.SendPacket(Packets.SEND_SCORE, [songScore], OnlinePlayMenuState.socket);}
+      Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy)], OnlinePlayMenuState.socket);
+    }else{Sender.SendPacket(Packets.SEND_SCORE, [PlayState.songScore], OnlinePlayMenuState.socket);}
 
   }
 
