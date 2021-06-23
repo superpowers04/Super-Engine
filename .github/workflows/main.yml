@@ -57,10 +57,3 @@ jobs:
         with:
           name: windowsBuild
           path: export/release/windows/bin
-      - name: Compile 32 bit
-        run: haxelib run lime build windows -D32bit -32
-      - name: Publish 32bit
-        uses: actions/upload-artifact@v2
-        with:
-          name: windows32Build
-          path: export/32bit/windows/bin
