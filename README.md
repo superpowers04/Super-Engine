@@ -38,6 +38,9 @@ Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play
  - [Kawai Sprite](https://twitter.com/kawaisprite) - Music
 
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp.
+## Funkin Battle Royale Mod
+- [Superpowers04](https://github.com/superpowers04) - Pretty much everything
+- [NayToon](https://github.com/cartoon032) - Some help and providing early Windows builds
 ## Kade Engine
 - [KadeDeveloper](https://twitter.com/KadeDeveloper) - Maintainer and lead programmer
 - [The contributors](https://github.com/KadeDev/Kade-Engine/graphs/contributors)
