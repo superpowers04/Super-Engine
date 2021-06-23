@@ -56,4 +56,17 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windowsBuild
-          path: export/release/windows/bin
+          path: export/release/windows/bin      
+      - name: Publish without changed assets as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: windowsBuild-Minimal
+          path: |
+                export/release/windows/bin/FNF Battle Royale.exe
+                export/release/windows/bin/manifest
+                export/release/windows/bin/assets/images/FNF_main_menu_assets.png
+                export/release/windows/bin/assets/images/FNF_main_menu_assets.xml
+                export/release/windows/bin/assets/shared/images/NOTE_assets.xml
+                export/release/windows/bin/assets/shared/images/NOTE_assets.png
+                export/release/windows/bin/assets/images/onlinemod
+                export/release/windows/bin/assets/data/introText.txt
