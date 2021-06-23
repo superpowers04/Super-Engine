@@ -8,11 +8,11 @@ This is client aims for customisability besides providing backwards compatibilit
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide
 
 
-
-# Friday Night Funkin' FPS Plus
+# Powered by
+## [Friday Night Funkin' FPS Plus](https://github.com/ThatRozebudDude/FPS-Plus-Public/)
 ![FPS plus logo](https://github.com/ThatRozebudDude/FPS-Plus-Public/raw/release/art/readme/logo.png)
 
-# [Kade Engine](https://github.com/KadeDev/Kade-Engine)
+## [Kade Engine](https://github.com/KadeDev/Kade-Engine)
 ![Kade Engine logo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
 
 # Information
