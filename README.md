@@ -9,6 +9,8 @@ This is client aims for customisability besides providing backwards compatibilit
 
 
 
+# Friday Night Funkin' FPS Plus
+![FPS plus logo](https://github.com/ThatRozebudDude/FPS-Plus-Public/raw/release/art/readme/logo.png)
 
 # [Kade Engine](https://github.com/KadeDev/Kade-Engine)
 ![Kade Engine logo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
@@ -26,9 +28,9 @@ Links: **[itch.io page](https://ninja-muffin24.itch.io/funkin) ⋅ [Newgrounds](
 Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play in browser](https://funkin.puyo.xyz) ⋅ [latest stable release](https://github.com/KadeDev/Kade-Engine/releases/latest)
 
 ## Friday Night Funkin' FPS Plus
-![](https://github.com/ThatRozebudDude/FPS-Plus-Public/raw/release/art/readme/logo.png)
 Friday Night Funkin' FPS Plus is a mod of Friday Night Funkin' that aims to improve gameplay and add quality of life features.
 Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play in browser](https://funkin.puyo.xyz) ⋅ [latest stable release](https://github.com/KadeDev/Kade-Engine/releases/latest)
+
 # Credits
 ## Friday Night Funkin'
  - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programming
