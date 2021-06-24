@@ -118,7 +118,8 @@ class PlayState extends MusicBeatState
 
 	private var gfSpeed:Int = 1;
 	public var health:Float = 1; //making public because sethealth doesnt work without it
-	private var combo:Int = 0;
+	public static var combo:Int = 0;
+	public static var MaxCOMBO:Int = 0;
 	public static var misses:Int = 0;
 	public static var accuracy:Float = 0.00;
 	private var accuracyDefault:Float = 0.00;
@@ -228,6 +229,8 @@ class PlayState extends MusicBeatState
 		goods = 0;
 
 		misses = 0;
+		combo = 0;
+		MaxCOMBO = 0;
 
 		repPresses = 0;
 		repReleases = 0;
@@ -952,14 +955,14 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.downscroll)
 			kadeEngineWatermark.y = FlxG.height * 0.9 + 45;
 
-		scoreTxt = new FlxText(FlxG.width / 2 - 235, healthBarBG.y + 50, 0, "", 20);
+		scoreTxt = new FlxText(FlxG.width / 2 - 350, healthBarBG.y + 50, 0, "", 20);
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		if (offsetTesting)
 			scoreTxt.x += 300;
-		if(FlxG.save.data.botplay) scoreTxt.x = FlxG.width / 2 - 20;													  
+		if(FlxG.save.data.botplay) scoreTxt.x = FlxG.width / 2 - 250;													  
 		add(scoreTxt);
 
 		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0, "REPLAY", 20);
@@ -1689,6 +1692,8 @@ class PlayState extends MusicBeatState
 			nps = notesHitArray.length;
 			if (nps > maxNPS)
 				maxNPS = nps;
+			if (combo > MAXCOMBO)
+				MAXCOMBO = combo;
 		}
 
 		if (FlxG.keys.justPressed.NINE)
