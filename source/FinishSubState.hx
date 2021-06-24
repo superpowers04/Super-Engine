@@ -30,7 +30,7 @@ class FinishSubState extends MusicBeatSubstate
 	{
 		if(win){PlayState.boyfriend.playAnim("hey");PlayState.dad.playAnim('singDOWNmiss');}else{PlayState.boyfriend.playAnim('singDOWNmiss');PlayState.dad.playAnim("hey");}
 		super();
-        music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
+		music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
 		music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
 
 		FlxG.sound.list.add(music);
@@ -41,40 +41,39 @@ class FinishSubState extends MusicBeatSubstate
 		add(bg);
 
 		var finishedText:FlxText = new FlxText(20,-55,0,if(win) "Song Won!" else "Song failed" );
-        finishedText.size = 34;
-        finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-        finishedText.color = FlxColor.WHITE;
-        finishedText.scrollFactor.set();
-        add(finishedText);
+		finishedText.size = 34;
+		finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+		finishedText.color = FlxColor.WHITE;
+		finishedText.scrollFactor.set();
+		add(finishedText);
+		var comboText:FlxText = new FlxText(20,-75,0,'Judgements:\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
+		comboText.size = 28;
+		comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+		comboText.color = FlxColor.WHITE;
+		comboText.scrollFactor.set();
+		add(comboText);
 
-        var comboText:FlxText = new FlxText(20,-75,0,'Judgements:\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\n\nCombo Breaks: ${PlayState.misses + PlayState.shits}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
-        comboText.size = 28;
-        comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-        comboText.color = FlxColor.WHITE;
-        comboText.scrollFactor.set();
-        add(comboText);
+		var contText:FlxText = new FlxText(FlxG.width - 475,FlxG.height + 100,0,'Press ENTER to continue\nor R to restart.');
+		contText.size = 28;
+		contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+		contText.color = FlxColor.WHITE;
+		contText.scrollFactor.set();
+		add(contText);
 
-        var contText:FlxText = new FlxText(FlxG.width - 475,FlxG.height + 100,0,'Press ENTER to continue\nor R to restart.');
-        contText.size = 28;
-        contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-        contText.color = FlxColor.WHITE;
-        contText.scrollFactor.set();
-        add(contText);
-
-        var settingsText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${PlayState.SONG.song} ${CoolUtil.difficultyString()}');
-        settingsText.size = 16;
-        settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
-        settingsText.color = FlxColor.WHITE;
-        settingsText.scrollFactor.set();
-        add(settingsText);
+		var settingsText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${PlayState.SONG.song} ${CoolUtil.difficultyString()}');
+		settingsText.size = 16;
+		settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
+		settingsText.color = FlxColor.WHITE;
+		settingsText.scrollFactor.set();
+		add(settingsText);
 
 		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
-        FlxTween.tween(finishedText, {y:20},0.5,{ease: FlxEase.expoInOut});
-        FlxTween.tween(comboText, {y:145},0.5,{ease: FlxEase.expoInOut});
-        FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
-        FlxTween.tween(settingsText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
+		FlxTween.tween(finishedText, {y:20},0.5,{ease: FlxEase.expoInOut});
+		FlxTween.tween(comboText, {y:145},0.5,{ease: FlxEase.expoInOut});
+		FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
+		FlxTween.tween(settingsText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
 
-        cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
 	}
 

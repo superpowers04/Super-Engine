@@ -134,11 +134,11 @@ class Ratings
         return 
         (FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") + (!FlxG.save.data.botplay ?	                // NPS Toggle
         " | Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
-        " | Combo:" + PlayState.combo + (PlayState.combo < PlayState.MaxCOMBO ? " (Max " + PlayState.MaxCOMBO + ")" : "") +
+        " | Combo:" + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
         " | Combo Breaks:" + PlayState.misses + 																				// Misses/Combo Breaks
         " | Accuracy:" + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
         " | " + GenerateLetterRank(accuracy) :                                                                                  // Letter Rank
-        " | Combo:" + PlayState.combo + (PlayState.combo < PlayState.MaxCOMBO ? " (Max " + PlayState.MaxCOMBO + ")" : "") +
+        " | Combo:" + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
         " | Lagspike:" + PlayState.misses +
         " | Accuracy:" + HelperFunctions.truncateFloat(accuracy, 2) + " %"
         );
