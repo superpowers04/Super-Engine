@@ -119,7 +119,7 @@ class PlayState extends MusicBeatState
 	private var gfSpeed:Int = 1;
 	public var health:Float = 1; //making public because sethealth doesnt work without it
 	public static var combo:Int = 0;
-	public static var MaxCOMBO:Int = 0;
+	public static var maxCombo:Int = 0;
 	public static var misses:Int = 0;
 	public static var accuracy:Float = 0.00;
 	private var accuracyDefault:Float = 0.00;
@@ -230,7 +230,7 @@ class PlayState extends MusicBeatState
 
 		misses = 0;
 		combo = 0;
-		MaxCOMBO = 0;
+		maxCombo = 0;
 
 		repPresses = 0;
 		repReleases = 0;
@@ -1692,8 +1692,8 @@ class PlayState extends MusicBeatState
 			nps = notesHitArray.length;
 			if (nps > maxNPS)
 				maxNPS = nps;
-			if (combo > MAXCOMBO)
-				MAXCOMBO = combo;
+			if (combo > maxCombo)
+				maxCombo = combo;
 		}
 
 		if (FlxG.keys.justPressed.NINE)
