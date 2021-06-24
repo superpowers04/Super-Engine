@@ -74,7 +74,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", 0, 27);
 				addOffset("singLEFT", -10, 10);
 				addOffset("singDOWN", 0, -30);
-				camX=400;
+				camX+=400;
 			case 'mom','mom-car':
 				addOffset('idle');
 				addOffset("singUP", 14, 71);
@@ -89,7 +89,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", -130, -14);
 				addOffset("singLEFT", 130, -10);
 				addOffset("singDOWN", -50, -130);
-				charY=200;
+				charY-=200;
 			case "pico":
 				if(isPlayer){
 					needsInverted = true;
@@ -111,10 +111,10 @@ class Character extends FlxSprite
 					addOffset("singLEFTmiss", 62, 50);
 					addOffset("singDOWNmiss", 200, -34);}
 
-				charY=330;
-				if(!isPlayer){camX=600;}
+				charY+=330;
+				if(!isPlayer){camX+=600;}
 			case 'bf','bf-christmas','bf-car':
-				charY=330;
+				charY+=330;
 				needsInverted = true;
 				if (isPlayer){			
 					addOffset('idle', -5);
@@ -148,16 +148,16 @@ class Character extends FlxSprite
 					addOffset('scared', -4);
 				}
 			case "bf-pixel":
-				charY=330;
+				charY+=330;
 			case 'spirit':
 				addOffset('idle', -220, -280);
 				addOffset('singUP', -220, -240);
 				addOffset("singRIGHT", -220, -280);
 				addOffset("singLEFT", -200, -280);
 				addOffset("singDOWN", 170, 110);
-				charX=150;
-				charY=100;
-				camX=300;
+				charX-=150;
+				charY-=100;
+				camX+=300;
 
 			case 'senpai':
 				addOffset('idle');
@@ -165,9 +165,9 @@ class Character extends FlxSprite
 				addOffset("singRIGHT");
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
-				charX=150;
-				charY=360;
-				camX=300;
+				charX-=150;
+				charY-=360;
+				camX+=300;
 
 			case 'senpai-angry':
 				addOffset('idle');
@@ -175,9 +175,9 @@ class Character extends FlxSprite
 				addOffset("singRIGHT");
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
-				charX=150;
-				charY=360;
-				camX=300;
+				charX-=150;
+				charY-=360;
+				camX+=300;
 			case 'parents-christmas':
 				addOffset('idle');
 				addOffset("singUP", -47, 24);
@@ -188,21 +188,21 @@ class Character extends FlxSprite
 				addOffset("singRIGHT-alt", -1, -24);
 				addOffset("singLEFT-alt", -30, 15);
 				addOffset("singDOWN-alt", -30, -27);
-				charX=-500;
+				charX-=500;
 			case 'monster':
 				addOffset('idle');
 				addOffset("singUP", -20, 50);
 				addOffset("singRIGHT", -51);
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
-				charY=-100;
+				charY-=100;
 			case 'monster-christmas':
 				addOffset('idle');
 				addOffset("singUP", -20, 50);
 				addOffset("singRIGHT", -51);
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
-				charY=-130;
+				charY-=130;
 		}
 	}
 
@@ -527,8 +527,12 @@ class Character extends FlxSprite
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					hasAlts =  charProperties.alt_anims; // Handles alt animations
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
-					if (charProperties.char_pos != null){charX+=charProperties.char_pos[0];charY+=charProperties.char_pos[1];}
-					if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
+					// if (charProperties.char_pos != null){charX+=charProperties.char_pos[0];charY+=charProperties.char_pos[1];}
+					if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
+					if (charProperties.cam_pos != null){
+						camX+=charProperties.cam_pos[0];
+						camY+=charProperties.cam_pos[1];
+					}
 					
 					trace('Loading Animations!');
 					for (anima in charProperties.animations){
@@ -558,7 +562,8 @@ class Character extends FlxSprite
 						addOffset(offset.anim,offset.player1[0],offset.player1[1],true);
 					}	
 					addOffset('all',charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
-					camX=charProperties.common_stage_offset[0];camY+=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
+					camX+=charProperties.common_stage_offset[0];
+					camY+=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
 					trace('Loaded ${offsetCount} offsets!');
 					 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
@@ -644,12 +649,12 @@ class Character extends FlxSprite
 				}
 			}
 
-			switch (curCharacter)
-			{
-				case 'gf':
-					if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-						playAnim('danceRight');
-			}
+			// switch (curCharacter)
+			// {
+			// 	case 'gf':
+			// 		if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+			// 			playAnim('danceRight');
+			// }
 			if(dance_idle || charType == 2){
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
@@ -696,13 +701,14 @@ class Character extends FlxSprite
 			if (dance_idle || charType == 2){
 				playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
 			}else{
-						switch (curCharacter)
-						{
-							case 'gf' | 'gf-car' | 'gf-christmas' | 'gf-pixel' | "spooky":
-								playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
-							default:
-								playAnim('idle', true, false, animation.getByName('idle').numFrames - 1);
-						}}
+				switch (curCharacter)
+				{
+					case 'gf' | 'gf-car' | 'gf-christmas' | 'gf-pixel' | "spooky":
+						playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
+					default:
+						playAnim('idle', true, false, animation.getByName('idle').numFrames - 1);
+				}
+			}
 		}
 	}
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
@@ -723,7 +729,7 @@ class Character extends FlxSprite
 		offsets[1]+=animOffsets["all"][1];
 		offset.set(offsets[0], offsets[1]); // Set offsets
 
-		if ((dance_idle || curCharacter == 'gf' || clonedChar == "gf") && lastAnim != AnimName )
+		if (dance_idle && lastAnim != AnimName )
 		{
 			switch(AnimName){
 				case 'singLEFT', 'danceLeft':
@@ -735,12 +741,12 @@ class Character extends FlxSprite
 			}
 		}
 	}
-	public function cloneAnimation(name:String,anim:FlxAnimation){
+	public function cloneAnimation(name:String,anim:FlxAnimation):Void{
 		if(!amPreview && anim != null){
 			animation.add(name,anim.frames,anim.frameRate,anim.flipX);
 		}
 	}
-	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false)
+	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false):Void
 	{
 		if (needsInverted && !custom){
 			x=-x;

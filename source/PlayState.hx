@@ -3197,7 +3197,7 @@ class PlayState extends MusicBeatState
 
 
 
-		if (dad.dance_idle || dad.curCharacter == 'gf') {
+		if (dad.dance_idle) {
 			if (curBeat % 2 == 1 && dad.animOffsets.exists('danceLeft'))
 				dad.playAnim('danceLeft');
 			if (curBeat % 2 == 0 && dad.animOffsets.exists('danceRight'))
@@ -3240,10 +3240,14 @@ class PlayState extends MusicBeatState
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
-		if (curBeat % gfSpeed == 0)
-		{
-			gf.dance();
-		}
+		// if (curBeat % gfSpeed == 0)
+		// {
+		// 	gf.dance();
+		// }
+		if (gf.animation.curAnim.name.startsWith("dance") || gf.animation.curAnim.finished){
+			if (curBeat % 2 == 1){gf.playAnim('danceLeft');}
+			if (curBeat % 2 == 0){gf.playAnim('danceRight');}
+		} // Honestly surprised this fixed it
 
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 		{
