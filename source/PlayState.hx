@@ -234,6 +234,7 @@ class PlayState extends MusicBeatState
 
 		repPresses = 0;
 		repReleases = 0;
+		songScore = 0;
 
 
 		#if !cpp
