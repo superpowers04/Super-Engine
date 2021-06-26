@@ -8,6 +8,7 @@
 		"scale_pixel": 0.91, "": "Sprite scale on Pixel stages, Senpai/Spirit/BF-Pixel uses 6, everyone else uses 0.91",
 		"pixel_offset_scale": 0.91, "": "Fixes the animation offsets being a bit broken on Pixel stages for non-pixel characters, usually just set this to the same value as scale_pixel. This is dumb",
 		"online_offset_scale": 0.7, "": "Fixes the singing animations being a bit broken on Online Mode Lobby, Spirit/Senpai/BF-Pixel uses 1, everyone else uses 0.7. This is also dumb",
+		"custom_misses": 2, "": "Custom misses, 1 is FNF Multi voices, 2 is 'miss_left.ogg','miss_right.ogg','miss_up.ogg' and 'miss_down.ogg'",
 
 		"voices": "bf", "": "Voices to be used on Lobby singing, set this to 'custom' if you want to use custom voice files, the files should be named 'sing_left.ogg', 'sing_up.ogg', 'sing_down.ogg' and 'sing_right.ogg', and should be located in your character's folder",
 		"alt_anims": false, "": "Enables alt animations like those from Parents-Christmas",

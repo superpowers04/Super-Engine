@@ -13,6 +13,8 @@ import lime.utils.Assets;
 import lime.graphics.Image;
 import CharacterJson;
 
+import flash.media.Sound;
+
 import sys.io.File;
 import flash.display.BitmapData;
 import Xml;
@@ -39,6 +41,8 @@ class Character extends FlxSprite
 	public var dance_idle:Bool = false;
 	public var amPreview:Bool = false;
 	public var needsInverted:Bool= false;
+	public var useMisses:Bool = false;
+	public var missSounds:Array<Sound> = [];
 
 	public var holdTimer:Float = 0;
 	public var stunned:Bool = false; // Why was this specific to BF?
@@ -521,12 +525,24 @@ class Character extends FlxSprite
 					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 					animation.addByPrefix('hey', 'BF HEY', 24, false);
 
-					dadVar = charProperties.sing_duration;
+					dadVar = charProperties.sing_duration; // As the varname implies
 					flipX=charProperties.flip_x; // Flip for BF clones
 					spiritTrail=charProperties.spirit_trail; // Spirit TraiL
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					hasAlts =  charProperties.alt_anims; // Handles alt animations
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+					// Custom misses
+					if (charType == 0 && !amPreview && !debugMode){
+						switch(charProperties.custom_misses){
+							case 1: // Custom misses using FNF Multi custom sounds
+								useMisses = true;
+								missSounds = [Sound.fromFile('mods/characters/$curCharacter/custom_left.ogg'), Sound.fromFile('mods/characters/$curCharacter/custom_down.ogg'), Sound.fromFile('mods/characters/$curCharacter/custom_up.ogg'),Sound.fromFile('mods/characters/$curCharacter/custom_right.ogg')];
+							case 2: // Custom misses using Predefined sound names
+								useMisses = true;
+								missSounds = [Sound.fromFile('mods/characters/$curCharacter/miss_left.ogg'), Sound.fromFile('mods/characters/$curCharacter/miss_down.ogg'), Sound.fromFile('mods/characters/$curCharacter/miss_up.ogg'),Sound.fromFile('mods/characters/$curCharacter/miss_right.ogg')];
+						}
+					}
+
 					// if (charProperties.char_pos != null){charX+=charProperties.char_pos[0];charY+=charProperties.char_pos[1];}
 					if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
 					if (charProperties.cam_pos != null){

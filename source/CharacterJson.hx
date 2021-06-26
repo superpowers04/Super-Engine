@@ -16,6 +16,8 @@ typedef CharacterJson =
 	var common_stage_offset:Array<Int>;
 	var cam_pos:Array<Int>;
 	var char_pos:Array<Int>;
+	var custom_misses:Int;
+
 }
 typedef IfStatement = {
 	var	type:String;
