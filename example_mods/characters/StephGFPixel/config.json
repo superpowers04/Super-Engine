@@ -1,0 +1,47 @@
+	{
+		"clone": "gf-pixel", "": "Copies the offsets of a character and a few interactions, disable it by removing this line or leaving it blank",
+		"no_antialiasing": true, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
+		"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
+		"dance_idle": false, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
+
+		"scale": 6, "": "Sprite scale on common stages, online lobby and Character Select screen, Senpai uses 6 while BF-Pixel/Spirit uses 6.6, everyone else uses 1",
+		"scale_pixel": 0.91, "": "Sprite scale on Pixel stages, Senpai/Spirit/BF-Pixel uses 6, everyone else uses 0.91",
+		"pixel_offset_scale": 0.91, "": "Fixes the animation offsets being a bit broken on Pixel stages for non-pixel characters, usually just set this to the same value as scale_pixel. This is dumb",
+		"online_offset_scale": 0.7, "": "Fixes the singing animations being a bit broken on Online Mode Lobby, Spirit/Senpai/BF-Pixel uses 1, everyone else uses 0.7. This is also dumb",
+
+		"voices": "gf", "": "Voices to be used on Lobby singing, set this to 'custom' if you want to use custom voice files, the files should be named 'sing_left.ogg', 'sing_up.ogg', 'sing_down.ogg' and 'sing_right.ogg', and should be located in your character's folder",
+		"alt_anims": false, "": "Enables alt animations like those from Parents-Christmas",
+		"flip_x": false, "": "Flips X axis from the sprite, useful for Boyfriend/Pico clones",
+
+		"animations":
+		[
+			{
+				"anim": "danceLeft",
+				"name": "GF IDLE",
+				"fps": 24,
+				"loop": false,
+				"indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+			},
+			{
+				"anim": "danceRight",
+				"name": "GF IDLE",
+				"fps": 24,
+				"loop": false,
+				"indices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+			}
+		], 
+		"hey_anim": "cheer", 
+		"scared_anim": "scared",
+
+		"animations_offsets":
+		[
+		],
+
+		"common_stage_offset": [-200, -300, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
+		"pixel_stage_offset": [0, 50, 0, 50], "": "Your character's offset ingame on Pixel stages as Player 1 and 2",
+		"local_multiplayer_offset": [0, 0], "": "Your character's offset on the Local Multiplayer/Singleplayer Character Select screen",
+		"online_offset": [-80, -115], "": "Your character's offset on Online Mode lobby",
+		"playername_relative": 100, "": "Relative (Y) position from the Player Name to their character on Online Mode Lobby",
+
+		"": "Sometimes i hate my own code, good luck messing with this! I will probably convert the Animation Debug into a Character Editor someday, idk"
+	}

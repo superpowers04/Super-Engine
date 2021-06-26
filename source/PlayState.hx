@@ -206,6 +206,7 @@ class PlayState extends MusicBeatState
 	private var saveNotes:Array<Float> = [];
 
 	private var executeModchart = false;
+	private var bruhmode:Bool = false;
 
 	// API stuff
 	
@@ -215,6 +216,7 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+
 		instance = this;
 		
 		if (FlxG.save.data.fpsCap > 290)
@@ -942,6 +944,7 @@ class PlayState extends MusicBeatState
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
+		
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
 		// healthBar
@@ -978,7 +981,7 @@ class PlayState extends MusicBeatState
 		botPlayState.setFormat(Paths.font("vcr.ttf"), 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		botPlayState.scrollFactor.set();
 		
-		if(FlxG.save.data.botplay && !loadRep) add(botPlayState);
+		if(FlxG.save.data.botplay && !loadRep){add(botPlayState);bruhmode = FlxG.save.data.botplay;};
 
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
@@ -1389,7 +1392,7 @@ class PlayState extends MusicBeatState
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
-				if (p2canplay && !gottaHitNote ){continue;}
+				if (p2canplay && !gottaHitNote || gottaHitNote && bruhmode ){continue;}
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];

@@ -69,7 +69,7 @@ class KadeEngineData
 		if (FlxG.save.data.resetButton == null)
 			FlxG.save.data.resetButton = false;
 		
-		if (FlxG.save.data.botplay != false)
+		if (FlxG.save.data.botplay == null) // Dammit, disabing botplay broke stuff
 			FlxG.save.data.botplay = false;
 
 		if (FlxG.save.data.cpuStrums == null)
@@ -104,10 +104,12 @@ class KadeEngineData
 		if (FlxG.save.data.charSelShow == null)
 			FlxG.save.data.charSelShow = false;
 
-		// if (FlxG.save.data.lastServer == null)
-		// 	FlxG.save.data.lastServer = "";
-		// if (FlxG.save.data.lastServerPort == null)
-		// 	FlxG.save.data.lastServerPort = "";		
+		if (FlxG.save.data.lastServer == null)
+			FlxG.save.data.lastServer = "";
+		if (FlxG.save.data.lastServerPort == null)
+			FlxG.save.data.lastServerPort = "";	
+		if (FlxG.save.data.nickname == null)
+			FlxG.save.data.nickname = "";		
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();

@@ -96,7 +96,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
-			menuItem.screenCenter(X);
+			// menuItem.screenCenter(X);
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set();
 			menuItem.antialiasing = true;
@@ -108,6 +108,7 @@ class MainMenuState extends MusicBeatState
 					}});
 			else
 				menuItem.y = 60 + (i * 160);
+			menuItem.x = FlxG.width * 0.25;
 		}
 
 		firstStart = false;
@@ -127,7 +128,7 @@ class MainMenuState extends MusicBeatState
 			add(outdatedLMAO);
 		}
 		if (!TitleState.choosableCharacters.contains(FlxG.save.data.playerChar)){
-			errorMessage += '${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
+			errorMessage += '\n${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
 			FlxG.save.data.playerChar = "bf";
 		}
 		if (!TitleState.choosableCharacters.contains(FlxG.save.data.opponent)){
@@ -139,7 +140,7 @@ class MainMenuState extends MusicBeatState
 			FlxG.save.data.gfChar = "gf";
 		}
 		if (errorMessage != ""){
-			var errorText = new FlxText(0, 18, FlxG.width, errorMessage);
+			var errorText = new FlxText(0, FlxG.height - 18, FlxG.width, errorMessage);
 		    errorText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.RED, CENTER);
 		    add(errorText);
 		    errorMessage="";
@@ -185,12 +186,12 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (optionShit[curSelected] == 'donate')
-				{
-					fancyOpenURL("https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game");
-				}
-				else
-				{
+				// if (optionShit[curSelected] == 'donate')
+				// {
+				// 	fancyOpenURL("https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game");
+				// }
+				// else
+				// {
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
 					
@@ -227,16 +228,16 @@ class MainMenuState extends MusicBeatState
 							}
 						}
 					});
-				}
+				// }
 			}
 		}
 
 		super.update(elapsed);
 
-		menuItems.forEach(function(spr:FlxSprite)
-		{
-			spr.screenCenter(X);
-		});
+		// menuItems.forEach(function(spr:FlxSprite)
+		// {
+		// 	spr.x = FlxG.width * 0.25;
+		// });
 	}
 	
 	function goToState()

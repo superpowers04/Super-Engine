@@ -100,8 +100,9 @@ class OnlinePlayMenuState extends MusicBeatState
 		var connectButton = new FlxUIButton(0, FlxG.height * 0.85, "Connect", () -> {
       try
   		{
+        FlxG.save.data.lastServer = ipField.text;
+        FlxG.save.data.lastServerPort = portField.text;
   			socket.connect(ipField.text, Std.parseInt(portField.text));
-
   		}catch (e: Dynamic){
   			trace(e);
   		}
@@ -149,6 +150,8 @@ class OnlinePlayMenuState extends MusicBeatState
 		socket.addEventListener(ProgressEvent.SOCKET_DATA, OnData);
 		receiver = new Receiver(HandleData);
 
+    ipField.text = FlxG.save.data.lastServer;
+    portField.text = FlxG.save.data.lastServerPort;
 
 		super.create();
 	}

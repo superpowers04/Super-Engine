@@ -48,6 +48,7 @@ class OnlineNickState extends MusicBeatState
 
     var confirmButton = new FlxUIButton(0, FlxG.height * 0.65, "Confirm", () -> {
       nickname = nickField.text;
+      FlxG.save.data.nickname = nickField.text;
       Sender.SendPacket(Packets.SEND_NICKNAME, [nickname], OnlinePlayMenuState.socket);
     });
     confirmButton.setLabelFormat(32, FlxColor.BLACK, CENTER);
@@ -64,7 +65,7 @@ class OnlineNickState extends MusicBeatState
 
     OnlinePlayMenuState.receiver.HandleData = HandleData;
 
-
+    nickField.text = FlxG.save.data.nickname;
     super.create();
   }
 

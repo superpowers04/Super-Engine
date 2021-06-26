@@ -25,6 +25,10 @@ class CharSelection extends MusicBeatState
   var posY:Int = 0;
   var searchField:FlxInputText;
   var searchButton:FlxUIButton;
+  var muteKeys = FlxG.sound.muteKeys;
+  var volumeUpKeys = FlxG.sound.volumeUpKeys;
+  var volumeDownKeys = FlxG.sound.volumeDownKeys;
+
 
   override function create()
   {
@@ -96,7 +100,8 @@ class CharSelection extends MusicBeatState
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-    if (!searchField.hasFocus){
+    if (searchField.hasFocus){SetVolumeControls(false);}else{
+      SetVolumeControls(true);
       if (controls.BACK)
       {
         ret();
@@ -109,6 +114,9 @@ class CharSelection extends MusicBeatState
       }
       if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
       if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
+      if (FlxG.keys.pressed.ONE && songs.length > 0){FlxG.switchState(new AnimationDebug(songs[curSelected],true,0));}
+      if (FlxG.keys.pressed.TWO && songs.length > 0){FlxG.switchState(new AnimationDebug(songs[curSelected],false,1));}
+      if (FlxG.keys.pressed.THREE && songs.length > 0){FlxG.switchState(new AnimationDebug(songs[curSelected],false,2));}
 
       if (controls.ACCEPT && songs.length > 0)
       {
@@ -154,4 +162,19 @@ class CharSelection extends MusicBeatState
 			}
 		}
 	}
+  function SetVolumeControls(enabled:Bool)
+  {
+    if (enabled)
+    {
+      FlxG.sound.muteKeys = muteKeys;
+      FlxG.sound.volumeUpKeys = volumeUpKeys;
+      FlxG.sound.volumeDownKeys = volumeDownKeys;
+    }
+    else
+    {
+      FlxG.sound.muteKeys = null;
+      FlxG.sound.volumeUpKeys = null;
+      FlxG.sound.volumeDownKeys = null;
+    }
+  }
 }

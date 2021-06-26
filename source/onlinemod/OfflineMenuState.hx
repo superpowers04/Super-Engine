@@ -24,6 +24,9 @@ class OfflineMenuState extends MusicBeatState
   var grpSongs:FlxTypedGroup<Alphabet>;
   var dataDir:String = "assets/onlinedata/data/";
   public static var optionsButton:FlxUIButton;
+  var muteKeys = FlxG.sound.muteKeys;
+  var volumeUpKeys = FlxG.sound.volumeUpKeys;
+  var volumeDownKeys = FlxG.sound.volumeDownKeys;
 
   override function create()
   {
@@ -95,7 +98,8 @@ class OfflineMenuState extends MusicBeatState
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-    if (!searchField.hasFocus){
+    if (searchField.hasFocus){SetVolumeControls(false);}else{
+      SetVolumeControls(true);
       if (controls.BACK)
       {
         FlxG.switchState(new OnlineMenuState());
@@ -152,4 +156,19 @@ class OfflineMenuState extends MusicBeatState
 			}
 		}
 	}
+  function SetVolumeControls(enabled:Bool)
+  {
+    if (enabled)
+    {
+      FlxG.sound.muteKeys = muteKeys;
+      FlxG.sound.volumeUpKeys = volumeUpKeys;
+      FlxG.sound.volumeDownKeys = volumeDownKeys;
+    }
+    else
+    {
+      FlxG.sound.muteKeys = null;
+      FlxG.sound.volumeUpKeys = null;
+      FlxG.sound.volumeDownKeys = null;
+    }
+  }
 }
