@@ -166,7 +166,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
 				charX-=150;
-				charY-=360;
+				charY+=360;
 				camX+=300;
 
 			case 'senpai-angry':
@@ -176,7 +176,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
 				charX-=150;
-				charY-=360;
+				charY+=360;
 				camX+=300;
 			case 'parents-christmas':
 				addOffset('idle');
@@ -195,14 +195,14 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", -51);
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
-				charY-=100;
+				charY+=100;
 			case 'monster-christmas':
 				addOffset('idle');
 				addOffset("singUP", -20, 50);
 				addOffset("singRIGHT", -51);
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
-				charY-=130;
+				charY+=130;
 		}
 	}
 
