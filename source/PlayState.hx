@@ -755,9 +755,10 @@ class PlayState extends MusicBeatState
 		if (dad.camX != 0) {
 			camPos.x +=dad.camX;
 		}
-		if(dad.camY !=0){
-			camPos.y +=dad.camY;
+		if(dad.camY != 0){
+			camPos.y += dad.camY;
 		}
+		camPos.set(camPos.x + dad.camX, camPos.y + dad.camY);
 
 		boyfriend = new Character(770, 100, SONG.player1,true,0);
 
