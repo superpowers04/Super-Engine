@@ -3225,11 +3225,14 @@ class PlayState extends MusicBeatState
 			if (curBeat % 2 == 0){gf.playAnim('danceRight');}
 		} // Honestly surprised this fixed it
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+		if (!boyfriend.animation.curAnim.name.startsWith("sing") && !boyfriend.dance_idle)
 		{
 			boyfriend.playAnim('idle');
 		}
-		
+		if (boyfriend.dance_idle && (boyfriend.animation.curAnim.name.startsWith("dance") || boyfriend.animation.curAnim.finished)){
+			if (curBeat % 2 == 1){boyfriend.playAnim('danceLeft');}
+			if (curBeat % 2 == 0){boyfriend.playAnim('danceRight');}
+		}
 
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
 		{

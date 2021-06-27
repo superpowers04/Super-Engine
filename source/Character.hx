@@ -545,10 +545,7 @@ class Character extends FlxSprite
 
 					// if (charProperties.char_pos != null){charX+=charProperties.char_pos[0];charY+=charProperties.char_pos[1];}
 					if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
-					if (charProperties.cam_pos != null){
-						camX+=charProperties.cam_pos[0];
-						camY+=charProperties.cam_pos[1];
-					}
+					if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 					
 					trace('Loading Animations!');
 					for (anima in charProperties.animations){
@@ -558,9 +555,7 @@ class Character extends FlxSprite
 
 						if (anima.indices.length > 0) { // Add using indices if specified
 							animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
-						}else{
-							animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);
-						}
+						}else{animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);}
 					}
 					
 					setGraphicSize(Std.int(width * charProperties.scale)); // Setting size

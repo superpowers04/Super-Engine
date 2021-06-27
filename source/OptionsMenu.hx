@@ -127,7 +127,9 @@ class OptionsMenu extends MusicBeatState
 
 	var isCat:Bool = false;
 	
-
+	function goBack(){
+		FlxG.switchState(new MainMenuState());
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -144,7 +146,7 @@ class OptionsMenu extends MusicBeatState
 				// 	case 1:
 				// 		FlxG.switchState(new onlinemod.OfflineMenuState());
 				// }}
-				FlxG.switchState(new MainMenuState());
+				goBack();
 			}
 				
 			else if (controls.BACK)

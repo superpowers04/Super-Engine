@@ -59,7 +59,7 @@ class OfflineMenuState extends MusicBeatState
 
     optionsButton = new FlxUIButton(1100, 40, "Options", () -> {
       FlxG.mouse.visible = false;
-      FlxG.switchState(new OptionsMenu());
+      FlxG.switchState(new OfflineOptionsMenu());
     });
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(150, 30);
@@ -170,5 +170,11 @@ class OfflineMenuState extends MusicBeatState
       FlxG.sound.volumeUpKeys = null;
       FlxG.sound.volumeDownKeys = null;
     }
+  }
+}
+
+class OfflineOptionsMenu extends OptionsMenu{
+  override function goBack(){
+    FlxG.switchState(new OfflineMenuState());
   }
 }
