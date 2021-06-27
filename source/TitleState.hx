@@ -45,11 +45,39 @@ class TitleState extends MusicBeatState
 	public static var supported:Bool = false;
 	public static var outdated:Bool = false;
 	public static var updatedVer:String = "";
+	public static var errorMessage:String = "";
 
 	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
-
+	public static function checkCharacters(){
+		#if sys
+		choosableCharacters = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster"];
+		// Loading like this is probably not a good idea
+	    var dataDir:String = "mods/characters/";
+	    var customCharacters:Array<String> = [];
+	    if (FileSystem.exists(dataDir))
+	    {
+	      for (directory in FileSystem.readDirectory(dataDir))
+	      {
+	      	if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml"))
+	      	{
+	       		customCharacters.push(directory);  
+	      	
+	        }
+	      }
+	    }
+		// customCharacters.sort((a, b) -> );
+		haxe.ds.ArraySort.sort(customCharacters, function(a, b) {
+           if(a < b) return -1;
+           else if(b > a) return 1;
+           else return 0;
+        });
+		for (char in customCharacters){
+			choosableCharacters.push(char);
+		}
+	    #end
+	}
 	override public function create():Void
 	{
 		
@@ -84,31 +112,7 @@ class TitleState extends MusicBeatState
 		KadeEngineData.initSave();
 
 		Highscore.load();
-		#if sys
-		// Loading like this is probably not a good idea
-	    var dataDir:String = "mods/characters/";
-	    var customCharacters:Array<String> = [];
-	    if (FileSystem.exists(dataDir))
-	    {
-	      for (directory in FileSystem.readDirectory(dataDir))
-	      {
-	      	if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml"))
-	      	{
-	       		customCharacters.push(directory);  
-	      	
-	        }
-	      }
-	    }
-		// customCharacters.sort((a, b) -> );
-		haxe.ds.ArraySort.sort(customCharacters, function(a, b) {
-           if(a < b) return -1;
-           else if(b > a) return 1;
-           else return 0;
-        });
-		for (char in customCharacters){
-			choosableCharacters.push(char);
-		}
-	    #end
+		checkCharacters();
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{

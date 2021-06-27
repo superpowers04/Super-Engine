@@ -504,14 +504,14 @@ class Character extends FlxSprite
 				try{
 					trace('Loading a custom character "$curCharacter"! ');				
 					var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml'); // Loads the XML as a string
-					if (charXml == null){MainMenuState.errorMessage = '$curCharacter is missing their XML!';FlxG.switchState(new MainMenuState());} // Boot to main menu if character's XML can't be loaded
+					if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
 					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), charXml);
-					if (tex == null){MainMenuState.errorMessage = '$curCharacter is missing their XML!';FlxG.switchState(new MainMenuState());} // Boot to main menu if character's texture can't be loaded
+					if (tex == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 					trace('Loaded character sheet');
 					frames = tex;
 					var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json');
 					var charProperties:CharacterJson = haxe.Json.parse(charPropJson);
-					trace('Loaded and parsed JSON ');
+					if (charProperties.animations == null){MainMenuState.handleError('$curCharacter\'s JSON is invalid');} // Boot to main menu if character's JSON can't be loaded
 					// BF's animations, Adding because they're used by default to provide support with FNF Multi
 					animation.addByPrefix('idle', 'BF idle dance', 24, false);
 					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
@@ -581,6 +581,7 @@ class Character extends FlxSprite
 					trace('Finished loading character, Lets get funky!');
 				}catch(e){
 					trace('Error with $curCharacter: ' + e.message + "");
+					MainMenuState.handleError('Error with $curCharacter: ' + e.message + "");
 					return;
 				}			
 		}

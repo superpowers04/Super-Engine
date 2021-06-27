@@ -27,26 +27,36 @@ class MainMenuState extends SickMenuState
 	public static var kadeEngineVer:String = "1.5.2" + nightly;
 	public static var gameVer:String = "0.2.7.1/0.2.8";
 	public static var errorMessage:String = "";
+	public static function handleError(error:String):Void{
+		MainMenuState.errorMessage = error;
+		FlxG.switchState(new MainMenuState());
+	}
 
 	override function create()
 	{
-		options = ['online', 'downloaded songs','story mode', 'freeplay', 'options'];
-		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.",'Play through the story mode', 'Play any song from the game',  'Customise your experience to fit you'];
-
-
+		options = ['online', 'downloaded songs','get characters','story mode', 'freeplay', 'options'];
+		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","download characters to play as",'Play through the story mode', 'Play any song from the game',  'Customise your experience to fit you'];
+		if (errorMessage == ""){errorMessage = TitleState.errorMessage;}
+		trace(errorMessage);
 
 		persistentUpdate = persistentDraw = true;
 		bgImage = 'menuBG';
+		if (FlxG.save.data.dfjk)
+			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
+		else
+			controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 32, 0, gameVer +  (Main.watermarks ? " FNF - " + kadeEngineVer + " Kade Engine" : ""), 12);
+		super.create();
+
+		var versionShit:FlxText = new FlxText(FlxG.width - 5, FlxG.height - 36, 0, gameVer +  (Main.watermarks ? " FNF - " + kadeEngineVer + " Kade Engine" : ""), 12);
 		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
 		if (TitleState.outdated){
-			var outdatedLMAO:FlxText = new FlxText(5, FlxG.height - 48, 0, 	'Kade is outdated: ${TitleState.updatedVer}', 12);
+			var outdatedLMAO:FlxText = new FlxText(FlxG.width - 5, FlxG.height - 50, 0,'Kade is outdated: ${TitleState.updatedVer}', 12);
 			outdatedLMAO.scrollFactor.set();
-			outdatedLMAO.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			outdatedLMAO.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			add(outdatedLMAO);
 		}
 		//  Whole bunch of checks to prevent crashing
@@ -63,21 +73,20 @@ class MainMenuState extends SickMenuState
 			FlxG.save.data.gfChar = "gf";
 		}
 		if (errorMessage != ""){
-			var errorText = new FlxText(0, FlxG.height - 18, FlxG.width, errorMessage);
+
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			var errorText =  new FlxText(2, 48, 0, errorMessage, 12);
 		    errorText.scrollFactor.set();
-		    errorText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.RED, CENTER);
+		    errorText.setFormat("VCR OSD Mono", 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		    add(errorText);
+		    TitleState.errorMessage="";
 		    errorMessage="";
 		}
 
-		if (FlxG.save.data.dfjk)
-			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
-		else
-			controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
 
 		// changeItem();
 
-		super.create();
+		
 	}
 
 	var selectedSomethin:Bool = false;
@@ -111,6 +120,8 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
 			case 'downloaded songs':
 				FlxG.switchState(new onlinemod.OfflineMenuState());
+			case 'get characters':
+				FlxG.switchState(new RepoState());
 
 			case 'options':
 				FlxG.switchState(new OptionsMenu());
