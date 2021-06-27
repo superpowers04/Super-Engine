@@ -33,5 +33,29 @@
 <SubTexture name="GF IDLE0027" x="240" y="212" width="120" height="106" />
 <SubTexture name="GF IDLE0028" x="240" y="212" width="120" height="106" />
 <SubTexture name="GF IDLE0029" x="240" y="212" width="120" height="106" />
+<SubTexture name="singLEFT0000" x="0" y="318" width="120" height="106" />
+<SubTexture name="singLEFT0001" x="0" y="318" width="120" height="106" />
+<SubTexture name="singLEFT0002" x="0" y="318" width="120" height="106" />
+<SubTexture name="singLEFT0003" x="120" y="318" width="120" height="106" />
+<SubTexture name="singLEFT0004" x="120" y="318" width="120" height="106" />
+<SubTexture name="singLEFT0005" x="120" y="318" width="120" height="106" />
+<SubTexture name="singRIGHT0000" x="240" y="318" width="120" height="106" />
+<SubTexture name="singRIGHT0001" x="240" y="318" width="120" height="106" />
+<SubTexture name="singRIGHT0002" x="240" y="318" width="120" height="106" />
+<SubTexture name="singRIGHT0003" x="0" y="424" width="120" height="106" />
+<SubTexture name="singRIGHT0004" x="0" y="424" width="120" height="106" />
+<SubTexture name="singRIGHT0005" x="0" y="424" width="120" height="106" />
+<SubTexture name="singDOWN0000" x="120" y="424" width="120" height="106" />
+<SubTexture name="singDOWN0001" x="120" y="424" width="120" height="106" />
+<SubTexture name="singDOWN0002" x="120" y="424" width="120" height="106" />
+<SubTexture name="singDOWN0003" x="240" y="424" width="120" height="106" />
+<SubTexture name="singDOWN0004" x="240" y="424" width="120" height="106" />
+<SubTexture name="singDOWN0005" x="240" y="424" width="120" height="106" />
+<SubTexture name="singUP0000" x="0" y="530" width="120" height="106" />
+<SubTexture name="singUP0001" x="0" y="530" width="120" height="106" />
+<SubTexture name="singUP0002" x="0" y="530" width="120" height="106" />
+<SubTexture name="singUP0003" x="120" y="530" width="120" height="106" />
+<SubTexture name="singUP0004" x="120" y="530" width="120" height="106" />
+<SubTexture name="singUP0005" x="120" y="530" width="120" height="106" />
 
 </TextureAtlas>

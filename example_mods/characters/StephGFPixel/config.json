@@ -2,7 +2,7 @@
 		"clone": "gf-pixel", "": "Copies the offsets of a character and a few interactions, disable it by removing this line or leaving it blank",
 		"no_antialiasing": true, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
 		"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
-		"dance_idle": false, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
+		"dance_idle": true, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
 
 		"scale": 6, "": "Sprite scale on common stages, online lobby and Character Select screen, Senpai uses 6 while BF-Pixel/Spirit uses 6.6, everyone else uses 1",
 		"scale_pixel": 0.91, "": "Sprite scale on Pixel stages, Senpai/Spirit/BF-Pixel uses 6, everyone else uses 0.91",
@@ -28,6 +28,34 @@
 				"fps": 24,
 				"loop": false,
 				"indices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+			},
+			{
+				"anim": "singRIGHT",
+				"name": "singRIGHT",
+				"fps": 24,
+				"loop": false,
+				"indices": []
+			},
+			{
+				"anim": "singLEFT",
+				"name": "singLEFT",
+				"fps": 24,
+				"loop": false,
+				"indices": []
+			},
+			{
+				"anim": "singDOWN",
+				"name": "singDOWN",
+				"fps": 24,
+				"loop": false,
+				"indices": []
+			},
+			{
+				"anim": "singUP",
+				"name": "singUP",
+				"fps": 24,
+				"loop": false,
+				"indices": []
 			}
 		], 
 		"hey_anim": "cheer", 
