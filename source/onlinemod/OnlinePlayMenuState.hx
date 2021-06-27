@@ -224,7 +224,7 @@ class OnlinePlayMenuState extends MusicBeatState
       SetVolumeControls(true);
       if (controls.BACK)
       {
-        FlxG.switchState(new OnlineMenuState());
+        FlxG.switchState(new MainMenuState());
 
         if (socket.connected)
         {

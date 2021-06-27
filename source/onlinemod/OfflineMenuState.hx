@@ -102,7 +102,7 @@ class OfflineMenuState extends MusicBeatState
       SetVolumeControls(true);
       if (controls.BACK)
       {
-        FlxG.switchState(new OnlineMenuState());
+        FlxG.switchState(new MainMenuState());
       }
 
         if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
