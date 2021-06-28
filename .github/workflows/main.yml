@@ -65,9 +65,9 @@ jobs:
                 export/release/windows/bin/FNF Battle Royale.exe
                 export/release/windows/bin/manifest
                 export/release/windows/bin/mods
-                export/release/windows/bin/assets/images/FNF_main_menu_assets.png
-                export/release/windows/bin/assets/images/FNF_main_menu_assets.xml
                 export/release/windows/bin/assets/shared/images/NOTE_assets.xml
                 export/release/windows/bin/assets/shared/images/NOTE_assets.png
+                export/release/windows/bin/assets/shared/images/noteSplashes.xml
+                export/release/windows/bin/assets/shared/images/noteSplashes.png
                 export/release/windows/bin/assets/images/onlinemod
                 export/release/windows/bin/assets/data/introText.txt
