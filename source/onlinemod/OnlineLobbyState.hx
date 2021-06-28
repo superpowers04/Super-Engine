@@ -223,12 +223,12 @@ class OnlineLobbyState extends MusicBeatState
       OnlinePlayMenuState.SetVolumeControls(true);
       if (controls.BACK)
       {
-        FlxG.switchState(new OnlinePlayMenuState());
 
         if (OnlinePlayMenuState.socket.connected)
         {
           OnlinePlayMenuState.socket.close();
         }
+        FlxG.switchState(new OnlinePlayMenuState());
       }
     }
     else

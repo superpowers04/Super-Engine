@@ -45,7 +45,7 @@ class MainMenuState extends SickMenuState
 	override function create()
 	{
 		options = ['online', 'downloaded songs','get characters','story mode', 'freeplay', 'options'];
-		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","download characters to play as",'Play through the story mode', 'Play any song from the game',  'Customise your experience to fit you'];
+		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Download characters to play as ingame",'Play through the story mode', 'Play any song from the game',  'Customise your experience to fit you'];
 		if (errorMessage == ""){errorMessage = TitleState.errorMessage;}
 		trace(errorMessage);
 
