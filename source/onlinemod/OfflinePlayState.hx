@@ -15,12 +15,16 @@ class OfflinePlayState extends PlayState
   var loadedVoices:FlxSound;
   var loadedInst:Sound;
   
-
+  
   override function create()
   {
     PlayState.SONG.player1 = FlxG.save.data.playerChar;
-    PlayState.SONG.player2 = FlxG.save.data.opponent;
-    PlayState.stateType =2;
+    if (!FlxG.save.data.charAuto || TitleState.retChar(PlayState.SONG.player2) == ""){ // Check is second player is a valid character
+    	PlayState.SONG.player2 = FlxG.save.data.opponent;
+    }else{ // Allows characters with the wrong case to still work
+    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
+    }
+    PlayState.stateType=2;
     
     loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg'));
     loadedInst = Sound.fromFile('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg');

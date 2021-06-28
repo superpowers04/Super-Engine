@@ -55,6 +55,7 @@ class OptionsMenu extends MusicBeatState
 			new OpponentOption("Change the opponent used in Online/Offline"),
 			new PlayerOption("Change the player character"),
 			new GFOption("Change the GF used"),
+			new CharAutoOption("Allow the song to choose the opponent if you have them")
 		]),
 		new OptionCategory("Misc", [
 			#if desktop

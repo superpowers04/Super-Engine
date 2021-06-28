@@ -57,7 +57,11 @@ class OnlinePlayState extends PlayState
   {
     if (customSong){
       PlayState.SONG.player1 = FlxG.save.data.playerChar;
-      PlayState.SONG.player2 = FlxG.save.data.opponent;
+      if (!FlxG.save.data.charAuto || TitleState.retChar(PlayState.SONG.player2) == ""){ // Check is second player is a valid character
+        PlayState.SONG.player2 = FlxG.save.data.opponent;
+      }else{ // Allows characters with the wrong case to still work
+        PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
+      }
     }
 
     super.create();

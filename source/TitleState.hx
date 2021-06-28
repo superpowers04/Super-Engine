@@ -40,6 +40,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
 	public static var choosableCharacters:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster"];
+	public static var choosableCharactersLower:Map<String,String> = [];
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;
 	public static var supported:Bool = false;
@@ -50,9 +51,17 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
+	public static function retChar(char:String):String{
+		if (choosableCharactersLower[char.toLowerCase()] != null){
+			return choosableCharactersLower[char.toLowerCase()];
+		}else{
+			return "";
+		}
+  	}
 	public static function checkCharacters(){
 		#if sys
 		choosableCharacters = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster"];
+		choosableCharactersLower = ["bf" => "bf","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","bf-pixel" => "bf-pixel","gf" => "gf","dad" => "dad","monster" => "monster"];
 		// Loading like this is probably not a good idea
 	    var dataDir:String = "mods/characters/";
 	    var customCharacters:Array<String> = [];
@@ -62,8 +71,8 @@ class TitleState extends MusicBeatState
 	      {
 	      	if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml"))
 	      	{
-	       		customCharacters.push(directory);  
-	      	
+	       		customCharacters.push(directory);
+
 	        }
 	      }
 	    }
@@ -75,6 +84,7 @@ class TitleState extends MusicBeatState
         });
 		for (char in customCharacters){
 			choosableCharacters.push(char);
+			choosableCharactersLower[char.toLowerCase()] = char;
 		}
 	    #end
 	}
