@@ -75,12 +75,8 @@ class Song
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		try{
-			var swagShit:SwagSong = cast Json.parse(rawJson).song;
-			swagShit.validScore = true;
-			return swagShit;
-		}catch(e){
-			MainMenuState.handleError('Something went wrong with that song! ${e.message}');
-		}
+		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+		swagShit.validScore = true;
+		return swagShit;
 	}
 }
