@@ -130,11 +130,12 @@ class RepoState extends SickMenuState
 
 		super.create();
 
-		installingText = new FlxText(5, 50, 0,'Installing ${installing}\n ${installingList.join("\n")}', 12);
+		installingText = new FlxText(5, 50, 0,'Installing ${installing}
+${installingList.join("\n")}', 12);
 		installingText.scrollFactor.set();
 		installingText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(installingText);
-		installedText = new FlxText(FlxG.width - 5, 50, 0,'Not Installed', 12);
+		installedText = new FlxText(FlxG.width - 60, 50, 0,'Not Installed', 12);
 		installedText.scrollFactor.set();
 		installedText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(installedText);
@@ -181,7 +182,8 @@ class RepoState extends SickMenuState
 		updateText();
 	}
 	function updateText(){
-		installingText.text = 'Installing ${installing}\n ${installingList.join("\n")}';
+		installingText.text = 'Installing ${installing}\n
+${installingList.join("\n")}';
 		installedText.text = if (TitleState.choosableCharacters.contains(repoArray.characters[curSelected].name)) "Installed" else "Not Installed";
 	}
 	function finishDownload(data:Bytes,char:RepoCharsJSON,sel:Int){

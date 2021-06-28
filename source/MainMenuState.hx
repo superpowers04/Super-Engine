@@ -5,7 +5,6 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -14,6 +13,15 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
+import sys.io.File;
+
+// For Title Screen GF
+import flixel.graphics.FlxGraphic;
+import flixel.animation.FlxAnimation;
+import flixel.animation.FlxBaseAnimation;
+import sys.FileSystem;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flash.display.BitmapData;
 
 
 using StringTools;
@@ -31,6 +39,8 @@ class MainMenuState extends SickMenuState
 		MainMenuState.errorMessage = error;
 		FlxG.switchState(new MainMenuState());
 	}
+	// var danceLeft:Bool=false;
+	// var gfDance:FlxSprite;
 
 	override function create()
 	{
@@ -83,12 +93,42 @@ class MainMenuState extends SickMenuState
 		    errorMessage="";
 		}
 
+		// if(!FlxG.save.data.preformance && FileSystem.exists(Sys.getCwd() + "mods/characters/"+FlxG.save.data.gfChar+"/character.png")){ // Gf on main menu because yes
+		// 	try{
+		// 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
+		// 		var curCharacter:String = FlxG.save.data.gfChar;
+		// 		gfDance.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), File.getContent('mods/characters/$curCharacter/character.xml'));
+		// 		var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json');
+		// 		var charProperties:CharacterJson = haxe.Json.parse(charPropJson);
+		// 		gfDance.antialiasing = !charProperties.no_antialiasing;
+		// 		gfDance.setGraphicSize(Std.int(gfDance.width * charProperties.scale));
+		// 		gfDance.updateHitbox();
 
+		// 		for (anima in charProperties.animations){
+		// 			if (anima.indices.length > 0) { // Add using indices if specified
+		// 				gfDance.animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
+		// 			}else{gfDance.animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);}
+		// 		}
+		// 		add(gfDance);
+
+		// 	}
+		// }
 		// changeItem();
 
 		
 	}
-
+	// override function beatHit()
+	// {
+	// 	super.beatHit();
+	// 	if (gfDance != null){
+	// 		danceLeft = !danceLeft;
+	
+	// 		if (danceLeft)
+	// 			gfDance.animation.play('danceRight');
+	// 		else
+	// 			gfDance.animation.play('danceLeft');
+	// 	}
+	// }
 	var selectedSomethin:Bool = false;
 
 	override function goBack(){
