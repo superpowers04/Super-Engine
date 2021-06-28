@@ -112,6 +112,7 @@ class PlayState extends MusicBeatState
 	public static var strumLineNotes:FlxTypedGroup<FlxSprite> = null;
 	public static var playerStrums:FlxTypedGroup<FlxSprite> = null;
 	public static var cpuStrums:FlxTypedGroup<FlxSprite> = null;
+	public static var dadShow = true;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -215,7 +216,7 @@ class PlayState extends MusicBeatState
 
 
 	override public function create()
-	{
+	{try{
 
 		instance = this;
 		
@@ -709,8 +710,7 @@ class PlayState extends MusicBeatState
 		gf = new Character(400, 100, gfVersion,false,2);
 		gf.scrollFactor.set(0.95, 0.95);
 
-		dad = new Character(100, 100, SONG.player2,false,1);
-
+		if (dadShow) dad = new Character(100, 100, SONG.player2,false,1); else dad = new EmptyCharacter(100, 100);
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
 		switch (SONG.player2)
@@ -911,7 +911,6 @@ class PlayState extends MusicBeatState
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
 		FlxG.fixedTimestep = false;
-
 		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
 			{
 				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
@@ -935,14 +934,13 @@ class PlayState extends MusicBeatState
 				add(songName);
 				songName.cameras = [camHUD];
 			}
-
+		
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
 		if (FlxG.save.data.downscroll)
 			healthBarBG.y = 50;
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
-
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		
@@ -950,7 +948,6 @@ class PlayState extends MusicBeatState
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
 		// healthBar
 		add(healthBar);
-
 		// Add Kade Engine watermark
 		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -1073,7 +1070,7 @@ class PlayState extends MusicBeatState
 			rep = new Replay("na");
 
 		super.create();
-	}
+	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
@@ -1161,8 +1158,6 @@ class PlayState extends MusicBeatState
 
 	var startTimer:FlxTimer;
 	var perfectMode:Bool = false;
-
-	var luaWiggles:Array<WiggleEffect> = [];
 
 
 
@@ -1393,7 +1388,7 @@ class PlayState extends MusicBeatState
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
-				if (p2canplay && !gottaHitNote || gottaHitNote && bruhmode ){continue;}
+				if ((p2canplay || !dadShow) && !gottaHitNote || gottaHitNote && bruhmode ){continue;}
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -1660,6 +1655,7 @@ class PlayState extends MusicBeatState
 	public static var songRate = 1.5;
 
 	function finishSong(?win=true):Void{
+		PlayState.dadShow = true; // Reenable this to prevent issues later
 		this.persistentUpdate = false;
 		this.persistentDraw = true;
 		this.paused = true;
@@ -1667,17 +1663,14 @@ class PlayState extends MusicBeatState
 		this.vocals.stop();
 		FlxG.sound.music.stop();
 		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
-	
+		
 	}
 
 	override public function update(elapsed:Float)
-	{
+	{try{
 		#if !debug
 		perfectMode = false;
 		#end
-
-		if (FlxG.save.data.botplay && FlxG.keys.justPressed.ONE)
-			camHUD.visible = !camHUD.visible;
 
 
 		// reverse iterate to remove oldest notes first and not invalidate the iteration
@@ -2045,13 +2038,14 @@ class PlayState extends MusicBeatState
 					{
 						daNote.active = false;
 						daNote.visible = false;
+						daNote.kill();
+						notes.remove(daNote, true);
 					}
 					else
 					{
 						daNote.visible = true;
 						daNote.active = true;
 					}
-					
 					// if (!daNote.modifiedByLua) Modcharts don't work, this check is useless
 					// 	{
 							if (FlxG.save.data.downscroll)
@@ -2102,51 +2096,51 @@ class PlayState extends MusicBeatState
 						// }
 		
 	
-					if (!daNote.mustPress && daNote.wasGoodHit)
+					if (dadShow && !daNote.mustPress && daNote.wasGoodHit )
 					{
 						if (SONG.song != 'Tutorial')
 							camZooming = true;
 
 						var altAnim:String = "";
-	
-						if (SONG.notes[Math.floor(curStep / 16)] != null)
-						{
-							if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-								altAnim = '-alt';
-						}
-	
-						switch (Math.abs(daNote.noteData))
-						{
-							case 2:
-								dad.playAnim('singUP' + altAnim, true);
-							case 3:
-								dad.playAnim('singRIGHT' + altAnim, true);
-							case 1:
-								dad.playAnim('singDOWN' + altAnim, true);
-							case 0:
-								dad.playAnim('singLEFT' + altAnim, true);
-						}
-						
-						if (FlxG.save.data.cpuStrums && !p2canplay)
-						{
-							cpuStrums.forEach(function(spr:FlxSprite)
+						if (!p2canplay){
+							if (SONG.notes[Math.floor(curStep / 16)] != null)
 							{
+								if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+									altAnim = '-alt';
+							}
+		
+							switch (Math.abs(daNote.noteData))
+							{
+								case 2:
+									dad.playAnim('singUP' + altAnim, true);
+								case 3:
+									dad.playAnim('singRIGHT' + altAnim, true);
+								case 1:
+									dad.playAnim('singDOWN' + altAnim, true);
+								case 0:
+									dad.playAnim('singLEFT' + altAnim, true);
+							}
+							
+							if (FlxG.save.data.cpuStrums)
+							{
+								cpuStrums.forEach(function(spr:FlxSprite)
+								{
 
-								if (Math.abs(daNote.noteData) == spr.ID )
-								{
-									spr.animation.play('confirm', true);
-								}
-								if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-								{
-									spr.centerOffsets();
-									spr.offset.x -= 13;
-									spr.offset.y -= 13;
-								}
-								else
-									spr.centerOffsets();
-							});
+									if (Math.abs(daNote.noteData) == spr.ID )
+									{
+										spr.animation.play('confirm', true);
+									}
+									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									{
+										spr.centerOffsets();
+										spr.offset.x -= 13;
+										spr.offset.y -= 13;
+									}
+									else
+										spr.centerOffsets();
+								});
+							}
 						}
-	
 
 						dad.holdTimer = 0;
 	
@@ -2159,6 +2153,11 @@ class PlayState extends MusicBeatState
 						daNote.kill();
 						notes.remove(daNote, true);
 						daNote.destroy();
+					} else if (!daNote.mustPress && daNote.wasGoodHit && !dadShow && SONG.needsVoices){
+						daNote.active = false;
+						vocals.volume = 0;
+						daNote.kill();
+						notes.remove(daNote, true);
 					}
 
 					if (daNote.mustPress)
@@ -2231,7 +2230,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
-	}
+	}catch(e){MainMenuState.handleError('Caught "update" crash: ${e.message}');}}
 
 	function endSong():Void
 	{
@@ -2820,11 +2819,18 @@ class PlayState extends MusicBeatState
 					else
 						spr.centerOffsets();
 				});
+									
 				if (p2canplay){ // The above but for P2
+					if (p2presses[0]) dad.playAnim('singLEFT', true);
+					else if (p2presses[1]) dad.playAnim('singDOWN', true);
+					else if (p2presses[2]) dad.playAnim('singUP', true);
+					else if (p2presses[3]) dad.playAnim('singRIGHT', true);
+					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true);
 					cpuStrums.forEach(function(spr:FlxSprite)
 					{
 						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
 							spr.animation.play('pressed');
+
 						if (!p2presses[spr.ID])
 							spr.animation.play('static');
 			 
@@ -2837,6 +2843,8 @@ class PlayState extends MusicBeatState
 						else
 							spr.centerOffsets();
 					});
+
+
 				}
 			}
 

@@ -529,7 +529,6 @@ class Character extends FlxSprite
 					flipX=charProperties.flip_x; // Flip for BF clones
 					spiritTrail=charProperties.spirit_trail; // Spirit TraiL
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
-					hasAlts =  charProperties.alt_anims; // Handles alt animations
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
 					// Custom misses
 					if (charType == 0 && !amPreview && !debugMode){
@@ -595,12 +594,10 @@ class Character extends FlxSprite
 		if (clonedChar == ""){
 			clonedChar = curCharacter;
 		}
-		if (!hasAlts && animation.getByName('singRIGHT-alt') == null){ // Add main animations over alts if no alt's present
-			cloneAnimation('singUP-alt', animation.getByName('singUP'));
-			cloneAnimation('singDOWN-alt', animation.getByName('singDOWN'));
-			cloneAnimation('singLEFT-alt', animation.getByName('singLEFT'));
-			cloneAnimation('singRIGHT-alt', animation.getByName('singRIGHT'));
-
+		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over alts if alt isn't present
+			if (animation.getByName('sing$i-alt') == null){
+				cloneAnimation('sing$i-alt', animation.getByName('sing$i'));
+			}
 		}
 		if (charType == 2 && !curCharacter.startsWith("gf")){ // Checks if GF is not girlfriend
 			this.curCharacter = "gf";

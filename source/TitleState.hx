@@ -60,8 +60,8 @@ class TitleState extends MusicBeatState
   	}
 	public static function checkCharacters(){
 		#if sys
-		choosableCharacters = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster"];
-		choosableCharactersLower = ["bf" => "bf","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","bf-pixel" => "bf-pixel","gf" => "gf","dad" => "dad","monster" => "monster"];
+		choosableCharacters = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster","lonely"];
+		choosableCharactersLower = ["bf" => "bf","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","bf-pixel" => "bf-pixel","gf" => "gf","dad" => "dad","monster" => "monster","lonely" => "lonely","" => "lonely"];
 		// Loading like this is probably not a good idea
 	    var dataDir:String = "mods/characters/";
 	    var customCharacters:Array<String> = [];
