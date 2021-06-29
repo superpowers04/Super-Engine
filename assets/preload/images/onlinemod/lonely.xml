@@ -3,4 +3,10 @@
 	<!-- Created with Adobe Animate version 20.0.0.17400 -->
 	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="Idle0000" x="0" y="0" width="1" height="1"/>
+	<SubTexture name="DanceRight0000" x="0" y="0" width="1" height="1"/>
+	<SubTexture name="DanceLeft0000" x="0" y="0" width="1" height="1"/>
+	<SubTexture name="SingUP0000" x="0" y="0" width="1" height="1"/>
+	<SubTexture name="SingDOWN0000" x="0" y="0" width="1" height="1"/>
+	<SubTexture name="SingLEFT0000" x="0" y="0" width="1" height="1"/>
+	<SubTexture name="SingRIGHT0000" x="0" y="0" width="1" height="1"/>
 </TextureAtlas>
