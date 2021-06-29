@@ -56,7 +56,7 @@ jobs:
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
-        run: haxelib run lime build windows --app-version="4.2.5-${{ github.run_id}}" --Dghaction
+        run: haxelib run lime build windows --app-version="4.2.5-${{ github.run_id}}" -Dghaction
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:

@@ -37,7 +37,7 @@
 	<set name="BUILD_DIR" value="export/debug" if="debug" unless="ghaction" />
 	<set name="BUILD_DIR" value="export/release" unless="debug ghaction"/>
 	<set name="BUILD_DIR" value="export/32bit" if="32bit" unless="ghaction"/>
-	<set name="BUILD_DIR" value="c:\fnfbrbin\" unless="ghaction"/>
+	<set name="BUILD_DIR" value="c:/fnfbrbin/" if="ghaction"/>
 
 
 
