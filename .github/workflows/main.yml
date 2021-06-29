@@ -29,8 +29,13 @@ jobs:
         with:
           path: |
             C:/haxelib
-            D:/a/FunkinBattleRoyale-Mod/FunkinBattleRoyale-Mod/export/
           key: Haxelib
+      - name: Cache FNFBRBIN
+        uses: actions/cache@v2
+        with:
+          path: |
+            C:/fnfbrbin
+          key: Bin
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
@@ -56,18 +61,18 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windowsBuild
-          path: export/release/windows/bin      
+          path: C:/fnfbrbin/windows/bin      
       - name: Publish without changed assets as Artifact
         uses: actions/upload-artifact@v2
         with:
           name: windowsBuild-Minimal
           path: |
-                export/release/windows/bin/FNF Battle Royale.exe
-                export/release/windows/bin/manifest
-                export/release/windows/bin/mods
-                export/release/windows/bin/assets/shared/images/NOTE_assets.xml
-                export/release/windows/bin/assets/shared/images/NOTE_assets.png
-                export/release/windows/bin/assets/shared/images/noteSplashes.xml
-                export/release/windows/bin/assets/shared/images/noteSplashes.png
-                export/release/windows/bin/assets/images/onlinemod
-                export/release/windows/bin/assets/data/introText.txt
+                C:/fnfbrbin/windows/bin/FNF Battle Royale.exe
+                C:/fnfbrbin/windows/bin/manifest
+                C:/fnfbrbin/windows/bin/mods
+                C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets.xml
+                C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets.png
+                C:/fnfbrbin/windows/bin/assets/shared/images/noteSplashes.xml
+                C:/fnfbrbin/windows/bin/assets/shared/images/noteSplashes.png
+                C:/fnfbrbin/windows/bin/assets/images/onlinemod
+                C:/fnfbrbin/windows/bin/assets/data/introText.txt
