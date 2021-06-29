@@ -21,6 +21,7 @@ class OfflineMenuState extends MusicBeatState
   var searchButton:FlxUIButton;
 
   var songs:Array<String> = [];
+  var songFiles:Array<String> = [];
   var grpSongs:FlxTypedGroup<Alphabet>;
   var dataDir:String = "assets/onlinedata/data/";
   public static var optionsButton:FlxUIButton;
@@ -71,6 +72,7 @@ class OfflineMenuState extends MusicBeatState
     grpSongs = new FlxTypedGroup<Alphabet>();
     add(grpSongs);
     songs = [];
+    songFiles = [];
     var i:Int = 0;
     if (FileSystem.exists(dataDir))
     {
@@ -81,6 +83,7 @@ class OfflineMenuState extends MusicBeatState
           if (StringTools.endsWith(file, '.json') && (search == "" || FlxStringUtil.contains(file.toLowerCase(),search.toLowerCase()))) // Handles searching
           {
             songs.push(dataDir + directory + "/" + file);
+            songFiles.push(file);
 
             var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, file.substr(0, file.length - 5), true, false);
             controlLabel.isMenuItem = true;
@@ -112,17 +115,20 @@ class OfflineMenuState extends MusicBeatState
       {
         PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
         PlayState.isStoryMode = false;
-
+        var songName = songFiles[curSelected];
         // Set difficulty
         PlayState.storyDifficulty = 1;
         if (StringTools.endsWith(songs[curSelected], '-hard.json'))
         {
+          songName = songName.substr(0,songName.indexOf('-hard.json'));
           PlayState.storyDifficulty = 2;
         }
         else if (StringTools.endsWith(songs[curSelected], '-easy.json'))
         {
+          songName = songName.substr(0,songName.indexOf('-easy.json'));
           PlayState.storyDifficulty = 0;
         }
+        PlayState.actualSongName = songName;
 
         LoadingState.loadAndSwitchState(new OfflinePlayState());
       }

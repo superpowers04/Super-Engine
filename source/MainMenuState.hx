@@ -37,6 +37,8 @@ class MainMenuState extends SickMenuState
 	public static var errorMessage:String = "";
 	public static function handleError(error:String):Void{
 		MainMenuState.errorMessage = error;
+		try{if (onlinemod.OnlinePlayMenuState.socket != null){onlinemod.OnlinePlayMenuState.socket.close();}}catch(e){trace('You just got an exception in yo exception ${e.message}');}
+		
 		FlxG.switchState(new MainMenuState());
 	}
 	// var danceLeft:Bool=false;

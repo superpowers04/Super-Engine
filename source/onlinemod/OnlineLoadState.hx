@@ -184,13 +184,13 @@ class OnlineLoadState extends MusicBeatState
           FileSystem.createDirectory('assets/onlinedata/data/${folder.toLowerCase()}');
           File.saveBytes('assets/onlinedata/data/${folder.toLowerCase()}/${jsonInput.toLowerCase()}.json', file);
 
-          if (FileSystem.exists('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg')) // If Voices.ogg has already been downladed
-            loadVoices('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg');
+          if (FileSystem.exists('assets/onlinedata/songs/${folder.toLowerCase()}/Voices.ogg')) // If Voices.ogg has already been downladed
+            loadVoices('assets/onlinedata/songs/${folder.toLowerCase()}/Voices.ogg');
           else
             requestVoices();
 
-          if (FileSystem.exists('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg')) // If Inst.ogg has already been downloaded
-            loadInst('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg');
+          if (FileSystem.exists('assets/onlinedata/songs/${folder.toLowerCase()}/Inst.ogg')) // If Inst.ogg has already been downloaded
+            loadInst('assets/onlinedata/songs/${folder.toLowerCase()}/Inst.ogg');
           else
             requestInst();
         }
@@ -198,8 +198,8 @@ class OnlineLoadState extends MusicBeatState
       case Packets.SEND_VOICES:
         var file:Bytes = cast(data[0], Bytes);
 
-        FileSystem.createDirectory('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}');
-        File.saveBytes('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg', file);
+        FileSystem.createDirectory('assets/onlinedata/songs/${folder.toLowerCase()}');
+        File.saveBytes('assets/onlinedata/songs/${folder.toLowerCase()}/Voices.ogg', file);
 
         voices = new FlxSound().loadEmbedded(Sound.fromAudioBuffer(AudioBuffer.fromBytes(file)));
 
@@ -210,8 +210,8 @@ class OnlineLoadState extends MusicBeatState
       case Packets.SEND_INST:
         var file:Bytes = cast(data[0], Bytes);
 
-        FileSystem.createDirectory('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}');
-        File.saveBytes('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg', file);
+        FileSystem.createDirectory('assets/onlinedata/songs/${folder.toLowerCase()}');
+        File.saveBytes('assets/onlinedata/songs/${folder.toLowerCase()}/Inst.ogg', file);
 
         inst = Sound.fromAudioBuffer(AudioBuffer.fromBytes(file));
 

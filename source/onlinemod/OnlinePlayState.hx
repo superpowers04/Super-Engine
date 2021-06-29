@@ -54,7 +54,7 @@ class OnlinePlayState extends PlayState
   }
 
   override function create()
-  {
+  {try{
     if (customSong){
       PlayState.SONG.player1 = FlxG.save.data.playerChar;
       if (!FlxG.save.data.charAuto || TitleState.retChar(PlayState.SONG.player2) == ""){ // Check is second player is a valid character
@@ -138,7 +138,7 @@ class OnlinePlayState extends PlayState
 
     FlxG.mouse.visible = false;
     FlxG.autoPause = false;
-  }
+  }catch(e){MainMenuState.handleError('Crash in "create" caught: ${e.message}');}}
 
   override function startCountdown()
   {
@@ -150,12 +150,13 @@ class OnlinePlayState extends PlayState
 
   override function startSong()
   {
+    try{
     FlxG.sound.playMusic(loadedInst, 1, false);
 
     paused = true; // Setting 'paused' to true makes it so 'super.startSong()' doesn't try to load the Inst track
     super.startSong();
     paused = false;
-  }
+  }catch(e){MainMenuState.handleError('Crash in "startsong" caught: ${e.message}');}}
 
   override function generateSong(dataPath:String)
   {
@@ -342,7 +343,7 @@ class OnlinePlayState extends PlayState
   }
 
   function HandleData(packetId:Int, data:Array<Dynamic>)
-  {
+  {try{
     OnlinePlayMenuState.RespondKeepAlive(packetId);
     switch (packetId)
     {
@@ -403,7 +404,8 @@ class OnlinePlayState extends PlayState
       case Packets.DISCONNECT:
         FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
     }
-  }
+  }catch(e){MainMenuState.handleError('Crash in "HandleData" caught: ${e.message}');}}
+  
 
   function SendScore()
   {

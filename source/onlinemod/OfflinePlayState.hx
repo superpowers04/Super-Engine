@@ -26,8 +26,8 @@ class OfflinePlayState extends PlayState
     }
     PlayState.stateType=2;
     
-    loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg'));
-    loadedInst = Sound.fromFile('assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg');
+    loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile('assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'));
+    loadedInst = Sound.fromFile('assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg');
 
 
     super.create();
