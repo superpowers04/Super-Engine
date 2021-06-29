@@ -7,6 +7,7 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flash.media.Sound;
+import sys.FileSystem;
 
 import Section.SwagSection;
 
@@ -25,9 +26,31 @@ class OfflinePlayState extends PlayState
     	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
     }
     PlayState.stateType=2;
-    
-    loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile('assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'));
-    loadedInst = Sound.fromFile('assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg');
+    // var voicesFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'
+    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg')){
+    // 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg';
+    // }
+    // var instFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg'
+    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg')){
+    // 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg';
+    // }
+    var voicesFile = "";
+    var instFile = "";
+    for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg']) {
+    	if (FileSystem.exists('${Sys.getCwd()}/$i')){
+    		instFile = i;
+    	}
+    }
+    if (instFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a inst file!');}
+    for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg']) {
+    	if (FileSystem.exists('${Sys.getCwd()}/$i')){
+    		voicesFile = i;
+    	}
+    }
+    if (voicesFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a voices file!');}
+    trace('Loading $voicesFile, $instFile');
+    loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));
+    loadedInst = Sound.fromFile(instFile);
 
 
     super.create();

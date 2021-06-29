@@ -183,7 +183,7 @@ class OnlineLoadState extends MusicBeatState
 
           FileSystem.createDirectory('assets/onlinedata/data/${folder.toLowerCase()}');
           File.saveBytes('assets/onlinedata/data/${folder.toLowerCase()}/${jsonInput.toLowerCase()}.json', file);
-
+          
           if (FileSystem.exists('assets/onlinedata/songs/${folder.toLowerCase()}/Voices.ogg')) // If Voices.ogg has already been downladed
             loadVoices('assets/onlinedata/songs/${folder.toLowerCase()}/Voices.ogg');
           else

@@ -22,6 +22,7 @@ class OfflineMenuState extends MusicBeatState
 
   var songs:Array<String> = [];
   var songFiles:Array<String> = [];
+  var songDirs:Array<String> = [];
   var grpSongs:FlxTypedGroup<Alphabet>;
   var dataDir:String = "assets/onlinedata/data/";
   public static var optionsButton:FlxUIButton;
@@ -84,6 +85,7 @@ class OfflineMenuState extends MusicBeatState
           {
             songs.push(dataDir + directory + "/" + file);
             songFiles.push(file);
+            songDirs.push(directory);
 
             var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, file.substr(0, file.length - 5), true, false);
             controlLabel.isMenuItem = true;
@@ -116,6 +118,7 @@ class OfflineMenuState extends MusicBeatState
         PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
         PlayState.isStoryMode = false;
         var songName = songFiles[curSelected];
+        PlayState.songDir = songDirs[curSelected];
         // Set difficulty
         PlayState.storyDifficulty = 1;
         if (StringTools.endsWith(songs[curSelected], '-hard.json'))
