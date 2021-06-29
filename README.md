@@ -3,6 +3,7 @@ This is a mod of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattle
 This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine) with some of [FPSPlus](https://github.com/ThatRozebudDude/FPS-Plus-Public/) added in.<br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
 This is client aims for customisability besides providing backwards compatibility with normal Funkin Battle Royale servers
+Last Build:[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml)
 
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide
