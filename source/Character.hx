@@ -44,6 +44,7 @@ class Character extends FlxSprite
 	public var useMisses:Bool = false;
 	public var missSounds:Array<Sound> = [];
 	public var oneShotAnims:Array<String> = [];
+	public var tintedAnims:Array<String> = [];
 
 	public var holdTimer:Float = 0;
 	public var stunned:Bool = false; // Why was this specific to BF?
@@ -628,6 +629,13 @@ class Character extends FlxSprite
 				cloneAnimation('sing$i-alt', animation.getByName('sing$i'));
 			}
 		}
+		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over alts if alt isn't present
+			if (animation.getByName('sing${i}miss') == null){
+				cloneAnimation('sing${i}miss', animation.getByName('sing$i'));
+				tintedAnims.push('sing${i}miss');
+			}
+		}
+
 		if (charType == 2 && !curCharacter.startsWith("gf")){ // Checks if GF is not girlfriend
 			this.curCharacter = "gf";
 			if(animation.getByName('danceRight') == null){ // Convert sing animations into dance animations for when put as GF
@@ -755,6 +763,8 @@ class Character extends FlxSprite
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
 		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
 		animation.play(AnimName, Force, Reversed, Frame);
+		
+		if (tintedAnims.contains(animation.curAnim.name)){this.color = 0x330066;}else{this.color = 0xffffff;}
 		// if (animation.curAnim != null && animation.curAnim.name == AnimName){return;} // Skip if already playing, no need to calculate offsets and such
 
 		var daOffset = animOffsets.get(AnimName); // Get offsets
