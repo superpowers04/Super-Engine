@@ -258,6 +258,7 @@ class Character extends FlxSprite
 				tex = Paths.getSparrowAtlas('onlinemod/lonely');
 				frames=tex;
 				animation.addByPrefix('Idle', 'Idle', 24, false);
+				visible = false;
 
 
 			case 'gf','gf-christmas': // Condensed to reduce duplicate code
