@@ -597,6 +597,9 @@ class Character extends FlxSprite
 						offsetCount++;
 						addOffset(offset.anim,offset.player1[0],offset.player1[1],true);
 					}	
+					if (charType == 0 && charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
+					if (charType == 1 && charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
+					if (charType == 2 && charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
 					addOffset('all',charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
 					camX+=charProperties.common_stage_offset[0];
 					camY+=charProperties.common_stage_offset[1]; // Load common stage offset for camera too

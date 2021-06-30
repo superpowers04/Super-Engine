@@ -16,6 +16,12 @@ typedef CharacterJson =
 	var common_stage_offset:Array<Int>;
 	var cam_pos:Array<Int>;
 	var char_pos:Array<Int>;
+	var cam_pos1:Array<Int>;
+	var char_pos1:Array<Int>;
+	var cam_pos2:Array<Int>;
+	var char_pos2:Array<Int>;
+	var cam_pos3:Array<Int>;
+	var char_pos3:Array<Int>;
 	var custom_misses:Int;
 
 }
