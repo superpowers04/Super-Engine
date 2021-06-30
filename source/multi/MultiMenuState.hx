@@ -60,7 +60,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
           grpSongs.add(controlLabel);
           for (file in FileSystem.readDirectory(dataDir + directory))
           {
-              if (!blockedFiles.contains(file) && StringTools.endsWith(file, '.json')){
+              if (!blockedFiles.contains(file.toLowerCase()) && StringTools.endsWith(file, '.json')){
                 modes[i].push(file);
               }
           }
@@ -70,6 +70,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     }}else{
       MainMenuState.handleError('"/mods/charts" does not exist!');
     }
+    changeDiff();
   }
   override function gotoSong(){
       var songJSON = modes[curSelected][selMode]; // Just for easy access

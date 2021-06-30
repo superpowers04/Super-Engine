@@ -53,6 +53,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import CharacterJson;
 
 
 
@@ -211,6 +212,7 @@ class PlayState extends MusicBeatState
 
 	private var executeModchart = false;
 	private var bruhmode:Bool = false;
+	public static var animEvents:Map<Int,Map<String,IfStatement>>;
 
 	// API stuff
 	
@@ -222,7 +224,7 @@ class PlayState extends MusicBeatState
 	{try{
 
 		instance = this;
-		
+		animEvents = [];
 		if (FlxG.save.data.fpsCap > 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(800);
 		
@@ -1042,6 +1044,10 @@ class PlayState extends MusicBeatState
 
 		super.create();
 	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
+
+	// public static function regAnimEvent(charType:Int,ifState:IfStatement,animName:String){
+	// 	PlayState.animEvents[charType][animName] = ifState;
+	// }
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
@@ -3132,6 +3138,29 @@ class PlayState extends MusicBeatState
 		// {
 		// 	gf.dance();
 		// }
+		try{
+			for (i => v in animEvents) {
+				for (anim => ifState in v) {
+					var variable:Dynamic = Reflect.field(this,ifState.variable);
+					var play:Bool = false;
+					if (ifState.type == "contains"){
+						if (ifState.value.contains(variable)){play = true;}
+					}else{
+						var ret:Int = Reflect.compare(variable,ifState.value);
+						if (ifState.type == "equals" && ret == 0) play = true; else if (ifState.type == "more" && ret == 1) play = true; else if (ifState.type == "less" && ret == 0) play = true;
+					}
+					if (play){
+						trace("Custom animation, Playing anim");
+						switch(i){
+							case 0: boyfriend.playAnim(anim);
+							case 1: dad.playAnim(anim);
+							case 2: gf.playAnim(anim);
+						}
+					}
+				}
+			}
+		}catch(e){MainMenuState.handleError('A animation event caused an error ${e.message}');}
+
 		if (gf.animation.curAnim.name.startsWith("dance") || gf.animation.curAnim.finished){
 			if (curBeat % 2 == 1){gf.playAnim('danceLeft');}
 			if (curBeat % 2 == 0){gf.playAnim('danceRight');}

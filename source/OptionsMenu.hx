@@ -35,7 +35,7 @@ class OptionsMenu extends MusicBeatState
 			#end
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
-			new ResetButtonOption("Toggle pressing R to gameover.")
+			new ResetButtonOption("Toggle pressing R to gameover."),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
 			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference")
 		]),
@@ -206,7 +206,7 @@ class OptionsMenu extends MusicBeatState
 					
 				
 				}
-				updateOffsetText()			
+				updateOffsetText();		
 			}
 			else
 			{
@@ -217,7 +217,7 @@ class OptionsMenu extends MusicBeatState
 				}
 				else if (FlxG.keys.pressed.RIGHT) FlxG.save.data.offset += 0.1;
 				else if (FlxG.keys.pressed.LEFT) FlxG.save.data.offset -= 0.1;
-				updateOffsetText()
+				updateOffsetText();
 			}
 		
 

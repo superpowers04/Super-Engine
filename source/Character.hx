@@ -43,6 +43,7 @@ class Character extends FlxSprite
 	public var needsInverted:Bool= false;
 	public var useMisses:Bool = false;
 	public var missSounds:Array<Sound> = [];
+	public var oneShotAnims:Array<String> = [];
 
 	public var holdTimer:Float = 0;
 	public var stunned:Bool = false; // Why was this specific to BF?
@@ -556,13 +557,25 @@ class Character extends FlxSprite
 					
 					trace('Loading Animations!');
 					for (anima in charProperties.animations){
-						if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
+						try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
 						if (anima.stage != "" && anima.stage != null){if(PlayState.curStage != anima.stage){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
+						if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
 						if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
+						if (anima.ifstate != null && (anima.ifstate.char_side == null || anima.ifstate.char_side == 3 || anima.ifstate.char_side == charType)){
+							trace("Loading a animation with ifstatement...");
+							
+							if (PlayState.animEvents[charType] == null) PlayState.animEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.animEvents[charType][anima.anim] = anima.ifstate;
+							// PlayState.regAnimEvent(charType,anima.ifstate,anima.anim);
+						}
+						if (anima.oneshot == true){ // "On static platforms, null can't be used as basic type Bool" bruh
+							oneShotAnims.push(anima.anim);
+							anima.loop = false; // Looping when oneshot is a terrible idea
+						}
 
 						if (anima.indices.length > 0) { // Add using indices if specified
 							animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
 						}else{animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);}
+						}catch(e){MainMenuState.handleError('${curCharacter} had an animation error ${e.message}');break;}
 					}
 					
 					setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
@@ -732,6 +745,7 @@ class Character extends FlxSprite
 	{
 		var lastAnim = "";
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
+		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
 		animation.play(AnimName, Force, Reversed, Frame);
 		// if (animation.curAnim != null && animation.curAnim.name == AnimName){return;} // Skip if already playing, no need to calculate offsets and such
 
