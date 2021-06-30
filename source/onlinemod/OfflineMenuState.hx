@@ -29,11 +29,12 @@ class OfflineMenuState extends MusicBeatState
   var muteKeys = FlxG.sound.muteKeys;
   var volumeUpKeys = FlxG.sound.volumeUpKeys;
   var volumeDownKeys = FlxG.sound.volumeDownKeys;
-
+  var bg:FlxSprite;
   override function create()
   {
-    var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
+    bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
     bg.color = 0xFFFF6E6E;
+    
     add(bg);
     searchField = new FlxInputText(10, 100, 1152, 20);
     searchField.maxLength = 81;
@@ -105,6 +106,10 @@ class OfflineMenuState extends MusicBeatState
     super.update(elapsed);
     if (searchField.hasFocus){SetVolumeControls(false);}else{
       SetVolumeControls(true);
+      handleInput();
+    }
+  }
+  function handleInput(){
       if (controls.BACK)
       {
         FlxG.switchState(new MainMenuState());
@@ -115,27 +120,29 @@ class OfflineMenuState extends MusicBeatState
 
       if (controls.ACCEPT && songs.length > 0)
       {
-        PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
-        PlayState.isStoryMode = false;
-        var songName = songFiles[curSelected];
-        PlayState.songDir = songDirs[curSelected];
-        // Set difficulty
-        PlayState.storyDifficulty = 1;
-        if (StringTools.endsWith(songs[curSelected], '-hard.json'))
-        {
-          songName = songName.substr(0,songName.indexOf('-hard.json'));
-          PlayState.storyDifficulty = 2;
-        }
-        else if (StringTools.endsWith(songs[curSelected], '-easy.json'))
-        {
-          songName = songName.substr(0,songName.indexOf('-easy.json'));
-          PlayState.storyDifficulty = 0;
-        }
-        PlayState.actualSongName = songName;
-
-        LoadingState.loadAndSwitchState(new OfflinePlayState());
+          gotoSong();
       }
-    }
+  }
+  function gotoSong(){
+      PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
+      PlayState.isStoryMode = false;
+      var songName = songFiles[curSelected];
+      PlayState.songDir = songDirs[curSelected];
+      // Set difficulty
+      PlayState.storyDifficulty = 1;
+      if (StringTools.endsWith(songs[curSelected], '-hard.json'))
+      {
+        songName = songName.substr(0,songName.indexOf('-hard.json'));
+        PlayState.storyDifficulty = 2;
+      }
+      else if (StringTools.endsWith(songs[curSelected], '-easy.json'))
+      {
+        songName = songName.substr(0,songName.indexOf('-easy.json'));
+        PlayState.storyDifficulty = 0;
+      }
+      PlayState.actualSongName = songName;
+
+      LoadingState.loadAndSwitchState(new OfflinePlayState());
   }
 
   function changeSelection(change:Int = 0)

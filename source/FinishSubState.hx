@@ -59,8 +59,9 @@ class FinishSubState extends MusicBeatSubstate
 		contText.color = FlxColor.WHITE;
 		contText.scrollFactor.set();
 		add(contText);
-
-		var settingsText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${PlayState.SONG.song} ${CoolUtil.difficultyString()}');
+		var songName:String = "";
+		if (PlayState.stateType == 4) songName = PlayState.songDiff; else songName = '${PlayState.SONG.song} ${CoolUtil.difficultyString()}';
+		var settingsText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
 		settingsText.size = 16;
 		settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
 		settingsText.color = FlxColor.WHITE;
@@ -95,6 +96,7 @@ class FinishSubState extends MusicBeatSubstate
 			switch (PlayState.stateType)
 			{
 				case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+				case 4:FlxG.switchState(new multi.MultiMenuState());
 					
 
 				default:FlxG.switchState(new FreeplayState());

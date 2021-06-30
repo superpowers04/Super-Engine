@@ -71,6 +71,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	public static var songDiff:String = "";
 	public static var weekSong:Int = 0;
 	public static var shits:Int = 0;
 	public static var bads:Int = 0;
@@ -849,7 +850,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		add(grpNoteSplashes);
-
+		if (stateType != 4) songDiff = (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		cpuStrums = new FlxTypedGroup<FlxSprite>();
@@ -918,7 +919,7 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 		// Add Kade Engine watermark
-		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
+		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + songDiff + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
 		add(kadeEngineWatermark);
@@ -2222,6 +2223,7 @@ class PlayState extends MusicBeatState
 					if (storyDifficulty == 2)
 						difficulty = '-hard';
 
+					// difficulty = if (songDiff != "normal") '-${songDiff}';
 					trace('LOADING NEXT SONG');
 					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
 

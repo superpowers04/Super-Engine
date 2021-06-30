@@ -46,8 +46,8 @@ class MainMenuState extends SickMenuState
 
 	override function create()
 	{
-		options = ['online', 'downloaded songs','get characters','story mode', 'freeplay', 'options'];
-		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Download characters to play as ingame",'Play through the story mode', 'Play any song from the game',  'Customise your experience to fit you'];
+		options = ['online', 'downloaded songs','modded songs','get characters','story mode', 'freeplay', 'options'];
+		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally","Download characters to play as ingame",'Play through the story mode', 'Play any song from the game',  'Customise your experience to fit you'];
 		if (errorMessage == ""){errorMessage = TitleState.errorMessage;}
 		trace(errorMessage);
 
@@ -160,6 +160,8 @@ class MainMenuState extends SickMenuState
 				trace("Freeplay Menu Selected");
 			case 'online':
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
+			case 'modded songs':
+				FlxG.switchState(new multi.MultiMenuState());
 			case 'downloaded songs':
 				FlxG.switchState(new onlinemod.OfflineMenuState());
 			case 'get characters':
