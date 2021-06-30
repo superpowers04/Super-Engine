@@ -36,8 +36,8 @@ class OptionsMenu extends MusicBeatState
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new ResetButtonOption("Toggle pressing R to gameover.")
-			// new OffsetMenu("Get a note offset based off of your inputs!"),
-			// new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference")
+			new OffsetMenu("Get a note offset based off of your inputs!"),
+			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference")
 		]),
 		new OptionCategory("Appearance", [
 			#if desktop
@@ -206,29 +206,23 @@ class OptionsMenu extends MusicBeatState
 					
 				
 				}
-				if (currentSelectedCat.getOptions()[curSelected].getAccept())
-					versionShit.text =  currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
-				else
-					versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+				updateOffsetText()			
 			}
 			else
 			{
 				if (FlxG.keys.pressed.SHIFT)
-					{
-						if (FlxG.keys.justPressed.RIGHT)
-							FlxG.save.data.offset += 0.1;
-						else if (FlxG.keys.justPressed.LEFT)
-							FlxG.save.data.offset -= 0.1;
-					}
-					else if (FlxG.keys.pressed.RIGHT)
-						FlxG.save.data.offset += 0.1;
-					else if (FlxG.keys.pressed.LEFT)
-						FlxG.save.data.offset -= 0.1;
+				{
+					if (FlxG.keys.justPressed.RIGHT) FlxG.save.data.offset += 0.1;
+					else if (FlxG.keys.justPressed.LEFT) FlxG.save.data.offset -= 0.1;
+				}
+				else if (FlxG.keys.pressed.RIGHT) FlxG.save.data.offset += 0.1;
+				else if (FlxG.keys.pressed.LEFT) FlxG.save.data.offset -= 0.1;
+				updateOffsetText()
 			}
 		
 
 			if (controls.RESET)
-					FlxG.save.data.offset = 0;
+				FlxG.save.data.offset = 0;
 
 			if (controls.ACCEPT)
 			{
@@ -263,11 +257,21 @@ class OptionsMenu extends MusicBeatState
 
 	var isSettingControl:Bool = false;
 
+	function updateOffsetText(){
+		if (isCat)
+		{
+			if (currentSelectedCat.getOptions()[curSelected].getAccept())
+				versionShit.text =  currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
+			else
+				versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+		}
+		else
+			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+
+	}
+
 	function changeSelection(change:Int = 0)
 	{
-		#if !switch
-		// NGio.logEvent("Fresh");
-		#end
 		
 		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 
@@ -282,15 +286,7 @@ class OptionsMenu extends MusicBeatState
 			currentDescription = currentSelectedCat.getOptions()[curSelected].getDescription();
 		else
 			currentDescription = "Please select a category";
-		if (isCat)
-		{
-			if (currentSelectedCat.getOptions()[curSelected].getAccept())
-				versionShit.text =  currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
-			else
-				versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
-		}
-		else
-			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+		updateOffsetText();
 		// selector.y = (70 * curSelected) + 30;
 
 		var bullShit:Int = 0;
