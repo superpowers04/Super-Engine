@@ -1837,7 +1837,7 @@ class PlayState extends MusicBeatState
 			{
 				var offsetX = 0;
 				var offsetY = 0;
-				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX, dad.getMidpoint().y - 100 + offsetY);
+				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX+ dad.camX, dad.getMidpoint().y - 100 + offsetY + dad.camY);
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
 				switch (dad.curCharacter)
@@ -1860,7 +1860,7 @@ class PlayState extends MusicBeatState
 			{
 				var offsetX = 0;
 				var offsetY = 0;
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX, boyfriend.getMidpoint().y - 100 + offsetY);
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX+ boyfriend.camX, boyfriend.getMidpoint().y - 100 + offsetY+ boyfriend.camY);
 
 
 				switch (curStage)
