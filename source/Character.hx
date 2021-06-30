@@ -559,9 +559,10 @@ class Character extends FlxSprite
 					for (anima in charProperties.animations){
 						try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
 						if (anima.stage != "" && anima.stage != null){if(PlayState.curStage != anima.stage){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
-						if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
+						if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies song, skip if it doesn't match PlayState's song
 						if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
-						if (anima.ifstate != null && (anima.ifstate.char_side == null || anima.ifstate.char_side == 3 || anima.ifstate.char_side == charType)){
+						if (anima.ifstate.char_side != null && anima.ifstate.char_side != 3 && anima.ifstate.char_side != charType){continue;} // Probably better as a animation property instead of a if statement
+						if (anima.ifstate != null){
 							trace("Loading a animation with ifstatement...");
 							
 							if (PlayState.animEvents[charType] == null) PlayState.animEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.animEvents[charType][anima.anim] = anima.ifstate;

@@ -22,7 +22,6 @@ typedef CharacterJson =
 typedef IfStatement = {
 	var	variable:String;
 	var	type:String;
-	var char_side:Dynamic; // 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
 	var	value:Dynamic;
 } // Does nothing at the moment but planned to provide the abilty to play animations on certain conditions, for example the Hey thing
 typedef CharJsonAnimation ={
@@ -34,6 +33,7 @@ typedef CharJsonAnimation ={
 	var indices:Array<Int>;
 	var stage:String; // Set on specific stage
 	var song:String; // Set on specific songname
+	var char_side:Dynamic; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
 	var oneshot:Bool; // Should animation overlap everything?
 }
 typedef CharJsonAnimOffsets ={
