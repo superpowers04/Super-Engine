@@ -561,11 +561,15 @@ class Character extends FlxSprite
 						if (anima.stage != "" && anima.stage != null){if(PlayState.curStage != anima.stage){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
 						if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies song, skip if it doesn't match PlayState's song
 						if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
-						if (anima.ifstate.char_side != null && anima.ifstate.char_side != 3 && anima.ifstate.char_side != charType){continue;} // Probably better as a animation property instead of a if statement
+						if (anima.char_side != null && anima.char_side != 3 && anima.char_side != charType){continue;} // Probably better as a animation property instead of a if statement
 						if (anima.ifstate != null){
 							trace("Loading a animation with ifstatement...");
+							if (anima.ifstate.check == 1 ){ // Do on step or beat
+								if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.stepAnimEvents[charType][anima.anim] = anima.ifstate;
+							} else {
+								if (PlayState.beatAnimEvents[charType] == null) PlayState.beatAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.beatAnimEvents[charType][anima.anim] = anima.ifstate;
+							}
 							
-							if (PlayState.animEvents[charType] == null) PlayState.animEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.animEvents[charType][anima.anim] = anima.ifstate;
 							// PlayState.regAnimEvent(charType,anima.ifstate,anima.anim);
 						}
 						if (anima.oneshot == true){ // "On static platforms, null can't be used as basic type Bool" bruh

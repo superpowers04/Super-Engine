@@ -30,6 +30,10 @@ class OfflineMenuState extends MusicBeatState
   var volumeUpKeys = FlxG.sound.volumeUpKeys;
   var volumeDownKeys = FlxG.sound.volumeDownKeys;
   var bg:FlxSprite;
+  function findButton(){
+      refreshList(true,searchField.text);
+      searchField.hasFocus = false;
+  }
   override function create()
   {
     bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
@@ -40,10 +44,7 @@ class OfflineMenuState extends MusicBeatState
     searchField.maxLength = 81;
     add(searchField);
 
-    searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", () -> {
-      refreshList(true,searchField.text);
-      searchField.hasFocus = false;
-    });
+    searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", findButton);
     searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     searchButton.resize(100, searchField.height);
     add(searchButton);

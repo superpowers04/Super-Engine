@@ -22,6 +22,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
   var blockedFiles:Array<String> = [];
 
   var songNames:Array<String> = ['picospeaker.json','meta.json','config.json'];
+  override function findButton(){
+    super.findButton();
+    changeDiff();
+  }
   override function create()
   {
     dataDir = "mods/charts/";
@@ -70,7 +74,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     }}else{
       MainMenuState.handleError('"/mods/charts" does not exist!');
     }
-    changeDiff();
   }
   override function gotoSong(){
       var songJSON = modes[curSelected][selMode]; // Just for easy access

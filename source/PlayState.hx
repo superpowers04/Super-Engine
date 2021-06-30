@@ -212,7 +212,8 @@ class PlayState extends MusicBeatState
 
 	private var executeModchart = false;
 	private var bruhmode:Bool = false;
-	public static var animEvents:Map<Int,Map<String,IfStatement>>;
+	public static var beatAnimEvents:Map<Int,Map<String,IfStatement>>;
+	public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
 
 	// API stuff
 	
@@ -224,7 +225,8 @@ class PlayState extends MusicBeatState
 	{try{
 
 		instance = this;
-		animEvents = [];
+		stepAnimEvents = [];
+		beatAnimEvents = [];
 		if (FlxG.save.data.fpsCap > 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(800);
 		
@@ -3073,7 +3075,28 @@ class PlayState extends MusicBeatState
 		{
 			resyncVocals();
 		}
-
+		try{
+			for (i => v in stepAnimEvents) {
+				for (anim => ifState in v) {
+					var variable:Dynamic = Reflect.field(this,ifState.variable);
+					var play:Bool = false;
+					if (ifState.type == "contains"){
+						if (ifState.value.contains(variable)){play = true;}
+					}else{
+						var ret:Int = Reflect.compare(variable,ifState.value);
+						if (ifState.type == "equals" && ret == 0) play = true; else if (ifState.type == "more" && ret == 1) play = true; else if (ifState.type == "less" && ret == 0) play = true;
+					}
+					if (play){
+						trace("Custom animation, Playing anim");
+						switch(i){
+							case 0: boyfriend.playAnim(anim);
+							case 1: dad.playAnim(anim);
+							case 2: gf.playAnim(anim);
+						}
+					}
+				}
+			}
+		}catch(e){MainMenuState.handleError('A animation event caused an error ${e.message}');}
 
 	}
 	
@@ -3139,7 +3162,7 @@ class PlayState extends MusicBeatState
 		// 	gf.dance();
 		// }
 		try{
-			for (i => v in animEvents) {
+			for (i => v in beatAnimEvents) {
 				for (anim => ifState in v) {
 					var variable:Dynamic = Reflect.field(this,ifState.variable);
 					var play:Bool = false;

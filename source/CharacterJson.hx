@@ -23,7 +23,8 @@ typedef IfStatement = {
 	var	variable:String;
 	var	type:String;
 	var	value:Dynamic;
-} // Does nothing at the moment but planned to provide the abilty to play animations on certain conditions, for example the Hey thing
+	var check:Int; // 0 = beat, 1 = step
+} 
 typedef CharJsonAnimation ={
 	var ifstate:IfStatement;
 	var anim:String;
