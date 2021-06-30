@@ -254,9 +254,16 @@ class Character extends FlxSprite
 		}
 		switch (curCharacter)
 		{
+			case 'lonely','Lonely':
+				tex = Paths.getSparrowAtlas('onlinemod/lonely');
+				frames=tex;
+				animation.addByPrefix('Idle', 'Idle', 24, false);
+
+
 			case 'gf','gf-christmas': // Condensed to reduce duplicate code
 				// GIRLFRIEND CODE
 				frames = tex;
+				dance_idle = true;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
 				animation.addByPrefix('singRIGHT', 'GF Right Note', 24, false);
