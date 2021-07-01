@@ -125,7 +125,8 @@ class OfflineMenuState extends MusicBeatState
       }
   }
   function gotoSong(){
-      PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
+      // PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
+      OfflinePlayState.chartFile = songs[curSelected];
       PlayState.isStoryMode = false;
       var songName = songFiles[curSelected];
       PlayState.songDir = songDirs[curSelected];

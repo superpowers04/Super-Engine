@@ -8,6 +8,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flash.media.Sound;
 import sys.FileSystem;
+import sys.io.File;
 
 import Section.SwagSection;
 
@@ -15,6 +16,7 @@ class OfflinePlayState extends PlayState
 {
   var loadedVoices:FlxSound;
   var loadedInst:Sound;
+  public static var chartFile:String = "";
   function loadSongs(){
   	var voicesFile = "";
     var instFile = "";
@@ -37,38 +39,41 @@ class OfflinePlayState extends PlayState
   
   override function create()
   {
-    PlayState.SONG.player1 = FlxG.save.data.playerChar;
-    if (!FlxG.save.data.charAuto || TitleState.retChar(PlayState.SONG.player2) == ""){ // Check is second player is a valid character
-    	PlayState.SONG.player2 = FlxG.save.data.opponent;
-    }else{ // Allows characters with the wrong case to still work
-    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
-    }
-    PlayState.stateType=2;
-    // var voicesFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'
-    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg')){
-    // 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg';
-    // }
-    // var instFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg'
-    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg')){
-    // 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg';
-    // }
-    loadSongs();
+  	try{
+	  	PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+	    PlayState.SONG.player1 = FlxG.save.data.playerChar;
+	    if (!FlxG.save.data.charAuto || TitleState.retChar(PlayState.SONG.player2) == ""){ // Check is second player is a valid character
+	    	PlayState.SONG.player2 = FlxG.save.data.opponent;
+	    }else{ // Allows characters with the wrong case to still work
+	    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
+	    }
+	    PlayState.stateType=2;
+	    // var voicesFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'
+	    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg')){
+	    // 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg';
+	    // }
+	    // var instFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg'
+	    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg')){
+	    // 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg';
+	    // }
+	    loadSongs();
 
 
-    super.create();
+	    super.create();
 
 
-    // Add XieneDev watermark
-    var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.9 + 50, FlxG.width, "XieneDev Battle Royale", 16);
-		xieneDevWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		xieneDevWatermark.scrollFactor.set();
-		add(xieneDevWatermark);
-    xieneDevWatermark.cameras = [camHUD];
+	    // Add XieneDev watermark
+	    var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.9 + 50, FlxG.width, "XieneDev Battle Royale", 16);
+			xieneDevWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			xieneDevWatermark.scrollFactor.set();
+			add(xieneDevWatermark);
+	    xieneDevWatermark.cameras = [camHUD];
 
 
-    FlxG.mouse.visible = false;
-    FlxG.autoPause = true;
-  }
+	    FlxG.mouse.visible = false;
+	    FlxG.autoPause = true;
+	  }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}
+	}
 
   override function startSong()
   {
@@ -80,7 +85,7 @@ class OfflinePlayState extends PlayState
   }
 
   override function generateSong(dataPath:String)
-  {
+  {try{
     // I have to code the entire code over so that I can remove the offset thing
     var songData = PlayState.SONG;
 		Conductor.changeBPM(songData.bpm);
@@ -174,7 +179,7 @@ class OfflinePlayState extends PlayState
 		unspawnNotes.sort(sortByShit);
 
 		generatedMusic = true;
-  }
+   }catch(e){MainMenuState.handleError('Caught "gensong" crash: ${e.message}');}}
 
   override function endSong()
   {

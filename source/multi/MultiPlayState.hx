@@ -17,13 +17,16 @@ class MultiPlayState extends onlinemod.OfflinePlayState
 	public static var voicesFile = "";
   public static var instFile = "";
   override function loadSongs(){
+    {try{
     loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));
     loadedInst = Sound.fromFile(instFile);
+  }catch(e){MainMenuState.handleError('Caught "loadSongs" crash: ${e.message}');}}
   }
-  override function create(){
+  override function create()
+    {try{
   	super.create();
   	PlayState.stateType=4;
-  }
+  }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
   override function openSubState(SubState:FlxSubState)
   {
     if (Type.getClass(SubState) == PauseSubState)

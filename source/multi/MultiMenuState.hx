@@ -76,10 +76,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     }
   }
   override function gotoSong(){
+      try{
+
       var songJSON = modes[curSelected][selMode]; // Just for easy access
       var songName = songNames[curSelected]; // Easy access to var
       var selSong = songs[curSelected]; // Easy access to var
-      PlayState.SONG = Song.parseJSONshit(File.getContent('${selSong}/${songJSON}'));
+      onlinemod.OfflinePlayState.chartFile = '${selSong}/${songJSON}';
+      // PlayState.SONG = Song.parseJSONshit(File.getContent('${selSong}/${songJSON}'));
       PlayState.isStoryMode = false;
       // Set difficulty
       PlayState.songDiff = songJSON;
@@ -98,6 +101,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
       MultiPlayState.instFile = '${selSong}/Inst.ogg';
       LoadingState.loadAndSwitchState(new MultiPlayState());
+      }catch(e){
+        MainMenuState.handleError('Error while loading chart ${e.message}');
+      }
   }
   override function handleInput(){
       if (controls.BACK)
