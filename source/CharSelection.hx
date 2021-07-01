@@ -31,7 +31,7 @@ class CharSelection extends MusicBeatState
 
 
   override function create()
-  {
+  {try{
     var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
     bg.color = 0xFFFF6E6E;
     add(bg);
@@ -64,16 +64,17 @@ class CharSelection extends MusicBeatState
     FlxG.autoPause = true;
 
     super.create();
-  }
+  }catch(e) MainMenuState.handleError('Error with charsel "create" ${e.message}');}
 
-  public function addChar(?spr = 'bf'){
+  public function addChar(?spr = 'bf'){try{
     char = new Character(posX,posY,spr,Options.PlayerOption.playerEdit == 0,Options.PlayerOption.playerEdit,true);
     char.debugMode = true;
     // char.screenCenter();
     add(char);
     if(char.dance_idle){char.playAnim('danceRight');}else{char.playAnim('idle');}
-  }
-  function reloadCharList(?reload = false,?search=""){
+  }catch(e) MainMenuState.handleError('Error with previewing char, ${e.message}');}
+
+  function reloadCharList(?reload = false,?search=""){try{
     curSelected = 0;
     if(reload){grpSongs.destroy();}
     grpSongs = new FlxTypedGroup<Alphabet>();
@@ -96,9 +97,9 @@ class CharSelection extends MusicBeatState
           i++;
       }
     }
-  }
+  }catch(e) MainMenuState.handleError('Error with loading char list ${e.message}');}
   override function update(elapsed:Float)
-  {
+  {try{
     super.update(elapsed);
     if (searchField.hasFocus){SetVolumeControls(false);}else{
       SetVolumeControls(true);
@@ -131,12 +132,12 @@ class CharSelection extends MusicBeatState
         ret();
       }
     }
-  }
+  }catch(e) MainMenuState.handleError('Error with charsel "update" ${e.message}');}
   function ret(){
     if (onlinemod.OnlinePlayMenuState.socket != null){FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{FlxG.switchState(new OptionsMenu());}
   }
   function changeSelection(change:Int = 0)
-	{
+	{try{
 		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 
 		curSelected += change;
@@ -161,7 +162,7 @@ class CharSelection extends MusicBeatState
 				item.alpha = 1;
 			}
 		}
-	}
+	}catch(e) MainMenuState.handleError('Error with charsel "chgsel" ${e.message}');}
   function SetVolumeControls(enabled:Bool)
   {
     if (enabled)
