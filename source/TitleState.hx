@@ -39,7 +39,7 @@ class TitleState extends MusicBeatState
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
-	public static var choosableCharacters:Array<String> = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster"];
+	public static var choosableCharacters:Array<String> = [];
 	public static var choosableCharactersLower:Map<String,String> = [];
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;
@@ -60,8 +60,8 @@ class TitleState extends MusicBeatState
   	}
 	public static function checkCharacters(){
 		#if sys
-		choosableCharacters = ["bf","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","bf-pixel","gf","dad","monster","lonely"];
-		choosableCharactersLower = ["bf" => "bf","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","bf-pixel" => "bf-pixel","gf" => "gf","dad" => "dad","monster" => "monster","lonely" => "lonely","" => "lonely"];
+		choosableCharacters = ["bf","bf-pixel","bf-christmas","gf",'gf-pixel',"dad","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","monster","lonely"];
+		choosableCharactersLower = ["bf" => "bf","bf-pixel" => "bf-pixel","bf-christmas" => "bf-christmas","gf" => "gf","gf-pixel" => "gf-pixel","dad" => "dad","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","monster" => "monster","lonely" => "lonely","" => "lonely"];
 		// Loading like this is probably not a good idea
 	    var dataDir:String = "mods/characters/";
 	    var customCharacters:Array<String> = [];

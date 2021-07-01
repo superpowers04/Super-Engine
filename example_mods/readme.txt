@@ -17,4 +17,4 @@ Heres an example that adds Garcellos "tight bars, little man" animation into Rel
 	"song":"release","":"The song to play the animation on",
 	"char_side":1,"":"Only play on a specific side, 0 = BF, 1 = Dad, 2 = GF"
 }
-You can find this example on the mod repo
+You can find this example on the mod repo under GARCELLO DEAD

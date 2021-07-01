@@ -31,7 +31,7 @@ class FinishSubState extends MusicBeatSubstate
 		if(win){
 			PlayState.boyfriend.playAnim("hey");
 			PlayState.dad.playAnim('singDOWNmiss');
-			PlayState.gf.playAnim('cheer')
+			PlayState.gf.playAnim('cheer');
 		}else{
 			PlayState.boyfriend.playAnim('singDOWNmiss');
 			PlayState.dad.playAnim("hey");

@@ -130,11 +130,11 @@ class RepoState extends SickMenuState
 
 		super.create();
 
-		installingText = new FlxText(5, 50, 0,'Installing ${installing}', 12);
+		installingText = new FlxText(5, 50, 0,'Installing ${installing}', 32);
 		installingText.scrollFactor.set();
 		installingText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(installingText);
-		installedText = new FlxText(FlxG.width - 60, 50, 0,'Not Installed', 12);
+		installedText = new FlxText(FlxG.width - 90, 50, 0,'Not Installed', 32);
 		installedText.scrollFactor.set();
 		installedText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(installedText);
