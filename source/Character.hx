@@ -603,7 +603,7 @@ class Character extends FlxSprite
 					if (charType == 2 && charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
 					addOffset('all',charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
 					camX+=charProperties.common_stage_offset[0];
-					camY+=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
+					camY-=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
 					trace('Loaded ${offsetCount} offsets!');
 					 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
