@@ -28,7 +28,15 @@ class FinishSubState extends MusicBeatSubstate
 
 	public function new(x:Float, y:Float,?win = true)
 	{
-		if(win){PlayState.boyfriend.playAnim("hey");PlayState.dad.playAnim('singDOWNmiss');}else{PlayState.boyfriend.playAnim('singDOWNmiss');PlayState.dad.playAnim("hey");}
+		if(win){
+			PlayState.boyfriend.playAnim("hey");
+			PlayState.dad.playAnim('singDOWNmiss');
+			PlayState.gf.playAnim('cheer')
+		}else{
+			PlayState.boyfriend.playAnim('singDOWNmiss');
+			PlayState.dad.playAnim("hey");
+			PlayState.gf.playAnim('sad');
+		}
 		super();
 		music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
 		music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
