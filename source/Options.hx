@@ -792,24 +792,3 @@ class ShitQualityOption extends Option
 		return "Shit Quality " + (!FlxG.save.data.preformance ? "off" : "on");
 	}
 }
-
-class CharOnSelOption extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-	}
-
-	public override function press():Bool
-	{
-		FlxG.save.data.charSelShow = !FlxG.save.data.charSelShow;
-		display = updateDisplay();
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return (!FlxG.save.data.charSelShow ? "Hide" : "Show") + " Char on Char Selection";
-	}
-}
