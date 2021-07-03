@@ -161,7 +161,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", -220, -280);
 				addOffset("singLEFT", -200, -280);
 				addOffset("singDOWN", 170, 110);
-				charX-=150;
+				charX+=150;
 				charY-=100;
 				camX+=300;
 
@@ -171,7 +171,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT");
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
-				charX-=150;
+				charX+=150;
 				charY+=360;
 				camX+=300;
 
@@ -181,7 +181,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT");
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
-				charX-=150;
+				charX+=150;
 				charY+=360;
 				camX+=300;
 			case 'parents-christmas':
