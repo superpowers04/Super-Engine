@@ -733,7 +733,7 @@ class PlayState extends MusicBeatState
 		
 
 		// REPOSITIONING PER STAGE
-		switch (curStage)
+		switch (curStage.toLowerCase())
 		{
 			case 'limo':
 				boyfriend.y -= 220;
@@ -749,6 +749,9 @@ class PlayState extends MusicBeatState
 			case 'mallEvil':
 				boyfriend.x += 320;
 				dad.y -= 80;
+			case 'school','schoolevil':
+				boyfriend.y += 20;
+				gf.y += 40;
 		}
 		if (dad.spiritTrail && FlxG.save.data.distractions){
 			// trailArea.scrollFactor.set();
@@ -838,7 +841,7 @@ class PlayState extends MusicBeatState
 			{
 				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
 				if (FlxG.save.data.downscroll)
-					songPosBG.y = FlxG.height * 0.9 + 45; 
+					songPosBG.y = FlxG.height * 0.9 + 45 - FlxG.save.data.guiGap; 
 				songPosBG.screenCenter(X);
 				songPosBG.scrollFactor.set();
 				add(songPosBG);
@@ -858,9 +861,9 @@ class PlayState extends MusicBeatState
 				songName.cameras = [camHUD];
 			}
 		
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
 		if (FlxG.save.data.downscroll)
-			healthBarBG.y = 50;
+			healthBarBG.y = 50 + FlxG.save.data.guiGap;
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -872,15 +875,15 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 		// Add Kade Engine watermark
-		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + songDiff + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
+		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50 - FlxG.save.data.guiGap,0,SONG.song + " " + songDiff + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
 		add(kadeEngineWatermark);
 
 		if (FlxG.save.data.downscroll)
-			kadeEngineWatermark.y = FlxG.height * 0.9 + 45;
+			kadeEngineWatermark.y = FlxG.height * 0.9 + 45 + FlxG.save.data.guiGap;
 
-		scoreTxt = new FlxText(FlxG.width / 2 - 350, healthBarBG.y + 50, 0, "", 20);
+		scoreTxt = new FlxText(FlxG.width / 2 - 350, healthBarBG.y + 50 - FlxG.save.data.guiGap, 0, "", 20);
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -969,12 +972,10 @@ class PlayState extends MusicBeatState
 							});
 						});
 					});
-				case 'senpai':
+				case 'senpai','thorns':
 					schoolIntro(doof);
 				case 'roses':
 					FlxG.sound.play(Paths.sound('ANGRY'));
-					schoolIntro(doof);
-				case 'thorns':
 					schoolIntro(doof);
 				default:
 					startCountdown();
@@ -982,11 +983,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			switch (curSong.toLowerCase())
-			{
-				default:
-					startCountdown();
-			}
+			startCountdown();
 		}
 
 		if (!loadRep)
@@ -1219,19 +1216,19 @@ class PlayState extends MusicBeatState
 
 			songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
 			if (FlxG.save.data.downscroll)
-				songPosBG.y = FlxG.height * 0.9 + 45; 
+				songPosBG.y = FlxG.height * 0.9 + 45 + FlxG.save.data.guiGap; 
 			songPosBG.screenCenter(X);
 			songPosBG.scrollFactor.set();
 			add(songPosBG);
 
-			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
+			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4 + FlxG.save.data.guiGap, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
 				'songPositionBar', 0, songLength - 1000);
 			songPosBar.numDivisions = 1000;
 			songPosBar.scrollFactor.set();
 			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			add(songPosBar);
 
-			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
+			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y + FlxG.save.data.guiGap,0,SONG.song, 16);
 			if (FlxG.save.data.downscroll)
 				songName.y -= 3;
 			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -1401,41 +1398,6 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
 				}
-
-			// 	default:
-			// 		babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
-			// 		babyArrow.animation.addByPrefix('green', 'arrowUP');
-			// 		babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-			// 		babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-			// 		babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-
-			// 		babyArrow.antialiasing = true;
-			// 		babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-
-			// 		switch (Math.abs(i))
-			// 		{
-			// 			case 0:
-			// 				babyArrow.x += Note.swagWidth * 0;
-			// 				babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-			// 				babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-			// 				babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-			// 			case 1:
-			// 				babyArrow.x += Note.swagWidth * 1;
-			// 				babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-			// 				babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-			// 				babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-			// 			case 2:
-			// 				babyArrow.x += Note.swagWidth * 2;
-			// 				babyArrow.animation.addByPrefix('static', 'arrowUP');
-			// 				babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-			// 				babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-			// 			case 3:
-			// 				babyArrow.x += Note.swagWidth * 3;
-			// 				babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-			// 				babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-			// 				babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-			// 		}
-			// }
 
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
@@ -1818,12 +1780,6 @@ class PlayState extends MusicBeatState
 						camFollow.x = boyfriend.getMidpoint().x - 300;
 					case 'mall':
 						camFollow.y = boyfriend.getMidpoint().y - 200;
-					case 'school':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
-					case 'schoolEvil':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
 				}
 			}
 		}
@@ -2007,7 +1963,7 @@ class PlayState extends MusicBeatState
 									{
 										spr.animation.play('confirm', true);
 									}
-									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									if (spr.animation.curAnim.name == 'confirm')
 									{
 										spr.centerOffsets();
 										spr.offset.x -= 13;
@@ -2713,6 +2669,18 @@ class PlayState extends MusicBeatState
 		if (!boyfriend.stunned)
 		{
 			health -= 0.04;
+			if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 0.7);}else{FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));}
+			switch (direction)
+			{
+				case 0:
+					boyfriend.playAnim('singLEFTmiss', true);
+				case 1:
+					boyfriend.playAnim('singDOWNmiss', true);
+				case 2:
+					boyfriend.playAnim('singUPmiss', true);
+				case 3:
+					boyfriend.playAnim('singRIGHTmiss', true);
+			}
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 			{
 				gf.playAnim('sad');
@@ -2727,21 +2695,11 @@ class PlayState extends MusicBeatState
 				totalNotesHit -= 1;
 
 			songScore -= 10;
-			if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 0.7);}else{FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));}
+			
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 			// FlxG.log.add('played imss note');
 
-			switch (direction)
-			{
-				case 0:
-					boyfriend.playAnim('singLEFTmiss', true);
-				case 1:
-					boyfriend.playAnim('singDOWNmiss', true);
-				case 2:
-					boyfriend.playAnim('singUPmiss', true);
-				case 3:
-					boyfriend.playAnim('singRIGHTmiss', true);
-			}
+
 
 
 

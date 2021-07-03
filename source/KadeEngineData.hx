@@ -109,7 +109,9 @@ class KadeEngineData
 		if (FlxG.save.data.lastServerPort == null)
 			FlxG.save.data.lastServerPort = "";	
 		if (FlxG.save.data.nickname == null)
-			FlxG.save.data.nickname = "";		
+			FlxG.save.data.nickname = "";	
+
+		if (FlxG.save.data.guiGap == null) FlxG.save.data.guiGap = 0;	
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();

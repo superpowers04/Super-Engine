@@ -545,27 +545,27 @@ class CustomizeGameplay extends Option
 	}
 }
 
-class WatermarkOption extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-	}
+// class WatermarkOption extends Option
+// {
+// 	public function new(desc:String)
+// 	{
+// 		super();
+// 		description = desc;
+// 	}
 
-	public override function press():Bool
-	{
-		Main.watermarks = !Main.watermarks;
-		FlxG.save.data.watermark = Main.watermarks;
-		display = updateDisplay();
-		return true;
-	}
+// 	public override function press():Bool
+// 	{
+// 		Main.watermarks = !Main.watermarks;
+// 		FlxG.save.data.watermark = Main.watermarks;
+// 		display = updateDisplay();
+// 		return true;
+// 	}
 
-	private override function updateDisplay():String
-	{
-		return "Watermarks " + (Main.watermarks ? "on" : "off");
-	}
-}
+// 	private override function updateDisplay():String
+// 	{
+// 		return "Watermarks " + (Main.watermarks ? "on" : "off");
+// 	}
+// }
 
 class OffsetMenu extends Option
 {
@@ -790,5 +790,41 @@ class ShitQualityOption extends Option
 	private override function updateDisplay():String
 	{
 		return "Shit Quality " + (!FlxG.save.data.preformance ? "off" : "on");
+	}
+}
+
+class GUIGapOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+	}
+
+	public override function press():Bool
+	{
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "GUI Gap";
+	}
+	
+	override function right():Bool {
+		FlxG.save.data.guiGap += 1;
+
+		return true;
+	}
+
+	override function left():Bool {
+		FlxG.save.data.guiGap -= 1;
+		return true;
+	}
+
+	override function getValue():String
+	{
+		return 'Hud distance: ${FlxG.save.data.guiGap}, Press enter to reset to 0';
 	}
 }

@@ -14,6 +14,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -24,8 +25,12 @@ class PauseSubState extends MusicBeatSubstate
 
 	var pauseMusic:FlxSound;
 	var perSongOffset:FlxText;
+	var ready = true;
 	
 	var offsetChanged:Bool = false;
+	var levelInfo:FlxText;
+	var levelDifficulty:FlxText;
+	var startTimer:FlxTimer;
 
 	public function new(x:Float, y:Float)
 	{
@@ -42,14 +47,14 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
+		levelInfo = new FlxText(20, 15, 0, "", 32);
 		levelInfo.text += PlayState.SONG.song;
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
 		add(levelInfo);
 
-		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
+		levelDifficulty = new FlxText(20, 15 + 32, 0, "", 32);
 		levelDifficulty.text += CoolUtil.difficultyString();
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
@@ -90,7 +95,7 @@ class PauseSubState extends MusicBeatSubstate
 	}
 
 	override function update(elapsed:Float)
-	{
+	{if (ready){
 		if (pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
 
@@ -176,7 +181,7 @@ class PauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
-					close();
+					countdown();
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
@@ -195,16 +200,89 @@ class PauseSubState extends MusicBeatSubstate
 			}
 		}
 
-		if (FlxG.keys.justPressed.J)
-		{
-			// for reference later!
-			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
-		}
-	}
+	}}
+	function countdown(){try{
+		var ready = false;
+		var swagCounter:Int = 1;
+		pauseMusic.stop();
+		pauseMusic.destroy();
+		grpMenuShit.destroy();
+		levelDifficulty.destroy();
+		levelInfo.destroy();
 
+
+
+		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
+		{
+
+			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
+			introAssets.set('default', ['ready', "set", "go"]);
+
+			var introAlts:Array<String> = introAssets.get('default');
+			var altSuffix:String = "";
+			switch (swagCounter)
+			{
+				case 1:
+					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
+					ready.scrollFactor.set();
+					ready.updateHitbox();
+
+
+					ready.screenCenter();
+					add(ready);
+					FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							ready.destroy();
+						}
+					});
+					FlxG.sound.play(Paths.sound('intro2' + altSuffix), 0.6);
+				case 2:
+					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
+					set.scrollFactor.set();
+
+
+
+					set.screenCenter();
+					add(set);
+					FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							set.destroy();
+						}
+					});
+					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
+				case 3:
+					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
+					go.scrollFactor.set();
+
+
+					go.updateHitbox();
+
+					go.screenCenter();
+					add(go);
+					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							go.destroy();
+						}
+					});
+					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
+				case 4:
+					close();
+			}
+
+			swagCounter += 1;
+			// generateSong('fresh');
+		}, 5);
+	}catch(e){MainMenuState.handleError('Something went wrong on countdown ${e.message}');}}
+	
 	override function destroy()
 	{
-		pauseMusic.destroy();
+		if (pauseMusic != null){pauseMusic.destroy();}
 
 		super.destroy();
 	}

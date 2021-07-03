@@ -80,7 +80,6 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", 0, 27);
 				addOffset("singLEFT", -10, 10);
 				addOffset("singDOWN", 0, -30);
-				camX+=400;
 			case 'mom','mom-car':
 				addOffset('idle');
 				addOffset("singUP", 14, 71);
@@ -123,7 +122,7 @@ class Character extends FlxSprite
 				charY+=330;
 				needsInverted = true;
 				if (isPlayer){			
-					addOffset('idle', -5);
+					addOffset('idle', -10);
 					addOffset("singUP", 0, 27);
 					// This game is handled terribly....					
 					addOffset("singLEFT", -38, -7);
@@ -161,9 +160,9 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", -220, -280);
 				addOffset("singLEFT", -200, -280);
 				addOffset("singDOWN", 170, 110);
-				charX+=150;
+				charX-=150;
 				charY-=100;
-				camX+=300;
+				// camX+=300;
 
 			case 'senpai':
 				addOffset('idle');
@@ -172,7 +171,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
 				charX+=150;
-				charY+=360;
+				charY+=320;
 				camX+=300;
 
 			case 'senpai-angry':
@@ -182,7 +181,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
 				charX+=150;
-				charY+=360;
+				charY+=320;
 				camX+=300;
 			case 'parents-christmas':
 				addOffset('idle');

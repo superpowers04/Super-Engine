@@ -62,9 +62,9 @@ class OptionsMenu extends MusicBeatState
 			new FPSOption("Toggle the FPS Counter"),
 			new ReplayOption("View replays"),
 			#end
-
+			new GUIGapOption("Change the distance between the end of the screen and text"),
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
-			new WatermarkOption("Enable and disable all watermarks from the engine."),
+			// new WatermarkOption("Enable and disable all watermarks from the engine."), This doesn't seem to actually do anything
 			new AnimDebugOption("Access animation debug in a offline session using 9 for P1 or 8 or P2 when enabled")
 		]),
 		new OptionCategory("Preformance", [
