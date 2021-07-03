@@ -18,7 +18,7 @@ class CharSelection extends MusicBeatState
 {
   var curSelected:Int = 0;
 
-  var songs:Array<String> = [];
+  var songs:Array<String> = []; // Is the character list, just too lazy to rename
   var grpSongs:FlxTypedGroup<Alphabet>;
   var posX:Int = Std.int(FlxG.width * 0.7);
   var posY:Int = 0;
@@ -72,9 +72,9 @@ class CharSelection extends MusicBeatState
     songs = [];
 
     var i:Int = 0;
-
+    var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
     for (char in TitleState.choosableCharacters){
-      if(search == "" || FlxStringUtil.contains(char.toLowerCase(),search.toLowerCase())){
+      if(search == "" || query.match(char.toLowerCase()) ){
           songs.push(char);
     
           var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false);

@@ -35,6 +35,7 @@ class PauseSubState extends MusicBeatSubstate
 	public function new(x:Float, y:Float)
 	{
 		super();
+		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
 
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
@@ -202,13 +203,14 @@ class PauseSubState extends MusicBeatSubstate
 
 	}}
 	function countdown(){try{
-		var ready = false;
+		ready = false;
 		var swagCounter:Int = 1;
 		pauseMusic.stop();
 		pauseMusic.destroy();
 		grpMenuShit.destroy();
 		levelDifficulty.destroy();
 		levelInfo.destroy();
+		perSongOffset.destroy();
 
 
 

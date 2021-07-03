@@ -77,13 +77,15 @@ class OfflineMenuState extends MusicBeatState
     songs = [];
     songFiles = [];
     var i:Int = 0;
+
+    var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
     if (FileSystem.exists(dataDir))
     {
       for (directory in FileSystem.readDirectory(dataDir))
       {
         for (file in FileSystem.readDirectory(dataDir + directory))
         {
-          if (StringTools.endsWith(file, '.json') && (search == "" || FlxStringUtil.contains(file.toLowerCase(),search.toLowerCase()))) // Handles searching
+          if ( StringTools.endsWith(file, '.json') && (search == "" || query.match(file.toLowerCase())) ) // Handles searching
           {
             songs.push(dataDir + directory + "/" + file);
             songFiles.push(file);

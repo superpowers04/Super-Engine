@@ -75,13 +75,12 @@ class OfflinePlayState extends PlayState
 	  }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}
 	}
 
-  override function startSong()
+  override function startSong(?alrLoaded:Bool = false)
   {
     FlxG.sound.playMusic(loadedInst, 1, false);
 
-    paused = true; // Setting 'paused' to true makes it so 'super.startSong()' doesn't try to load the Inst track
-    super.startSong();
-    paused = false;
+    // We be good and actually just use an argument to not load the song instead of "pausing" the game
+    super.startSong(true);
   }
 
   override function generateSong(dataPath:String)

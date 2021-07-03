@@ -148,14 +148,14 @@ class OnlinePlayState extends PlayState
     super.startCountdown();
   }
 
-  override function startSong()
+  override function startSong(?alrLoaded:Bool = false)
   {
     try{
     FlxG.sound.playMusic(loadedInst, 1, false);
 
-    paused = true; // Setting 'paused' to true makes it so 'super.startSong()' doesn't try to load the Inst track
-    super.startSong();
-    paused = false;
+    // We be good and actually just use an argument to not load the song instead of "pausing" the game
+    super.startSong(true);
+    
   }catch(e){MainMenuState.handleError('Crash in "startsong" caught: ${e.message}');}}
 
   override function generateSong(dataPath:String)
@@ -323,6 +323,7 @@ class OnlinePlayState extends PlayState
 
       paused = realPaused;
       persistentUpdate = true;
+      
       canPause = false;
 
       return;

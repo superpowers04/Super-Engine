@@ -44,11 +44,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     songs = [];
     modes = [];
     var i:Int = 0;
+
+    var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
     if (FileSystem.exists(dataDir))
     {
       for (directory in FileSystem.readDirectory(dataDir))
       {
-        if ((search == "" || FlxStringUtil.contains(directory.toLowerCase(),search.toLowerCase()))) // Handles searching
+        if (search == "" || query.match(directory.toLowerCase())) // Handles searching
         {
         if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
 

@@ -117,6 +117,7 @@ class PlayState extends MusicBeatState
 	public static var playerStrums:FlxTypedGroup<FlxSprite> = null;
 	public static var cpuStrums:FlxTypedGroup<FlxSprite> = null;
 	public static var dadShow = true;
+	var canPause:Bool = true;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -839,7 +840,7 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
 			{
-				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
+				songPosBG = new FlxSprite(0, 10 + FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
 				if (FlxG.save.data.downscroll)
 					songPosBG.y = FlxG.height * 0.9 + 45 - FlxG.save.data.guiGap; 
 				songPosBG.screenCenter(X);
@@ -1190,14 +1191,14 @@ class PlayState extends MusicBeatState
 
 	var songStarted = false;
 
-	function startSong():Void
+	function startSong(?alrLoaded:Bool = false):Void
 	{
 		startingSong = false;
 		songStarted = true;
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
-		if (!paused)
+		if (!alrLoaded)
 		{
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
 		}
@@ -1446,7 +1447,7 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.pause();
 				vocals.pause();
 			}
-
+			canPause = false;
 
 			if (!startTimer.finished)
 				startTimer.active = false;
@@ -1466,6 +1467,7 @@ class PlayState extends MusicBeatState
 
 			if (!startTimer.finished)
 				startTimer.active = true;
+			canPause = true;
 			paused = false;
 
 		}
@@ -1487,7 +1489,6 @@ class PlayState extends MusicBeatState
 
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
-	var canPause:Bool = true;
 	var nps:Int = 0;
 	var maxNPS:Int = 0;
 
@@ -1501,6 +1502,7 @@ class PlayState extends MusicBeatState
 
 		this.vocals.stop();
 		FlxG.sound.music.stop();
+		try{FlxG.sound.music.stop();}catch(e){} // Stop it dammit, fucking stop it. I said to stop, stop it
 		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
 		
 	}
@@ -2119,7 +2121,6 @@ class PlayState extends MusicBeatState
 
 					if (SONG.validScore)
 					{
-						NGio.unlockMedal(60961);
 						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 					}
 

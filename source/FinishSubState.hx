@@ -28,6 +28,7 @@ class FinishSubState extends MusicBeatSubstate
 
 	public function new(x:Float, y:Float,?win = true)
 	{
+		FlxG.sound.music.stop();
 		if(win){
 			PlayState.boyfriend.playAnim("hey");
 			PlayState.dad.playAnim('singDOWNmiss');
@@ -38,52 +39,54 @@ class FinishSubState extends MusicBeatSubstate
 			PlayState.gf.playAnim('sad');
 		}
 		super();
-		music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
-		music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
+		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer) // Litterally just here because sometimes the game doesn't stop music properly or anything
+		{
+			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
+			music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
 
-		FlxG.sound.list.add(music);
+			FlxG.sound.list.add(music);
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		bg.alpha = 0;
-		bg.scrollFactor.set();
-		add(bg);
+			var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+			bg.alpha = 0;
+			bg.scrollFactor.set();
+			add(bg);
 
-		var finishedText:FlxText = new FlxText(20,-55,0,if(win) "Song Won!" else "Song failed" );
-		finishedText.size = 34;
-		finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-		finishedText.color = FlxColor.WHITE;
-		finishedText.scrollFactor.set();
-		add(finishedText);
-		var comboText:FlxText = new FlxText(20,-75,0,'Judgements:\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
-		comboText.size = 28;
-		comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-		comboText.color = FlxColor.WHITE;
-		comboText.scrollFactor.set();
-		add(comboText);
+			var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0,if(win) "Song Won!" else "Song failed" );
+			finishedText.size = 34;
+			finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+			finishedText.color = FlxColor.WHITE;
+			finishedText.scrollFactor.set();
+			add(finishedText);
+			var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,'Judgements:\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
+			comboText.size = 28;
+			comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+			comboText.color = FlxColor.WHITE;
+			comboText.scrollFactor.set();
+			add(comboText);
 
-		var contText:FlxText = new FlxText(FlxG.width - 475,FlxG.height + 100,0,'Press ENTER to continue\nor R to restart.');
-		contText.size = 28;
-		contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-		contText.color = FlxColor.WHITE;
-		contText.scrollFactor.set();
-		add(contText);
-		var songName:String = "";
-		if (PlayState.stateType == 4) songName = PlayState.songDiff; else songName = '${PlayState.SONG.song} ${CoolUtil.difficultyString()}';
-		var settingsText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
-		settingsText.size = 16;
-		settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
-		settingsText.color = FlxColor.WHITE;
-		settingsText.scrollFactor.set();
-		add(settingsText);
+			var contText:FlxText = new FlxText(FlxG.width - 475 - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue\nor R to restart.');
+			contText.size = 28;
+			contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+			contText.color = FlxColor.WHITE;
+			contText.scrollFactor.set();
+			add(contText);
+			var songName:String = "";
+			if (PlayState.stateType == 4) songName = PlayState.songDiff; else songName = '${PlayState.SONG.song} ${CoolUtil.difficultyString()}';
+			var settingsText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
+			settingsText.size = 16;
+			settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
+			settingsText.color = FlxColor.WHITE;
+			settingsText.scrollFactor.set();
+			add(settingsText);
 
-		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
-		FlxTween.tween(finishedText, {y:20},0.5,{ease: FlxEase.expoInOut});
-		FlxTween.tween(comboText, {y:145},0.5,{ease: FlxEase.expoInOut});
-		FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
-		FlxTween.tween(settingsText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
+			FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+			FlxTween.tween(finishedText, {y:20},0.5,{ease: FlxEase.expoInOut});
+			FlxTween.tween(comboText, {y:145},0.5,{ease: FlxEase.expoInOut});
+			FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
+			FlxTween.tween(settingsText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
 
-		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-
+			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
+		}, 1);
 	}
 
 	override function update(elapsed:Float)
