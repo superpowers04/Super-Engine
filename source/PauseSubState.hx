@@ -119,61 +119,61 @@ class PauseSubState extends MusicBeatSubstate
 			changeSelection(1);
 		}
 		
-		#if cpp
-			else if (leftP)
-			{
-				oldOffset = PlayState.songOffset;
-				PlayState.songOffset -= 1;
-				sys.FileSystem.rename(songPath + oldOffset + '.offset', songPath + PlayState.songOffset + '.offset');
-				perSongOffset.text = "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.';
+		// #if cpp
+		// 	else if (leftP)
+		// 	{
+		// 		oldOffset = PlayState.songOffset;
+		// 		PlayState.songOffset -= 1;
+		// 		sys.FileSystem.rename(songPath + oldOffset + '.offset', songPath + PlayState.songOffset + '.offset');
+		// 		perSongOffset.text = "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.';
 
-				// Prevent loop from happening every single time the offset changes
-				if(!offsetChanged)
-				{
-					grpMenuShit.clear();
+		// 		// Prevent loop from happening every single time the offset changes
+		// 		if(!offsetChanged)
+		// 		{
+		// 			grpMenuShit.clear();
 
-					menuItems = ['Restart Song', 'Exit to menu'];
+		// 			menuItems = ['Restart Song', 'Exit to menu'];
 
-					for (i in 0...menuItems.length)
-					{
-						var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
-						songText.isMenuItem = true;
-						songText.targetY = i;
-						grpMenuShit.add(songText);
-					}
+		// 			for (i in 0...menuItems.length)
+		// 			{
+		// 				var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+		// 				songText.isMenuItem = true;
+		// 				songText.targetY = i;
+		// 				grpMenuShit.add(songText);
+		// 			}
 
-					changeSelection();
+		// 			changeSelection();
 
-					cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-					offsetChanged = true;
-				}
-			}else if (rightP)
-			{
-				oldOffset = PlayState.songOffset;
-				PlayState.songOffset += 1;
-				sys.FileSystem.rename(songPath + oldOffset + '.offset', songPath + PlayState.songOffset + '.offset');
-				perSongOffset.text = "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.';
-				if(!offsetChanged)
-				{
-					grpMenuShit.clear();
+		// 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		// 			offsetChanged = true;
+		// 		}
+		// 	}else if (rightP)
+		// 	{
+		// 		oldOffset = PlayState.songOffset;
+		// 		PlayState.songOffset += 1;
+		// 		sys.FileSystem.rename(songPath + oldOffset + '.offset', songPath + PlayState.songOffset + '.offset');
+		// 		perSongOffset.text = "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.';
+		// 		if(!offsetChanged)
+		// 		{
+		// 			grpMenuShit.clear();
 
-					menuItems = ['Restart Song', 'Exit to menu'];
+		// 			menuItems = ['Restart Song', 'Exit to menu'];
 
-					for (i in 0...menuItems.length)
-					{
-						var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
-						songText.isMenuItem = true;
-						songText.targetY = i;
-						grpMenuShit.add(songText);
-					}
+		// 			for (i in 0...menuItems.length)
+		// 			{
+		// 				var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+		// 				songText.isMenuItem = true;
+		// 				songText.targetY = i;
+		// 				grpMenuShit.add(songText);
+		// 			}
 
-					changeSelection();
+		// 			changeSelection();
 
-					cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-					offsetChanged = true;
-				}
-			}
-		#end
+		// 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		// 			offsetChanged = true;
+		// 		}
+		// 	}
+		// #end
 
 		if (accepted)
 		{
