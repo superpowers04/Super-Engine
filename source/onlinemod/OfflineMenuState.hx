@@ -107,7 +107,7 @@ class OfflineMenuState extends MusicBeatState
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-    if (searchField.hasFocus){SetVolumeControls(false);}else{
+    if (searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
       SetVolumeControls(true);
       handleInput();
     }

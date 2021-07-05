@@ -28,7 +28,10 @@ class CharSelection extends MusicBeatState
   var volumeUpKeys = FlxG.sound.volumeUpKeys;
   var volumeDownKeys = FlxG.sound.volumeDownKeys;
 
-
+  function findButton(){
+      reloadCharList(true,searchField.text);
+      searchField.hasFocus = false;
+  }
   override function create()
   {try{
     var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
@@ -40,10 +43,7 @@ class CharSelection extends MusicBeatState
     searchField.maxLength = 81;
     add(searchField);
 
-    searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", () -> {
-      reloadCharList(true,searchField.text);
-      searchField.hasFocus = false;
-    });
+    searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", findButton);
     searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     searchButton.resize(100, searchField.height);
     add(searchButton);
@@ -91,7 +91,7 @@ class CharSelection extends MusicBeatState
   override function update(elapsed:Float)
   {try{
     super.update(elapsed);
-    if (searchField.hasFocus){SetVolumeControls(false);}else{
+    if (searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
       SetVolumeControls(true);
       if (controls.BACK)
       {
