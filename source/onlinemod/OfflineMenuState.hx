@@ -165,15 +165,18 @@ class OfflineMenuState extends MusicBeatState
 
 		for (item in grpSongs.members)
 		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
+      var onScreen = ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10));
+      if (onScreen){ // If item is onscreen, then actually move and such
+        item.revive();
+        item.targetY = bullShit - curSelected;
 
-			item.alpha = 0.6;
+        item.alpha = 0.6;
 
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-			}
+        if (item.targetY == 0)
+        {
+          item.alpha = 1;
+        }}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
+  		bullShit++;
 		}
 	}
   function SetVolumeControls(enabled:Bool)
