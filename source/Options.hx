@@ -890,3 +890,25 @@ class ReloadCharlist extends Option
 	}
 
 }
+class InputHandlerOption extends Option
+{
+	var ies:Array<String> = ["Kade","Omega"];
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.inputHandler += 1;
+		if (FlxG.save.data.inputHandler >= ies.length) FlxG.save.data.inputHandler = 0;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return '${ies[FlxG.save.data.inputHandler]} Input Engine';
+	}
+}

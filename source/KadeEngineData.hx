@@ -116,6 +116,10 @@ class KadeEngineData
 
 		if (FlxG.save.data.guiGap == null) FlxG.save.data.guiGap = 0;	
 
+		if (FlxG.save.data.inputHandler == null)
+			FlxG.save.data.inputHandler = 0;
+	
+
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();
 		KeyBinds.keyCheck();
