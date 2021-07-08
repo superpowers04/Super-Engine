@@ -19,9 +19,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
   var modes:Map<Int,Array<String>> = [];
   var diffText:FlxText;
   var selMode:Int = 0;
-  var blockedFiles:Array<String> = [];
+  var blockedFiles:Array<String> = ['picospeaker.json','meta.json','config.json'];
 
-  var songNames:Array<String> = ['picospeaker.json','meta.json','config.json'];
+  var songNames:Array<String> = [];
   override function findButton(){
     super.findButton();
     changeDiff();
