@@ -91,6 +91,9 @@ class KadeEngineData
 		if (FlxG.save.data.gfChar == null)
 			FlxG.save.data.gfChar = "gf";
 
+		if (FlxG.save.data.selStage == null)
+			FlxG.save.data.selStage = "default";
+
 		if (FlxG.save.data.animDebug == null)
 			FlxG.save.data.animDebug = false;
 		// Note Splash

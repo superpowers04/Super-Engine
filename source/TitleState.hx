@@ -39,6 +39,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
 	public static var choosableCharacters:Array<String> = [];
+	public static var choosableStages:Array<String> = ["default","stage",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
 	public static var choosableCharactersLower:Map<String,String> = [];
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;

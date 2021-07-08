@@ -25,6 +25,13 @@ class OptionsMenu extends MusicBeatState
 	var curSelected:Int = 0;
 
 	var options:Array<OptionCategory> = [
+		new OptionCategory("Customization", [
+			new OpponentOption("Change the opponent used in Online/Offline"),
+			new PlayerOption("Change the player character"),
+			new GFOption("Change the GF used"),
+			new CharAutoOption("Allow the song to choose the opponent if you have them"),
+			new SelStageOption("Select the stage to use, Default will use song default"),
+		]),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
 			new DownscrollOption("Change the layout of the strumline."),
@@ -50,12 +57,6 @@ class OptionsMenu extends MusicBeatState
 			#else
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay.")
 			#end
-		]),
-		new OptionCategory("Character Selection", [
-			new OpponentOption("Change the opponent used in Online/Offline"),
-			new PlayerOption("Change the player character"),
-			new GFOption("Change the GF used"),
-			new CharAutoOption("Allow the song to choose the opponent if you have them")
 		]),
 		new OptionCategory("Misc", [
 			#if desktop

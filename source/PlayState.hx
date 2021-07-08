@@ -310,6 +310,7 @@ class PlayState extends MusicBeatState
 			case 'thorns':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
 		}
+
 		if (FlxG.save.data.preformance){
 			defaultCamZoom = 0.9;
 			curStage = 'stage';
@@ -321,6 +322,7 @@ class PlayState extends MusicBeatState
 			stageFront.active = false;
 			add(stageFront);
 		}else{
+			if (FlxG.save.data.selStage != "default"){SONG.stage = FlxG.save.data.selStage;}
 			switch(SONG.stage.toLowerCase()){
 					case 'halloween': 
 					{

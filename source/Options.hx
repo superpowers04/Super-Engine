@@ -828,3 +828,34 @@ class GUIGapOption extends Option
 		return 'Hud distance: ${FlxG.save.data.guiGap}, Press enter to reset to 0';
 	}
 }
+class SelStageOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+
+	}
+	override function right():Bool {
+		return false;
+	}
+	override function left():Bool {
+		return false;
+	}
+	public override function press():Bool
+	{
+		FlxG.switchState(new StageSelection());
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Selected Stage";
+	}
+
+	override function getValue():String {
+		return "Current Stage: " + FlxG.save.data.selStage;
+	}
+
+}
