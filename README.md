@@ -49,4 +49,6 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 - [Rozebud](https://twitter.com/helpme_thebigt) - *Everything*
 ### Shoutouts
 - [GWebDev](https://twitter.com/GFlipaclip) - Haxeflixel Video
-- [Ethab Taxi](https://twitter.com/EthabTaxi) - He's just sorta chillin'.
+- [Ethab Taxi](https://twitter.com/EthabTaxi) - He's just sorta chillin'.<br>
+- [V.S. Ex Tabi](https://gamebanana.com/mods/286388) - The arrow examples are from here
+- [Smoke 'Em Out Struggle](https://gamebanana.com/mods/166531) - Used Garcello's character for testing custom characters/custom animations
