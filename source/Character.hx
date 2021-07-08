@@ -117,7 +117,7 @@ class Character extends FlxSprite
 					addOffset("singDOWNmiss", 200, -34);}
 
 				charY+=330;
-				if(!isPlayer){camX+=600;}
+				// if(!isPlayer){camX+=600;}
 			case 'bf','bf-christmas','bf-car':
 				charY+=330;
 				needsInverted = true;
