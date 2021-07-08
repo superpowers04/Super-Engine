@@ -28,6 +28,8 @@ import sys.FileSystem;
 
 using StringTools;
 
+
+
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
@@ -51,6 +53,11 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
+	public static function loadNoteAssets(){
+		if (NoteAssets == null || NoteAssets.name != FlxG.save.data.noteAsset){
+			new NoteAssets(FlxG.save.data.noteAsset);
+		}
+	}
 	public static function retChar(char:String):String{
 		if (choosableCharactersLower[char.toLowerCase()] != null){
 			return choosableCharactersLower[char.toLowerCase()];
@@ -59,9 +66,9 @@ class TitleState extends MusicBeatState
 		}
   	}
 	public static function checkCharacters(){
-		#if sys
 		choosableCharacters = ["bf","bf-pixel","bf-christmas","gf",'gf-pixel',"dad","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","monster","lonely"];
 		choosableCharactersLower = ["bf" => "bf","bf-pixel" => "bf-pixel","bf-christmas" => "bf-christmas","gf" => "gf","gf-pixel" => "gf-pixel","dad" => "dad","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","monster" => "monster","lonely" => "lonely","" => "lonely"];
+		#if sys
 		// Loading like this is probably not a good idea
 	    var dataDir:String = "mods/characters/";
 	    var customCharacters:Array<String> = [];

@@ -258,7 +258,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.playerChar != "bf"){
 			SONG.player1 = FlxG.save.data.playerChar;
 		}
-
+		TitleState.loadNoteAssets(); // Make sure note assets are actually loaded
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -1388,6 +1388,7 @@ class PlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Int):Void
 	{
+
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
@@ -1396,7 +1397,7 @@ class PlayState extends MusicBeatState
 			// switch (SONG.noteStyle)
 			// {
 			// 	case 'normal':
-			babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
+			babyArrow.frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 			babyArrow.animation.addByPrefix('green', 'arrowUP');
 			babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 			babyArrow.animation.addByPrefix('purple', 'arrowLEFT');

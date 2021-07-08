@@ -13,6 +13,7 @@ import PlayState;
 
 using StringTools;
 
+
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
@@ -59,7 +60,7 @@ class Note extends FlxSprite
 
 		var daStage:String = PlayState.curStage;
 
-		frames = Paths.getSparrowAtlas('NOTE_assets');
+		frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 
 		animation.addByPrefix('greenScroll', 'green0');
 		animation.addByPrefix('redScroll', 'red0');

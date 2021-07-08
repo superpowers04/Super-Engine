@@ -21,7 +21,7 @@ class CharSelection extends SearchMenuState
   {try{
     searchList = TitleState.choosableCharacters;
     super.create();
-  }catch(e) MainMenuState.handleError('Error with stagesel "create" ${e.message}');}
+  }catch(e) MainMenuState.handleError('Error with charsel "create" ${e.message}');}
   override function select(sel:Int = 0){
     switch (Options.PlayerOption.playerEdit){
       case 0:

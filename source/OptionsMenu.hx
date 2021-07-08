@@ -29,6 +29,7 @@ class OptionsMenu extends MusicBeatState
 			new OpponentOption("Change the opponent used in Online/Offline"),
 			new PlayerOption("Change the player character"),
 			new GFOption("Change the GF used"),
+			new NoteSelOption("Change the note assets used, pulled from mods/noteassets"),
 			new CharAutoOption("Allow the song to choose the opponent if you have them"),
 			new ReloadCharlist("Refreshes the character list, used for if you added characters"),
 			new SelStageOption("Select the stage to use, Default will use song default"),

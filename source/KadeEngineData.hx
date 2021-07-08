@@ -118,6 +118,10 @@ class KadeEngineData
 
 		if (FlxG.save.data.inputHandler == null)
 			FlxG.save.data.inputHandler = 0;
+
+
+		if (FlxG.save.data.noteAsset == null)
+			FlxG.save.data.noteAsset = "default";
 	
 
 		Conductor.recalculateTimings();

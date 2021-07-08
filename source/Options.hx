@@ -912,3 +912,34 @@ class InputHandlerOption extends Option
 		return '${ies[FlxG.save.data.inputHandler]} Input Engine';
 	}
 }
+class NoteSelOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+
+	}
+	override function right():Bool {
+		return false;
+	}
+	override function left():Bool {
+		return false;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.switchState(new ArrowSelection());
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Note Style Selection";
+	}
+
+	override function getValue():String {
+		return "Current note style: " + FlxG.save.data.noteAsset;
+	}
+}
