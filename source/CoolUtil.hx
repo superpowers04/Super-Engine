@@ -46,4 +46,7 @@ class CoolUtil
 		}
 		return dumbArray;
 	}
+	public static function multiInt(?int:Int = 0){
+		if (int == 1) return ''; else return 's';
+	}
 }

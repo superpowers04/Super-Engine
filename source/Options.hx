@@ -859,3 +859,34 @@ class SelStageOption extends Option
 	}
 
 }
+class ReloadCharlist extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+
+	}
+	override function right():Bool {
+		return false;
+	}
+	override function left():Bool {
+		return false;
+	}
+	public override function press():Bool
+	{
+		TitleState.checkCharacters();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Reload Character List";
+	}
+
+	override function getValue():String {
+		return '${TitleState.choosableCharacters.length} character${CoolUtil.multiInt(TitleState.choosableCharacters.length)} loaded';
+	}
+
+}

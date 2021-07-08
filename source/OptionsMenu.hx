@@ -30,6 +30,7 @@ class OptionsMenu extends MusicBeatState
 			new PlayerOption("Change the player character"),
 			new GFOption("Change the GF used"),
 			new CharAutoOption("Allow the song to choose the opponent if you have them"),
+			new ReloadCharlist("Refreshes the character list, used for if you added characters"),
 			new SelStageOption("Select the stage to use, Default will use song default"),
 		]),
 		new OptionCategory("Gameplay", [
