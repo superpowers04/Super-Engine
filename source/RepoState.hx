@@ -89,7 +89,6 @@ class RepoState extends SickMenuState
 		}
 		new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
-			// Get current version of Kade Engine
 			
 			var http = new Http(repo);
 			
@@ -130,13 +129,13 @@ class RepoState extends SickMenuState
 
 		super.create();
 
-		installingText = new FlxText(5, 50, 0,'Installing ${installing}', 32);
+		installingText = new FlxText(FlxG.width * 0.12, 5, 0,'Installing ${installing}', 32);
 		installingText.scrollFactor.set();
-		installingText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		installingText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(installingText);
-		installedText = new FlxText(FlxG.width - 90, 50, 0,'Not Installed', 32);
+		installedText = new FlxText(FlxG.width * 0.8, 5, 0,'Not Installed', 32);
 		installedText.scrollFactor.set();
-		installedText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		installedText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(installedText);
 		updateText();
 	}
@@ -181,7 +180,7 @@ class RepoState extends SickMenuState
 		updateText();
 	}
 	function updateText(){
-		installingText.text = 'Installing ${installing}';
+		installingText.text = 'Installing ${installing} mod${if (installing != 1) 's' else '' }';
 		installedText.text = if (TitleState.choosableCharacters.contains(repoArray.characters[curSelected].name)) "Installed" else "Not Installed";
 	}
 	function finishDownload(data:Bytes,char:RepoCharsJSON,sel:Int){
@@ -194,5 +193,7 @@ class RepoState extends SickMenuState
 		installingList.remove(char.name);
 		installing-=1;
 		updateText();
+
+		FlxG.sound.play(Paths.sound('confirmMenu'));
 	}
 }
