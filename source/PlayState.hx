@@ -661,48 +661,34 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.gfChar != "gf"){gfVersion=FlxG.save.data.gfChar;}
 		gf = new Character(400, 100, gfVersion,false,2);
 		gf.scrollFactor.set(0.95, 0.95);
-
+		if (SONG.defplayer2.startsWith("gf") && FlxG.save.data.charAuto) SONG.player2 = FlxG.save.data.gfChar;
 		if (dadShow) dad = new Character(100, 100, SONG.player2,false,1); else dad = new EmptyCharacter(100, 100);
+
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-
-		switch (SONG.player2)
-		{
-			case 'gf':
-				if (SONG.player1 != 'gf'){	// Don't hide GF if player 1 is GF
-					dad.setPosition(gf.x, gf.y);
-					gf.visible = false;
+		if (FlxG.save.data.gfChar == SONG.player2){
+			if (SONG.player1 != 'gf'){	// Don't hide GF if player 1 is GF
+				dad.setPosition(gf.x, gf.y);
+				gf.visible = false;
+			}
+			if (isStoryMode)
+			{
+				camPos.x += 600;
+				tweenCamIn();
+			}
+		}else{
+			switch (SONG.player2)
+			{
+				case 'gf':
+					if (SONG.player1 != 'gf'){	// Don't hide GF if player 1 is GF
+						dad.setPosition(gf.x, gf.y);
+						gf.visible = false;
+					}
+					if (isStoryMode)
+					{
+						camPos.x += 600;
+						tweenCamIn();
+					}
 				}
-				if (isStoryMode)
-				{
-					camPos.x += 600;
-					tweenCamIn();
-				}
-
-			// case "spooky":
-			// 	dad.y += 200;
-			// case "monster":
-			// 	dad.y += 100;
-			// case 'monster-christmas':
-			// 	dad.y += 130;
-			// case 'dad':
-			// 	camPos.x += 400;
-			// case 'pico':
-			// 	camPos.x += 600;
-			// 	dad.y += 300;
-			// case 'parents-christmas':
-			// 	dad.x -= 500;
-			// case 'senpai':
-			// 	dad.x += 150;
-			// 	dad.y += 360;
-			// 	camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			// case 'senpai-angry':
-			// 	dad.x += 150;
-			// 	dad.y += 360;
-			// 	camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			// case 'spirit':
-			// 	dad.x -= 150;
-			// 	dad.y += 100;
-			// 	camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 		}
 		if (dad.camX != 0) {
 			camPos.x +=dad.camX;
