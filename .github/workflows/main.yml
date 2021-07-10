@@ -57,19 +57,24 @@ jobs:
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
         run: haxelib run lime build windows --app-version="4.2.5-${{ github.run_id}}" -Dghaction
-
-      - name: Compress
-        run: |
-          7z a C:/fnfbrbin/windowsBuild.zip -spf2 C:/fnfbrbin/windows/bin/
-          7z a C:/fnfbrbin/windowsBuild-patch.zip -spf2 @D:/a/FunkinBattleRoyale-Mod/FunkinBattleRoyale-Mod/7zlist.txt
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
           name: windowsBuild
-          path: C:/fnfbrbin/windowsBuild.zip      
+          path: C:/fnfbrbin/windows/bin      
       - name: Publish without changed assets as Artifact
         uses: actions/upload-artifact@v2
         with:
           name: windowsBuild-Minimal
-          path: C:/fnfbrbin/windowsBuild-patch.zip
+          path: |
+                C:/fnfbrbin/windows/bin/FNF Battle Royale.exe
+                C:/fnfbrbin/windows/bin/manifest
+                C:/fnfbrbin/windows/bin/mods
+                C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets.xml
+                C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets.png
+                C:/fnfbrbin/windows/bin/assets/shared/images/noteSplashes.xml
+                C:/fnfbrbin/windows/bin/assets/shared/images/noteSplashes.png
+                C:/fnfbrbin/windows/bin/assets/images/onlinemod
+                C:/fnfbrbin/windows/bin/assets/data/introText.txt
+                C:/fnfbrbin/windows/bin/assets/sounds/Hit_Sound.ogg
 
