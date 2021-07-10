@@ -66,6 +66,7 @@
 		],
 
 		"common_stage_offset": [-200, -300, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
+		"cam_pos": [0, -200], "": "Camera position",
 		"pixel_stage_offset": [0, 50, 0, 50], "": "Your character's offset ingame on Pixel stages as Player 1 and 2",
 		"local_multiplayer_offset": [0, 0], "": "Your character's offset on the Local Multiplayer/Singleplayer Character Select screen",
 		"online_offset": [-80, -115], "": "Your character's offset on Online Mode lobby",
