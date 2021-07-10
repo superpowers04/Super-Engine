@@ -943,3 +943,24 @@ class NoteSelOption extends Option
 		return "Current note style: " + FlxG.save.data.noteAsset;
 	}
 }
+
+class HitSoundOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.hitSound = !FlxG.save.data.hitSound;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Note Hit Sound " + (!FlxG.save.data.hitSound ? "off" : "on");
+	}
+}

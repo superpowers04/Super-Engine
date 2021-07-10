@@ -47,6 +47,7 @@ class OptionsMenu extends MusicBeatState
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
 			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"),
+			new HitSoundOption("Play a click when you hit a note, Basically is the one from VSOmega")
 			// new InputHandlerOption("Change the input engine used, only works locally, Disables Kade options unless supported by engine")
 		]),
 		new OptionCategory("Appearance", [

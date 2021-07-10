@@ -217,6 +217,7 @@ class PlayState extends MusicBeatState
 	public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
 
 	public static var inputMode:Int = 0;
+	var hitSound:Bool = false;
 
 
 	// API stuff
@@ -818,6 +819,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
+		hitSound = FlxG.save.data.hitSound;
 		FlxG.fixedTimestep = false;
 		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
 			{
@@ -2968,7 +2970,9 @@ class PlayState extends MusicBeatState
 					}
 					else
 						totalNotesHit += 1;
-	
+					
+
+					if(hitSound && !note.isSustainNote) FlxG.sound.play(Paths.sound('Normal_Hit'),1);
 
 					switch (note.noteData)
 					{
