@@ -17,6 +17,9 @@ typedef SwagSong =
 
 	var player1:String;
 	var player2:String;
+	var ?defplayer1:String;
+	var ?defplayer2:String;
+	var ?defgf:String;
 	var gfVersion:String;
 	var noteStyle:String;
 	var stage:String;
@@ -77,6 +80,20 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
+		if (PlayState.invertedChart){
+			var invertedNotes:Array<Int> = [4,5,6,7,0,1,2,3];
+			for (sid => section in swagShit.notes) {
+				// for (nid => note in section.sectionNotes){
+				// 	note[1] = invertedNotes[note[1]];
+				// 	swagShit.notes[sid].sectionNotes[nid] = note;
+				// }
+				section.mustHitSection = !section.mustHitSection;
+				swagShit.notes[sid] = section;
+			}
+		}
+		swagShit.defplayer1 = swagShit.player1;
+		swagShit.defplayer2 = swagShit.player2;
+		swagShit.defgf = swagShit.gfVersion;
 		return swagShit;
 	}
 }

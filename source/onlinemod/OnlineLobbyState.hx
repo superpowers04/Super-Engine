@@ -14,6 +14,7 @@ import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 
 import sys.FileSystem;
+using StringTools;
 
 class OnlineLobbyState extends MusicBeatState
 {
@@ -158,13 +159,33 @@ class OnlineLobbyState extends MusicBeatState
           TitleState.supported = true;
           Sender.SendPacket(Packets.SUPPORTED, [], OnlinePlayMenuState.socket);
           Chat.SERVER_MESSAGE("This server is compatible with extra features!");
-        }else{Chat.SERVER_MESSAGE(data[0]);}
+        }else if(StringTools.startsWith(data[0],"'32d5d167'")) handleServerCommand(data[0].toLowerCase(),0); else Chat.SERVER_MESSAGE(data[0]);
 
       case Packets.DISCONNECT:
         TitleState.p2canplay = false;
         FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
     }
   }
+
+  public static function handleServerCommand(command:String,?version = 0) // Not sure if I'll ever actually use the version variable for anything
+  {
+    try{
+
+      var args:Array<String> = command.split(' ');
+      switch (args[1]){
+        case "set":
+          if (args[3] == "true" || args[3] == "false"){ // This is probably dangerous, although it's only bools so it should be fine
+            var bool = (args[3] == "true");
+            switch(args[2]){
+              case "invertnotes":
+                PlayState.invertedChart = bool;
+            }
+          }
+      }
+      Chat.SERVER_MESSAGE('Server \'${args[1]}\' \'${args[2]}\' to \'${args[3]}\'');
+    }catch(e){Chat.SERVER_MESSAGE('Server sent an invalid command ${e.message}, ${command}');} // I don't expect servers to always handle this properly, always better to have error catching
+  }
+
 
   public static function StartGame(jsonInput:String, folder:String)
   {

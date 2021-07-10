@@ -7,6 +7,8 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxAxes;
 
+using StringTools;
+
 class OnlineResultState extends MusicBeatState
 {
   var clients:Map<Int, String>;
@@ -112,7 +114,7 @@ class OnlineResultState extends MusicBeatState
       case Packets.MUTED:
         Chat.MUTED();
       case Packets.SERVER_CHAT_MESSAGE:
-        Chat.SERVER_MESSAGE(data[0]);
+         if(StringTools.startsWith(data[0],"'32d5d167'")) OnlineLobbyState.handleServerCommand(data[0].toLowerCase(),0); else Chat.SERVER_MESSAGE(data[0]);
 
       case Packets.DISCONNECT:
         FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));

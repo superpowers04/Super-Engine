@@ -37,7 +37,8 @@ class OnlinePlayMenuState extends MusicBeatState
   public function new(?message:String="", ?color:FlxColor=FlxColor.RED)
   {
     super();
-
+    PlayState.invertedChart = false;
+    PlayState.dadShow = true;
     errorMessage = message;
     errorColor = color;
   }

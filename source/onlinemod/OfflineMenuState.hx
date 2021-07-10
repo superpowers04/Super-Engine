@@ -8,6 +8,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
+import flixel.addons.ui.FlxUIText;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -19,6 +20,7 @@ class OfflineMenuState extends MusicBeatState
   var curSelected:Int = 0;
   var searchField:FlxInputText;
   var searchButton:FlxUIButton;
+  var sideButton:FlxUIButton;
 
   var songs:Array<String> = [];
   var songFiles:Array<String> = [];
@@ -30,9 +32,16 @@ class OfflineMenuState extends MusicBeatState
   var volumeUpKeys = FlxG.sound.volumeUpKeys;
   var volumeDownKeys = FlxG.sound.volumeDownKeys;
   var bg:FlxSprite;
+  var invertedChart:Bool = false;
   function findButton(){
       refreshList(true,searchField.text);
       searchField.hasFocus = false;
+  }
+  function updateSideButton(){
+    // var lab = sideButton.label;
+    
+    sideButton.setLabel(new FlxUIText(0,0,(PlayState.invertedChart ? "Deswap":"Swap") + " Chart"));
+    sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
   }
   override function create()
   {
@@ -68,6 +77,14 @@ class OfflineMenuState extends MusicBeatState
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(150, 30);
     add(optionsButton);
+    sideButton = new FlxUIButton(1050, 160, "", () -> {
+      PlayState.invertedChart = !PlayState.invertedChart;
+      updateSideButton();
+    });
+    sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+    sideButton.resize(200, 30);
+    add(sideButton);
+    updateSideButton();
   }
   function refreshList(?reload=false,?search = ""){
     curSelected = 0;

@@ -79,6 +79,7 @@ class PlayState extends MusicBeatState
 	public static var goods:Int = 0;
 	public static var sicks:Int = 0;
 	public static var stateType=0;
+	public static var invertedChart:Bool = false;
 
 	public static var songPosBG:FlxSprite;
 	public static var songPosBar:FlxBar;
@@ -1296,6 +1297,7 @@ class PlayState extends MusicBeatState
 
 		var playerCounter:Int = 0;
 
+
 		// Per song offset check
 		
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
@@ -1315,7 +1317,7 @@ class PlayState extends MusicBeatState
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
-				if ((p2canplay || !dadShow) && !gottaHitNote || gottaHitNote && bruhmode ){continue;}
+				
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
