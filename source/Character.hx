@@ -46,6 +46,7 @@ class Character extends FlxSprite
 	public var oneShotAnims:Array<String> = [];
 	public var tintedAnims:Array<String> = [];
 
+
 	public var holdTimer:Float = 0;
 	public var stunned:Bool = false; // Why was this specific to BF?
 	function addOffsets(?character:String = "bf") // Handles offsets for characters with support for clones
@@ -556,12 +557,13 @@ class Character extends FlxSprite
 					if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 					
 					trace('Loading Animations!');
+					var invChIDs:Array<Int> = [1,0,2];
 					for (anima in charProperties.animations){
 						try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
 						if (anima.stage != "" && anima.stage != null){if(PlayState.curStage != anima.stage){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
 						if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies song, skip if it doesn't match PlayState's song
 						if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
-						if (anima.char_side != null && anima.char_side != 3 && anima.char_side != charType){continue;} // Probably better as a animation property instead of a if statement
+						if (anima.char_side != null && anima.char_side != 3 && !(!PlayState.invertedChart && anima.char_side == invChIDs[charType] || PlayState.invertedChart && anima.char_side == invChIDs[charType])){continue;} // This if statement hurts my brain
 						if (anima.ifstate != null){
 							trace("Loading a animation with ifstatement...");
 							if (anima.ifstate.check == 1 ){ // Do on step or beat

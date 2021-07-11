@@ -400,6 +400,8 @@ class OnlinePlayState extends PlayState
         if (PlayState.p2canplay){
           PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
 
+          //PlayState.p2presses = [data[0], data[1], data[2], data[3]];
+
         }
 
       case Packets.DISCONNECT:

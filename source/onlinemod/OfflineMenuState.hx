@@ -43,6 +43,10 @@ class OfflineMenuState extends MusicBeatState
     sideButton.setLabel(new FlxUIText(0,0,(PlayState.invertedChart ? "Deswap":"Swap") + " Chart"));
     sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
   }
+  function goOptions(){
+      FlxG.mouse.visible = false;
+      FlxG.switchState(new OfflineOptionsMenu());
+  }
   override function create()
   {
     bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
@@ -70,10 +74,7 @@ class OfflineMenuState extends MusicBeatState
 
     super.create();
 
-    optionsButton = new FlxUIButton(1100, 40, "Options", () -> {
-      FlxG.mouse.visible = false;
-      FlxG.switchState(new OfflineOptionsMenu());
-    });
+    optionsButton = new FlxUIButton(1100, 40, "Options", goOptions);
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(150, 30);
     add(optionsButton);

@@ -42,10 +42,10 @@ class OfflinePlayState extends PlayState
   	try{
 	  	PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
 	    PlayState.SONG.player1 = FlxG.save.data.playerChar;
-	    if (!FlxG.save.data.charAuto || TitleState.retChar(PlayState.SONG.player2) == ""){ // Check is second player is a valid character
-	    	PlayState.SONG.player2 = FlxG.save.data.opponent;
-	    }else{ // Allows characters with the wrong case to still work
+	    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
 	    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
+	    }else{
+	    	PlayState.SONG.player2 = FlxG.save.data.opponent;
 	    }
 	    PlayState.stateType=2;
 	    // var voicesFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'

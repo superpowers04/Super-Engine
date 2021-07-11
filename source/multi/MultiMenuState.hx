@@ -54,22 +54,25 @@ class MultiMenuState extends onlinemod.OfflineMenuState
         {
         if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
 
-          songs.push(dataDir + directory);
-          songNames.push(directory);
-              
-          var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
-          controlLabel.isMenuItem = true;
-          controlLabel.targetY = i;
           modes[i] = [];
-          if (i != 0)
-            controlLabel.alpha = 0.6;
-          grpSongs.add(controlLabel);
           for (file in FileSystem.readDirectory(dataDir + directory))
           {
               if (!blockedFiles.contains(file.toLowerCase()) && StringTools.endsWith(file, '.json')){
                 modes[i].push(file);
               }
           }
+          if (modes[i][0] == null){ // No charts to load!
+            modes[i][0] = "No charts for this song!";
+          }
+          songs.push(dataDir + directory);
+          songNames.push(directory);
+              
+          var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
+          controlLabel.isMenuItem = true;
+          controlLabel.targetY = i;
+          if (i != 0)
+            controlLabel.alpha = 0.6;
+          grpSongs.add(controlLabel);
           i++;
         }
       }
@@ -78,6 +81,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     }
   }
   override function gotoSong(){
+      if(modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
+        MainMenuState.handleError('${songs[curSelected]} has no chart!');
+        return;
+      }
       try{
 
       var songJSON = modes[curSelected][selMode]; // Just for easy access
@@ -158,9 +165,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			}
 		}
 	}
+
+  override function goOptions(){
+      FlxG.mouse.visible = false;
+      FlxG.switchState(new MultiOptionsMenu());
+  }
 }
 
-class OfflineOptionsMenu extends OptionsMenu{
+class MultiOptionsMenu extends OptionsMenu{
   override function goBack(){
     FlxG.switchState(new MultiMenuState());
   }

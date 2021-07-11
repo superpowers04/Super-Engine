@@ -291,7 +291,7 @@ class PlayState extends MusicBeatState
 	
 		//dialogue shit
 		loadDialog();
-
+		// Stage management
 		if (FlxG.save.data.preformance){
 			defaultCamZoom = 0.9;
 			curStage = 'stage';
@@ -646,6 +646,11 @@ class PlayState extends MusicBeatState
 					}
 				}
 		}
+		if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
+			var pl:Array<String> = [SONG.player1,SONG.player2];
+			SONG.player1 = pl[1];
+			SONG.player2 = pl[0];
+		}
 		var gfVersion:String = 'gf';
 
 		switch (SONG.gfVersion)
@@ -666,37 +671,63 @@ class PlayState extends MusicBeatState
 		if (dadShow) dad = new Character(100, 100, SONG.player2,false,1); else dad = new EmptyCharacter(100, 100);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-		if (FlxG.save.data.gfChar == SONG.player2){
-			if (SONG.player1 != 'gf'){	// Don't hide GF if player 1 is GF
+		if (gfVersion == SONG.player2){
+			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
 				dad.setPosition(gf.x, gf.y);
 				gf.visible = false;
-			}
-			if (isStoryMode)
-			{
-				camPos.x += 600;
-				tweenCamIn();
-			}
-		}else{
-			switch (SONG.player2)
-			{
-				case 'gf':
-					if (SONG.player1 != 'gf'){	// Don't hide GF if player 1 is GF
-						dad.setPosition(gf.x, gf.y);
-						gf.visible = false;
-					}
-					if (isStoryMode)
-					{
-						camPos.x += 600;
-						tweenCamIn();
-					}
+				if (isStoryMode)
+				{
+					camPos.x += 600;
+					tweenCamIn();
 				}
+			}
 		}
-		if (dad.camX != 0) {
-			camPos.x +=dad.camX;
+		if (gfVersion == SONG.player1){
+			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
+				boyfriend.setPosition(gf.x, gf.y);
+				gf.visible = false;
+				if (isStoryMode)
+				{
+					camPos.x += 600;
+					tweenCamIn();
+				}
+			}
 		}
-		if(dad.camY != 0){
-			camPos.y += dad.camY;
-		}
+		// Pretty sure this doesn't do anything anymore
+		// else{ 
+		// 	switch (SONG.player2)
+		// 	{
+		// 		case 'gf':
+		// 			if (!SONG.player1.startsWith('gf')){	// Don't hide GF if player 1 is GF
+		// 				dad.setPosition(gf.x, gf.y);
+		// 				gf.visible = false;
+		// 			}
+		// 			if (isStoryMode)
+		// 			{
+		// 				camPos.x += 600;
+		// 				tweenCamIn();
+		// 			}
+		// 		}
+		// 	switch (SONG.player1)
+		// 	{
+		// 		case 'gf':
+		// 			if (!SONG.player2.startsWith('gf')){	// Don't hide GF if player 1 is GF
+		// 				boyfriend.setPosition(gf.x, gf.y);
+		// 				gf.visible = false;
+		// 			}
+		// 			if (isStoryMode)
+		// 			{
+		// 				camPos.x += 600;
+		// 				tweenCamIn();
+		// 			}
+		// 		}
+		// }
+		// if (dad.camX != 0) {
+		// 	camPos.x +=dad.camX;
+		// }
+		// if(dad.camY != 0){
+		// 	camPos.y += dad.camY;
+		// }
 		camPos.set(camPos.x + dad.camX, camPos.y + dad.camY);
 
 		boyfriend = new Character(770, 100, SONG.player1,true,0);
