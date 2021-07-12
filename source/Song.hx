@@ -80,6 +80,8 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
+		swagShit.defplayer1 = swagShit.player1;
+		swagShit.defplayer2 = swagShit.player2;
 		if (PlayState.invertedChart){
 			var invertedNotes:Array<Int> = [4,5,6,7,0,1,2,3];
 			for (sid => section in swagShit.notes) {
@@ -90,9 +92,9 @@ class Song
 				section.mustHitSection = !section.mustHitSection;
 				swagShit.notes[sid] = section;
 			}
+			swagShit.defplayer1 = swagShit.player2;
+			swagShit.defplayer2 = swagShit.player1;
 		}
-		swagShit.defplayer1 = swagShit.player1;
-		swagShit.defplayer2 = swagShit.player2;
 		swagShit.defgf = swagShit.gfVersion;
 		return swagShit;
 	}

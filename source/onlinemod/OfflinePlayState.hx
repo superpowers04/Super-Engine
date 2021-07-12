@@ -16,8 +16,10 @@ class OfflinePlayState extends PlayState
 {
   var loadedVoices:FlxSound;
   var loadedInst:Sound;
+  var loadingtext:FlxText;
   public static var chartFile:String = "";
   function loadSongs(){
+
   	var voicesFile = "";
     var instFile = "";
     for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg']) {

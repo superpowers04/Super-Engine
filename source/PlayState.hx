@@ -88,7 +88,7 @@ class PlayState extends MusicBeatState
 	public static var loadRep:Bool = false;
 
 	public static var noteBools:Array<Bool> = [false, false, false, false];
-	public static var p2presses:Array<Bool> = [false, false, false, false];
+	public static var p2presses:Array<Int> = [0,0,0,0]; // 0 = not pressed, 1 = pressed, 2 = hold, 3 = miss
 	public static var p1presses:Array<Bool> = [false, false, false, false];
 	public static var p2canplay = false;//TitleState.p2canplay
 
@@ -667,32 +667,13 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.gfChar != "gf"){gfVersion=FlxG.save.data.gfChar;}
 		gf = new Character(400, 100, gfVersion,false,2);
 		gf.scrollFactor.set(0.95, 0.95);
+		if (SONG.defplayer1.startsWith("gf") && FlxG.save.data.charAuto) SONG.player1 = FlxG.save.data.gfChar;
 		if (SONG.defplayer2.startsWith("gf") && FlxG.save.data.charAuto) SONG.player2 = FlxG.save.data.gfChar;
 		if (dadShow) dad = new Character(100, 100, SONG.player2,false,1); else dad = new EmptyCharacter(100, 100);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-		if (gfVersion == SONG.player2){
-			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
-				dad.setPosition(gf.x, gf.y);
-				gf.visible = false;
-				if (isStoryMode)
-				{
-					camPos.x += 600;
-					tweenCamIn();
-				}
-			}
-		}
-		if (gfVersion == SONG.player1){
-			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
-				boyfriend.setPosition(gf.x, gf.y);
-				gf.visible = false;
-				if (isStoryMode)
-				{
-					camPos.x += 600;
-					tweenCamIn();
-				}
-			}
-		}
+
+
 		// Pretty sure this doesn't do anything anymore
 		// else{ 
 		// 	switch (SONG.player2)
@@ -753,6 +734,29 @@ class PlayState extends MusicBeatState
 			case 'school','schoolevil':
 				boyfriend.y += 20;
 				gf.y += 40;
+		}
+		if (gfVersion == SONG.player2){
+			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
+				dad.setPosition(gf.x, gf.y);
+				gf.visible = false;
+				if (isStoryMode)
+				{
+					camPos.x += 600;
+					tweenCamIn();
+				}
+			}
+		}
+
+		if (gfVersion == SONG.player1){
+			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
+				boyfriend.setPosition(gf.x, gf.y);
+				gf.visible = false;
+				if (isStoryMode)
+				{
+					camPos.x += 600;
+					tweenCamIn();
+				}
+			}
 		}
 		if (dad.spiritTrail && FlxG.save.data.distractions){
 			// trailArea.scrollFactor.set();
@@ -1624,7 +1628,7 @@ class PlayState extends MusicBeatState
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
-		if (FlxG.keys.justPressed.SEVEN)
+		if (FlxG.keys.justPressed.SEVEN && onlinemod.OnlinePlayMenuState.socket == null)
 		{
 			FlxG.switchState(new ChartingState());
 		}
@@ -2298,8 +2302,9 @@ class PlayState extends MusicBeatState
 		var downHold:Bool = false;
 		var rightHold:Bool = false;
 		var leftHold:Bool = false;	
-		private function fromBool(?input:Bool = false):Int{
-			if(input){return 1;}else{return 0;}
+		private function fromBool(input:Array<Bool>):Int{
+			if (input[1]) return 1; else if (input[0]) return 2;
+			return 0; 
 		}
 		private function fromInt(?input:Int = 0):Bool{
 			if(input == 1){return true;}else{return false;}
@@ -2791,17 +2796,17 @@ class PlayState extends MusicBeatState
 				});
 									
 				if (p2canplay){ // The above but for P2
-					if (p2presses[0]) dad.playAnim('singLEFT', true);
-					else if (p2presses[1]) dad.playAnim('singDOWN', true);
-					else if (p2presses[2]) dad.playAnim('singUP', true);
-					else if (p2presses[3]) dad.playAnim('singRIGHT', true);
+					if (p2presses[0] != 0) dad.playAnim('singLEFT', true);
+					else if (p2presses[1] != 0) dad.playAnim('singDOWN', true);
+					else if (p2presses[2] != 0) dad.playAnim('singUP', true);
+					else if (p2presses[3] != 0) dad.playAnim('singRIGHT', true);
 					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true);
 					cpuStrums.forEach(function(spr:FlxSprite)
 					{
-						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
+						if (p2presses[spr.ID] == 1 && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
 							spr.animation.play('pressed');
 
-						if (!p2presses[spr.ID])
+						if (p2presses[spr.ID] != 2)
 							spr.animation.play('static');
 			 
 						if (spr.animation.curAnim.name == 'confirm')

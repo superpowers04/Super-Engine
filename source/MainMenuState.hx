@@ -21,18 +21,21 @@ import flixel.animation.FlxBaseAnimation;
 import sys.FileSystem;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
+import flixel.util.FlxAxes;
 
 
 using StringTools;
 
 class MainMenuState extends SickMenuState
 {
+	public static var ver:String = "0.0.1";
+	
 	public static var firstStart:Bool = true;
 
 	public static var nightly:String = "";
 
 	public static var kadeEngineVer:String = "1.5.2" + nightly;
-	public static var gameVer:String = "0.2.7.1/0.2.8";
+	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static function handleError(error:String):Void{
 		MainMenuState.errorMessage = error;
@@ -59,15 +62,16 @@ class MainMenuState extends SickMenuState
 
 		super.create();
 
-		var versionShit:FlxText = new FlxText(FlxG.width - 5, FlxG.height - 36, 0, gameVer +  (Main.watermarks ? " FNF - " + kadeEngineVer + " Kade Engine" : ""), 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/FNFBR ${ver}', 12);
+		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
 		if (TitleState.outdated){
-			var outdatedLMAO:FlxText = new FlxText(FlxG.width - 5, FlxG.height - 50, 0,'Kade is outdated: ${TitleState.updatedVer}', 12);
+			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'FNFBR is outdated, Latest: ${TitleState.updatedVer}', 32);
+			outdatedLMAO.setFormat("VCR OSD Mono", 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			outdatedLMAO.scrollFactor.set();
-			outdatedLMAO.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+ 			outdatedLMAO.screenCenter(FlxAxes.X);
 			add(outdatedLMAO);
 		}
 		//  Whole bunch of checks to prevent crashing
