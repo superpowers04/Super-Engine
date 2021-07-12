@@ -331,25 +331,23 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.music.stop();
 
 			MainMenuState.firstStart = true;
-
+			#if !debug
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Get current version of Kade Engine
 				
-				var http = new haxe.Http("https://raw.githubusercontent.com/KadeDev/Kade-Engine/master/version.downloadMe");
+				var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/FunkinBattleRoyale-Mod/master/version.downloadMe"); // It's recommended to change this if forking
 				var returnedData:Array<String> = [];
 				
 				http.onData = function (data:String)
 				{
-					returnedData[0] = data.substring(0, data.indexOf(';'));
-					returnedData[1] = data.substring(data.indexOf('-'), data.length);
-				  	if (!MainMenuState.kadeEngineVer.contains(returnedData[0].trim()) && !OutdatedSubState.leftState && MainMenuState.nightly == "")
+				  	if (!MainMenuState.ver.contains(data.trim()) && !OutdatedSubState.leftState && MainMenuState.nightly == "")
 					{
-						trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.kadeEngineVer);
+						trace('outdated lmao! ' + data + ' != ' + MainMenuState.ver);
 						// OutdatedSubState.needVer = returnedData[0];
 						// OutdatedSubState.currChanges = returnedData[1];
 						outdated = true;
-						updatedVer = returnedData[0];
+						updatedVer = data;
 						// FlxG.switchState(new OutdatedSubState());
 					}
 					else
@@ -365,6 +363,9 @@ class TitleState extends MusicBeatState
 				
 				http.request();
 			});
+			#else
+				FlxG.switchState(new MainMenuState());
+			#end
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 

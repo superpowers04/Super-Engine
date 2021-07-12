@@ -18,6 +18,7 @@ class MultiPlayState extends onlinemod.OfflinePlayState
   public static var instFile = "";
   override function loadSongs(){
     {try{
+
     loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));
     loadedInst = Sound.fromFile(instFile);
   }catch(e){MainMenuState.handleError('Caught "loadSongs" crash: ${e.message}');}}

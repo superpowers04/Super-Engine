@@ -4,6 +4,7 @@ typedef CharacterJson =
 {
 	var spirit_trail:Bool;
 	var flip_x:Bool;
+	var flip:Dynamic; // Controls if the character should be flipped when on the player's side
 	var clone:String;
 	var animations:Array<CharJsonAnimation>;
 	var animations_offsets:Array<CharJsonAnimOffsets>;

@@ -1628,10 +1628,11 @@ class PlayState extends MusicBeatState
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
-		if (FlxG.keys.justPressed.SEVEN && onlinemod.OnlinePlayMenuState.socket == null)
-		{
-			FlxG.switchState(new ChartingState());
-		}
+		// Charting is broken at the moment
+		// if (FlxG.keys.justPressed.SEVEN && onlinemod.OnlinePlayMenuState.socket == null)    C
+		// {
+		// 	FlxG.switchState(new ChartingState());
+		// }
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);

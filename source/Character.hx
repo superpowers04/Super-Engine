@@ -45,6 +45,7 @@ class Character extends FlxSprite
 	public var missSounds:Array<Sound> = [];
 	public var oneShotAnims:Array<String> = [];
 	public var tintedAnims:Array<String> = [];
+	public var flip:Bool = true;
 
 
 	public var holdTimer:Float = 0;
@@ -67,14 +68,17 @@ class Character extends FlxSprite
 				addOffset('hairFall', 0, -9);
 
 				addOffset('scared', -2, -17);
+				flip = false;
 			case 'gf-car':
 				addOffset('all',0,30);
 				addOffset('danceLeft', 0);
 				addOffset('danceRight', 0);
+				flip = false;
 			case 'gf-pixel':
 				addOffset('all',0,30);
 				addOffset('danceLeft', 0);
 				addOffset('danceRight', 0);
+				flip = false;
 			case "dad":
 				addOffset('idle');
 				addOffset("singUP", -6, 50);
@@ -540,6 +544,7 @@ class Character extends FlxSprite
 					spiritTrail=charProperties.spirit_trail; // Spirit TraiL
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+					
 					// Custom misses
 					if (charType == 0 && !amPreview && !debugMode){
 						switch(charProperties.custom_misses){
@@ -593,6 +598,8 @@ class Character extends FlxSprite
 						trace('Character clones $clonedChar copying their offsets!');
 						addOffsets(clonedChar);
 					}
+					if (charProperties.flip != null) flip = charProperties.flip;
+
 					trace('Adding custom offsets');
 					var offsetCount = 0;
 					for (offset in charProperties.animations_offsets){ // Custom offsets
@@ -650,7 +657,7 @@ class Character extends FlxSprite
 		}
 		this.y += charY;
 		this.x += charX;
-		if (isPlayer && !amPreview && animation.getByName('singRIGHT') != null)
+		if (isPlayer && !amPreview && animation.getByName('singRIGHT') != null && flip)
 		{
 			flipX = !flipX;
 

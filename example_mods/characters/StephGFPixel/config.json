@@ -12,6 +12,7 @@
 		"voices": "gf", "": "Voices to be used on Lobby singing, set this to 'custom' if you want to use custom voice files, the files should be named 'sing_left.ogg', 'sing_up.ogg', 'sing_down.ogg' and 'sing_right.ogg', and should be located in your character's folder",
 		"alt_anims": false, "": "Enables alt animations like those from Parents-Christmas",
 		"flip_x": false, "": "Flips X axis from the sprite, useful for Boyfriend/Pico clones",
+		"flip": false, "": "Allow the character to flip, enabled by default for every character except for GF, copies cloned character if not provided",
 
 		"animations":
 		[

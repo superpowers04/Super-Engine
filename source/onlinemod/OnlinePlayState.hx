@@ -305,7 +305,11 @@ class OnlinePlayState extends PlayState
     super.keyShit();
     if (PlayState.p2canplay){
       if (lastPressed != PlayState.p1presses){
-        Sender.SendPacket(Packets.KEYPRESS, [this.fromBool(controls.LEFT), this.fromBool(controls.DOWN), this.fromBool(controls.UP), this.fromBool(controls.RIGHT)], OnlinePlayMenuState.socket);
+        // Sender.SendPacket(Packets.KEYPRESS, [this.fromBool(controls.LEFT), this.fromBool(controls.DOWN), this.fromBool(controls.UP), this.fromBool(controls.RIGHT)], OnlinePlayMenuState.socket);
+        Sender.SendPacket(Packets.KEYPRESS, [this.fromBool([controls.LEFT_P, controls.LEFT]),
+          this.fromBool([controls.DOWN_P, controls.DOWN]),
+          this.fromBool([controls.UP_P, controls.UP]),
+          this.fromBool([controls.RIGHT_P, controls.RIGHT])], OnlinePlayMenuState.socket);
         lastPressed = PlayState.p1presses;
       }
     }
@@ -398,9 +402,9 @@ class OnlinePlayState extends PlayState
         FlxG.switchState(new OnlineLobbyState(true));
       case Packets.KEYPRESS:
         if (PlayState.p2canplay){
-          PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
+          // PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
 
-          //PlayState.p2presses = [data[0], data[1], data[2], data[3]];
+          PlayState.p2presses = [data[0], data[1], data[2], data[3]];
 
         }
 
