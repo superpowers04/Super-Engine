@@ -102,15 +102,15 @@ class Character extends FlxSprite
 				charY-=200;
 			case "pico":
 				if(isPlayer){
-					needsInverted = true;
-					addOffset("singUP", 0, 29);
-					addOffset("singRIGHT", 0, -11);
-					addOffset("singLEFT", 0, 2);
-					addOffset("singDOWN", 0, -76);
-					addOffset("singUPmiss", 0, 67);
-					addOffset("singRIGHTmiss", 0, 28);
-					addOffset("singLEFTmiss", 0, 50);
-					addOffset("singDOWNmiss", 0, -34);
+					// needsInverted = true;
+			        addOffset('singDOWN', 87, -80);
+			        addOffset('singDOWNmiss', 87, -29);
+			        addOffset('singRIGHT', -48, 0);
+			        addOffset('singRIGHTmiss', -40, 50);
+			        addOffset('singUP', 19, 27);
+			        addOffset('singUPmiss', 19, 67);
+			        addOffset('singLEFT', 75, -9);
+			        addOffset('singLEFTmiss', 75, 25);
 				}else{
 					addOffset("singUP", -43, 29);
 					addOffset("singRIGHT", -85, -11);
@@ -122,7 +122,7 @@ class Character extends FlxSprite
 					addOffset("singDOWNmiss", 200, -34);}
 
 				charY+=330;
-				// if(!isPlayer){camX+=600;}
+				if(!isPlayer){camX-=100;}
 			case 'bf','bf-christmas','bf-car':
 				charY+=330;
 				needsInverted = true;
