@@ -107,7 +107,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       //   PlayState.storyDifficulty = 0;
       // }
       PlayState.actualSongName = songName;
-      MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
+      MultiPlayState.voicesFile = '';
+      if (FileSystem.exists('${selSong}/Voices.ogg')) MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
       MultiPlayState.instFile = '${selSong}/Inst.ogg';
       LoadingState.loadAndSwitchState(new MultiPlayState());
       }catch(e){

@@ -33,9 +33,9 @@ class OfflinePlayState extends PlayState
     		voicesFile = i;
     	}
     }
-    if (voicesFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a voices file!');}
+    if (voicesFile != ""){loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));}
     trace('Loading $voicesFile, $instFile');
-    loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));
+    
     loadedInst = Sound.fromFile(instFile);
   }
   
