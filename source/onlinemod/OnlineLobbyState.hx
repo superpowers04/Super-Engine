@@ -12,6 +12,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxAxes;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
+import flixel.ui.FlxBar;
 
 import sys.FileSystem;
 using StringTools;
@@ -30,6 +31,10 @@ class OnlineLobbyState extends MusicBeatState
   public static var clients:Map<Int, String> = []; // Maps a player ID to the corresponding nickname
   public static var clientsOrder:Array<Int> = []; // This array holds ID values in order of join time (including ID -1 for self)
   public static var receivedPrevPlayers:Bool = false;
+  var quitHeld:Int = 0;
+  var quitHeldBar:FlxBar;
+  var quitHeldBG:FlxSprite;
+
 
   var keepClients:Bool;
 
@@ -92,6 +97,20 @@ class OnlineLobbyState extends MusicBeatState
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(160, 70);
     add(optionsButton);
+
+    quitHeldBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar','shared'));
+    quitHeldBG.screenCenter(X);
+    quitHeldBG.scrollFactor.set();
+    add(quitHeldBG);
+
+
+    quitHeldBar = new FlxBar(quitHeldBG.x + 4, quitHeldBG.y + 4, LEFT_TO_RIGHT, Std.int(quitHeldBG.width - 8), Std.int(quitHeldBG.height - 8), this,
+      'quitHeld', 0, 1000);
+    quitHeldBar.numDivisions = 1000;
+    quitHeldBar.scrollFactor.set();
+    quitHeldBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+    add(quitHeldBar);
+
 
 
     super.create();
@@ -235,22 +254,23 @@ class OnlineLobbyState extends MusicBeatState
     clientTexts.remove(id);
     clientCount--;
   }
-
+  function disconnect(){
+      if (OnlinePlayMenuState.socket.connected)
+      {
+        OnlinePlayMenuState.socket.close();
+      }
+      FlxG.switchState(new OnlinePlayMenuState());
+  }
 
   override function update(elapsed:Float)
   {
+    if (quitHeldBar.visible && quitHeld <= 0){
+      quitHeldBar.visible = false;
+      quitHeldBG.visible = false;
+    }
     if (!Chat.chatField.hasFocus)
     {
       OnlinePlayMenuState.SetVolumeControls(true);
-      if (controls.BACK)
-      {
-
-        if (OnlinePlayMenuState.socket.connected)
-        {
-          OnlinePlayMenuState.socket.close();
-        }
-        FlxG.switchState(new OnlinePlayMenuState());
-      }
     }
     else
     {
@@ -259,8 +279,18 @@ class OnlineLobbyState extends MusicBeatState
       {
         Chat.SendChatMessage();
       }
-    }
 
+    }
+    if (FlxG.keys.pressed.ESCAPE)
+    {
+      quitHeld += 5;
+      quitHeldBar.visible = true;
+      quitHeldBG.visible = true;
+      if (quitHeld > 1000) disconnect(); 
+    }else if (quitHeld > 0){
+      quitHeld -= 10;
+      
+    }
     super.update(elapsed);
   }
 }
