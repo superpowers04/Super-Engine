@@ -667,8 +667,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.gfChar != "gf"){gfVersion=FlxG.save.data.gfChar;}
 		gf = new Character(400, 100, gfVersion,false,2);
 		gf.scrollFactor.set(0.95, 0.95);
-		if (SONG.defplayer1.startsWith("gf") && FlxG.save.data.charAuto) SONG.player1 = FlxG.save.data.gfChar;
-		if (SONG.defplayer2.startsWith("gf") && FlxG.save.data.charAuto) SONG.player2 = FlxG.save.data.gfChar;
+		if (SONG.defplayer1 != null && SONG.defplayer1.startsWith("gf") && FlxG.save.data.charAuto) SONG.player1 = FlxG.save.data.gfChar;
+		if (SONG.defplayer2 != null && SONG.defplayer2.startsWith("gf") && FlxG.save.data.charAuto) SONG.player2 = FlxG.save.data.gfChar;
 		if (dadShow) dad = new Character(100, 100, SONG.player2,false,1); else dad = new EmptyCharacter(100, 100);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
@@ -1629,10 +1629,10 @@ class PlayState extends MusicBeatState
 		}
 
 		// Charting is broken at the moment
-		// if (FlxG.keys.justPressed.SEVEN && onlinemod.OnlinePlayMenuState.socket == null)    C
-		// {
-		// 	FlxG.switchState(new ChartingState());
-		// }
+		if (FlxG.keys.justPressed.SEVEN && onlinemod.OnlinePlayMenuState.socket == null)
+		{
+			FlxG.switchState(new ChartingState());
+		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
@@ -2484,7 +2484,7 @@ class PlayState extends MusicBeatState
 								daNote.kill();
 								notes.remove(daNote, true);
 							}
-							else
+							else if (!daNote.canMiss)
 							{
 								health -= 0.075;
 								vocals.volume = 0;
@@ -2824,7 +2824,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-	function noteMiss(direction:Int = 1, daNote:Note):Void
+	function noteMiss(direction:Int = 1, daNote:Note,?type = 0):Void
 	{
 		if (!boyfriend.stunned)
 		{
@@ -2855,7 +2855,7 @@ class PlayState extends MusicBeatState
 				totalNotesHit -= 1;
 
 			songScore -= 10;
-			
+			if (type == 1) {songScore -= 290; health -= 0.16;} // Having it insta kill, not a good idea 
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 			// FlxG.log.add('played imss note');
 
@@ -2982,6 +2982,13 @@ class PlayState extends MusicBeatState
 
 				if (!resetMashViolation && mashViolations >= 1)
 					mashViolations--;
+
+
+				if (note.canMiss){
+					
+					if (note.rating != "shit") return;// Lets not be a shit and count shit hits for hurt notes
+					noteMiss(note.noteData, note,1);
+				}
 
 				if (mashViolations < 0)
 					mashViolations = 0;
