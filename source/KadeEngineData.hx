@@ -123,6 +123,8 @@ class KadeEngineData
 
 		if (FlxG.save.data.noteAsset == null)
 			FlxG.save.data.noteAsset = "default";
+
+		if (FlxG.save.data.noterating == null) FlxG.save.data.noterating = true;
 	
 
 		Conductor.recalculateTimings();

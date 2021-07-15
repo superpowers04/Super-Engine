@@ -792,6 +792,26 @@ class ShitQualityOption extends Option
 		return "Shit Quality " + (!FlxG.save.data.preformance ? "off" : "on");
 	}
 }
+class NoteRatingOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.noterating = !FlxG.save.data.noterating;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Note Ratings " + (!FlxG.save.data.noterating ? "off" : "on");
+	}
+}
 
 class GUIGapOption extends Option
 {

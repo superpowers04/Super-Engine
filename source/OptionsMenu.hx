@@ -46,7 +46,7 @@ class OptionsMenu extends MusicBeatState
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
-			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"),
+			// new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"), This didn't work before and it doesn't work again...
 			new HitSoundOption("Play a click when you hit a note, Basically is the one from VS Omega. Can cause lag!")
 			// new InputHandlerOption("Change the input engine used, only works locally, Disables Kade options unless supported by engine")
 		]),
@@ -75,6 +75,7 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Preformance", [
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
+			new NoteRatingOption("Disables the rating that appears when you press a note"),
 		])
 	];
 

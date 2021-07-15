@@ -2115,7 +2115,7 @@ class PlayState extends MusicBeatState
 			var pixelShitPart1:String = "";
 			var pixelShitPart2:String = '';
 	
-			if(!FlxG.save.data.preformance){
+			if(FlxG.save.data.noterating){
 				rating.loadGraphic(Paths.image(daRating));
 				rating.screenCenter();
 				rating.y -= 50;
@@ -2180,7 +2180,7 @@ class PlayState extends MusicBeatState
 
 			if(!FlxG.save.data.botplay) add(currentTimingShown);
 			var comboSpr:FlxSprite = null;
-			if(!FlxG.save.data.preformance){
+			if(FlxG.save.data.noterating){
 				comboSpr = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
 				comboSpr.screenCenter();
 				comboSpr.x = rating.x;
@@ -2263,7 +2263,7 @@ class PlayState extends MusicBeatState
 	
 			coolText.text = Std.string(seperatedScore);
 			// add(coolText);
-			if(!FlxG.save.data.preformance){
+			if(FlxG.save.data.noterating){
 				FlxTween.tween(rating, {alpha: 0}, 0.2, {
 					startDelay: Conductor.crochet * 0.001,
 					onUpdate: function(tween:FlxTween)
@@ -2288,9 +2288,9 @@ class PlayState extends MusicBeatState
 					},
 					startDelay: Conductor.crochet * 0.001
 				});
-		
-				curSection += 1;
-				}
+
+			}
+			curSection += 1;
 			}
 		}
 

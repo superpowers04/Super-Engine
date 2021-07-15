@@ -65,6 +65,7 @@ class OnlineOptionsMenu extends OptionsMenu
       new OptionCategory("Preformance", [
         new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
         new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
+        new NoteRatingOption("Disables the rating that appears when you press a note"),
       ])
     ];
 		super.create();
