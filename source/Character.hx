@@ -771,20 +771,20 @@ class Character extends FlxSprite
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
 		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
 		animation.play(AnimName, Force, Reversed, Frame);
+		if (animation.curAnim != null && AnimName != lastAnim){
 		
-		if (tintedAnims.contains(animation.curAnim.name)){this.color = 0x330066;}else{this.color = 0xffffff;}
-		// if (animation.curAnim != null && animation.curAnim.name == AnimName){return;} // Skip if already playing, no need to calculate offsets and such
-
-		var daOffset = animOffsets.get(AnimName); // Get offsets
-		var offsets:Array<Float> = [0,0];
-		if (animOffsets.exists(AnimName)) // Set offsets if animation has any
-		{
-			offsets[0]+=daOffset[0];
-			offsets[1]+=daOffset[1];
-		}
-		offsets[0]+=animOffsets["all"][0]; // Add "all" offsets
-		offsets[1]+=animOffsets["all"][1];
-		offset.set(offsets[0], offsets[1]); // Set offsets
+			if (tintedAnims.contains(animation.curAnim.name)){this.color = 0x330066;}else{this.color = 0xffffff;}
+			var daOffset = animOffsets.get(AnimName); // Get offsets
+			var offsets:Array<Float> = [0,0];
+			if (animOffsets.exists(AnimName)) // Set offsets if animation has any
+			{
+				offsets[0]+=daOffset[0];
+				offsets[1]+=daOffset[1];
+			}
+			offsets[0]+=animOffsets["all"][0]; // Add "all" offsets
+			offsets[1]+=animOffsets["all"][1];
+			offset.set(offsets[0], offsets[1]); // Set offsets
+		} // Skip if already playing, no need to calculate offsets and such
 
 		if (dance_idle && lastAnim != AnimName )
 		{
@@ -801,6 +801,9 @@ class Character extends FlxSprite
 	public function cloneAnimation(name:String,anim:FlxAnimation):Void{
 		if(!amPreview && anim != null){
 			animation.add(name,anim.frames,anim.frameRate,anim.flipX);
+			if (animOffsets.exists(anim.name)){
+				addOffset(name,animOffsets[anim.name][0],animOffsets[anim.name][1],true);
+			}
 		}
 	}
 	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false):Void
