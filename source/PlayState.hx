@@ -2986,7 +2986,7 @@ class PlayState extends MusicBeatState
 
 				if (note.canMiss){
 					
-					if (note.rating != "shit") return;// Lets not be a shit and count shit hits for hurt notes
+					if (note.rating == "shit") return;// Lets not be a shit and count shit hits for hurt notes
 					noteMiss(note.noteData, note,1);
 				}
 
