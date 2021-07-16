@@ -15,28 +15,20 @@ import sys.FileSystem;
 
 using StringTools;
 
-class OfflineMenuState extends MusicBeatState
+class OfflineMenuState extends SearchMenuState
 {
-  var curSelected:Int = 0;
-  var searchField:FlxInputText;
-  var searchButton:FlxUIButton;
   var sideButton:FlxUIButton;
 
-  var songs:Array<String> = [];
+  // var songs:Array<String> = [];
   var songFiles:Array<String> = [];
   var songDirs:Array<String> = [];
-  var grpSongs:FlxTypedGroup<Alphabet>;
   var dataDir:String = "assets/onlinedata/data/";
-  public static var optionsButton:FlxUIButton;
-  var muteKeys = FlxG.sound.muteKeys;
-  var volumeUpKeys = FlxG.sound.volumeUpKeys;
-  var volumeDownKeys = FlxG.sound.volumeDownKeys;
-  var bg:FlxSprite;
+  var optionsButton:FlxUIButton;
   var invertedChart:Bool = false;
-  function findButton(){
-      refreshList(true,searchField.text);
-      searchField.hasFocus = false;
-  }
+  // function findButton(){
+  //     refreshList(true,searchField.text);
+  //     searchField.hasFocus = false;
+  // }
   function updateSideButton(){
     // var lab = sideButton.label;
     
@@ -49,31 +41,30 @@ class OfflineMenuState extends MusicBeatState
   }
   override function create()
   {
-    bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
-    bg.color = 0xFFFF6E6E;
+    // bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
     
-    add(bg);
-    searchField = new FlxInputText(10, 100, 1152, 20);
-    searchField.maxLength = 81;
-    add(searchField);
+    
+    // add(bg);
+    // searchField = new FlxInputText(10, 100, 1152, 20);
+    // searchField.maxLength = 81;
+    // add(searchField);
 
-    searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", findButton);
-    searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-    searchButton.resize(100, searchField.height);
-    add(searchButton);
+    // searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", findButton);
+    // searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+    // searchButton.resize(100, searchField.height);
+    // add(searchButton);
 
 
 
     
 
-    refreshList();
+    // refreshList();
 
-    FlxG.mouse.visible = true;
-    FlxG.autoPause = true;
+    // FlxG.mouse.visible = true;
+    // FlxG.autoPause = true;
 
 
     super.create();
-
     optionsButton = new FlxUIButton(1100, 40, "Options", goOptions);
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(150, 30);
@@ -87,7 +78,7 @@ class OfflineMenuState extends MusicBeatState
     add(sideButton);
     updateSideButton();
   }
-  function refreshList(?reload=false,?search = ""){
+  override function reloadList(?reload=false,?search = ""){
     curSelected = 0;
     if(reload){grpSongs.destroy();}
     grpSongs = new FlxTypedGroup<Alphabet>();
@@ -122,29 +113,19 @@ class OfflineMenuState extends MusicBeatState
       }
     }
   }
-  override function update(elapsed:Float)
-  {
-    super.update(elapsed);
-    if (searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
-      SetVolumeControls(true);
-      handleInput();
-    }
+  // override function update(elapsed:Float)
+  // {
+  //   super.update(elapsed);
+  //   if (searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
+  //     SetVolumeControls(true);
+  //     handleInput();
+  //   }
+  // }
+  override function ret(){
+    FlxG.mouse.visible = false;
+    FlxG.switchState(new MainMenuState());
   }
-  function handleInput(){
-      if (controls.BACK)
-      {
-        FlxG.switchState(new MainMenuState());
-      }
-
-        if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
-        if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
-
-      if (controls.ACCEPT && songs.length > 0)
-      {
-          gotoSong();
-      }
-  }
-  function gotoSong(){
+  override function select(sel:Int = 0){
       // PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
       OfflinePlayState.chartFile = songs[curSelected];
       PlayState.isStoryMode = false;
@@ -165,52 +146,6 @@ class OfflineMenuState extends MusicBeatState
       PlayState.actualSongName = songName;
 
       LoadingState.loadAndSwitchState(new OfflinePlayState());
-  }
-
-  function changeSelection(change:Int = 0)
-	{
-		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = grpSongs.length - 1;
-		if (curSelected >= grpSongs.length)
-			curSelected = 0;
-
-
-		var bullShit:Int = 0;
-
-		for (item in grpSongs.members)
-		{
-      var onScreen = ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10));
-      if (onScreen){ // If item is onscreen, then actually move and such
-        item.revive();
-        item.targetY = bullShit - curSelected;
-
-        item.alpha = 0.6;
-
-        if (item.targetY == 0)
-        {
-          item.alpha = 1;
-        }}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
-  		bullShit++;
-		}
-	}
-  function SetVolumeControls(enabled:Bool)
-  {
-    if (enabled)
-    {
-      FlxG.sound.muteKeys = muteKeys;
-      FlxG.sound.volumeUpKeys = volumeUpKeys;
-      FlxG.sound.volumeDownKeys = volumeDownKeys;
-    }
-    else
-    {
-      FlxG.sound.muteKeys = null;
-      FlxG.sound.volumeUpKeys = null;
-      FlxG.sound.volumeDownKeys = null;
-    }
   }
 }
 

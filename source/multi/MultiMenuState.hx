@@ -36,7 +36,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     add(diffText);
     changeDiff();
   }
-  override function refreshList(?reload=false,?search = ""){
+  override function reloadList(?reload=false,?search = ""){
     curSelected = 0;
     if(reload){grpSongs.destroy();}
     grpSongs = new FlxTypedGroup<Alphabet>();
@@ -80,7 +80,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       MainMenuState.handleError('"/mods/charts" does not exist!');
     }
   }
-  override function gotoSong(){
+  override function select(sel:Int = 0){
       if(modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
         MainMenuState.handleError('${songs[curSelected]} has no chart!');
         return;
@@ -115,10 +115,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
         MainMenuState.handleError('Error while loading chart ${e.message}');
       }
   }
+
   override function handleInput(){
       if (controls.BACK)
       {
-        FlxG.switchState(new MainMenuState());
+        ret();
       }
 
       if(controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
@@ -127,7 +128,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       if(controls.RIGHT_P){changeDiff(1);}
       if (controls.ACCEPT && songs.length > 0)
       {
-          gotoSong();
+          select();
       }
   }
   function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
@@ -139,32 +140,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
   }
   override function changeSelection(change:Int = 0)
 	{
-		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = grpSongs.length - 1;
-		if (curSelected >= grpSongs.length)
-			curSelected = 0;
-
+    super.changeSelection(change);
     if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
 
-
-		var bullShit:Int = 0;
-
-		for (item in grpSongs.members)
-		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
-
-			item.alpha = 0.6;
-
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-			}
-		}
 	}
 
   override function goOptions(){
