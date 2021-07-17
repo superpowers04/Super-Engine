@@ -28,6 +28,9 @@ class SearchMenuState extends MusicBeatState
   var volumeUpKeys = FlxG.sound.volumeUpKeys;
   var volumeDownKeys = FlxG.sound.volumeDownKeys;
   var searchList:Array<String> = ["this should be replaced"];
+  var retAfter:Bool = true;
+  var bg:FlxSprite;
+  
 
   function findButton(){
       reloadList(true,searchField.text);
@@ -35,7 +38,11 @@ class SearchMenuState extends MusicBeatState
   }
   override function create()
   {try{
-    var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
+    if (!FlxG.sound.music.playing)
+    {
+      FlxG.sound.playMusic(Paths.music('freakyMenu'));
+    } 
+    bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
     bg.color = 0xFFFF6E6E;
     add(bg);
     reloadList();
@@ -94,6 +101,13 @@ class SearchMenuState extends MusicBeatState
     super.update(elapsed);
     if (searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
       SetVolumeControls(true);
+      handleInput();
+    }
+  }catch(e) MainMenuState.handleError('Error with searchmenu "update" ${e.message}');}
+  function select(sel:Int = 0){
+    trace("You forgot to replace the select function!");
+  }
+  function handleInput(){
       if (controls.BACK)
       {
         ret();
@@ -104,12 +118,8 @@ class SearchMenuState extends MusicBeatState
       if (controls.ACCEPT && songs.length > 0)
       {
         select(curSelected);
-        ret();
+        if(retAfter) ret();
       }
-    }
-  }catch(e) MainMenuState.handleError('Error with searchmenu "update" ${e.message}');}
-  function select(sel:Int = 0){
-    trace("You forgot to replace the select function!");
   }
   function ret(){
     FlxG.mouse.visible = false;
@@ -129,18 +139,22 @@ class SearchMenuState extends MusicBeatState
 
 		var bullShit:Int = 0;
 
-		for (item in grpSongs.members)
-		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
 
-			item.alpha = 0.6;
+      for (item in grpSongs.members)
+      {
+        var onScreen = ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10));
+        if (onScreen){ // If item is onscreen, then actually move and such
+          item.revive();
+          item.targetY = bullShit - curSelected;
 
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-			}
-		}
+          item.alpha = 0.6;
+
+          if (item.targetY == 0)
+          {
+            item.alpha = 1;
+          }}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
+        bullShit++;
+      }
 	}catch(e) MainMenuState.handleError('Error with searchmenu "chgsel" ${e.message}');}
   function SetVolumeControls(enabled:Bool)
   {

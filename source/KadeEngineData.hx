@@ -110,11 +110,11 @@ class KadeEngineData
 		if (FlxG.save.data.lastServer == null)
 			FlxG.save.data.lastServer = "";
 		if (FlxG.save.data.lastServerPort == null)
-			FlxG.save.data.lastServerPort = "";	
+			FlxG.save.data.lastServerPort = "";
 		if (FlxG.save.data.nickname == null)
-			FlxG.save.data.nickname = "";	
+			FlxG.save.data.nickname = "";
 
-		if (FlxG.save.data.guiGap == null) FlxG.save.data.guiGap = 0;	
+		if (FlxG.save.data.guiGap == null) FlxG.save.data.guiGap = 0;
 
 		if (FlxG.save.data.inputHandler == null)
 			FlxG.save.data.inputHandler = 0;
@@ -125,6 +125,7 @@ class KadeEngineData
 			FlxG.save.data.noteAsset = "default";
 
 		if (FlxG.save.data.noterating == null) FlxG.save.data.noterating = true;
+		if (FlxG.save.data.camMovement == null) FlxG.save.data.camMovement = true;
 	
 
 		Conductor.recalculateTimings();

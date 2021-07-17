@@ -51,23 +51,21 @@ class OptionsMenu extends MusicBeatState
 			// new InputHandlerOption("Change the input engine used, only works locally, Disables Kade options unless supported by engine")
 		]),
 		new OptionCategory("Appearance", [
-			#if desktop
+			new GUIGapOption("Change the distance between the end of the screen and text"),
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
-			new RainbowFPSOption("Make the FPS Counter Rainbow"),
-			new AccuracyOption("Display accuracy information."),
+			new CamMovementOption("Toggle the camera moving"),
 			new NPSDisplayOption("Shows your current Notes Per Second."),
+			new AccuracyOption("Display accuracy information."),
 			new SongPositionOption("Show the songs current position (as a bar)"),
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
-			#else
-			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay.")
-			#end
+			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
+			new RainbowFPSOption("Make the FPS Counter Rainbow"),
 		]),
 		new OptionCategory("Misc", [
 			#if desktop
 			new FPSOption("Toggle the FPS Counter"),
 			new ReplayOption("View replays"),
 			#end
-			new GUIGapOption("Change the distance between the end of the screen and text"),
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			// new WatermarkOption("Enable and disable all watermarks from the engine."), This doesn't seem to actually do anything
 			new AnimDebugOption("Access animation debug in a offline session using 9 for P1 or 8 or P2 when enabled")

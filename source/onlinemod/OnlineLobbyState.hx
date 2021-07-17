@@ -193,11 +193,30 @@ class OnlineLobbyState extends MusicBeatState
       var args:Array<String> = command.split(' ');
       switch (args[1]){
         case "set":
-          if (args[3] == "true" || args[3] == "false"){ // This is probably dangerous, although it's only bools so it should be fine
+          if (args[3] == "true" || args[3] == "false"){ 
             var bool = (args[3] == "true");
             switch(args[2]){
               case "invertnotes":
                 PlayState.invertedChart = bool;
+              case "inputsync":
+                OnlinePlayState.autoDetPlayer2 = false;
+                PlayState.p2canplay = bool;
+              case "p2show":
+                OnlinePlayState.autoDetPlayer2 = false;
+                PlayState.dadShow = bool;
+              default:
+                throw("Invalid option");
+            }
+          }else{
+            switch(args[2]){
+              case "player1",'bf','p1':
+                OnlinePlayState.useSongChar[0] = args[3];
+              case "player2",'dad','p2':
+                OnlinePlayState.useSongChar[1] = args[3];
+              case "gf":
+                OnlinePlayState.useSongChar[2] = args[3];
+              default:
+                throw("Invalid option");
             }
           }
       }

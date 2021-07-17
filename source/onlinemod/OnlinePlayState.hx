@@ -23,6 +23,8 @@ class OnlinePlayState extends PlayState
   public static var clientScores:Map<Int, Int> = [];
   public static var clientText:Map<Int, String> = [];
   public static var lastPressed:Array<Bool> = [false,false,false,false];
+  public static var useSongChar:Array<String> = ["","",""];
+  public static var autoDetPlayer2:Bool = true;
   var clientTexts:Map<Int, Int> = [];
   var clientsGroup:FlxTypedGroup<FlxText>;
 
@@ -56,11 +58,21 @@ class OnlinePlayState extends PlayState
   override function create()
   {try{
     if (customSong){
-      PlayState.SONG.player1 = FlxG.save.data.playerChar;
-      if (!FlxG.save.data.charAuto || TitleState.retChar(PlayState.SONG.player2) == ""){ // Check is second player is a valid character
-        PlayState.SONG.player2 = FlxG.save.data.opponent;
-      }else{ // Allows characters with the wrong case to still work
+      for (i => v in useSongChar) {
+        if (v != ""){
+          switch(i){
+            case 0: PlayState.SONG.player1 = v;
+            case 1: PlayState.SONG.player2 = v;
+            case 2: PlayState.SONG.gfVersion = v;
+          }
+        }
+      }
+      if (useSongChar[0] != "") PlayState.SONG.player1 = FlxG.save.data.playerChar;
+      
+      if ((FlxG.save.data.charAuto || useSongChar[1] != "") && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
         PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
+      }else{
+        PlayState.SONG.player2 = FlxG.save.data.opponent;
       }
     }
 
@@ -92,16 +104,18 @@ class OnlinePlayState extends PlayState
       text.cameras = [camHUD];
     }
     add(clientsGroup);
-    if (clientCount == 2 && TitleState.supported) {
-      PlayState.p2canplay = true;
-    }else{
-      PlayState.p2canplay = false;
+    if (autoDetPlayer2){
+        if (clientCount == 2 && TitleState.supported) {
+          PlayState.p2canplay = true;
+        }else{
+          PlayState.p2canplay = false;
+        }
+        if (clientCount == 1){
+          PlayState.dadShow = false;
+          PlayState.dad.destroy();
+          PlayState.dad = new EmptyCharacter(100, 100);
+        }
     }
-		if (clientCount == 1){
-			PlayState.dadShow = false;
-			PlayState.dad.destroy();
-			PlayState.dad = new EmptyCharacter(100, 100);
-		}
     // Add XieneDev watermark
     var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.9 + 50, FlxG.width, "XieneDev Battle Royale", 16);
 		xieneDevWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -302,9 +316,177 @@ class OnlinePlayState extends PlayState
     if (inPause)
       return;
 
-    super.keyShit();
+    // Litterally just a copy of Playstate.keyshit, entirely because checking for p2canplay on singleplayer is dumb
+
+    var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+    p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+    var pressArray:Array<Bool> = [
+      controls.LEFT_P,
+      controls.DOWN_P,
+      controls.UP_P,
+      controls.RIGHT_P
+    ];
+    var releaseArray:Array<Bool> = [
+      controls.LEFT_R,
+      controls.DOWN_R,
+      controls.UP_R,
+      controls.RIGHT_R
+    ];
+ 
+    // HOLDS, check for sustain notes
+    if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
+    {
+      notes.forEachAlive(function(daNote:Note)
+      {
+        if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData])
+          goodNoteHit(daNote);
+      });
+    }
+ 
+    // PRESSES, check for note hits
+    if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
+    {
+      boyfriend.holdTimer = 0;
+ 
+      var possibleNotes:Array<Note> = []; // notes that can be hit
+      var directionList:Array<Int> = []; // directions that can be hit
+      var dumbNotes:Array<Note> = []; // notes to kill later
+ 
+      notes.forEachAlive(function(daNote:Note)
+      {
+        if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+        {
+          if (directionList.contains(daNote.noteData))
+          {
+            for (coolNote in possibleNotes)
+            {
+              if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
+              { // if it's the same note twice at < 10ms distance, just delete it
+                // EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
+                dumbNotes.push(daNote);
+                break;
+              }
+              else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
+              { // if daNote is earlier than existing note (coolNote), replace
+                possibleNotes.remove(coolNote);
+                possibleNotes.push(daNote);
+                break;
+              }
+            }
+          }
+          else
+          {
+            possibleNotes.push(daNote);
+            directionList.push(daNote.noteData);
+          }
+        }
+      });
+ 
+      for (note in dumbNotes)
+      {
+        FlxG.log.add("killing dumb ass note at " + note.strumTime);
+        note.kill();
+        notes.remove(note, true);
+        note.destroy();
+      }
+ 
+      possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+ 
+      var dontCheck = false;
+
+      for (i in 0...pressArray.length)
+      {
+        if (pressArray[i] && !directionList.contains(i))
+          dontCheck = true;
+      }
+
+      if (perfectMode)
+        goodNoteHit(possibleNotes[0]);
+      else if (possibleNotes.length > 0 && !dontCheck)
+      {
+        if (!FlxG.save.data.ghost)
+        {
+          for (shit in 0...pressArray.length)
+            { // if a direction is hit that shouldn't be
+              if (pressArray[shit] && !directionList.contains(shit))
+                noteMiss(shit, null);
+            }
+        }
+        for (coolNote in possibleNotes)
+        {
+          if (pressArray[coolNote.noteData])
+          {
+            if (mashViolations != 0)
+              mashViolations--;
+            scoreTxt.color = FlxColor.WHITE;
+            goodNoteHit(coolNote);
+          }
+        }
+      }
+      else if (!FlxG.save.data.ghost)
+        {
+          for (shit in 0...pressArray.length)
+            if (pressArray[shit])
+              noteMiss(shit, null);
+        }
+
+      if(dontCheck && possibleNotes.length > 0 && FlxG.save.data.ghost && !FlxG.save.data.botplay)
+      {
+        if (mashViolations > 8)
+        {
+          trace('mash violations ' + mashViolations);
+          scoreTxt.color = FlxColor.RED;
+          noteMiss(0,null);
+        }
+        else
+          mashViolations++;
+      }
+
+    }
+    
+    notes.forEachAlive(function(daNote:Note)
+    {
+      if(FlxG.save.data.downscroll && daNote.y > strumLine.y ||
+      !FlxG.save.data.downscroll && daNote.y < strumLine.y)
+      {
+        // Force good note hit regardless if it's too late to hit it or not as a fail safe
+        if(daNote.canBeHit && daNote.mustPress || daNote.tooLate && daNote.mustPress)
+        {
+          { // Remove the check for replays, might break stuff but preformance is more important than replays
+            goodNoteHit(daNote);
+            boyfriend.holdTimer = daNote.sustainLength;
+          }
+        }
+      }
+    });
+    
+    if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true)) )
+    {
+      if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+        boyfriend.playAnim('idle');
+    }
+ 
+    playerStrums.forEach(function(spr:FlxSprite)
+    {
+      if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
+        spr.animation.play('pressed');
+      if (!holdArray[spr.ID])
+        spr.animation.play('static');
+ 
+      if (spr.animation.curAnim.name == 'confirm')
+      {
+        spr.centerOffsets();
+        spr.offset.x -= 13;
+        spr.offset.y -= 13;
+      }
+      else
+        spr.centerOffsets();
+    });
+
+
+
     if (PlayState.p2canplay){
-      if (lastPressed != PlayState.p1presses){
+      if (lastPressed != PlayState.p1presses){ // Handles sending packets
         // Sender.SendPacket(Packets.KEYPRESS, [this.fromBool(controls.LEFT), this.fromBool(controls.DOWN), this.fromBool(controls.UP), this.fromBool(controls.RIGHT)], OnlinePlayMenuState.socket);
         Sender.SendPacket(Packets.KEYPRESS, [this.fromBool([controls.LEFT_P, controls.LEFT]),
           this.fromBool([controls.DOWN_P, controls.DOWN]),
@@ -312,6 +494,33 @@ class OnlinePlayState extends PlayState
           this.fromBool([controls.RIGHT_P, controls.RIGHT])], OnlinePlayMenuState.socket);
         lastPressed = PlayState.p1presses;
       }
+
+      // Handles strumline and p2 animations
+
+      if (p2presses[0] != 0) dad.playAnim('singLEFT', true);
+      else if (p2presses[1] != 0) dad.playAnim('singDOWN', true);
+      else if (p2presses[2] != 0) dad.playAnim('singUP', true);
+      else if (p2presses[3] != 0) dad.playAnim('singRIGHT', true);
+      else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true);
+      cpuStrums.forEach(function(spr:FlxSprite)
+      {
+        if (p2presses[spr.ID] == 1 && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
+          spr.animation.play('pressed');
+
+        if (p2presses[spr.ID] != 2)
+          spr.animation.play('static');
+   
+        if (spr.animation.curAnim.name == 'confirm')
+        {
+          spr.centerOffsets();
+          spr.offset.x -= 13;
+          spr.offset.y -= 13;
+        }
+        else
+          spr.centerOffsets();
+      });
+
+        
     }
   }
 

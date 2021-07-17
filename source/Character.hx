@@ -46,6 +46,8 @@ class Character extends FlxSprite
 	public var oneShotAnims:Array<String> = [];
 	public var tintedAnims:Array<String> = [];
 	public var flip:Bool = true;
+	public var flipNotes:Bool = true;
+	var altAnims:Array<String> = []; 
 
 
 	public var holdTimer:Float = 0;
@@ -544,6 +546,7 @@ class Character extends FlxSprite
 					spiritTrail=charProperties.spirit_trail; // Spirit TraiL
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+					if (charProperties.flip_notes) flipNotes = charProperties.flip_notes;
 					
 					// Custom misses
 					if (charType == 0 && !amPreview && !debugMode){
@@ -632,12 +635,12 @@ class Character extends FlxSprite
 		if (clonedChar == ""){
 			clonedChar = curCharacter;
 		}
-		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over alts if alt isn't present
-			if (animation.getByName('sing$i-alt') == null){
-				cloneAnimation('sing$i-alt', animation.getByName('sing$i'));
-			}
-		}
-		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over alts if alt isn't present
+		// for (i in ['RIGHT','UP','LEFT','DOWN', if (dance_idle) "danceRight","danceLeft" else 'Idle' ]) { // Add main animations over alts if alt isn't present
+		// 	if (animation.getByName('sing$i-alt') == null){
+		// 		cloneAnimation('sing$i-alt', animation.getByName('sing$i'));
+		// 	}
+		// } Not needed anymore, automatically handled by playAnim
+		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over miss if miss isn't present
 			if (animation.getByName('sing${i}miss') == null){
 				cloneAnimation('sing${i}miss', animation.getByName('sing$i'));
 				tintedAnims.push('sing${i}miss');
@@ -657,7 +660,7 @@ class Character extends FlxSprite
 		}
 		this.y += charY;
 		this.x += charX;
-		if (isPlayer && !amPreview && animation.getByName('singRIGHT') != null && flip)
+		if (isPlayer && !amPreview && animation.getByName('singRIGHT') != null && flip && flipNotes)
 		{
 			flipX = !flipX;
 
@@ -770,6 +773,9 @@ class Character extends FlxSprite
 		var lastAnim = "";
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
 		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
+		
+		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
+			AnimName = AnimName + '-alt'; // Alt animations
 		animation.play(AnimName, Force, Reversed, Frame);
 		if (animation.curAnim != null && AnimName != lastAnim){
 		
@@ -789,11 +795,11 @@ class Character extends FlxSprite
 		if (dance_idle && lastAnim != AnimName )
 		{
 			switch(AnimName){
-				case 'singLEFT', 'danceLeft':
+				case 'singLEFT', 'singLEFT-alt', 'danceLeft','danceLeft-alt':
 					danced = true;
-				case 'singRIGHT', 'danceRight':
+				case 'singRIGHT', 'singRIGHT-alt', 'danceRight', 'danceRight-alt':
 					danced = false;
-				case 'singUP', 'singDOWN':
+				case 'singUP', 'singDOWN' ,'singUP-alt', 'singDOWN-alt':
 					danced = !danced;
 			}
 		}

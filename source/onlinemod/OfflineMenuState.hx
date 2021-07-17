@@ -25,12 +25,8 @@ class OfflineMenuState extends SearchMenuState
   var dataDir:String = "assets/onlinedata/data/";
   var optionsButton:FlxUIButton;
   var invertedChart:Bool = false;
-  // function findButton(){
-  //     refreshList(true,searchField.text);
-  //     searchField.hasFocus = false;
-  // }
+
   function updateSideButton(){
-    // var lab = sideButton.label;
     
     sideButton.setLabel(new FlxUIText(0,0,(PlayState.invertedChart ? "Deswap":"Swap") + " Chart"));
     sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
@@ -41,27 +37,7 @@ class OfflineMenuState extends SearchMenuState
   }
   override function create()
   {
-    // bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
-    
-    
-    // add(bg);
-    // searchField = new FlxInputText(10, 100, 1152, 20);
-    // searchField.maxLength = 81;
-    // add(searchField);
 
-    // searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", findButton);
-    // searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-    // searchButton.resize(100, searchField.height);
-    // add(searchButton);
-
-
-
-    
-
-    // refreshList();
-
-    // FlxG.mouse.visible = true;
-    // FlxG.autoPause = true;
 
 
     super.create();
@@ -113,20 +89,12 @@ class OfflineMenuState extends SearchMenuState
       }
     }
   }
-  // override function update(elapsed:Float)
-  // {
-  //   super.update(elapsed);
-  //   if (searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
-  //     SetVolumeControls(true);
-  //     handleInput();
-  //   }
-  // }
+
   override function ret(){
     FlxG.mouse.visible = false;
     FlxG.switchState(new MainMenuState());
   }
   override function select(sel:Int = 0){
-      // PlayState.SONG = Song.parseJSONshit(File.getContent(songs[curSelected]));
       OfflinePlayState.chartFile = songs[curSelected];
       PlayState.isStoryMode = false;
       var songName = songFiles[curSelected];

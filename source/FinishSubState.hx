@@ -28,7 +28,7 @@ class FinishSubState extends MusicBeatSubstate
 
 	public function new(x:Float, y:Float,?win = true)
 	{
-		FlxG.sound.music.stop();
+		if (FlxG.sound.music != null) FlxG.sound.music.stop(); // Please, I've given you 4 calls to die, just die already
 		if(win){
 			PlayState.boyfriend.playAnim("hey");
 			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) PlayState.dad.playAnim('cheer'); else PlayState.dad.playAnim('singDOWNmiss');
@@ -103,8 +103,8 @@ class FinishSubState extends MusicBeatSubstate
 
 
 		if (accepted)
-		{
-			if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
+		{			if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
+
 			switch (PlayState.stateType)
 			{
 				case 2:FlxG.switchState(new onlinemod.OfflineMenuState());

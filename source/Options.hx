@@ -984,3 +984,24 @@ class HitSoundOption extends Option
 		return "Note Hit Sound " + (!FlxG.save.data.hitSound ? "off" : "on");
 	}
 }
+
+class CamMovementOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.camMovement = !FlxG.save.data.camMovement;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Camera Movement " + (!FlxG.save.data.camMovement ? "off" : "on");
+	}
+}

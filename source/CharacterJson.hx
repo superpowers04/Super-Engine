@@ -24,6 +24,7 @@ typedef CharacterJson =
 	var cam_pos3:Array<Int>;
 	var char_pos3:Array<Int>;
 	var custom_misses:Int;
+	var flip_notes:Bool; // Tells the game if it should flip left and right notes on the right
 
 }
 typedef IfStatement = {

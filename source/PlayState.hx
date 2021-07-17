@@ -218,6 +218,8 @@ class PlayState extends MusicBeatState
 	public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
 
 	public static var inputMode:Int = 0;
+	public static var canUseAlts:Bool = false;
+
 	var hitSound:Bool = false;
 
 
@@ -1148,7 +1150,9 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(1);
 
 
-
+		FlxG.camera.zoom = FlxMath.lerp(0.90, FlxG.camera.zoom, 0.95);
+		camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+		camFollow.setPosition(720, 500);
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
@@ -1801,52 +1805,58 @@ class PlayState extends MusicBeatState
 			}
 			
 
-
-			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
-			{
-				var offsetX = 0;
-				var offsetY = 0;
-				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX+ dad.camX, dad.getMidpoint().y - 100 + offsetY + dad.camY);
-				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
-
-				switch (dad.curCharacter)
+			PlayState.canUseAlts = (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim);
+			if (FlxG.save.data.camMovement){
+				if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 				{
-					case 'mom':
-						camFollow.y = dad.getMidpoint().y;
-					case 'senpai':
-						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
-					case 'senpai-angry':
-						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
+					var offsetX = 0;
+					var offsetY = 0;
+					camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX+ dad.camX, dad.getMidpoint().y - 100 + offsetY + dad.camY);
+					// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+
+					switch (dad.curCharacter)
+					{
+						case 'mom':
+							camFollow.y = dad.getMidpoint().y;
+						case 'senpai':
+							camFollow.y = dad.getMidpoint().y - 430;
+							camFollow.x = dad.getMidpoint().x - 100;
+						case 'senpai-angry':
+							camFollow.y = dad.getMidpoint().y - 430;
+							camFollow.x = dad.getMidpoint().x - 100;
+					}
+
+					if (dad.curCharacter == 'mom')
+						vocals.volume = 1;
 				}
 
-				if (dad.curCharacter == 'mom')
-					vocals.volume = 1;
-			}
-
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
-			{
-				var offsetX = 0;
-				var offsetY = 0;
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX+ boyfriend.camX, boyfriend.getMidpoint().y - 100 + offsetY+ boyfriend.camY);
-
-
-				switch (curStage)
+				if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 				{
-					case 'limo':
-						camFollow.x = boyfriend.getMidpoint().x - 300;
-					case 'mall':
-						camFollow.y = boyfriend.getMidpoint().y - 200;
+					var offsetX = 0;
+					var offsetY = 0;
+
+					camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX+ boyfriend.camX, boyfriend.getMidpoint().y - 100 + offsetY+ boyfriend.camY);
+
+
+					switch (curStage)
+					{
+						case 'limo':
+							camFollow.x = boyfriend.getMidpoint().x - 300;
+						case 'mall':
+							camFollow.y = boyfriend.getMidpoint().y - 200;
+					}
 				}
+				if (camZooming)
+				{
+					FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
+					camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+				}
+			}else{
+				FlxG.camera.zoom = 0.95;
+				camHUD.zoom = 1;
 			}
 		}
 
-		if (camZooming)
-		{
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
-		}
 
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
@@ -2391,24 +2401,24 @@ class PlayState extends MusicBeatState
 						if (SONG.song != 'Tutorial')
 							camZooming = true;
 
-						var altAnim:String = "";
+						// var altAnim:String = "";
 						if (!p2canplay){
-							if (SONG.notes[Math.floor(curStep / 16)] != null)
-							{
-								if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-									altAnim = '-alt';
-							}
+							// if (SONG.notes[Math.floor(curStep / 16)] != null)
+							// {
+							// 	if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+							// 		altAnim = '-alt';
+							// }
 		
 							switch (Math.abs(daNote.noteData))
 							{
 								case 2:
-									dad.playAnim('singUP' + altAnim, true);
+									dad.playAnim('singUP', true);
 								case 3:
-									dad.playAnim('singRIGHT' + altAnim, true);
+									dad.playAnim('singRIGHT', true);
 								case 1:
-									dad.playAnim('singDOWN' + altAnim, true);
+									dad.playAnim('singDOWN', true);
 								case 0:
-									dad.playAnim('singLEFT' + altAnim, true);
+									dad.playAnim('singLEFT', true);
 							}
 							
 							if (FlxG.save.data.cpuStrums)
@@ -2510,115 +2520,6 @@ class PlayState extends MusicBeatState
 	dynamic function noteHit(note:Note):Void{
 		return;
 	}
-	// function omegaNoteHit(note:Note):Void
-	// {
-	// 	if (!note.wasGoodHit){
-	// 		goodNoteHit(note);
-	// 		note.wasGoodHit=true;
-	// 		playerStrums.forEach(function(spr:FlxSprite)
-	// 		{
-	// 			if (Math.abs(note.noteData) == spr.ID)
-	// 			{
-	// 				spr.animation.play('confirm', true);
-	// 			}
-	// 		});
-
-	// 		if (!note.isSustainNote)
-	// 		{
-	// 			note.kill();
-	// 			if(note.mustPress)
-	// 				noteLanes[note.noteData].remove(note);
-	// 			hittableNotes.remove(note);
-	// 			// renderedNotes.remove(note, true);
-	// 			note.destroy();
-	// 		}else if(note.mustPress){
-	// 			susNoteLanes[note.noteData].remove(note);
-	// 		}
-	// 	}
-
-	// }
-	// private function omegaKeyShit():Void
-	// {
-	// 	var up = controls.UP;
-	// 	var right = controls.RIGHT;
-	// 	var down = controls.DOWN;
-	// 	var left = controls.LEFT;
-
-	// 	var upP = controls.UP_P;
-	// 	var rightP = controls.RIGHT_P;
-	// 	var downP = controls.DOWN_P;
-	// 	var leftP = controls.LEFT_P;
-
-	// 	var holdArray:Array<Bool> = [left,down,up,right];
-	// 	var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
-
-	// 	if(holdArray.contains(true)){
-	// 		for(idx in 0...holdArray.length){
-	// 			var isHeld = holdArray[idx];
-	// 			if(isHeld){
-	// 				for(daNote in susNoteLanes[idx]){
-	// 					if(daNote.isSustainNote && daNote.canBeHit){
-	// 						noteHit(daNote);
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-
-	// 	var hitSomething=false;
-	// 	// probably a naive way but idc
-	// 	if(controlArray.contains(true)){
-	// 		for(idx in 0...controlArray.length){
-	// 			var pressed = controlArray[idx];
-	// 			if(pressed){
-	// 				var nextHit = noteLanes[idx][0];
-	// 				if(nextHit!=null){
-	// 					if(nextHit.canBeHit){
-	// 						hitSomething=true;
-	// 						boyfriend.holdTimer=0;
-	// 						noteHit(nextHit);
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 		if(!hitSomething && currentOptions.ghosttapping==false){
-	// 			badNoteCheck();
-	// 		}
-	// 	}
-
-	// 	var bfVar:Float=4;
-	// 	if(boyfriend.curCharacter=='dad')
-	// 		bfVar=6.1;
-
-	// 	if (boyfriend.holdTimer > Conductor.stepCrochet * bfVar * 0.001 && !up && !down && !right && !left)
-	// 	{
-	// 		if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-	// 		{
-	// 			boyfriend.dance();
-	// 		}
-	// 	}
-
-
-	// 	playerStrums.forEach(function(spr:FlxSprite)
-	// 	{
-	// 		if(controlArray[spr.ID] && spr.animation.curAnim.name!="confirm")
-	// 			spr.animation.play("pressed");
-
-	// 		if(!holdArray[spr.ID]){
-	// 			spr.animation.play("static");
-	// 		}
-	// 		if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-	// 		{
-	// 			spr.centerOffsets();
-	// 			spr.offset.x -= 13;
-	// 			spr.offset.y -= 13;
-	// 		}
-	// 		else
-	// 			spr.centerOffsets();
-	// 	});
-
-	// }
-
  	private function kadeKeyShit():Void // I've invested in emma stocks
 			{
 				// control arrays, order L D R U
