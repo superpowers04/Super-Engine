@@ -42,6 +42,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     grpSongs = new FlxTypedGroup<Alphabet>();
     add(grpSongs);
     songs = [];
+    songNames = [];
     modes = [];
     var i:Int = 0;
 
@@ -106,7 +107,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       //   songName = songName.substr(0,songName.indexOf('-easy.json'));
       //   PlayState.storyDifficulty = 0;
       // }
-      PlayState.actualSongName = songName;
+      PlayState.actualSongName = songJSON;
       MultiPlayState.voicesFile = '';
       if (FileSystem.exists('${selSong}/Voices.ogg')) MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
       MultiPlayState.instFile = '${selSong}/Inst.ogg';

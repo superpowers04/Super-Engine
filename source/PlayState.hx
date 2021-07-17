@@ -1562,6 +1562,7 @@ class PlayState extends MusicBeatState
 		this.vocals.stop();
 		FlxG.sound.music.stop();
 		try{FlxG.sound.music.stop();}catch(e){} // Stop it dammit, fucking stop it. I said to stop, stop it
+		try{FlxG.sound.music.volume = 0;}catch(e){} // Fine, I'll set your volume to zero
 		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
 		
 	}
@@ -2749,16 +2750,12 @@ class PlayState extends MusicBeatState
 			combo = 0;
 			misses++;
 
-			//var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
-			//var wife:Float = EtternaFunctions.wife3(noteDiff, FlxG.save.data.etternaMode ? 1 : 1.7);
 
 			if (FlxG.save.data.accuracyMod == 1)
 				totalNotesHit -= 1;
 
 			songScore -= 10;
 			if (type == 1) {songScore -= 290; health -= 0.16;} // Having it insta kill, not a good idea 
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
 
 
 
@@ -2824,44 +2821,10 @@ class PlayState extends MusicBeatState
 			var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 
 			note.rating = Ratings.CalculateRating(noteDiff);
-
-			/* if (loadRep)
-			{
-				if (controlArray[note.noteData])
-					goodNoteHit(note, false);
-				else if (rep.replay.keyPresses.length > repPresses && !controlArray[note.noteData])
-				{
-					if (NearlyEquals(note.strumTime,rep.replay.keyPresses[repPresses].time, 4))
-					{
-						goodNoteHit(note, false);
-					}
-				}
-			} */
 			
 			if (controlArray[note.noteData])
 			{
 				goodNoteHit(note, (mashing > getKeyPresses(note)));
-				
-				/*if (mashing > getKeyPresses(note) && mashViolations <= 2)
-				{
-					mashViolations++;
-
-					goodNoteHit(note, (mashing > getKeyPresses(note)));
-				}
-				else if (mashViolations > 2)
-				{
-					// this is bad but fuck you
-					playerStrums.members[0].animation.play('static');
-					playerStrums.members[1].animation.play('static');
-					playerStrums.members[2].animation.play('static');
-					playerStrums.members[3].animation.play('static');
-					health -= 0.4;
-					trace('mash ' + mashing);
-					if (mashing != 0)
-						mashing = 0;
-				}
-				else
-					goodNoteHit(note, false);*/
 
 			}
 		}
@@ -2876,6 +2839,15 @@ class PlayState extends MusicBeatState
 
 				note.rating = Ratings.CalculateRating(noteDiff);
 
+
+
+				// if (note.canMiss){ Disabled for now, It seemed to add to the lag and isn't even properly implemented
+					
+				// 	if (note.rating == "shit") return;// Lets not be a shit and count shit hits for hurt notes
+				// 	noteMiss(note.noteData, note,1);
+				// }
+
+
 				// add newest note to front of notesHitArray
 				// the oldest notes are at the end and are removed first
 				if (!note.isSustainNote)
@@ -2884,12 +2856,6 @@ class PlayState extends MusicBeatState
 				if (!resetMashViolation && mashViolations >= 1)
 					mashViolations--;
 
-
-				if (note.canMiss){
-					
-					if (note.rating == "shit") return;// Lets not be a shit and count shit hits for hurt notes
-					noteMiss(note.noteData, note,1);
-				}
 
 				if (mashViolations < 0)
 					mashViolations = 0;
@@ -3073,6 +3039,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
+			
 		}catch(e){MainMenuState.handleError('A animation event caused an error ${e.message}');}
 
 	}
@@ -3116,16 +3083,18 @@ class PlayState extends MusicBeatState
 		wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!
-		if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
-		{
-			FlxG.camera.zoom += 0.015;
-			camHUD.zoom += 0.03;
-		}
-
-		if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
-		{
-			FlxG.camera.zoom += 0.015;
-			camHUD.zoom += 0.03;
+		if (FlxG.save.data.camMovement){
+			if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
+			{
+				FlxG.camera.zoom += 0.015;
+				camHUD.zoom += 0.03;
+			}
+	
+			if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
+			{
+				FlxG.camera.zoom += 0.015;
+				camHUD.zoom += 0.03;
+			}
 		}
 
 		iconP1.setGraphicSize(Std.int(iconP1.width + 30));

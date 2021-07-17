@@ -26,8 +26,9 @@ class MultiPlayState extends onlinemod.OfflinePlayState
   }
   override function create()
     {try{
-  	super.create();
   	PlayState.stateType=4;
+  	super.create();
+
   }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
   override function openSubState(SubState:FlxSubState)
   {
