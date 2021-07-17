@@ -40,7 +40,7 @@ class FinishSubState extends MusicBeatSubstate
 			PlayState.gf.playAnim('sad');
 		}
 		super();
-		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer) // Litterally just here because sometimes the game doesn't stop music properly or anything
+		new FlxTimer().start(1, function(tmr:FlxTimer) // Litterally just here because sometimes the game doesn't stop music properly or anything
 		{
 			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
 			music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
@@ -72,7 +72,7 @@ class FinishSubState extends MusicBeatSubstate
 			contText.scrollFactor.set();
 			add(contText);
 			var songName:String = "";
-			if (PlayState.stateType == 4) songName = PlayState.songDiff; else songName = '${PlayState.SONG.song} ${CoolUtil.difficultyString()}';
+			if (PlayState.stateType == 4) songName = PlayState.actualSongName; else songName = '${PlayState.SONG.song} ${CoolUtil.difficultyString()}';
 			var settingsText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
 			settingsText.size = 16;
 			settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
