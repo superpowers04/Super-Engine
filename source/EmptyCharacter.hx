@@ -53,7 +53,7 @@ class EmptyCharacter extends Character
 	{
 		return;
 	}
-	override public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
+	override public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Int = 0,?offsetY = 0):Void
 	{
 		return;
 	}

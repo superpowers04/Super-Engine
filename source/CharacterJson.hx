@@ -8,21 +8,21 @@ typedef CharacterJson =
 	var clone:String;
 	var animations:Array<CharJsonAnimation>;
 	var animations_offsets:Array<CharJsonAnimOffsets>;
-	var sing_duration:Int;
+	var sing_duration:Float;
 	var scale:Float;
 	var no_antialiasing:Bool;
 	var dance_idle:Bool;
 	var alt_anims:Bool;
 	var bpm:Float;
-	var common_stage_offset:Array<Int>;
-	var cam_pos:Array<Int>;
-	var char_pos:Array<Int>;
-	var cam_pos1:Array<Int>;
-	var char_pos1:Array<Int>;
-	var cam_pos2:Array<Int>;
-	var char_pos2:Array<Int>;
-	var cam_pos3:Array<Int>;
-	var char_pos3:Array<Int>;
+	var common_stage_offset:Array<Float>;
+	var cam_pos:Array<Float>;
+	var char_pos:Array<Float>;
+	var cam_pos1:Array<Float>;
+	var char_pos1:Array<Float>;
+	var cam_pos2:Array<Float>;
+	var char_pos2:Array<Float>;
+	var cam_pos3:Array<Float>;
+	var char_pos3:Array<Float>;
 	var custom_misses:Int;
 	var flip_notes:Bool; // Tells the game if it should flip left and right notes on the right
 
@@ -37,7 +37,7 @@ typedef CharJsonAnimation ={
 	var ifstate:IfStatement;
 	var anim:String;
 	var name:String;
-	var fps:Int;
+	var fps:Float;
 	var loop:Bool;
 	var indices:Array<Int>;
 	var stage:String; // Set on specific stage
@@ -47,6 +47,6 @@ typedef CharJsonAnimation ={
 }
 typedef CharJsonAnimOffsets ={
 	var anim:String;
-	var player1:Array<Int>;
-	var player2:Array<Int>;
+	var player1:Array<Float>;
+	var player2:Array<Float>;
 }

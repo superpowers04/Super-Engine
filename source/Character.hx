@@ -47,6 +47,7 @@ class Character extends FlxSprite
 	public var tintedAnims:Array<String> = [];
 	public var flip:Bool = true;
 	public var flipNotes:Bool = true;
+	public var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
 	var altAnims:Array<String> = []; 
 
 
@@ -218,7 +219,7 @@ class Character extends FlxSprite
 		}
 	}
 
-	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false) // CharTypes: 0=BF 1=Dad 2=GF
+	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null) // CharTypes: 0=BF 1=Dad 2=GF
 	{
 		super(x, y);
 		animOffsets = new Map<String, Array<Dynamic>>();
@@ -236,7 +237,8 @@ class Character extends FlxSprite
 		this.isPlayer = isPlayer;
 		amPreview = preview;
 
-		var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
+		
+		if (exitex != null) tex = exitex;
 		antialiasing = true;
 		switch (curCharacter) // Seperate statement for duplicated character paths
 		{
@@ -519,10 +521,12 @@ class Character extends FlxSprite
 			default: // Custom characters pog
 				try{
 					trace('Loading a custom character "$curCharacter"! ');				
-					var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml'); // Loads the XML as a string
-					if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), charXml);
-					if (tex == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
+					if (tex == null){
+						var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml'); // Loads the XML as a string
+						if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+						tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), charXml);
+						if (tex == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
+					}
 					trace('Loaded character sheet');
 					frames = tex;
 					var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json');
@@ -768,12 +772,11 @@ class Character extends FlxSprite
 			}
 		}
 	}
-	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
+	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0):Void
 	{
 		var lastAnim = "";
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
 		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
-		
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
 			AnimName = AnimName + '-alt'; // Alt animations
 		animation.play(AnimName, Force, Reversed, Frame);
@@ -781,7 +784,7 @@ class Character extends FlxSprite
 		
 			if (tintedAnims.contains(animation.curAnim.name)){this.color = 0x330066;}else{this.color = 0xffffff;}
 			var daOffset = animOffsets.get(AnimName); // Get offsets
-			var offsets:Array<Float> = [0,0];
+			var offsets:Array<Float> = [offsetX,offsetY];
 			if (animOffsets.exists(AnimName)) // Set offsets if animation has any
 			{
 				offsets[0]+=daOffset[0];
