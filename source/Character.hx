@@ -28,10 +28,10 @@ class Character extends FlxSprite
 	public var debugMode:Bool = false;
 	public var spiritTrail = false;
 	public var camPos:Array<Int> = [0,0];
-	public var charX:Int = 0;
-	public var charY:Int = 0;
-	public var camX = 0;
-	public var camY = 0;
+	public var charX:Float = 0;
+	public var charY:Float = 0;
+	public var camX:Float = 0;
+	public var camY:Float = 0;
 	var dadVar:Float = 4; // Singduration?
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
@@ -780,7 +780,7 @@ class Character extends FlxSprite
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
 			AnimName = AnimName + '-alt'; // Alt animations
 		animation.play(AnimName, Force, Reversed, Frame);
-		if (animation.curAnim != null && AnimName != lastAnim){
+		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
 		
 			if (tintedAnims.contains(animation.curAnim.name)){this.color = 0x330066;}else{this.color = 0xffffff;}
 			var daOffset = animOffsets.get(AnimName); // Get offsets

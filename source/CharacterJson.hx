@@ -13,7 +13,6 @@ typedef CharacterJson =
 	var no_antialiasing:Bool;
 	var dance_idle:Bool;
 	var alt_anims:Bool;
-	var bpm:Float;
 	var common_stage_offset:Array<Float>;
 	var cam_pos:Array<Float>;
 	var char_pos:Array<Float>;
@@ -37,7 +36,7 @@ typedef CharJsonAnimation ={
 	var ifstate:IfStatement;
 	var anim:String;
 	var name:String;
-	var fps:Float;
+	var fps:Int;
 	var loop:Bool;
 	var indices:Array<Int>;
 	var stage:String; // Set on specific stage
