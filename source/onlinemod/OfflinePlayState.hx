@@ -42,7 +42,7 @@ class OfflinePlayState extends PlayState
   override function create()
   {
   	try{
-	  	PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+	  	if (!ChartingState.charting) PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
 	    PlayState.SONG.player1 = FlxG.save.data.playerChar;
 	    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
 	    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
@@ -186,6 +186,8 @@ class OfflinePlayState extends PlayState
   {
     canPause = false;
     FlxG.sound.music.onComplete = null;
+  	if (ChartingState.charting){
+  	    	FlxG.switchState(new ChartingState());return;}
 		persistentUpdate = false;
 		persistentDraw = true;
 		paused = true;
@@ -193,6 +195,6 @@ class OfflinePlayState extends PlayState
 		vocals.stop();
 		FlxG.sound.music.stop();
 
-    super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
+    	super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
   }
 }

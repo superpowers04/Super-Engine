@@ -13,18 +13,17 @@ import PlayState;
 
 using StringTools;
 
-
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 
 	public var mustPress:Bool = false;
-	public var canMiss:Bool = false;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
+	public var modifiedByLua:Bool = false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
@@ -32,13 +31,13 @@ class Note extends FlxSprite
 
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
-	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
+	public static var GREEN_NOTE:Int = 2;
 	public static var RED_NOTE:Int = 3;
 
 	public var rating:String = "shit";
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false)
 	{
 		super();
 
@@ -51,7 +50,10 @@ class Note extends FlxSprite
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
-		this.strumTime = strumTime;
+		if (inCharter)
+			this.strumTime = strumTime;
+		else 
+			this.strumTime = Math.round(strumTime);
 
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
@@ -59,6 +61,10 @@ class Note extends FlxSprite
 		this.noteData = noteData;
 
 		var daStage:String = PlayState.curStage;
+
+		//defaults if no noteStyle was found in chart
+		var noteTypeCheck:String = 'normal';
+
 
 		frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 
@@ -127,6 +133,7 @@ class Note extends FlxSprite
 			updateHitbox();
 
 			x -= width / 2;
+
 			if (prevNote.isSustainNote)
 			{
 				switch (prevNote.noteData)

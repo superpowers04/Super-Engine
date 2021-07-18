@@ -44,6 +44,7 @@ class ChartingState extends MusicBeatState
 	var _file:FileReference;
 
 	public var playClaps:Bool = false;
+	public static var charting:Bool = false;
 
 	public var snap:Int = 1;
 
@@ -101,7 +102,7 @@ class ChartingState extends MusicBeatState
 	override function create()
 	{
 		curSection = lastSection;
-
+		new onlinemod.OfflinePlayState();
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
@@ -729,7 +730,7 @@ class ChartingState extends MusicBeatState
 						if(!claps.contains(note))
 						{
 							claps.push(note);
-							FlxG.sound.play(Paths.sound('Hit_Sound'));
+							FlxG.sound.play(Paths.sound('SNAP'));
 						}
 					});
 				}
@@ -873,7 +874,7 @@ class ChartingState extends MusicBeatState
 			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
-			LoadingState.loadAndSwitchState(new PlayState());
+			gotoPlaystate();
 		}
 
 		if (FlxG.keys.justPressed.E)
@@ -1239,7 +1240,7 @@ class ChartingState extends MusicBeatState
 			var daStrumTime = i[0];
 			var daSus = i[2];
 
-			var note:Note = new Note(daStrumTime, daNoteInfo % 4);
+			var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true);
 			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
@@ -1529,5 +1530,14 @@ class ChartingState extends MusicBeatState
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
 		FlxG.log.error("Problem saving Level data");
+	}
+
+	function gotoPlaystate(){
+		ChartingState.charting = true;
+		switch(PlayState.stateType){
+			case 2: LoadingState.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
+			case 4: LoadingState.loadAndSwitchState(new multi.MultiPlayState());
+			default: LoadingState.loadAndSwitchState(new PlayState());
+		}
 	}
 }

@@ -34,6 +34,7 @@ class SickMenuState extends MusicBeatState
   }
   override function create()
   {
+    if (ChartingState.charting) ChartingState.charting = false;
     if (!FlxG.sound.music.playing)
     {
       FlxG.sound.playMusic(Paths.music('freakyMenu'));
