@@ -2495,7 +2495,7 @@ class PlayState extends MusicBeatState
 								daNote.kill();
 								notes.remove(daNote, true);
 							}
-							else if (!daNote.canMiss)
+							else
 							{
 								health -= 0.075;
 								vocals.volume = 0;

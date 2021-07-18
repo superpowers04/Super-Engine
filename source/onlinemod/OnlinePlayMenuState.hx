@@ -39,6 +39,8 @@ class OnlinePlayMenuState extends MusicBeatState
     super();
     PlayState.invertedChart = false;
     PlayState.dadShow = true;
+    OnlinePlayState.autoDetPlayer2 = true;
+    OnlinePlayState.useSongChar = ["","",""];
     errorMessage = message;
     errorColor = color;
   }
