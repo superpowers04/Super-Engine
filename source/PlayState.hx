@@ -1037,22 +1037,7 @@ class PlayState extends MusicBeatState
 	// public static function regAnimEvent(charType:Int,ifState:IfStatement,animName:String){
 	// 	PlayState.animEvents[charType][animName] = ifState;
 	// }
-	function setInputHandlers(){
-		// if (onlinemod.OnlinePlayMenuState.socket != null) inputMode = 0;
-		// switch(inputMode){
-		// 	case 0:
-		// 		handleInput = kadeInput; // I believe this is for Dad
-		// 		doKeyShit = kadeKeyShit; // I believe this is for Boyfriend
-		// 	// case 1:
-		// 	// 	handleInput = kadeInput;
-		// 	// 	doKeyShit = omegaKeyShit;
-		// 	default:
-		// 		MainMenuState.handleError('${inputMode} is not a valid input! Please change your input mode!');
 
-		// }
-		handleInput = kadeInput;
-		doKeyShit = kadeKeyShit; // Todo, add multiple input options
-	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
@@ -1578,31 +1563,23 @@ class PlayState extends MusicBeatState
 		// reverse iterate to remove oldest notes first and not invalidate the iteration
 		// stop iteration as soon as a note is not removed
 		// all notes should be kept in the correct order and this is optimal, safe to do every frame/update
-		{
-			var balls = notesHitArray.length-1;
-			while (balls >= 0)
-			{
-				var cock:Date = notesHitArray[balls];
-				if (cock != null && cock.getTime() + 1000 < Date.now().getTime())
-					notesHitArray.remove(cock);
-				else
-					balls = 0;
-				balls--;
-			}
-			nps = notesHitArray.length;
-			if (nps > maxNPS)
-				maxNPS = nps;
-			if (combo > maxCombo)
-				maxCombo = combo;
-		}
-
-		if (FlxG.keys.justPressed.NINE)
-		{
-			if (iconP1.animation.curAnim.name == 'bf-old')
-				iconP1.animation.play(SONG.player1);
-			else
-				iconP1.animation.play('bf-old');
-		}
+		// {
+		// 	var balls = notesHitArray.length-1;
+		// 	while (balls >= 0)
+		// 	{
+		// 		var cock:Date = notesHitArray[balls];
+		// 		if (cock != null && cock.getTime() + 1000 < Date.now().getTime())
+		// 			notesHitArray.remove(cock);
+		// 		else
+		// 			balls = 0;
+		// 		balls--;
+		// 	}
+		// 	nps = notesHitArray.length;
+		// 	if (nps > maxNPS)
+		// 		maxNPS = nps;
+		// 	if (combo > maxCombo)
+		// 		maxCombo = combo;
+		// }
 
 		switch (curStage)
 		{
@@ -1634,11 +1611,6 @@ class PlayState extends MusicBeatState
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
-		// Charting is broken at the moment
-		if (FlxG.keys.justPressed.SEVEN && onlinemod.OnlinePlayMenuState.socket == null)
-		{
-			FlxG.switchState(new ChartingState());
-		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
@@ -1925,11 +1897,6 @@ class PlayState extends MusicBeatState
 		if (!inCutscene)
 			keyShit();
 
-
-		#if debug
-		if (FlxG.keys.justPressed.ONE)
-			endSong();
-		#end
 	}catch(e){MainMenuState.handleError('Caught "update" crash: ${e.message}');}}
 
 	function endSong():Void
@@ -2328,6 +2295,63 @@ class PlayState extends MusicBeatState
 
 
 	dynamic function handleInput(){MainMenuState.handleError("I can't handle input for some reason, Please report this!");}
+	dynamic function moveNotes(daNote:Note){MainMenuState.handleError("I can't move notes for some reason, Please report this!");}
+	function setInputHandlers(){
+
+		if (FlxG.save.data.downscroll) moveNotes = function(daNote:Note){
+				if (daNote.mustPress)
+					daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+				else
+					daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+				if(daNote.isSustainNote)
+				{
+					// Remember = minus makes notes go up, plus makes them go down
+					if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
+						daNote.y += daNote.prevNote.height;
+					else
+						daNote.y += daNote.height / 2;
+
+					// Only clip sustain notes when properly hit
+					if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
+					{
+						// Clip to strumline
+						var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
+						swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+						swagRect.y = daNote.frameHeight - swagRect.height;
+
+						daNote.clipRect = swagRect;
+					}
+				}
+			}
+		else moveNotes = function(daNote:Note){
+			if (daNote.mustPress)
+				daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+			else
+				daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+			if(daNote.isSustainNote)
+			{
+				daNote.y -= daNote.height / 2;
+				if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+				{
+					// Clip to strumline
+					var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+					swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+					swagRect.height -= swagRect.y;
+
+					daNote.clipRect = swagRect;
+				}
+			}
+		}
+
+
+		handleInput = kadeInput;
+		doKeyShit = kadeKeyShit; // Todo, add multiple input options
+	}
+
+	function moveNotesUp(){
+
+	}
+
 	function kadeInput(){
 		if (generatedMusic)
 			{
@@ -2350,51 +2374,7 @@ class PlayState extends MusicBeatState
 					}
 					// if (!daNote.modifiedByLua) Modcharts don't work, this check is useless
 					// 	{
-							if (FlxG.save.data.downscroll)
-							{
-								if (daNote.mustPress)
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
-								else
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
-								if(daNote.isSustainNote)
-								{
-									// Remember = minus makes notes go up, plus makes them go down
-									if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
-										daNote.y += daNote.prevNote.height;
-									else
-										daNote.y += daNote.height / 2;
-	
-									// Only clip sustain notes when properly hit
-									if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
-									{
-										// Clip to strumline
-										var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
-										swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
-										swagRect.y = daNote.frameHeight - swagRect.height;
-
-										daNote.clipRect = swagRect;
-									}
-								}
-							}else
-							{
-								if (daNote.mustPress)
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
-								else
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
-								if(daNote.isSustainNote)
-								{
-									daNote.y -= daNote.height / 2;
-									if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
-									{
-										// Clip to strumline
-										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-										swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
-										swagRect.height -= swagRect.y;
-
-										daNote.clipRect = swagRect;
-									}
-								}
-							}
+					moveNotes(daNote);
 						// }
 		
 	
@@ -2518,10 +2498,6 @@ class PlayState extends MusicBeatState
 	private dynamic function doKeyShit():Void
 		{MainMenuState.handleError("I can't handle key inputs? Please report this!");}
 
-
-	dynamic function noteHit(note:Note):Void{
-		return;
-	}
  	private function kadeKeyShit():Void // I've invested in emma stocks
 			{
 				// control arrays, order L D R U
@@ -2541,7 +2517,7 @@ class PlayState extends MusicBeatState
 				];
 		 
 				// HOLDS, check for sustain notes
-				if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
+				if (holdArray.contains(true) && generatedMusic)
 				{
 					notes.forEachAlive(function(daNote:Note)
 					{
@@ -2551,7 +2527,7 @@ class PlayState extends MusicBeatState
 				}
 		 
 				// PRESSES, check for note hits
-				if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
+				if (pressArray.contains(true) && generatedMusic)
 				{
 					boyfriend.holdTimer = 0;
 		 
@@ -2570,6 +2546,7 @@ class PlayState extends MusicBeatState
 									if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
 									{ // if it's the same note twice at < 10ms distance, just delete it
 										// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
+										daNote.kill();
 										dumbNotes.push(daNote);
 										break;
 									}
@@ -2591,8 +2568,6 @@ class PlayState extends MusicBeatState
 		 
 					for (note in dumbNotes)
 					{
-						FlxG.log.add("killing dumb ass note at " + note.strumTime);
-						note.kill();
 						notes.remove(note, true);
 						note.destroy();
 					}
@@ -3230,6 +3205,10 @@ class PlayState extends MusicBeatState
 			if (FlxG.keys.justPressed.THREE)
 			{
 				FlxG.switchState(new AnimationDebug(SONG.gfVersion,false,2));
+			}
+			if (FlxG.keys.justPressed.SEVEN )
+			{
+				FlxG.switchState(new ChartingState());
 			}
 		}
 	}
