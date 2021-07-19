@@ -693,11 +693,12 @@ class Character extends FlxSprite
 			}
 		}
 		updateHitbox();
-		if (dance_idle || charType == 2 || curCharacter == "spooky"){
-			playAnim('danceRight');
-		}else{
-			playAnim('idle');
-		}
+		dance();
+		// if (dance_idle || charType == 2 || curCharacter == "spooky"){
+		// 	playAnim('danceRight');
+		// }else{
+		// 	playAnim('idle');
+		// }
 	}
 
 	override function update(elapsed:Float)
