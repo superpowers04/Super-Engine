@@ -28,7 +28,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.1.0";
+	public static var ver:String = "0.1.1";
 	
 	public static var firstStart:Bool = true;
 
@@ -48,8 +48,8 @@ class MainMenuState extends SickMenuState
 
 	override function create()
 	{
-		options = ['online', 'downloaded songs','modded songs','get characters','story mode', 'freeplay', 'options'];
-		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally","Download characters to play as ingame",'Play through the story mode', 'Play any song from the game',  'Customise your experience to fit you'];
+		options = ['online', 'downloaded songs','modded songs','story mode', 'freeplay',"changelog",'get characters', 'options'];
+		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally",'Play through the story mode', 'Play any song from the game',"Check the latest update and it's changes","Download characters to play as ingame",'Customise your experience to fit you'];
 		trace(errorMessage);
 
 		persistentUpdate = persistentDraw = true;
@@ -67,7 +67,7 @@ class MainMenuState extends SickMenuState
 		add(versionShit);
 
 		if (TitleState.outdated){
-			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'FNFBR is outdated, Latest: ${TitleState.updatedVer}', 32);
+			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'FNFBR is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info', 32);
 			outdatedLMAO.setFormat("VCR OSD Mono", 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			outdatedLMAO.scrollFactor.set();
  			outdatedLMAO.screenCenter(FlxAxes.X);
@@ -171,6 +171,8 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new onlinemod.OfflineMenuState());
 			case 'get characters':
 				FlxG.switchState(new RepoState());
+			case 'changelog':
+				FlxG.switchState(new OutdatedSubState());
 
 			case 'options':
 				FlxG.switchState(new OptionsMenu());

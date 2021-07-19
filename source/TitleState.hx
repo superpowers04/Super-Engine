@@ -47,6 +47,7 @@ class TitleState extends MusicBeatState
 	public static var returnStateID:Int = 0;
 	public static var supported:Bool = false;
 	public static var outdated:Bool = false;
+	public static var checkedUpdate:Bool = false;
 	public static var updatedVer:String = "";
 	public static var errorMessage:String = "";
 
@@ -332,37 +333,40 @@ class TitleState extends MusicBeatState
 
 			MainMenuState.firstStart = true;
 			#if !debug
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+			if (FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate)
+				FlxG.switchState(new MainMenuState());
+			else
 			{
-				// Get current version of Kade Engine
-				
-				var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/FunkinBattleRoyale-Mod/master/version.downloadMe"); // It's recommended to change this if forking
-				var returnedData:Array<String> = [];
-				
-				http.onData = function (data:String)
+				new FlxTimer().start(2, function(tmr:FlxTimer)
 				{
-				  	if (!MainMenuState.ver.contains(data.trim()) && !OutdatedSubState.leftState && MainMenuState.nightly == "")
+					// Get current version of FNFBR, Uses kade's update checker 
+	
+					var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/FunkinBattleRoyale-Mod/master/version.downloadMe"); // It's recommended to change this if forking
+					var returnedData:Array<String> = [];
+					
+					http.onData = function (data:String)
 					{
-						trace('outdated lmao! ' + data + ' != ' + MainMenuState.ver);
-						// OutdatedSubState.needVer = returnedData[0];
-						// OutdatedSubState.currChanges = returnedData[1];
-						outdated = true;
-						updatedVer = data;
-						// FlxG.switchState(new OutdatedSubState());
+						checkedUpdate = true;
+						returnedData[0] = data.substring(0, data.indexOf(';'));
+						returnedData[1] = data.substring(data.indexOf('-'), data.length);
+						OutdatedSubState.needVer = returnedData[0];
+						OutdatedSubState.currChanges = returnedData[1];
+					  	if (!MainMenuState.ver.contains(data.trim()) && !OutdatedSubState.leftState)
+						{
+							trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
+							outdated = true;
+							updatedVer = data;
+						}
+						FlxG.switchState(new MainMenuState());
 					}
-					else
-					{
+					http.onError = function (error) {
+					  trace('error: $error');
+					  FlxG.switchState(new MainMenuState()); // fail but we go anyway
 					}
-					FlxG.switchState(new MainMenuState());
-				}
-				
-				http.onError = function (error) {
-				  trace('error: $error');
-				  FlxG.switchState(new MainMenuState()); // fail but we go anyway
-				}
-				
-				http.request();
-			});
+					
+					http.request();
+				});
+			}
 			#else
 				FlxG.switchState(new MainMenuState());
 			#end

@@ -12,7 +12,6 @@ import lime.app.Application;
 
 class OutdatedSubState extends MusicBeatState
 {
-	public static var leftState:Bool = false;
 
 	public static var needVer:String = "IDFK LOL";
 	public static var currChanges:String = "dk";
@@ -28,7 +27,7 @@ class OutdatedSubState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('week54prototype', 'shared'));
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(if(Math.random() > 0.5) 'week54prototype' else "zzzzzzzz", 'shared'));
 		bg.scale.x *= 1.55;
 		bg.scale.y *= 1.55;
 		bg.screenCenter();
@@ -41,15 +40,15 @@ class OutdatedSubState extends MusicBeatState
 		kadeLogo.y -= 180;
 		kadeLogo.alpha = 0.8;
 		add(kadeLogo);
-		
+		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,if(TitleState.outdated) 'FNFBR is outdated, Your version: ${MainMenuState.ver} latest: ${needVer} ' else 'Up to date: ${MainMenuState.ver}' , 32);
+		outdatedLMAO.setFormat("VCR OSD Mono", 32, if(TitleState.outdated) FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		outdatedLMAO.scrollFactor.set();
+		outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
+		add(outdatedLMAO);
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Your Kade Engine is outdated!\nYou are on "
-			+ MainMenuState.kadeEngineVer
-			+ "\nwhile the most recent version is " + needVer + "."
-			+ "\n\nWhat's new:\n\n"
+			"\n\nChangelog:\n\n"
 			+ currChanges
-			+ "\n& more changes and bugfixes in the full changelog"
-			+ "\n\nPress Space to view the full changelog and update\nor ESCAPE to ignore this",
+			+ "\n\nPress Space to get latest update's zip, D to open a invite to the Discord server or Escape to close.\n\nYou can install it by downloading the zip and dragging the files\n into your game folder",
 			32);
 		
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.fromRGB(200, 200, 200), CENTER);
@@ -84,13 +83,16 @@ class OutdatedSubState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.ACCEPT)
+		if (controls.ACCEPT || FlxG.keys.justPressed.SPACE)
 		{
-			fancyOpenURL("https://kadedev.github.io/Kade-Engine/changelogs/changelog-" + needVer);
+			fancyOpenURL("https://nightly.link/superpowers04/FunkinBattleRoyale-Mod/workflows/main/master/windowsBuild-Minimal.zip");
+		}
+		if (FlxG.keys.justPressed.D)
+		{
+			fancyOpenURL("https://discord.gg/28GPGTRuuR");
 		}
 		if (controls.BACK)
 		{
-			leftState = true;
 			FlxG.switchState(new MainMenuState());
 		}
 		super.update(elapsed);

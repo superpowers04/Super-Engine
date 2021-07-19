@@ -4,6 +4,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.FlxSubState;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -34,8 +35,6 @@ class AnimationDebug extends MusicBeatState
 	var pressArray:Array<Bool> = [];
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
-	var helpObjs:Array<FlxObject> = [];
-	var helpShown:Bool = false;
 	var offset:Map<String, Array<Float>> = [];
 	var offsetText:Map<String, FlxText> = [];
 	var offsetTextSize:Int = 20;
@@ -51,12 +50,14 @@ class AnimationDebug extends MusicBeatState
 
 	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false)
 	{
+		if (PlayState.SONG == null) MainMenuState.handleError("A song needs to be loaded first due to a crashing bug!");
 		super();
 		this.daAnim = daAnim;
 		this.isPlayer = isPlayer;
 		charType = charType_;
 		this.charSel = charSel;
 		trace('Animation debug with ${daAnim},${if(isPlayer) "true" else "false"},${charType}');
+
 	}
 
 	override function create()
@@ -72,7 +73,7 @@ class AnimationDebug extends MusicBeatState
 			FlxCamera.defaultCameras = [camGame];
 
 			// if (!charSel){ // Music should still be playing, no reason to do anything to it
-			// 	FlxG.sound.music.looped = true;
+			FlxG.sound.music.looped = true;
 			// 	FlxG.sound.music.play(); // Music go brrr
 			// }
 
@@ -97,6 +98,17 @@ class AnimationDebug extends MusicBeatState
 			spawnChar();
 
 
+			camFollow = new FlxObject(0, 0, 2, 2);
+			camFollow.screenCenter();
+			camFollow.setPosition(720, 500); 
+			add(camFollow);
+
+
+			FlxG.camera.follow(camFollow);
+			super.create();
+			updateCharPos(0,0,false,false);
+
+
 
 			var contText:FlxText = new FlxText(FlxG.width - 90,FlxG.height * 0.92,0,'Press H for help');
 			contText.size = 16;
@@ -110,16 +122,6 @@ class AnimationDebug extends MusicBeatState
 			offsetTopText.color = FlxColor.WHITE;
 			offsetTopText.scrollFactor.set();
 			add(offsetTopText);
-
-			camFollow = new FlxObject(0, 0, 2, 2);
-			camFollow.screenCenter();
-			camFollow.setPosition(720, 500); 
-			add(camFollow);
-
-
-			FlxG.camera.follow(camFollow);
-			super.create();
-			updateCharPos(0,0,false,false);
 
 			
 		}catch(e) MainMenuState.handleError('Error occurred, try loading a song first. ${e.message}');
@@ -164,39 +166,8 @@ class AnimationDebug extends MusicBeatState
 		}catch(e) MainMenuState.handleError('Error occurred in spawnChar, animdebug ${e.message}');
 	}
 
-	function showHelp(){
-		helpShown = true;
-		helpObjs = [];
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		bg.alpha = 0.6;
-		bg.scrollFactor.set();
-		helpObjs.push(bg);
-		var exitText:FlxText = new FlxText(FlxG.width - 1000, FlxG.height * 0.9,0,'Press ESC to close.');
-		exitText.setFormat("VCR OSD Mono", 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		exitText.scrollFactor.set();
-		helpObjs.push(exitText);
-		var controlsText:FlxText = new FlxText(20,145,0,'Controls:\n\nArrows - Note anims\nShift - Miss variant/Move by 5(Combine with CTRL to move 5)\nI - Idle\nCtrl - Alt Variant/Move by *0.1\n WASD - Move Offset, Moves per press for accuracy\n IJKL - Move char, Moves per press for accuracy\nR - Reload character\nEscape - Close animation debug');
-		controlsText.setFormat("VCR OSD Mono", 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		controlsText.scrollFactor.set();
-		helpObjs.push(controlsText);
 
-		var importantText:FlxText = new FlxText(2, 48,0,'You cannot save offsets, You have to manually copy them');
-		importantText.setFormat("VCR OSD Mono", 28, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// importantText.color = FlxColor.WHITE;
-		importantText.scrollFactor.set();
-		helpObjs.push(importantText);
 
-		for (i => v in helpObjs) {
-			add(helpObjs[i]);
-		}
-	}
-
-	function closeHelp(){
-		for (i => v in helpObjs) {
-			helpObjs[i].destroy();
-		}
-		helpShown = false;
-	} 
 	function moveOffset(?amountX:Float = 0,?amountY:Float = 0,?shiftPress:Bool = false,?ctrlPress:Bool = false,?animName:String = ""){
 		try{
 
@@ -261,80 +232,115 @@ class AnimationDebug extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		// textAnim.text = dad.animation.curAnim.name;
-		if (helpShown){
-			if (FlxG.keys.justPressed.ESCAPE)
-				closeHelp();
-		}else{
-			if (FlxG.keys.justPressed.ESCAPE)
-				exit();
-			var shiftPress = FlxG.keys.pressed.SHIFT;
-			var ctrlPress = FlxG.keys.pressed.CONTROL;
-			var rPress = FlxG.keys.justPressed.R;
-			var hPress = FlxG.keys.justPressed.H;
-			
-			pressArray = [
-				 (FlxG.keys.pressed.LEFT),
-				 (FlxG.keys.pressed.DOWN),
-				 (FlxG.keys.pressed.UP),
-				 (FlxG.keys.pressed.RIGHT),
-				 (FlxG.keys.pressed.V),
-				 (FlxG.keys.justPressed.W), // Adjust offset
-				 (FlxG.keys.justPressed.A),
-				 (FlxG.keys.justPressed.S),
-				 (FlxG.keys.justPressed.D),
-				 (FlxG.keys.justPressed.I), // Adjust Camera
-				 (FlxG.keys.justPressed.J),
-				 (FlxG.keys.justPressed.K),
-				 (FlxG.keys.justPressed.L),
-			];
+		if (FlxG.keys.justPressed.ESCAPE)
+			exit();
+		var shiftPress = FlxG.keys.pressed.SHIFT;
+		var ctrlPress = FlxG.keys.pressed.CONTROL;
+		var rPress = FlxG.keys.justPressed.R;
+		var hPress = FlxG.keys.justPressed.H;
+		
+		pressArray = [
+			 (FlxG.keys.justPressed.W), // Adjust offset
+			 (FlxG.keys.justPressed.A),
+			 (FlxG.keys.justPressed.S),
+			 (FlxG.keys.justPressed.D),
+			 (FlxG.keys.pressed.V),
+			 (FlxG.keys.pressed.LEFT),
+			 (FlxG.keys.pressed.DOWN),
+			 (FlxG.keys.pressed.UP),
+			 (FlxG.keys.pressed.RIGHT),
+			 (FlxG.keys.justPressed.I), // Adjust Camera
+			 (FlxG.keys.justPressed.J),
+			 (FlxG.keys.justPressed.K),
+			 (FlxG.keys.justPressed.L),
+		];
 
-			var modifier = "";
-			if (shiftPress) modifier += "miss";
-			if (ctrlPress) modifier += "-alt";
-			if (hPress) showHelp();
-			var animToPlay = "";
-			for (i => v in pressArray) {
-				if (v){
-					switch(i){
-						case 0:
-							animToPlay = 'singLEFT' + modifier;
-						case 1:
-							animToPlay = 'singDOWN' + modifier;
-						case 2:
-							animToPlay = 'singUP' + modifier;
-						case 3:
-							animToPlay = 'singRIGHT' + modifier;
-						case 4:
-							dad.dance();
-							
-						case 5: // Offset adjusting
-							moveOffset(0,1,shiftPress,ctrlPress);
-						case 6:
-							moveOffset(1,0,shiftPress,ctrlPress);
-						case 7:
-							moveOffset(0,-1,shiftPress,ctrlPress);
-						case 8:
-							moveOffset(-1,0,shiftPress,ctrlPress);
-						case 9:
-							updateCharPos(0,-1,shiftPress,ctrlPress);
-						case 10:
-							updateCharPos(-1,0,shiftPress,ctrlPress);
-						case 11:
-							updateCharPos(0,1,shiftPress,ctrlPress);
-						case 12:
-							updateCharPos(1,0,shiftPress,ctrlPress);
-					}
+		var modifier = "";
+		if (shiftPress) modifier += "miss";
+		if (ctrlPress) modifier += "-alt";
+		if (hPress) openSubState(new AnimHelpScreen());
+		var animToPlay = "";
+		for (i => v in pressArray) {
+			if (v){
+				switch(i){
+					case 0:
+						animToPlay = 'singLEFT' + modifier;
+					case 1:
+						animToPlay = 'singDOWN' + modifier;
+					case 2:
+						animToPlay = 'singUP' + modifier;
+					case 3:
+						animToPlay = 'singRIGHT' + modifier;
+					case 4:
+						dad.dance();
+						
+					case 5: // Offset adjusting
+						moveOffset(0,1,shiftPress,ctrlPress);
+					case 6:
+						moveOffset(1,0,shiftPress,ctrlPress);
+					case 7:
+						moveOffset(0,-1,shiftPress,ctrlPress);
+					case 8:
+						moveOffset(-1,0,shiftPress,ctrlPress);
+					case 9:
+						updateCharPos(0,-1,shiftPress,ctrlPress);
+					case 10:
+						updateCharPos(-1,0,shiftPress,ctrlPress);
+					case 11:
+						updateCharPos(0,1,shiftPress,ctrlPress);
+					case 12:
+						updateCharPos(1,0,shiftPress,ctrlPress);
 				}
 			}
-			if (animToPlay != "") {
-				var localOffsets:Array<Float>=[0,0];
-				if(offset[animToPlay] != null) localOffsets = offset[animToPlay];
-				dad.playAnim(animToPlay, true, false, 0, localOffsets[0], localOffsets[1]);
-			}
-			if (rPress && !pressArray.contains(true)) spawnChar(true);
 		}
+		if (animToPlay != "") {
+			var localOffsets:Array<Float>=[0,0];
+			if(offset[animToPlay] != null) localOffsets = offset[animToPlay];
+			dad.playAnim(animToPlay, true, false, 0, localOffsets[0], localOffsets[1]);
+		}
+		if (rPress && !pressArray.contains(true)) spawnChar(true);
 
 
 		super.update(elapsed);
 	}
+}
+class AnimHelpScreen extends FlxSubState{
+
+	var helpObjs:Array<FlxObject> = [];
+	override function create(){
+		// helpShown = true;
+		helpObjs = [];
+		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		bg.alpha = 0.6;
+		bg.scrollFactor.set();
+		helpObjs.push(bg);
+		var exitText:FlxText = new FlxText(FlxG.width - 1000, FlxG.height * 0.9,0,'Press ESC to close.');
+		exitText.setFormat("VCR OSD Mono", 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		exitText.scrollFactor.set();
+		helpObjs.push(exitText);
+		var controlsText:FlxText = new FlxText(20,145,0,'Controls:\n\nArrows - Note anims\nShift - Miss variant/Move by 5(Combine with CTRL to move 5)\nI - Idle\nCtrl - Alt Variant/Move by *0.1\n WASD - Move Offset, Moves per press for accuracy\n IJKL - Move char, Moves per press for accuracy\nR - Reload character\nEscape - Close animation debug');
+		controlsText.setFormat("VCR OSD Mono", 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		controlsText.scrollFactor.set();
+		helpObjs.push(controlsText);
+
+		var importantText:FlxText = new FlxText(2, 48,0,'You cannot save offsets, You have to manually copy them');
+		importantText.setFormat("VCR OSD Mono", 28, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		// importantText.color = FlxColor.WHITE;
+		importantText.scrollFactor.set();
+		helpObjs.push(importantText);
+
+		for (i => v in helpObjs) {
+			add(helpObjs[i]);
+		}
+	}
+	override function update(elapsed:Float){
+		if (FlxG.keys.justPressed.ESCAPE)
+			closeHelp();
+	}
+	function closeHelp(){
+		for (i => v in helpObjs) {
+			helpObjs[i].destroy();
+		}
+		this.destroy();
+	} 
 }
