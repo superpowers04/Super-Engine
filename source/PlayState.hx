@@ -259,9 +259,10 @@ class PlayState extends MusicBeatState
 
 		resetScore();
 
-		if (FlxG.save.data.playerChar != "bf"){
-			SONG.player1 = FlxG.save.data.playerChar;
-		}
+		if (FlxG.save.data.playerChar == "automatic"){
+			if (TitleState.retChar(PlayState.SONG.player1) != "") SONG.player1 = TitleState.retChar(PlayState.SONG.player1);
+			else SONG.player1 = "bf";
+		}else SONG.player1 = FlxG.save.data.playerChar;
 		TitleState.loadNoteAssets(); // Make sure note assets are actually loaded
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -3216,15 +3217,19 @@ class PlayState extends MusicBeatState
 		}
 	}
 	public function testanimdebug(){
-		if (FlxG.save.data.animDebug) {
-			if (FlxG.keys.justPressed.EIGHT)
+		if (FlxG.save.data.animDebug && onlinemod.OnlinePlayMenuState.socket == null) {
+			if (FlxG.keys.justPressed.TWO)
 			{
-				FlxG.switchState(new AnimationDebug(SONG.player2));
+				FlxG.switchState(new AnimationDebug(SONG.player2,false,1));
 			}
 
-			if (FlxG.keys.justPressed.NINE)
+			if (FlxG.keys.justPressed.ONE)
 			{
-				FlxG.switchState(new AnimationDebug(SONG.player1));
+				FlxG.switchState(new AnimationDebug(SONG.player1,true,0));
+			}
+			if (FlxG.keys.justPressed.THREE)
+			{
+				FlxG.switchState(new AnimationDebug(SONG.gfVersion,false,2));
 			}
 		}
 	}

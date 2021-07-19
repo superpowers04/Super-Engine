@@ -28,7 +28,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.0.3";
+	public static var ver:String = "0.1.0";
 	
 	public static var firstStart:Bool = true;
 
@@ -50,7 +50,6 @@ class MainMenuState extends SickMenuState
 	{
 		options = ['online', 'downloaded songs','modded songs','get characters','story mode', 'freeplay', 'options'];
 		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally","Download characters to play as ingame",'Play through the story mode', 'Play any song from the game',  'Customise your experience to fit you'];
-		if (errorMessage == ""){errorMessage = TitleState.errorMessage;}
 		trace(errorMessage);
 
 		persistentUpdate = persistentDraw = true;
@@ -75,7 +74,7 @@ class MainMenuState extends SickMenuState
 			add(outdatedLMAO);
 		}
 		//  Whole bunch of checks to prevent crashing
-		if (!TitleState.choosableCharacters.contains(FlxG.save.data.playerChar)){
+		if (!TitleState.choosableCharacters.contains(FlxG.save.data.playerChar) && FlxG.save.data.playerChar != "automatic"){
 			errorMessage += '\n${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
 			FlxG.save.data.playerChar = "bf";
 		}
@@ -84,18 +83,20 @@ class MainMenuState extends SickMenuState
 			FlxG.save.data.opponent = "dad";
 		}
 		if (!TitleState.choosableCharacters.contains(FlxG.save.data.gfChar)){
-			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid opponent! Reset back to GF!';
+			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
 			FlxG.save.data.gfChar = "gf";
 		}
-		if (errorMessage != ""){
+		if (MainMenuState.errorMessage != ""){
 
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			var errorText =  new FlxText(2, 48, 0, errorMessage, 12);
+
+			var errorText =  new FlxText(2, 48, 0, MainMenuState.errorMessage, 12);
 		    errorText.scrollFactor.set();
-		    errorText.setFormat("VCR OSD Mono", 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		    errorText.wordWrap = true;
+		    errorText.fieldWidth = 1200;
+		    errorText.setFormat("VCR OSD Mono", 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		    add(errorText);
-		    TitleState.errorMessage="";
-		    errorMessage="";
+		    MainMenuState.errorMessage="";
 		}
 
 		// if(!FlxG.save.data.preformance && FileSystem.exists(Sys.getCwd() + "mods/characters/"+FlxG.save.data.gfChar+"/character.png")){ // Gf on main menu because yes
@@ -134,7 +135,6 @@ class MainMenuState extends SickMenuState
 	// 			gfDance.animation.play('danceLeft');
 	// 	}
 	// }
-	var selectedSomethin:Bool = false;
 
 	override function goBack(){
 		FlxG.switchState(new TitleState());
@@ -150,6 +150,8 @@ class MainMenuState extends SickMenuState
 	}
 	
   override function select(sel:Int){
+  	    if (selected){return;}
+    	selected = true;
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));
 		switch (daChoice)

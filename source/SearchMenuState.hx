@@ -30,7 +30,17 @@ class SearchMenuState extends MusicBeatState
   var searchList:Array<String> = ["this should be replaced"];
   var retAfter:Bool = true;
   var bg:FlxSprite;
+  var titleText:FlxText;
+  var infotext:FlxText;
   
+
+  function addTitleText(str:String = ""){
+    if (titleText != null) titleText.destroy();
+    titleText = new FlxText(FlxG.width * 0.5, 20, 0, str, 12);
+    titleText.scrollFactor.set();
+    titleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    add(titleText);
+  }
 
   function findButton(){
       reloadList(true,searchField.text);
@@ -57,10 +67,10 @@ class SearchMenuState extends MusicBeatState
     add(searchButton);
 
     var infotexttxt:String = "Hold shift to scroll faster";
-    var infotext = new FlxText(5, FlxG.height - 40, 0, infotexttxt, 12);
+    infotext = new FlxText(5, FlxG.height - 30, 0, infotexttxt, 12);
     infotext.scrollFactor.set();
     infotext.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(infotext.width + 900)),Std.int(infotext.height + 600),FlxColor.BLACK);
+    var blackBorder = new FlxSprite(-30,FlxG.height - 30).makeGraphic((Std.int(infotext.width + 900)),Std.int(infotext.height + 600),FlxColor.BLACK);
     blackBorder.alpha = 0.5;
 
     add(blackBorder);
@@ -114,12 +124,15 @@ class SearchMenuState extends MusicBeatState
       }
       if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
       if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
-
+      extraKeys();
       if (controls.ACCEPT && songs.length > 0)
       {
         select(curSelected);
         if(retAfter) ret();
       }
+  }
+  function extraKeys(){
+    return;
   }
   function ret(){
     FlxG.mouse.visible = false;

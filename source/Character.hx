@@ -128,38 +128,49 @@ class Character extends FlxSprite
 				if(!isPlayer){camX-=100;}
 			case 'bf','bf-christmas','bf-car':
 				charY+=330;
-				needsInverted = true;
-				if (isPlayer){			
-					addOffset('idle', -10);
-					addOffset("singUP", 0, 27);
-					// This game is handled terribly....					
-					addOffset("singLEFT", -38, -7);
-					addOffset("singRIGHT", 12, -6);
-					addOffset("singDOWN", 0, -50);
-					addOffset("singUPmiss", 0, 27);
-					addOffset("singRIGHTmiss", 0, 21);
-					addOffset("singLEFTmiss", 0, 24);
-					addOffset("singDOWNmiss", 0, -19);
-					addOffset("hey",0, 4);
-					addOffset('firstDeath', 0, 11);
-					addOffset('deathLoop', 0, 5);
-					addOffset('deathConfirm', 0, 69);
-				}else{ // Why the hell is this needed on the left but not the right?
-					addOffset('idle', -5);
-					addOffset("singUP", -29, 27);
-					addOffset("singLEFT", -38, -7);
-					addOffset("singRIGHT", 12, -6);
-					addOffset("singDOWN", -10, -50);
-					addOffset("singUPmiss", -29, 27);
-					addOffset("singRIGHTmiss", -30, 21);
-					addOffset("singLEFTmiss", 12, 24);
-					addOffset("singDOWNmiss", -11, -19);
-					addOffset("hey", 7, 4);
-					addOffset('firstDeath', 37, 11);
-					addOffset('deathLoop', 37, 5);
-					addOffset('deathConfirm', 37, 69);
-					addOffset('scared', -4);
-				}
+				// needsInverted = true;
+				// if (isPlayer){			
+				// 	addOffset('idle', -10);
+				// 	addOffset("singUP", 0, 27);
+				// 	// This game is handled terribly....					
+				// 	addOffset("singLEFT", -38, -7);
+				// 	addOffset("singRIGHT", 12, -6);
+				// 	addOffset("singDOWN", 0, -50);
+				// 	addOffset("singUPmiss", 0, 27);
+				// 	addOffset("singRIGHTmiss", 0, 21);
+				// 	addOffset("singLEFTmiss", 0, 24);
+				// 	addOffset("singDOWNmiss", 0, -19);
+				// 	addOffset("hey",0, 4);
+				// 	addOffset('firstDeath', 0, 11);
+				// 	addOffset('deathLoop', 0, 5);
+				// 	addOffset('deathConfirm', 0, 69);
+				// }else{ // Why the hell is this needed on the left but not the right?
+				// 	addOffset('idle', -5);
+				// 	addOffset("singUP", -29, 27);
+				// 	addOffset("singLEFT", -38, -7);
+				// 	addOffset("singRIGHT", 12, -6);
+				// 	addOffset("singDOWN", -10, -50);
+				// 	addOffset("singUPmiss", -29, 27);
+				// 	addOffset("singRIGHTmiss", -30, 21);
+				// 	addOffset("singLEFTmiss", 12, 24);
+				// 	addOffset("singDOWNmiss", -11, -19);
+				// 	addOffset("hey", 7, 4);
+				// 	addOffset('firstDeath', 37, 11);
+				// 	addOffset('deathLoop', 37, 5);
+				// 	addOffset('deathConfirm', 37, 69);
+				// 	addOffset('scared', -4);
+				// }
+				addOffset('idle', -5);
+				addOffset("singUP", -29, 27);
+				addOffset("singRIGHT", -38, -7);
+				addOffset("singLEFT", 12, -6);
+				addOffset("singDOWN", -10, -50);
+				addOffset("singUPmiss", -29, 27);
+				addOffset("singRIGHTmiss", -30, 21);
+				addOffset("singLEFTmiss", 12, 24);
+				addOffset("singDOWNmiss", -11, -19);
+				addOffset("hey", 7, 4);
+				addOffset('scared', -4);
 			case "bf-pixel":
 				charY+=330;
 			case 'spirit':
@@ -664,7 +675,7 @@ class Character extends FlxSprite
 		}
 		this.y += charY;
 		this.x += charX;
-		if (isPlayer && !amPreview && animation.getByName('singRIGHT') != null && flip && flipNotes)
+		if (isPlayer && animation.getByName('singRIGHT') != null && flip && flipNotes)
 		{
 			flipX = !flipX;
 
@@ -681,6 +692,7 @@ class Character extends FlxSprite
 				animation.getByName('singLEFTmiss').frames = oldMiss;
 			}
 		}
+		updateHitbox();
 		if (dance_idle || charType == 2 || curCharacter == "spooky"){
 			playAnim('danceRight');
 		}else{
@@ -750,7 +762,7 @@ class Character extends FlxSprite
 						playAnim('danceLeft');
 				}
 			}else{
-					playAnim('idle');
+				playAnim('idle');
 			}
 		}
 	}

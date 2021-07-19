@@ -18,6 +18,7 @@ class SickMenuState extends MusicBeatState
   var descriptionText:FlxText;
   var grpControls:FlxTypedGroup<Alphabet>;
   var bgImage:String = "menuDesat";
+  var selected:Bool = false;
   function goBack(){
     FlxG.switchState(new MainMenuState());
   }
@@ -91,6 +92,7 @@ class SickMenuState extends MusicBeatState
   }
   function changeSelection(change:Int = 0)
 	{
+
 		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 
 		curSelected += change;
