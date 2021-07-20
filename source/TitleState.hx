@@ -355,7 +355,7 @@ class TitleState extends MusicBeatState
 						{
 							trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
 							outdated = true;
-							updatedVer = data;
+							updatedVer = returnedData[0];
 						}
 						FlxG.switchState(new MainMenuState());
 					}
