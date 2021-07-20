@@ -8,6 +8,7 @@ import flixel.FlxSubState;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.input.keyboard.FlxKey;
@@ -44,6 +45,8 @@ class AnimationDebug extends MusicBeatState
 	var charY:Float = 0;
 	var characterX:Float = 0;
 	var characterY:Float = 0;
+	var UI:FlxGroup = new FlxGroup();
+	public static var inHelp:Bool = false;
 
 	// var flippedChars:Array<String> = ["pico"];
 
@@ -74,7 +77,7 @@ class AnimationDebug extends MusicBeatState
 
 			// if (!charSel){ // Music should still be playing, no reason to do anything to it
 			FlxG.sound.music.looped = true;
-			// 	FlxG.sound.music.play(); // Music go brrr
+			FlxG.sound.music.play(); // Music go brrr
 			// }
 
 			var gridBG:FlxSprite = FlxGridOverlay.create(50, 20);
@@ -89,7 +92,7 @@ class AnimationDebug extends MusicBeatState
 			stageFront.scrollFactor.set(0.9, 0.9);
 			stageFront.active = false;
 			add(stageFront);
-			if (charType != 3){
+			if (charType != 2){
 				gf = new Character(400, 100, "gf",false,2,true);
 				gf.scrollFactor.set(0.95, 0.95);
 				gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
@@ -110,19 +113,17 @@ class AnimationDebug extends MusicBeatState
 
 
 
-			var contText:FlxText = new FlxText(FlxG.width - 90,FlxG.height * 0.92,0,'Press H for help');
-			contText.size = 16;
-			contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+			var contText:FlxText = new FlxText(FlxG.width * 0.8,FlxG.height * 0.92,0,'Press H for help');
+			contText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 			contText.color = FlxColor.WHITE;
 			contText.scrollFactor.set();
-			add(contText);
+			// add(contText);
 			var offsetTopText:FlxText = new FlxText(30,20,0,'Current offsets(This is in addition to the existing offsets):');
-			offsetTopText.size = 16;
-			offsetTopText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-			offsetTopText.color = FlxColor.WHITE;
+			offsetTopText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 			offsetTopText.scrollFactor.set();
-			add(offsetTopText);
-
+			// add(offsetTopText);
+			UI.add(offsetTopText);
+			UI.add(contText);
 			
 		}catch(e) MainMenuState.handleError('Error occurred, try loading a song first. ${e.message}');
 	}
@@ -184,11 +185,9 @@ class AnimationDebug extends MusicBeatState
 			}
 			if (offsetText[animName] == null){
 				var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
-				text.size = 16;
-				text.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-				text.color = FlxColor.WHITE;
+				text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 				text.scrollFactor.set();
-				add(text);
+				UI.add(text);
 				offsetText[animName] = text;
 			}
 			dad.playAnim(animName, true,false,0,offset[animName][0],offset[animName][1]);
@@ -218,11 +217,10 @@ class AnimationDebug extends MusicBeatState
 		if (offsetText["charPos_internal"] == null){
 			offsetCount += 1;
 			var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
-			text.size = 16;
-			text.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-			text.color = FlxColor.WHITE;
+			text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			// text.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 			text.scrollFactor.set();
-			add(text);
+			UI.add(text);
 			offsetText["charPos_internal"] = text;
 		}
 		offsetText["charPos_internal"].text = 'Character Position: [${charX}, ${charY}]';
@@ -240,15 +238,15 @@ class AnimationDebug extends MusicBeatState
 		var hPress = FlxG.keys.justPressed.H;
 		
 		pressArray = [
-			 (FlxG.keys.justPressed.W), // Adjust offset
-			 (FlxG.keys.justPressed.A),
-			 (FlxG.keys.justPressed.S),
-			 (FlxG.keys.justPressed.D),
+			 (FlxG.keys.pressed.A), // Adjust offset
+			 (FlxG.keys.pressed.S),
+			 (FlxG.keys.pressed.W),
+			 (FlxG.keys.pressed.D),
 			 (FlxG.keys.pressed.V),
-			 (FlxG.keys.pressed.LEFT),
-			 (FlxG.keys.pressed.DOWN),
-			 (FlxG.keys.pressed.UP),
-			 (FlxG.keys.pressed.RIGHT),
+			 (FlxG.keys.justPressed.UP),
+			 (FlxG.keys.justPressed.LEFT),
+			 (FlxG.keys.justPressed.DOWN),
+			 (FlxG.keys.justPressed.RIGHT),
 			 (FlxG.keys.justPressed.I), // Adjust Camera
 			 (FlxG.keys.justPressed.J),
 			 (FlxG.keys.justPressed.K),
@@ -303,12 +301,18 @@ class AnimationDebug extends MusicBeatState
 
 		super.update(elapsed);
 	}
+	override function draw(){ // Dunno how inefficient this is but it works
+		super.draw();
+
+		if (!inHelp) UI.draw();
+	}
 }
 class AnimHelpScreen extends FlxSubState{
 
 	var helpObjs:Array<FlxObject> = [];
 	override function create(){
 		// helpShown = true;
+		AnimationDebug.inHelp = true;
 		helpObjs = [];
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.6;
@@ -318,7 +322,7 @@ class AnimHelpScreen extends FlxSubState{
 		exitText.setFormat("VCR OSD Mono", 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		exitText.scrollFactor.set();
 		helpObjs.push(exitText);
-		var controlsText:FlxText = new FlxText(20,145,0,'Controls:\n\nArrows - Note anims\nShift - Miss variant/Move by 5(Combine with CTRL to move 5)\nI - Idle\nCtrl - Alt Variant/Move by *0.1\n WASD - Move Offset, Moves per press for accuracy\n IJKL - Move char, Moves per press for accuracy\nR - Reload character\nEscape - Close animation debug');
+		var controlsText:FlxText = new FlxText(20,145,0,'Controls:\n\nWASD - Note anims\n I - Idle\nArrows - Move Offset, Moves per press for accuracy\nIJKL - Move char, Moves per press for accuracy\n Shift - Miss variant/Move by 5(Combine with CTRL to move 5)\n Ctrl - Alt Variant/Move by *0.1\nR - Reload character\nEscape - Close animation debug');
 		controlsText.setFormat("VCR OSD Mono", 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlsText.scrollFactor.set();
 		helpObjs.push(controlsText);
@@ -341,6 +345,7 @@ class AnimHelpScreen extends FlxSubState{
 		for (i => v in helpObjs) {
 			helpObjs[i].destroy();
 		}
-		this.destroy();
+		AnimationDebug.inHelp = false;
+		close();
 	} 
 }

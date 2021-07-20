@@ -90,7 +90,7 @@ class MainMenuState extends SickMenuState
 
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 
-			var errorText =  new FlxText(2, 48, 0, MainMenuState.errorMessage, 12);
+			var errorText =  new FlxText(2, 64, 0, MainMenuState.errorMessage, 12);
 		    errorText.scrollFactor.set();
 		    errorText.wordWrap = true;
 		    errorText.fieldWidth = 1200;
@@ -158,11 +158,8 @@ class MainMenuState extends SickMenuState
 		{
 			case 'story mode':
 				FlxG.switchState(new StoryMenuState());
-				trace("Story Menu Selected");
 			case 'freeplay':
 				FlxG.switchState(new FreeplayState());
-
-				trace("Freeplay Menu Selected");
 			case 'online':
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
 			case 'modded songs':
@@ -173,7 +170,6 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new RepoState());
 			case 'changelog':
 				FlxG.switchState(new OutdatedSubState());
-
 			case 'options':
 				FlxG.switchState(new OptionsMenu());
 		}

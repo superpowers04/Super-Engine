@@ -3181,18 +3181,18 @@ class PlayState extends MusicBeatState
 	}
 	public function testanimdebug(){
 		if (FlxG.save.data.animDebug && onlinemod.OnlinePlayMenuState.socket == null) {
-			if (FlxG.keys.justPressed.TWO)
+			if (FlxG.keys.justPressed.ONE && boyfriend != null)
 			{
-				FlxG.switchState(new AnimationDebug(SONG.player2,false,1));
+				FlxG.switchState(new AnimationDebug(boyfriend.curCharacter,true,0));
+			}
+			if (FlxG.keys.justPressed.TWO && dad != null)
+			{
+				FlxG.switchState(new AnimationDebug(dad.curCharacter,false,1));
 			}
 
-			if (FlxG.keys.justPressed.ONE)
+			if (FlxG.keys.justPressed.THREE && gf != null)
 			{
-				FlxG.switchState(new AnimationDebug(SONG.player1,true,0));
-			}
-			if (FlxG.keys.justPressed.THREE)
-			{
-				FlxG.switchState(new AnimationDebug(SONG.gfVersion,false,2));
+				FlxG.switchState(new AnimationDebug(gf.curCharacter,false,2));
 			}
 			if (FlxG.keys.justPressed.SEVEN )
 			{
