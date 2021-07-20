@@ -349,13 +349,14 @@ class TitleState extends MusicBeatState
 						checkedUpdate = true;
 						returnedData[0] = data.substring(0, data.indexOf(';'));
 						returnedData[1] = data.substring(data.indexOf('-'), data.length);
-						OutdatedSubState.needVer = returnedData[0];
+						updatedVer = returnedData[0];
+						OutdatedSubState.needVer = updatedVer;
 						OutdatedSubState.currChanges = returnedData[1];
-					  	if (!MainMenuState.ver.contains(data.trim()))
+					  	if (!MainMenuState.ver.contains(updatedVer.trim()))
 						{
 							trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
 							outdated = true;
-							updatedVer = returnedData[0];
+							
 						}
 						FlxG.switchState(new MainMenuState());
 					}
