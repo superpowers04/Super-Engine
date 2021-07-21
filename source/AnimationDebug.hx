@@ -77,6 +77,7 @@ class AnimationDebug extends MusicBeatState
 
 			// if (!charSel){ // Music should still be playing, no reason to do anything to it
 			FlxG.sound.music.looped = true;
+			FlxG.sound.music.onComplete = null;
 			FlxG.sound.music.play(); // Music go brrr
 			// }
 
@@ -114,12 +115,12 @@ class AnimationDebug extends MusicBeatState
 
 
 			var contText:FlxText = new FlxText(FlxG.width * 0.8,FlxG.height * 0.92,0,'Press H for help');
-			contText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-			contText.color = FlxColor.WHITE;
+			contText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
+			contText.color = FlxColor.BLACK;
 			contText.scrollFactor.set();
 			// add(contText);
 			var offsetTopText:FlxText = new FlxText(30,20,0,'Current offsets(This is in addition to the existing offsets):');
-			offsetTopText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			offsetTopText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			offsetTopText.scrollFactor.set();
 			// add(offsetTopText);
 			UI.add(offsetTopText);
@@ -185,7 +186,7 @@ class AnimationDebug extends MusicBeatState
 			}
 			if (offsetText[animName] == null){
 				var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
-				text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+				text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 				text.scrollFactor.set();
 				UI.add(text);
 				offsetText[animName] = text;
@@ -217,7 +218,7 @@ class AnimationDebug extends MusicBeatState
 		if (offsetText["charPos_internal"] == null){
 			offsetCount += 1;
 			var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
-			text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			// text.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 			text.scrollFactor.set();
 			UI.add(text);
@@ -238,12 +239,12 @@ class AnimationDebug extends MusicBeatState
 		var hPress = FlxG.keys.justPressed.H;
 		
 		pressArray = [
-			 (FlxG.keys.pressed.A), // Adjust offset
+			 (FlxG.keys.pressed.A), // Play note animation
 			 (FlxG.keys.pressed.S),
 			 (FlxG.keys.pressed.W),
 			 (FlxG.keys.pressed.D),
 			 (FlxG.keys.pressed.V),
-			 (FlxG.keys.justPressed.UP),
+			 (FlxG.keys.justPressed.UP), // Adjust offsets
 			 (FlxG.keys.justPressed.LEFT),
 			 (FlxG.keys.justPressed.DOWN),
 			 (FlxG.keys.justPressed.RIGHT),
@@ -251,6 +252,7 @@ class AnimationDebug extends MusicBeatState
 			 (FlxG.keys.justPressed.J),
 			 (FlxG.keys.justPressed.K),
 			 (FlxG.keys.justPressed.L),
+			 (FlxG.keys.pressed.ONE),
 		];
 
 		var modifier = "";
@@ -261,7 +263,7 @@ class AnimationDebug extends MusicBeatState
 		for (i => v in pressArray) {
 			if (v){
 				switch(i){
-					case 0:
+					case 0: // Play notes
 						animToPlay = 'singLEFT' + modifier;
 					case 1:
 						animToPlay = 'singDOWN' + modifier;
@@ -280,7 +282,8 @@ class AnimationDebug extends MusicBeatState
 						moveOffset(0,-1,shiftPress,ctrlPress);
 					case 8:
 						moveOffset(-1,0,shiftPress,ctrlPress);
-					case 9:
+
+					case 9: // Char position
 						updateCharPos(0,-1,shiftPress,ctrlPress);
 					case 10:
 						updateCharPos(-1,0,shiftPress,ctrlPress);
@@ -288,6 +291,11 @@ class AnimationDebug extends MusicBeatState
 						updateCharPos(0,1,shiftPress,ctrlPress);
 					case 12:
 						updateCharPos(1,0,shiftPress,ctrlPress);
+
+					case 13: // Unload character offsets
+						dad.animOffsets = ["all" => [0,0]];
+						dad.offset.set(0,0);
+
 				}
 			}
 		}
@@ -315,21 +323,33 @@ class AnimHelpScreen extends FlxSubState{
 		AnimationDebug.inHelp = true;
 		helpObjs = [];
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		bg.alpha = 0.6;
+		bg.alpha = 0.8;
 		bg.scrollFactor.set();
 		helpObjs.push(bg);
-		var exitText:FlxText = new FlxText(FlxG.width - 1000, FlxG.height * 0.9,0,'Press ESC to close.');
-		exitText.setFormat("VCR OSD Mono", 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var exitText:FlxText = new FlxText(FlxG.width * 0.7, FlxG.height * 0.9,0,'Press ESC to close.');
+		exitText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		exitText.scrollFactor.set();
 		helpObjs.push(exitText);
-		var controlsText:FlxText = new FlxText(20,145,0,'Controls:\n\nWASD - Note anims\n I - Idle\nArrows - Move Offset, Moves per press for accuracy\nIJKL - Move char, Moves per press for accuracy\n Shift - Miss variant/Move by 5(Combine with CTRL to move 5)\n Ctrl - Alt Variant/Move by *0.1\nR - Reload character\nEscape - Close animation debug');
-		controlsText.setFormat("VCR OSD Mono", 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var controlsText:FlxText = new FlxText(20,145,0,'Controls:'
+		+'\n\nWASD - Note anims'
+		+'\nI - Idle'
+		+'\n*Shift - Miss variant'
+		+'\n*Ctrl - Alt Variant'
+		+'\nArrows - Move Offset, Moves per press for accuracy'
+		+'\nIJKL - Move char, Moves per press for accuracy'
+		+'\n*Shift - Move by 5(Combine with CTRL to move 5)'
+		+'\n*Ctrl - Move by *0.1'
+		+'\n1 - Unload defined offsets'
+		+'\nR - Reload character'
+		+'\nEscape - Close animation debug');
+		controlsText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlsText.scrollFactor.set();
 		helpObjs.push(controlsText);
 
-		var importantText:FlxText = new FlxText(2, 48,0,'You cannot save offsets, You have to manually copy them');
-		importantText.setFormat("VCR OSD Mono", 28, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// importantText.color = FlxColor.WHITE;
+		var importantText:FlxText = new FlxText(10, 48,0,'You cannot save offsets, You have to manually copy them');
+		importantText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
+
+		// importantText.color = FlxColor.BLACK;
 		importantText.scrollFactor.set();
 		helpObjs.push(importantText);
 

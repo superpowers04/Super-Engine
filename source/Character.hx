@@ -551,8 +551,10 @@ class Character extends FlxSprite
 					animation.addByPrefix('singRIGHT', 'BF NOTE LEFT0', 24, false);
 					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
 					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+
+					animation.addByPrefix('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
+
 					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 					animation.addByPrefix('hey', 'BF HEY', 24, false);
 
@@ -692,7 +694,7 @@ class Character extends FlxSprite
 				animation.getByName('singLEFTmiss').frames = oldMiss;
 			}
 		}
-		updateHitbox();
+		// updateHitbox();-
 		dance();
 		// if (dance_idle || charType == 2 || curCharacter == "spooky"){
 		// 	playAnim('danceRight');
@@ -703,7 +705,7 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{	
-		if(!amPreview && animation.curAnim != null){			// WHY IS CURANIM NEVER SET?
+		if(!amPreview){
 			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
 			{
 				playAnim('idle', true, false, 10);
@@ -718,10 +720,13 @@ class Character extends FlxSprite
 			{
 				if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 				{
-					dance();
 					holdTimer = 0;
 				}
 			}
+			if (animation.curAnim.name.startsWith('sing') && animation.curAnim.finished){
+				dance();
+			}
+
 
 			// switch (curCharacter)
 			// {

@@ -1,6 +1,2 @@
-0.1.1;
-Reverted to old playstate
-Some optimisations
-Add a proper changelog
-Polish animation debug a bit and fix some bugs
-Change animation debug to use Arrows for movement instead of WASD
+0.1.2;
+- Some general fixes
