@@ -416,7 +416,7 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		logoBl.animation.play('bump');
+		if (logoBl != null) logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
 
 		if (danceLeft)

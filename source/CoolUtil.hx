@@ -12,7 +12,6 @@ class CoolUtil
 	{
 		return difficultyArray[PlayState.storyDifficulty];
 	}
-
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = Assets.getText(path).trim().split('\n');
@@ -48,5 +47,10 @@ class CoolUtil
 	}
 	public static function multiInt(?int:Int = 0){
 		if (int == 1) return ''; else return 's';
+	}
+	public static function cleanJSON(input:String):String{ // Haxe doesn't filter out comments?
+		input = input.trim();
+		input = (~/\/\*[\s\S]*?\*\/|\/\/.*/g).replace(input,'');
+		return input;
 	}
 }

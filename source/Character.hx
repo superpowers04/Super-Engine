@@ -541,8 +541,8 @@ class Character extends FlxSprite
 					trace('Loaded character sheet');
 					frames = tex;
 					var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json');
-					var charProperties:CharacterJson = haxe.Json.parse(charPropJson);
-					if (charProperties.animations == null){MainMenuState.handleError('$curCharacter\'s JSON is invalid');} // Boot to main menu if character's JSON can't be loaded
+					var charProperties:CharacterJson = haxe.Json.parse(CoolUtil.cleanJSON(charPropJson));
+					if (charProperties == null || charProperties.animations == null || charProperties.animations[0] == null){MainMenuState.handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
 					// BF's animations, Adding because they're used by default to provide support with FNF Multi
 					animation.addByPrefix('idle', 'BF idle dance', 24, false);
 					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
