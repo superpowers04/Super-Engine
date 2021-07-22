@@ -99,7 +99,7 @@ class Note extends FlxSprite
 				x += swagWidth * 2;
 				animation.play('greenScroll');
 			case 3:
-				x += swagWidth * 3;
+				x += swagWidth * 3 + 4;
 				animation.play('redScroll');
 		}
 
