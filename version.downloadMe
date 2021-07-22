@@ -1,2 +1,5 @@
 0.1.2;
+- The ability to output offsets to a text file for easier copying
+- JSON's can actually include comments without causing crashes now
+- A whole bunch of fixes for BF
 - Some general fixes
