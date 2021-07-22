@@ -216,8 +216,6 @@ class PlayState extends MusicBeatState
 	private var bruhmode:Bool = false;
 	public static var beatAnimEvents:Map<Int,Map<String,IfStatement>>;
 	public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
-
-	public static var inputMode:Int = 0;
 	public static var canUseAlts:Bool = false;
 
 	var hitSound:Bool = false;
@@ -2298,6 +2296,20 @@ class PlayState extends MusicBeatState
 
 
 	dynamic function handleInput(){MainMenuState.handleError("I can't handle input for some reason, Please report this!");}
+	function DadStrumPlayAnim(id:Int) {
+		var spr:FlxSprite= strumLineNotes.members[id];
+		if(spr != null) {
+			spr.animation.play('confirm', true);
+			if (spr.animation.curAnim.name == 'confirm')
+			{
+				spr.centerOffsets();
+				spr.offset.x -= 13;
+				spr.offset.y -= 13;
+			}
+			else
+				spr.centerOffsets();
+		}
+	}
 	function kadeInput(){
 		if (generatedMusic)
 			{
@@ -2395,22 +2407,7 @@ class PlayState extends MusicBeatState
 							
 							if (FlxG.save.data.cpuStrums)
 							{
-								cpuStrums.forEach(function(spr:FlxSprite)
-								{
-
-									if (Math.abs(daNote.noteData) == spr.ID )
-									{
-										spr.animation.play('confirm', true);
-									}
-									if (spr.animation.curAnim.name == 'confirm')
-									{
-										spr.centerOffsets();
-										spr.offset.x -= 13;
-										spr.offset.y -= 13;
-									}
-									else
-										spr.centerOffsets();
-								});
+								DadStrumPlayAnim(daNote.noteData);
 							}
 						}
 
