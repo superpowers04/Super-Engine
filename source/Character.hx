@@ -40,10 +40,10 @@ class Character extends FlxSprite
 	public var charType:Int = 0;
 	public var dance_idle:Bool = false;
 	public var amPreview:Bool = false;
-	public var needsInverted:Bool= false;
+	public var needsInverted:Int= 3;
 	public var useMisses:Bool = false;
 	public var missSounds:Array<Sound> = [];
-	public var oneShotAnims:Array<String> = [];
+	public var oneShotAnims:Array<String> = ["hey"];
 	public var tintedAnims:Array<String> = [];
 	public var flip:Bool = true;
 	public var flipNotes:Bool = true;
@@ -102,7 +102,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", -130, -14);
 				addOffset("singLEFT", 130, -10);
 				addOffset("singDOWN", -50, -130);
-				charY-=200;
+				charY+=130;
 			case "pico":
 				if(isPlayer){
 					// needsInverted = true;
@@ -160,18 +160,33 @@ class Character extends FlxSprite
 				// 	addOffset('deathConfirm', 37, 69);
 				// 	addOffset('scared', -4);
 				// }
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -38, -7);
-				addOffset("singLEFT", 12, -6);
-				addOffset("singDOWN", -10, -50);
-				addOffset("singUPmiss", -29, 27);
-				addOffset("singRIGHTmiss", -30, 21);
-				addOffset("singLEFTmiss", 12, 24);
-				addOffset("singDOWNmiss", -11, -19);
-				addOffset("hey", 7, 4);
-				addOffset('scared', -4);
+				needsInverted = 0;
+				if (isPlayer){
+					addOffset('idle', 0);
+					addOffset("singUP", -34, 27);
+					addOffset("singRIGHT", -48, -7);
+					addOffset("singLEFT", 22, -6);
+					addOffset("singDOWN", -10, -50);
+					addOffset("singUPmiss", -29, 27);
+					addOffset("singRIGHTmiss", -30, 21);
+					addOffset("singLEFTmiss", 12, 24);
+					addOffset("singDOWNmiss", -11, -19);
+					addOffset("hey", 7, 4);
+					addOffset('scared', -4);
+				}else{
+					addOffset("singUP", 5, 30);
+					addOffset("singRIGHT", -30, -5);
+					addOffset("singLEFT", 38, -5);
+					addOffset("singDOWN", -15, -50);
+					addOffset("singUPmiss", 1, 30);
+					addOffset("singRIGHTmiss", -31, 21);
+					addOffset("singLEFTmiss", 2, 23);
+					addOffset("singDOWNmiss", -15, -20);
+					addOffset("hey", 7, 4);
+					addOffset('scared', -4);
+				}
 			case "bf-pixel":
+				needsInverted = 0;
 				charY+=330;
 			case 'spirit':
 				addOffset('idle', -220, -280);
@@ -201,7 +216,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 14);
 				charX+=150;
 				charY+=320;
-				camX+=300;
+				// camX+=300;
 			case 'parents-christmas':
 				addOffset('idle');
 				addOffset("singUP", -47, 24);
@@ -407,8 +422,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'BF NOTE LEFT0', 24, false);
 				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
 				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 				animation.addByPrefix('hey', 'BF HEY', 24, false);
 
@@ -432,8 +447,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'BF LEFT NOTE', 24, false);
 				animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
 				animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF LEFT MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
 				addOffsets('bf-pixel');
 
@@ -563,6 +578,7 @@ class Character extends FlxSprite
 					spiritTrail=charProperties.spirit_trail; // Spirit TraiL
 					antialiasing = !charProperties.no_antialiasing; // Why was this inverted?
 					dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+
 					if (charProperties.flip_notes) flipNotes = charProperties.flip_notes;
 					
 					// Custom misses
@@ -577,12 +593,12 @@ class Character extends FlxSprite
 						}
 					}
 
-					// if (charProperties.char_pos != null){charX+=charProperties.char_pos[0];charY+=charProperties.char_pos[1];}
 					if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
 					if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 					
 					trace('Loading Animations!');
 					var invChIDs:Array<Int> = [1,0,2];
+
 					for (anima in charProperties.animations){
 						try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
 						if (anima.stage != "" && anima.stage != null){if(PlayState.curStage.toLowerCase() != anima.stage.toLowerCase()){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
@@ -613,18 +629,22 @@ class Character extends FlxSprite
 					setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
 					updateHitbox();// I honestly don't know what this does, other resized characters use it so ¯\_(ツ)_/¯
 
+
+					if (charProperties.flip != null) flip = charProperties.flip;
 					clonedChar = '${charProperties.clone}';
 					if (clonedChar != "") {
 						trace('Character clones $clonedChar copying their offsets!');
 						addOffsets(clonedChar);
 					}
-					if (charProperties.flip != null) flip = charProperties.flip;
-
+					if (charProperties.offset_flip != null ) needsInverted = charProperties.offset_flip;
 					trace('Adding custom offsets');
 					var offsetCount = 0;
 					for (offset in charProperties.animations_offsets){ // Custom offsets
 						offsetCount++;
-						addOffset(offset.anim,offset.player1[0],offset.player1[1],true);
+						if (needsInverted == 1 && !isPlayer)
+							addOffset(offset.anim,offset.player2[0],offset.player2[1]);
+						else
+							addOffset(offset.anim,offset.player1[0],offset.player1[1]);
 					}	
 					if (charType == 0 && charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
 					if (charType == 1 && charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
@@ -645,18 +665,9 @@ class Character extends FlxSprite
 
 		dance();
 		var alloffset = animOffsets.get("all");
-		// if (animOffsets.exists('all'))
-		// {
-		// 	this.setPosition(x+alloffset[0],y+alloffset[1]);
-		// }
 		if (clonedChar == ""){
 			clonedChar = curCharacter;
 		}
-		// for (i in ['RIGHT','UP','LEFT','DOWN', if (dance_idle) "danceRight","danceLeft" else 'Idle' ]) { // Add main animations over alts if alt isn't present
-		// 	if (animation.getByName('sing$i-alt') == null){
-		// 		cloneAnimation('sing$i-alt', animation.getByName('sing$i'));
-		// 	}
-		// } Not needed anymore, automatically handled by playAnim
 		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over miss if miss isn't present
 			if (animation.getByName('sing${i}miss') == null){
 				cloneAnimation('sing${i}miss', animation.getByName('sing$i'));
@@ -694,8 +705,9 @@ class Character extends FlxSprite
 				animation.getByName('singLEFTmiss').frames = oldMiss;
 			}
 		}
-		// updateHitbox();-
+		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
 		dance();
+		if(animation.curAnim == null){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
 		// if (dance_idle || charType == 2 || curCharacter == "spooky"){
 		// 	playAnim('danceRight');
 		// }else{
@@ -704,7 +716,8 @@ class Character extends FlxSprite
 	}
 
 	override function update(elapsed:Float)
-	{	
+	{	try{
+
 		if(!amPreview){
 			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
 			{
@@ -740,7 +753,7 @@ class Character extends FlxSprite
 			}
 		}
 		super.update(elapsed);
-	}
+	}catch(e){MainMenuState.handleError('Caught character "update" crash: ${e.message}');}}
 
 	private var danced:Bool = false;
 
@@ -790,6 +803,19 @@ class Character extends FlxSprite
 			}
 		}
 	}
+	public function setOffsets(AnimName:String = "",?offsetX:Float = 0,?offsetY:Float = 0){
+		if (tintedAnims.contains(animation.curAnim.name)){this.color = 0x330066;}else{this.color = 0xffffff;}
+		var daOffset = animOffsets.get(AnimName); // Get offsets
+		var offsets:Array<Float> = [offsetX,offsetY];
+		if (animOffsets.exists(AnimName)) // Set offsets if animation has any
+		{
+			offsets[0]+=daOffset[0];
+			offsets[1]+=daOffset[1];
+		}
+		offsets[0]+=animOffsets["all"][0]; // Add "all" offsets
+		offsets[1]+=animOffsets["all"][1];
+		offset.set(offsets[0], offsets[1]); // Set offsets
+	}
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0):Void
 	{
 		var lastAnim = "";
@@ -800,17 +826,7 @@ class Character extends FlxSprite
 		animation.play(AnimName, Force, Reversed, Frame);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
 		
-			if (tintedAnims.contains(animation.curAnim.name)){this.color = 0x330066;}else{this.color = 0xffffff;}
-			var daOffset = animOffsets.get(AnimName); // Get offsets
-			var offsets:Array<Float> = [offsetX,offsetY];
-			if (animOffsets.exists(AnimName)) // Set offsets if animation has any
-			{
-				offsets[0]+=daOffset[0];
-				offsets[1]+=daOffset[1];
-			}
-			offsets[0]+=animOffsets["all"][0]; // Add "all" offsets
-			offsets[1]+=animOffsets["all"][1];
-			offset.set(offsets[0], offsets[1]); // Set offsets
+			setOffsets(AnimName,offsetX,offsetY);
 		} // Skip if already playing, no need to calculate offsets and such
 
 		if (dance_idle && lastAnim != AnimName )
@@ -835,7 +851,9 @@ class Character extends FlxSprite
 	}
 	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false):Void
 	{
-		if (needsInverted && !custom){
+		if (needsInverted == 3 && isPlayer){
+			x=-x;
+		}else if (needsInverted == 2 && !isPlayer){
 			x=-x;
 		}	
 		if (animOffsets[name] == null){ // If animation is null, just add the offsets out right

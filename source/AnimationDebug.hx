@@ -12,6 +12,7 @@ import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.input.keyboard.FlxKey;
+import flixel.util.FlxTimer;
 
 using StringTools;
 
@@ -46,6 +47,7 @@ class AnimationDebug extends MusicBeatState
 	var characterX:Float = 0;
 	var characterY:Float = 0;
 	var UI:FlxGroup = new FlxGroup();
+	var tempMessage:FlxText;
 	public static var inHelp:Bool = false;
 
 	// var flippedChars:Array<String> = ["pico"];
@@ -256,6 +258,7 @@ class AnimationDebug extends MusicBeatState
 			 (FlxG.keys.justPressed.K),
 			 (FlxG.keys.justPressed.L),
 			 (FlxG.keys.pressed.ONE),
+			 (FlxG.keys.pressed.TWO),
 		];
 
 		var modifier = "";
@@ -298,7 +301,20 @@ class AnimationDebug extends MusicBeatState
 					case 13: // Unload character offsets
 						dad.animOffsets = ["all" => [0,0]];
 						dad.offset.set(0,0);
-
+					case 14: // Write to file
+						var text = "These are not absolute, you will have to add these to your existing ones unless you unloaded the offsets provided by the character\nExported offsets:";
+						for (i => v in offset) {
+							var name = if (i == "charPos_internal") "Character Position" else i;
+							text+='\n${name} : [${v[0]}, ${v[1]}]';
+						}
+						sys.io.File.saveContent(Sys.getCwd() + "offsets.txt",text);
+						FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+						tempMessage = new FlxText(FlxG.width * 0.8,30,0,"Saved to output successfully");
+						tempMessage.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.GREEN, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
+						new FlxTimer().start(5, function(tmr:FlxTimer)
+						{
+							if (tempMessage != null) tempMessage.destroy();
+						},1);
 				}
 			}
 		}
@@ -343,6 +359,7 @@ class AnimHelpScreen extends FlxSubState{
 		+'\n*Shift - Move by 5(Combine with CTRL to move 5)'
 		+'\n*Ctrl - Move by *0.1'
 		+'\n1 - Unload defined offsets'
+		+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
 		+'\nR - Reload character'
 		+'\nEscape - Close animation debug');
 		controlsText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
