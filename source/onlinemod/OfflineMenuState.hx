@@ -33,7 +33,8 @@ class OfflineMenuState extends SearchMenuState
   }
   function goOptions(){
       FlxG.mouse.visible = false;
-      FlxG.switchState(new OfflineOptionsMenu());
+      OptionsMenu.lastState = 3;
+      FlxG.switchState(new OptionsMenu());
   }
   override function create()
   {
@@ -114,11 +115,5 @@ class OfflineMenuState extends SearchMenuState
       PlayState.actualSongName = songName;
 
       LoadingState.loadAndSwitchState(new OfflinePlayState());
-  }
-}
-
-class OfflineOptionsMenu extends OptionsMenu{
-  override function goBack(){
-    FlxG.switchState(new OfflineMenuState());
   }
 }

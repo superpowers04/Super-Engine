@@ -148,12 +148,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
   override function goOptions(){
       FlxG.mouse.visible = false;
-      FlxG.switchState(new MultiOptionsMenu());
-  }
-}
-
-class MultiOptionsMenu extends OptionsMenu{
-  override function goBack(){
-    FlxG.switchState(new MultiMenuState());
+      OptionsMenu.lastState = 4;
+      FlxG.switchState(new OptionsMenu());
   }
 }

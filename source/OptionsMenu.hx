@@ -20,6 +20,7 @@ import flixel.addons.ui.FlxUIState;
 class OptionsMenu extends MusicBeatState
 {
 	public static var instance:OptionsMenu;
+	public static var lastState:Int = 0;
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -133,7 +134,15 @@ class OptionsMenu extends MusicBeatState
 	var isCat:Bool = false;
 	
 	function goBack(){
-		FlxG.switchState(new MainMenuState());
+		if (lastState != 0){
+			var ls = lastState;
+			lastState = 0;
+			switch(ls){
+				case 3:FlxG.switchState(new onlinemod.OfflineMenuState());
+				case 4:FlxG.switchState(new multi.MultiMenuState());
+			}
+		}else
+			FlxG.switchState(new MainMenuState());
 	}
 	override function update(elapsed:Float)
 	{
