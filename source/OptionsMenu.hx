@@ -35,6 +35,7 @@ class OptionsMenu extends MusicBeatState
 			new SelStageOption("Select the stage to use, Default will use song default"),
 		]),
 		new OptionCategory("Gameplay", [
+		    new PracticeModeOption("Disables the ability to get a gameover."),
 			new DFJKOption(controls),
 			new DownscrollOption("Change the layout of the strumline."),
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),

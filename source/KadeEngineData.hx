@@ -126,6 +126,7 @@ class KadeEngineData
 
 		if (FlxG.save.data.noterating == null) FlxG.save.data.noterating = true;
 		if (FlxG.save.data.camMovement == null) FlxG.save.data.camMovement = true;
+		if (FlxG.save.data.practiceMode == null) FlxG.save.data.practiceMode = false;
 	
 
 		Conductor.recalculateTimings();

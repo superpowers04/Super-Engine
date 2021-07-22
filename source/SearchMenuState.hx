@@ -32,6 +32,9 @@ class SearchMenuState extends MusicBeatState
   var bg:FlxSprite;
   var titleText:FlxText;
   var infotext:FlxText;
+  var toggleables:Map<String,Bool> = [
+    "search" => true
+  ];
   
 
   function addTitleText(str:String = ""){
@@ -56,15 +59,17 @@ class SearchMenuState extends MusicBeatState
     bg.color = 0xFFFF6E6E;
     add(bg);
     reloadList();
-    //Searching
-    searchField = new FlxInputText(10, 100, 1152, 20);
-    searchField.maxLength = 81;
-    add(searchField);
-
-    searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", findButton);
-    searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-    searchButton.resize(100, searchField.height);
-    add(searchButton);
+    if (toggleables['search']){
+        //Searching
+        searchField = new FlxInputText(10, 100, 1152, 20);
+        searchField.maxLength = 81;
+        add(searchField);
+    
+        searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", findButton);
+        searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+        searchButton.resize(100, searchField.height);
+        add(searchButton);
+      }
 
     var infotexttxt:String = "Hold shift to scroll faster";
     infotext = new FlxText(5, FlxG.height - 30, 0, infotexttxt, 12);

@@ -1005,3 +1005,24 @@ class CamMovementOption extends Option
 		return "Camera Movement " + (!FlxG.save.data.camMovement ? "off" : "on");
 	}
 }
+
+class PracticeModeOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.practiceMode = !FlxG.save.data.practiceMode;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Practice Mode " + (!FlxG.save.data.practiceMode ? "off" : "on");
+	}
+}
