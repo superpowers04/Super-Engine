@@ -28,20 +28,24 @@ class FinishSubState extends MusicBeatSubstate
 
 	public function new(x:Float, y:Float,?win = true)
 	{
-		if (FlxG.sound.music != null) FlxG.sound.music.stop(); // Please, I've given you 4 calls to die, just die already
+
+		FlxG.state.persistentUpdate = true;
+		if (FlxG.sound.music != null) {FlxG.sound.music.stop();} // Please, I've given you 4 calls to die, just die already
 		if(win){
-			PlayState.boyfriend.playAnim("hey");
+			PlayState.boyfriend.playAnim("hey",true);
 			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) PlayState.dad.playAnim('cheer'); else PlayState.dad.playAnim('singDOWNmiss');
-			PlayState.gf.playAnim('cheer');
+			PlayState.gf.playAnim('cheer',true);
 		}else{
 			PlayState.boyfriend.playAnim('singDOWNmiss');
-			PlayState.dad.playAnim("hey");
+			PlayState.dad.playAnim("hey",true);
 			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) PlayState.dad.playAnim('sad'); else PlayState.dad.playAnim("hey");
-			PlayState.gf.playAnim('sad');
+			PlayState.gf.playAnim('sad',true);
 		}
 		super();
-		new FlxTimer().start(1, function(tmr:FlxTimer) // Litterally just here because sometimes the game doesn't stop music properly or anything
+		new FlxTimer().start(0.2, function(tmr:FlxTimer) // Litterally just here because sometimes the game doesn't stop music properly or anything
 		{
+			FlxG.state.persistentUpdate = false;
+			if (FlxG.sound.music != null) {FlxG.sound.music.stop();FlxG.sound.music.destroy();}
 			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
 			music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
 
@@ -103,8 +107,9 @@ class FinishSubState extends MusicBeatSubstate
 
 
 		if (accepted)
-		{			if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
-
+		{
+			if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
+			PlayState.actualSongName = ""; // Reset to prevent issues
 			switch (PlayState.stateType)
 			{
 				case 2:FlxG.switchState(new onlinemod.OfflineMenuState());

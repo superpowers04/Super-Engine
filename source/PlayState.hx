@@ -884,7 +884,8 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 		// Add Kade Engine watermark
-		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50 - FlxG.save.data.guiGap,0,SONG.song + " " + songDiff + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
+		if (actualSongName == "") actualSongName = curSong + " " + songDiff;
+		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50 - FlxG.save.data.guiGap,0,actualSongName + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
 		add(kadeEngineWatermark);
@@ -997,7 +998,7 @@ class PlayState extends MusicBeatState
 
 		if (!loadRep)
 			rep = new Replay("na");
-		if (actualSongName == "") actualSongName = curSong;
+		
 		setInputHandlers(); // Sets all of the handlers for input
 		super.create();
 	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
@@ -1434,7 +1435,7 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
 				case 1:
-					babyArrow.x += Note.swagWidth * 1;
+					babyArrow.x += Note.swagWidth * 1 ;
 					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
@@ -1444,7 +1445,7 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
 				case 3:
-					babyArrow.x += Note.swagWidth * 3;
+					babyArrow.x += Note.swagWidth * 3 + 4;
 					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
@@ -1549,11 +1550,13 @@ class PlayState extends MusicBeatState
 		this.persistentUpdate = false;
 		this.persistentDraw = true;
 		this.paused = true;
-
-		this.vocals.stop();
-		FlxG.sound.music.stop();
-		try{FlxG.sound.music.stop();}catch(e){} // Stop it dammit, fucking stop it. I said to stop, stop it
-		try{FlxG.sound.music.volume = 0;}catch(e){} // Fine, I'll set your volume to zero
+		try{
+	
+			FlxG.sound.music.stop();
+			FlxG.sound.music.destroy();
+			this.vocals.stop();
+			this.vocals.destroy();
+		}catch(e) trace("oh no, an error occurred while killing vocals, what ever will we do");
 		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
 		
 	}
@@ -1860,7 +1863,7 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (health <= 0)
+		if (health <= 0 && !FlxG.save.data.practiceMode)
 			finishSong(false);
  		if (FlxG.save.data.resetButton)
 		{
@@ -1896,7 +1899,8 @@ class PlayState extends MusicBeatState
 		if (!inCutscene)
 			keyShit();
 
-	}catch(e){MainMenuState.handleError('Caught "update" crash: ${e.message}');}}
+	}catch(e){MainMenuState.handleError('Caught "update" crash: ${e.message}');}
+}
 
 	function endSong():Void
 	{
@@ -2719,7 +2723,7 @@ class PlayState extends MusicBeatState
 				totalNotesHit -= 1;
 
 			songScore -= 10;
-			if (type == 1) {songScore -= 290; health -= 0.16;} // Having it insta kill, not a good idea 
+			// if (type == 1) {songScore -= 290; health -= 0.16;} // Having it insta kill, not a good idea 
 
 
 
@@ -3034,14 +3038,13 @@ class PlayState extends MusicBeatState
 			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
 			{
 				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
-				FlxG.log.add('CHANGED BPM!');
 			}
 			// else
 			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
-			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection && dad.curCharacter != 'gf')
-				dad.dance();
+			// if (SONG.notes[Math.floor(curStep / 16)].mustHitSection && dad.curCharacter != 'gf')
+			// 	dad.dance();
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
@@ -3094,19 +3097,29 @@ class PlayState extends MusicBeatState
 			}
 		}catch(e){MainMenuState.handleError('A animation event caused an error ${e.message}');}
 
-		if (gf.animation.curAnim.name.startsWith("dance") || gf.animation.curAnim.finished){
-			if (curBeat % 2 == 1){gf.playAnim('danceLeft');}
-			if (curBeat % 2 == 0){gf.playAnim('danceRight');}
-		} // Honestly surprised this fixed it
+		// if (gf.animation.curAnim.name.startsWith("dance") || gf.animation.curAnim.finished){
+		// 	if (curBeat % 2 == 1){gf.playAnim('danceLeft');}
+		// 	if (curBeat % 2 == 0){gf.playAnim('danceRight');}
+		// } // Honestly surprised this fixed it
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing") && !boyfriend.dance_idle)
-		{
-			boyfriend.playAnim('idle');
+		// if (!boyfriend.animation.curAnim.name.startsWith("sing") && !boyfriend.dance_idle)
+		// {
+		// 	boyfriend.playAnim('idle');
+		// }
+		// if (boyfriend.dance_idle && (boyfriend.animation.curAnim.name.startsWith("dance") || boyfriend.animation.curAnim.finished)){
+		// 	if (curBeat % 2 == 1){boyfriend.playAnim('danceLeft');}
+		// 	if (curBeat % 2 == 0){boyfriend.playAnim('danceRight');}
+		// }
+		for (i => v in [boyfriend,gf,dad]) {
+			if (v.dance_idle && (v.animation.curAnim.name.startsWith("dance") || v.animation.curAnim.finished)){
+				if (curBeat % 2 == 1){v.playAnim('danceLeft');}
+				if (curBeat % 2 == 0){v.playAnim('danceRight');}
+			}else if (!v.dance_idle && !v.animation.curAnim.name.startsWith("sing"))
+			{
+			 v.playAnim('idle');
+			}
 		}
-		if (boyfriend.dance_idle && (boyfriend.animation.curAnim.name.startsWith("dance") || boyfriend.animation.curAnim.finished)){
-			if (curBeat % 2 == 1){boyfriend.playAnim('danceLeft');}
-			if (curBeat % 2 == 0){boyfriend.playAnim('danceRight');}
-		}
+
 
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
 		{
