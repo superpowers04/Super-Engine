@@ -132,13 +132,16 @@ class AnimationDebug extends MusicBeatState
 		try{
 
 			if (reload) {
+				// Destroy, otherwise there will be 4 characters
 				dad.destroy();
 				dadBG.destroy();
 				for (i => v in offsetText) {
 					v.destroy();
 				}
+				// Reset offsets
 				offsetText = [];
 				offset = [];
+				offsetCount = 1;
 			}
 			characterY=100;
 			var flipX = isPlayer;
