@@ -32,7 +32,7 @@ class Character extends FlxSprite
 	public var charY:Float = 0;
 	public var camX:Float = 0;
 	public var camY:Float = 0;
-	var dadVar:Float = 4; // Singduration?
+	public var dadVar:Float = 4; // Singduration?
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 	public var hasAlts:Bool = false;
@@ -55,6 +55,8 @@ class Character extends FlxSprite
 	public var stunned:Bool = false; // Why was this specific to BF?
 	function addOffsets(?character:String = "bf") // Handles offsets for characters with support for clones
 	{
+
+		
 		switch(character){
 			case 'gf','gf-christmas':
 				addOffset('all',0,30);
@@ -128,38 +130,6 @@ class Character extends FlxSprite
 				if(!isPlayer){camX-=100;}
 			case 'bf','bf-christmas','bf-car':
 				charY+=330;
-				// needsInverted = true;
-				// if (isPlayer){			
-				// 	addOffset('idle', -10);
-				// 	addOffset("singUP", 0, 27);
-				// 	// This game is handled terribly....					
-				// 	addOffset("singLEFT", -38, -7);
-				// 	addOffset("singRIGHT", 12, -6);
-				// 	addOffset("singDOWN", 0, -50);
-				// 	addOffset("singUPmiss", 0, 27);
-				// 	addOffset("singRIGHTmiss", 0, 21);
-				// 	addOffset("singLEFTmiss", 0, 24);
-				// 	addOffset("singDOWNmiss", 0, -19);
-				// 	addOffset("hey",0, 4);
-				// 	addOffset('firstDeath', 0, 11);
-				// 	addOffset('deathLoop', 0, 5);
-				// 	addOffset('deathConfirm', 0, 69);
-				// }else{ // Why the hell is this needed on the left but not the right?
-				// 	addOffset('idle', -5);
-				// 	addOffset("singUP", -29, 27);
-				// 	addOffset("singLEFT", -38, -7);
-				// 	addOffset("singRIGHT", 12, -6);
-				// 	addOffset("singDOWN", -10, -50);
-				// 	addOffset("singUPmiss", -29, 27);
-				// 	addOffset("singRIGHTmiss", -30, 21);
-				// 	addOffset("singLEFTmiss", 12, 24);
-				// 	addOffset("singDOWNmiss", -11, -19);
-				// 	addOffset("hey", 7, 4);
-				// 	addOffset('firstDeath', 37, 11);
-				// 	addOffset('deathLoop', 37, 5);
-				// 	addOffset('deathConfirm', 37, 69);
-				// 	addOffset('scared', -4);
-				// }
 				needsInverted = 0;
 				if (isPlayer){
 					addOffset('idle', 0);
@@ -247,6 +217,7 @@ class Character extends FlxSprite
 
 	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null) // CharTypes: 0=BF 1=Dad 2=GF
 	{
+		try{
 		super(x, y);
 		animOffsets = new Map<String, Array<Dynamic>>();
 		animOffsets['all'] = [0, 0];
@@ -545,7 +516,7 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			default: // Custom characters pog
-				try{
+
 					trace('Loading a custom character "$curCharacter"! ');				
 					if (tex == null){
 						var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml'); // Loads the XML as a string
@@ -646,21 +617,26 @@ class Character extends FlxSprite
 						else
 							addOffset(offset.anim,offset.player1[0],offset.player1[1]);
 					}	
-					if (charType == 0 && charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
-					if (charType == 1 && charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
-					if (charType == 2 && charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
-					addOffset('all',charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
-					camX+=charProperties.common_stage_offset[0];
-					camY-=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
+					switch(charType){
+						case 0: if (charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
+						case 1: if (charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
+						case 2: if (charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
+					}
+					if (needsInverted == 1 && !isPlayer){
+					addOffset('all',charProperties.common_stage_offset[2],charProperties.common_stage_offset[3]); // Load common stage offset
+						camX+=charProperties.common_stage_offset[2];
+						camY-=charProperties.common_stage_offset[3]; // Load common stage offset for camera too
+					}else{
+						addOffset('all',charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
+						camX+=charProperties.common_stage_offset[0];
+						camY-=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
+
+					}
 					trace('Loaded ${offsetCount} offsets!');
 					 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
 					trace('Finished loading character, Lets get funky!');
-				}catch(e){
-					trace('Error with $curCharacter: ' + e.message + "");
-					MainMenuState.handleError('Error with $curCharacter: ' + e.message + "");
-					return;
-				}			
+		
 		}
 
 		dance();
@@ -713,6 +689,11 @@ class Character extends FlxSprite
 		// }else{
 		// 	playAnim('idle');
 		// }
+		}catch(e){
+			trace('Error with $curCharacter: ' + e.message + "");
+			MainMenuState.handleError('Error with $curCharacter: ' + e.message + "");
+			return;
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -734,10 +715,8 @@ class Character extends FlxSprite
 				if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 				{
 					holdTimer = 0;
+					dance();
 				}
-			}
-			if (animation.curAnim.name.startsWith('sing') && animation.curAnim.finished){
-				dance();
 			}
 
 
@@ -842,12 +821,15 @@ class Character extends FlxSprite
 		}
 	}
 	public function cloneAnimation(name:String,anim:FlxAnimation):Void{
+		try{
+
 		if(!amPreview && anim != null){
 			animation.add(name,anim.frames,anim.frameRate,anim.flipX);
 			if (animOffsets.exists(anim.name)){
 				addOffset(name,animOffsets[anim.name][0],animOffsets[anim.name][1],true);
 			}
 		}
+		}catch(e)MainMenuState.handleError('Caught character "cloneAnimation" crash: ${e.message}');
 	}
 	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false):Void
 	{
