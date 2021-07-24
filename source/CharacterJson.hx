@@ -6,6 +6,7 @@ typedef CharacterJson =
 	var flip_x:Bool;
 	var flip:Dynamic; // Controls if the character should be flipped when on the player's side
 	var offset_flip:Dynamic; // Flips the offsets on the left, 0/not specififed = off completely, 1 = use player2, 2 = flip left, 3 = flip right  
+	var asset_files:Array<CharacterAssetFiles>;
 	var clone:String;
 	var animations:Array<CharJsonAnimation>;
 	var animations_offsets:Array<CharJsonAnimOffsets>;
@@ -45,12 +46,22 @@ typedef CharJsonAnimation ={
 	var char_side:Dynamic; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
 	var oneshot:Bool; // Should animation overlap everything?
 }
+
+typedef CharacterAssetFiles ={
+	var xml:String;
+	var png:String;
+	var stage:String; // Set on specific stage
+	var song:String; // Set on specific songname
+	var char_side:Dynamic; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
+	var animations:Array<CharJsonAnimation>;
+	var animations_offsets:Array<CharJsonAnimOffsets>;
+}
 typedef CharJsonAnimOffsets ={
 	var anim:String;
 	var player1:Array<Float>;
 	var player2:Array<Float>;
 }
 
-typedef CharacterMetadataJSON = {
+typedef CharacterMetadataJSON = { // :eye: :lips :eye:
 	var characters:Map<String,CharacterJson>;
 }

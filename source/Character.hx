@@ -518,17 +518,36 @@ class Character extends FlxSprite
 			default: // Custom characters pog
 
 					trace('Loading a custom character "$curCharacter"! ');				
-					if (tex == null){
-						var charXml:String = File.getContent('mods/characters/$curCharacter/character.xml'); // Loads the XML as a string
-						if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-						tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), charXml);
-						if (tex == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
-					}
-					trace('Loaded character sheet');
-					frames = tex;
 					var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json');
 					var charProperties:CharacterJson = haxe.Json.parse(CoolUtil.cleanJSON(charPropJson));
 					if (charProperties == null || charProperties.animations == null || charProperties.animations[0] == null){MainMenuState.handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
+					var pngName:String = "character.png";
+					var xmlName:String = "character.xml";
+					if (charProperties.asset_files != null){
+						var selAssets = -10;
+						for (i => charFile in charProperties.asset_files) {
+							if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side != charType){continue;} // This if statement hurts my brain
+							if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
+							if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
+							
+							selAssets = i;
+						}
+						if (selAssets != -10){
+							if (charProperties.asset_files[selAssets].png != null )pngName=charProperties.asset_files[selAssets].png;
+							if (charProperties.asset_files[selAssets].xml != null )xmlName=charProperties.asset_files[selAssets].xml;
+							if (charProperties.asset_files[selAssets].animations != null )charProperties.animations=charProperties.asset_files[selAssets].animations;
+							if (charProperties.asset_files[selAssets].animations_offsets != null )charProperties.animations_offsets=charProperties.asset_files[selAssets].animations_offsets;
+						}
+					}
+
+					if (tex == null){
+						var charXml:String = File.getContent('mods/characters/$curCharacter/${xmlName}'); // Loads the XML as a string
+						if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+						tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
+						if (tex == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
+					}
+					trace('Loaded "mods/characters/$curCharacter/${pngName}"');
+					frames = tex;
 					// BF's animations, Adding because they're used by default to provide support with FNF Multi
 					animation.addByPrefix('idle', 'BF idle dance', 24, false);
 					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
@@ -623,7 +642,7 @@ class Character extends FlxSprite
 						case 2: if (charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
 					}
 					if (needsInverted == 1 && !isPlayer){
-					addOffset('all',charProperties.common_stage_offset[2],charProperties.common_stage_offset[3]); // Load common stage offset
+						addOffset('all',charProperties.common_stage_offset[2],charProperties.common_stage_offset[3]); // Load common stage offset
 						camX+=charProperties.common_stage_offset[2];
 						camY-=charProperties.common_stage_offset[3]; // Load common stage offset for camera too
 					}else{
@@ -718,6 +737,9 @@ class Character extends FlxSprite
 					dance();
 				}
 			}
+			// if (animation.curAnim.name.startsWith('sing') && holdTimer == 0){
+			// 	dance();
+			// }
 
 
 			// switch (curCharacter)
