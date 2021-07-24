@@ -257,8 +257,8 @@ class AnimationDebug extends MusicBeatState
 			 (FlxG.keys.justPressed.J),
 			 (FlxG.keys.justPressed.K),
 			 (FlxG.keys.justPressed.L),
-			 (FlxG.keys.pressed.ONE),
-			 (FlxG.keys.pressed.TWO),
+			 (FlxG.keys.justPressed.ONE),
+			 (FlxG.keys.justPressed.TWO),
 		];
 
 		var modifier = "";
@@ -300,11 +300,14 @@ class AnimationDebug extends MusicBeatState
 
 					case 13: // Unload character offsets
 						dad.animOffsets = ["all" => [0,0]];
+						charX = 0;charY = 0;
 						dad.offset.set(0,0);
 					case 14: // Write to file
-						var text = "These are not absolute, you will have to add these to your existing ones unless you unloaded the offsets provided by the character\nExported offsets:";
+						var text = "These are not absolute, you will have to add these to your existing ones unless you unloaded the offsets provided by the character\nExported offsets:"
+						+ 'Character Position: [${charX}, ${charY}]';
 						for (i => v in offset) {
-							var name = if (i == "charPos_internal") "Character Position" else i;
+							var name = i;
+
 							text+='\n${name} : [${v[0]}, ${v[1]}]';
 						}
 						sys.io.File.saveContent(Sys.getCwd() + "offsets.txt",text);
@@ -351,7 +354,7 @@ class AnimHelpScreen extends FlxSubState{
 		helpObjs.push(exitText);
 		var controlsText:FlxText = new FlxText(20,145,0,'Controls:'
 		+'\n\nWASD - Note anims'
-		+'\nI - Idle'
+		+'\nV - Idle'
 		+'\n*Shift - Miss variant'
 		+'\n*Ctrl - Alt Variant'
 		+'\nArrows - Move Offset, Moves per press for accuracy'
