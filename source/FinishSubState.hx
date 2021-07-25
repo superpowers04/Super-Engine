@@ -30,7 +30,6 @@ class FinishSubState extends MusicBeatSubstate
 	{
 
 		FlxG.state.persistentUpdate = true;
-		if (FlxG.sound.music != null) {FlxG.sound.music.stop();} // Please, I've given you 4 calls to die, just die already
 		if(win){
 			PlayState.boyfriend.playAnim("hey",true);
 			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) PlayState.dad.playAnim('cheer'); else PlayState.dad.playAnim('singDOWNmiss');
@@ -46,6 +45,7 @@ class FinishSubState extends MusicBeatSubstate
 		{
 			FlxG.state.persistentUpdate = false;
 			if (FlxG.sound.music != null) {FlxG.sound.music.stop();FlxG.sound.music.destroy();}
+
 			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
 			music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
 
@@ -54,27 +54,23 @@ class FinishSubState extends MusicBeatSubstate
 			var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 			bg.alpha = 0;
 			bg.scrollFactor.set();
-			add(bg);
 
 			var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0,if(win) "Song Won!" else "Song failed" );
 			finishedText.size = 34;
 			finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 			finishedText.color = FlxColor.WHITE;
 			finishedText.scrollFactor.set();
-			add(finishedText);
 			var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,'Judgements:\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
 			comboText.size = 28;
 			comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 			comboText.color = FlxColor.WHITE;
 			comboText.scrollFactor.set();
-			add(comboText);
 
 			var contText:FlxText = new FlxText(FlxG.width - 475 - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue\nor R to restart.');
 			contText.size = 28;
 			contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 			contText.color = FlxColor.WHITE;
 			contText.scrollFactor.set();
-			add(contText);
 			var songName:String = "";
 			if (PlayState.stateType == 4) songName = PlayState.actualSongName; else songName = '${PlayState.SONG.song} ${CoolUtil.difficultyString()}';
 			var settingsText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
@@ -82,6 +78,11 @@ class FinishSubState extends MusicBeatSubstate
 			settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
 			settingsText.color = FlxColor.WHITE;
 			settingsText.scrollFactor.set();
+			
+			add(bg);
+			add(finishedText);
+			add(comboText);
+			add(contText);
 			add(settingsText);
 
 			FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});

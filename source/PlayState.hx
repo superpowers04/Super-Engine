@@ -104,7 +104,7 @@ class PlayState extends MusicBeatState
 	var kadeEngineWatermark:FlxText;
 	
 
-	var vocals:FlxSound;
+	public var vocals:FlxSound;
 
 	public static var dad:Character;
 	public static var gf:Character;
@@ -1573,16 +1573,18 @@ class PlayState extends MusicBeatState
 	var maxNPS:Int = 0;
 
 	public static var songRate = 1.5;
+	var finished = false;
 
 	function finishSong(?win=true):Void{
+		if (finished) return;
+		finished = true;
 		PlayState.dadShow = true; // Reenable this to prevent issues later
-		this.persistentUpdate = false;
-		this.persistentDraw = true;
+		canPause = false;
 		this.paused = true;
-		FlxG.sound.music.volume = 0; 
-		this.vocals.volume = 0;
 		FlxG.sound.music.pause();
 		this.vocals.pause();
+		FlxG.sound.music.volume = 0;
+		this.vocals.volume = 0;
 
 		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
 		
@@ -1950,7 +1952,7 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
-		if (SONG.validScore)
+		if (SONG.validScore && stateType != 2 && stateType != 4)
 		{
 			#if !switch
 			Highscore.saveScore(SONG.song, Math.round(songScore), storyDifficulty);
@@ -2436,7 +2438,7 @@ class PlayState extends MusicBeatState
 						if (SONG.song != 'Tutorial')
 							camZooming = true;
 						if (!p2canplay){
-		
+							if (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim) PlayState.canUseAlts = true;
 							switch (Math.abs(daNote.noteData))
 							{
 								case 2:
@@ -3091,7 +3093,7 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20 && generatedMusic)
 		{
 			resyncVocals();
 		}

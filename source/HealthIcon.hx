@@ -24,7 +24,7 @@ class HealthIcon extends FlxSprite
 
 		antialiasing = true;
 		animation.add('bf', [0, 1], 0, false, isPlayer);
-		if(chars.contains(char)){ // For vanilla characters
+		if(chars.contains(char.toLowerCase())){ // For vanilla characters
 			animation.add('bf-car', [0, 1], 0, false, isPlayer);
 			animation.add('bf-christmas', [0, 1], 0, false, isPlayer);
 			animation.add('bf-pixel', [21, 21], 0, false, isPlayer);
@@ -45,7 +45,7 @@ class HealthIcon extends FlxSprite
 			animation.add('parents-christmas', [17, 18], 0, false, isPlayer);
 			animation.add('monster', [19, 20], 0, false, isPlayer);
 			animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
-			animation.play(char);
+			animation.play(char.toLowerCase());
 		}else{trace('Invalid character icon $char, Using BF!');animation.play("bf");}
 		switch(char)
 		{

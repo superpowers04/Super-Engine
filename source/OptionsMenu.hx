@@ -163,6 +163,7 @@ class OptionsMenu extends MusicBeatState
 				// 	case 1:
 				// 		FlxG.switchState(new onlinemod.OfflineMenuState());
 				// }}
+				FlxG.save.flush(); // Save when exiting, not every fucking frame
 				goBack();
 			}
 				
@@ -268,7 +269,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			}
 		}
-		FlxG.save.flush();
+		
 	}
 
 	var isSettingControl:Bool = false;

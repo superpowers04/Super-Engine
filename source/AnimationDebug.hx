@@ -302,18 +302,20 @@ class AnimationDebug extends MusicBeatState
 						dad.animOffsets = ["all" => [0,0]];
 						charX = 0;charY = 0;
 						dad.offset.set(0,0);
+						dadBG.offset.set(0,0);
 					case 14: // Write to file
-						var text = "These are not absolute, you will have to add these to your existing ones unless you unloaded the offsets provided by the character\nExported offsets:"
+						var text = 'These are not absolute, you will have to add these to your existing ones unless you unloaded the offsets provided by the character\nExported offsets for ${dad.curCharacter}:\n'
 						+ 'Character Position: [${charX}, ${charY}]';
 						for (i => v in offset) {
 							var name = i;
 
-							text+='\n${name} : [${v[0]}, ${v[1]}]';
+							text+='\n"${name}" : [${v[0]}, ${v[1]}]';
 						}
 						sys.io.File.saveContent(Sys.getCwd() + "offsets.txt",text);
 						FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 						tempMessage = new FlxText(FlxG.width * 0.8,30,0,"Saved to output successfully");
-						tempMessage.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.GREEN, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
+						tempMessage.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.LIME, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+						UI.add(tempMessage);
 						new FlxTimer().start(5, function(tmr:FlxTimer)
 						{
 							if (tempMessage != null) tempMessage.destroy();
