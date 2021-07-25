@@ -28,6 +28,7 @@ class EmptyCharacter extends Character
 
 	override public function new(x:Float, y:Float, ?character:String = "lonely", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false) // CharTypes: 0=BF 1=Dad 2=GF
 	{
+		super.lonely = true;
 		super(x, y);
 		animOffsets = new Map<String, Array<Dynamic>>();
 		animOffsets['all'] = [0, 0];
@@ -41,11 +42,19 @@ class EmptyCharacter extends Character
 		var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
 		tex = Paths.getSparrowAtlas('onlinemod/lonely');
 		frames = tex;
+		animation.addByPrefix('idle', 'Idle', 24, false);
+		animation.addByPrefix('Idle', 'Idle', 24, false);
+		animation.play("idle",true,false,0);
 	}
 
+	override public function update(elapsed:Float)
+	{
+		return;
+	}
 
 	override public function dance(?ignoreDebug:Bool = false)
 	{
+		animation.play("idle",true,false,0);
 		return;
 	}
 	// Added for Animation debug
@@ -55,6 +64,7 @@ class EmptyCharacter extends Character
 	}
 	override public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0):Void
 	{
+		animation.play("idle",true,false,0);
 		return;
 	}
 	override public function cloneAnimation(name:String,anim:FlxAnimation):Void{

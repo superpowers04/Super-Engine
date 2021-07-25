@@ -1026,3 +1026,63 @@ class PracticeModeOption extends Option
 		return "Practice Mode " + (!FlxG.save.data.practiceMode ? "off" : "on");
 	}
 }
+class ShowP2Option extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.dadShow = !FlxG.save.data.dadShow;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Opponent " + (!FlxG.save.data.dadShow ? "off" : "on");
+	}
+}
+class ShowP1Option extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.bfShow = !FlxG.save.data.bfShow;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Player " + (!FlxG.save.data.bfShow ? "off" : "on");
+	}
+}
+class ShowGFOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.gfShow = !FlxG.save.data.gfShow;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Girlfriend " + (!FlxG.save.data.gfShow ? "off" : "on");
+	}
+}

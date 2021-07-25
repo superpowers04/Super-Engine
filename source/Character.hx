@@ -48,6 +48,7 @@ class Character extends FlxSprite
 	public var flip:Bool = true;
 	public var flipNotes:Bool = true;
 	public var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
+	var lonely:Bool = false;
 	var altAnims:Array<String> = []; 
 
 
@@ -217,7 +218,11 @@ class Character extends FlxSprite
 
 	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null) // CharTypes: 0=BF 1=Dad 2=GF
 	{
-		try{
+		if (lonely){
+			super(x, y);
+			return;
+		}
+	try{
 		super(x, y);
 		animOffsets = new Map<String, Array<Dynamic>>();
 		animOffsets['all'] = [0, 0];
@@ -523,14 +528,21 @@ class Character extends FlxSprite
 					if (charProperties == null || charProperties.animations == null || charProperties.animations[0] == null){MainMenuState.handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
 					var pngName:String = "character.png";
 					var xmlName:String = "character.xml";
+					var forced:Int = 0;
 					if (charProperties.asset_files != null){
 						var selAssets = -10;
 						for (i => charFile in charProperties.asset_files) {
 							if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side != charType){continue;} // This if statement hurts my brain
 							if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
 							if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
+							var tagsMatched = 0;
+							if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
+								for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
+								if (tagsMatched == 0) continue;
+							}
 							
-							selAssets = i;
+							if (forced == 0 || tagsMatched == forced)
+								selAssets = i;
 						}
 						if (selAssets != -10){
 							if (charProperties.asset_files[selAssets].png != null )pngName=charProperties.asset_files[selAssets].png;
@@ -700,9 +712,9 @@ class Character extends FlxSprite
 				animation.getByName('singLEFTmiss').frames = oldMiss;
 			}
 		}
-		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
 		dance();
-		if(animation.curAnim == null){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
+		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
+		if(animation.curAnim == null && !lonely){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
 		// if (dance_idle || charType == 2 || curCharacter == "spooky"){
 		// 	playAnim('danceRight');
 		// }else{

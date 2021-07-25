@@ -1,6 +1,5 @@
-0.1.2;
-- The ability to output offsets to a text file for easier copying
-- offset_flip <https://github.com/superpowers04/FunkinBattleRoyale-Mod/wiki/Character-JSON>
-- JSON's can actually include comments without causing crashes now
-- A whole bunch of fixes for BF
-- Some general fixes
+0.2.0;
+- Custom stages
+- Character sprites can be controlled by stage tags, stages and song names
+- BF, GF and Opponent can be toggled in preformance
+- Some improvements

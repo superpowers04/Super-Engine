@@ -16,6 +16,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
+	var offscreenY:Int = FlxG.height + 50; //+50 to prevent notes from randomly appearing
 
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
@@ -26,6 +27,7 @@ class Note extends FlxSprite
 	public var modifiedByLua:Bool = false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var ignoreNote:Bool = false; // For Phych
 
 	public var noteScore:Float = 1;
 
@@ -34,6 +36,7 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var GREEN_NOTE:Int = 2;
 	public static var RED_NOTE:Int = 3;
+	public var skipNote:Bool = true;
 
 	public var rating:String = "shit";
 
@@ -156,48 +159,52 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
+			visible = false;
 		}
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		if (mustPress)
-		{
-			// ass
-			if (isSustainNote)
+		if (y < offscreenY){ // doesn't calculate anything until they're on screen
+			skipNote = false;
+			visible = true;
+			if (mustPress)
 			{
-				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
-					canBeHit = true;
+				// ass
+				if (isSustainNote)
+				{
+					if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
+						&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+						canBeHit = true;
+					else
+						canBeHit = false;
+				}
 				else
-					canBeHit = false;
+				{
+					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
+						canBeHit = true;
+					else
+						canBeHit = false;
+				}
+
+				if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale && !wasGoodHit)
+					tooLate = true;
 			}
 			else
 			{
-				if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-					&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
-					canBeHit = true;
-				else
-					canBeHit = false;
+				canBeHit = false;
+
+				if (strumTime <= Conductor.songPosition)
+					wasGoodHit = true;
 			}
 
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale && !wasGoodHit)
-				tooLate = true;
-		}
-		else
-		{
-			canBeHit = false;
-
-			if (strumTime <= Conductor.songPosition)
-				wasGoodHit = true;
-		}
-
-		if (tooLate)
-		{
-			if (alpha > 0.3)
-				alpha = 0.3;
+			if (tooLate)
+			{
+				if (alpha > 0.3)
+					alpha = 0.3;
+			}
 		}
 	}
 }

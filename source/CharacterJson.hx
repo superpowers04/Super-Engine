@@ -53,6 +53,7 @@ typedef CharacterAssetFiles ={
 	var stage:String; // Set on specific stage
 	var song:String; // Set on specific songname
 	var char_side:Dynamic; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
+	var tags:Array<String>;
 	var animations:Array<CharJsonAnimation>;
 	var animations_offsets:Array<CharJsonAnimOffsets>;
 }
