@@ -48,6 +48,8 @@ class OnlineResultState extends MusicBeatState
     {
       var name:String = clients[i];
       var score = OnlinePlayState.clientText[i];
+      if (score == null) score = "N/A";
+      if (name == null) name = "N/A";
       var text:FlxText = new FlxText(0, FlxG.height*0.2 + 30*x, '${x+1}. $name: $score');
 
       if (i == -1)
@@ -123,19 +125,20 @@ class OnlineResultState extends MusicBeatState
 
   override function update(elapsed:Float)
   {
-    if (!Chat.chatField.hasFocus)
-    {
-      OnlinePlayMenuState.SetVolumeControls(true);
-      if (controls.BACK)
-        FlxG.switchState(new OnlineLobbyState(true));
-    }
-    else
+    if (Chat.chatField.hasFocus)
     {
       OnlinePlayMenuState.SetVolumeControls(false);
       if (FlxG.keys.justPressed.ENTER)
       {
         Chat.SendChatMessage();
       }
+
+    }
+    else
+    {
+      OnlinePlayMenuState.SetVolumeControls(true);
+      if (controls.BACK)
+      FlxG.switchState(new OnlineLobbyState(true));
     }
 
     super.update(elapsed);
