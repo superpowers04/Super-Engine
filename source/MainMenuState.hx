@@ -28,7 +28,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.1.2";
+	public static var ver:String = "0.2.0";
 	
 	public static var firstStart:Bool = true;
 
@@ -39,7 +39,7 @@ class MainMenuState extends SickMenuState
 	public static var errorMessage:String = "";
 	public static function handleError(error:String):Void{
 		MainMenuState.errorMessage = error;
-		try{if (onlinemod.OnlinePlayMenuState.socket != null){onlinemod.OnlinePlayMenuState.socket.close();}}catch(e){trace('You just got an exception in yo exception ${e.message}');}
+		try{if (onlinemod.OnlinePlayMenuState.socket != null){onlinemod.OnlinePlayMenuState.socket.close();onlinemod.OnlinePlayMenuState.socket=null;}}catch(e){trace('You just got an exception in yo exception ${e.message}');}
 		
 		FlxG.switchState(new MainMenuState());
 	}
