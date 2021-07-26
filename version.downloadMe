@@ -1,5 +1,5 @@
 0.2.0;
-- Custom stages
+- Buggy custom stages
 - Character sprites can be controlled by stage tags, stages and song names
 - BF, GF and Opponent can be toggled in preformance
 - Some improvements
