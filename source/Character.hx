@@ -530,6 +530,7 @@ class Character extends FlxSprite
 					var xmlName:String = "character.xml";
 					var forced:Int = 0;
 					if (charProperties.asset_files != null){
+						var invChIDs:Array<Int> = [1,0,2];
 						var selAssets = -10;
 						for (i => charFile in charProperties.asset_files) {
 							if (charFile.char_side != null && charFile.char_side != 3 && !(!PlayState.invertedChart && charFile.char_side == invChIDs[charType] || PlayState.invertedChart && charFile.char_side == invChIDs[charType])){continue;} // This if statement hurts my brain
