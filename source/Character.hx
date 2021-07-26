@@ -532,7 +532,7 @@ class Character extends FlxSprite
 					if (charProperties.asset_files != null){
 						var selAssets = -10;
 						for (i => charFile in charProperties.asset_files) {
-							if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side != charType){continue;} // This if statement hurts my brain
+							if (charFile.char_side != null && charFile.char_side != 3 && !(!PlayState.invertedChart && charFile.char_side == invChIDs[charType] || PlayState.invertedChart && charFile.char_side == invChIDs[charType])){continue;} // This if statement hurts my brain
 							if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
 							if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
 							var tagsMatched = 0;
