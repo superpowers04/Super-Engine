@@ -42,13 +42,17 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 ## Funkin Battle Royale Mod
 - [Superpowers04](https://github.com/superpowers04) - Pretty much everything
 - [NayToon](https://github.com/cartoon032) - Some help and providing early Windows builds
-## Kade Engine
+- [XieneDev](https://github.com/XieneDev/) - Responsible for the base mod
+## Kade Engine (The base engine)
 - [KadeDeveloper](https://twitter.com/KadeDeveloper) - Maintainer and lead programmer
 - [The contributors](https://github.com/KadeDev/Kade-Engine/graphs/contributors)
-## FPS Plus
+## FPS Plus (Some improvements)
 - [Rozebud](https://twitter.com/helpme_thebigt) - *Everything*
-### Shoutouts
+
+## Shoutouts
 - [GWebDev](https://twitter.com/GFlipaclip) - Haxeflixel Video
 - [Ethab Taxi](https://twitter.com/EthabTaxi) - He's just sorta chillin'.<br>
 - [V.S. Ex Tabi](https://gamebanana.com/mods/286388) - The arrow examples are from here
 - [Smoke 'Em Out Struggle](https://gamebanana.com/mods/166531) - Used Garcello's character for testing custom characters/custom animations
+### Special Thanks
+- [NoLime](https://gamebanana.com/members/1762727) - Giving permission to have [BF Girlfriend mode](https://gamebanana.com/mods/185105) as a built-in character

@@ -16,7 +16,7 @@ using StringTools;
 
 class CharSelection extends SearchMenuState
 {
-
+  var defText:String = "Use shift to scroll faster";
   override function create()
   {try{
     searchList = TitleState.choosableCharacters;
@@ -32,7 +32,8 @@ class CharSelection extends SearchMenuState
       default: title= "You found a secret, You should exit this menu";
     }
     if (title != "") addTitleText(title);
-    if (onlinemod.OnlinePlayMenuState.socket == null) infotext.text = "Use shift to scroll faster, press 1,2 or 3 to open Animation Debug(1=bf,2=dad,3=gf)";
+    if (onlinemod.OnlinePlayMenuState.socket == null) defText =  "Use shift to scroll faster, Animation Debug keys: 1=bf,2=dad,3=gf";
+    changeSelection();
   }catch(e) MainMenuState.handleError('Error with charsel "create" ${e.message}');}
   override function extraKeys(){
     if (songs[curSelected] != "automatic" && onlinemod.OnlinePlayMenuState.socket == null){
@@ -40,6 +41,15 @@ class CharSelection extends SearchMenuState
         if (FlxG.keys.justPressed.TWO){FlxG.switchState(new AnimationDebug(songs[curSelected],false,1,true));}
         if (FlxG.keys.justPressed.THREE){FlxG.switchState(new AnimationDebug(songs[curSelected],false,2,true));}
       }
+  }
+  override function changeSelection(change:Int = 0){
+    super.changeSelection(change);
+
+    if (songs[curSelected] != "" && TitleState.characterDescriptions[songs[curSelected]] != null && TitleState.characterDescriptions[songs[curSelected]] != "" ){
+      updateInfoText('${defText}; ' + TitleState.characterDescriptions[songs[curSelected]]);
+    }else{
+      updateInfoText('${defText}; No description for this character.');
+    }
   }
   override function select(sel:Int = 0){
     switch (Options.PlayerOption.playerEdit){

@@ -44,6 +44,7 @@ class TitleState extends MusicBeatState
 	public static var choosableStages:Array<String> = ["default","stage",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
 	public static var choosableStagesLower:Map<String,String> = [];
 	public static var choosableCharactersLower:Map<String,String> = [];
+	public static var characterDescriptions:Map<String,String> = [];
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;
 	public static var supported:Bool = false;
@@ -66,73 +67,76 @@ class TitleState extends MusicBeatState
 		}else{
 			return "";
 		}
-  	}
+	}
 	public static function retStage(char:String):String{
 		if (choosableStagesLower[char.toLowerCase()] != null){
 			return choosableStagesLower[char.toLowerCase()];
 		}else{
 			return "";
 		}
-  	}
+	}
 	public static function checkCharacters(){
+
 		choosableCharacters = ["bf","bf-pixel","bf-christmas","gf",'gf-pixel',"dad","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","monster"];
 		choosableCharactersLower = ["bf" => "bf","bf-pixel" => "bf-pixel","bf-christmas" => "bf-christmas","gf" => "gf","gf-pixel" => "gf-pixel","dad" => "dad","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","monster" => "monster"];
+		characterDescriptions = ["automatic" => "Automatically uses character from song json"];
 		#if sys
 		// Loading like this is probably not a good idea
-	    var dataDir:String = "mods/characters/";
-	    var customCharacters:Array<String> = [];
-	    if (FileSystem.exists(dataDir))
-	    {
-	      for (directory in FileSystem.readDirectory(dataDir))
-	      {
-	      	if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml"))
-	      	{
-	       		customCharacters.push(directory);
-
-	        }
-	      }
-	    }
+		var dataDir:String = "mods/characters/";
+		var customCharacters:Array<String> = [];
+		if (FileSystem.exists(dataDir))
+		{
+		  for (directory in FileSystem.readDirectory(dataDir))
+		  {
+			if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml"))
+			{
+				customCharacters.push(directory);
+				if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/description.txt"))
+					characterDescriptions[directory] = File.getContent('mods/characters/${directory}/description.txt');
+			}
+		  }
+		}
 		// customCharacters.sort((a, b) -> );
 		haxe.ds.ArraySort.sort(customCharacters, function(a, b) {
-           if(a < b) return -1;
-           else if(b > a) return 1;
-           else return 0;
-        });
+		   if(a < b) return -1;
+		   else if(b > a) return 1;
+		   else return 0;
+		});
 		for (char in customCharacters){
 			choosableCharacters.push(char);
 			choosableCharactersLower[char.toLowerCase()] = char;
 		}
-	    #end
-	    checkStages();
+		#end
+		checkStages();
 	}
 	public static function checkStages(){
 		choosableStages = ["default","stage",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
 		choosableStagesLower = ["default" => "default","stage" => "stage",'halloween' => 'halloween',"philly" => "philly","limo" => "limo",'mall' => 'mall','mallevil' => 'mallevil','school' => 'school','schoolevil' => 'schoolevil'];
 		#if sys
 		// Loading like this is probably not a good idea
-	    var dataDir:String = "mods/stages/";
-	    var customStages:Array<String> = [];
-	    if (FileSystem.exists(dataDir))
-	    {
-	      for (directory in FileSystem.readDirectory(dataDir))
-	      {
-	      	if (FileSystem.exists(Sys.getCwd() + "mods/stages/"+directory+"/config.json"))
-	      	{
-	       		customStages.push(directory);
+		var dataDir:String = "mods/stages/";
+		var customStages:Array<String> = [];
+		if (FileSystem.exists(dataDir))
+		{
+		  for (directory in FileSystem.readDirectory(dataDir))
+		  {
+			if (FileSystem.exists(Sys.getCwd() + "mods/stages/"+directory+"/config.json"))
+			{
+				customStages.push(directory);
 
-	        }
-	      }
-	    }
+			}
+		  }
+		}
 		haxe.ds.ArraySort.sort(customStages, function(a, b) {
-           if(a < b) return -1;
-           else if(b > a) return 1;
-           else return 0;
-        });
+		   if(a < b) return -1;
+		   else if(b > a) return 1;
+		   else return 0;
+		});
 		for (char in customStages){
 			choosableStages.push(char);
 			choosableStagesLower[char.toLowerCase()] = char;
 		}
-	    #end
+		#end
 	}
 	override public function create():Void
 	{
@@ -390,7 +394,7 @@ class TitleState extends MusicBeatState
 						updatedVer = returnedData[0];
 						OutdatedSubState.needVer = updatedVer;
 						OutdatedSubState.currChanges = returnedData[1];
-					  	if (!MainMenuState.ver.contains(updatedVer.trim()))
+						if (!MainMenuState.ver.contains(updatedVer.trim()))
 						{
 							trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
 							outdated = true;

@@ -39,12 +39,15 @@ class MainMenuState extends SickMenuState
 	public static var errorMessage:String = "";
 	public static function handleError(error:String):Void{
 		MainMenuState.errorMessage = error;
-		try{if (onlinemod.OnlinePlayMenuState.socket != null){onlinemod.OnlinePlayMenuState.socket.close();onlinemod.OnlinePlayMenuState.socket=null;}}catch(e){trace('You just got an exception in yo exception ${e.message}');}
+		if (onlinemod.OnlinePlayMenuState.socket != null){
+			try{
+				onlinemod.OnlinePlayMenuState.socket.close();
+				onlinemod.OnlinePlayMenuState.socket=null;
+			}catch(e){trace('You just got an exception in yo exception ${e.message}');}
+		}
 		
 		FlxG.switchState(new MainMenuState());
 	}
-	// var danceLeft:Bool=false;
-	// var gfDance:FlxSprite;
 
 	override function create()
 	{
@@ -99,42 +102,8 @@ class MainMenuState extends SickMenuState
 		    MainMenuState.errorMessage="";
 		}
 
-		// if(!FlxG.save.data.preformance && FileSystem.exists(Sys.getCwd() + "mods/characters/"+FlxG.save.data.gfChar+"/character.png")){ // Gf on main menu because yes
-		// 	try{
-		// 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
-		// 		var curCharacter:String = FlxG.save.data.gfChar;
-		// 		gfDance.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/character.png')), File.getContent('mods/characters/$curCharacter/character.xml'));
-		// 		var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json');
-		// 		var charProperties:CharacterJson = haxe.Json.parse(charPropJson);
-		// 		gfDance.antialiasing = !charProperties.no_antialiasing;
-		// 		gfDance.setGraphicSize(Std.int(gfDance.width * charProperties.scale));
-		// 		gfDance.updateHitbox();
-
-		// 		for (anima in charProperties.animations){
-		// 			if (anima.indices.length > 0) { // Add using indices if specified
-		// 				gfDance.animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
-		// 			}else{gfDance.animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);}
-		// 		}
-		// 		add(gfDance);
-
-		// 	}
-		// }
-		// changeItem();
-
 		
 	}
-	// override function beatHit()
-	// {
-	// 	super.beatHit();
-	// 	if (gfDance != null){
-	// 		danceLeft = !danceLeft;
-	
-	// 		if (danceLeft)
-	// 			gfDance.animation.play('danceRight');
-	// 		else
-	// 			gfDance.animation.play('danceLeft');
-	// 	}
-	// }
 
 	override function goBack(){
 		FlxG.switchState(new TitleState());
