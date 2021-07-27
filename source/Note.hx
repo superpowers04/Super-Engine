@@ -43,7 +43,7 @@ class Note extends FlxSprite
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false)
 	{
 		super();
-
+		if (FlxG.save.data.downscroll) offscreenY = 50;
 		if (prevNote == null)
 			prevNote = this;
 
@@ -166,7 +166,7 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (y < offscreenY){ // doesn't calculate anything until they're on screen
+		if (!FlxG.save.data.downscroll && y < offscreenY || FlxG.save.data.downscroll && y > offscreenY){ // doesn't calculate anything until they're on screen
 			skipNote = false;
 			visible = true;
 			if (mustPress)
