@@ -54,7 +54,7 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 	public var stunned:Bool = false; // Why was this specific to BF?
-	function addOffsets(?character:String = "bf") // Handles offsets for characters with support for clones
+	function addOffsets(?character:String = "") // Handles offsets for characters with support for clones
 	{
 
 		
@@ -867,14 +867,14 @@ class Character extends FlxSprite
 		}
 		}catch(e)MainMenuState.handleError('Caught character "cloneAnimation" crash: ${e.message}');
 	}
-	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false):Void
+	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false,?replace:Bool = false):Void
 	{
 		if (needsInverted == 3 && isPlayer){
 			x=-x;
 		}else if (needsInverted == 2 && !isPlayer){
 			x=-x;
 		}	
-		if (animOffsets[name] == null){ // If animation is null, just add the offsets out right
+		if (animOffsets[name] == null || replace){ // If animation is null, just add the offsets out right
 			animOffsets[name] = [x, y];
 		}else{ // If animation is not null, add the offsets to the existing ones
 			animOffsets[name] = [animOffsets[name][0] + x, animOffsets[name][1] + y];

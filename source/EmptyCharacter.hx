@@ -70,7 +70,7 @@ class EmptyCharacter extends Character
 	override public function cloneAnimation(name:String,anim:FlxAnimation):Void{
 		return;
 	}
-	override public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false):Void
+	override public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false,?replace:Bool = false):Void
 	{
 		return;
 	}
