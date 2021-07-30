@@ -143,6 +143,7 @@ class OptionsMenu extends MusicBeatState
 			switch(ls){
 				case 3:FlxG.switchState(new onlinemod.OfflineMenuState());
 				case 4:FlxG.switchState(new multi.MultiMenuState());
+				case 5:FlxG.switchState(new osu.OsuMenuState());
 			}
 		}else
 			FlxG.switchState(new MainMenuState());

@@ -75,7 +75,7 @@ class SickMenuState extends MusicBeatState
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-
+    if (selected) return;
     if (controls.BACK)
     {
       goBack();
@@ -122,5 +122,6 @@ class SickMenuState extends MusicBeatState
 				item.alpha = 1;
 			}
 		}
+
 	}
 }

@@ -65,6 +65,8 @@ class MainMenuState extends SickMenuState
 
 		super.create();
 
+		bg.scrollFactor.set(0.1,0.1);
+		bg.color = 0xFFFFFFFF;
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/FNFBR ${ver}', 12);
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.scrollFactor.set();
