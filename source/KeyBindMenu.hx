@@ -73,7 +73,7 @@ class KeyBindMenu extends FlxSubState
         blackBox = new FlxSprite(0,0).makeGraphic(FlxG.width,FlxG.height,FlxColor.BLACK);
         add(blackBox);
 
-        infoText = new FlxText(-10, 580, 1280, "(Escape to save, backspace to leave without saving)", 72);
+        infoText = new FlxText(-10, 580, 1280, "(Escape to save, backspace to leave without saving. Arrow keys will always be bound)", 72);
 		infoText.scrollFactor.set(0, 0);
 		infoText.setFormat("VCR OSD Mono", 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		infoText.borderSize = 2;

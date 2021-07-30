@@ -19,6 +19,7 @@ class SickMenuState extends MusicBeatState
   var grpControls:FlxTypedGroup<Alphabet>;
   var bgImage:String = "menuDesat";
   var selected:Bool = false;
+  var bg:FlxSprite;
   function goBack(){
     FlxG.switchState(new MainMenuState());
   }
@@ -41,8 +42,9 @@ class SickMenuState extends MusicBeatState
       FlxG.sound.playMusic(Paths.music('freakyMenu'));
     } // TODO CUSTOM MAIN MENU SONGS
 
-    var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(bgImage));
+    bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
     bg.color = 0xFFFF6E6E;
+    bg.scrollFactor.set(0.01,0.01);
     add(bg);
 
 

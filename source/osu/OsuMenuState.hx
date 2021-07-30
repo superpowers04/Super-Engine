@@ -1,4 +1,4 @@
-package multi;
+package osu;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -14,26 +14,28 @@ import sys.FileSystem;
 
 using StringTools;
 
-class MultiMenuState extends onlinemod.OfflineMenuState
+class OsuMenuState extends onlinemod.OfflineMenuState
 {
   var modes:Map<Int,Array<String>> = [];
   var diffText:FlxText;
   var selMode:Int = 0;
-  var blockedFiles:Array<String> = ['picospeaker.json','meta.json','config.json'];
+  public static var songPath:String = "";
 
   var songNames:Array<String> = [];
   override function findButton(){
     super.findButton();
     changeDiff();
   }
+
   override function create()
   {
-    dataDir = "mods/charts/";
+    dataDir = TitleState.osuBeatmapLoc;
     super.create();
-    bg.color = 0x0000FF6E;
+    bg.color = 0x006E006E;
     diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
     diffText.font = Paths.font("vcr.ttf");
     add(diffText);
+    sideButton.destroy();
     changeDiff();
   }
   override function reloadList(?reload=false,?search = ""){
@@ -53,20 +55,24 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       {
         if (search == "" || query.match(directory.toLowerCase())) // Handles searching
         {
-        if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
-
+          var name = directory;
+          var nameff = false;
           modes[i] = [];
           for (file in FileSystem.readDirectory(dataDir + directory))
           {
-              if (!blockedFiles.contains(file.toLowerCase()) && StringTools.endsWith(file, '.json')){
+              if (StringTools.endsWith(file, '.osu')){
                 modes[i].push(file);
+                if(!nameff){
+                  var n = OsuBeatMap.getSettingBM("Title",File.getContent('${dataDir}${directory}/${file}'));
+                  if (n != "") name=n;
+                }
               }
           }
           if (modes[i][0] == null){ // No charts to load!
-            modes[i][0] = "No charts for this song!";
+            modes[i][0] = "No beatmaps for this song!";
           }
           songs.push(dataDir + directory);
-          songNames.push(directory);
+          songNames.push(name);
               
           var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
           controlLabel.isMenuItem = true;
@@ -75,16 +81,17 @@ class MultiMenuState extends onlinemod.OfflineMenuState
             controlLabel.alpha = 0.6;
           grpSongs.add(controlLabel);
           i++;
+        
         }
       }
-    }}else{
-      MainMenuState.handleError('"/mods/charts" does not exist!');
+    }else{
+      MainMenuState.handleError('"${TitleState.osuBeatmapLoc}" does not exist!');
     }
   }
   override function select(sel:Int = 0){
       if (songs[curSelected] == null) {return;}
-      if(modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
-        MainMenuState.handleError('${songs[curSelected]} has no chart!');
+      if(modes[curSelected][selMode] == "No beatmaps for this song!"){ // Actually check if the song has no charts when loading, if so then error
+        MainMenuState.handleError('${songs[curSelected]} has no beatmaps!');
         return;
       }
       try{
@@ -92,27 +99,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       var songJSON = modes[curSelected][selMode]; // Just for easy access
       var songName = songNames[curSelected]; // Easy access to var
       var selSong = songs[curSelected]; // Easy access to var
-      onlinemod.OfflinePlayState.chartFile = '${selSong}/${songJSON}';
-      // PlayState.SONG = Song.parseJSONshit(File.getContent('${selSong}/${songJSON}'));
+      songPath = songs[curSelected];
+      PlayState.SONG = OsuBeatMap.loadFromText(sys.io.File.getContent('${selSong}/${songJSON}'));
       PlayState.isStoryMode = false;
-      // Set difficulty
       PlayState.songDiff = songJSON;
-      PlayState.storyDifficulty = switch(songJSON){case '${songName}-easy.json': 0; case '${songName}-hard.json': 2; default: 1;};
-      // if (StringTools.endsWith(songs[curSelected], '-hard.json'))
-      // {
-      //   songName = songName.substr(0,songName.indexOf('-hard.json'));
-      //   PlayState.storyDifficulty = 2;
-      // }
-      // else if (StringTools.endsWith(songs[curSelected], '-easy.json'))
-      // {
-      //   songName = songName.substr(0,songName.indexOf('-easy.json'));
-      //   PlayState.storyDifficulty = 0;
-      // }
+      PlayState.storyDifficulty = 1;
+
       PlayState.actualSongName = songJSON;
-      MultiPlayState.voicesFile = '';
-      if (FileSystem.exists('${selSong}/Voices.ogg')) MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
-      MultiPlayState.instFile = '${selSong}/Inst.ogg';
-      LoadingState.loadAndSwitchState(new MultiPlayState());
+      LoadingState.loadAndSwitchState(new OsuPlayState());
       }catch(e){
         MainMenuState.handleError('Error while loading chart ${e.message}');
       }
@@ -134,7 +128,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       }
   }
   function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
-    if (songs.length == 0 || songs[curSelected] == null || songs[curSelected] == "") {
+    if (songs[curSelected] == null || songs[curSelected] == "") {
       diffText.text = 'No song selected';
       return;
     }
@@ -142,7 +136,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     if (selMode >= modes[curSelected].length) selMode = 0;
     if (selMode < 0) selMode = modes[curSelected].length - 1;
     diffText.text = modes[curSelected][selMode];
+    diffText.x = 10;
+    diffText.scrollFactor.set();
+    diffText.setFormat("VCR OSD Mono", if (diffText.text.length > 72) 16 else 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
+  
   }
   override function changeSelection(change:Int = 0)
 	{
@@ -153,7 +151,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
   override function goOptions(){
       FlxG.mouse.visible = false;
-      OptionsMenu.lastState = 4;
+      OptionsMenu.lastState = 5;
       FlxG.switchState(new OptionsMenu());
   }
 }

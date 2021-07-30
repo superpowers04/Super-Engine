@@ -28,7 +28,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.2.0";
+	public static var ver:String = "0.2.1";
 	
 	public static var firstStart:Bool = true;
 
@@ -38,6 +38,7 @@ class MainMenuState extends SickMenuState
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static function handleError(error:String):Void{
+		if (errorMessage != "") return; 
 		MainMenuState.errorMessage = error;
 		if (onlinemod.OnlinePlayMenuState.socket != null){
 			try{
@@ -51,8 +52,8 @@ class MainMenuState extends SickMenuState
 
 	override function create()
 	{
-		options = ['online', 'downloaded songs','modded songs','story mode', 'freeplay',"changelog",'get characters', 'options'];
-		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally",'Play through the story mode', 'Play any song from the game',"Check the latest update and it's changes","Download characters to play as ingame",'Customise your experience to fit you'];
+		options = ['online', 'downloaded songs','modded songs','other',"changelog",'get characters', 'options'];
+		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally",'Other playing modes',"Check the latest update and it's changes","Download characters to play as ingame",'Customise your experience to fit you'];
 		trace(errorMessage);
 
 		persistentUpdate = persistentDraw = true;
@@ -125,10 +126,8 @@ class MainMenuState extends SickMenuState
 		FlxG.sound.play(Paths.sound('confirmMenu'));
 		switch (daChoice)
 		{
-			case 'story mode':
-				FlxG.switchState(new StoryMenuState());
-			case 'freeplay':
-				FlxG.switchState(new FreeplayState());
+			case 'other':
+				FlxG.switchState(new OtherMenuState());
 			case 'online':
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
 			case 'modded songs':

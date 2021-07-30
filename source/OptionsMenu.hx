@@ -49,8 +49,8 @@ class OptionsMenu extends MusicBeatState
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
 			// new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"), This didn't work before and it doesn't work again...
-			new HitSoundOption("Play a click when you hit a note, Basically is the one from VS Omega. Can cause lag!")
-			// new InputHandlerOption("Change the input engine used, only works locally, Disables Kade options unless supported by engine")
+			new HitSoundOption("Play a click when you hit a note, Basically is the one from VS Omega. Can cause lag!"),
+			new InputHandlerOption("Change the input engine used, only works locally, Disables Kade options unless supported by engine")
 		]),
 		new OptionCategory("Appearance", [
 			new GUIGapOption("Change the distance between the end of the screen and text"),

@@ -52,6 +52,7 @@ class TitleState extends MusicBeatState
 	public static var checkedUpdate:Bool = false;
 	public static var updatedVer:String = "";
 	public static var errorMessage:String = "";
+	public static var osuBeatmapLoc:String = "";
 
 	var curWacky:Array<String> = [];
 
@@ -137,6 +138,18 @@ class TitleState extends MusicBeatState
 			choosableStagesLower[char.toLowerCase()] = char;
 		}
 		#end
+	}
+	public static function findosuBeatmaps(){
+		var loc = "";
+		#if windows
+			if (Sys.getEnv("LOCALAPPDATA") != null && FileSystem.exists('${Sys.getEnv("LOCALAPPDATA")}/osu!/Songs/')) loc = '${Sys.getEnv("LOCALAPPDATA")}/osu!/Songs/';
+			if (Sys.getEnv("LOCALAPPDATA") != null && FileSystem.exists('${Sys.getEnv("LOCALAPPDATA")}/osu-stable/Songs/')) loc = '${Sys.getEnv("LOCALAPPDATA")}/osu-stable/Songs/';
+		#else
+			if (Sys.getEnv("HOME") != null && FileSystem.exists('${Sys.getEnv("HOME")}/.local/share/osu-stable/Songs/')) loc = '${Sys.getEnv("HOME")}/.local/share/osu-stable/Songs/';
+			if (loc == "") trace('${Sys.getEnv("HOME")}/.local/share/osu-stable/songs/ doesnt exist!');
+		#end
+
+		osuBeatmapLoc = loc;
 	}
 	override public function create():Void
 	{
@@ -226,6 +239,7 @@ class TitleState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
+			findosuBeatmaps();
 		}
 
 		Conductor.changeBPM(102);

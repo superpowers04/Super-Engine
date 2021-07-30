@@ -17,6 +17,7 @@ class OfflinePlayState extends PlayState
   var loadedVoices:FlxSound;
   var loadedInst:Sound;
   var loadingtext:FlxText;
+  var shouldLoadJson:Bool = true;
   public static var chartFile:String = "";
   function loadSongs(){
 
@@ -38,11 +39,13 @@ class OfflinePlayState extends PlayState
     
     loadedInst = Sound.fromFile(instFile);
   }
-  
+  function loadJSON(){
+  	if (!ChartingState.charting) PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+  }
   override function create()
   {
   	try{
-	  	if (!ChartingState.charting) PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+	  	if (shouldLoadJson) loadJSON();
 	    PlayState.SONG.player1 = FlxG.save.data.playerChar;
 	    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
 	    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
@@ -79,7 +82,7 @@ class OfflinePlayState extends PlayState
 
   override function startSong(?alrLoaded:Bool = false)
   {
-    FlxG.sound.playMusic(loadedInst, 1, false);
+    if (shouldLoadJson) FlxG.sound.playMusic(loadedInst, 1, false);
 
     // We be good and actually just use an argument to not load the song instead of "pausing" the game
     super.startSong(true);
@@ -198,3 +201,5 @@ class OfflinePlayState extends PlayState
     	super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
   }
 }
+
+

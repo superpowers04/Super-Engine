@@ -62,6 +62,7 @@ class SearchMenuState extends MusicBeatState
 		} 
 		bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 		bg.color = 0xFFFF6E6E;
+		bg.scrollFactor.set(0.01,0.01);
 		add(bg);
 		reloadList();
 		if (toggleables['search']){
