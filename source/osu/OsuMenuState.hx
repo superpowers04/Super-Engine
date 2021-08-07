@@ -53,7 +53,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
     {
       for (directory in FileSystem.readDirectory(dataDir))
       {
-        if (search == "" || query.match(directory.toLowerCase())) // Handles searching
+        if ((search == "" || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
         {
           var name = directory;
           var nameff = false;
@@ -74,7 +74,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
           songs.push(dataDir + directory);
           songNames.push(name);
               
-          var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
+          var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false);
           controlLabel.isMenuItem = true;
           controlLabel.targetY = i;
           if (i != 0)
@@ -84,6 +84,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
         
         }
       }
+      if (songs.length == 0) MainMenuState.handleError('Unable to find any songs, returned to main menu to prevent crash');
     }else{
       MainMenuState.handleError('"${TitleState.osuBeatmapLoc}" does not exist!');
     }

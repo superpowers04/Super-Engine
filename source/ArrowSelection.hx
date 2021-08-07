@@ -16,7 +16,6 @@ using StringTools;
 
 class ArrowSelection extends SearchMenuState
 {
-
   override function create()
   {try{
     { // Looks for all notes, This will probably be rarely accessed, so loading like this shouldn't be a problem

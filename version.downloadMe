@@ -1,5 +1,3 @@
-0.2.0;
-- Buggy custom stages
-- Character sprites can be controlled by stage tags, stages and song names
-- BF, GF and Opponent can be toggled in preformance
-- Some improvements
+0.3.0;
+- Some support for Osu! Beatmaps
+- Downscroll should work again

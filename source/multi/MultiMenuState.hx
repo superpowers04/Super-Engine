@@ -123,7 +123,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       {
         ret();
       }
-
+      if(songs.length == 0) return;
+      
       if(controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
       if(controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
       if(controls.LEFT_P){changeDiff(-1);}

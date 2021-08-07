@@ -363,7 +363,7 @@ class AnimHelpScreen extends FlxSubState{
 		+'\nIJKL - Move char, Moves per press for accuracy'
 		+'\n*Shift - Move by 5(Combine with CTRL to move 5)'
 		+'\n*Ctrl - Move by *0.1'
-		+'\n1 - Unload defined offsets'
+		+'\n1 - Unloads all offsets from the game or json file, including character position'
 		+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
 		+'\nR - Reload character'
 		+'\nEscape - Close animation debug');
