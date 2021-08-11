@@ -82,7 +82,7 @@ class Alphabet extends FlxSpriteGroup
 				lastWasSpace = true;
 			}
 
-			if (AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1)
+			if (AlphaCharacter.acceptedChars.contains(character.toLowerCase()))
 				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 			{
 				if (lastSprite != null)
@@ -100,7 +100,7 @@ class Alphabet extends FlxSpriteGroup
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
 				listOAlphabets.add(letter);
 
-				if (isBold)
+				if (isBold && AlphaCharacter.alphabet.contains(character.toLowerCase()))
 					letter.createBold(character);
 				else
 				{
@@ -150,14 +150,8 @@ class Alphabet extends FlxSpriteGroup
 			{
 				lastWasSpace = true;
 			}
-
-			#if (haxe >= "4.0.0")
 			var isNumber:Bool = AlphaCharacter.numbers.contains(splitWords[loopNum]);
 			var isSymbol:Bool = AlphaCharacter.symbols.contains(splitWords[loopNum]);
-			#else
-			var isNumber:Bool = AlphaCharacter.numbers.indexOf(splitWords[loopNum]) != -1;
-			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(splitWords[loopNum]) != -1;
-			#end
 
 			if (AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol)
 				// if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
@@ -192,18 +186,18 @@ class Alphabet extends FlxSpriteGroup
 				}
 				else
 				{
-					if (isNumber)
-					{
-						letter.createNumber(splitWords[loopNum]);
-					}
-					else if (isSymbol)
-					{
-						letter.createSymbol(splitWords[loopNum]);
-					}
-					else
-					{
-						letter.createLetter(splitWords[loopNum]);
-					}
+					// if (isNumber)
+					// {
+					// 	letter.createNumber(splitWords[loopNum]);
+					// }
+					// else if (isSymbol)
+					// {
+					// 	letter.createSymbol(splitWords[loopNum]);
+					// }
+					// else
+					// {
+					letter.createLetter(splitWords[loopNum]);
+					// }
 
 					letter.x += 90;
 				}
@@ -242,10 +236,11 @@ class Alphabet extends FlxSpriteGroup
 class AlphaCharacter extends FlxSprite
 {
 	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
+	public static var acceptedChars:String = "abcdefghijklmnopqrstuvwxyz1234567890~#$%()*+:;<=>@[]^.,'!?/";
 
 	public static var numbers:String = "1234567890";
 
-	public static var symbols:String = "|~#$%()*+-:;<=>@[]^_.,'!? ";
+	public static var symbols:String = "|~#$%()*+-:;<=>@[]^_.,'!? /";
 
 	public var row:Int = 0;
 
@@ -272,15 +267,20 @@ class AlphaCharacter extends FlxSprite
 		{
 			letterCase = 'capital';
 		}
+		if (symbols.contains(letter)){
+			createSymbol(letter);
+		}else if (alphabet.contains(letter)){
+			animation.addByPrefix(letter, letter + " " + letterCase, 24);
+		}else{
+			animation.addByPrefix(letter, letter, 24);
+			
 
-		animation.addByPrefix(letter, letter + " " + letterCase, 24);
+		}
 		animation.play(letter);
 		updateHitbox();
 
-		FlxG.log.add('the row' + row);
-
-		y = (110 - height);
-		y += row * 60;
+		if (alphabet.contains(letter)){y = (110 - height);
+		y += row * 60;}
 	}
 
 	public function createNumber(letter:String):Void
@@ -309,10 +309,10 @@ class AlphaCharacter extends FlxSprite
 			case "!":
 				animation.addByPrefix(letter, 'exclamation point', 24);
 				animation.play(letter);
-			case '_':
-				animation.addByPrefix(letter, '_', 24);
-				animation.play(letter);
-				y += 50;
+			// case '_':
+			// 	animation.addByPrefix(letter, '_', 24);
+			// 	animation.play(letter);
+			// 	y += 50;
 			case "#":
 				animation.addByPrefix(letter, '#', 24);
 				animation.play(letter);
@@ -334,9 +334,9 @@ class AlphaCharacter extends FlxSprite
 			case "+":
 				animation.addByPrefix(letter, '+', 24);
 				animation.play(letter);
-			case "-":
-				animation.addByPrefix(letter, '-', 24);
-				animation.play(letter);
+			// case "-":
+			// 	animation.addByPrefix(letter, '-', 24);
+			// 	animation.play(letter);
 			case '"':
 				animation.addByPrefix(letter, '"', 24);
 				animation.play(letter);
@@ -351,8 +351,9 @@ class AlphaCharacter extends FlxSprite
 			case ' ':
 				animation.addByPrefix(letter, 'space', 24);
 				animation.play(letter);
+			case '/':
+				animation.addByPrefix(letter, 'forward slash', 24);
+				animation.play(letter);
 		}
-
-		updateHitbox();
 	}
 }
