@@ -1,3 +1,7 @@
 0.3.0;
 - Some support for Osu! Beatmaps
+- An WIP option for importing from other mods
 - Downscroll should work again
+Known bugs:
+-Sliders don't work
+-Game crashes when you search for a song and it doesn't exist in Multi and osu listings

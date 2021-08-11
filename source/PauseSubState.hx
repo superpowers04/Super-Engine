@@ -15,6 +15,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.ui.FlxBar;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -31,6 +32,9 @@ class PauseSubState extends MusicBeatSubstate
 	var levelInfo:FlxText;
 	var levelDifficulty:FlxText;
 	var startTimer:FlxTimer;
+	var quitHeld:Int = 0;
+	var quitHeldBar:FlxBar;
+	var quitHeldBG:FlxSprite;
 
 	public function new(x:Float, y:Float)
 	{
@@ -92,6 +96,19 @@ class PauseSubState extends MusicBeatSubstate
 
 		changeSelection();
 
+		quitHeldBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar','shared'));
+		quitHeldBG.screenCenter(X);
+		quitHeldBG.scrollFactor.set();
+		add(quitHeldBG);
+
+
+		quitHeldBar = new FlxBar(quitHeldBG.x + 4, quitHeldBG.y + 4, LEFT_TO_RIGHT, Std.int(quitHeldBG.width - 8), Std.int(quitHeldBG.height - 8), this,'quitHeld', 0, 1000);
+		quitHeldBar.numDivisions = 1000;
+		quitHeldBar.scrollFactor.set();
+		quitHeldBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+		add(quitHeldBar);
+
+
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 	}
 
@@ -119,61 +136,20 @@ class PauseSubState extends MusicBeatSubstate
 			changeSelection(1);
 		}
 		
-		// #if cpp
-		// 	else if (leftP)
-		// 	{
-		// 		oldOffset = PlayState.songOffset;
-		// 		PlayState.songOffset -= 1;
-		// 		sys.FileSystem.rename(songPath + oldOffset + '.offset', songPath + PlayState.songOffset + '.offset');
-		// 		perSongOffset.text = "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.';
+		if (quitHeldBar.visible && quitHeld <= 0){
+			quitHeldBar.visible = false;
+			quitHeldBG.visible = false;
+    		}
+		if (FlxG.keys.pressed.ESCAPE)
+		{
+			quitHeld += 5;
+			quitHeldBar.visible = true;
+			quitHeldBG.visible = true;
+			if (quitHeld > 1000) quit(); 
+			}else if (quitHeld > 0){
+			quitHeld -= 10;
 
-		// 		// Prevent loop from happening every single time the offset changes
-		// 		if(!offsetChanged)
-		// 		{
-		// 			grpMenuShit.clear();
-
-		// 			menuItems = ['Restart Song', 'Exit to menu'];
-
-		// 			for (i in 0...menuItems.length)
-		// 			{
-		// 				var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
-		// 				songText.isMenuItem = true;
-		// 				songText.targetY = i;
-		// 				grpMenuShit.add(songText);
-		// 			}
-
-		// 			changeSelection();
-
-		// 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-		// 			offsetChanged = true;
-		// 		}
-		// 	}else if (rightP)
-		// 	{
-		// 		oldOffset = PlayState.songOffset;
-		// 		PlayState.songOffset += 1;
-		// 		sys.FileSystem.rename(songPath + oldOffset + '.offset', songPath + PlayState.songOffset + '.offset');
-		// 		perSongOffset.text = "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.';
-		// 		if(!offsetChanged)
-		// 		{
-		// 			grpMenuShit.clear();
-
-		// 			menuItems = ['Restart Song', 'Exit to menu'];
-
-		// 			for (i in 0...menuItems.length)
-		// 			{
-		// 				var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
-		// 				songText.isMenuItem = true;
-		// 				songText.targetY = i;
-		// 				grpMenuShit.add(songText);
-		// 			}
-
-		// 			changeSelection();
-
-		// 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-		// 			offsetChanged = true;
-		// 		}
-		// 	}
-		// #end
+		}
 
 		if (accepted)
 		{
@@ -186,22 +162,25 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
-					if(PlayState.loadRep)
-					{
-						FlxG.save.data.botplay = false;
-						FlxG.save.data.scrollSpeed = 1;
-						FlxG.save.data.downscroll = false;
-					}
-					PlayState.loadRep = false;
-					
-					if (FlxG.save.data.fpsCap > 290)
-						(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
-					
-					FlxG.switchState(new MainMenuState());
+					quit();
 			}
 		}
 
-	}}
+	}
+}
+	function quit(){
+		if(PlayState.loadRep)
+		{
+			FlxG.save.data.botplay = false;
+			FlxG.save.data.scrollSpeed = 1;
+			FlxG.save.data.downscroll = false;
+		}
+		PlayState.loadRep = false;
+
+		if (FlxG.save.data.fpsCap > 290) (cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
+
+		FlxG.switchState(new MainMenuState());
+	}
 	function countdown(){try{
 		ready = false;
 		var swagCounter:Int = 1;

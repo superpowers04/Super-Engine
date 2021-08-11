@@ -35,6 +35,9 @@ class SearchMenuState extends MusicBeatState
 	var toggleables:Map<String,Bool> = [
 		"search" => true
 	];
+	var buttonText:Map<String,String> = [
+		"Find" => "Find"
+	];
 	
 
 	function addTitleText(str:String = ""){
@@ -71,18 +74,18 @@ class SearchMenuState extends MusicBeatState
 				searchField.maxLength = 81;
 				add(searchField);
 		
-				searchButton = new FlxUIButton(10 + 1152 + 9, 100, "Find", findButton);
+				searchButton = new FlxUIButton(10 + 1152 + 9, 100, buttonText["Find"], findButton);
 				searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
 				searchButton.resize(100, searchField.height);
 				add(searchButton);
 			}
 
 		var infotexttxt:String = "Hold shift to scroll faster";
-		infotext = new FlxText(5, FlxG.height - 40, FlxG.width - 100, infotexttxt, 12);
+		infotext = new FlxText(5, FlxG.height - 40, FlxG.width - 100, infotexttxt, 16);
 		infotext.wordWrap = true;
 		infotext.scrollFactor.set();
 		infotext.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(infotext.width + 900)),Std.int(infotext.height),FlxColor.BLACK);
+		var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(FlxG.width)),Std.int(50),FlxColor.BLACK);
 		blackBorder.alpha = 0.5;
 
 		add(blackBorder);

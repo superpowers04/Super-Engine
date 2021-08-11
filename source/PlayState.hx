@@ -709,7 +709,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 		}
-		if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
+		if (invertedChart && onlinemod.OnlinePlayMenuState.socket == null){ // Invert players if chart is inverted, Does not swap sides, just changes character names
 			var pl:Array<String> = [SONG.player1,SONG.player2];
 			SONG.player1 = pl[1];
 			SONG.player2 = pl[0];
@@ -1187,6 +1187,7 @@ class PlayState extends MusicBeatState
 			gf.dance();
 			boyfriend.dance();
 
+
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
 
@@ -1205,6 +1206,7 @@ class PlayState extends MusicBeatState
 			{
 				case 0:
 					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
+			
 				case 1:
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 					ready.scrollFactor.set();

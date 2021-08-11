@@ -54,30 +54,30 @@ class MultiMenuState extends onlinemod.OfflineMenuState
         if (search == "" || query.match(directory.toLowerCase())) // Handles searching
         {
         if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
-
-          modes[i] = [];
-          for (file in FileSystem.readDirectory(dataDir + directory))
-          {
-              if (!blockedFiles.contains(file.toLowerCase()) && StringTools.endsWith(file, '.json')){
-                modes[i].push(file);
-              }
+            modes[i] = [];
+            for (file in FileSystem.readDirectory(dataDir + directory))
+            {
+                if (!blockedFiles.contains(file.toLowerCase()) && StringTools.endsWith(file, '.json')){
+                  modes[i].push(file);
+                }
+            }
+            if (modes[i][0] == null){ // No charts to load!
+              modes[i][0] = "No charts for this song!";
+            }
+            songs.push(dataDir + directory);
+            songNames.push(directory);
+                
+            var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
+            controlLabel.isMenuItem = true;
+            controlLabel.targetY = i;
+            if (i != 0)
+              controlLabel.alpha = 0.6;
+            grpSongs.add(controlLabel);
+            i++;
           }
-          if (modes[i][0] == null){ // No charts to load!
-            modes[i][0] = "No charts for this song!";
-          }
-          songs.push(dataDir + directory);
-          songNames.push(directory);
-              
-          var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
-          controlLabel.isMenuItem = true;
-          controlLabel.targetY = i;
-          if (i != 0)
-            controlLabel.alpha = 0.6;
-          grpSongs.add(controlLabel);
-          i++;
         }
       }
-    }}else{
+    }else{
       MainMenuState.handleError('"/mods/charts" does not exist!');
     }
   }
