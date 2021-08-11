@@ -1,7 +1,12 @@
 0.3.0;
-- Some support for Osu! Beatmaps
+- WIP support for Osu! Beatmaps
 - An WIP option for importing from other mods
 - Downscroll should work again
+- Menu options will now properly show symbols and numbers
+- Holding escape in the pause screen will now go to the main menu
+
 Known bugs:
--Sliders don't work
+-Sliders don't work for Osu beatmaps
 -Game crashes when you search for a song and it doesn't exist in Multi and osu listings
+-Keybind menu doesn't correctly save keyboard binds when saving gamepad binds
+-Voices play during finished screen
