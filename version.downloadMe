@@ -10,3 +10,4 @@ Known bugs:
 -Game crashes when you search for a song and it doesn't exist in Multi and osu listings
 -Keybind menu doesn't correctly save keyboard binds when saving gamepad binds
 -Voices play during finished screen
+-Older mods can't be imported due to them using an older file layout
