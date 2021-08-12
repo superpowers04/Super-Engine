@@ -28,13 +28,13 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.3.0";
+	public static var ver:String = "0.3.1";
 	
 	public static var firstStart:Bool = true;
 
 	public static var nightly:String = "";
 
-	public static var kadeEngineVer:String = "1.5.2" + nightly;
+	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static function handleError(error:String):Void{
