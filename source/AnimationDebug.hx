@@ -48,6 +48,8 @@ class AnimationDebug extends MusicBeatState
 	var characterY:Float = 0;
 	var UI:FlxGroup = new FlxGroup();
 	var tempMessage:FlxText;
+	var offsetTopText:FlxText;
+	var isAbsoluteOffsets:Bool = false;
 	public static var inHelp:Bool = false;
 
 	// var flippedChars:Array<String> = ["pico"];
@@ -95,6 +97,9 @@ class AnimationDebug extends MusicBeatState
 			stageFront.scrollFactor.set(0.9, 0.9);
 			stageFront.active = false;
 			add(stageFront);
+			offsetTopText = new FlxText(30,20,0,'');
+			offsetTopText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
+			offsetTopText.scrollFactor.set();
 			if (charType != 2){
 				gf = new Character(400, 100, "gf",false,2,true);
 				gf.scrollFactor.set(0.95, 0.95);
@@ -121,10 +126,7 @@ class AnimationDebug extends MusicBeatState
 			contText.color = FlxColor.BLACK;
 			contText.scrollFactor.set();
 			// add(contText);
-			var offsetTopText:FlxText = new FlxText(30,20,0,'Current offsets(This is in addition to the existing offsets):');
-			offsetTopText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
-			offsetTopText.scrollFactor.set();
-			// add(offsetTopText);
+
 			UI.add(offsetTopText);
 			UI.add(contText);
 			
@@ -163,8 +165,8 @@ class AnimationDebug extends MusicBeatState
 			dadBG.debugMode = true;
 			dadBG.alpha = 0.75;
 			dadBG.color = 0xFF000000;
-			// dad.x = FlxG.camera.width * 0.2;
-			// dadBG.x = FlxG.camera.width * 0.2;
+			offsetTopText.text = 'Current offsets(Relative, These should be added to your existing ones):';
+			isAbsoluteOffsets = false;
 
 			add(dadBG);
 			add(dad);
@@ -303,17 +305,20 @@ class AnimationDebug extends MusicBeatState
 						charX = 0;charY = 0;
 						dad.offset.set(0,0);
 						dadBG.offset.set(0,0);
+						isAbsoluteOffsets = true;
+						offsetTopText.text = 'Current offsets(Absolute, these replace your existing ones):';
 					case 14: // Write to file
-						var text = 'These are not absolute, you will have to add these to your existing ones unless you unloaded the offsets provided by the character\nExported offsets for ${dad.curCharacter}:\n'
-						+ 'Character Position: [${charX}, ${charY}]';
+						var text = (if(isAbsoluteOffsets) "These are absolute, these should replace the offsets in the config.json." else 'These are not absolute, these should be added to the existing offsets in your config.json.') + (if (dad.clonedChar != dad.curCharacter) ' This character is cloning ${dad.clonedChar}' else '') +
+						'\nExported offsets for ${dad.curCharacter}/Player ${charType + 1}:\n' +
+						if(charX != 0 || charY != 0) '\ncharPos: [${charX}, ${charY}]' else ""; 
 						for (i => v in offset) {
 							var name = i;
 
-							text+='\n"${name}" : [${v[0]}, ${v[1]}]';
+							text+='\n"${name}" : { "player${charType + 1}": [${v[0]}, ${v[1]}] }';
 						}
 						sys.io.File.saveContent(Sys.getCwd() + "offsets.txt",text);
 						FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-						tempMessage = new FlxText(FlxG.width * 0.8,30,0,"Saved to output successfully");
+						tempMessage = new FlxText(FlxG.width * 0.6,30,0,"Saved to output.txt successfully");
 						tempMessage.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.LIME, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 						UI.add(tempMessage);
 						new FlxTimer().start(5, function(tmr:FlxTimer)
@@ -357,13 +362,14 @@ class AnimHelpScreen extends FlxSubState{
 		var controlsText:FlxText = new FlxText(20,145,0,'Controls:'
 		+'\n\nWASD - Note anims'
 		+'\nV - Idle'
-		+'\n*Shift - Miss variant'
-		+'\n*Ctrl - Alt Variant'
-		+'\nArrows - Move Offset, Moves per press for accuracy'
+		+'\n *Shift - Miss variant'
+		+'\n *Ctrl - Alt Variant'
 		+'\nIJKL - Move char, Moves per press for accuracy'
-		+'\n*Shift - Move by 5(Combine with CTRL to move 5)'
-		+'\n*Ctrl - Move by *0.1'
-		+'\n1 - Unloads all offsets from the game or json file, including character position'
+		+'\nArrows - Move Offset, Moves per press for accuracy'
+		+'\n *Shift - Move by 5(Combine with CTRL to move 5)'
+		+'\n *Ctrl - Move by *0.1'
+		+"\n"
+		+'\n1 - Unloads all offsets from the game or json file, including character position.**\n **Making offsets absolute(Meaning they should replace existing offsets your character may have)'
 		+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
 		+'\nR - Reload character'
 		+'\nEscape - Close animation debug');
