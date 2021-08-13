@@ -1,1 +1,154 @@
-{}
+{
+	"aliases":{"boyfriend":"bf"},
+	"characters":{
+		"bf":{
+			"no_antialiasing": false, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
+			"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
+			"dance_idle": false, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
+			"embedded":false,
+			"path":"Skins/BOYFRIEND",
+			"scale": 1, "": "Sprite scale on common stages, online lobby and Character Select screen, Senpai uses 6 while BF-Pixel/Spirit uses 6.6, everyone else uses 1",
+
+			"flip_x": true, "": "Flips X axis from the sprite, useful for Boyfriend/Pico/Tankman clones",
+			"spirit_trail": false, "": "Enables Spirit's visual effect",
+
+			"animations":
+			[
+				{
+					"anim": "Idle",
+					"name": "BF idle dance",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singUP",
+					"name": "BF NOTE UP0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singDOWN",
+					"name": "BF NOTE DOWN0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singRIGHT",
+					"name": "BF NOTE LEFT0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singLEFT",
+					"name": "BF NOTE RIGHT0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singUPmiss",
+					"name": "BF NOTE UP0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singDOWNmiss",
+					"name": "BF NOTE DOWN0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singLEFTmiss",
+					"name": "BF NOTE LEFT0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singRIGHTmiss",
+					"name": "BF NOTE RIGHT0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "hey",
+					"name": "BF HEY",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "scared",
+					"name": "BF idle shaking",
+					"fps": 24,
+					"loop": true,
+					"indices": []
+				}
+				
+			], "": "The idle/sing/miss animations are added automatically with the same values as Boyfriend's, you just have to add animations to this array if you want to edit something or add Hey/Scared animations to it",
+
+			"animations_offsets":
+			[			
+				{
+					"anim": "idle",
+					"player1": [0, 0],
+					"player2": [0, 0]
+				},
+				{
+					"anim": "singUP",
+					"player1": [-45, 25],
+					"player2": [5, 30]
+				},
+				{
+					"anim": "singRIGHT",
+					"player1": [-40, -7],
+					"player2": [-35, -5.5]
+				},
+				{
+					"anim": "singLEFT",
+					"player1": [8, -6],
+					"player2": [40, -5]
+				},
+				{
+					"anim": "singDOWN",
+					"player1": [-20, -50],
+					"player2": [-20, -50]
+				},
+				{
+					"anim": "singUPmiss",
+					"player1": [-41, 25],
+					"player2": [1, 30]
+				},
+				{
+					"anim": "singRIGHTmiss",
+					"player1": [-34, 21],
+					"player2": [-35.8, 20.5]
+				},
+				{
+					"anim": "singLEFTmiss",
+					"player1": [8, 20],
+					"player2": [40, 23]
+				},
+				{
+					"anim": "singDOWNmiss",
+					"player1": [-20, -20],
+					"player2": [-20, -20]
+				}
+			],
+
+			"hey_anim": "hey", "": "Which animation should it use for the Bopeebo 'Hey!'",
+			"scared_anim": "scared", "": "Which animation should it use for Spooky Month stage scare",
+
+			"common_stage_offset": [0, 0, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
+			"char_pos": [0, -300], "": "Your character's position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the camera position",
+			"cam_pos": [0, 0], "": "Your character's camera position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the char position"
+		}
+	}
+}
