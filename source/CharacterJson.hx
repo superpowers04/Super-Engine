@@ -27,6 +27,8 @@ typedef CharacterJson =
 	var custom_misses:Int;
 	var flip_notes:Bool; // Tells the game if it should flip left and right notes on the right
 
+	var embedded:Bool; // For embedded JSON chars, will not effect custom chars. Tells the game whether to use Lime assets or load them like a custom character
+	var path:String; // For embedded JSON chars, will not effect custom chars. Tells the game the asset to use or the path to load from
 }
 typedef IfStatement = {
 	var	variable:String;
@@ -61,8 +63,5 @@ typedef CharJsonAnimOffsets ={
 	var anim:String;
 	var player1:Array<Float>;
 	var player2:Array<Float>;
-}
-
-typedef CharacterMetadataJSON = { // :eye: :lips :eye:
-	var characters:Map<String,CharacterJson>;
+	var player3:Array<Float>;
 }

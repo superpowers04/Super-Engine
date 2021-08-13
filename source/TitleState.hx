@@ -29,7 +29,6 @@ import sys.FileSystem;
 using StringTools;
 
 
-
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
@@ -45,6 +44,7 @@ class TitleState extends MusicBeatState
 	public static var choosableStagesLower:Map<String,String> = [];
 	public static var choosableCharactersLower:Map<String,String> = [];
 	public static var characterDescriptions:Map<String,String> = [];
+	public static var defCharJson:CharacterMetadataJSON = {characters:[], aliases:[]};
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;
 	public static var supported:Bool = false;
@@ -107,6 +107,13 @@ class TitleState extends MusicBeatState
 			choosableCharacters.push(char);
 			choosableCharactersLower[char.toLowerCase()] = char;
 		}
+		var rawJson = Assets.getText('assets/data/characterMetadata.json');
+		// trace('Char Json: \n${rawJson}');
+		TitleState.defCharJson = haxe.Json.parse(rawJson);
+		if (defCharJson == null || TitleState.defCharJson.characters == null || TitleState.defCharJson.aliases == null) {defCharJson = {
+			characters:[],
+			aliases:[]
+		};trace("Character characterMetadata is null!");}
 		#end
 		checkStages();
 	}
@@ -158,7 +165,6 @@ class TitleState extends MusicBeatState
 		if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays"))
 			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");
 		#end
-
 		@:privateAccess
 		{
 			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");

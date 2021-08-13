@@ -1,13 +1,4 @@
-0.3.0;
-- WIP support for Osu! Beatmaps
-- An WIP option for importing from other mods
-- Downscroll should work again
-- Menu options will now properly show symbols and numbers
-- Holding escape in the pause screen will now go to the main menu
-
-Known bugs:
--Sliders don't work for Osu beatmaps
--Game crashes when you search for a song and it doesn't exist in Multi and osu listings
--Keybind menu doesn't correctly save keyboard binds when saving gamepad binds
--Voices play during finished screen
--Older mods can't be imported due to them using an older file layout
+0.3.1;
+- An overhaul to how characters are loaded
+- Player 3 can be used on animation offsets for GF
+- Improvements to the animation debug

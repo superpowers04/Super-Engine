@@ -30,8 +30,8 @@ class EmptyCharacter extends Character
 	{
 		super.lonely = true;
 		super(x, y);
-		animOffsets = new Map<String, Array<Dynamic>>();
-		animOffsets['all'] = [0, 0];
+		animOffsets = new Map<String, Array<Float>>();
+		animOffsets['all'] = [0.0, 0.0];
 		character = "lonely";
 
 		curCharacter = character;

@@ -709,11 +709,11 @@ class PlayState extends MusicBeatState
 					}
 				}
 		}
-		if (invertedChart && onlinemod.OnlinePlayMenuState.socket == null){ // Invert players if chart is inverted, Does not swap sides, just changes character names
-			var pl:Array<String> = [SONG.player1,SONG.player2];
-			SONG.player1 = pl[1];
-			SONG.player2 = pl[0];
-		}
+		// if (invertedChart && onlinemod.OnlinePlayMenuState.socket == null){ // Invert players if chart is inverted, Does not swap sides, just changes character names
+		// 	var pl:Array<String> = [SONG.player1,SONG.player2];
+		// 	SONG.player1 = pl[1];
+		// 	SONG.player2 = pl[0];
+		// }
 		var gfVersion:String = 'gf';
 
 		switch (SONG.gfVersion)
@@ -1578,6 +1578,9 @@ class PlayState extends MusicBeatState
 	var finished = false;
 
 	function finishSong(?win=true):Void{
+		
+		FlxG.camera.zoom = defaultCamZoom;
+		camHUD.zoom = 1;
 		if (finished) return;
 		finished = true;
 		PlayState.dadShow = true; // Reenable this to prevent issues later
