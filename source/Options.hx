@@ -912,10 +912,11 @@ class ReloadCharlist extends Option
 }
 class InputHandlerOption extends Option
 {
-	var ies:Array<String> = ["Kade","Omega"];
+	var ies:Array<String> = ["Kade"];
 	public function new(desc:String)
 	{
 		super();
+		if (FlxG.save.data.inputHandler >= ies.length) FlxG.save.data.inputHandler = 0;
 		description = desc;
 	}
 
