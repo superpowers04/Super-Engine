@@ -70,7 +70,8 @@ class OptionsMenu extends MusicBeatState
 			#end
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			// new WatermarkOption("Enable and disable all watermarks from the engine."), This doesn't seem to actually do anything
-			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF")
+			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF"),
+			new PlayVoicesOption("Plays your character's voices when you press a note.")
 		]),
 		new OptionCategory("Preformance", [
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),

@@ -26,11 +26,6 @@ class OfflineMenuState extends SearchMenuState
   var optionsButton:FlxUIButton;
   var invertedChart:Bool = false;
 
-  function updateSideButton(){
-    
-    sideButton.setLabel(new FlxUIText(0,0,(PlayState.invertedChart ? "Deswap":"Swap") + " Chart"));
-    sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-  }
   function goOptions(){
       FlxG.mouse.visible = false;
       OptionsMenu.lastState = 3;
@@ -46,14 +41,12 @@ class OfflineMenuState extends SearchMenuState
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(150, 30);
     add(optionsButton);
-    sideButton = new FlxUIButton(1050, 160, "", () -> {
-      PlayState.invertedChart = !PlayState.invertedChart;
-      updateSideButton();
+    sideButton = new FlxUIButton(1050, 160, "Chart Options", () -> {
+      openSubState(new QuickOptionsSubState(0,0));
     });
     sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-    sideButton.resize(200, 30);
+    sideButton.resize(150, 60);
     add(sideButton);
-    updateSideButton();
   }
   override function reloadList(?reload=false,?search = ""){
     curSelected = 0;

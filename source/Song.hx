@@ -76,25 +76,44 @@ class Song
 		return parseJSONshit(rawJson);
 	}
 
+	static function invertChart(swagShit:SwagSong):SwagSong{
+		var invertedNotes:Array<Int> = [4,5,6,7,0,1,2,3];
+		for (sid => section in swagShit.notes) {
+			// for (nid => note in section.sectionNotes){
+			// 	note[1] = invertedNotes[note[1]];
+			// 	swagShit.notes[sid].sectionNotes[nid] = note;
+			// }
+			section.mustHitSection = !section.mustHitSection;
+			swagShit.notes[sid] = section;
+		}
+		// swagShit.defplayer1 = swagShit.player2;
+		// swagShit.defplayer2 = swagShit.player1;
+		return swagShit;
+	}
+	static function removeOpponentArrows(swagShit:SwagSong):SwagSong{
+		var oppNotes:Array<Int> = [4,5,6,7];
+		var invertedNotes:Array<Int> = [0,1,2,3];
+
+		for (sid => section in swagShit.notes) {
+			for (nid => note in section.sectionNotes){
+				if (!section.mustHitSection && invertedNotes.contains(note[1]) || section.mustHitSection && oppNotes.contains(note[1])) continue;
+				swagShit.notes[sid].sectionNotes[nid] = null;
+			}
+		}
+		return swagShit;
+	}
+
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
 		swagShit.defplayer1 = swagShit.player1;
 		swagShit.defplayer2 = swagShit.player2;
-		if (PlayState.invertedChart){
-			var invertedNotes:Array<Int> = [4,5,6,7,0,1,2,3];
-			for (sid => section in swagShit.notes) {
-				// for (nid => note in section.sectionNotes){
-				// 	note[1] = invertedNotes[note[1]];
-				// 	swagShit.notes[sid].sectionNotes[nid] = note;
-				// }
-				section.mustHitSection = !section.mustHitSection;
-				swagShit.notes[sid] = section;
-			}
-			swagShit.defplayer1 = swagShit.player2;
-			swagShit.defplayer2 = swagShit.player1;
+		if (PlayState.invertedChart || QuickOptionsSubState.getSetting("Inverted chart")) swagShit = invertChart(swagShit);
+		if (onlinemod.OnlinePlayMenuState.socket == null){
+			if (!QuickOptionsSubState.getSetting("Opponent Arrows")) swagShit = removeOpponentArrows(swagShit);
 		}
+
 		swagShit.defgf = swagShit.gfVersion;
 		return swagShit;
 	}

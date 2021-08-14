@@ -53,6 +53,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import flash.media.Sound;
 
 import sys.io.File;
 import flash.display.BitmapData;
@@ -224,6 +225,7 @@ class PlayState extends MusicBeatState
 	public static var beatAnimEvents:Map<Int,Map<String,IfStatement>>;
 	public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
 	public static var canUseAlts:Bool = false;
+	public static var hitSoundEff:Sound;
 
 	var hitSound:Bool = false;
 
@@ -982,6 +984,8 @@ class PlayState extends MusicBeatState
 		// UI_camera.zoom = 1;
 
 		// cameras = [FlxG.cameras.list[1]];
+		if(hitSound) hitSoundEff = Sound.fromFile(Paths.sound('Normal_Hit'));
+
 		startingSong = true;
 		
 		if (isStoryMode)
@@ -2120,7 +2124,7 @@ class PlayState extends MusicBeatState
 			if (daRating != 'shit' || daRating != 'bad')
 				{
 	
-	
+			
 			songScore += Math.round(score);
 			songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
 	
@@ -2901,7 +2905,7 @@ class PlayState extends MusicBeatState
 						totalNotesHit += 1;
 					
 
-					if(hitSound && !note.isSustainNote) FlxG.sound.play(Paths.sound('Normal_Hit'),1);
+					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,1);
 
 					switch (note.noteData)
 					{
@@ -2929,7 +2933,7 @@ class PlayState extends MusicBeatState
 					});
 					
 					note.wasGoodHit = true;
-					vocals.volume = 1;
+					if (boyfriend.useVoices){FlxG.sound.play(boyfriend.voiceSounds[note.noteData], 0.7);vocals.volume = 0;}else vocals.volume = 1;
 		
 					note.kill();
 					notes.remove(note, true);
@@ -2940,58 +2944,6 @@ class PlayState extends MusicBeatState
 			}
 		
 
-	function psychGoodNote(note:Note, ?resetMashViolation = true):Void
-	{
-		if (!note.wasGoodHit)
-		{
-			if (!note.isSustainNote)
-			{
-				popUpScore(note);
-				combo += 1;
-			}
-
-			if (note.noteData >= 0)
-				health += 0.023;
-			else
-				health += 0.004;
-
-			if(hitSound && !note.isSustainNote) FlxG.sound.play(Paths.sound('Normal_Hit'),1);
-
-
-
-
-			switch (note.noteData)
-			{
-				case 0:
-					boyfriend.playAnim('singLEFT', true);
-				case 1:
-					boyfriend.playAnim('singDOWN', true);
-				case 2:
-					boyfriend.playAnim('singUP', true);
-				case 3:
-					boyfriend.playAnim('singRIGHT', true);
-			}
-			
-
-			playerStrums.forEach(function(spr:FlxSprite)
-			{
-				if (Math.abs(note.noteData) == spr.ID)
-				{
-					spr.animation.play('confirm', true);
-				}
-			});
-
-			note.wasGoodHit = true;
-			vocals.volume = 1;
-
-			if (!note.isSustainNote)
-			{
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			}
-		}
-	}
 
 
 	var fastCarCanDrive:Bool = true;
