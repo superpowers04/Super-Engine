@@ -42,7 +42,9 @@ class Character extends FlxSprite
 	public var dance_idle:Bool = false;
 	public var amPreview:Bool = false;
 	public var useMisses:Bool = false;
+	public var useVoices:Bool = false;
 	public var missSounds:Array<Sound> = [];
+	public var voiceSounds:Array<Sound> = [];
 	public var oneShotAnims:Array<String> = ["hey"];
 	public var tintedAnims:Array<String> = [];
 	public var flip:Bool = true;
@@ -424,6 +426,11 @@ class Character extends FlxSprite
 				case 2: // Custom misses using Predefined sound names
 					useMisses = true;
 					missSounds = [Sound.fromFile('mods/characters/$curCharacter/miss_left.ogg'), Sound.fromFile('mods/characters/$curCharacter/miss_down.ogg'), Sound.fromFile('mods/characters/$curCharacter/miss_up.ogg'),Sound.fromFile('mods/characters/$curCharacter/miss_right.ogg')];
+			}
+			if (FlxG.save.data.playVoices && charProperties.voices == "custom") {
+				useVoices = true;
+				voiceSounds = [Sound.fromFile('mods/characters/$curCharacter/custom_left.ogg'), Sound.fromFile('mods/characters/$curCharacter/custom_down.ogg'), Sound.fromFile('mods/characters/$curCharacter/custom_up.ogg'),Sound.fromFile('mods/characters/$curCharacter/custom_right.ogg')];
+
 			}
 		}
 		 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle

@@ -1086,3 +1086,23 @@ class ShowGFOption extends Option
 		return "Girlfriend " + (!FlxG.save.data.gfShow ? "off" : "on");
 	}
 }
+class PlayVoicesOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.playVoices = !FlxG.save.data.playVoices;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Play voices " + (!FlxG.save.data.playVoices ? "off" : "on");
+	}
+}
