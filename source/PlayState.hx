@@ -929,7 +929,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.downscroll)
 			kadeEngineWatermark.y = FlxG.height * 0.9 + 45 + FlxG.save.data.guiGap;
 
-		scoreTxt = new FlxText(FlxG.width / 2 - 350, healthBarBG.y + 50 - FlxG.save.data.guiGap, 0, "", 20);
+		scoreTxt = new FlxText(FlxG.width / 2 - 350, healthBarBG.y + 30 - FlxG.save.data.guiGap, 0, "", 20);
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -937,8 +937,7 @@ class PlayState extends MusicBeatState
 		if (offsetTesting)
 			scoreTxt.x += 300;
 		if(FlxG.save.data.botplay) scoreTxt.x = FlxG.width / 2 - 250;													  
-		add(scoreTxt);
-
+		
 		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0, "REPLAY", 20);
 		replayTxt.setFormat(Paths.font("vcr.ttf"), 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		replayTxt.scrollFactor.set();
@@ -1038,6 +1037,7 @@ class PlayState extends MusicBeatState
 			rep = new Replay("na");
 		
 		setInputHandlers(); // Sets all of the handlers for input
+		add(scoreTxt);
 		super.create();
 	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
 

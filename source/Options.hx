@@ -729,7 +729,7 @@ class CharAutoOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return (!FlxG.save.data.charAuto ? "Use selected opponent" : "Try to use the songs Opponent");
+		return (!FlxG.save.data.charAuto ? "Use selected opponent" : "Use songs opponent when available");
 	}
 }
 class AnimDebugOption extends Option
@@ -912,7 +912,7 @@ class ReloadCharlist extends Option
 }
 class InputHandlerOption extends Option
 {
-	var ies:Array<String> = ["Kade"];
+	var ies:Array<String> = ["Kade","FPSPlus"];
 	public function new(desc:String)
 	{
 		super();
