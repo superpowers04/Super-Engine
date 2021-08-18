@@ -62,29 +62,18 @@ class NoteSplash extends FlxSprite
     	animation.addByPrefix("note3-1", "note impact 2 red", 24, false);
     }
 
-    public function setupNoteSplash(xPos:Float, yPos:Float, note:Int)
+    public function setupNoteSplash(xPos:Float, yPos:Float,?note:Int = 0)
     {
-    	if(note == 0)
-    	{
-    		note = 0;
-    	}
     	x = xPos;
     	y = yPos;
     	alpha = 0.6;
     	animation.play("note" + note + "-" + FlxG.random.int(0, 1), true);
-    	var a:FlxAnimation = animation.curAnim;
-    	a.frameRate = a.frameRate + FlxG.random.int(-2, 2);
+    	animation.curAnim.frameRate = animation.curAnim.frameRate + FlxG.random.int(0, 2);
+        animation.finishCallback = finished;
     	updateHitbox();
     	offset.set(0.3 * width, 0.3 * height);
     }
-
-    override public function update(elapsed:Float)
-    {
-    	
-    	if(animation.curAnim.finished == true)
-    	{
-    		kill();
-    	}
-    	super.update(elapsed);
+    function finished(name:String){
+        kill();
     }
 }
