@@ -118,7 +118,7 @@ class PlayState extends MusicBeatState
 	public var strumLine:FlxSprite;
 	private var curSection:Int = 0;
 
-	private var camFollow:FlxObject;
+	public var camFollow:FlxObject;
 
 	private static var prevCamFollow:FlxObject;
 
@@ -1599,7 +1599,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.volume = 0;
 		this.vocals.volume = 0;
 
-		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
+		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win,camFollow));
 		
 	}
 
@@ -1831,49 +1831,13 @@ class PlayState extends MusicBeatState
 			PlayState.canUseAlts = (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim);
 			if (FlxG.save.data.camMovement){
 				if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
-				{
-					var offsetX = 0;
-					var offsetY = 0;
-					camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX+ dad.camX, dad.getMidpoint().y - 100 + offsetY + dad.camY);
-					// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
-
-					switch (dad.curCharacter)
-					{
-						case 'mom':
-							camFollow.y = dad.getMidpoint().y;
-						case 'senpai':
-							camFollow.y = dad.getMidpoint().y - 430;
-							camFollow.x = dad.getMidpoint().x - 100;
-						case 'senpai-angry':
-							camFollow.y = dad.getMidpoint().y - 430;
-							camFollow.x = dad.getMidpoint().x - 100;
-					}
-
-					if (dad.curCharacter == 'mom')
-						vocals.volume = 1;
-				}
+				{followChar(1);}
 
 				if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
-				{
-					var offsetX = 0;
-					var offsetY = 0;
-
-					camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX+ boyfriend.camX, boyfriend.getMidpoint().y - 100 + offsetY+ boyfriend.camY);
-
-
-					switch (curStage)
-					{
-						case 'limo':
-							camFollow.x = boyfriend.getMidpoint().x - 300;
-						case 'mall':
-							camFollow.y = boyfriend.getMidpoint().y - 200;
-					}
-				}
-				if (camZooming)
-				{
-					FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-					camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
-				}
+				{followChar();}
+				FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
+				camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+				
 			}else{
 				FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 				camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
@@ -1947,6 +1911,49 @@ class PlayState extends MusicBeatState
 	}catch(e){MainMenuState.handleError('Caught "update" crash: ${e.message}');}
 	#end
 }
+
+	public function followChar(?char:Int = 0){
+		switch (char) {
+			case 1:{
+				var offsetX = 0;
+				var offsetY = 0;
+				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX+ dad.camX, dad.getMidpoint().y - 100 + offsetY + dad.camY);
+				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+
+				switch (dad.curCharacter)
+				{
+					case 'mom':
+						camFollow.y = dad.getMidpoint().y;
+					case 'senpai':
+						camFollow.y = dad.getMidpoint().y - 430;
+						camFollow.x = dad.getMidpoint().x - 100;
+					case 'senpai-angry':
+						camFollow.y = dad.getMidpoint().y - 430;
+						camFollow.x = dad.getMidpoint().x - 100;
+				}
+
+				if (dad.curCharacter == 'mom')
+					vocals.volume = 1;}
+			default:
+				{
+					var offsetX = 0;
+					var offsetY = 0;
+
+					camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX+ boyfriend.camX, boyfriend.getMidpoint().y - 100 + offsetY+ boyfriend.camY);
+
+
+					switch (curStage)
+					{
+						case 'limo':
+							camFollow.x = boyfriend.getMidpoint().x - 300;
+						case 'mall':
+							camFollow.y = boyfriend.getMidpoint().y - 200;
+					}
+				}
+
+		}
+	}
+
 
 	function endSong():Void
 	{

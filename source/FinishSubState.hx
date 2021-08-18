@@ -15,6 +15,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.FlxObject;
 
 class FinishSubState extends MusicBeatSubstate
 {
@@ -25,29 +26,47 @@ class FinishSubState extends MusicBeatSubstate
 	
 	var offsetChanged:Bool = false;
 	var win:Bool = true;
-
-	public function new(x:Float, y:Float,?win = true)
+	var ready = false;
+	var camFollow:FlxObject;
+	public function new(x:Float, y:Float,?won = true,?camFollow:FlxObject)
 	{
 
 		FlxG.state.persistentUpdate = true;
+		win = won;
+		FlxG.sound.pause();
+		var dad = PlayState.dad;
+		var boyfriend = PlayState.boyfriend;
 		if(win){
-			PlayState.boyfriend.playAnim("hey",true);
-			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) PlayState.dad.playAnim('cheer'); else PlayState.dad.playAnim('singDOWNmiss');
+			boyfriend.playAnim("hey",true);
+			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('cheer'); else dad.playAnim('singDOWNmiss');
 			PlayState.gf.playAnim('cheer',true);
 		}else{
-			PlayState.boyfriend.playAnim('singDOWNmiss');
-			PlayState.dad.playAnim("hey",true);
-			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) PlayState.dad.playAnim('sad'); else PlayState.dad.playAnim("hey");
+			boyfriend.playAnim('singDOWNmiss');
+			dad.playAnim("hey",true);
+			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('sad'); else dad.playAnim("hey");
 			PlayState.gf.playAnim('sad',true);
 		}
 		super();
-		new FlxTimer().start(0.2, function(tmr:FlxTimer) // Litterally just here because sometimes the game doesn't stop music properly or anything
-		{
+		if (win) boyfriend.animation.finishCallback = this.finishNew; else dad.animation.finishCallback = this.finishNew;
+		if (FlxG.save.data.camMovement && camFollow != null){
+			PlayState.instance.followChar(if(win) 0 else 1);
+		}
+	}
+
+	public function finishNew(?name:String){
+
+			if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
+			ready = true;
 			FlxG.state.persistentUpdate = false;
 			FlxG.sound.pause();
 
-			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
-			music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
+			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'StartItchBuild' else 'gameOver'), true, true);
+			music.play(false);
+			if(win){
+				music.looped = false;
+				music.onComplete = function(){music = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);music.play(false);} 
+
+			}
 
 			FlxG.sound.list.add(music);
 
@@ -92,39 +111,40 @@ class FinishSubState extends MusicBeatSubstate
 			FlxTween.tween(settingsText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
 
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
-		}, 1);
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		if (ready){
+			var upP = controls.UP_P;
+			var downP = controls.DOWN_P;
+			var leftP = controls.LEFT_P;
+			var rightP = controls.RIGHT_P;
+			var accepted = controls.ACCEPT;
+			var oldOffset:Float = 0;
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-		var rightP = controls.RIGHT_P;
-		var accepted = controls.ACCEPT;
-		var oldOffset:Float = 0;
 
-
-		if (accepted)
-		{
-			if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
-			PlayState.actualSongName = ""; // Reset to prevent issues
-			switch (PlayState.stateType)
+			if (accepted)
 			{
-				case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
-				case 4:FlxG.switchState(new multi.MultiMenuState());
-				case 5:FlxG.switchState(new osu.OsuMenuState());
-					
+				if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
+				PlayState.actualSongName = ""; // Reset to prevent issues
+				switch (PlayState.stateType)
+				{
+					case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+					case 4:FlxG.switchState(new multi.MultiMenuState());
+					case 5:FlxG.switchState(new osu.OsuMenuState());
+						
 
-				default:FlxG.switchState(new FreeplayState());
+					default:FlxG.switchState(new FreeplayState());
+				}
+				return;
 			}
-			return;
+
+			if (FlxG.keys.justPressed.R)
+			{if(win){FlxG.resetState();}else{restart();}}
 		}
 
-		if (FlxG.keys.justPressed.R)
-		{if(win){FlxG.resetState();}else{restart();}}
 	}
 	function restart()
 	{

@@ -281,6 +281,7 @@ class Character extends FlxSprite
 			else
 				addOffset(offset.anim,offset.player1[0],offset.player1[1]);
 		}	
+
 		switch(charType){
 			case 0: if (charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
 			case 1: if (charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
@@ -295,6 +296,8 @@ class Character extends FlxSprite
 			camX+=charProperties.common_stage_offset[0];
 			camY-=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
 		}
+		if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
+		if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 		trace('Loaded ${offsetCount} offsets!');
 
 	}
@@ -326,8 +329,7 @@ class Character extends FlxSprite
 
 		if (charProperties.flip_notes) flipNotes = charProperties.flip_notes;
 
-		if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
-		if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
+
 		
 		trace('Loading Animations!');
 		var animCount = 0;
