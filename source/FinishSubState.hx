@@ -47,7 +47,7 @@ class FinishSubState extends MusicBeatSubstate
 			PlayState.gf.playAnim('sad',true);
 		}
 		super();
-		if (win) boyfriend.animation.finishCallback = this.finishNew; else dad.animation.finishCallback = this.finishNew;
+		if (win) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 		if (FlxG.save.data.camMovement && camFollow != null){
 			PlayState.instance.followChar(if(win) 0 else 1);
 		}
@@ -113,6 +113,21 @@ class FinishSubState extends MusicBeatSubstate
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
 	}
 
+	public static function retMenu(){
+		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
+		PlayState.actualSongName = ""; // Reset to prevent issues
+		switch (PlayState.stateType)
+		{
+			case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+			case 4:FlxG.switchState(new multi.MultiMenuState());
+			case 5:FlxG.switchState(new osu.OsuMenuState());
+				
+
+			default:FlxG.switchState(new FreeplayState());
+		}
+		return;
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -127,18 +142,7 @@ class FinishSubState extends MusicBeatSubstate
 
 			if (accepted)
 			{
-				if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
-				PlayState.actualSongName = ""; // Reset to prevent issues
-				switch (PlayState.stateType)
-				{
-					case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
-					case 4:FlxG.switchState(new multi.MultiMenuState());
-					case 5:FlxG.switchState(new osu.OsuMenuState());
-						
-
-					default:FlxG.switchState(new FreeplayState());
-				}
-				return;
+				retMenu();
 			}
 
 			if (FlxG.keys.justPressed.R)

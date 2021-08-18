@@ -41,7 +41,7 @@ class Note extends FlxSprite
 
 	public var rating:String = "shit";
 
-	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false)
+	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false)
 	{
 		super();
 		if (FlxG.save.data.downscroll) offscreenY = 50;
@@ -50,7 +50,7 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		shouldntBeHit = (_noteData > 7 || (isSustainNote && prevNote.shouldntBeHit)) && onlinemod.OnlinePlayMenuState.socket == null;
+		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || _shouldntBeHit);
 
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?

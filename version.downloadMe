@@ -1,9 +1,4 @@
-0.4.0;
-- An overhaul to how characters are loaded
-- Characters can now use custom voices
-- Hitsounds were optimised and use Osu!Mania sounds(A custom hitsound.ogg can be placed in your mods folder)
-- Hurt arrows(Only works with Tricky arrows at the moment)
-- Player 3 can be used on animation offsets for GF
-- Improvements to the animation debug
-- Voices nolonger play during finished state
-- Some quality of life improvements
+0.4.1;
+- Hurt arrows from VSOmega and Tricky now make you lose 1000 points from score and will lose 30 health offline
+- Fixed the game crashing after playing a song
+- Boot to where the song was chosen from when exiting to the menu from the pause screen

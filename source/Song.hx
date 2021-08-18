@@ -80,6 +80,22 @@ class Song
 		}
 		return swagShit;
 	}
+	static function removeHurtArrows(swagShit:SwagSong):SwagSong{
+		for (sid => section in swagShit.notes) {
+			for (nid => note in section.sectionNotes){
+				swagShit.notes[sid].sectionNotes[nid][3] = 0;
+			}
+		}
+		return swagShit;
+	}
+	static function convHurtArrows(swagShit:SwagSong):SwagSong{ // Support for Andromeda and tricky notes
+		for (sid => section in swagShit.notes) {
+			for (nid => note in section.sectionNotes){
+				if(note[4] == 1 || note[1] > 7) {swagShit.notes[sid].sectionNotes[nid][3] = 1;}
+			}
+		}
+		return swagShit;
+	}
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
@@ -88,10 +104,11 @@ class Song
 		swagShit.defplayer1 = swagShit.player1;
 		swagShit.defplayer2 = swagShit.player2;
 		if (PlayState.invertedChart || QuickOptionsSubState.getSetting("Inverted chart")) swagShit = invertChart(swagShit);
+		if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null)swagShit = convHurtArrows(swagShit);
 		if (onlinemod.OnlinePlayMenuState.socket == null){
 			if (!QuickOptionsSubState.getSetting("Opponent Arrows")) swagShit = removeOpponentArrows(swagShit);
+			if (!QuickOptionsSubState.getSetting("Hurt notes")) swagShit = removeHurtArrows(swagShit);
 		}
-
 		swagShit.defgf = swagShit.gfVersion;
 		return swagShit;
 	}

@@ -21,7 +21,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	public static var settings:Map<String,Bool> = ["Inverted chart" => false,"Opponent Arrows" => true];
+	public static var settings:Map<String,Bool> = ["Inverted chart" => false,"Opponent Arrows" => true,"Hurt notes" => true];
 	var menuItems:Array<String> = [];
 	var curSelected:Int = 0;
 	public static function getSetting(str:String){

@@ -99,7 +99,6 @@ class Ratings
 
         if (customSafeZone != null)
             customTimeScale = customSafeZone / 166;
-
 	    
         if (noteDiff > 166 * customTimeScale) // so god damn early its a miss
             return "miss";

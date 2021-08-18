@@ -227,6 +227,7 @@ class PlayState extends MusicBeatState
 	public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
 	public static var canUseAlts:Bool = false;
 	public static var hitSoundEff:Sound;
+	public static var hurtSoundEff:Sound;
 	public var inputMode:Int = 0;
 	var inputEngineName:String = "Unspecified";
 
@@ -989,6 +990,8 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		if(hitSound && hitSoundEff == null) hitSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hitSound.ogg')) 'mods/hitSound.ogg' else Paths.sound('Normal_Hit')));
 
+		if(hurtSoundEff == null) hitSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hurtSound.ogg')) 'mods/hurtSound.ogg' else Paths.sound('ANGRY')));
+
 		startingSong = true;
 		
 		if (isStoryMode)
@@ -1394,7 +1397,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,null,null,songNotes[3] == 1);
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -1407,7 +1410,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
+					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,null,songNotes[3] == 1);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -2566,7 +2569,7 @@ class PlayState extends MusicBeatState
 								daNote.kill();
 								notes.remove(daNote, true);
 							}
-							else
+							else if (!daNote.shouldntBeHit)
 							{
 								health -= 0.075;
 								vocals.volume = 0;
@@ -3012,7 +3015,7 @@ class PlayState extends MusicBeatState
 								daNote.kill();
 								notes.remove(daNote, true);
 							}
-							else
+							else if (!daNote.shouldntBeHit)
 							{
 								health -= 0.075;
 								vocals.volume = 0;
@@ -3266,14 +3269,16 @@ class PlayState extends MusicBeatState
 		if(daNote != null && daNote.shouldntBeHit && !forced) return;
 		
 		if(daNote != null && forced && daNote.shouldntBeHit){ // Only true on hurt arrows
-				daNote.kill();
-				notes.remove(daNote, true);
-				daNote.destroy();
+			daNote.kill();
+			notes.remove(daNote, true);
+			daNote.destroy();
+			FlxG.sound.play(hitSoundEff, 1);
+
 		}
 		if (!boyfriend.stunned)
 		{
+			if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 1);}else{FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));}
 			health -= 0.04;
-			if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 0.7);}else{FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));}
 			switch (direction)
 			{
 				case 0:
@@ -3297,8 +3302,7 @@ class PlayState extends MusicBeatState
 				totalNotesHit -= 1;
 
 			songScore -= 10;
-			if (daNote != null && daNote.shouldntBeHit) {songScore -= 290; health -= 0.16;} // Having it insta kill, not a good idea 
-
+			if (daNote != null && daNote.shouldntBeHit) {songScore -= 990; health -= 0.26;} // Having it insta kill, not a good idea 
 
 
 
