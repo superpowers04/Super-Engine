@@ -208,7 +208,7 @@ class OnlinePlayState extends PlayState
 				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
 				if (daStrumTime < 0)
 					daStrumTime = 0;
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
+				var daNoteData:Int = songNotes[1];
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
@@ -277,9 +277,9 @@ class OnlinePlayState extends PlayState
     SendScore();
   }
 
-  override function noteMiss(direction:Int = 1, daNote:Note,?type:Int = 0):Void
+  override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
   {
-    super.noteMiss(direction, daNote,type);
+    super.noteMiss(direction, daNote,forced);
 
     SendScore();
   }

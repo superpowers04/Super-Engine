@@ -100,15 +100,6 @@ class Ratings
         if (customSafeZone != null)
             customTimeScale = customSafeZone / 166;
 
-        // trace(customTimeScale + ' vs ' + Conductor.timeScale);
-
-        // I HATE THIS IF CONDITION
-        // IF LEMON SEES THIS I'M SORRY :(
-
-        // trace('Hit Info\nDifference: ' + noteDiff + '\nZone: ' + Conductor.safeZoneOffset * 1.5 + "\nTS: " + customTimeScale + "\nLate: " + 155 * customTimeScale);
-
-	// if (FlxG.save.data.botplay)
-	//     return "good"; // FUNNY
 	    
         if (noteDiff > 166 * customTimeScale) // so god damn early its a miss
             return "miss";

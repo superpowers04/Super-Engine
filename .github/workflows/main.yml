@@ -72,9 +72,13 @@ jobs:
                 C:/fnfbrbin/windows/bin/mods
                 C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets.xml
                 C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets.png
+                C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets_bad.xml
+                C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets_bad.png
                 C:/fnfbrbin/windows/bin/assets/shared/images/noteSplashes.xml
                 C:/fnfbrbin/windows/bin/assets/shared/images/noteSplashes.png
+                C:/fnfbrbin/windows/bin/assets/music
                 C:/fnfbrbin/windows/bin/assets/images/onlinemod
                 C:/fnfbrbin/windows/bin/assets/data/introText.txt
+                C:/fnfbrbin/windows/bin/assets/data/characterMetadata.json
                 C:/fnfbrbin/windows/bin/assets/sounds/Hit_Sound.ogg
 

@@ -7,6 +7,11 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
+import flash.media.Sound;
+import sys.FileSystem;
+import flixel.util.FlxColor;
 
 class SickMenuState extends MusicBeatState
 {
@@ -20,6 +25,12 @@ class SickMenuState extends MusicBeatState
   var bgImage:String = "menuDesat";
   var selected:Bool = false;
   var bg:FlxSprite;
+  public static var menuMusic:Sound;
+  public static var musicTime:Int = 8;
+  public static var fading:Bool = false;
+  var isMainMenu:Bool = false;
+
+
   function goBack(){
     FlxG.switchState(new MainMenuState());
   }
@@ -34,13 +45,51 @@ class SickMenuState extends MusicBeatState
       grpControls.add(controlLabel);
     }
   }
+  function musicHandle(){
+
+      
+      var time:Int = Date.now().getHours();
+      var curMusicTime = (if (time > 22 || time < 6) 1 else if (time > 5 && time < 10) 2 else if (time > 18 && time < 22) 3 else 0); // 0=day,1=night,2=morning,3=evening
+
+      var musicTime = SickMenuState.musicTime;
+      if (SickMenuState.menuMusic == null || musicTime != curMusicTime){
+        if(FlxG.sound.music.playing){if(!SickMenuState.fading){SickMenuState.fading = true;
+          var switchToColor = switch (curMusicTime) {// default=day,1=night,2=morning,3=evening
+                      case 1:0x1133aa;
+                      case 2,3:0xffaa11;
+                      default:0xECD77F;
+                    }
+          new FlxTimer().start(0.1, function(tmr:FlxTimer)
+          {
+              FlxG.sound.music.volume -= 0.1;
+              if(isMainMenu){
+                bg.color = FlxColor.interpolate(bg.color,switchToColor,0.2);
+              }              
+              if(tmr.elapsedLoops > 9){
+                FlxG.sound.music.stop();
+                
+                musicHandle();
+              }
+          },10);
+          }
+          return;}
+        SickMenuState.fading = false;
+        SickMenuState.menuMusic = switch (curMusicTime) {
+          case 1:Sound.fromFile(if(FileSystem.exists("mods/title-night.ogg")) "mods/title-night.ogg" else Paths.music("freshChillMix"));
+          case 2:Sound.fromFile(if(FileSystem.exists("mods/title-morning.ogg")) "mods/title-morning.ogg" else Paths.music("breakfast"));
+          case 3:Sound.fromFile(if(FileSystem.exists("mods/title-evening.ogg")) "mods/title-evening.ogg" else Paths.music("GiveaLilBitBack"));
+          default:Sound.fromFile(if(FileSystem.exists("mods/title-day.ogg")) "mods/title-day.ogg" else Paths.music('freakyMenu'));
+        };
+        SickMenuState.musicTime = curMusicTime;
+      FlxG.sound.playMusic(SickMenuState.menuMusic);
+    }else if (!FlxG.sound.music.playing) FlxG.sound.playMusic(SickMenuState.menuMusic);
+
+  }
+
   override function create()
   {
     if (ChartingState.charting) ChartingState.charting = false;
-    if (!FlxG.sound.music.playing)
-    {
-      FlxG.sound.playMusic(Paths.music('freakyMenu'));
-    } // TODO CUSTOM MAIN MENU SONGS
+    musicHandle();
 
     bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
     bg.color = 0xFFFF6E6E;

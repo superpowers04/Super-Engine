@@ -57,16 +57,22 @@ class MainMenuState extends SickMenuState
 		trace(errorMessage);
 
 		persistentUpdate = persistentDraw = true;
-		bgImage = 'menuBG';
+		bgImage = 'menuDesat';
 		if (FlxG.save.data.dfjk)
 			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
 		else
 			controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
-
+		isMainMenu = true;
 		super.create();
 
 		bg.scrollFactor.set(0.1,0.1);
-		bg.color = 0xFFFFFFFF;
+		bg.color = switch (SickMenuState.musicTime) {// default=day,1=night,2=morning,3=evening, 8=unset
+			case 8:0xeeeeee;
+			case 1:0x1133aa;
+			case 2,3:0xffaa11;
+			default:0xECD77F;
+		}
+
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/FNFBR ${ver}', 12);
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.scrollFactor.set();

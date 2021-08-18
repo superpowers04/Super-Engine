@@ -124,7 +124,7 @@ class OfflinePlayState extends PlayState
 				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
 				if (daStrumTime < 0)
 					daStrumTime = 0;
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
+				var daNoteData:Int = songNotes[1];
 
 				var gottaHitNote:Bool = section.mustHitSection;
 

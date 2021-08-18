@@ -44,7 +44,7 @@ class FinishSubState extends MusicBeatSubstate
 		new FlxTimer().start(0.2, function(tmr:FlxTimer) // Litterally just here because sometimes the game doesn't stop music properly or anything
 		{
 			FlxG.state.persistentUpdate = false;
-			if (FlxG.sound.music != null) {FlxG.sound.music.stop();FlxG.sound.music.destroy();}
+			FlxG.sound.pause();
 
 			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'breakfast' else 'gameOver'), true, true);
 			music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));

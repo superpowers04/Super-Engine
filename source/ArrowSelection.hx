@@ -26,7 +26,7 @@ class ArrowSelection extends SearchMenuState
       {
         for (file in FileSystem.readDirectory(dataDir))
         {
-          if (file.endsWith(".png")){
+          if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("splash.png")){
             var name = file.substr(0,-4);
             if (FileSystem.exists('${dataDir}${name}.xml'))
             {

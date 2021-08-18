@@ -27,7 +27,8 @@ class Note extends FlxSprite
 	public var modifiedByLua:Bool = false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
-	public var ignoreNote:Bool = false; // For Phych
+	public var shouldntBeHit:Bool = false;
+	// public var isSustainNoteEnd:Bool = false;
 
 	public var noteScore:Float = 1;
 
@@ -40,15 +41,16 @@ class Note extends FlxSprite
 
 	public var rating:String = "shit";
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false)
+	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false)
 	{
 		super();
 		if (FlxG.save.data.downscroll) offscreenY = 50;
 		if (prevNote == null)
 			prevNote = this;
-
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
+
+		shouldntBeHit = (_noteData > 7 || (isSustainNote && prevNote.shouldntBeHit)) && onlinemod.OnlinePlayMenuState.socket == null;
 
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
@@ -61,15 +63,15 @@ class Note extends FlxSprite
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
 
-		this.noteData = noteData;
+		this.noteData = _noteData % 4;
 
 		var daStage:String = PlayState.curStage;
 
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
 
-
-		frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+		if (shouldntBeHit) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
+		if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 
 		animation.addByPrefix('greenScroll', 'green0');
 		animation.addByPrefix('redScroll', 'red0');
@@ -132,7 +134,7 @@ class Note extends FlxSprite
 				case 0:
 					animation.play('purpleholdend');
 			}
-
+			// isSustainNoteEnd = true;
 			updateHitbox();
 
 			x -= width / 2;
@@ -150,7 +152,7 @@ class Note extends FlxSprite
 					case 3:
 						prevNote.animation.play('redhold');
 				}
-
+				// prevNote.isSustainNoteEnd = false;
 
 				if(FlxG.save.data.scrollSpeed != 1)
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;

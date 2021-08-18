@@ -912,21 +912,34 @@ class ReloadCharlist extends Option
 }
 class InputHandlerOption extends Option
 {
-	var ies:Array<String> = ["Kade","FPSPlus"];
+	var ies:Array<String> = ["Kade","Tweaked Kade"];
+	var iesDesc:Array<String> = ["Good old kade","Kade engine without antimash, and some improvements"];
 	public function new(desc:String)
 	{
 		super();
 		if (FlxG.save.data.inputHandler >= ies.length) FlxG.save.data.inputHandler = 0;
 		description = desc;
+
+		acceptValues = true;
 	}
 
-	public override function press():Bool
-	{
+	override function getValue():String {
+		return iesDesc[FlxG.save.data.inputHandler];
+	}
+
+	override function right():Bool {
 		FlxG.save.data.inputHandler += 1;
 		if (FlxG.save.data.inputHandler >= ies.length) FlxG.save.data.inputHandler = 0;
 		display = updateDisplay();
 		return true;
 	}
+	override function left():Bool {
+		FlxG.save.data.inputHandler -= 1;
+		if (FlxG.save.data.inputHandler < 0) FlxG.save.data.inputHandler = ies.length - 1;
+		display = updateDisplay();
+		return true;
+	}
+	public override function press():Bool{return right();}
 
 	private override function updateDisplay():String
 	{

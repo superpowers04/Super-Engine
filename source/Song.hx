@@ -57,37 +57,15 @@ class Song
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
-		// FIX THE CASTING ON WINDOWS/NATIVE
-		// Windows???
-		// trace(songData);
-
-		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
-			for (i in 0...songData.notes.length)
-			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-			}
-
-				daNotes = songData.notes;
-				daSong = songData.song;
-				daBpm = songData.bpm; */
-
 		return parseJSONshit(rawJson);
 	}
 
 	static function invertChart(swagShit:SwagSong):SwagSong{
 		var invertedNotes:Array<Int> = [4,5,6,7,0,1,2,3];
 		for (sid => section in swagShit.notes) {
-			// for (nid => note in section.sectionNotes){
-			// 	note[1] = invertedNotes[note[1]];
-			// 	swagShit.notes[sid].sectionNotes[nid] = note;
-			// }
 			section.mustHitSection = !section.mustHitSection;
 			swagShit.notes[sid] = section;
 		}
-		// swagShit.defplayer1 = swagShit.player2;
-		// swagShit.defplayer2 = swagShit.player1;
 		return swagShit;
 	}
 	static function removeOpponentArrows(swagShit:SwagSong):SwagSong{

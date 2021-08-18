@@ -5,8 +5,8 @@
 			"no_antialiasing": false, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
 			"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
 			"dance_idle": false, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
-			"embedded":false,
-			"path":"Skins/BOYFRIEND",
+			"embedded":true,
+			"path":"characters/BOYFRIEND",
 			"scale": 1, "": "Sprite scale on common stages, online lobby and Character Select screen, Senpai uses 6 while BF-Pixel/Spirit uses 6.6, everyone else uses 1",
 
 			"flip_x": true, "": "Flips X axis from the sprite, useful for Boyfriend/Pico/Tankman clones",
@@ -149,6 +149,28 @@
 			"common_stage_offset": [0, 0, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
 			"char_pos": [0, -300], "": "Your character's position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the camera position",
 			"cam_pos": [0, 0], "": "Your character's camera position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the char position"
+		},
+		"gf-pixel":{
+			"no_antialiasing": true, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
+			"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
+			"dance_idle": true, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
+			"embedded":true,
+			"path":"Skins/gfPixel",
+			"char_pos": [100, 300], "": "Your character's position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the camera position",
+			"animations":[
+				{"anim":"Idle","name": "GF IDLE","fps":24,"loop":false,"indices": []},
+				{"anim":"danceLeft","name": "GF IDLE","fps":24,"loop":false,"indices": [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]},
+				{"anim":"danceRight","name": "GF IDLE","fps":24,"loop":false,"indices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]}
+			],
+			"animations_offsets":
+			[			
+				{
+					"anim": "all",
+					"player1": [0, 0],
+					"player2": [0, 0],
+					"player3": [0, 30]
+				}
+			]
 		}
 	}
 }
