@@ -148,7 +148,7 @@
 
 			"common_stage_offset": [0, 0, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
 			"char_pos": [0, -300], "": "Your character's position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the camera position",
-			"cam_pos": [0, -300], "": "Your character's camera position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the char position"
+			"cam_pos": [0, 300], "": "Your character's camera position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the char position"
 		}
 		// Below is GFPixel's characterJSON, i can't get it to work. If you'd like to try, go ahead. If you do end up getting it working, then feel free to message superpoerrs04#3887 about it
 		

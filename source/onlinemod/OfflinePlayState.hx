@@ -198,7 +198,7 @@ class OfflinePlayState extends PlayState
 		vocals.stop();
 		FlxG.sound.music.stop();
 
-    	super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
+    	super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true,camFollow));
   }
 }
 
