@@ -38,7 +38,6 @@ class MainMenuState extends SickMenuState
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static function handleError(error:String):Void{
-		FlxG.switchState(new MainMenuState());
 		if (errorMessage != "") return; 
 		MainMenuState.errorMessage = error;
 		if (onlinemod.OnlinePlayMenuState.socket != null){
@@ -47,6 +46,7 @@ class MainMenuState extends SickMenuState
 				onlinemod.OnlinePlayMenuState.socket=null;
 			}catch(e){trace('You just got an exception in yo exception ${e.message}');}
 		}
+		FlxG.switchState(new MainMenuState());
 		
 	}
 

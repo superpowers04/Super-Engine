@@ -59,10 +59,7 @@ class SearchMenuState extends MusicBeatState
 	}
 	override function create()
 	{try{
-		if (!FlxG.sound.music.playing)
-		{
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
-		} 
+		SickMenuState.musicHandle();
 		bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 		bg.color = 0xFFFF6E6E;
 		bg.scrollFactor.set(0.01,0.01);
