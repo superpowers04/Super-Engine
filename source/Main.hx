@@ -81,9 +81,12 @@ class Main extends Sprite
 
 		addChild(game);
 
-		#if !mobile
-		fpsCounter = new FPS(10, 3, 0xFFFFFF);
+		fpsCounter = new Overlay(0, 0);
 		addChild(fpsCounter);
+
+		#if !mobile
+		// fpsCounter = new FPS(10, 3, 0xFFFFFF);
+		// addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
 
 		#end
@@ -91,7 +94,7 @@ class Main extends Sprite
 
 	var game:FlxGame;
 
-	var fpsCounter:FPS;
+	var fpsCounter:Overlay;
 
 	public function toggleFPS(fpsEnabled:Bool):Void {
 		fpsCounter.visible = fpsEnabled;
