@@ -1,5 +1,5 @@
 	{
-		"clone": "gf-pixel", "": "Copies the offsets of a character and a few interactions, disable it by removing this line or leaving it blank",
+		"clone": "", "": "Copies the offsets of a character and a few interactions, disable it by removing this line or leaving it blank",
 		"no_antialiasing": true, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
 		"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
 		"dance_idle": true, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
