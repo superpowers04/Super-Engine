@@ -192,7 +192,7 @@ class PauseSubState extends MusicBeatSubstate
 			case 5:FlxG.switchState(new osu.OsuMenuState());
 				
 
-			default:FlxG.switchState(new FreeplayState());
+			default:FlxG.switchState(new MainMenuState());
 		}
 		return;
 	}
