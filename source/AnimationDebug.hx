@@ -552,7 +552,7 @@ class AnimHelpScreen extends FlxSubState{
 		+"\n"
 		+'\n1 - Unloads all offsets from the game or json file, including character position.**\n **Making offsets absolute(Meaning they should replace existing offsets your character has)'
 		+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
-		+if(animDebug.canEditJson)'\n3 - Write character info to characters JSON'else''
+		// +if(animDebug.canEditJson)'\n3 - Write character info to characters JSON'else''
 		+'\nR - Reload character'
 		+'\nEscape - Close animation debug');
 		controlsText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
