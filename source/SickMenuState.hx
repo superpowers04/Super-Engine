@@ -12,6 +12,15 @@ import flixel.util.FlxTimer;
 import flash.media.Sound;
 import sys.FileSystem;
 import flixel.util.FlxColor;
+import flixel.system.FlxSound;
+
+typedef MusicTime ={
+	var file:String;
+	var begin:Int;
+	var end:Int;
+	var color:Int;
+	var wrapAround:Bool;
+}
 
 class SickMenuState extends MusicBeatState
 {
@@ -28,6 +37,27 @@ class SickMenuState extends MusicBeatState
 	public static var menuMusic:Sound;
 	public static var musicTime:Int = 8;
 	public static var fading:Bool = false;
+	public static var curSongTime:Float = 0;
+	public static var musicFileLoc:String = "";
+	public static var chgTime:Bool = false;
+	public static var musicList:Array<MusicTime> = [
+		{
+			file: if(FileSystem.exists("mods/title-morning.ogg")) "mods/title-morning.ogg" else Paths.music("breakfast"),
+			begin:5,end:10,wrapAround:false,color:0xffaa11
+		},
+		{
+			file: if(FileSystem.exists("mods/title-day.ogg")) "mods/title-day.ogg" else Paths.music('freakyMenu'),
+			wrapAround:false,end:100,begin:101,color:0xECD77F // Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
+		},
+		{
+			file: if(FileSystem.exists("mods/title-evening.ogg")) "mods/title-evening.ogg" else Paths.music("GiveaLilBitBack"),
+			begin:16,end:21,wrapAround:false,color:0xffaa11
+		},
+		{
+			file: if(FileSystem.exists("mods/title-night.ogg")) "mods/title-night.ogg" else Paths.music("freshChillMix"),
+			begin:21,end:6,wrapAround:true,color:0x1133aa
+		},
+	];
 	var isMainMenu:Bool = false;
 
 
@@ -49,17 +79,25 @@ class SickMenuState extends MusicBeatState
 
 
 			var time:Int = Date.now().getHours();
-			var curMusicTime = (if (time > 22 || time < 6) 1 else if (time > 5 && time < 10) 2 else if (time > 18 && time < 22) 3 else 0); // 0=day,1=night,2=morning,3=evening
+			var curMusicTime = 1;
+			for (i in 1 ... SickMenuState.musicList.length) {
+				var v = SickMenuState.musicList[i];
+				if (!v.wrapAround && time => v.begin && time <= v.end || (v.wrapAround && (time => v.begin || time <= v.end))){
+					curMusicTime = i;
+					break;
+				}
+			}
 
 			var musicTime = SickMenuState.musicTime;
+			var mt:MusicTime = SickMenuState.musicList[curMusicTime];
+				
 			if (SickMenuState.menuMusic == null || musicTime != curMusicTime){
 				
 				if(FlxG.sound.music.playing){if(!SickMenuState.fading){SickMenuState.fading = true;
-					var switchToColor = switch (curMusicTime) {// default=day,1=night,2=morning,3=evening
-							case 1:0x1133aa;
-							case 2,3:0xffaa11;
-							default:0xECD77F;
-						}
+					var switchToColor = mt.color;
+					if(isMainMenu && _bg != null){
+						MainMenuState.bgcolor = switchToColor;
+					}
 					new FlxTimer().start(0.1, function(tmr:FlxTimer)
 					{
 						FlxG.sound.music.volume -= 0.1;
@@ -67,42 +105,39 @@ class SickMenuState extends MusicBeatState
 							_bg.color = FlxColor.interpolate(_bg.color,switchToColor,0.2);
 						}              
 						if(tmr.elapsedLoops > 9){
+							SickMenuState.curSongTime = FlxG.sound.music.time;
 							FlxG.sound.music.stop();
 							
-							musicHandle();
+							musicHandle(isMainMenu,_bg);
 						}
 					},10);
 					}
 					return;}
 				SickMenuState.fading = false;
-				SickMenuState.menuMusic = switch (curMusicTime) {
-					case 1:Sound.fromFile(if(FileSystem.exists("mods/title-night.ogg")) "mods/title-night.ogg" else Paths.music("freshChillMix"));
-					case 2:Sound.fromFile(if(FileSystem.exists("mods/title-morning.ogg")) "mods/title-morning.ogg" else Paths.music("breakfast"));
-					case 3:Sound.fromFile(if(FileSystem.exists("mods/title-evening.ogg")) "mods/title-evening.ogg" else Paths.music("GiveaLilBitBack"));
-					default:Sound.fromFile(if(FileSystem.exists("mods/title-day.ogg")) "mods/title-day.ogg" else Paths.music('freakyMenu'));
-				};
+				SickMenuState.musicFileLoc = mt.file;
+				SickMenuState.menuMusic = Sound.fromFile(SickMenuState.musicFileLoc);
 				SickMenuState.musicTime = curMusicTime;
-			FlxG.sound.playMusic(SickMenuState.menuMusic);
-		}else if (!FlxG.sound.music.playing) FlxG.sound.playMusic(SickMenuState.menuMusic);
 
+			// if (_bg != null){ }
+
+			FlxG.sound.playMusic(SickMenuState.menuMusic);
+			FlxG.sound.music.time = FlxMath.wrap(Math.floor(SickMenuState.curSongTime),0,Math.floor(FlxG.sound.music.length));
+		}else if (!FlxG.sound.music.playing) FlxG.sound.playMusic(SickMenuState.menuMusic);
+		if(!isMainMenu && _bg != null){
+			_bg.color = FlxColor.interpolate(_bg.color,SickMenuState.musicList[musicTime].color,0.2);
+		}
 	}
 
 	override function create()
 	{
 		if (ChartingState.charting) ChartingState.charting = false;
-
+		SickMenuState.chgTime = true;
 		bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
 		bg.color = 0xFFFF6E6E;
 		bg.scrollFactor.set(0.01,0.01);
 		add(bg);
 		musicHandle(isMainMenu,bg);
-		if(!isMainMenu){
-			bg.color = FlxColor.interpolate(bg.color,switch (musicTime) {// default=day,1=night,2=morning,3=evening
-							case 1:0x1133aa;
-							case 2,3:0xffaa11;
-							default:0xECD77F;
-						},0.2);
-		}
+
 
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
@@ -172,10 +207,11 @@ class SickMenuState extends MusicBeatState
 			bullShit++;
 
 			item.alpha = 0.6;
-
+			item.color = 0xdddddd;
 			if (item.targetY == 0)
 			{
 				item.alpha = 1;
+				item.color = 0xffffff;
 			}
 		}
 

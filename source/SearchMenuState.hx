@@ -11,6 +11,7 @@ import flixel.addons.ui.FlxInputText;
 
 import sys.io.File;
 import sys.FileSystem;
+import flixel.math.FlxMath;
 
 using StringTools;
 
@@ -52,6 +53,14 @@ class SearchMenuState extends MusicBeatState
 			reloadList(true,searchField.text);
 			searchField.hasFocus = false;
 			changeSelection(0);
+	}
+	function orderList(list:Array<String>):Array<String>{
+		haxe.ds.ArraySort.sort(list, function(a, b) {
+		   if(a < b) return -1;
+		   else if(b > a) return 1;
+		   else return 0;
+		});
+		return list;
 	}
 	function updateInfoText(str:String = ""){
 		infotext.text = str;
@@ -156,14 +165,15 @@ class SearchMenuState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{try{
 		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-
+		if (grpSongs.length < 2){
+			return;
+		}
 		curSelected += change;
 
 		if (curSelected < 0)
 			curSelected = grpSongs.length - 1;
 		if (curSelected >= grpSongs.length)
 			curSelected = 0;
-
 
 		var bullShit:Int = 0;
 
@@ -175,11 +185,11 @@ class SearchMenuState extends MusicBeatState
 					item.revive();
 					item.targetY = bullShit - curSelected;
 
-					item.alpha = 0.6;
-
+					item.color = 0xdddddd;
 					if (item.targetY == 0)
 					{
 						item.alpha = 1;
+						item.color = 0xffffff;
 					}
 				}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
 				bullShit++;

@@ -248,7 +248,7 @@ class TitleState extends MusicBeatState
 			findosuBeatmaps();
 		}
 
-		Conductor.changeBPM(93);
+		Conductor.changeBPM(70);
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -395,7 +395,7 @@ class TitleState extends MusicBeatState
 
 			MainMenuState.firstStart = true;
 			#if !debug
-			if (FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate)
+			if (FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
 				FlxG.switchState(new MainMenuState());
 			else
 			{
