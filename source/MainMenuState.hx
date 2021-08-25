@@ -57,7 +57,7 @@ class MainMenuState extends SickMenuState
 			errorMessage = Main.errorMessage;
 			Main.errorMessage = "";
 		}
-		options = ['online', 'downloaded songs','chart folder/modded songs','other',"changelog",'get characters', 'options'];
+		options = ['online', 'downloaded songs','modded songs','other',"changelog",'get characters', 'options'];
 		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally",'Other playing modes',"Check the latest update and it's changes","Download characters to play as ingame",'Customise your experience to fit you'];
 		trace(errorMessage);
 
@@ -138,7 +138,7 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new OtherMenuState());
 			case 'online':
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
-			case 'chart folder/modded songs':
+			case 'modded songs':
 				FlxG.switchState(new multi.MultiMenuState());
 			case 'downloaded songs':
 				FlxG.switchState(new onlinemod.OfflineMenuState());
