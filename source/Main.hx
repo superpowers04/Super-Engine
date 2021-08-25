@@ -3,6 +3,7 @@ package;
 import openfl.display.BlendMode;
 import openfl.text.TextFormat;
 import openfl.display.Application;
+import lime.app.Application as LimeApp;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxGame;
@@ -12,9 +13,14 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.events.UncaughtErrorEvent;
+import haxe.CallStack;
+import sys.FileSystem;
+import sys.io.File;
 
 class Main extends Sprite
 {
+	public static var errorMessage = "";
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
@@ -77,6 +83,8 @@ class Main extends Sprite
 		initialState = TitleState;
 		#end
 
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+
 		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
 
 		addChild(game);
@@ -118,5 +126,42 @@ class Main extends Sprite
 	public function getFPS():Float
 	{
 		return fpsCounter.currentFPS;
+	}
+	public function onCrash(e:UncaughtErrorEvent){
+		game = null;
+		// overlay.destroy();
+
+		var errMsg:String = "";
+		var path:String;
+		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+		var dateNow:String = Date.now().toString();
+
+		dateNow = StringTools.replace(dateNow, " ", "_");
+		dateNow = StringTools.replace(dateNow, ":", ".");
+
+		var path:String = "./crash/" + "FNFBR_" + dateNow + ".txt";
+
+		for (stackItem in callStack)
+		{
+			switch (stackItem)
+			{
+				case FilePos(s, file, line, column):
+					errMsg += file + " (line " + line + ")\n";
+				default:
+					Sys.println(stackItem);
+			}
+		}
+
+		errMsg += "\nUncaught Error: " + e.error;
+
+		if (!FileSystem.exists("./crash/"))
+			FileSystem.createDirectory("./crash/");
+
+		File.saveContent(path, errMsg + "\n");
+		LimeApp.current.window.alert(errMsg, "Restarting game due to error!");
+		Sys.println(errMsg);
+		Sys.println("Crash dump saved in " + path);
+		// errorMessage = 'Uncaught error forced game to reboot, Crash dump saved in "${Path.normalize(path)}"';
+		setupGame();
 	}
 }
