@@ -13,17 +13,39 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxTimer;
+import sys.FileSystem;
+import sys.io.File;
+import openfl.net.FileReference;
+
+import flixel.graphics.FlxGraphic;
+import flixel.addons.ui.FlxInputText;
+import flixel.addons.ui.FlxUI9SliceSprite;
+import flixel.addons.ui.FlxUI;
+import flixel.addons.ui.FlxUICheckBox;
+import flixel.addons.ui.FlxUIInputText;
+import flixel.addons.ui.FlxUINumericStepper;
+import flixel.addons.ui.FlxUITabMenu;
+import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
+import flixel.ui.FlxButton;
+import flixel.ui.FlxSpriteButton;
+
 
 using StringTools;
 
-/**
-	*DEBUG MODE
- */
+typedef ToggleBox ={
+	var x:Int;
+	var y:Int;
+	var name:String;
+	var callback:Dynamic;
+	var checked:Dynamic;
+	var labelW:Int;
+}
+
 class AnimationDebug extends MusicBeatState
 {
 	var gf:Character;
-	var dad:Character;
-	var dadBG:Character;
+	public var dad:Character;
+	public var dadBG:Character;
 	//var char:Character;
 	var textAnim:FlxText;
 	var dumbTexts:FlxTypedGroup<FlxText>;
@@ -48,17 +70,20 @@ class AnimationDebug extends MusicBeatState
 	var characterY:Float = 0;
 	var UI:FlxGroup = new FlxGroup();
 	var tempMessage:FlxText;
+	var tempMessTimer:FlxTimer;
 	var offsetTopText:FlxText;
 	var isAbsoluteOffsets:Bool = false;
+	public var charJson:CharacterJson;
 	public static var inHelp:Bool = false;
-
-	// var flippedChars:Array<String> = ["pico"];
-
+	public var canEditJson:Bool = false;
+	var animationList:Array<String> = [];
+	var UI_box:FlxUITabMenu;
 
 	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false)
 	{
 		if (PlayState.SONG == null) MainMenuState.handleError("A song needs to be loaded first due to a crashing bug!");
 		super();
+		
 		this.daAnim = daAnim;
 		this.isPlayer = isPlayer;
 		charType = charType_;
@@ -132,7 +157,7 @@ class AnimationDebug extends MusicBeatState
 			
 		}catch(e) MainMenuState.handleError('Error occurred, try loading a song first. ${e.message}');
 	}
-	function spawnChar(?reload:Bool = false){
+	function spawnChar(?reload:Bool = false,?resetOffsets = true){
 		try{
 
 			if (reload) {
@@ -143,9 +168,12 @@ class AnimationDebug extends MusicBeatState
 					v.destroy();
 				}
 				// Reset offsets
-				offsetText = [];
-				offset = [];
-				offsetCount = 1;
+				if (resetOffsets){
+					offsetText = [];
+					offset = [];
+					offsetCount = 1;
+				}
+				animationList = [];
 			}
 			characterY=100;
 			var flipX = isPlayer;
@@ -170,7 +198,14 @@ class AnimationDebug extends MusicBeatState
 
 			add(dadBG);
 			add(dad);
-			// dad.dance();
+			charJson = dad.charProperties;
+			if(charJson == null || dad.loadedFrom == "" || !FileSystem.exists(dad.loadedFrom))
+			   canEditJson = false; 
+			else {
+				canEditJson = true;
+				if(charJson.animations_offsets != null) {for (i => v in charJson.animations) {animationList.push(v.name);}}
+			}
+
 			
 		}catch(e) MainMenuState.handleError('Error occurred in spawnChar, animdebug ${e.message}');
 	}
@@ -214,6 +249,95 @@ class AnimationDebug extends MusicBeatState
 			default: LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
+	function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
+		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}
+		trace(str);
+		tempMessage = new FlxText(40,30,24,str);
+		tempMessage.setFormat(Paths.font("vcr.ttf"), 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		tempMessage.scrollFactor.set();
+		tempMessage.width = FlxG.width - tempMessage.x;
+		UI.add(tempMessage);
+		tempMessTimer = new FlxTimer().start(time, function(tmr:FlxTimer)
+		{
+			if (tempMessage != null) tempMessage.destroy();
+		},1);}
+
+	function outputCharOffsets(){
+		var text = (if(isAbsoluteOffsets) "These are absolute, these should replace the offsets in the config.json." else 'These are not absolute, these should be added to the existing offsets in your config.json.') + (if (dad.clonedChar != dad.curCharacter) ' This character is cloning ${dad.clonedChar}' else '') +
+			'\nExported offsets for ${dad.curCharacter}/Player ${charType + 1}:\n' +
+			if(charX != 0 || charY != 0) '\ncharPos: [${charX}, ${charY}]' else ""; 
+		for (i => v in offset) {
+			var name = i;
+
+			text+='\n"${name}" : { "player${charType + 1}": [${v[0]}, ${v[1]}] }';
+		}
+		sys.io.File.saveContent(Sys.getCwd() + "offsets.txt",text);
+		showTempmessage("Saved to output.txt successfully");
+		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+
+	}
+	function outputChar(){
+		if(charJson == null) {FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Can't save, Character has no JSON?",FlxColor.RED);return;}
+		if(dad.loadedFrom == "" || !FileSystem.exists(dad.loadedFrom)) {FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Unable to save! Character does't use a specific JSON?",FlxColor.RED);return;}
+		try{
+			var animOffsetsJSON = "[";
+			var animOffsets:Map<String, Map<String,Array<Float>>> = [];
+			for (name => v in dad.animOffsets) {
+				var x = v[0];
+				var y = v[1];
+				if (offset.get(name) != null){
+					x+=offset[name][0];
+					y+=offset[name][1];
+				}
+				animOffsets[name] = ['player${charType + 1}' =>[x,y]];
+
+			}
+			for (i => v in offset){
+				if (animOffsets.get(i) == null){
+					animOffsets[i] = [ 'player${charType + 1}' => [v[0],v[1]]];
+				}
+			}
+			for (i => v in charJson.animations_offsets){
+				var name = v.anim;
+				// if (animOffsets.get(name) == null){
+				// 	animOffsets[name] = [];
+				// }
+				if(v.player1 != null && animOffsets[name]["player1"] == null) animOffsets[name]["player1"] = v.player1;
+				if(v.player2 != null && animOffsets[name]["player2"] == null) animOffsets[name]["player2"] = v.player2;
+				if(v.player3 != null && animOffsets[name]["player3"] == null) animOffsets[name]["player3"] = v.player3;
+
+			}
+			charJson.animations_offsets = [];
+			for (name => v in animOffsets){
+				if(animOffsets[name]["player1"] == null) animOffsets[name]["player1"] = [];
+				if(animOffsets[name]["player2"] == null) animOffsets[name]["player2"] = [];
+				if(animOffsets[name]["player3"] == null) animOffsets[name]["player3"] = [];
+				charJson.animations_offsets.push({
+					"anim" : name,
+					"player1" : animOffsets[name]["player1"],
+					"player2" : animOffsets[name]["player2"],
+					"player3" : animOffsets[name]["player3"]
+				});
+			}
+			charJson.common_stage_offset = [];
+			charJson.char_pos = [];
+			switch (charType) {
+				case 0: charJson.char_pos1 = [dad.x,-dad.y];
+				case 1: charJson.char_pos2 = [dad.x,-dad.y];
+				case 2: charJson.char_pos3 = [dad.x,-dad.y];
+			}
+			charJson.genBy = "FNFBR; Animation Editor";
+			
+			File.copy(dad.loadedFrom,dad.loadedFrom + "-bak.json");
+			File.saveContent(dad.loadedFrom,haxe.Json.stringify(charJson, "\t"));
+			showTempmessage("Saved to character.json successfully");
+			FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+
+		}catch(e){FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage('Error: ${e.message}',FlxColor.RED);trace('ERROR: ${e.message}');return;}
+	}
+
+
+
 	function updateCharPos(?x:Float = 0,?y:Float = 0,?shiftPress:Bool = false,?ctrlPress:Bool = false){
 		if (shiftPress){x=x*5;y=y*5;}
 		if (ctrlPress){x=x*0.1;y=y*0.1;}
@@ -227,6 +351,7 @@ class AnimationDebug extends MusicBeatState
 			var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
 			text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			// text.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+			text.width = FlxG.width;
 			text.scrollFactor.set();
 			UI.add(text);
 			offsetText["charPos_internal"] = text;
@@ -255,18 +380,19 @@ class AnimationDebug extends MusicBeatState
 			 (FlxG.keys.justPressed.LEFT),
 			 (FlxG.keys.justPressed.DOWN),
 			 (FlxG.keys.justPressed.RIGHT),
-			 (FlxG.keys.justPressed.I), // Adjust Camera
+			 (FlxG.keys.justPressed.I), // Adjust Character position
 			 (FlxG.keys.justPressed.J),
 			 (FlxG.keys.justPressed.K),
 			 (FlxG.keys.justPressed.L),
 			 (FlxG.keys.justPressed.ONE),
 			 (FlxG.keys.justPressed.TWO),
+			 (FlxG.keys.justPressed.THREE),
 		];
 
 		var modifier = "";
 		if (shiftPress) modifier += "miss";
 		if (ctrlPress) modifier += "-alt";
-		if (hPress) openSubState(new AnimHelpScreen());
+		if (hPress) openSubState(new AnimHelpScreen(this));
 		var animToPlay = "";
 		for (i => v in pressArray) {
 			if (v){
@@ -308,24 +434,10 @@ class AnimationDebug extends MusicBeatState
 						isAbsoluteOffsets = true;
 						offsetTopText.text = 'Current offsets(Absolute, these replace your existing ones):';
 					case 14: // Write to file
-						var text = (if(isAbsoluteOffsets) "These are absolute, these should replace the offsets in the config.json." else 'These are not absolute, these should be added to the existing offsets in your config.json.') + (if (dad.clonedChar != dad.curCharacter) ' This character is cloning ${dad.clonedChar}' else '') +
-						'\nExported offsets for ${dad.curCharacter}/Player ${charType + 1}:\n' +
-						if(charX != 0 || charY != 0) '\ncharPos: [${charX}, ${charY}]' else ""; 
-						for (i => v in offset) {
-							var name = i;
-
-							text+='\n"${name}" : { "player${charType + 1}": [${v[0]}, ${v[1]}] }';
-						}
-						sys.io.File.saveContent(Sys.getCwd() + "offsets.txt",text);
-						FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-						tempMessage = new FlxText(FlxG.width * 0.6,30,0,"Saved to output.txt successfully");
-						tempMessage.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.LIME, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-						UI.add(tempMessage);
-						new FlxTimer().start(5, function(tmr:FlxTimer)
-						{
-							if (tempMessage != null) tempMessage.destroy();
-						},1);
-				}
+						outputCharOffsets();
+					// case 15: // Save Char JSON
+					// 	if(canEditJson) outputChar();
+				}	
 			}
 		}
 		if (animToPlay != "") {
@@ -347,8 +459,77 @@ class AnimationDebug extends MusicBeatState
 class AnimHelpScreen extends FlxSubState{
 
 	var helpObjs:Array<FlxObject> = [];
+
+	var animDebug:Dynamic;
+	var UI_box:FlxUITabMenu;
+
+
+
+	// function createUI(){
+	// 	var tab_group = new FlxUI(null, UI_box);
+	// 	tab_group.name = "Character Settings";
+	// 	var toggleBoxes:Array<ToggleBox> = [
+	// 		{
+	// 			x:10,
+	// 			y:60,
+	// 			name:"FlipX",
+	// 			labelW:100,
+	// 			checked:function(){return animDebug.charJson.flip_x;},
+	// 			callback:function(){
+	// 				animDebug.dad.flipX = !animDebug.dad.flipX;
+	// 				animDebug.dadBG.flipX = !animDebug.dadBG.flipX;
+	// 				animDebug.charJson.flip_x = !animDebug.charJson.flip_x;
+	// 			}
+	// 		}
+	// 	];
+	// 	for (i => v in toggleBoxes) {
+	// 		var toggleBox = new FlxUICheckBox(v.x, v.y, null, null, v.name, v.labelW,null,v.callback);
+	// 		toggleBox.checked = v.checked();
+
+	// 		tab_group.add(toggleBox);
+	// 	}
+
+	// 	// var check_player = new FlxUICheckBox(10, 60, null, null, "Playable Character", 100);
+	// 	// check_player.checked = ;
+	// 	// check_player.callback = function()
+	// 	// {
+	// 	// 	char.isPlayer = !char.isPlayer;
+	// 	// 	char.flipX = !char.flipX;
+	// 	// 	loadChar(!check_player.checked);
+	// 	// 	updatePresence();
+	// 	// 	reloadCharacterDropDown();
+	// 	// 	reloadBGs();
+	// 	// };
+
+	// 	// var charDropDown = new FlxUIDropDownMenuCustom(10, 30, FlxUIDropDownMenuCustom.makeStrIdLabelArray([''], true), function(character:String)
+	// 	// {
+	// 	// 	daAnim = characterList[Std.parseInt(character)];
+	// 	// 	check_player.checked = daAnim.startsWith('bf');
+	// 	// 	loadChar(!check_player.checked);
+	// 	// 	updatePresence();
+	// 	// 	reloadCharacterDropDown();
+	// 	// });
+	// 	// charDropDown.selectedLabel = daAnim;
+	// 	// reloadCharacterDropDown();
+
+	// 	var reloadCharacter:FlxButton = new FlxButton(140, 30, "Reload Char", function() {animDebug.spawnChar(true,true);});
+		
+	// 	// tab_group.add(new FlxText(charDropDown.x, charDropDown.y - 18, 0, 'Character:'));
+	// 	// tab_group.add(check_player);
+	// 	// tab_group.add(reloadCharacter);
+	// 	// tab_group.add(charDropDown);
+	// 	// tab_group.add(reloadCharacter);
+	// 	UI_box.addGroup(tab_group);
+	// }
+
+	override public function new(?_animDebug:Dynamic):Void {
+		super();
+		animDebug = _animDebug;
+	}
+
 	override function create(){
 		// helpShown = true;
+
 		AnimationDebug.inHelp = true;
 		helpObjs = [];
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -359,7 +540,7 @@ class AnimHelpScreen extends FlxSubState{
 		exitText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		exitText.scrollFactor.set();
 		helpObjs.push(exitText);
-		var controlsText:FlxText = new FlxText(20,145,0,'Controls:'
+		var controlsText:FlxText = new FlxText(10,145,0,'Controls:'
 		+'\n\nWASD - Note anims'
 		+'\nV - Idle'
 		+'\n *Shift - Miss variant'
@@ -369,13 +550,15 @@ class AnimHelpScreen extends FlxSubState{
 		+'\n *Shift - Move by 5(Combine with CTRL to move 5)'
 		+'\n *Ctrl - Move by *0.1'
 		+"\n"
-		+'\n1 - Unloads all offsets from the game or json file, including character position.**\n **Making offsets absolute(Meaning they should replace existing offsets your character may have)'
+		+'\n1 - Unloads all offsets from the game or json file, including character position.**\n **Making offsets absolute(Meaning they should replace existing offsets your character has)'
 		+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
+		+if(animDebug.canEditJson)'\n3 - Write character info to characters JSON'else''
 		+'\nR - Reload character'
 		+'\nEscape - Close animation debug');
 		controlsText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlsText.scrollFactor.set();
 		helpObjs.push(controlsText);
+		// if(animDebug.canEditJson)createUI();
 
 		var importantText:FlxText = new FlxText(10, 48,0,'You cannot save offsets, You have to manually copy them');
 		importantText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
