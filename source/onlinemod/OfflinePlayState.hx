@@ -18,6 +18,7 @@ class OfflinePlayState extends PlayState
   var loadedInst:Sound;
   var loadingtext:FlxText;
   var shouldLoadJson:Bool = true;
+  var stateType = 2;
   public static var chartFile:String = "";
   function loadSongs(){
 
@@ -52,7 +53,7 @@ class OfflinePlayState extends PlayState
 	    }else{
 	    	PlayState.SONG.player2 = FlxG.save.data.opponent;
 	    }
-	    PlayState.stateType=2;
+	    PlayState.stateType=stateType;
 	    // var voicesFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'
 	    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg')){
 	    // 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg';

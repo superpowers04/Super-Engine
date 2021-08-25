@@ -35,10 +35,9 @@ class OsuPlayState extends onlinemod.OfflinePlayState
   }
   override function create()
     {try{
-    PlayState.stateType=5;
+    stateType=5;
     shouldLoadJson = false;
   	super.create();
-  	PlayState.stateType=5;
 
   }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
   override function openSubState(SubState:FlxSubState)

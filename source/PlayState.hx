@@ -853,7 +853,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		add(grpNoteSplashes);
-		if (stateType != 4) songDiff = (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
+		songDiff = if(stateType == 4) "mods/charts" else if (stateType == 5) "osu! beatmap" else (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		cpuStrums = new FlxTypedGroup<FlxSprite>();
@@ -923,7 +923,7 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 		// Add Kade Engine watermark
-		if (actualSongName == "") actualSongName = curSong + " " + songDiff;
+		if (stateType != 4 && stateType != 5 ) actualSongName = curSong + " " + songDiff;
 
 		
 		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50 - FlxG.save.data.guiGap,0,actualSongName + " - " + inputEngineName, 16);
@@ -1974,12 +1974,13 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
+		#if !switch
 		if (SONG.validScore && stateType != 2 && stateType != 4)
 		{
-			#if !switch
+			
 			Highscore.saveScore(SONG.song, Math.round(songScore), storyDifficulty);
-			#end
 		}
+		#end
 
 		if (offsetTesting)
 		{
