@@ -43,14 +43,16 @@ class Alphabet extends FlxSpriteGroup
 	var splitWords:Array<String> = [];
 
 	var isBold:Bool = false;
+	public var xOffset:Float = 70;
 
-	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, shouldMove:Bool = false)
+	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, shouldMove:Bool = false,?xOffset:Float = 70)
 	{
 		super(x, y);
 
 		_finalText = text;
 		this.text = text;
 		isBold = bold;
+		this.xOffset = xOffset;
 
 		if (text != "")
 		{
@@ -225,8 +227,8 @@ class Alphabet extends FlxSpriteGroup
 		{
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.30);
-			x = FlxMath.lerp(x, (targetY * 20) + 70, 0.30);
+			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48),5 * elapsed);
+			x = FlxMath.lerp(x, (targetY * 20) + xOffset, 5 * elapsed);
 		}
 
 		super.update(elapsed);

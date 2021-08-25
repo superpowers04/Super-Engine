@@ -163,8 +163,14 @@ class LoadingState extends MusicBeatState
 		if (!loaded)
 			return new LoadingState(target, stopMusic);
 		#end
-		if (stopMusic && FlxG.sound.music != null)
+		if (stopMusic && FlxG.sound.music != null){
+			if(SickMenuState.chgTime){
+				SickMenuState.curSongTime = FlxG.sound.music.time;
+				SickMenuState.chgTime = false;
+			}
 			FlxG.sound.music.stop();
+
+		}
 		
 		return target;
 	}

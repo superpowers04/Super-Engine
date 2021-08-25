@@ -28,7 +28,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.4.1";
+	public static var ver:String = "0.4.2";
 	
 	public static var firstStart:Bool = true;
 
@@ -37,8 +37,9 @@ class MainMenuState extends SickMenuState
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
+	public static var bgcolor:Int = 0;
 	public static function handleError(error:String):Void{
-		if (errorMessage != "") return; 
+		if (errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		MainMenuState.errorMessage = error;
 		if (onlinemod.OnlinePlayMenuState.socket != null){
 			try{
@@ -52,7 +53,11 @@ class MainMenuState extends SickMenuState
 
 	override function create()
 	{
-		options = ['online', 'downloaded songs','modded songs','other',"changelog",'get characters', 'options'];
+		if (Main.errorMessage != ""){
+			errorMessage = Main.errorMessage;
+			Main.errorMessage = "";
+		}
+		options = ['online', 'downloaded songs','chart folder/modded songs','other',"changelog",'get characters', 'options'];
 		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally",'Other playing modes',"Check the latest update and it's changes","Download characters to play as ingame",'Customise your experience to fit you'];
 		trace(errorMessage);
 
@@ -66,13 +71,7 @@ class MainMenuState extends SickMenuState
 		super.create();
 
 		bg.scrollFactor.set(0.1,0.1);
-		bg.color = switch (SickMenuState.musicTime) {// default=day,1=night,2=morning,3=evening, 8=unset
-			case 8:0xeeeeee;
-			case 1:0x1133aa;
-			case 2,3:0xffaa11;
-			default:0xECD77F;
-		}
-
+		bg.color = MainMenuState.bgcolor;
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/FNFBR ${ver}', 12);
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.scrollFactor.set();
@@ -132,13 +131,14 @@ class MainMenuState extends SickMenuState
     	selected = true;
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));
+		
 		switch (daChoice)
 		{
 			case 'other':
 				FlxG.switchState(new OtherMenuState());
 			case 'online':
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
-			case 'modded songs':
+			case 'chart folder/modded songs':
 				FlxG.switchState(new multi.MultiMenuState());
 			case 'downloaded songs':
 				FlxG.switchState(new onlinemod.OfflineMenuState());

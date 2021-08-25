@@ -17,6 +17,8 @@ import sys.io.File;
 import sys.io.FileOutput;
 import sys.FileSystem;
 
+using StringTools;
+
 class ImportMod extends DirectoryListing
 {
 	var curReg:EReg = ~/.+\/(.*?)\//g;
@@ -39,7 +41,7 @@ class ImportModFromFolder extends MusicBeatState
 {
   var loadingText:FlxText;
   var progress:Float = 0;
-  var existingSongs:Array<String> = [ 'tutorial', 'bopeebo', 'fresh', 'dad-battle', 'dad battle', 'dadbattle', 'spookeez', 'south', "monster", 'pico', 'philly-nice', 'philly nice', 'philly', 'phillynice', "blammed", 'satin panties','satin-panties','satinpanties', "high", "milf", 'cocoa', 'eggnog', 'winter-horrorland', 'winter horrorland', 'winterhorrorland', 'senpai', 'roses', 'thorns', 'test'];
+  var existingSongs:Array<String> = ["offsettest", 'tutorial', 'bopeebo', 'fresh', 'dad-battle', 'dad battle', 'dadbattle', 'spookeez', 'south', "monster", 'pico', 'philly-nice', 'philly nice', 'philly', 'phillynice', "blammed", 'satin panties','satin-panties','satinpanties', "high", "milf", 'cocoa', 'eggnog', 'winter-horrorland', 'winter horrorland', 'winterhorrorland', 'senpai', 'roses', 'thorns', 'test'];
   var songName:EReg = ~/.+\/(.*?)\//g;
   var songsImported:Int = 0;
 
@@ -74,31 +76,58 @@ class ImportModFromFolder extends MusicBeatState
 
 	  	var assets = '${folder}assets/'; // For easy access
 	  	if (!FileSystem.exists(assets)) MainMenuState.handleError('${folder} doesn\'t have a assets folder!'); //This folder is not a mod!
-	  	for (directory in FileSystem.readDirectory('${assets}songs/')) {
-				loadingText.text = 'Checking ${directory}...'; // Just display this text
-				if(!FileSystem.isDirectory('${assets}songs/${directory}') || existingSongs.contains(directory.toLowerCase())) {continue;} // Skip if it's a file or if it's on the existing songs list
-				var dir:String = '${folder}assets/songs/${directory}/';
-				if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
+	  	if(FileSystem.exists('${assets}songs/')){
 
-				var outDir:String = Sys.getCwd() + 'mods/charts/${name.substr(0,5)}-${directory}/';
-				try{FileSystem.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
-				
-				for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg',
-				     			'${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
-					try{
-						loadingText.text = 'Copying ${i}...';// Just display this text
-						File.copy(i,v);
-					}catch(e) trace('$i caused ${e.message}');
-				}
-				for (file in FileSystem.readDirectory('${assets}data/${directory}/')) {
-					try{
-						loadingText.text = 'Copying ${file}...';// Just display this text
-						File.copy('${assets}data/${directory}/${file}','${outDir}${file}');
-					}catch(e) trace('$file caused ${e.message}');
+		  	for (directory in FileSystem.readDirectory('${assets}songs/')) {
+					loadingText.text = 'Checking ${directory}...'; // Just display this text
+					if(!FileSystem.isDirectory('${assets}songs/${directory}') || existingSongs.contains(directory.toLowerCase())) continue; // Skip if it's a file or if it's on the existing songs list
+					var dir:String = '${folder}assets/songs/${directory}/';
+					if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 
+					var outDir:String = Sys.getCwd() + 'mods/charts/${name.substr(0,5)}-${directory}/';
+					try{FileSystem.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
+					
+					for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg','${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
+						try{
+							loadingText.text = 'Copying ${i}...';// Just display this text
+							File.copy(i,v);
+						}catch(e) trace('$i caused ${e.message}');
+					}
+					for (file in FileSystem.readDirectory('${assets}data/${directory}/')) {
+						try{
+							loadingText.text = 'Copying ${file}...';// Just display this text
+							File.copy('${assets}data/${directory}/${file}','${outDir}${file}');
+						}catch(e) trace('$file caused ${e.message}');
+
+				}songsImported++;}
+	  	}
+	  if(FileSystem.exists('${assets}music/')){
+		  	for (directory in FileSystem.readDirectory('${assets}music/')) {
+		  		if (!directory.endsWith("inst.ogg")) continue;
+		  		directory = directory.substr(0,-8);
+					loadingText.text = 'Checking ${directory}...'; // Just display this text
+					if(existingSongs.contains(directory.toLowerCase())) {continue;} // Skip if it's a file or if it's on the existing songs list
+					var dir:String = '${folder}assets/music/${directory}-';
+					if(!FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" doesnt exist');continue;}
+
+					var outDir:String = Sys.getCwd() + 'mods/charts/${name.substr(0,5)}-${directory}/';
+					try{FileSystem.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
+					
+					for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg',
+					     			'${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
+						try{
+							loadingText.text = 'Copying ${i}...';// Just display this text
+							File.copy(i,v);
+						}catch(e) trace('$i caused ${e.message}');
+					}
+					for (file in FileSystem.readDirectory('${assets}data/${directory}/')) {
+						try{
+							loadingText.text = 'Copying ${file}...';// Just display this text
+							File.copy('${assets}data/${directory}/${file}','${outDir}${file}');
+						}catch(e) trace('$file caused ${e.message}');
+
+				} songsImported++;}
 		}
-		songsImported++;
-  	}
   	loadingText.text = 'Imported ${songsImported} songs. Press any key to go to the main menu';
   	done = true;
   	}catch(e) MainMenuState.handleError('Error while trying to scan for songs, ${e.message}');

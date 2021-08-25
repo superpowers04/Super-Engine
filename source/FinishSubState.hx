@@ -48,6 +48,8 @@ class FinishSubState extends MusicBeatSubstate
 		}
 		super();
 		if (win) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+		FlxG.camera.zoom = 1;
+		PlayState.instance.camHUD.zoom = 1;
 		if (FlxG.save.data.camMovement && camFollow != null){
 			PlayState.instance.followChar(if(win) 0 else 1);
 		}
@@ -113,7 +115,7 @@ class FinishSubState extends MusicBeatSubstate
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
 	}
 
-	public static function retMenu(){
+	function retMenu(){
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
 		switch (PlayState.stateType)
@@ -152,15 +154,10 @@ class FinishSubState extends MusicBeatSubstate
 	}
 	function restart()
 	{
+		ready = false;
 		FlxG.sound.music.stop();
 		FlxG.sound.play(Paths.music('gameOverEnd'));
-		new FlxTimer().start(0.7, function(tmr:FlxTimer)
-		{
-			FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
-			{
-				FlxG.resetState();
-			});
-		});
+		FlxG.resetState();
 	}
 	override function destroy()
 	{

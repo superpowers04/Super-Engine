@@ -48,7 +48,7 @@ class KeyBindMenu extends FlxSubState
                               FlxG.save.data.gpupBind,
                               FlxG.save.data.gprightBind];
     var tempKey:String = "";
-    var blacklist:Array<String> = ["ESCAPE", "ENTER", "BACKSPACE", "SPACE", "TAB"];
+    var blacklist:Array<String> = ["ESCAPE", "ENTER", "BACKSPACE", "SPACE", "TAB","ONE","TWO","THREE","SEVEN"];
 
     var blackBox:FlxSprite;
     var infoText:FlxText;
@@ -352,18 +352,14 @@ class KeyBindMenu extends FlxSubState
 
         var shouldReturn:Bool = true;
 
-        var notAllowed:Array<String> = [];
-
-        for(x in blacklist){notAllowed.push(x);}
-
-        trace(notAllowed);
+        
 
         for(x in 0...keys.length)
             {
                 var oK = keys[x];
                 if(oK == r)
                     keys[x] = null;
-                if (notAllowed.contains(oK))
+                if (blacklist.contains(oK))
                 {
                     keys[x] = null;
                     lastKey = oK;
@@ -371,12 +367,12 @@ class KeyBindMenu extends FlxSubState
                 }
             }
 
-        if (r.contains("NUMPAD"))
-        {
-            keys[curSelected] = null;
-            lastKey = r;
-            return;
-        }
+        // if (r.contains("NUMPAD"))
+        // {
+        //     keys[curSelected] = null;
+        //     lastKey = r;
+        //     return;
+        // }
 
         lastKey = "";
 

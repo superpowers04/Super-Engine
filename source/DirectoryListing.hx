@@ -43,8 +43,12 @@ class DirectoryListing extends SearchMenuState{
 		add(grpSongs);
 		songs = [];
 		var i:Int = 0;
-		curDirReg.match(dataDir);
-		addTitleText(curDirReg.matched(2));
+		try{
+			curDirReg.match(dataDir);
+			addTitleText(curDirReg.matched(2));
+		}catch(e){
+			addTitleText(dataDir);
+		}
 			#if windows
 			if (dataDir == "Root"){
 				MainMenuState.handleError('Scanning for drives doesnt work yet, due to the developer lacking a Windows system(and 20 gigs) for testing.');

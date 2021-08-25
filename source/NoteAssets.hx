@@ -13,6 +13,8 @@ class NoteAssets{
 	var path:String = "mods/noteassets"; // The slash not being here is just for ease of reading
 	public static var image:FlxGraphic;
 	public static var xml:String;
+	public static var splashImage:FlxGraphic;
+	public static var splashXml:String;
 	public static var badImage:FlxGraphic;
 	public static var badXml:String;
 	public static var noteSplashAsset:SplashNoteAsset;
@@ -59,8 +61,8 @@ class SplashNoteAsset{
 
 		name = name_;
 		path = path_;
-		image = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}.png'));
-		xml = File.getContent('${path}/${name}.xml');
+		NoteAssets.splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}.png'));
+		NoteAssets.splashXml = File.getContent('${path}/${name}.xml');
 		return;
 		}catch(e) MainMenuState.handleError('Error occurred while loading splashes ${e.message}');
 		

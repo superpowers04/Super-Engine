@@ -13,6 +13,7 @@
 		"alt_anims": false, "": "Enables alt animations like those from Parents-Christmas",
 		"flip_x": false, "": "Flips X axis from the sprite, useful for Boyfriend/Pico clones",
 		"flip": false, "": "Allow the character to flip, enabled by default for every character except for GF, copies cloned character if not provided",
+		"offset_flip" : 0,
 
 		"animations":
 		[
@@ -66,7 +67,7 @@
 		[
 		],
 
-		"common_stage_offset": [-200, -300, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
+		"common_stage_offset": [-200, -90, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
 		"cam_pos": [0, -200], "": "Camera position",
 		"pixel_stage_offset": [0, 50, 0, 50], "": "Your character's offset ingame on Pixel stages as Player 1 and 2",
 		"local_multiplayer_offset": [0, 0], "": "Your character's offset on the Local Multiplayer/Singleplayer Character Select screen",

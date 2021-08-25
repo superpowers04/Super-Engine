@@ -179,7 +179,21 @@ class PauseSubState extends MusicBeatSubstate
 
 		if (FlxG.save.data.fpsCap > 290) (cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
 
-		FinishSubState.retMenu();
+		retMenu();
+		return;
+	}
+	function retMenu(){
+		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
+		PlayState.actualSongName = ""; // Reset to prevent issues
+		switch (PlayState.stateType)
+		{
+			case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+			case 4:FlxG.switchState(new multi.MultiMenuState());
+			case 5:FlxG.switchState(new osu.OsuMenuState());
+				
+
+			default:FlxG.switchState(new FreeplayState());
+		}
 		return;
 	}
 	function countdown(){try{

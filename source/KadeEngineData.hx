@@ -131,7 +131,8 @@ class KadeEngineData
 		if (FlxG.save.data.bfShow == null) FlxG.save.data.bfShow = true;
 
 		if (FlxG.save.data.playVoices == null) FlxG.save.data.playVoices = false;
-	
+		if (FlxG.save.data.updateCheck == null) FlxG.save.data.updateCheck = true;
+	 
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();

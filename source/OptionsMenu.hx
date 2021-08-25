@@ -16,6 +16,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import flixel.addons.ui.FlxUIState;
+import flixel.util.FlxTimer;
 
 class OptionsMenu extends MusicBeatState
 {
@@ -24,6 +25,7 @@ class OptionsMenu extends MusicBeatState
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
+	var selCat:Int = 0;
 
 	var options:Array<OptionCategory> = [
 		new OptionCategory("Customization", [
@@ -59,7 +61,6 @@ class OptionsMenu extends MusicBeatState
 			new AccuracyOption("Display accuracy information."),
 			new SongPositionOption("Show the songs current position (as a bar)"),
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
-			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			new RainbowFPSOption("Make the FPS Counter Rainbow"),
 		]),
 		new OptionCategory("Misc", [
@@ -73,6 +74,7 @@ class OptionsMenu extends MusicBeatState
 			new PlayVoicesOption("Plays your character's voices when you press a note.")
 		]),
 		new OptionCategory("Preformance", [
+			new CheckForUpdatesOption("Check for updates when booting the game"),
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
 			new NoteRatingOption("Toggles the rating that appears when you press a note"),
@@ -86,6 +88,8 @@ class OptionsMenu extends MusicBeatState
 
 	private var currentDescription:String = "";
 	private var grpControls:FlxTypedGroup<Alphabet>;
+	private var grpControls_:FlxTypedGroup<Alphabet>;
+	private var catControls:FlxTypedGroup<Alphabet>;
 	public static var versionShit:FlxText;
 
 	var currentSelectedCat:OptionCategory;
@@ -132,6 +136,7 @@ class OptionsMenu extends MusicBeatState
 		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
 
 		super.create();
+		updateCat();
 	}
 
 	var isCat:Bool = false;
@@ -171,16 +176,26 @@ class OptionsMenu extends MusicBeatState
 			else if (controls.BACK)
 			{
 				isCat = false;
+				if (catControls != null){
+					grpControls.forEach(function(item){
+						catControls.add(item);
+						item.xOffset = FlxG.width * 0.60;
+						item.alpha = 0.3;
+						item.color = 0xdddddd;
+					});
+				}
 				grpControls.clear();
 				for (i in 0...options.length)
 					{
 						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
 						controlLabel.isMenuItem = true;
 						controlLabel.targetY = i;
+						controlLabel.x = -2000;
 						grpControls.add(controlLabel);
 						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 					}
 				curSelected = 0;
+				changeSelection(selCat,false);
 			}
 			if (controls.UP_P)
 				changeSelection(-1);
@@ -255,19 +270,49 @@ class OptionsMenu extends MusicBeatState
 				}
 				else
 				{
+					selCat = curSelected;
 					currentSelectedCat = options[curSelected];
 					isCat = true;
+					var start = 0;
+					var iy = FlxG.height * 0.50;
+					if ( grpControls_ == null) {grpControls_ = new FlxTypedGroup<Alphabet>();add(grpControls_);}
+					grpControls_.clear();
+					grpControls.forEach(function(item){
+						item.xOffset = -1500;
+						grpControls_.add(item);
+					});
 					grpControls.clear();
-					for (i in 0...currentSelectedCat.getOptions().length)
+					new FlxTimer().start(0.5, function(tmr:FlxTimer){grpControls_.clear();},1);
+					
+
+					if (catControls != null){
+						start = 4;
+						iy=FlxG.height;
+						catControls.forEach(function(item){
+							grpControls.add(item);
+							item.xOffset = 70;
+							item.alpha = 1;
+							item.color = 0xFFFFFFFF;
+						});
+						catControls.clear();
+						curSelected = 0;
+						changeSelection(0);
+					}
+					for (i in start...currentSelectedCat.getOptions().length)
 						{
 							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
 							controlLabel.isMenuItem = true;
 							controlLabel.targetY = i;
+							controlLabel.x = FlxG.width * 0.60;
+							controlLabel.y = iy;
 							grpControls.add(controlLabel);
 							// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 						}
+					
 					curSelected = 0;
 				}
+
+				updateCat();
 			}
 		}
 		
@@ -288,10 +333,31 @@ class OptionsMenu extends MusicBeatState
 
 	}
 
-	function changeSelection(change:Int = 0)
+	function updateCat(){
+		if (catControls != null){catControls.clear();} else{catControls = new FlxTypedGroup<Alphabet>();add(catControls);}
+		
+		if (isCat) return;
+		// catControls = new FlxTypedGroup<Alphabet>();
+		// add(catControls);
+
+		for (i in 0...options[curSelected].getOptions().length)
+		{
+			if(i > 4) break; // No reason to add more than 4
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[curSelected].getOptions()[i].getDisplay(), true, false, true,FlxG.width * 0.60);
+			controlLabel.isMenuItem = true;
+			controlLabel.targetY = i;
+			controlLabel.alpha = 0.3;
+			controlLabel.color = 0xdddddd;
+			controlLabel.x = 80;
+			controlLabel.y = FlxG.height * 0.50;
+			catControls.add(controlLabel);
+		}
+	}
+
+	function changeSelection(change:Int = 0,?upCat = true)
 	{
 		
-		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+		if (change != 0 )FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 
 		curSelected += change;
 
@@ -305,6 +371,7 @@ class OptionsMenu extends MusicBeatState
 		else
 			currentDescription = "Please select a category";
 		updateOffsetText();
+		if (upCat) updateCat();
 		// selector.y = (70 * curSelected) + 30;
 
 		var bullShit:Int = 0;
