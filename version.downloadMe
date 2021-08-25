@@ -1,4 +1,5 @@
-0.4.1;
-- Hurt arrows from VSOmega and Tricky now make you lose 1000 points from score and will lose 30 health offline
-- Fixed the game crashing after playing a song
-- Boot to where the song was chosen from when exiting to the menu from the pause screen
+0.4.2;
+- Many changes to animation debug
+- GF characters actually load now
+- Some polish to the options menu
+- Game no longer crashes when there's no songs to be listed

@@ -342,7 +342,7 @@ class OptionsMenu extends MusicBeatState
 
 		for (i in 0...options[curSelected].getOptions().length)
 		{
-			if(i > 4) break; // No reason to add more than 4
+			if(i >= 4) break; // No reason to add more than 4
 			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[curSelected].getOptions()[i].getDisplay(), true, false, true,FlxG.width * 0.60);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;

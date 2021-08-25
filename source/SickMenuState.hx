@@ -43,7 +43,7 @@ class SickMenuState extends MusicBeatState
 	public static var musicList:Array<MusicTime> = [
 		{
 			file: if(FileSystem.exists("mods/title-morning.ogg")) "mods/title-morning.ogg" else Paths.music("breakfast"),
-			begin:5,end:10,wrapAround:false,color:0xffaa11
+			begin:6,end:10,wrapAround:false,color:0xffaa11
 		},
 		{
 			file: if(FileSystem.exists("mods/title-day.ogg")) "mods/title-day.ogg" else Paths.music('freakyMenu'),
@@ -51,11 +51,11 @@ class SickMenuState extends MusicBeatState
 		},
 		{
 			file: if(FileSystem.exists("mods/title-evening.ogg")) "mods/title-evening.ogg" else Paths.music("GiveaLilBitBack"),
-			begin:16,end:21,wrapAround:false,color:0xffaa11
+			begin:15,end:19,wrapAround:false,color:0xffaa11
 		},
 		{
 			file: if(FileSystem.exists("mods/title-night.ogg")) "mods/title-night.ogg" else Paths.music("freshChillMix"),
-			begin:21,end:6,wrapAround:true,color:0x1133aa
+			begin:20,end:5,wrapAround:true,color:0x1133aa
 		},
 	];
 	var isMainMenu:Bool = false;
@@ -82,7 +82,7 @@ class SickMenuState extends MusicBeatState
 			var curMusicTime = 1;
 			for (i in 1 ... SickMenuState.musicList.length) {
 				var v = SickMenuState.musicList[i];
-				if (!v.wrapAround && time => v.begin && time <= v.end || (v.wrapAround && (time => v.begin || time <= v.end))){
+				if (!v.wrapAround && time >= v.begin && time <= v.end || (v.wrapAround && (time >= v.begin || time <= v.end))){
 					curMusicTime = i;
 					break;
 				}
@@ -121,7 +121,7 @@ class SickMenuState extends MusicBeatState
 			// if (_bg != null){ }
 
 			FlxG.sound.playMusic(SickMenuState.menuMusic);
-			FlxG.sound.music.time = FlxMath.wrap(Math.floor(SickMenuState.curSongTime),0,Math.floor(FlxG.sound.music.length));
+			if (!MainMenuState.firstStart) FlxG.sound.music.time = FlxMath.wrap(Math.floor(SickMenuState.curSongTime),0,Math.floor(FlxG.sound.music.length));
 		}else if (!FlxG.sound.music.playing) FlxG.sound.playMusic(SickMenuState.menuMusic);
 		if(!isMainMenu && _bg != null){
 			_bg.color = FlxColor.interpolate(_bg.color,SickMenuState.musicList[musicTime].color,0.2);

@@ -51,7 +51,8 @@ class OsuMenuState extends onlinemod.OfflineMenuState
     var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
     if (FileSystem.exists(dataDir))
     {
-      for (directory in FileSystem.readDirectory(dataDir))
+      var dirs = orderList(FileSystem.readDirectory(dataDir));
+      for (directory in dirs)
       {
         if ((search == "" || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
         {
@@ -71,8 +72,8 @@ class OsuMenuState extends onlinemod.OfflineMenuState
           if (modes[i][0] == null){ // No charts to load!
             modes[i][0] = "No beatmaps for this song!";
           }
-          songs.push(dataDir + directory);
-          songNames.push(name);
+            songs[i] = dataDir + directory;
+            songNames[i] = directory;
               
           var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false);
           controlLabel.isMenuItem = true;

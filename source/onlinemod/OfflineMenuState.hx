@@ -9,6 +9,7 @@ import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIText;
+import flixel.math.FlxRandom;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -48,6 +49,10 @@ class OfflineMenuState extends SearchMenuState
     sideButton.resize(150, 60);
     add(sideButton);
   }
+  function sortDirListing(listing:Array<String>){
+    
+    return listing;
+  }
   override function reloadList(?reload=false,?search = ""){
     curSelected = 0;
     if(reload){grpSongs.destroy();}
@@ -60,7 +65,8 @@ class OfflineMenuState extends SearchMenuState
     var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
     if (FileSystem.exists(dataDir))
     {
-      for (directory in FileSystem.readDirectory(dataDir))
+      var dirs = orderList(FileSystem.readDirectory(dataDir));
+      for (directory in dirs)
       {
         for (file in FileSystem.readDirectory(dataDir + directory))
         {
@@ -87,6 +93,11 @@ class OfflineMenuState extends SearchMenuState
   override function ret(){
     FlxG.mouse.visible = false;
     FlxG.switchState(new MainMenuState());
+  }
+  override function extraKeys(){
+    if (FlxG.keys.justPressed.R){
+      changeSelection(Math.floor(songs.length * Math.random()));
+    }
   }
   override function select(sel:Int = 0){
       OfflinePlayState.chartFile = songs[curSelected];

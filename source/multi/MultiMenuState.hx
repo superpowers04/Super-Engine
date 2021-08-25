@@ -41,15 +41,16 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     if(reload){grpSongs.destroy();}
     grpSongs = new FlxTypedGroup<Alphabet>();
     add(grpSongs);
-    songs = [];
-    songNames = [];
-    modes = [];
+    songs = ["No Songs!"];
+    songNames = ["Nothing"];
+    modes = [0 => ["None"]];
     var i:Int = 0;
 
     var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
     if (FileSystem.exists(dataDir))
     {
-      for (directory in FileSystem.readDirectory(dataDir))
+      var dirs = orderList(FileSystem.readDirectory(dataDir));
+      for (directory in dirs)
       {
         if (search == "" || query.match(directory.toLowerCase())) // Handles searching
         {
@@ -64,8 +65,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
             if (modes[i][0] == null){ // No charts to load!
               modes[i][0] = "No charts for this song!";
             }
-            songs.push(dataDir + directory);
-            songNames.push(directory);
+            songs[i] = dataDir + directory;
+            songNames[i] = directory;
                 
             var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
             controlLabel.isMenuItem = true;
@@ -82,9 +83,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     }
   }
   override function select(sel:Int = 0){
-      if (songs[curSelected] == null) {return;}
-      if(modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
-        MainMenuState.handleError('${songs[curSelected]} has no chart!');
+      if (songs[curSelected] == "No Songs!" || modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
+        FlxG.sound.play(Paths.sound("cancelMenu"));
         return;
       }
       try{
