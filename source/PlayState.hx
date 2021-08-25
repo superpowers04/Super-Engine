@@ -110,6 +110,7 @@ class PlayState extends MusicBeatState
 
 	public static var dad:Character;
 	public static var gf:Character;
+	public var gfChar:String = "gf";
 	public static var boyfriend:Character;
 
 	public var notes:FlxTypedGroup<Note>;
@@ -259,9 +260,14 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{try{
 
+		if (instance != null) instance.destroy();
+		setInputHandlers(); // Sets all of the handlers for input
 		instance = this;
 		stepAnimEvents = [];
 		beatAnimEvents = [];
+		strumLineNotes = null;
+		playerStrums = null;
+		cpuStrums = null;
 		if (FlxG.save.data.fpsCap > 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(800);
 		
@@ -734,6 +740,7 @@ class PlayState extends MusicBeatState
 				gfVersion = 'gf';
 		}
 		if (FlxG.save.data.gfChar != "gf"){gfVersion=FlxG.save.data.gfChar;}
+		gfChar = gfVersion;
 		if (FlxG.save.data.gfShow) gf = new Character(400, 100, gfVersion,false,2); else gf = new EmptyCharacter(400, 100);
 		gf.scrollFactor.set(0.95, 0.95);
 		if (noGf) gf.visible = false;
@@ -802,20 +809,12 @@ class PlayState extends MusicBeatState
 			}
 		}
 		if (dad.spiritTrail && FlxG.save.data.distractions){
-			// trailArea.scrollFactor.set();
 			var dadTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-			// evilTrail.changeValuesEnabled(false, false, false, false);
-			// evilTrail.changeGraphic()
 			add(dadTrail);
-			// evilTrail.scrollFactor.set(1.1, 1.1);
 		}
 		if (boyfriend.spiritTrail && FlxG.save.data.distractions){
-			// trailArea.scrollFactor.set();
 			var bfTrail = new FlxTrail(boyfriend, null, 4, 24, 0.3, 0.069);
-			// evilTrail.changeValuesEnabled(false, false, false, false);
-			// evilTrail.changeGraphic()
 			add(bfTrail);
-			// evilTrail.scrollFactor.set(1.1, 1.1);
 		}
 		add(gf);
 
@@ -926,6 +925,7 @@ class PlayState extends MusicBeatState
 		// Add Kade Engine watermark
 		if (actualSongName == "") actualSongName = curSong + " " + songDiff;
 
+		
 		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50 - FlxG.save.data.guiGap,0,actualSongName + " - " + inputEngineName, 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
@@ -1043,7 +1043,6 @@ class PlayState extends MusicBeatState
 		if (!loadRep)
 			rep = new Replay("na");
 		
-		setInputHandlers(); // Sets all of the handlers for input
 		add(scoreTxt);
 		super.create();
 	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
@@ -3703,7 +3702,7 @@ class PlayState extends MusicBeatState
 
 			if (FlxG.keys.justPressed.THREE && gf != null)
 			{
-				FlxG.switchState(new AnimationDebug(gf.curCharacter,false,2));
+				FlxG.switchState(new AnimationDebug(gfChar,false,2));
 			}
 			if (FlxG.keys.justPressed.SEVEN )
 			{
