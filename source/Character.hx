@@ -26,6 +26,7 @@ using StringTools;
 class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Float>>;
+	public var animLoopStart:Map<String,Int>;
 	public var debugMode:Bool = false;
 	public var spiritTrail:Bool = false;
 	public var camPos:Array<Int> = [0,0];
@@ -48,13 +49,15 @@ class Character extends FlxSprite
 	public var oneShotAnims:Array<String> = ["hey"];
 	public var tintedAnims:Array<String> = [];
 	public var flip:Bool = true;
-	public var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
+	public var tex:FlxAtlasFrames = null;
 	public var holdTimer:Float = 0;
-	public var stunned:Bool = false; // Why was this specific to BF?
+	public var stunned:Bool = false;
+	public var loadedFrom:String = "";
+	public var isCustom:Bool = false;
+	public var charProperties:CharacterJson;
 	var flipNotes:Bool = true;
 	var needsInverted:Int= 1;
 	var danced:Bool = false;
-	var charProperties:CharacterJson;
 	var lonely:Bool = false;
 	var altAnims:Array<String> = []; 
 
@@ -264,42 +267,47 @@ class Character extends FlxSprite
 		frames = tex;
 		loadJSONChar(charProperties);
 	}
-	function loadOffsetsFromJSON(charProperties:CharacterJson){
+	function loadOffsetsFromJSON(?charProperties:CharacterJson){
+		if (charProperties == null) return;
 		if (charProperties.offset_flip != null ) needsInverted = charProperties.offset_flip;
 		var offsetCount = 0;
-		for (offset in charProperties.animations_offsets){ // Custom offsets
-			offsetCount++;
-			if (needsInverted == 1)
-				switch (charType) {
-					case 0:
-						addOffset(offset.anim,offset.player1[0],offset.player1[1]);
-					case 1:
-						addOffset(offset.anim,offset.player2[0],offset.player2[1]);
-					case 2:
-						addOffset(offset.anim,offset.player3[0],offset.player3[1]);
-				}
-			else
-				addOffset(offset.anim,offset.player1[0],offset.player1[1]);
-		}	
+		if (charProperties.animations_offsets != null && charProperties.animations_offsets.length > 0){
+
+			for (offset in charProperties.animations_offsets){ // Custom offsets
+				offsetCount++;
+				if (needsInverted == 1)
+					switch (charType) {
+						case 0:
+							if (offset.player1 != null && offset.player1.length > 1) addOffset(offset.anim,offset.player1[0],offset.player1[1]);
+						case 1:
+							if (offset.player2 != null && offset.player2.length > 1) addOffset(offset.anim,offset.player2[0],offset.player2[1]); else if (offset.player1 != null && offset.player1.length > 1) addOffset(offset.anim,offset.player1[0],offset.player1[1]);
+						case 2:
+							if (offset.player3 != null && offset.player3.length > 1) addOffset(offset.anim,offset.player3[0],offset.player3[1]); else if (offset.player1 != null && offset.player1.length > 1) addOffset(offset.anim,offset.player1[0],offset.player1[1]);
+					}
+				else
+					addOffset(offset.anim,offset.player1[0],offset.player1[1]);
+			}	
+		}
 
 		switch(charType){
 			case 0: if (charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
 			case 1: if (charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
 			case 2: if (charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
 		}
-		if (needsInverted == 1 && !isPlayer){
-			addOffset('all',charProperties.common_stage_offset[2],charProperties.common_stage_offset[3]); // Load common stage offset
-			camX+=charProperties.common_stage_offset[2];
-			camY-=charProperties.common_stage_offset[3]; // Load common stage offset for camera too
-		}else{
-			addOffset('all',charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
-			camX+=charProperties.common_stage_offset[0];
-			camY-=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
+		if(charProperties.common_stage_offset != null){
+			if (needsInverted == 1 && !isPlayer){
+				addOffset('all',charProperties.common_stage_offset[2],charProperties.common_stage_offset[3]); // Load common stage offset
+				camX+=charProperties.common_stage_offset[2];
+				camY-=charProperties.common_stage_offset[3]; // Load common stage offset for camera too
+			}else{
+				addOffset('all',charProperties.common_stage_offset[0],charProperties.common_stage_offset[1]); // Load common stage offset
+				camX+=charProperties.common_stage_offset[0];
+				camY-=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
+			}
 		}
 		if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
 		if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 		trace('Loaded ${offsetCount} offsets!');
-
 	}
 	function loadJSONChar(charProperties:CharacterJson){
 		
@@ -365,7 +373,7 @@ class Character extends FlxSprite
 		updateHitbox();
 
 
-		if (charProperties.flip != null) flip = charProperties.flip;
+		if(charProperties.flip != null) flip = charProperties.flip;
 		clonedChar = charProperties.clone;
 		if (clonedChar != null && clonedChar != "") {
 			trace('Character clones $clonedChar copying their offsets!');
@@ -377,9 +385,11 @@ class Character extends FlxSprite
 	}
 	function loadCustomChar(){
 		trace('Loading a custom character "$curCharacter"! ');				
-		var charPropJson:String = File.getContent('mods/characters/$curCharacter/config.json');
-		charProperties = haxe.Json.parse(CoolUtil.cleanJSON(charPropJson));
+		isCustom = true;
+		var charPropJson:String = "";
+		if (charProperties == null) {charPropJson = File.getContent('mods/characters/$curCharacter/config.json');charProperties = haxe.Json.parse(CoolUtil.cleanJSON(charPropJson));}
 		if (charProperties == null || charProperties.animations == null || charProperties.animations[0] == null){MainMenuState.handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
+		loadedFrom = 'mods/characters/$curCharacter/config.json';
 		var pngName:String = "character.png";
 		var xmlName:String = "character.xml";
 		var forced:Int = 0;
@@ -417,7 +427,7 @@ class Character extends FlxSprite
 		frames = tex;
 
 
-
+		if (charProperties == null) trace("No charProperites?");
 		loadJSONChar(charProperties);
 		// Custom misses
 		if (charType == 0 && !amPreview && !debugMode){
@@ -441,13 +451,8 @@ class Character extends FlxSprite
 		}
 
 
-	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null) // CharTypes: 0=BF 1=Dad 2=GF
+	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null) // CharTypes: 0=BF 1=Dad 2=GF
 	{
-		if (lonely){
-			super(x, y);
-			return;
-		}
-
 	try{
 
 		super(x, y);
@@ -466,6 +471,7 @@ class Character extends FlxSprite
 		if (curCharacter == 'dad'){dadVar = 6.1;}
 		this.isPlayer = isPlayer;
 		amPreview = preview;
+		if(charJson != null) charProperties = charJson;
 
 		
 		if (exitex != null) tex = exitex;
@@ -805,8 +811,9 @@ class Character extends FlxSprite
 		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
 		if(animation.curAnim == null && !lonely){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
 		}catch(e){
-
+			#if debug
 			trace('Error with $curCharacter: ${e.stack} ${e.message}');
+			#end
 			MainMenuState.handleError('Error with $curCharacter: ' + e.message + "");
 			return;
 		}
@@ -856,7 +863,7 @@ class Character extends FlxSprite
 		else if ((!debugMode || ignoreDebug) && !amPreview)
 		{
 
-			if(dance_idle || charType == 2 || curCharacter == "spooky"){ // And I condensed it even more by providing a dance_idle option...
+			if(dance_idle || charType == 2 || curCharacter == "spooky"){
 				if (animation.curAnim == null || (!animation.curAnim.name.startsWith('hair') && animation.curAnim.finished))
 				{
 					// danced = !danced;
