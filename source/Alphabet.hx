@@ -8,6 +8,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
 
 using StringTools;
 
@@ -37,15 +39,17 @@ class Alphabet extends FlxSpriteGroup
 	var lastSprite:AlphaCharacter;
 	var xPosResetted:Bool = false;
 	var lastWasSpace:Bool = false;
+	public var textObj:FlxText;
 
-	var listOAlphabets:List<AlphaCharacter> = new List<AlphaCharacter>();
+	var listOAlphabets:List<AlphaCharacter>;
 
 	var splitWords:Array<String> = [];
 
 	var isBold:Bool = false;
 	public var xOffset:Float = 70;
+	public var useAlphabet:Bool = true;
 
-	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, shouldMove:Bool = false,?xOffset:Float = 70)
+	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, shouldMove:Bool = false,?xOffset:Float = 70,?useAlphabet:Bool = true)
 	{
 		super(x, y);
 
@@ -53,9 +57,11 @@ class Alphabet extends FlxSpriteGroup
 		this.text = text;
 		isBold = bold;
 		this.xOffset = xOffset;
+		this.useAlphabet = useAlphabet;
 
-		if (text != "")
+		if (text != "" && useAlphabet)
 		{
+			listOAlphabets = new List<AlphaCharacter>();
 			if (typed)
 			{
 				startTypedText();
@@ -65,6 +71,11 @@ class Alphabet extends FlxSpriteGroup
 				addText();
 			}
 
+		}else if (text != "" && !useAlphabet){
+			textObj = new FlxText(0, 0, FlxG.width, text, 48);
+			textObj.scrollFactor.set();
+			textObj.setFormat("VCR OSD Mono", 48, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			add(textObj);
 		}
 	}
 
