@@ -2,57 +2,75 @@ package;
 
 import haxe.Timer;
 import openfl.events.Event;
-import openfl.system.System;
 import openfl.text.TextField;
+import openfl.system.System;
 import openfl.text.TextFormat;
 
-/* 
-	Based on this tutorial:
-	https://keyreal-code.github.io/haxecoder-tutorials/17_displaying_fps_and_memory_usage_using_openfl.html
- */
+// Recreation of openfl.display.fps, with memory being listed
 class Overlay extends TextField
 {
-	var times:Array<Float> = [];
-	var memPeak:Float = 0;
-	public var currentFPS:Int = 0;
+	/**
+		The current frame rate, expressed using frames-per-second
+	**/
+	public var currentFPS(default, null):Int;
 
-	public function new(xPos:Float, yPos:Float)
+	@:noCompletion private var cacheCount:Int;
+	@:noCompletion private var currentTime:Float;
+	@:noCompletion private var times:Array<Float>;
+
+	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
 	{
 		super();
 
-		x = xPos;
-		y = yPos;
+		this.x = x;
+		this.y = y;
 		width = 200;
 		height = 70;
 
+		currentFPS = 0;
 		selectable = false;
+		mouseEnabled = false;
+		defaultTextFormat = new TextFormat("_sans", 12, color);
+		text = "FPS: ";
 
-		defaultTextFormat = new TextFormat("_sans", 12, 0xFFFFFF);
-		text = "";
+		cacheCount = 0;
+		currentTime = 0;
+		times = [];
 
-		addEventListener(Event.ENTER_FRAME, onEnterFrame);
+		#if flash
+		addEventListener(Event.ENTER_FRAME, function(e)
+		{
+			var time = Lib.getTimer();
+			__enterFrame(time - currentTime);
+		});
+		#end
 	}
-	function update(){
-		currentFPS = times.length;
-	}
+	var memPeak:Float = 0;
 
-	function onEnterFrame(_)
+	// Event Handlers
+	@:noCompletion
+	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
-		var now:Float = Timer.stamp();
-		times.push(now);
-		while (times[0] < now - 1)
+		currentTime += deltaTime;
+		times.push(currentTime);
+
+		while (times[0] < currentTime - 1000)
 		{
 			times.shift();
 		}
 
+		var currentCount = times.length;
+		currentFPS = Math.round((currentCount + cacheCount) / 2);
 		var mem:Float = Math.round(System.totalMemory / 1024 / 1024 * 100) / 100;
 		if (mem > memPeak)
 			memPeak = mem;
 
-		// Update the text
-		if (visible)
+		if (currentCount != cacheCount /*&& visible*/)
 		{
-			text = "FPS: " + times.length + "\nMemory: " + mem + " MB\nPeak Memory: " + memPeak + " MB";
+			// text = "FPS: " + currentFPS;
+			text = "FPS: " + currentFPS + "\nMemory: " + mem + " MB\nPeak Memory: " + memPeak + " MB";
 		}
+
+		cacheCount = currentCount;
 	}
 }

@@ -38,7 +38,7 @@ class MainMenuState extends SickMenuState
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
-	public static function handleError(error:String):Void{
+	public static function handleError(?error:String = "An error occurred"):Void{
 		if (errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		MainMenuState.errorMessage = error;
 		if (onlinemod.OnlinePlayMenuState.socket != null){

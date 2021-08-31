@@ -61,7 +61,6 @@ class OptionsMenu extends MusicBeatState
 			new AccuracyOption("Display accuracy information."),
 			new SongPositionOption("Show the songs current position (as a bar)"),
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
-			new RainbowFPSOption("Make the FPS Counter Rainbow"),
 		]),
 		new OptionCategory("Misc", [
 			#if desktop

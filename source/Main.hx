@@ -14,6 +14,9 @@ import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.UncaughtErrorEvent;
+import crashdumper.CrashDumper;
+import crashdumper.SessionData;
+
 import haxe.CallStack;
 import sys.FileSystem;
 import sys.io.File;
@@ -78,12 +81,12 @@ class Main extends Sprite
 			gameWidth = Math.ceil(stageWidth / zoom);
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
-
+		var crashDumper = new CrashDumper(SessionData.generateID("FNFBR-"));
 		#if !debug
 		initialState = TitleState;
 		#end
 
-		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		// Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 
 		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
 
@@ -91,6 +94,9 @@ class Main extends Sprite
 
 		fpsCounter = new Overlay(0, 0);
 		addChild(fpsCounter);
+		// fpsCounter.visible = false;
+		// fpsOverlay = new Overlay(0, 0);
+		// addChild(fpsCounter);
 
 		#if !mobile
 		// fpsCounter = new FPS(10, 3, 0xFFFFFF);
@@ -103,6 +109,7 @@ class Main extends Sprite
 	var game:FlxGame;
 
 	var fpsCounter:Overlay;
+	// var fpsOverlay:Overlay;
 
 	public function toggleFPS(fpsEnabled:Bool):Void {
 		fpsCounter.visible = fpsEnabled;

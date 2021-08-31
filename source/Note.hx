@@ -39,7 +39,7 @@ class Note extends FlxSprite
 	public var rating:String = "shit";
 
 	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false)
-	{
+	{try{
 		super();
 		if (FlxG.save.data.downscroll) offscreenY = 50;
 		if (prevNote == null)
@@ -66,8 +66,9 @@ class Note extends FlxSprite
 
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
-
-		if (shouldntBeHit) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
+		try{
+			if (shouldntBeHit) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
+		}catch(e){color = 0x220011;}
 		if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 
 		animation.addByPrefix('greenScroll', 'green0');
@@ -160,7 +161,7 @@ class Note extends FlxSprite
 			}
 			visible = false;
 		}
-	}
+	}catch(e){MainMenuState.handleError('Caught "Note create" crash: ${e.message}');}}
 
 	override function update(elapsed:Float)
 	{

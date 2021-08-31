@@ -43,7 +43,7 @@ class SickMenuState extends MusicBeatState
 	public static var musicList:Array<MusicTime> = [
 		{
 			file: if(FileSystem.exists("mods/title-morning.ogg")) "mods/title-morning.ogg" else Paths.music("breakfast"),
-			begin:6,end:10,wrapAround:false,color:0xffaa11
+			begin:6,end:10,wrapAround:false,color:0xdd9911
 		},
 		{
 			file: if(FileSystem.exists("mods/title-day.ogg")) "mods/title-day.ogg" else Paths.music('freakyMenu'),
@@ -51,11 +51,11 @@ class SickMenuState extends MusicBeatState
 		},
 		{
 			file: if(FileSystem.exists("mods/title-evening.ogg")) "mods/title-evening.ogg" else Paths.music("GiveaLilBitBack"),
-			begin:15,end:19,wrapAround:false,color:0xffaa11
+			begin:17,end:19,wrapAround:false,color:0xdd9911
 		},
 		{
 			file: if(FileSystem.exists("mods/title-night.ogg")) "mods/title-night.ogg" else Paths.music("freshChillMix"),
-			begin:20,end:5,wrapAround:true,color:0x1133aa
+			begin:20,end:5,wrapAround:true,color:0x113355
 		},
 	];
 	var isMainMenu:Bool = false;
@@ -131,6 +131,7 @@ class SickMenuState extends MusicBeatState
 	override function create()
 	{
 		if (ChartingState.charting) ChartingState.charting = false;
+		if (FlxG.save.data.songUnload && PlayState.SONG != null) PlayState.SONG = null;
 		SickMenuState.chgTime = true;
 		bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
 		bg.color = 0xFFFF6E6E;

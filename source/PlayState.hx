@@ -123,9 +123,9 @@ class PlayState extends MusicBeatState
 
 	private static var prevCamFollow:FlxObject;
 
-	public static var strumLineNotes:FlxTypedGroup<FlxSprite> = null;
-	public static var playerStrums:FlxTypedGroup<FlxSprite> = null;
-	public static var cpuStrums:FlxTypedGroup<FlxSprite> = null;
+	public var strumLineNotes:FlxTypedGroup<FlxSprite> = null;
+	public var playerStrums:FlxTypedGroup<FlxSprite> = null;
+	public var cpuStrums:FlxTypedGroup<FlxSprite> = null;
 	public static var dadShow = true;
 	var canPause:Bool = true;
 
@@ -255,7 +255,6 @@ class PlayState extends MusicBeatState
 		songScore = 0;
 
 	}
-
 
 	override public function create()
 	{try{
@@ -721,11 +720,18 @@ class PlayState extends MusicBeatState
 					}
 				}
 		}
-		// if (invertedChart && onlinemod.OnlinePlayMenuState.socket == null){ // Invert players if chart is inverted, Does not swap sides, just changes character names
-		// 	var pl:Array<String> = [SONG.player1,SONG.player2];
-		// 	SONG.player1 = pl[1];
-		// 	SONG.player2 = pl[0];
-		// }
+		if (stateType == 0 || stateType == 1){
+	    PlayState.SONG.player1 = FlxG.save.data.playerChar;
+	    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
+	    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
+	    }else{
+	    	PlayState.SONG.player2 = FlxG.save.data.opponent;
+	    }}
+		if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
+			var pl:Array<String> = [SONG.player1,SONG.player2];
+			SONG.player1 = pl[1];
+			SONG.player2 = pl[0];
+		}
 		var gfVersion:String = 'gf';
 
 		switch (SONG.gfVersion)
@@ -879,11 +885,10 @@ class PlayState extends MusicBeatState
 		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast (Lib.current.getChildAt(0), Main)).getFPS()));
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
-		FlxG.camera.focusOn(camFollow.getPosition());
+		// FlxG.camera.focusOn(camFollow.getPosition());
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
-		hitSound = FlxG.save.data.hitSound;
 		FlxG.fixedTimestep = false;
 		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
 			{
@@ -957,11 +962,11 @@ class PlayState extends MusicBeatState
 		
 		if(FlxG.save.data.botplay && !loadRep){add(botPlayState);bruhmode = FlxG.save.data.botplay;};
 
-		iconP1 = new HealthIcon(SONG.player1, true);
+		iconP1 = new HealthIcon(SONG.player1, true,boyfriend.clonedChar);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
-		iconP2 = new HealthIcon(SONG.player2, false);
+		iconP2 = new HealthIcon(SONG.player2, false,dad.clonedChar);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
@@ -988,9 +993,10 @@ class PlayState extends MusicBeatState
 		// UI_camera.zoom = 1;
 
 		// cameras = [FlxG.cameras.list[1]];
-		if(hitSound && hitSoundEff == null) hitSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hitSound.ogg')) 'mods/hitSound.ogg' else Paths.sound('Normal_Hit')));
+		hitSound = FlxG.save.data.hitSound;
+		if(FlxG.save.data.hitSound && hitSoundEff == null) hitSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hitSound.ogg')) 'mods/hitSound.ogg' else Paths.sound('Normal_Hit')));
 
-		if(hurtSoundEff == null) hitSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hurtSound.ogg')) 'mods/hurtSound.ogg' else Paths.sound('ANGRY')));
+		if(hurtSoundEff == null) hurtSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hurtSound.ogg')) 'mods/hurtSound.ogg' else Paths.sound('ANGRY')));
 
 		startingSong = true;
 		
@@ -1044,6 +1050,9 @@ class PlayState extends MusicBeatState
 			rep = new Replay("na");
 		
 		add(scoreTxt);
+		// FlxG.sound.cache("missnote1");
+		// FlxG.sound.cache("missnote2");
+		// FlxG.sound.cache("missnote3");
 		super.create();
 	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
 
@@ -1358,8 +1367,9 @@ class PlayState extends MusicBeatState
 			vocals = new FlxSound();
 
 		FlxG.sound.list.add(vocals);
-
-		notes = new FlxTypedGroup<Note>();
+		if (notes == null) 
+			notes = new FlxTypedGroup<Note>();
+		notes.clear();
 		add(notes);
 
 		var noteData:Array<SwagSection>;
@@ -1378,6 +1388,7 @@ class PlayState extends MusicBeatState
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
 			for (songNotes in section.sectionNotes)
 			{
+				if(songNotes[1] == -1) continue;
 				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset + songOffset;
 				if (daStrumTime < 0)
 					daStrumTime = 0;
@@ -2518,9 +2529,8 @@ class PlayState extends MusicBeatState
 						}
 
 						dad.holdTimer = 0;
-	
-						if (SONG.needsVoices)
-							vocals.volume = 1;
+						if (dad.useVoices){dad.voiceSounds[daNote.noteData].play(1);dad.voiceSounds[daNote.noteData].time = 0;vocals.volume = 0;}else if (SONG.needsVoices) vocals.volume = 1;
+
 	
 						daNote.active = false;
 
@@ -2571,7 +2581,7 @@ class PlayState extends MusicBeatState
 							}
 							else if (!daNote.shouldntBeHit)
 							{
-								health -= 0.075;
+								health += SONG.noteMetadata.tooLateHealth;
 								vocals.volume = 0;
 								noteMiss(daNote.noteData, daNote);
 							}
@@ -2833,7 +2843,8 @@ class PlayState extends MusicBeatState
 						totalNotesHit += 1;
 					
 
-					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,1);
+					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,0.75).x = (FlxG.camera.x) + (FlxG.width * (0.25 * note.noteData + 1));
+
 
 					switch (note.noteData)
 					{
@@ -2855,7 +2866,7 @@ class PlayState extends MusicBeatState
 					BFStrumPlayAnim(note.noteData);
 					
 					note.wasGoodHit = true;
-					if (boyfriend.useVoices){FlxG.sound.play(boyfriend.voiceSounds[note.noteData], 1);vocals.volume = 0;}else vocals.volume = 1;
+					if (boyfriend.useVoices){boyfriend.voiceSounds[note.noteData].play(1);boyfriend.voiceSounds[note.noteData].time = 0;vocals.volume = 0;}else vocals.volume = 1;
 		
 					note.kill();
 					notes.remove(note, true);
@@ -2965,8 +2976,8 @@ class PlayState extends MusicBeatState
 
 						dad.holdTimer = 0;
 	
-						if (SONG.needsVoices)
-							vocals.volume = 1;
+						if (dad.useVoices){dad.voiceSounds[daNote.noteData].play(1);dad.voiceSounds[daNote.noteData].time = 0;vocals.volume = 0;}else if (SONG.needsVoices) vocals.volume = 1;
+
 	
 						daNote.active = false;
 
@@ -3017,7 +3028,7 @@ class PlayState extends MusicBeatState
 							}
 							else if (!daNote.shouldntBeHit)
 							{
-								health -= 0.075;
+								health += SONG.noteMetadata.tooLateHealth;
 								vocals.volume = 0;
 								noteMiss(daNote.noteData, daNote);
 							}
@@ -3224,7 +3235,7 @@ class PlayState extends MusicBeatState
 						totalNotesHit += 1;
 					
 
-					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,1);
+					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,0.75).x = (FlxG.camera.x) + (FlxG.width * (0.25 * note.noteData + 1));
 
 					switch (note.noteData)
 					{
@@ -3246,8 +3257,7 @@ class PlayState extends MusicBeatState
 					BFStrumPlayAnim(note.noteData);
 					
 					note.wasGoodHit = true;
-					if (boyfriend.useVoices){FlxG.sound.play(boyfriend.voiceSounds[note.noteData], 1);vocals.volume = 0;}else vocals.volume = 1;
-		
+					if (boyfriend.useVoices){boyfriend.voiceSounds[note.noteData].play(1);boyfriend.voiceSounds[note.noteData].time = 0;vocals.volume = 0;}else vocals.volume = 1;
 					note.kill();
 					notes.remove(note, true);
 					note.destroy();
@@ -3272,13 +3282,14 @@ class PlayState extends MusicBeatState
 			daNote.kill();
 			notes.remove(daNote, true);
 			daNote.destroy();
-			FlxG.sound.play(hitSoundEff, 1);
+			FlxG.sound.play(hurtSoundEff, 1);
 
 		}
 		if (!boyfriend.stunned)
 		{
 			if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 1);}else{FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));}
-			health -= 0.04;
+			// FlxG.sound.play(hurtSoundEff, 1);
+			health += SONG.noteMetadata.missHealth;
 			switch (direction)
 			{
 				case 0:
@@ -3302,7 +3313,7 @@ class PlayState extends MusicBeatState
 				totalNotesHit -= 1;
 
 			songScore -= 10;
-			if (daNote != null && daNote.shouldntBeHit) {songScore -= 990; health -= 0.26;} // Having it insta kill, not a good idea 
+			if (daNote != null && daNote.shouldntBeHit) {songScore += SONG.noteMetadata.badnoteScore; health += SONG.noteMetadata.badnoteHealth;} // Having it insta kill, not a good idea 
 
 
 

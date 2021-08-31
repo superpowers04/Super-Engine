@@ -75,6 +75,7 @@ class SearchMenuState extends MusicBeatState
 		add(bg);
 		reloadList();
 		if (toggleables['search']){
+				FlxG.mouse.visible = true;
 				//Searching
 				searchField = new FlxInputText(10, 100, 1152, 20);
 				searchField.maxLength = 81;
@@ -96,7 +97,6 @@ class SearchMenuState extends MusicBeatState
 
 		add(blackBorder);
 		add(infotext);
-		FlxG.mouse.visible = true;
 		FlxG.autoPause = true;
 		try{if(onlinemod.OnlinePlayMenuState.socket != null) onlinemod.OnlinePlayMenuState.receiver.HandleData = HandleData;}catch(e){}
 
@@ -182,7 +182,10 @@ class SearchMenuState extends MusicBeatState
 			{
 				var onScreen = ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10));
 				if (onScreen){ // If item is onscreen, then actually move and such
-					item.revive();
+					if (!item.alive){
+						item.revive();
+						if (change < 0 ) item.y = -500; else item.y = FlxG.height + 300;
+					}
 					item.targetY = bullShit - curSelected;
 
 					item.color = 0xdddddd;
