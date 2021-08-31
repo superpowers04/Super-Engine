@@ -19,6 +19,7 @@ import sys.io.File;
 import sys.FileSystem;
 import flash.display.BitmapData;
 import Xml;
+import flixel.system.FlxSound;
 // import lime.graphics.Image as LimeImage;
 
 using StringTools;
@@ -45,7 +46,7 @@ class Character extends FlxSprite
 	public var useMisses:Bool = false;
 	public var useVoices:Bool = false;
 	public var missSounds:Array<Sound> = [];
-	public var voiceSounds:Array<Sound> = [];
+	public var voiceSounds:Array<FlxSound> = [];
 	public var oneShotAnims:Array<String> = ["hey"];
 	public var tintedAnims:Array<String> = [];
 	public var flip:Bool = true;
@@ -55,6 +56,7 @@ class Character extends FlxSprite
 	public var loadedFrom:String = "";
 	public var isCustom:Bool = false;
 	public var charProperties:CharacterJson;
+	public var charXml:String;
 	var flipNotes:Bool = true;
 	var needsInverted:Int= 1;
 	var danced:Bool = false;
@@ -261,6 +263,7 @@ class Character extends FlxSprite
 			if(!FileSystem.exists(pngPath) || !FileSystem.exists(xmlPath)) MainMenuState.handleError('Invalid xml/png path for ${curCharacter}');
 			var charXml:String = File.getContent(xmlPath); // Loads the XML as a string
 			if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+			if (amPreview) this.charXml = charXml;
 			tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile(pngPath)), charXml);
 		}
 		if(tex == null) MainMenuState.handleError('Invalid texture for ${curCharacter}');
@@ -379,6 +382,7 @@ class Character extends FlxSprite
 			trace('Character clones $clonedChar copying their offsets!');
 			addOffsets(clonedChar);
 		}
+		if (charProperties.like != null && charProperties.like != "") clonedChar = charProperties.like;
 		trace('Adding custom offsets');
 		loadOffsetsFromJSON(charProperties);
 
@@ -439,11 +443,11 @@ class Character extends FlxSprite
 					useMisses = true;
 					missSounds = [Sound.fromFile('mods/characters/$curCharacter/miss_left.ogg'), Sound.fromFile('mods/characters/$curCharacter/miss_down.ogg'), Sound.fromFile('mods/characters/$curCharacter/miss_up.ogg'),Sound.fromFile('mods/characters/$curCharacter/miss_right.ogg')];
 			}
-			if (FlxG.save.data.playVoices && charProperties.voices == "custom") {
-				useVoices = true;
-				voiceSounds = [Sound.fromFile('mods/characters/$curCharacter/custom_left.ogg'), Sound.fromFile('mods/characters/$curCharacter/custom_down.ogg'), Sound.fromFile('mods/characters/$curCharacter/custom_up.ogg'),Sound.fromFile('mods/characters/$curCharacter/custom_right.ogg')];
+		}
+		if (FlxG.save.data.playVoices && charProperties.voices == "custom") {
+			useVoices = true;
+			voiceSounds = [new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_left.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_down.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_up.ogg')),new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_right.ogg'))];
 
-			}
 		}
 		 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
@@ -948,9 +952,8 @@ class Character extends FlxSprite
 	}
 	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false,?replace:Bool = false)
 	{
-		if (needsInverted == 3 && isPlayer){
-			x=-x;
-		}else if (needsInverted == 2 && !isPlayer){
+		
+		if (needsInverted == 2 && !isPlayer || needsInverted == 3 && isPlayer){
 			x=-x;
 		}	
 		if (animOffsets[name] == null || replace){ // If animation is null, just add the offsets out right

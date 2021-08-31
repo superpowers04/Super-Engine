@@ -1,1 +1,4 @@
 0.4.3;
+- Make night color less saturated
+- Fix hurtsound and hitsounds being broken
+- Overhaul to Animation Debug, now allows the ability to save and edit some properties

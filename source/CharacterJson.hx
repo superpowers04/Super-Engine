@@ -8,6 +8,7 @@ typedef CharacterJson =
 	var offset_flip:Dynamic; // Flips the offsets on the left, 0/not specififed = off completely, 1 = use player2, 2 = flip left, 3 = flip right  
 	var asset_files:Array<CharacterAssetFiles>;
 	var clone:String;
+	var like:String; // Clone but without stealing the offsets
 	var voices:String;
 	var animations:Array<CharJsonAnimation>;
 	var animations_offsets:Array<CharJsonAnimOffsets>;

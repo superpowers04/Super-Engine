@@ -1140,3 +1140,23 @@ class CheckForUpdatesOption extends Option
 		return "Check for updates " + (!FlxG.save.data.updateCheck ? "off" : "on");
 	}
 }
+class UnloadSongOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.songUnload = !FlxG.save.data.songUnload;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Unload song " + (!FlxG.save.data.songUnload ? "off" : "on");
+	}
+}

@@ -24,8 +24,17 @@ typedef SwagSong =
 	var noteStyle:String;
 	var stage:String;
 	var validScore:Bool;
+	var ?noteMetadata:NoteMetadata;
 }
-
+typedef NoteMetadata={
+	var badnoteHealth:Float;
+	var badnoteScore:Int;
+	// var healthGain:Float;
+	var missScore:Int;
+	var missHealth:Float;
+	// var tooLateScore:Float;
+	var tooLateHealth:Float;
+}
 class Song
 {
 	public var song:String;
@@ -37,8 +46,11 @@ class Song
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 	public var gfVersion:String = 'gf';
+	public var player3:String = 'gf';
 	public var noteStyle:String = 'normal';
 	public var stage:String = 'stage';
+
+
 
 	public function new(song, notes, bpm)
 	{
@@ -69,13 +81,13 @@ class Song
 		return swagShit;
 	}
 	static function removeOpponentArrows(swagShit:SwagSong):SwagSong{
-		var oppNotes:Array<Int> = [4,5,6,7];
-		var invertedNotes:Array<Int> = [0,1,2,3];
+		var invertedNotes:Array<Int> = [4,5,6,7];
+		var oppNotes:Array<Int> = [0,1,2,3];
 
 		for (sid => section in swagShit.notes) {
 			for (nid => note in section.sectionNotes){
 				if (!section.mustHitSection && invertedNotes.contains(note[1]) || section.mustHitSection && oppNotes.contains(note[1])) continue;
-				swagShit.notes[sid].sectionNotes[nid] = null;
+				swagShit.notes[sid].sectionNotes[nid][1] = -1;
 			}
 		}
 		return swagShit;
@@ -109,6 +121,13 @@ class Song
 			if (!QuickOptionsSubState.getSetting("Opponent Arrows")) swagShit = removeOpponentArrows(swagShit);
 			if (!QuickOptionsSubState.getSetting("Hurt notes")) swagShit = removeHurtArrows(swagShit);
 		}
+		if (swagShit.noteMetadata == null) swagShit.noteMetadata = {
+				badnoteHealth : -0.24,
+				badnoteScore : -990,
+				missScore : -10,
+				missHealth : -0.04,
+				tooLateHealth : 0.075
+			};
 		swagShit.defgf = swagShit.gfVersion;
 		return swagShit;
 	}

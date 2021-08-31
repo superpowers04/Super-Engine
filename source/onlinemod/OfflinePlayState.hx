@@ -122,6 +122,8 @@ class OfflinePlayState extends PlayState
 
 			for (songNotes in section.sectionNotes)
 			{
+
+				if(songNotes[1] == -1) continue;
 				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
 				if (daStrumTime < 0)
 					daStrumTime = 0;

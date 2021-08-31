@@ -149,6 +149,11 @@ class FinishSubState extends MusicBeatSubstate
 
 			if (FlxG.keys.justPressed.R)
 			{if(win){FlxG.resetState();}else{restart();}}
+		}else{
+			if(FlxG.keys.justPressed.ANY){
+				PlayState.boyfriend.animation.finishCallback = null;
+				finishNew();
+			}
 		}
 
 	}

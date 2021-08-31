@@ -77,6 +77,7 @@ class OptionsMenu extends MusicBeatState
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
 			new NoteRatingOption("Toggles the rating that appears when you press a note"),
+			new UnloadSongOption("Unload the song when exiting the game, can cause issues but should help with memory"),
 			new ShowP2Option("Show Opponent"),
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),
