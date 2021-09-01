@@ -14,8 +14,8 @@ import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.UncaughtErrorEvent;
-import crashdumper.CrashDumper;
-import crashdumper.SessionData;
+// import crashdumper.CrashDumper;
+// import crashdumper.SessionData;
 
 import haxe.CallStack;
 import sys.FileSystem;
@@ -81,7 +81,7 @@ class Main extends Sprite
 			gameWidth = Math.ceil(stageWidth / zoom);
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
-		var crashDumper = new CrashDumper(SessionData.generateID("FNFBR-"));
+		// var crashDumper = new CrashDumper(SessionData.generateID("FNFBR-"));
 		#if !debug
 		initialState = TitleState;
 		#end

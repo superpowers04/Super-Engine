@@ -51,7 +51,6 @@ jobs:
           haxelib install flixel-addons
           haxelib install linc_luajit
           haxelib install newgrounds
-          haxelib git crashdumper http://github.com/larsiusprime/crashdumper
           haxelib list
         shell: cmd
       - name: Create Version Tag

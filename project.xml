@@ -122,7 +122,6 @@
 	<!-- <haxelib name="newgrounds"/> -->
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="flixel-ui" />
-	<haxelib name="crashdumper" />
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
