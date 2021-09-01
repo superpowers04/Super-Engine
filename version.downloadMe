@@ -2,3 +2,6 @@
 - Make night color less saturated
 - Fix hurtsound and hitsounds being broken
 - Overhaul to Animation Debug, now allows the ability to save and edit some properties
+- You can now edit note metadata(Look at Random Features on th wiki for how)
+- Badnotes will now be normal notes colored black if their texture can't load properly
+- Some fixes
