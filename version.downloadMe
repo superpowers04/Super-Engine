@@ -1,5 +1,4 @@
-0.4.3-1;
+0.4.4;
 - Actually lose health when missing a note
 - Option to force hurt notes to use recolored normal note
 - Add a title to the top of the options screen so you know what category you're in
-- Absolutely defeat the purpose of using semantic versioning (https://semver.org)
