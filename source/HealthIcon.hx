@@ -15,16 +15,20 @@ class HealthIcon extends FlxSprite
 	public function new(?char:String = 'bf', ?isPlayer:Bool = false,?clone:String = "")
 	{
 		super();
-		if (clone != "") char = clone;
+		
 		var chars:Array<String> = ["bf","spooky","pico","mom","mom-car",'parents-christmas',"senpai","senpai-angry","spirit","spooky","bf-pixel","gf","dad","monster","monster-christmas","parents-christmas","bf-old","gf-pixel","gf-christmas","face","tankman"];
-		if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+char+"/healthicon.png")){
+		if (!chars.contains(char) &&FileSystem.exists(Sys.getCwd() + "mods/characters/"+char+"/healthicon.png")){
 			trace('Custom character with custom icon! Loading custom icon.');
 			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$char/healthicon.png')), true, 150, 150);
 			char = "bf";
-		}else if (chars.contains(char) && FileSystem.exists(Sys.getCwd() + "mods/characters/"+char+"/icongrid.png")){
+		}else if ((chars.contains(char) || chars.contains(clone)) && FileSystem.exists(Sys.getCwd() + "mods/characters/"+char+"/icongrid.png")){
 			trace('Custom character with custom icon! Loading custom icon.');
 			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$char/icongrid.png')), true, 150, 150);
-		}else{loadGraphic(Paths.image('iconGrid'), true, 150, 150);}
+			if (clone != "") char = clone;
+		}else{
+			if (clone != "") char = clone;
+			loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		}
 		
 		antialiasing = true;
 		animation.add('bf', [0, 1], 0, false, isPlayer);
