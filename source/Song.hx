@@ -126,7 +126,7 @@ class Song
 				badnoteScore : -990,
 				missScore : -10,
 				missHealth : -0.04,
-				tooLateHealth : 0.075
+				tooLateHealth : -0.075
 			};
 		swagShit.defgf = swagShit.gfVersion;
 		return swagShit;

@@ -29,7 +29,7 @@ class OptionsMenu extends MusicBeatState
 
 	var options:Array<OptionCategory> = [
 		new OptionCategory("Customization", [
-			new OpponentOption("Change the opponent used in Online/Offline"),
+			new OpponentOption("Change the opponent character"),
 			new PlayerOption("Change the player character"),
 			new GFOption("Change the GF used"),
 			new NoteSelOption("Change the note assets used, pulled from mods/noteassets"),
@@ -50,7 +50,7 @@ class OptionsMenu extends MusicBeatState
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
 			// new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"), This didn't work before and it doesn't work again...
-			new HitSoundOption("Play a click when you hit a note, Basically is the one from VS Omega. Can cause lag!"),
+			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
 			new InputHandlerOption("Change the input engine used, only works locally, Disables Kade options unless supported by engine")
 		]),
 		new OptionCategory("Appearance", [
@@ -68,7 +68,6 @@ class OptionsMenu extends MusicBeatState
 			new ReplayOption("View replays"),
 			#end
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
-			// new WatermarkOption("Enable and disable all watermarks from the engine."), This doesn't seem to actually do anything
 			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF"),
 			new PlayVoicesOption("Plays your character's voices when you press a note.")
 		]),
@@ -78,6 +77,7 @@ class OptionsMenu extends MusicBeatState
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
 			new NoteRatingOption("Toggles the rating that appears when you press a note"),
 			new UnloadSongOption("Unload the song when exiting the game, can cause issues but should help with memory"),
+			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
 			new ShowP2Option("Show Opponent"),
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),
@@ -94,6 +94,14 @@ class OptionsMenu extends MusicBeatState
 
 	var currentSelectedCat:OptionCategory;
 	var blackBorder:FlxSprite;
+	var titleText:FlxText;
+	function addTitleText(str:String = "Options"){
+		if (titleText != null) titleText.destroy();
+		titleText = new FlxText(FlxG.width * 0.5 - (str.length * 10), 20, 0, str, 12);
+		titleText.scrollFactor.set();
+		titleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(titleText);
+	}
 	override function create()
 	{
 
@@ -131,7 +139,7 @@ class OptionsMenu extends MusicBeatState
 		add(blackBorder);
 
 		add(versionShit);
-
+		addTitleText();
 		FlxTween.tween(versionShit,{y: FlxG.height - 18},2,{ease: FlxEase.elasticInOut});
 		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
 
@@ -196,6 +204,7 @@ class OptionsMenu extends MusicBeatState
 					}
 				curSelected = 0;
 				changeSelection(selCat,false);
+				addTitleText();
 			}
 			if (controls.UP_P)
 				changeSelection(-1);
@@ -310,6 +319,7 @@ class OptionsMenu extends MusicBeatState
 						}
 					
 					curSelected = 0;
+					addTitleText(options[selCat].getName());
 				}
 
 				updateCat();

@@ -133,6 +133,7 @@ class KadeEngineData
 		if (FlxG.save.data.playVoices == null) FlxG.save.data.playVoices = false;
 		if (FlxG.save.data.updateCheck == null) FlxG.save.data.updateCheck = true;
 		if (FlxG.save.data.songUnload == null) FlxG.save.data.songUnload = false;
+		if (FlxG.save.data.useBadArrowTex == null) FlxG.save.data.useBadArrowTex = true;
 	 
 
 		Conductor.recalculateTimings();

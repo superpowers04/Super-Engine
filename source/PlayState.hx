@@ -2503,8 +2503,8 @@ class PlayState extends MusicBeatState
 							}
 						// }
 		
-	
-					if (dadShow && !daNote.mustPress && daNote.wasGoodHit )
+					if (daNote.skipNote) return;
+					if (dadShow && !daNote.mustPress && daNote.wasGoodHit)
 					{
 						if (SONG.song != 'Tutorial')
 							camZooming = true;
@@ -2948,6 +2948,7 @@ class PlayState extends MusicBeatState
 								}
 							}
 						// }
+					if (daNote.skipNote) return;
 		
 	
 					if (dadShow && !daNote.mustPress && daNote.wasGoodHit )

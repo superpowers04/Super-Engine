@@ -67,8 +67,9 @@ class Note extends FlxSprite
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
 		try{
-			if (shouldntBeHit) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
-		}catch(e){color = 0x220011;}
+			if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
+		}catch(e){trace("Couldn't load bad arrow texture, recoloring arrows instead!");}
+		if(frames == null && shouldntBeHit) {color = 0x220011;}
 		if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 
 		animation.addByPrefix('greenScroll', 'green0');

@@ -43,6 +43,7 @@ class SearchMenuState extends MusicBeatState
 
 	function addTitleText(str:String = ""){
 		if (titleText != null) titleText.destroy();
+		if (str == "") return;
 		titleText = new FlxText(FlxG.width * 0.5, 20, 0, str, 12);
 		titleText.scrollFactor.set();
 		titleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
