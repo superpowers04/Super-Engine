@@ -28,9 +28,10 @@ class FinishSubState extends MusicBeatSubstate
 	var win:Bool = true;
 	var ready = false;
 	var camFollow:FlxObject;
-	public function new(x:Float, y:Float,?won = true,?camFollow:FlxObject)
+	var week:Bool = false;
+	public function new(x:Float, y:Float,?won = true,?camFollow:FlxObject,?week:Bool = false)
 	{
-
+		this.week = week;
 		FlxG.state.persistentUpdate = true;
 		win = won;
 		FlxG.sound.pause();
@@ -76,7 +77,7 @@ class FinishSubState extends MusicBeatSubstate
 			bg.alpha = 0;
 			bg.scrollFactor.set();
 
-			var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0,if(win) "Song Won!" else "Song failed" );
+			var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0, (if(week) "Week" else "song") + (if(win) "Won!" else "failed") );
 			finishedText.size = 34;
 			finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 			finishedText.color = FlxColor.WHITE;

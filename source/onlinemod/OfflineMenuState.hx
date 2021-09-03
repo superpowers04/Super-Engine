@@ -101,6 +101,7 @@ class OfflineMenuState extends SearchMenuState
   }
   override function select(sel:Int = 0){
       OfflinePlayState.chartFile = songs[curSelected];
+      PlayState.songScript = "";
       PlayState.isStoryMode = false;
       var songName = songFiles[curSelected];
       PlayState.songDir = songDirs[curSelected];

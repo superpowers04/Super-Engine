@@ -20,7 +20,12 @@ import sys.FileSystem;
 import flash.display.BitmapData;
 import Xml;
 import flixel.system.FlxSound;
-// import lime.graphics.Image as LimeImage;
+
+import hscript.Expr;
+import hscript.Interp;
+import hscript.InterpEx;
+import hscript.ParserEx;
+
 
 using StringTools;
 
@@ -62,6 +67,41 @@ class Character extends FlxSprite
 	var danced:Bool = false;
 	var lonely:Bool = false;
 	var altAnims:Array<String> = []; 
+	// HScript related shit
+
+
+	var interp:Interp;
+
+	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
+			if ((interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
+			try{
+
+			var method = interp.variables.get(func_name);
+			switch (args.length)
+			{
+				case 0:
+					method(this);
+				case 1:
+					method(this,args[0]);
+				case 2:
+					method(this,args[0], args[1]);
+			}
+			}catch(e){MainMenuState.handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}');}
+		}
+	function parseHScript(scriptContents:String){
+		var interp = HscriptUtils.createSimpleInterp();
+		var parser = new hscript.Parser();
+		var program:Expr;
+		program = parser.parseString(scriptContents);
+		
+		interp.variables.set("hscriptPath", 'mods/characters/$curCharacter');
+		interp.variables.set("charName", curCharacter);
+		interp.variables.set("charProperties", charProperties);
+		interp.variables.set("playState", PlayState.instance );
+		interp.execute(program);
+		this.interp = interp;
+	}
+
 
 	function addOffsets(?character:String = "") // Handles offsets for characters with support for clones
 	{
@@ -421,6 +461,7 @@ class Character extends FlxSprite
 			}
 		}
 
+
 		if (tex == null){
 			var charXml:String = File.getContent('mods/characters/$curCharacter/${xmlName}'); // Loads the XML as a string
 			if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
@@ -449,15 +490,19 @@ class Character extends FlxSprite
 			voiceSounds = [new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_left.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_down.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_up.ogg')),new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_right.ogg'))];
 
 		}
+		if (FileSystem.exists('mods/characters/$curCharacter/script.hscript')){
+			parseHScript(File.getContent('mods/characters/$curCharacter/script.hscript'));
+			trace("Loaded HScript");
+			callInterp("initScript",[],true);
+		}
 		 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
 		trace('Finished loading character, Lets get funky!');
 		}
-
+	
 
 	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null) // CharTypes: 0=BF 1=Dad 2=GF
-	{
-	try{
+	{try{
 
 		super(x, y);
 		trace('Loading ${character}');
@@ -812,6 +857,8 @@ class Character extends FlxSprite
 			}
 		}
 		dance();
+
+		callInterp("new",[]);
 		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
 		if(animation.curAnim == null && !lonely){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
 		}catch(e){
@@ -849,7 +896,9 @@ class Character extends FlxSprite
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
 			}
+			callInterp("update",[elapsed]);
 		}
+
 		super.update(elapsed);
 	}catch(e:Dynamic){MainMenuState.handleError('Caught character "update" crash: ${e.message}');}}
 
@@ -916,6 +965,8 @@ class Character extends FlxSprite
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0)
 	{
 		var lastAnim = "";
+
+		callInterp("playAnim",[AnimName]);
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
 		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)

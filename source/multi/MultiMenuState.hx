@@ -66,7 +66,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
               modes[i][0] = "No charts for this song!";
             }
             songs[i] = dataDir + directory;
-            songNames[i] = directory;
+            songNames[i] =directory;
                 
             var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
             controlLabel.isMenuItem = true;
@@ -111,6 +111,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       PlayState.actualSongName = songJSON;
       MultiPlayState.voicesFile = '';
       if (FileSystem.exists('${selSong}/Voices.ogg')) MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
+      if (FileSystem.exists('${selSong}/script.hscript')) {
+        trace("Song has script!");
+          MultiPlayState.scriptLoc = '${selSong}/script.hscript';
+          PlayState.hsBrTools = new HSBrTools('${selSong}');
+        }else {PlayState.hsBrTools = null;MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
       MultiPlayState.instFile = '${selSong}/Inst.ogg';
       LoadingState.loadAndSwitchState(new MultiPlayState());
       }catch(e){

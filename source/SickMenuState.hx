@@ -131,7 +131,8 @@ class SickMenuState extends MusicBeatState
 	override function create()
 	{
 		if (ChartingState.charting) ChartingState.charting = false;
-		if (FlxG.save.data.songUnload && PlayState.SONG != null) PlayState.SONG = null;
+		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;}
+		PlayState.songScript = "";PlayState.hsBrTools = null;
 		SickMenuState.chgTime = true;
 		bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
 		bg.color = 0xFFFF6E6E;

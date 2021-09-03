@@ -60,6 +60,12 @@ import sys.FileSystem;
 import flash.display.BitmapData;
 import Xml;
 
+
+import hscript.Expr;
+import hscript.Interp;
+import hscript.InterpEx;
+import hscript.ParserEx;
+
 import CharacterJson;
 import StageJson;
 
@@ -192,6 +198,7 @@ class PlayState extends MusicBeatState
 	public static var songScore:Int = 0;
 	var songScoreDef:Int = 0;
 	var scoreTxt:FlxText;
+	var scoreTxtX:Float;
 	var replayTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
@@ -231,6 +238,8 @@ class PlayState extends MusicBeatState
 	public static var hurtSoundEff:Sound;
 	public var inputMode:Int = 0;
 	var inputEngineName:String = "Unspecified";
+	public static var songScript:String = "";
+	public static var hsBrTools:HSBrTools;
 
 	var hitSound:Bool = false;
 
@@ -255,6 +264,43 @@ class PlayState extends MusicBeatState
 		songScore = 0;
 
 	}
+
+	var interp:Interp;
+
+	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
+			if ((interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
+			try{
+			var method = interp.variables.get(func_name);
+			switch (args.length)
+			{
+				case 0:
+					method(this);
+				case 1:
+					method(this,args[0]);
+				case 2:
+					method(this,args[0], args[1]);
+			}
+			}catch(e){MainMenuState.handleError('Something went wrong with ${func_name} for ${songName}, ${e.message}');}
+		}
+	function parseHScript(){
+		if (songScript == "") {interp = null;return;}
+		var interp = HscriptUtils.createSimpleInterp();
+		var parser = new hscript.Parser();
+		var program:Expr;
+		program = parser.parseString(songScript);
+
+		if (hsBrTools != null) 
+			interp.variables.set("BRtools",hsBrTools); 
+		else 
+			interp.variables.set("BRtools",new HSBrTools("assets/"));
+		interp.execute(program);
+		this.interp = interp;
+		callInterp("initScript",[]);
+		trace("Loaded script!");
+	}
+
+
+
 
 	override public function create()
 	{try{
@@ -308,6 +354,7 @@ class PlayState extends MusicBeatState
 
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + Conductor.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: ' + Conductor.timeScale + '\nBotPlay : ' + FlxG.save.data.botplay);
 	
+		
 		//dialogue shit
 		loadDialog();
 		// Stage management
@@ -530,7 +577,7 @@ class PlayState extends MusicBeatState
 					case 'school':
 					{
 							curStage = 'school';
-							stageTags = ["outside"];
+							stageTags = ["outside","pixel"];
 		
 							// defaultCamZoom = 0.9;
 		
@@ -539,20 +586,22 @@ class PlayState extends MusicBeatState
 							add(bgSky);
 		
 							var repositionShit = -200;
+							var y = 0;
+							gfPos = [0,5];
 		
-							var bgSchool:FlxSprite = new FlxSprite(repositionShit, 0).loadGraphic(Paths.image('weeb/weebSchool','week6'));
+							var bgSchool:FlxSprite = new FlxSprite(repositionShit, y).loadGraphic(Paths.image('weeb/weebSchool','week6'));
 							bgSchool.scrollFactor.set(0.6, 0.90);
 							add(bgSchool);
 		
-							var bgStreet:FlxSprite = new FlxSprite(repositionShit).loadGraphic(Paths.image('weeb/weebStreet','week6'));
+							var bgStreet:FlxSprite = new FlxSprite(repositionShit, y).loadGraphic(Paths.image('weeb/weebStreet','week6'));
 							bgStreet.scrollFactor.set(0.95, 0.95);
 							add(bgStreet);
 		
-							var fgTrees:FlxSprite = new FlxSprite(repositionShit + 170, 130).loadGraphic(Paths.image('weeb/weebTreesBack','week6'));
+							var fgTrees:FlxSprite = new FlxSprite(repositionShit + 170, y + 130).loadGraphic(Paths.image('weeb/weebTreesBack','week6'));
 							fgTrees.scrollFactor.set(0.9, 0.9);
 							add(fgTrees);
 		
-							var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, -800);
+							var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, y + -800);
 							var treetex = Paths.getPackerAtlas('weeb/weebTrees','week6');
 							bgTrees.frames = treetex;
 							bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
@@ -560,7 +609,7 @@ class PlayState extends MusicBeatState
 							bgTrees.scrollFactor.set(0.85, 0.85);
 							add(bgTrees);
 		
-							var treeLeaves:FlxSprite = new FlxSprite(repositionShit, -40);
+							var treeLeaves:FlxSprite = new FlxSprite(repositionShit, y + -40);
 							treeLeaves.frames = Paths.getSparrowAtlas('weeb/petals','week6');
 							treeLeaves.animation.addByPrefix('leaves', 'PETALS ALL', 24, true);
 							treeLeaves.animation.play('leaves');
@@ -583,7 +632,7 @@ class PlayState extends MusicBeatState
 							bgTrees.updateHitbox();
 							treeLeaves.updateHitbox();
 		
-							bgGirls = new BackgroundGirls(-100, 190);
+							bgGirls = new BackgroundGirls(-100, y + 190);
 							bgGirls.scrollFactor.set(0.9, 0.9);
 		
 							if (SONG.song.toLowerCase() == 'roses')
@@ -602,7 +651,8 @@ class PlayState extends MusicBeatState
 					case 'schoolevil':
 					{
 							curStage = 'schoolEvil';
-							stageTags = ["outside"];
+							stageTags = ["outside","pixel"];
+							var y = 200;
 		
 							var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
 							var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
@@ -778,9 +828,6 @@ class PlayState extends MusicBeatState
 			case 'mallEvil':
 				boyfriend.x += 320;
 				dad.y -= 80;
-			case 'school','schoolevil':
-				boyfriend.y += 20;
-				gf.y += 40;
 		}
 		for (i => v in [bfPos,dadPos,gfPos]) {
 			if (v[0] != 0 || v[1] != 0){
@@ -939,9 +986,10 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.downscroll)
 			kadeEngineWatermark.y = FlxG.height * 0.9 + 45 + FlxG.save.data.guiGap;
 
-		scoreTxt = new FlxText(FlxG.width / 2 - 350, healthBarBG.y + 30 - FlxG.save.data.guiGap, 0, "", 20);
-		if (!FlxG.save.data.accuracyDisplay)
-			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
+		scoreTxtX = FlxG.width / 2 - 350;
+		scoreTxt = new FlxText(scoreTxtX, healthBarBG.y + 30 - FlxG.save.data.guiGap, 0, "", 20);
+		// if (!FlxG.save.data.accuracyDisplay)
+		// 	scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		if (offsetTesting)
@@ -1053,6 +1101,7 @@ class PlayState extends MusicBeatState
 		// FlxG.sound.cache("missnote1");
 		// FlxG.sound.cache("missnote2");
 		// FlxG.sound.cache("missnote3");
+		parseHScript();
 		super.create();
 	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
 
@@ -1276,11 +1325,18 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
+					
 			}
 
 			swagCounter += 1;
 			// generateSong('fresh');
 		}, 5);
+	}
+
+	function charCall(func:String,args:Array<Dynamic>){
+		boyfriend.callInterp(func,[]);
+		dad.callInterp(func,[]);
+		gf.callInterp(func,[]);
 	}
 
 	var previousFrameTime:Int = 0;
@@ -1346,6 +1402,8 @@ class PlayState extends MusicBeatState
 			case 'Bopeebo' | 'Philly' | 'Blammed' | 'Cocoa' | 'Eggnog': allowedToHeadbang = true;
 			default: allowedToHeadbang = false;
 		}
+		charCall("startSong",[]);
+		callInterp("startSong",[]);
 		
 
 	}
@@ -1452,6 +1510,7 @@ class PlayState extends MusicBeatState
 		unspawnNotes.sort(sortByShit);
 
 		generatedMusic = true;
+		callInterp("generateSong",[]);
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -1533,6 +1592,7 @@ class PlayState extends MusicBeatState
 			});
 
 			strumLineNotes.add(babyArrow);
+			callInterp("strumNoteAdd",[babyArrow]);
 		}
 	}
 
@@ -1661,10 +1721,12 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		callInterp("update",[elapsed]);
 
 		scoreTxt.text = Ratings.CalculateRanking(songScore,songScoreDef,nps,maxNPS,accuracy);
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.text = "Score: " + songScore;
+		scoreTxt.x = scoreTxtX - scoreTxt.text.length;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1993,6 +2055,8 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
+		charCall("endSong",[]);
+		callInterp("endSong",[]);
 		if (offsetTesting)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -3496,6 +3560,7 @@ class PlayState extends MusicBeatState
 		{
 			resyncVocals();
 		}
+		callInterp("stepHit",[]);
 		try{
 			for (i => v in stepAnimEvents) {
 				for (anim => ifState in v) {
@@ -3528,6 +3593,7 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+		callInterp("beatHit",[]);
 
 		if (generatedMusic)
 		{

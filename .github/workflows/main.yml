@@ -51,6 +51,8 @@ jobs:
           haxelib install flixel-addons
           haxelib install linc_luajit
           haxelib install newgrounds
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
         shell: cmd
       - name: Create Version Tag

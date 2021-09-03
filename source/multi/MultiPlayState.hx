@@ -8,6 +8,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flash.media.Sound;
 import sys.FileSystem;
+import sys.io.File;
 
 import Section.SwagSection;
 
@@ -16,6 +17,7 @@ class MultiPlayState extends onlinemod.OfflinePlayState
 
 	public static var voicesFile = "";
   public static var instFile = "";
+  public static var scriptLoc= "";
   override function loadSongs(){
     {try{
 
@@ -25,6 +27,7 @@ class MultiPlayState extends onlinemod.OfflinePlayState
   }
   override function create()
     {try{
+    if (scriptLoc != "") PlayState.songScript = File.getContent(scriptLoc); else PlayState.songScript = "";
     stateType=4;
   	super.create();
 
