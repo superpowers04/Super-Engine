@@ -98,6 +98,7 @@ class Character extends FlxSprite
 		interp.variables.set("charName", curCharacter);
 		interp.variables.set("charProperties", charProperties);
 		interp.variables.set("playState", PlayState.instance );
+		interp.variables.set("BRtools",new HSBrTools('mods/characters/$curCharacter/'));
 		interp.execute(program);
 		this.interp = interp;
 	}
@@ -332,10 +333,17 @@ class Character extends FlxSprite
 			}	
 		}
 
+
 		switch(charType){
 			case 0: if (charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
 			case 1: if (charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
 			case 2: if (charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
+		}
+
+		switch(charType){
+			case 0: if (charProperties.cam_pos1 != null){camX += charProperties.cam_pos1[0];camY += charProperties.cam_pos1[1];}
+			case 1: if (charProperties.cam_pos2 != null){camX += charProperties.cam_pos2[0];camY += charProperties.cam_pos2[1];}
+			case 2: if (charProperties.cam_pos3 != null){camX += charProperties.cam_pos3[0];camY += charProperties.cam_pos3[1];}
 		}
 		if(charProperties.common_stage_offset != null){
 			if (needsInverted == 1 && !isPlayer){
