@@ -293,13 +293,28 @@ class PlayState extends MusicBeatState
 			interp.variables.set("BRtools",hsBrTools); 
 		else 
 			interp.variables.set("BRtools",new HSBrTools("assets/"));
+		interp.variables.set("charGet",charGet); 
+		interp.variables.set("charSet",charSet);
+		interp.variables.set("charAnim",charSet); 
 		interp.execute(program);
 		this.interp = interp;
 		callInterp("initScript",[]);
 		trace("Loaded script!");
 	}
-
-
+	static function charGet(charId:Int,field:String):Dynamic{
+		return Reflect.field(switch(charId){
+			case 1: dad; 
+			case 2: gf;
+			default: boyfriend;
+		},field);
+	}
+	static function charSet(charId:Int,field:String,value:Dynamic){
+		Reflect.setField(switch(charId){case 1: dad; case 2: gf; default: boyfriend;},field,value);
+	}
+	static function charAnim(charId:Int,animation:String){
+		var e = switch(charId){case 1: dad; case 2: gf; default: boyfriend;};
+		e.playAnim(animation);
+	}
 
 
 	override public function create()
@@ -2497,7 +2512,7 @@ class PlayState extends MusicBeatState
 	}
 
 // Vanilla Kade
-
+	public var acceptInput = true;
 	function kadeInput(){
 		if (generatedMusic)
 			{
@@ -2675,7 +2690,7 @@ class PlayState extends MusicBeatState
 					controls.UP_R,
 					controls.RIGHT_R
 				];
-		 
+		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
 				// HOLDS, check for sustain notes
 				if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
 				{
@@ -3124,6 +3139,7 @@ class PlayState extends MusicBeatState
 					controls.RIGHT_R
 				];
 		 
+		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
 				// HOLDS, check for sustain notes
 				if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
 				{

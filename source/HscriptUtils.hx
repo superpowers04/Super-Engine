@@ -57,12 +57,14 @@ class HscriptUtils {
 		// interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
 		interp.variables.set("FlxGroup", flixel.group.FlxGroup);
 		interp.variables.set("FlxAngle", flixel.math.FlxAngle);
-		interp.variables.set("FlxMath", flixel.math.FlxMath);
+        interp.variables.set("FlxMath", flixel.math.FlxMath);
+        interp.variables.set("FlxAnimation", flixel.animation.FlxAnimation);
+		interp.variables.set("FlxBaseAnimation", flixel.animation.FlxBaseAnimation);
 		interp.variables.set("TitleState", TitleState);
 		interp.variables.set("makeRangeArray", CoolUtil.numberArray);
 		// // : )
-		// interp.variables.set("FlxG", HscriptGlobals);
-        interp.variables.set("FlxG", FlxG);
+		interp.variables.set("FlxG", HscriptGlobals);
+        // interp.variables.set("FlxG", FlxG);
 		interp.variables.set("FlxTimer", flixel.util.FlxTimer);
 		interp.variables.set("FlxTween", flixel.tweens.FlxTween);
 		interp.variables.set("Std", Std);
