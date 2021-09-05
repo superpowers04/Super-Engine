@@ -1,5 +1,8 @@
 package;
 
+
+
+
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -19,17 +22,12 @@ import openfl.net.FileReference;
 
 import flixel.graphics.FlxGraphic;
 import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIState;
 import flixel.addons.ui.FlxUISubState;
-import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIInputText;
-import flixel.addons.ui.FlxUINumericStepper;
-import flixel.addons.ui.FlxUITabMenu;
-import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import Controls.Control;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.FlxSound;
@@ -62,6 +60,7 @@ class AnimationDebug extends MusicBeatState
 	private var camGame:FlxCamera;
 	var offset:Map<String, Array<Float>> = [];
 	var offsetText:Map<String, FlxText> = [];
+	var offsetList:Array<String> = [];
 	var offsetTextSize:Int = 20;
 	var offsetCount:Int = 1;
 	var charSel:Bool = false;
@@ -79,7 +78,15 @@ class AnimationDebug extends MusicBeatState
 	public static var canEditJson:Bool = false;
 	public static var reloadChar:Bool = false;
 	var animationList:Array<String> = [];
-	var UI_box:FlxUITabMenu;
+	public var editMode:Int = 0;
+	static var showOffsets:Bool = false;
+	static var offsetTopTextList:Array<String> = [
+	'Current offsets(Relative, These should be added to your existing ones):',
+	'Current offsets(Absolute, these replace your existing ones):',
+	'Offset Editing Mode(Relative)',
+	'Offset Editing Mode(Absolute)',
+	'Camera Positioning Mode'
+	];
 
 	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false)
 	{
@@ -176,6 +183,7 @@ class AnimationDebug extends MusicBeatState
 					offsetText = [];
 					offset = [];
 					offsetCount = 1;
+					offsetList = [];
 				}
 				animationList = [];
 			}
@@ -197,7 +205,7 @@ class AnimationDebug extends MusicBeatState
 			dadBG.debugMode = true;
 			dadBG.alpha = 0.75;
 			dadBG.color = 0xFF000000;
-			offsetTopText.text = 'Current offsets(Relative, These should be added to your existing ones):';
+			offsetTopText.text = offsetTopTextList[0];
 			isAbsoluteOffsets = false;
 
 			add(dadBG);
@@ -234,8 +242,10 @@ class AnimationDebug extends MusicBeatState
 				var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
 				text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 				text.scrollFactor.set();
+				text.visible = showOffsets;
 				UI.add(text);
 				offsetText[animName] = text;
+				offsetList.push(animName);
 			}
 			dad.playAnim(animName, true,false,0,offset[animName][0],offset[animName][1]);
 			offsetText[animName].text = '${animName}: [${offset[animName][0]}, ${offset[animName][1]}]';
@@ -345,11 +355,20 @@ class AnimationDebug extends MusicBeatState
 			};
 			dad.x -= characterX;
 			dad.y -= characterY;
-
+			charJson.cam_pos = [0,0];
 			switch (charType) {
-				case 0: charJson.char_pos1 = [-dad.x,-dad.y];
-				case 1: charJson.char_pos2 = [-dad.x,-dad.y];
-				case 2: charJson.char_pos3 = [-dad.x,-dad.y];
+				case 0: {
+					charJson.char_pos1 = [-dad.x,-dad.y];
+					charJson.cam_pos1 = [dad.camX,dad.camY];
+				};
+				case 1: {
+					charJson.char_pos2 = [-dad.x,-dad.y];
+					charJson.cam_pos2 = [dad.camX,dad.camY];
+				};
+				case 2: {
+					charJson.char_pos3 = [-dad.x,-dad.y];
+					charJson.cam_pos3 = [dad.camX,dad.camY];
+				};
 			}
 			charJson.genBy = "FNFBR; Animation Editor";
 			
@@ -380,8 +399,10 @@ class AnimationDebug extends MusicBeatState
 			// text.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 			text.width = FlxG.width;
 			text.scrollFactor.set();
+			text.visible = showOffsets;
 			UI.add(text);
 			offsetText["charPos_internal"] = text;
+			offsetList.push("charPos_internal");
 		}
 		offsetText["charPos_internal"].text = 'Character Position: [${charX}, ${charY}]';
 
@@ -393,7 +414,39 @@ class AnimationDebug extends MusicBeatState
 		dad.offset.set(0,0);
 		dadBG.offset.set(0,0);
 		isAbsoluteOffsets = true;
-		offsetTopText.text = 'Current offsets(Absolute, these replace your existing ones):';
+		offsetTopText.text = offsetTopTextList[1];
+	}
+	function toggleOffsetText(?value:Bool = false){
+		showOffsets = value;
+		for (i => v in offsetList) {
+			offsetText[v].visible = showOffsets;
+		};
+		if(editMode == 0){
+			offsetTopText.text = offsetTopTextList[0 + (if(isAbsoluteOffsets) 1 else 0) + (if(showOffsets) 0 else 2 )];
+		}else if (offsetTopTextList[3 + editMode] != null){
+			offsetTopText.text = offsetTopTextList[3 + editMode];
+		}
+		if(editMode == 1){
+			updateCameraPos(false,get_Dad_X(), get_Dad_Y());
+		}else{
+			updateCameraPos(false,720, 500);
+		}
+
+	}
+	inline function get_Dad_X(){return dad.getMidpoint().x + (if (charType == 0) 100 else 150) + dad.camX;}
+	inline function get_Dad_Y(){return dad.getMidpoint().y - 100 + dad.camY;}
+
+	function updateCameraPos(?modify:Bool = true,?x:Float=0,?y:Float=0,?shiftPress:Bool = false,?ctrlPress:Bool = false){
+		if (modify){
+			if (shiftPress){x=x*5;y=y*5;}
+			if (ctrlPress){x=x*0.1;y=y*0.1;}
+			dad.camX += x;
+			dad.camY += y;
+			camFollow.setPosition(get_Dad_X(), get_Dad_Y());
+
+		}else{
+			camFollow.setPosition(x,y);
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -405,76 +458,112 @@ class AnimationDebug extends MusicBeatState
 		var ctrlPress = FlxG.keys.pressed.CONTROL;
 		var rPress = FlxG.keys.justPressed.R;
 		var hPress = FlxG.keys.justPressed.H;
-		
-		pressArray = [
-			 (FlxG.keys.pressed.A), // Play note animation
-			 (FlxG.keys.pressed.S),
-			 (FlxG.keys.pressed.W),
-			 (FlxG.keys.pressed.D),
-			 (FlxG.keys.pressed.V),
-			 (FlxG.keys.justPressed.UP), // Adjust offsets
-			 (FlxG.keys.justPressed.LEFT),
-			 (FlxG.keys.justPressed.DOWN),
-			 (FlxG.keys.justPressed.RIGHT),
-			 (FlxG.keys.justPressed.I), // Adjust Character position
-			 (FlxG.keys.justPressed.J),
-			 (FlxG.keys.justPressed.K),
-			 (FlxG.keys.justPressed.L),
-			 (FlxG.keys.justPressed.ONE),
-			 (FlxG.keys.justPressed.TWO),
-			 (FlxG.keys.justPressed.THREE),
-		];
+		if (hPress) openSubState(new AnimHelpScreen(canEditJson,editMode));
+		switch(editMode){
+			case 0:{
+				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
 
-		var modifier = "";
-		if (shiftPress) modifier += "miss";
-		if (ctrlPress) modifier += "-alt";
-		if (hPress) openSubState(new AnimHelpScreen(canEditJson));
-		var animToPlay = "";
-		for (i => v in pressArray) {
-			if (v){
-				switch(i){
-					case 0: // Play notes
-						animToPlay = 'singLEFT' + modifier;
-					case 1:
-						animToPlay = 'singDOWN' + modifier;
-					case 2:
-						animToPlay = 'singUP' + modifier;
-					case 3:
-						animToPlay = 'singRIGHT' + modifier;
-					case 4:
-						dad.dance();
-						
-					case 5: // Offset adjusting
-						moveOffset(0,1,shiftPress,ctrlPress);
-					case 6:
-						moveOffset(1,0,shiftPress,ctrlPress);
-					case 7:
-						moveOffset(0,-1,shiftPress,ctrlPress);
-					case 8:
-						moveOffset(-1,0,shiftPress,ctrlPress);
+				pressArray = [
+					 (FlxG.keys.pressed.A), // Play note animation
+					 (FlxG.keys.pressed.S),
+					 (FlxG.keys.pressed.W),
+					 (FlxG.keys.pressed.D),
+					 (FlxG.keys.pressed.V),
+					 (FlxG.keys.justPressed.UP), // Adjust offsets
+					 (FlxG.keys.justPressed.LEFT),
+					 (FlxG.keys.justPressed.DOWN),
+					 (FlxG.keys.justPressed.RIGHT),
+					 (FlxG.keys.justPressed.I), // Adjust Character position
+					 (FlxG.keys.justPressed.J),
+					 (FlxG.keys.justPressed.K),
+					 (FlxG.keys.justPressed.L),
+					 (FlxG.keys.justPressed.ONE),
+					 (FlxG.keys.justPressed.TWO),
+					 (FlxG.keys.justPressed.THREE),
+					 (FlxG.keys.justPressed.M),
+				];
 
-					case 9: // Char position
-						updateCharPos(0,1,shiftPress,ctrlPress);
-					case 10:
-						updateCharPos(-1,0,shiftPress,ctrlPress);
-					case 11:
-						updateCharPos(0,-1,shiftPress,ctrlPress);
-					case 12:
-						updateCharPos(1,0,shiftPress,ctrlPress);
+				var modifier = "";
+				if (shiftPress) modifier += "miss";
+				if (ctrlPress) modifier += "-alt";
+				var animToPlay = "";
+				for (i => v in pressArray) {
+					if (v){
+						switch(i){
+							case 0: // Play notes
+								animToPlay = 'singLEFT' + modifier;
+							case 1:
+								animToPlay = 'singDOWN' + modifier;
+							case 2:
+								animToPlay = 'singUP' + modifier;
+							case 3:
+								animToPlay = 'singRIGHT' + modifier;
+							case 4:
+								dad.dance();
+								
+							case 5: // Offset adjusting
+								moveOffset(0,1,shiftPress,ctrlPress);
+							case 6:
+								moveOffset(1,0,shiftPress,ctrlPress);
+							case 7:
+								moveOffset(0,-1,shiftPress,ctrlPress);
+							case 8:
+								moveOffset(-1,0,shiftPress,ctrlPress);
 
-					case 13: // Unload character offsets
-						resetOffsets();
-					case 14: // Write to file
-						outputCharOffsets();
-					case 15: // Save Char JSON
-						if(canEditJson) outputChar();
-				}	
+							case 9: // Char position
+								updateCharPos(0,1,shiftPress,ctrlPress);
+							case 10:
+								updateCharPos(-1,0,shiftPress,ctrlPress);
+							case 11:
+								updateCharPos(0,-1,shiftPress,ctrlPress);
+							case 12:
+								updateCharPos(1,0,shiftPress,ctrlPress);
+
+							case 13: // Unload character offsets
+								resetOffsets();
+							case 14: // Write to file
+								outputCharOffsets();
+							case 15: // Save Char JSON
+								if(canEditJson) outputChar();
+							case 16:
+								editMode = 1;
+								toggleOffsetText(false);
+						}	
+					}
+				}
+				if (animToPlay != "") {
+					var localOffsets:Array<Float>=[0,0];
+					if(offset[animToPlay] != null) localOffsets = offset[animToPlay];
+					dad.playAnim(animToPlay, true, false, 0, localOffsets[0], localOffsets[1]);
+				}
 			}
-		}
-		if (animToPlay != "") {
-			var localOffsets:Array<Float>=[0,0];
-			if(offset[animToPlay] != null) localOffsets = offset[animToPlay];
-			dad.playAnim(animToPlay, true, false, 0, localOffsets[0], localOffsets[1]);
+			case 1:{
+
+				pressArray = [
+					 (FlxG.keys.justPressed.M),
+					 (FlxG.keys.justPressed.UP), // Adjust camera position
+					 (FlxG.keys.justPressed.LEFT),
+					 (FlxG.keys.justPressed.DOWN),
+					 (FlxG.keys.justPressed.RIGHT),
+				];
+				for (i => v in pressArray) {
+					if (v){
+						switch(i){
+							case 0:
+								editMode = 0;
+								toggleOffsetText(false);
+							case 1: // Offset adjusting
+								updateCameraPos(true,0,-1,shiftPress,ctrlPress);
+							case 2:
+								updateCameraPos(true,-1,0,shiftPress,ctrlPress);
+							case 3:
+								updateCameraPos(true,0,1,shiftPress,ctrlPress);
+							case 4:
+								updateCameraPos(true,1,0,shiftPress,ctrlPress);
+						}	
+					}
+				}
+			}
 		}
 		if (rPress && !pressArray.contains(true)) spawnChar(true);
 		if (reloadChar) spawnChar(true,false,charJson);
@@ -493,7 +582,7 @@ class AnimHelpScreen extends FlxUISubState{
 
 	var animDebug:Dynamic;
 	var canEditJson:Bool = false;
-	var editMode = false;
+	var editMode:Int = 0;
 
 
 	function createHelpUI(){
@@ -508,19 +597,31 @@ class AnimHelpScreen extends FlxUISubState{
 		exitText.scrollFactor.set();
 		helpObjs.push(exitText);
 		var controlsText:FlxText = new FlxText(10,145,0,'Controls:'
-		+'\n\nWASD - Note anims'
-		+'\nV - Idle'
-		+'\n *Shift - Miss variant'
-		+'\n *Ctrl - Alt Variant'
-		+'\nIJKL - Move char, Moves per press for accuracy'
-		+'\nArrows - Move Offset, Moves per press for accuracy'
-		+'\n *Shift - Move by 5(Combine with CTRL to move 5)'
-		+'\n *Ctrl - Move by *0.1'
-		+"\n"
-		+'\n1 - Unloads all offsets from the game or json file, including character position.**\n **Making offsets absolute(Meaning they should replace existing offsets your character has)'
-		+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
-		+(if(canEditJson)'\n3 - Write character info to characters JSON' else '')
+		+(switch(editMode) {
+			case 0:
+				'\n\nWASD - Note anims'
+				+'\nV - Idle'
+				+'\n *Shift - Miss variant'
+				+'\n *Ctrl - Alt Variant'
+				+'\nIJKL - Move char, Moves per press for accuracy'
+				+'\nArrows - Move Offset, Moves per press for accuracy'
+				+'\n *Shift - Move by 5(Combine with CTRL to move 0.5)'
+				+'\n *Ctrl - Move by *0.1'
+				+"\n\nUtilities:\n"
+				+'\n1 - Unloads all offsets from the game or json file, including character position.\n'
+				+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
+				+(if(canEditJson)'\n3 - Write character info to characters JSON' else '')
+				+"\nB - Hide/Show offset text";
+			case 1:
+				'\n\nArrows - Move camera, Moves per press for accuracy'
+				+'\n *Shift - Move by 5(Combine with CTRL to move 0.5)'
+				+'\n *Ctrl - Move by *0.1'
+				+'\n\nUtilities:\n';
+			default:
+				'This should not happen, please report this!.\nEdit mode:${editMode}';
+		})
 		+'\nR - Reload character'
+		+"\nM - Change modes"
 		+'\n\nC - Open property editor in help screen\nEscape - Close animation debug');
 		controlsText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlsText.scrollFactor.set();
@@ -557,9 +658,10 @@ class AnimHelpScreen extends FlxUISubState{
 
 	}
 
-	override public function new(?canEditJson:Bool = false) {
+	override public function new(?canEditJson:Bool = false,?mode:Int = 0) {
 		super();
 		this.canEditJson = canEditJson;
+		this.editMode = mode;
 	}
 	override function create(){
 		// helpShown = true;
