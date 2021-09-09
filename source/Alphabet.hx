@@ -74,7 +74,10 @@ class Alphabet extends FlxSpriteGroup
 		}else if (text != "" && !useAlphabet){
 			textObj = new FlxText(0, 0, FlxG.width, text, 48);
 			textObj.scrollFactor.set();
-			textObj.setFormat("VCR OSD Mono", 48, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			textObj.setFormat("VCR OSD Mono", 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			textObj.borderSize = 5;
+			textObj.borderQuality = 1;
+			textObj.borderStyle = OUTLINE_FAST;
 			add(textObj);
 		}
 	}
@@ -238,8 +241,8 @@ class Alphabet extends FlxSpriteGroup
 		{
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48),5 * elapsed);
-			x = FlxMath.lerp(x, (targetY * 20) + xOffset, 5 * elapsed);
+			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48),10 * elapsed);
+			x = FlxMath.lerp(x, (targetY * 20) + xOffset, 10 * elapsed);
 		}
 
 		super.update(elapsed);
@@ -366,6 +369,10 @@ class AlphaCharacter extends FlxSprite
 				animation.play(letter);
 			case '/':
 				animation.addByPrefix(letter, 'forward slash', 24);
+				animation.play(letter);
+			default:
+				animation.addByPrefix(letter, '#', 24);
+				animation.addByPrefix(letter, letter, 24);
 				animation.play(letter);
 		}
 	}
