@@ -1,6 +1,42 @@
 {
 	"aliases":{"boyfriend":"bf"},
 	"characters":{
+		"bf-pixel":{
+			"no_antialiasing": true, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
+			"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
+			"dance_idle": false, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
+			"embedded":true,
+			"path":"characters/bfPixel",
+			"scale": 6.6, "": "Sprite scale on common stages, online lobby and Character Select screen, Senpai uses 6 while BF-Pixel/Spirit uses 6.6, everyone else uses 1",
+
+			"flip_x": true, "": "Flips X axis from the sprite, useful for Boyfriend/Pico/Tankman clones",
+			"spirit_trail": false, "": "Enables Spirit's visual effect",
+
+			"animations":
+			[
+				{"anim":"idle","name": "BF IDLE instance 1","fps": 24,"loop": false,"indices":[]},
+				{"anim":"singUP","name": "BF UP NOTE instance 1","fps": 24,"loop": false,"indices":[]},
+				{"anim":"singLEFT","name": "BF RIGHT NOTE instance 1","fps": 24,"loop": false,"indices":[]},
+				{"anim":"singRIGHT","name": "BF LEFT NOTE instance 1","fps": 24,"loop": false,"indices":[]},
+				{"anim":"singDOWN","name": "BF DOWN NOTE instance 1","fps": 24,"loop": false,"indices":[]},
+				{"anim":"singUPmiss","name": "BF UP MISS instance 1","fps": 24,"loop": false,"indices":[]},
+				{"anim":"singRIGHTmiss","name": "BF LEFT MISS instance 1","fps": 24,"loop": false,"indices":[]},
+				{"anim":"singLEFTmiss","name": "BF RIGHT MISS instance 1","fps": 24,"loop": false,"indices":[]},
+				{"anim":"singDOWNmiss","name": "BF DOWN MISS instance 1","fps": 24,"loop": false,"indices":[]}
+			], "": "The idle/sing/miss animations are added automatically with the same values as Boyfriend's, you just have to add animations to this array if you want to edit something or add Hey/Scared animations to it",
+
+			"animations_offsets":
+			[
+			],
+
+			"hey_anim": "hey", "": "Which animation should it use for the Bopeebo 'Hey!'",
+			"scared_anim": "scared", "": "Which animation should it use for Spooky Month stage scare",
+
+			"common_stage_offset": [0, 0, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
+			"char_pos1": [300, 450], "": "Your character's position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the camera position",
+			"char_pos2": [300, 450], "": "Your character's position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the camera position",
+			"cam_pos": [0, 300], "": "Your character's camera position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the char position"
+		},
 		"bf":{
 			"no_antialiasing": false, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
 			"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
