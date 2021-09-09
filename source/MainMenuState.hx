@@ -28,7 +28,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.5.0";
+	public static var ver:String = "0.5.1";
 	
 	public static var firstStart:Bool = true;
 
