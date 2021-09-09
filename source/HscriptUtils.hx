@@ -73,7 +73,8 @@ class HscriptUtils {
         interp.variables.set("FlxEase", FlxEase);
 		interp.variables.set("BRcolor", HscriptColor);
 		interp.variables.set("Reflect", Reflect);
-		interp.variables.set("Character", Character);
+        interp.variables.set("Character", Character);
+		interp.variables.set("PlayState", PlayState);
 		
 		#if debug
 		interp.variables.set("debug", true);

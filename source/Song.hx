@@ -51,7 +51,7 @@ class Song
 	public var stage:String = 'stage';
 	public static var defNoteMetadata:NoteMetadata = {
 				badnoteHealth : -0.24,
-				badnoteScore : -990,
+				badnoteScore : -7490,
 				missScore : -10,
 				missHealth : -0.04,
 				tooLateHealth : -0.075
