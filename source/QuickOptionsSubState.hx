@@ -17,16 +17,36 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.ui.FlxBar;
 
+typedef QOSetting={
+	var ?max:Float;
+	var ?min:Float;
+	var ?lang:Map<Dynamic,String>;
+	var value:Dynamic;
+	var type:Int;
+}
+
 class QuickOptionsSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
-
-	public static var settings:Map<String,Bool> = ["Inverted chart" => false,"Opponent Arrows" => true,"Hurt notes" => true];
+	public static var normalSettings:Map<String,QOSetting> = [
+			"Inverted chart" => {type:0,value:false},
+			"Opponent arrows" => {type:0,value:true},
+			"Song hscripts" => {type:0,value:true},
+			"Hurt notes" => {type:0,value:true},
+			"Scroll speed" => {type:2,value:0,min:0,max:10,lang:[0 => "Chart"]}
+		];
+	public static var osuSettings:Map<String,QOSetting> = [
+			"Scroll speed" => {type:2,value:0,min:0,max:10}
+		];
+	var settings:Map<String,QOSetting> = [];
 	var menuItems:Array<String> = [];
 	var curSelected:Int = 0;
-	public static function getSetting(str:String){
-		if (settings[str] == null || !settings[str]) return false;
-		return true;
+	var infotext:FlxText;
+	public static function getSetting(setting:String):Dynamic{
+		return normalSettings[setting].value;
+	}
+	function setValue(str:String,value:Dynamic){
+		settings[str].value = value;
 	}
 
 	function reloadList():Void{
@@ -36,10 +56,12 @@ class QuickOptionsSubState extends MusicBeatSubstate
 
 		menuItems = [];
 		var i = 0;
-		for (name => value in settings)
+		for (name => setting in settings)
 		{
 			menuItems.push(name);
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, '${name} ${if (value) "on" else "off"}', true, false);
+			var val = setting.value;
+			if (setting.lang != null && setting.lang[setting.value] != null) val = setting.lang[setting.value];
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, '${name}: ${val}', true, false,70);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpMenuShit.add(songText);
@@ -49,21 +71,28 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	}
 
 
-	public function new(x:Float, y:Float)
+	public function new()
 	{
 		super();
+		loadSettings();
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.0;
 		bg.scrollFactor.set();
 		add(bg);
 
-
-		FlxTween.tween(bg, {alpha: 0.7}, 0.4, {ease: FlxEase.quartInOut});
+		FlxTween.tween(bg, {alpha: 0.9}, 0.4, {ease: FlxEase.quartInOut});
 		reloadList();
+		changeSelection(0);
 
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+	}
+	function saveSettings(){
+		normalSettings = settings;
+	}
+	function loadSettings(){
+		settings = normalSettings;
 	}
 
 	override function update(elapsed:Float)
@@ -87,17 +116,26 @@ class QuickOptionsSubState extends MusicBeatSubstate
 			changeSelection(1);
 		}
 		
-		if (FlxG.keys.pressed.ESCAPE) close(); 
+		if (FlxG.keys.pressed.ESCAPE){saveSettings();close();} 
 
-		if (accepted)
-		{
-			changeSetting(curSelected);
-			reloadList();
-		}
+		if (accepted && settings[menuItems[curSelected]].type != 1) changeSetting(curSelected);
+		if (leftP || rightP) changeSetting(curSelected,rightP);
 	}
 
-	inline function changeSetting(sel:Int){
-		settings[menuItems[sel]] = !settings[menuItems[sel]];
+	function changeSetting(sel:Int,?dir:Bool = true){
+		if (settings[menuItems[sel]].type == 0) setValue(menuItems[sel],settings[menuItems[sel]].value = !settings[menuItems[sel]].value );
+		if (settings[menuItems[sel]].type == 1 || settings[menuItems[sel]].type == 2) {
+			var val = settings[menuItems[sel]].value;
+			var inc:Float = 1;
+			if(settings[menuItems[sel]].type == 2 && FlxG.keys.pressed.SHIFT) inc=0.1;
+			val += if(dir) inc else -inc;
+			if (val > settings[menuItems[sel]].max) val = settings[menuItems[sel]].min; 
+			if (val < settings[menuItems[sel]].min) val = settings[menuItems[sel]].max - 1; 
+			setValue(menuItems[sel],val);
+		}
+
+
+		reloadList();
 	}
 
 	function changeSelection(?change:Int = 0)

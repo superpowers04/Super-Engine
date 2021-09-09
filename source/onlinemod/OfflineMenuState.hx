@@ -32,6 +32,9 @@ class OfflineMenuState extends SearchMenuState
       OptionsMenu.lastState = 3;
       FlxG.switchState(new OptionsMenu());
   }
+  function chartOptions(){
+      openSubState(new QuickOptionsSubState());
+  }
   override function create()
   {
 
@@ -42,9 +45,7 @@ class OfflineMenuState extends SearchMenuState
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(150, 30);
     add(optionsButton);
-    sideButton = new FlxUIButton(1050, 160, "Chart Options", () -> {
-      openSubState(new QuickOptionsSubState(0,0));
-    });
+    sideButton = new FlxUIButton(1050, 160, "Chart Options", chartOptions);
     sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     sideButton.resize(150, 60);
     add(sideButton);

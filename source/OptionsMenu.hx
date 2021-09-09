@@ -26,6 +26,7 @@ class OptionsMenu extends MusicBeatState
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var selCat:Int = 0;
+	var transitioning:Bool = false;
 
 	var options:Array<OptionCategory> = [
 		new OptionCategory("Customization", [
@@ -91,6 +92,7 @@ class OptionsMenu extends MusicBeatState
 	private var grpControls_:FlxTypedGroup<Alphabet>;
 	private var catControls:FlxTypedGroup<Alphabet>;
 	public static var versionShit:FlxText;
+	var timer:FlxTimer;
 
 	var currentSelectedCat:OptionCategory;
 	var blackBorder:FlxSprite;
@@ -185,6 +187,7 @@ class OptionsMenu extends MusicBeatState
 			{
 				isCat = false;
 				if (catControls != null){
+					catControls.clear();
 					grpControls.forEach(function(item){
 						catControls.add(item);
 						item.xOffset = FlxG.width * 0.60;
@@ -202,8 +205,8 @@ class OptionsMenu extends MusicBeatState
 						grpControls.add(controlLabel);
 						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 					}
-				curSelected = 0;
-				changeSelection(selCat,false);
+				curSelected = selCat;
+				changeSelection(0,false);
 				addTitleText();
 			}
 			if (controls.UP_P)
@@ -291,7 +294,8 @@ class OptionsMenu extends MusicBeatState
 						grpControls_.add(item);
 					});
 					grpControls.clear();
-					new FlxTimer().start(0.5, function(tmr:FlxTimer){grpControls_.clear();},1);
+					if (timer != null)timer.cancel();
+					timer=new FlxTimer().start(0.4, function(tmr:FlxTimer){grpControls_.clear();},1);
 					
 
 					if (catControls != null){
@@ -307,16 +311,16 @@ class OptionsMenu extends MusicBeatState
 						curSelected = 0;
 						changeSelection(0);
 					}
-					for (i in start...currentSelectedCat.getOptions().length)
-						{
-							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
-							controlLabel.isMenuItem = true;
-							controlLabel.targetY = i;
-							controlLabel.x = FlxG.width * 0.60;
-							controlLabel.y = iy;
-							grpControls.add(controlLabel);
-							// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-						}
+					// for (i in start...currentSelectedCat.getOptions().length)
+					// 	{
+					// 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
+					// 		controlLabel.isMenuItem = true;
+					// 		controlLabel.targetY = i;
+					// 		controlLabel.x = FlxG.width * 0.60;
+					// 		controlLabel.y = iy;
+					// 		grpControls.add(controlLabel);
+					// 		// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+					// 	}
 					
 					curSelected = 0;
 					addTitleText(options[selCat].getName());
@@ -352,7 +356,7 @@ class OptionsMenu extends MusicBeatState
 
 		for (i in 0...options[curSelected].getOptions().length)
 		{
-			if(i >= 4) break; // No reason to add more than 4
+			// if(i >= 4) break; // No reason to add more than 4 // Actually, probably not a good idea, slower machines don't load the rest for some reason
 			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[curSelected].getOptions()[i].getDisplay(), true, false, true,FlxG.width * 0.60);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
@@ -366,8 +370,9 @@ class OptionsMenu extends MusicBeatState
 
 	function changeSelection(change:Int = 0,?upCat = true)
 	{
-		
+
 		if (change != 0 )FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+		if(transitioning) return;
 
 		curSelected += change;
 

@@ -109,7 +109,7 @@ class PlayState extends MusicBeatState
 	var halloweenLevel:Bool = false;
 
 	var songLength:Float = 0;
-	var kadeEngineWatermark:FlxText;
+	public var kadeEngineWatermark:FlxText;
 	
 
 	public var vocals:FlxSound;
@@ -155,13 +155,13 @@ class PlayState extends MusicBeatState
 	private var healthBar:FlxBar;
 	private var songPositionBar:Float = 0;
 	
-	private var generatedMusic:Bool = false;
+	public var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
 	public var iconP1:HealthIcon; //making these public again because i may be stupid
 	public var iconP2:HealthIcon; //what could go wrong?
 	public var camHUD:FlxCamera;
-	private var camGame:FlxCamera;
+	public var camGame:FlxCamera;
 
 	public static var offsetTesting:Bool = false;
 
@@ -184,7 +184,7 @@ class PlayState extends MusicBeatState
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
-	var songName:FlxText;
+	public var songName:FlxText;
 	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
 	var santa:FlxSprite;
@@ -197,7 +197,7 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	public static var songScore:Int = 0;
 	var songScoreDef:Int = 0;
-	var scoreTxt:FlxText;
+	public var scoreTxt:FlxText;
 	var scoreTxtX:Float;
 	var replayTxt:FlxText;
 
@@ -237,7 +237,7 @@ class PlayState extends MusicBeatState
 	public static var hitSoundEff:Sound;
 	public static var hurtSoundEff:Sound;
 	public var inputMode:Int = 0;
-	var inputEngineName:String = "Unspecified";
+	public static var inputEngineName:String = "Unspecified";
 	public static var songScript:String = "";
 	public static var hsBrTools:HSBrTools;
 
@@ -268,6 +268,14 @@ class PlayState extends MusicBeatState
 	var interp:Interp;
 
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
+			if(func_name == "noteHitDad"){
+				charCall("noteHitSelf",[args[1]],1);
+				charCall("noteHitOpponent",[args[1]],0);
+			}
+			if(func_name == "noteHit"){
+				charCall("noteHitSelf",[args[1]],0);
+				charCall("noteHitOpponent",[args[1]],1);
+			}
 			if ((interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
 			try{
 			var method = interp.variables.get(func_name);
@@ -280,10 +288,10 @@ class PlayState extends MusicBeatState
 				case 2:
 					method(this,args[0], args[1]);
 			}
-			}catch(e){MainMenuState.handleError('Something went wrong with ${func_name} for ${songName}, ${e.message}');}
+			}catch(e){MainMenuState.handleError('Something went wrong with ${func_name} for ${SONG.song}, ${e.message}');}
 		}
 	function parseHScript(){
-		if (songScript == "") {interp = null;return;}
+		if (songScript == "" || !QuickOptionsSubState.getSetting("Song hscripts")) {interp = null;return;}
 		var interp = HscriptUtils.createSimpleInterp();
 		var parser = new hscript.Parser();
 		var program:Expr;
@@ -295,7 +303,7 @@ class PlayState extends MusicBeatState
 			interp.variables.set("BRtools",new HSBrTools("assets/"));
 		interp.variables.set("charGet",charGet); 
 		interp.variables.set("charSet",charSet);
-		interp.variables.set("charAnim",charSet); 
+		interp.variables.set("charAnim",charAnim); 
 		interp.execute(program);
 		this.interp = interp;
 		callInterp("initScript",[]);
@@ -967,7 +975,7 @@ class PlayState extends MusicBeatState
 				songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 				add(songPosBar);
 	
-				var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
+				songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
 				if (FlxG.save.data.downscroll)
 					songName.y -= 3;
 				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -1348,10 +1356,16 @@ class PlayState extends MusicBeatState
 		}, 5);
 	}
 
-	function charCall(func:String,args:Array<Dynamic>){
-		boyfriend.callInterp(func,[]);
-		dad.callInterp(func,[]);
-		gf.callInterp(func,[]);
+	function charCall(func:String,args:Array<Dynamic>,?char:Int = -1){
+		switch(char){
+			case 0: boyfriend.callInterp(func,args);
+			case 1: dad.callInterp(func,args);
+			case 2: gf.callInterp(func,args);
+			case -1:
+				boyfriend.callInterp(func,args);
+				dad.callInterp(func,args);
+				gf.callInterp(func,args);
+		}
 	}
 
 	var previousFrameTime:Int = 0;
@@ -1399,9 +1413,10 @@ class PlayState extends MusicBeatState
 			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			add(songPosBar);
 
-			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y + FlxG.save.data.guiGap,0,SONG.song, 16);
+			songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y + FlxG.save.data.guiGap,0,SONG.song, 16);
 			if (FlxG.save.data.downscroll)
 				songName.y -= 3;
+			songName.x -= songName.text.length;
 			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 			songName.scrollFactor.set();
 			add(songName);
@@ -1480,7 +1495,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,null,null,songNotes[3] == 1);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,null,null,songNotes[3] == 1,songNotes,gottaHitNote);
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -2605,6 +2620,7 @@ class PlayState extends MusicBeatState
 							{
 								DadStrumPlayAnim(daNote.noteData);
 							}
+							callInterp("noteHitDad",[dad,daNote]);
 						}
 
 						dad.holdTimer = 0;
@@ -2943,6 +2959,7 @@ class PlayState extends MusicBeatState
 						saveNotes.push(HelperFunctions.truncateFloat(note.strumTime, 2));
 					
 					BFStrumPlayAnim(note.noteData);
+					callInterp("noteHit",[boyfriend,note]);
 					
 					note.wasGoodHit = true;
 					if (boyfriend.useVoices){boyfriend.voiceSounds[note.noteData].play(1);boyfriend.voiceSounds[note.noteData].time = 0;vocals.volume = 0;}else vocals.volume = 1;
@@ -3052,6 +3069,7 @@ class PlayState extends MusicBeatState
 							{
 								DadStrumPlayAnim(daNote.noteData);
 							}
+							callInterp("noteHitDad",[dad,daNote]);
 						}
 
 						dad.holdTimer = 0;
@@ -3329,7 +3347,7 @@ class PlayState extends MusicBeatState
 						case 0:
 							boyfriend.playAnim('singLEFT', true);
 					}
-
+					callInterp("noteHit",[boyfriend,note]);
 
 
 					if(!loadRep && note.mustPress)
@@ -3395,7 +3413,7 @@ class PlayState extends MusicBeatState
 
 			songScore -= 10;
 			if (daNote != null && daNote.shouldntBeHit) {songScore += SONG.noteMetadata.badnoteScore; health += SONG.noteMetadata.badnoteHealth;} // Having it insta kill, not a good idea 
-
+			callInterp("noteMiss",[boyfriend,daNote]);
 
 
 

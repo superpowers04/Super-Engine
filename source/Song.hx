@@ -49,7 +49,13 @@ class Song
 	public var player3:String = 'gf';
 	public var noteStyle:String = 'normal';
 	public var stage:String = 'stage';
-
+	public static var defNoteMetadata:NoteMetadata = {
+				badnoteHealth : -0.24,
+				badnoteScore : -990,
+				missScore : -10,
+				missHealth : -0.04,
+				tooLateHealth : -0.075
+			};
 
 
 	public function new(song, notes, bpm)
@@ -116,18 +122,13 @@ class Song
 		swagShit.defplayer1 = swagShit.player1;
 		swagShit.defplayer2 = swagShit.player2;
 		if (PlayState.invertedChart || QuickOptionsSubState.getSetting("Inverted chart")) swagShit = invertChart(swagShit);
-		if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null)swagShit = convHurtArrows(swagShit);
+		if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null) swagShit = convHurtArrows(swagShit);
 		if (onlinemod.OnlinePlayMenuState.socket == null){
-			if (!QuickOptionsSubState.getSetting("Opponent Arrows")) swagShit = removeOpponentArrows(swagShit);
+			if (!QuickOptionsSubState.getSetting("Opponent arrows")) swagShit = removeOpponentArrows(swagShit);
 			if (!QuickOptionsSubState.getSetting("Hurt notes")) swagShit = removeHurtArrows(swagShit);
 		}
-		if (swagShit.noteMetadata == null) swagShit.noteMetadata = {
-				badnoteHealth : -0.24,
-				badnoteScore : -990,
-				missScore : -10,
-				missHealth : -0.04,
-				tooLateHealth : -0.075
-			};
+		if(QuickOptionsSubState.getSetting("Scroll speed") > 0) swagShit.speed = QuickOptionsSubState.getSetting("Scroll speed");
+		if (swagShit.noteMetadata == null) swagShit.noteMetadata = Song.defNoteMetadata;
 		swagShit.defgf = swagShit.gfVersion;
 		return swagShit;
 	}

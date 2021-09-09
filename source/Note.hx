@@ -25,6 +25,8 @@ class Note extends FlxSprite
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 	public var shouldntBeHit:Bool = false;
+	// public var playerNote:Bool = false;
+	public var type:Int = 0; // Used for scriptable arrows 
 	// public var isSustainNoteEnd:Bool = false;
 
 	public var noteScore:Float = 1;
@@ -38,7 +40,7 @@ class Note extends FlxSprite
 
 	public var rating:String = "shit";
 
-	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false)
+	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
 		super();
 		if (FlxG.save.data.downscroll) offscreenY = 50;
@@ -46,6 +48,7 @@ class Note extends FlxSprite
 			prevNote = this;
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
+		mustPress = playerNote; 
 
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || _shouldntBeHit);
 
@@ -61,16 +64,19 @@ class Note extends FlxSprite
 			this.strumTime = 0;
 
 		this.noteData = _noteData % 4;
+		if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteCreate",[this,rawNote]);
 
 		var daStage:String = PlayState.curStage;
 
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
-		try{
-			if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
-		}catch(e){trace("Couldn't load bad arrow texture, recoloring arrows instead!");}
-		if(frames == null && shouldntBeHit) {color = 0x220011;}
-		if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+		if (frames == null){
+			try{
+				if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
+			}catch(e){trace("Couldn't load bad arrow texture, recoloring arrows instead!");}
+			if(frames == null && shouldntBeHit) {color = 0x220011;}
+			if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+		}
 
 		animation.addByPrefix('greenScroll', 'green0');
 		animation.addByPrefix('redScroll', 'red0');

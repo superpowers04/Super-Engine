@@ -134,6 +134,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       if(controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
       if(controls.LEFT_P){changeDiff(-1);}
       if(controls.RIGHT_P){changeDiff(1);}
+      extraKeys();
       if (controls.ACCEPT && songs.length > 0)
       {
           select();

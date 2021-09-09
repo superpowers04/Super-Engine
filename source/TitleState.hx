@@ -107,7 +107,8 @@ class TitleState extends MusicBeatState
 			choosableCharacters.push(char);
 			choosableCharactersLower[char.toLowerCase()] = char;
 		}
-		var rawJson = Assets.getText('assets/data/characterMetadata.json');
+		// var rawJson = Assets.getText('assets/data/characterMetadata.json');
+		var rawJson = File.getContent('assets/data/characterMetadata.json');
 		// trace('Char Json: \n${rawJson}');
 		TitleState.defCharJson = haxe.Json.parse(CoolUtil.cleanJSON(rawJson));
 		if (defCharJson == null || TitleState.defCharJson.characters == null || TitleState.defCharJson.aliases == null) {defCharJson = {
