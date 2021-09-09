@@ -184,6 +184,7 @@ class AnimationDebug extends MusicBeatState
 					offset = [];
 					offsetCount = 1;
 					offsetList = [];
+					charX = 0;charY = 0;
 				}
 				animationList = [];
 			}
@@ -345,28 +346,25 @@ class AnimationDebug extends MusicBeatState
 			charJson.like = charJson.clone;
 			charJson.clone = "";
 			// Compensate for the game moving the character's position
-			var characterX = 0;
-			var characterY = 100;
-			switch(charType){
-				case 0:characterX=790;
-				case 1:characterX=100;
-				case 2:characterX=400;
-				default:characterX=100;
-			};
+
+			charJson.cam_pos = [0,0];
 			dad.x -= characterX;
 			dad.y -= characterY;
-			charJson.cam_pos = [0,0];
+			
+			if(isAbsoluteOffsets){
+				dad.x = -dad.x;dad.y = -dad.y;
+			}else{dad.x -= charX;dad.y = -dad.y;}
 			switch (charType) {
 				case 0: {
-					charJson.char_pos1 = [-dad.x,-dad.y];
+					charJson.char_pos1 = [dad.x,dad.y];
 					charJson.cam_pos1 = [dad.camX,dad.camY];
 				};
 				case 1: {
-					charJson.char_pos2 = [-dad.x,-dad.y];
+					charJson.char_pos2 = [dad.x,dad.y];
 					charJson.cam_pos2 = [dad.camX,dad.camY];
 				};
 				case 2: {
-					charJson.char_pos3 = [-dad.x,-dad.y];
+					charJson.char_pos3 = [dad.x,dad.y];
 					charJson.cam_pos3 = [dad.camX,dad.camY];
 				};
 			}
@@ -764,6 +762,8 @@ class AnimDebugOptions extends MusicBeatSubstate
 		infotext.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(FlxG.width)),Std.int(50),FlxColor.BLACK);
 		blackBorder.alpha = 0.5;
+		add(blackBorder);
+		add(infotext);
 		FlxTween.tween(bg, {alpha: 0.7}, 0.4, {ease: FlxEase.quartInOut});
 		reloadList();
 		changeSelection(0);
