@@ -35,7 +35,7 @@ class OsuBeatMap{
 				song: "OsuBeatMap_Not_loaded",
 				notes: [],
 				bpm: 120,
-				needsVoices: true,
+				needsVoices: false,
 				player1: 'bf',
 				player2: 'bf',
 				gfVersion: 'gf',
@@ -54,25 +54,27 @@ class OsuBeatMap{
 					song: getSetting("Title"),
 					notes: [],
 					bpm: 120,
-					needsVoices: true,
+					needsVoices: false,
 					player1: 'bf',
 					player2: 'bf',
 					gfVersion: 'gf',
 					noteStyle: 'normal',
 					stage: 'stage',
-					speed: 2.0,
-					validScore: false
+					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else 2.0,
+					validScore: false,
+					noteMetadata:Song.defNoteMetadata
 				};
 				var hitobjsre:EReg = (~/\[HitObjects\]/gi);
 				hitobjsre.match(bm);
 				var timingPoints:Array<OsuTimingPoint> = [];
-				{ // Timing points   0,0.0,0,0,0,0,0,0
-					var regTP:EReg = (~/(^[0-9]*),([0-9.]*),([0-9.]*),([0-9]*),([0-9.]*),([0-9.]*),([0-9.]*),([01])/gm);
+				{ // Timing points   0,0.0,0,0,0,0,0,0 |  -28,461.538461538462,4,1,0,100,1,0
+
+					var regTP:EReg = (~/(^[0-9]*),([0-9.]*),([0-9.]*),([0-9]*),([0-9.]*),([0-9.]*),([01]),/gm);
 					var input:String = bm;
 					while (regTP.match(input)) {
 						input=regTP.matchedRight();
-						var uninher:Bool = (regTP.matched(8) == "0");
-						if (!uninher) {trace('${regTP.matched(0)} is inherited, Unsupported at the moment');continue;} // Unsupported atm
+						var inher:Bool = (regTP.matched(7) == "0");
+						if (inher) {trace('${regTP.matched(0)} is inherited, Unsupported at the moment');continue;} // Unsupported atm
 						var bpm:Float = 1 / Std.parseFloat(regTP.matched(1)) * 1000 * 60; // Did not google this, dunno what you mean. *I'm not bad at math, I swear*
 						if (bpm < 0) bpm = -bpm;
 						timingPoints.push({
@@ -91,7 +93,9 @@ class OsuBeatMap{
 				var isTimedReg:EReg = (~/([a-z]|)/gi);
 				{ // hitobjs
 					var hitobjs:Array<SwagSection> = [];
-					var hitobjval:EReg = (~/(^[0-9]*),([0-9]*),([0-9]*),([0-9]*),([0-9]*),([0-9]*|)/gm);
+					var hitobjval:EReg = (~/(^[0-9]*),([0-9]*),([0-9]*),([0-9]*),([0-9]*),([0-9A-z|:]*)/gm);
+					var sliderReg:EReg = (~/([A-z]\|[|0-9.]*),([0-9]*),([0-9]*),.*/gm);
+					var maniaHoldReg:EReg = (~/([|0-9.]*):/gm);
 
 					var i = 0;
 					var curSection = 0;
@@ -100,13 +104,25 @@ class OsuBeatMap{
 					while (hitobjval.match(input)) {
 						input = hitobjval.matchedRight();
 						// var curObj:String = regHitObj.matched(1);
+						var hold = 0;
+						var time = Std.parseInt(hitobjval.matched(3));
+						var int = Std.parseInt; // Just for easier access
 
-						if (!isTimedReg.match(hitobjval.matched(0))) continue;
+						if (sliderReg.match(hitobjval.matched(6))) {
+							continue;
+						}else if (maniaHoldReg.match(hitobjval.matched(6))) {
+							hold = int(maniaHoldReg.matched(1)) - time;
+						}
+						// else if (int(hitobjval.matched(4)) >> 3 == 1){
+							// hold = int(hitobjval.matched(6)) - time;
+						// }
+
 						
 
-						var time = Std.parseInt(hitobjval.matched(3));
 						if (timingPoints[curSection + 1] != null && timingPoints[curSection + 1].ms <= time) curSection++;
+						if (i >= 72) {curSection++;timingPoints.insert(curSection,timingPoints[curSection - 1]);}
 						if (hitobjs[curSection] == null) {
+							i=0;
 							hitobjs[curSection] = {
 								typeOfSection : 0,
 								lengthInSteps : 16,
@@ -119,62 +135,14 @@ class OsuBeatMap{
 							trace('New section: ${curSection}');
 						}
 						// var hold = normalizeInt(Math.round(Std.parseInt(hitobjval.matched(6)) - time * 0.01));
-						var hold = 0;
-						var nid = Math.floor(Std.parseInt(hitobjval.matched(1)) * 4 / 512);
-						hitobjs[curSection].sectionNotes.push([time,nid,hold]); 
+						var nid = Math.floor(int(hitobjval.matched(1)) * 4 / 512);
+						hitobjs[curSection].sectionNotes.push([time,nid,hold,0]); 
 						i++;
 						noteCount++;
 						
 
 					}
 					trace('Converted ${noteCount} circles to notes with ${hitobjs.length} sections in ${Sys.time() - started} seconds');
-					song.notes = hitobjs;
-				}
-
-				{ // Sliders
-					var hitobjs:Array<SwagSection> = song.notes;
-					var hitobjval:EReg = (~/(^[0-9]*),([0-9]*),([0-9]*),([0-9]*),([0-9]*),(.*),(.*)/gm);
-					var sliderReg:EReg = (~/([A-z])|[|0-9.]*,([0-9]*),([0-9.]*)/gm);
-					var i = 0;
-					var curSection = -1;
-					var noteCount = 0;
-					
-					
-					var input =hitobjsre.matchedRight();
-					var sliderMultiplier:Float=Std.parseFloat(getSetting("SliderMultiplier"));
-					while (hitobjval.match(input)) {
-						input = hitobjval.matchedRight();
-						// if (Std.parseInt(hitobjval.matched(4)) == 3 ) continue;
-						// if (!isTimedReg.match(hitobjval.matched(0))) continue;
-
-						var time = Std.parseInt(hitobjval.matched(3));
-						var hold = 0;
-						
-						if (!sliderReg.match(hitobjval.matched(6))) continue;
-						hold =  normalizeInt(Math.round(((Std.parseFloat(sliderReg.matched(3)) / 100) * Std.parseInt(sliderReg.matched(2))) / 10));
-						
-						var nid = Math.round(Std.parseInt(hitobjval.matched(1)) * 4 / 512);
-						while (timingPoints[curSection + 1] != null && timingPoints[curSection + 1].ms <= time) curSection++;
-						if (hitobjs[curSection] == null) {
-							hitobjs[curSection] = {
-								typeOfSection : 0,
-								lengthInSteps : 16,
-								mustHitSection : true,
-								altAnim : false,
-								sectionNotes : [],
-								changeBPM : true,
-								bpm : timingPoints[curSection].bpm
-							};
-							trace('New section: ${curSection}');
-						}
-						hitobjs[curSection].sectionNotes.push([time,nid,hold]); 
-						i++;
-						noteCount++;
-						// if (i > 15) {i = 0; curSection++;}
-						
-
-					}
-					trace('Converted ${noteCount} sliders to hold notes in ${Sys.time() - started} seconds');
 					song.notes = hitobjs;
 				}
 

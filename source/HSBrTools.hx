@@ -29,8 +29,13 @@ class HSBrTools {
         if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
         return new FlxSprite(x, y).loadGraphic(spriteArray[pngPath]);
     }
+    public function loadSparrowFrames(pngPath:String):FlxAtlasFrames{
+        if(spriteArray[pngPath + ".png"] == null) spriteArray[pngPath + ".png"] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}.png'));
+        if(xmlArray[pngPath + ".xml"] == null) xmlArray[pngPath + ".xml"] = File.getContent('${path}${pngPath}.xml');
+
+        return FlxAtlasFrames.fromSparrow(spriteArray[pngPath + ".png"],xmlArray[pngPath + ".xml"]);
+    }
 	public function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
-        trace('${path}${pngPath}.png');
         if(spriteArray[pngPath + ".png"] == null) spriteArray[pngPath + ".png"] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}.png'));
 		var spr = new FlxSprite(x, y);
         if(xmlArray[pngPath + ".xml"] == null) xmlArray[pngPath + ".xml"] = File.getContent('${path}${pngPath}.xml');
@@ -40,6 +45,7 @@ class HSBrTools {
             spr.animation.addByPrefix(anim,anim,fps,loop);
             spr.animation.play(anim);
         }
+
         return spr;
 	}
     // public function loadSound(?x:Int=0,?y:Int=0,path:String):Sound{

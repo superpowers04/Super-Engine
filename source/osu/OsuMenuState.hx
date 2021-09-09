@@ -26,6 +26,9 @@ class OsuMenuState extends onlinemod.OfflineMenuState
     super.findButton();
     changeDiff();
   }
+  override function chartOptions(){
+      openSubState(new OsuQuickOptionsSubState());
+  }
 
   override function create()
   {
@@ -35,7 +38,6 @@ class OsuMenuState extends onlinemod.OfflineMenuState
     diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
     diffText.font = Paths.font("vcr.ttf");
     add(diffText);
-    sideButton.destroy();
     changeDiff();
   }
   override function reloadList(?reload=false,?search = ""){
@@ -155,5 +157,15 @@ class OsuMenuState extends onlinemod.OfflineMenuState
       FlxG.mouse.visible = false;
       OptionsMenu.lastState = 5;
       FlxG.switchState(new OptionsMenu());
+  }
+}
+
+
+class OsuQuickOptionsSubState extends QuickOptionsSubState{
+  override function saveSettings(){
+    QuickOptionsSubState.osuSettings = settings;
+  }
+  override function loadSettings(){
+    settings = QuickOptionsSubState.osuSettings;
   }
 }
