@@ -62,6 +62,7 @@ class Character extends FlxSprite
 	public var isCustom:Bool = false;
 	public var charProperties:CharacterJson;
 	public var charXml:String;
+	// public var definingColor:FlxColor;
 	var flipNotes:Bool = true;
 	var needsInverted:Int= 1;
 	var danced:Bool = false;
@@ -97,7 +98,7 @@ class Character extends FlxSprite
 		interp.variables.set("hscriptPath", 'mods/characters/$curCharacter');
 		interp.variables.set("charName", curCharacter);
 		interp.variables.set("charProperties", charProperties);
-		interp.variables.set("playState", PlayState.instance );
+		interp.variables.set("PlayState", PlayState );
 		interp.variables.set("BRtools",new HSBrTools('mods/characters/$curCharacter/'));
 		interp.execute(program);
 		this.interp = interp;
@@ -529,7 +530,7 @@ class Character extends FlxSprite
 		this.isPlayer = isPlayer;
 		amPreview = preview;
 		if(charJson != null) charProperties = charJson;
-
+		// definingColor = switch(charType){case 1:0xdd0000;default:0x00dd00;};
 		
 		if (exitex != null) tex = exitex;
 		antialiasing = true;
