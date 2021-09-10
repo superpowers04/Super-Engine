@@ -55,11 +55,14 @@ class FinishSubState extends MusicBeatSubstate
 		}
 		if(win){
 			boyfriend.playAnim("hey",true);
-			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('cheer'); else dad.playAnim('singDOWNmiss');
+			boyfriend.playAnim("win",true);
+			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnim('singDOWNmiss');dad.playAnim('lose');}
 			PlayState.gf.playAnim('cheer',true);
 		}else{
 			boyfriend.playAnim('singDOWNmiss');
+			boyfriend.playAnim('lose');
 			dad.playAnim("hey",true);
+			dad.playAnim("win",true);
 			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('sad'); else dad.playAnim("hey");
 			PlayState.gf.playAnim('sad',true);
 		}
