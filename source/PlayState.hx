@@ -262,6 +262,8 @@ class PlayState extends MusicBeatState
 		repPresses = 0;
 		repReleases = 0;
 		songScore = 0;
+		Note.setYRender(if(FlxG.save.data.downscroll) -50 else FlxG.height + 50,Std.int(FlxG.height * 0.5));
+
 
 	}
 
@@ -2545,7 +2547,7 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						daNote.visible = true;
+						// daNote.visible = true;
 						daNote.active = true;
 					}
 					// if (!daNote.modifiedByLua) Modcharts don't work, this check is useless
@@ -2995,7 +2997,7 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						daNote.visible = true;
+						// daNote.visible = true;
 						daNote.active = true;
 					}
 							if (FlxG.save.data.downscroll)
