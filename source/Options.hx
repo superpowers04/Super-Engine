@@ -1181,3 +1181,45 @@ class UseBadArrowsOption extends Option
 	}
 
 }
+class MiddlescrollOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.middleScroll = !FlxG.save.data.middleScroll;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Middle scroll " + (!FlxG.save.data.middleScroll ? "off" : "on");
+	}
+
+}
+class OpponentStrumlineOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.oppStrumLine = !FlxG.save.data.oppStrumLine;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Show Opponent Strumline " + (!FlxG.save.data.oppStrumLine ? "off" : "on");
+	}
+
+}

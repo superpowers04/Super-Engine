@@ -13,7 +13,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
-	var offscreenY:Int = FlxG.height + 50; //+50 to prevent notes from randomly appearing
+	static var offscreenY:Int = 0; //+50 to prevent notes from randomly appearing
 
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
@@ -37,19 +37,26 @@ class Note extends FlxSprite
 	public static var GREEN_NOTE:Int = 2;
 	public static var RED_NOTE:Int = 3;
 	public var skipNote:Bool = true;
+	var showNote = true;
 
 	public var rating:String = "shit";
+
+	public static function setOffscreen(){
+		offscreenY = (if (FlxG.save.data.downscroll) offscreenY = 50; else offscreenY = FlxG.height + 50);
+	}
 
 	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
 		super();
-		if (FlxG.save.data.downscroll) offscreenY = 50;
+		
+
 		if (prevNote == null)
 			prevNote = this;
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		mustPress = playerNote; 
 
+		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || _shouldntBeHit);
 
 		x += 50;
@@ -173,9 +180,10 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (!FlxG.save.data.downscroll && y < offscreenY || FlxG.save.data.downscroll && y > offscreenY){ // doesn't calculate anything until they're on screen
+		if (!skipNote || (!FlxG.save.data.downscroll && y < offscreenY || FlxG.save.data.downscroll && y > offscreenY)){ // doesn't calculate anything until they're on screen
 			skipNote = false;
-			visible = true;
+			visible = showNote;
+
 			if (mustPress)
 			{
 				// ass

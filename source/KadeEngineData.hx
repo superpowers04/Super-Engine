@@ -134,6 +134,8 @@ class KadeEngineData
 		if (FlxG.save.data.updateCheck == null) FlxG.save.data.updateCheck = true;
 		if (FlxG.save.data.songUnload == null) FlxG.save.data.songUnload = false;
 		if (FlxG.save.data.useBadArrowTex == null) FlxG.save.data.useBadArrowTex = true;
+		if (FlxG.save.data.middleScroll == null) FlxG.save.data.middleScroll = false;
+		if (FlxG.save.data.oppStrumLine == null) FlxG.save.data.oppStrumLine = true;
 	 
 
 		Conductor.recalculateTimings();

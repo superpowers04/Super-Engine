@@ -39,16 +39,15 @@ class OptionsMenu extends MusicBeatState
 			new SelStageOption("Select the stage to use, Default will use song default"),
 		]),
 		new OptionCategory("Gameplay", [
-		    new PracticeModeOption("Disables the ability to get a gameover."),
 			new DFJKOption(controls),
+		    new PracticeModeOption("Disables the ability to get a gameover."),
 			new DownscrollOption("Change the layout of the strumline."),
+			new MiddlescrollOption("Move the strumline to the middle of the screen"),
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
-			new FPSCapOption("Cap your FPS"),
 
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
-			new ResetButtonOption("Toggle pressing R to gameover."),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
 			// new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"), This didn't work before and it doesn't work again...
 			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
@@ -64,21 +63,22 @@ class OptionsMenu extends MusicBeatState
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
 		]),
 		new OptionCategory("Misc", [
-			#if desktop
 			new FPSOption("Toggle the FPS Counter"),
-			new ReplayOption("View replays"),
-			#end
+			new FPSCapOption("Cap your FPS"),
+			new ResetButtonOption("Toggle pressing R to gameover."),
+
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF"),
 			new PlayVoicesOption("Plays your character's voices when you press a note.")
 		]),
 		new OptionCategory("Preformance", [
 			new CheckForUpdatesOption("Check for updates when booting the game"),
+			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
 			new NoteRatingOption("Toggles the rating that appears when you press a note"),
 			new UnloadSongOption("Unload the song when exiting the game, can cause issues but should help with memory"),
-			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
+			new OpponentStrumlineOption("Whether to show the opponent's notes or not"),
 			new ShowP2Option("Show Opponent"),
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),

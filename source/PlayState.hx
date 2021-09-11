@@ -236,6 +236,7 @@ class PlayState extends MusicBeatState
 	public static var canUseAlts:Bool = false;
 	public static var hitSoundEff:Sound;
 	public static var hurtSoundEff:Sound;
+	static var vanillaHurtSounds:Array<Sound> = [];
 	public var inputMode:Int = 0;
 	public static var inputEngineName:String = "Unspecified";
 	public static var songScript:String = "";
@@ -262,6 +263,7 @@ class PlayState extends MusicBeatState
 		repPresses = 0;
 		repReleases = 0;
 		songScore = 0;
+		Note.setOffscreen();
 
 	}
 
@@ -1067,6 +1069,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.hitSound && hitSoundEff == null) hitSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hitSound.ogg')) 'mods/hitSound.ogg' else Paths.sound('Normal_Hit')));
 
 		if(hurtSoundEff == null) hurtSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hurtSound.ogg')) 'mods/hurtSound.ogg' else Paths.sound('ANGRY')));
+		if(vanillaHurtSounds[0] == null) vanillaHurtSounds = [Sound.fromFile('assets/shared/sounds/missnote1.ogg'),Sound.fromFile('assets/shared/sounds/missnote2.ogg'),Sound.fromFile('assets/shared/sounds/missnote3.ogg')];
 
 		startingSong = true;
 		
@@ -1598,7 +1601,7 @@ class PlayState extends MusicBeatState
 			{
 				babyArrow.y -= 10;
 				babyArrow.alpha = 0;
-				FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+				FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: if (player == 0) 0.7 else 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
 
 			babyArrow.ID = i;
@@ -1611,9 +1614,14 @@ class PlayState extends MusicBeatState
 					playerStrums.add(babyArrow);
 			}
 
-			babyArrow.animation.play('static');
-			babyArrow.x += 50;
-			babyArrow.x += ((FlxG.width / 2) * player);
+			babyArrow.animation.play('static'); 
+			// Todo, clean this shitty code up
+			 babyArrow.x += if (!(FlxG.save.data.middleScroll && player == 1)) 50 else 100;
+
+			babyArrow.x += if (FlxG.save.data.middleScroll) ((FlxG.width / 4) * player) else ((FlxG.width / 2) * player);
+			if (FlxG.save.data.middleScroll && player == 0 && i > 1) babyArrow.x += Note.swagWidth * 6;
+			babyArrow.visible = (player == 1 || FlxG.save.data.oppStrumLine);
+
 			
 			cpuStrums.forEach(function(spr:FlxSprite)
 			{					
@@ -1621,7 +1629,7 @@ class PlayState extends MusicBeatState
 			});
 
 			strumLineNotes.add(babyArrow);
-			callInterp("strumNoteAdd",[babyArrow]);
+			callInterp("strumNoteAdd",[babyArrow,player == 1]);
 		}
 	}
 
@@ -3376,15 +3384,15 @@ class PlayState extends MusicBeatState
 		if(daNote != null && daNote.shouldntBeHit && !forced) return;
 		
 		if(daNote != null && forced && daNote.shouldntBeHit){ // Only true on hurt arrows
+			FlxG.sound.play(hurtSoundEff, 1);
 			daNote.kill();
 			notes.remove(daNote, true);
 			daNote.destroy();
-			FlxG.sound.play(hurtSoundEff, 1);
 
 		}
 		if (!boyfriend.stunned)
 		{
-			if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 1);}else{FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));}
+			if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 1);}else{FlxG.sound.play(vanillaHurtSounds[Math.round(Math.random() * 2)], FlxG.random.float(0.1, 0.2));}
 			// FlxG.sound.play(hurtSoundEff, 1);
 			health += SONG.noteMetadata.missHealth;
 			switch (direction)
