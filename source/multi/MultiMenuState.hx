@@ -149,7 +149,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     if (selMode >= modes[curSelected].length) selMode = 0;
     if (selMode < 0) selMode = modes[curSelected].length - 1;
     diffText.text = modes[curSelected][selMode];
-
+    diffText.x = (FlxG.width) - (diffText.text.length * 14) - 10;
   }
   override function changeSelection(change:Int = 0)
 	{
