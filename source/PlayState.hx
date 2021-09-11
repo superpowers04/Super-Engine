@@ -2544,7 +2544,6 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						daNote.visible = true;
 						daNote.active = true;
 					}
 					// if (!daNote.modifiedByLua) Modcharts don't work, this check is useless
