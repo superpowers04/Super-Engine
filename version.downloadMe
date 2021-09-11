@@ -2,3 +2,4 @@
 - Fixed numpad keys being unbound every restart and removed arrow keys from being able to be bound
 - PlayState can now be properly accessed from hscript files
 - Characters will now play win/lose animations when they win or lose if they have them.
+- Animations can now supply a LoopStart value, 

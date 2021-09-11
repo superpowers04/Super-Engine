@@ -11,7 +11,7 @@
 
 			"flip_x": true, "": "Flips X axis from the sprite, useful for Boyfriend/Pico/Tankman clones",
 			"spirit_trail": false, "": "Enables Spirit's visual effect",
-
+			"color":[49,176,209],
 			"animations":
 			[
 				{"anim":"idle","name": "BF IDLE instance 1","fps": 24,"loop": false,"indices":[]},
@@ -47,6 +47,7 @@
 
 			"flip_x": true, "": "Flips X axis from the sprite, useful for Boyfriend/Pico/Tankman clones",
 			"spirit_trail": false, "": "Enables Spirit's visual effect",
+			"color":[49,176,209],
 
 			"animations":
 			[

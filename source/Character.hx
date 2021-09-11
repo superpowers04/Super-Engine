@@ -12,6 +12,7 @@ import haxe.DynamicAccess;
 import lime.utils.Assets;
 import lime.graphics.Image;
 import CharacterJson;
+import flixel.util.FlxColor;
 
 import flash.media.Sound;
 
@@ -54,6 +55,7 @@ class Character extends FlxSprite
 	public var voiceSounds:Array<FlxSound> = [];
 	public var oneShotAnims:Array<String> = ["hey"];
 	public var tintedAnims:Array<String> = [];
+	public var loopAnimFrames:Map<String,Int> = [];
 	public var flip:Bool = true;
 	public var tex:FlxAtlasFrames = null;
 	public var holdTimer:Float = 0;
@@ -62,7 +64,8 @@ class Character extends FlxSprite
 	public var isCustom:Bool = false;
 	public var charProperties:CharacterJson;
 	public var charXml:String;
-	// public var definingColor:FlxColor;
+	public var definingColor:FlxColor;
+	var customColor = false;
 	var flipNotes:Bool = true;
 	var needsInverted:Int= 1;
 	var danced:Bool = false;
@@ -357,10 +360,14 @@ class Character extends FlxSprite
 				camY-=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
 			}
 		}
+		if(!customColor && charProperties.color != null){
+			definingColor = FlxColor.fromRGB(isValidInt(charProperties.color[0]),isValidInt(charProperties.color[1]),isValidInt(charProperties.color[2],255));
+		}
 		if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
 		if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 		trace('Loaded ${offsetCount} offsets!');
 	}
+	function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
 	function loadJSONChar(charProperties:CharacterJson){
 		
 		trace('Loading Json animations!');
@@ -413,6 +420,7 @@ class Character extends FlxSprite
 				oneShotAnims.push(anima.anim);
 				anima.loop = false; // Looping when oneshot is a terrible idea
 			}
+			if(anima.loopStart != null && anima.loopStart != 0 )loopAnimFrames[anima.anim] = anima.loopStart;
 
 			if (anima.indices.length > 0) { // Add using indices if specified
 				animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
@@ -530,7 +538,7 @@ class Character extends FlxSprite
 		this.isPlayer = isPlayer;
 		amPreview = preview;
 		if(charJson != null) charProperties = charJson;
-		// definingColor = switch(charType){case 1:0xdd0000;default:0x00dd00;};
+		definingColor = switch(charType){case 1:0xdd0000;default:0x00dd00;};
 		
 		if (exitex != null) tex = exitex;
 		antialiasing = true;
@@ -981,6 +989,7 @@ class Character extends FlxSprite
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
 			AnimName = AnimName + '-alt'; // Alt animations
 		else if (animation.getByName(AnimName) == null) return;
+		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){Frame = loopAnimFrames[AnimName];}
 		animation.play(AnimName, Force, Reversed, Frame);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
 		

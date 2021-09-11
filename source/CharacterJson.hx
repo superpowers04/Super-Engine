@@ -27,6 +27,7 @@ typedef CharacterJson =
 	var char_pos3:Array<Float>;
 	var custom_misses:Int;
 	var ?flip_notes:Bool; // Tells the game if it should flip left and right notes on the right
+	var color:Null<Array<Int>>;
 
 	var embedded:Bool; // For embedded JSON chars, will not effect custom chars. Tells the game whether to use Lime assets or load them like a custom character
 	var path:String; // For embedded JSON chars, will not effect custom chars. Tells the game the asset to use or the path to load from
@@ -45,7 +46,7 @@ typedef CharJsonAnimation ={
 	var fps:Int;
 	var loop:Bool;
 	var indices:Array<Int>;
-	var loopStart:Int; // Tells the game where to restart the animation if looped
+	var loopStart:Null<Int>; // Tells the game where to restart the animation if looped
 	var stage:String; // Set on specific stage
 	var song:String; // Set on specific songname
 	var char_side:Dynamic; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
