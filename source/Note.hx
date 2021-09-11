@@ -13,8 +13,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
-	static var offscreenY:Int = 0; //+50 to prevent notes from randomly appearing
-	static var updateY:Int = 0; //+50 to prevent notes from randomly appearing
+	var offscreenY:Int = FlxG.height + 50; //+50 to prevent notes from randomly appearing
 
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
@@ -40,17 +39,11 @@ class Note extends FlxSprite
 	public var skipNote:Bool = true;
 
 	public var rating:String = "shit";
-	public static function setYRender(offscr:Int,upd:Int){
-		updateY = upd;
-		offscreenY = offscr;
-	}
 
 	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
 		super();
-		visible = false;
-		skipNote = true;
-
+		if (FlxG.save.data.downscroll) offscreenY = 50;
 		if (prevNote == null)
 			prevNote = this;
 		this.prevNote = prevNote;
@@ -173,19 +166,16 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
+			visible = false;
 		}
 	}catch(e){MainMenuState.handleError('Caught "Note create" crash: ${e.message}');}}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (!visible && (!FlxG.save.data.downscroll && y < offscreenY || FlxG.save.data.downscroll && y > offscreenY)){
-			visible = true;
-			return;
-		}
-		if (!skipNote || (!FlxG.save.data.downscroll && y < updateY || FlxG.save.data.downscroll && y > updateY)){ // doesn't calculate anything until they're on screen
+		if (!FlxG.save.data.downscroll && y < offscreenY || FlxG.save.data.downscroll && y > offscreenY){ // doesn't calculate anything until they're on screen
 			skipNote = false;
-			// visible = true;
+			visible = true;
 			if (mustPress)
 			{
 				// ass
