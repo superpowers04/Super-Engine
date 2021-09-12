@@ -9,12 +9,7 @@ Last Build:[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/act
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide
 
 
-# Powered by
-## [Friday Night Funkin' FPS Plus](https://github.com/ThatRozebudDude/FPS-Plus-Public/)
-![FPS plus logo](https://github.com/ThatRozebudDude/FPS-Plus-Public/raw/release/art/readme/logo.png)
 
-## [Kade Engine](https://github.com/KadeDev/Kade-Engine)
-![Kade Engine logo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
 
 # Information
 ## Friday Night Funkin'
@@ -28,11 +23,14 @@ Links: **[itch.io page](https://ninja-muffin24.itch.io/funkin) ⋅ [Newgrounds](
 
 Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play in browser](https://funkin.puyo.xyz) ⋅ [latest stable release](https://github.com/KadeDev/Kade-Engine/releases/latest)
 
-## Friday Night Funkin' FPS Plus
-Friday Night Funkin' FPS Plus is a mod of Friday Night Funkin' that aims to improve gameplay and add quality of life features.
-Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play in browser](https://funkin.puyo.xyz) ⋅ [latest stable release](https://github.com/KadeDev/Kade-Engine/releases/latest)
+## Friday Night Funkin' Modding Plus
+Friday Night Funkin' Modding Plus is a mod of Friday Night Funkin' that aims to make modding easier.
+Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/14264) ⋅ [latest stable release](https://github.com/FunkinModdingPlus/ModdingPlus/releases/)
 
-# Credits
+
+
+
+# Credits for every mod included
 ## Friday Night Funkin'
  - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programming
  - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
@@ -46,6 +44,17 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 ## Kade Engine (The base engine)
 - [KadeDeveloper](https://twitter.com/KadeDeveloper) - Maintainer and lead programmer
 - [The contributors](https://github.com/KadeDev/Kade-Engine/graphs/contributors)
+
+## Modding Plus (Several improvements and base for HScript capability)
+- [BulbyVR](https://github.com/TheDrawingCoder-Gamer) - Owner/Programmer
+- [DJ Popsicle](https://gamebanana.com/members/1780306) - Co-Owner/Additional Programmer
+- [Matheus L/Mlops](https://gamebanana.com/members/1767306), [AndreDoodles](https://gamebanana.com/members/1764840), riko, Raf, ElBartSinsoJaJa, and [plum](https://www.youtube.com/channel/UCXbiI4MJD9Y3FpjW61lG8ZQ) - Artist & Animation
+- [ThePinkPhantom/JuliettePink](https://gamebanana.com/members/1892442) - Portrait Artist
+- [Alex Director](https://gamebanana.com/members/1701629) - Icon Fixer
+- [TrafficKid](https://github.com/TrafficKid) - GitHub Wikipedia
+- [GwebDev](https://github.com/GrowtopiaFli) - Edited WebM code
+- [Axy](https://github.com/AxyGitPoggers) - Poggers help
+
 ## FPS Plus (Some improvements)
 - [Rozebud](https://twitter.com/helpme_thebigt) - *Everything*
 
