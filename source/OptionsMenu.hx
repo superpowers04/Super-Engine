@@ -72,7 +72,7 @@ class OptionsMenu extends MusicBeatState
 			new PlayVoicesOption("Plays your character's voices when you press a note.")
 		]),
 		new OptionCategory("Preformance", [
-			new CheckForUpdatesOption("Check for updates when booting the game"),
+			new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
 			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
@@ -208,6 +208,7 @@ class OptionsMenu extends MusicBeatState
 				curSelected = selCat;
 				changeSelection(0,false);
 				addTitleText();
+				updateOffsetText();
 			}
 			if (controls.UP_P)
 				changeSelection(-1);
@@ -234,24 +235,7 @@ class OptionsMenu extends MusicBeatState
 							currentSelectedCat.getOptions()[curSelected].left();
 					}
 				}
-				else
-				{
-
-					if (FlxG.keys.pressed.SHIFT)
-					{
-						if (FlxG.keys.justPressed.RIGHT)
-							FlxG.save.data.offset += 0.1;
-						else if (FlxG.keys.justPressed.LEFT)
-							FlxG.save.data.offset -= 0.1;
-					}
-					else if (FlxG.keys.pressed.RIGHT)
-						FlxG.save.data.offset += 0.1;
-					else if (FlxG.keys.pressed.LEFT)
-						FlxG.save.data.offset -= 0.1;
-					
-				
-				}
-				updateOffsetText();		
+				updateOffsetText();
 			}
 			else
 			{
@@ -324,6 +308,7 @@ class OptionsMenu extends MusicBeatState
 					
 					curSelected = 0;
 					addTitleText(options[selCat].getName());
+					updateOffsetText();
 				}
 
 				updateCat();
@@ -340,11 +325,10 @@ class OptionsMenu extends MusicBeatState
 			if (currentSelectedCat.getOptions()[curSelected].getAccept())
 				versionShit.text =  currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
 			else
-				versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+				versionShit.text = "Description - " + currentDescription;
 		}
 		else
 			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
-
 	}
 
 	function updateCat(){

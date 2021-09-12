@@ -4,6 +4,8 @@ This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
 This is client aims to allow people to use normal Funkin Battle Royale servers with custom characters or play custom charts and such when offline<br>
 Last Build:[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml) Click on a commit and go to the artifacts to download, you need a github account to download artifacts
+<br>[Discord server](https://discord.gg/28GPGTRuuR)
+
 
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide
@@ -30,7 +32,7 @@ Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/14264) ⋅ [late
 
 
 
-# Credits for every mod included
+# Credits for every mod included/used
 ## Friday Night Funkin'
  - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programming
  - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
