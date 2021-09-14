@@ -65,6 +65,7 @@ class Character extends FlxSprite
 	public var charProperties:CharacterJson;
 	public var charXml:String;
 	public var definingColor:FlxColor;
+	public var animationList:Array<CharJsonAnimation> = [];
 	var customColor = false;
 	var flipNotes:Bool = true;
 	var needsInverted:Int= 1;
@@ -106,7 +107,6 @@ class Character extends FlxSprite
 		interp.execute(program);
 		this.interp = interp;
 	}
-
 
 	function addOffsets(?character:String = "") // Handles offsets for characters with support for clones
 	{
@@ -372,19 +372,19 @@ class Character extends FlxSprite
 		
 		trace('Loading Json animations!');
 		// BF's animations, they're used by default to prevent crashes
-		animation.addByPrefix('idle', 'BF idle dance', 24, false);
-		animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+		addAnimation('idle', 'BF idle dance', 24, false);
+		addAnimation('singUP', 'BF NOTE UP0', 24, false);
 		// WHY DO THESE NEED TO BE FLIPPED?
-		animation.addByPrefix('singLEFT', 'BF NOTE RIGHT0', 24, false); 
-		animation.addByPrefix('singRIGHT', 'BF NOTE LEFT0', 24, false);
-		animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-		animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+		addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
+		addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
+		addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
+		addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
 
-		animation.addByPrefix('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
-		animation.addByPrefix('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
+		addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
+		addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
 
-		animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-		animation.addByPrefix('hey', 'BF HEY', 24, false);
+		addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+		addAnimation('hey', 'BF HEY', 24, false);
 
 
 
@@ -423,8 +423,8 @@ class Character extends FlxSprite
 			if(anima.loopStart != null && anima.loopStart != 0 )loopAnimFrames[anima.anim] = anima.loopStart;
 
 			if (anima.indices.length > 0) { // Add using indices if specified
-				animation.addByIndices(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
-			}else{animation.addByPrefix(anima.anim, anima.name, anima.fps, anima.loop);}
+				addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
+			}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
 			}catch(e){MainMenuState.handleError('${curCharacter} had an animation error ${e.message}');break;}
 			animCount++;
 		}
@@ -480,9 +480,17 @@ class Character extends FlxSprite
 
 
 		if (tex == null){
-			var charXml:String = File.getContent('mods/characters/$curCharacter/${xmlName}'); // Loads the XML as a string
-			if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-			tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
+			var charJsonF:String = ('mods/characters/$curCharacter/${xmlName}').substr(0,-3) + "json";
+			if (FileSystem.exists(charJsonF)){
+				var charXml:String = File.getContent(charJsonF); 				
+				if (charXml == null){MainMenuState.handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
+
+				tex = FlxAtlasFrames.fromTexturePackerJson(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
+			} else {
+				var charXml:String = File.getContent('mods/characters/$curCharacter/${xmlName}'); // Loads the XML as a string
+				if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
+			}
 			if (tex == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 		}
 		trace('Loaded "mods/characters/$curCharacter/${pngName}"');
@@ -575,7 +583,7 @@ class Character extends FlxSprite
 				case 'lonely','Lonely':
 					tex = Paths.getSparrowAtlas('onlinemod/lonely');
 					frames=tex;
-					animation.addByPrefix('Idle', 'Idle', 24, false);
+					addAnimation('Idle', 'Idle', 24, false);
 					visible = false;
 
 
@@ -583,17 +591,17 @@ class Character extends FlxSprite
 					// GIRLFRIEND CODE
 					frames = tex;
 					dance_idle = true;
-					animation.addByPrefix('cheer', 'GF Cheer', 24, false);
-					animation.addByPrefix('singLEFT', 'GF left note', 24, false);
-					animation.addByPrefix('singRIGHT', 'GF Right Note', 24, false);
-					animation.addByPrefix('singUP', 'GF Up Note', 24, false);
-					animation.addByPrefix('singDOWN', 'GF Down Note', 24, false);
-					animation.addByIndices('sad', 'gf sad', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
-					animation.addByIndices('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-					animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-					animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
-					animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
-					animation.addByPrefix('scared', 'GF FEAR', 24);
+					addAnimation('cheer', 'GF Cheer', 24, false);
+					addAnimation('singLEFT', 'GF left note', 24, false);
+					addAnimation('singRIGHT', 'GF Right Note', 24, false);
+					addAnimation('singUP', 'GF Up Note', 24, false);
+					addAnimation('singDOWN', 'GF Down Note', 24, false);
+					addAnimation('sad', 'gf sad', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
+					addAnimation('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+					addAnimation('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+					addAnimation('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
+					addAnimation('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
+					addAnimation('scared', 'GF FEAR', 24);
 
 					addOffsets('gf');
 
@@ -601,9 +609,9 @@ class Character extends FlxSprite
 				case 'gf-car':
 					tex = Paths.getSparrowAtlas('characters/gfCar');
 					frames = tex;
-					animation.addByIndices('singUP', 'GF Dancing Beat Hair blowing CAR', [0], "", 24, false);
-					animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-					animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
+					addAnimation('singUP', 'GF Dancing Beat Hair blowing CAR', [0], "", 24, false);
+					addAnimation('danceLeft', 'GF Dancing Beat Hair blowing CAR', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+					addAnimation('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
 						false);
 					dance_idle = true;
 
@@ -612,9 +620,9 @@ class Character extends FlxSprite
 				case 'gf-pixel':
 					tex = Paths.getSparrowAtlas('characters/gfPixel');
 					frames = tex;
-					animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
-					animation.addByIndices('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-					animation.addByIndices('danceRight', 'GF IDLE', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+					addAnimation('singUP', 'GF IDLE', [2], "", 24, false);
+					addAnimation('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+					addAnimation('danceRight', 'GF IDLE', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 					dance_idle = true;
 					addOffsets('gf-pixel');
 					playAnim('danceRight');
@@ -627,11 +635,11 @@ class Character extends FlxSprite
 					// DAD ANIMATION LOADING CODE
 					tex = Paths.getSparrowAtlas('characters/DADDY_DEAREST');
 					frames = tex;
-					animation.addByPrefix('idle', 'Dad idle dance', 24);
-					animation.addByPrefix('singUP', 'Dad Sing Note UP', 24);
-					animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24);
-					animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24);
-					animation.addByPrefix('singLEFT', 'Dad Sing Note LEFT', 24);
+					addAnimation('idle', 'Dad idle dance', 24);
+					addAnimation('singUP', 'Dad Sing Note UP', 24);
+					addAnimation('singRIGHT', 'Dad Sing Note RIGHT', 24);
+					addAnimation('singDOWN', 'Dad Sing Note DOWN', 24);
+					addAnimation('singLEFT', 'Dad Sing Note LEFT', 24);
 
 					addOffsets("dad");
 
@@ -639,12 +647,12 @@ class Character extends FlxSprite
 				case 'spooky':
 					tex = Paths.getSparrowAtlas('characters/spooky_kids_assets');
 					frames = tex;
-					animation.addByPrefix('singUP', 'spooky UP NOTE', 24, false);
-					animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);
-					animation.addByPrefix('singLEFT', 'note sing left', 24, false);
-					animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
-					animation.addByIndices('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
-					animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
+					addAnimation('singUP', 'spooky UP NOTE', 24, false);
+					addAnimation('singDOWN', 'spooky DOWN note', 24, false);
+					addAnimation('singLEFT', 'note sing left', 24, false);
+					addAnimation('singRIGHT', 'spooky sing right', 24, false);
+					addAnimation('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
+					addAnimation('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
 
 					dance_idle = true;
 					addOffsets('spooky');
@@ -653,41 +661,41 @@ class Character extends FlxSprite
 				case 'mom','mom-car': // Condensed to reduce duplicate code
 					frames = tex;
 
-					animation.addByPrefix('idle', "Mom Idle", 24, false);
-					animation.addByPrefix('singUP', "Mom Up Pose", 24, false);
-					animation.addByPrefix('singDOWN', "MOM DOWN POSE", 24, false);
-					animation.addByPrefix('singLEFT', 'Mom Left Pose', 24, false);
+					addAnimation('idle', "Mom Idle", 24, false);
+					addAnimation('singUP', "Mom Up Pose", 24, false);
+					addAnimation('singDOWN', "MOM DOWN POSE", 24, false);
+					addAnimation('singLEFT', 'Mom Left Pose', 24, false);
 					// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
 					// CUZ DAVE IS DUMB!
-					animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
+					addAnimation('singRIGHT', 'Mom Pose Left', 24, false);
 
 					addOffsets('mom');
 
 					playAnim('idle');
 				case 'monster','monster-christmas': // Condensed to reduce duplicate code
 					frames = tex;
-					animation.addByPrefix('idle', 'monster idle', 24, false);
-					animation.addByPrefix('singUP', 'monster up note', 24, false);
-					animation.addByPrefix('singDOWN', 'monster down', 24, false);
-					animation.addByPrefix('singLEFT', 'Monster left note', 24, false);
-					animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
+					addAnimation('idle', 'monster idle', 24, false);
+					addAnimation('singUP', 'monster up note', 24, false);
+					addAnimation('singDOWN', 'monster down', 24, false);
+					addAnimation('singLEFT', 'Monster left note', 24, false);
+					addAnimation('singRIGHT', 'Monster Right note', 24, false);
 
 					addOffsets('monster');
 					playAnim('idle');
 				case 'pico':
 					tex = Paths.getSparrowAtlas('characters/Pico_FNF_assetss');
 					frames = tex;
-					animation.addByPrefix('idle', "Pico Idle Dance", 24);
-					animation.addByPrefix('singUP', 'pico Up note0', 24, false);
-					animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
+					addAnimation('idle', "Pico Idle Dance", 24);
+					addAnimation('singUP', 'pico Up note0', 24, false);
+					addAnimation('singDOWN', 'Pico Down Note0', 24, false);
 
-					animation.addByPrefix('singLEFT', 'Pico Note Right0', 24, false);
-					animation.addByPrefix('singRIGHT', 'Pico NOTE LEFT0', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'Pico Note Right Miss', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'Pico NOTE LEFT miss', 24, false);
+					addAnimation('singLEFT', 'Pico Note Right0', 24, false);
+					addAnimation('singRIGHT', 'Pico NOTE LEFT0', 24, false);
+					addAnimation('singRIGHTmiss', 'Pico Note Right Miss', 24, false);
+					addAnimation('singLEFTmiss', 'Pico NOTE LEFT miss', 24, false);
 
-					animation.addByPrefix('singUPmiss', 'pico Up note miss', 24);
-					animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24);
+					addAnimation('singUPmiss', 'pico Up note miss', 24);
+					addAnimation('singDOWNmiss', 'Pico Down Note MISS', 24);
 
 					addOffsets('pico');
 
@@ -697,23 +705,23 @@ class Character extends FlxSprite
 				case 'bf','bf-christmas','bf-car':// Condensed to reduce duplicate code
 					frames = tex;
 
-					animation.addByPrefix('idle', 'BF idle dance', 24, false);
-					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+					addAnimation('idle', 'BF idle dance', 24, false);
+					addAnimation('singUP', 'BF NOTE UP0', 24, false);
 					// WHY DO THESE NEED TO BE FLIPPED?
-					animation.addByPrefix('singLEFT', 'BF NOTE RIGHT0', 24, false); 
-					animation.addByPrefix('singRIGHT', 'BF NOTE LEFT0', 24, false);
-					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
-					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-					animation.addByPrefix('hey', 'BF HEY', 24, false);
+					addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
+					addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
+					addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
+					addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
+					addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
+					addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
+					addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+					addAnimation('hey', 'BF HEY', 24, false);
 
-					animation.addByPrefix('firstDeath', "BF dies", 24, false);
-					animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-					animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+					addAnimation('firstDeath', "BF dies", 24, false);
+					addAnimation('deathLoop', "BF Dead Loop", 24, true);
+					addAnimation('deathConfirm', "BF Dead confirm", 24, false);
 
-					animation.addByPrefix('scared', 'BF idle shaking', 24);
+					addAnimation('scared', 'BF idle shaking', 24);
 
 					addOffsets('bf');
 
@@ -722,16 +730,16 @@ class Character extends FlxSprite
 					flipX = true;
 				case 'bf-pixel':
 					frames = Paths.getSparrowAtlas('characters/bfPixel');
-					animation.addByPrefix('idle', 'BF IDLE', 24, false);
-					animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
+					addAnimation('idle', 'BF IDLE', 24, false);
+					addAnimation('singUP', 'BF UP NOTE', 24, false);
 					// Flipped for some reason
-					animation.addByPrefix('singLEFT', 'BF RIGHT NOTE', 24, false);
-					animation.addByPrefix('singRIGHT', 'BF LEFT NOTE', 24, false);
-					animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
-					animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'BF LEFT MISS', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'BF RIGHT MISS', 24, false);
-					animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
+					addAnimation('singLEFT', 'BF RIGHT NOTE', 24, false);
+					addAnimation('singRIGHT', 'BF LEFT NOTE', 24, false);
+					addAnimation('singDOWN', 'BF DOWN NOTE', 24, false);
+					addAnimation('singUPmiss', 'BF UP MISS', 24, false);
+					addAnimation('singRIGHTmiss', 'BF LEFT MISS', 24, false);
+					addAnimation('singLEFTmiss', 'BF RIGHT MISS', 24, false);
+					addAnimation('singDOWNmiss', 'BF DOWN MISS', 24, false);
 					addOffsets('bf-pixel');
 
 					setGraphicSize(Std.int(width * 6));
@@ -747,10 +755,10 @@ class Character extends FlxSprite
 					flipX = true;
 				case 'bf-pixel-dead':
 					frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD');
-					animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
-					animation.addByPrefix('firstDeath', "BF Dies pixel", 24, false);
-					animation.addByPrefix('deathLoop', "Retry Loop", 24, true);
-					animation.addByPrefix('deathConfirm', "RETRY CONFIRM", 24, false);
+					addAnimation('singUP', "BF Dies pixel", 24, false);
+					addAnimation('firstDeath', "BF Dies pixel", 24, false);
+					addAnimation('deathLoop', "Retry Loop", 24, true);
+					addAnimation('deathConfirm', "RETRY CONFIRM", 24, false);
 					animation.play('firstDeath');
 
 					addOffset('firstDeath');
@@ -765,11 +773,11 @@ class Character extends FlxSprite
 				case 'senpai':
 					frames = Paths.getSparrowAtlas('characters/senpai');
 
-					animation.addByPrefix('idle', 'Senpai Idle', 24, false);
-					animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);
-					animation.addByPrefix('singLEFT', 'SENPAI LEFT NOTE', 24, false);
-					animation.addByPrefix('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
-					animation.addByPrefix('singDOWN', 'SENPAI DOWN NOTE', 24, false);
+					addAnimation('idle', 'Senpai Idle', 24, false);
+					addAnimation('singUP', 'SENPAI UP NOTE', 24, false);
+					addAnimation('singLEFT', 'SENPAI LEFT NOTE', 24, false);
+					addAnimation('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
+					addAnimation('singDOWN', 'SENPAI DOWN NOTE', 24, false);
 
 					addOffsets("senpai");
 
@@ -781,11 +789,11 @@ class Character extends FlxSprite
 					antialiasing = false;
 				case 'senpai-angry':
 					frames = Paths.getSparrowAtlas('characters/senpai');
-					animation.addByPrefix('idle', 'Angry Senpai Idle', 24, false);
-					animation.addByPrefix('singUP', 'Angry Senpai UP NOTE', 24, false);
-					animation.addByPrefix('singLEFT', 'Angry Senpai LEFT NOTE', 24, false);
-					animation.addByPrefix('singRIGHT', 'Angry Senpai RIGHT NOTE', 24, false);
-					animation.addByPrefix('singDOWN', 'Angry Senpai DOWN NOTE', 24, false);
+					addAnimation('idle', 'Angry Senpai Idle', 24, false);
+					addAnimation('singUP', 'Angry Senpai UP NOTE', 24, false);
+					addAnimation('singLEFT', 'Angry Senpai LEFT NOTE', 24, false);
+					addAnimation('singRIGHT', 'Angry Senpai RIGHT NOTE', 24, false);
+					addAnimation('singDOWN', 'Angry Senpai DOWN NOTE', 24, false);
 
 					addOffsets('senpai-angry');
 					playAnim('idle');
@@ -796,11 +804,11 @@ class Character extends FlxSprite
 					antialiasing = false;
 				case 'spirit':
 					frames = Paths.getPackerAtlas('characters/spirit');
-					animation.addByPrefix('idle', "idle spirit_", 24, false);
-					animation.addByPrefix('singUP', "up_", 24, false);
-					animation.addByPrefix('singRIGHT', "right_", 24, false);
-					animation.addByPrefix('singLEFT', "left_", 24, false);
-					animation.addByPrefix('singDOWN', "spirit down_", 24, false);
+					addAnimation('idle', "idle spirit_", 24, false);
+					addAnimation('singUP', "up_", 24, false);
+					addAnimation('singRIGHT', "right_", 24, false);
+					addAnimation('singLEFT', "left_", 24, false);
+					addAnimation('singDOWN', "spirit down_", 24, false);
 					addOffsets('spirit');
 					setGraphicSize(Std.int(width * 6));
 					updateHitbox();
@@ -810,17 +818,17 @@ class Character extends FlxSprite
 					antialiasing = false;
 				case 'parents-christmas':
 					frames = Paths.getSparrowAtlas('characters/mom_dad_christmas_assets');
-					animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
-					animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);
-					animation.addByPrefix('singDOWN', 'Parent Down Note Dad', 24, false);
-					animation.addByPrefix('singLEFT', 'Parent Left Note Dad', 24, false);
-					animation.addByPrefix('singRIGHT', 'Parent Right Note Dad', 24, false);
+					addAnimation('idle', 'Parent Christmas Idle', 24, false);
+					addAnimation('singUP', 'Parent Up Note Dad', 24, false);
+					addAnimation('singDOWN', 'Parent Down Note Dad', 24, false);
+					addAnimation('singLEFT', 'Parent Left Note Dad', 24, false);
+					addAnimation('singRIGHT', 'Parent Right Note Dad', 24, false);
 
-					animation.addByPrefix('singUP-alt', 'Parent Up Note Mom', 24, false);
+					addAnimation('singUP-alt', 'Parent Up Note Mom', 24, false);
 
-					animation.addByPrefix('singDOWN-alt', 'Parent Down Note Mom', 24, false);
-					animation.addByPrefix('singLEFT-alt', 'Parent Left Note Mom', 24, false);
-					animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
+					addAnimation('singDOWN-alt', 'Parent Down Note Mom', 24, false);
+					addAnimation('singLEFT-alt', 'Parent Left Note Mom', 24, false);
+					addAnimation('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
 
 					addOffsets('parents-christmas');
 					hasAlts=true;
@@ -1019,7 +1027,7 @@ class Character extends FlxSprite
 		}
 		}catch(e)MainMenuState.handleError('Caught character "cloneAnimation" crash: ${e.message}');
 	}
-	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom = false,?replace:Bool = false)
+	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom:Bool = false,?replace:Bool = false)
 	{
 		
 		if (needsInverted == 2 && !isPlayer || needsInverted == 3 && isPlayer){
@@ -1029,6 +1037,22 @@ class Character extends FlxSprite
 			animOffsets[name] = [x, y];
 		}else{ // If animation is not null, add the offsets to the existing ones
 			animOffsets[name] = [animOffsets[name][0] + x, animOffsets[name][1] + y];
+		}
+	}
+	public function addAnimation(anim:String,prefix:String,?indices:Array<Int>,?postFix:String = "",?fps:Int = 24,?loop:Bool = false){
+		if(amPreview){
+			animationList.push({
+				anim : anim,
+				name : prefix,
+				indices : (if (indices != null && indices.length > 0)indices else []),
+				fps : fps,
+				loop : loop
+			});
+		}
+		if (indices != null && indices.length > 0) { // Add using indices if specified
+			animation.addByIndices(anim, prefix,indices,postFix, fps, loop);
+		}else{
+			animation.addByPrefix(anim, prefix, fps, loop);
 		}
 	}
 }

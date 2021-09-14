@@ -28,7 +28,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.5.1";
+	public static var ver:String = "0.5.2";
 	
 	public static var firstStart:Bool = true;
 
@@ -73,7 +73,7 @@ class MainMenuState extends SickMenuState
 
 		bg.scrollFactor.set(0.1,0.1);
 		bg.color = MainMenuState.bgcolor;
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/FNFBR ${ver}', 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-BR ${ver}', 12);
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.scrollFactor.set();
 		add(versionShit);
