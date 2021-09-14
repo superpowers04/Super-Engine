@@ -40,6 +40,7 @@ class NoteSplash extends FlxSprite
         alpha = 0.6;
         animation.play("note" + note + "-" + FlxG.random.int(0, 1), true);
         animation.finishCallback = finished;
+        animation.curAnim.frameRate = 24 - Conductor.crochet / 1000;
         updateHitbox();
         offset.set(0.3 * width, 0.3 * height);
     }

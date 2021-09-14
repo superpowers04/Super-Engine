@@ -89,7 +89,7 @@ class TitleState extends MusicBeatState
 		{
 		  for (directory in FileSystem.readDirectory(dataDir))
 		  {
-			if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml"))
+			if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json")))
 			{
 				customCharacters.push(directory);
 				if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/description.txt"))
