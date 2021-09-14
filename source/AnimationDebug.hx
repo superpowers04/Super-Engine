@@ -20,6 +20,8 @@ import sys.FileSystem;
 import sys.io.File;
 import openfl.net.FileReference;
 
+import haxe.Json;
+
 import flixel.graphics.FlxGraphic;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUI;
@@ -170,6 +172,7 @@ class AnimationDebug extends MusicBeatState
 	}
 	function spawnChar(?reload:Bool = false,?resetOffsets = true,?charProp:CharacterJson = null){
 		try{
+			TitleState.checkCharacters();
 			reloadChar = false;
 			if (reload) {
 				// Destroy, otherwise there will be 4 characters
@@ -293,9 +296,27 @@ class AnimationDebug extends MusicBeatState
 
 	}
 	function outputChar(){
-		if(charJson == null) {FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Can't save, Character has no JSON?",FlxColor.RED);return;}
-		if(dad.loadedFrom == "" || !FileSystem.exists(dad.loadedFrom)) {FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Unable to save! Character does't use a specific JSON?",FlxColor.RED);return;}
 		try{
+			if(dad.loadedFrom == "" || !FileSystem.exists(dad.loadedFrom)) {
+				@:privateAccess
+				var e = '{
+								"animations" : ${Json.stringify(dad.animationList)},
+								"flip_x" : false,
+								"scale" : ${dad.scale.x},
+								"no_antialiasing" : ${!dad.antialiasing},
+								"dance_idle" : ${dad.dance_idle},
+								"animations_offsets" : [],
+								"sing_duration" : ${dad.dadVar},
+								"spirit_trail" : ${dad.spiritTrail}
+				
+							}';
+				trace(e);
+				charJson = Json.parse(e);
+				dad.loadedFrom = "output.json";
+			}
+			if(charJson == null) {FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Can't save, Character has no JSON?",FlxColor.RED);return;}
+
+		//FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Unable to save! Character does't use a specific JSON?",FlxColor.RED);return;
 			var animOffsetsJSON = "[";
 			var animOffsets:Map<String, Map<String,Array<Float>>> = [];
 			for (name => v in dad.animOffsets) {
@@ -370,9 +391,9 @@ class AnimationDebug extends MusicBeatState
 			}
 			charJson.genBy = "FNFBR; Animation Editor";
 			
-			File.copy(dad.loadedFrom,dad.loadedFrom + "-bak.json");
+			if (FileSystem.exists(dad.loadedFrom)) File.copy(dad.loadedFrom,dad.loadedFrom + "-bak.json");
 			File.saveContent(dad.loadedFrom,haxe.Json.stringify(charJson, "\t"));
-			showTempmessage("Saved to character.json successfully,\n Old character.json was backed up to character.json-bak.json.");
+			showTempmessage("Saved to character.json successfully. Old character.json was backed up to character.json-bak.json.");
 			FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 			spawnChar(true);
 
@@ -522,7 +543,7 @@ class AnimationDebug extends MusicBeatState
 							case 14: // Write to file
 								outputCharOffsets();
 							case 15: // Save Char JSON
-								if(canEditJson) outputChar();
+								outputChar();
 							case 16:
 								editMode = 1;
 								toggleOffsetText(false);
@@ -608,7 +629,7 @@ class AnimHelpScreen extends FlxUISubState{
 				+"\n\nUtilities:\n"
 				+'\n1 - Unloads all offsets from the game or json file, including character position.\n'
 				+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
-				+(if(canEditJson)'\n3 - Write character info to characters JSON' else '')
+				+(if(canEditJson)'\n3 - Write character info to characters JSON' else '\n3 - Write character info to output.json in FNFBR folder')
 				+"\nB - Hide/Show offset text";
 			case 1:
 				'\n\nArrows - Move camera, Moves per press for accuracy'

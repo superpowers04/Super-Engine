@@ -186,6 +186,118 @@
 			"common_stage_offset": [0, 0, 0, 0], "": "Your character's offset ingame on common stages as Player 1 and 2",
 			"char_pos": [0, -300], "": "Your character's position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the camera position",
 			"cam_pos": [0, 300], "": "Your character's camera position, Used if you want to stay compatible with Funkin Multi or if you don't want to change the char position"
+		},
+		"dad":{
+			"embedded":true,
+			"path":"characters/DADDY_DEAREST",
+			"animations_offsets": [
+				{
+					"player1": [],
+					"player2": [
+						0,
+						0
+					],
+					"player3": [],
+					"anim": "idle"
+				},
+				{
+					"player1": [],
+					"player2": [
+						0,
+						27
+					],
+					"player3": [],
+					"anim": "singRIGHT"
+				},
+				{
+					"player1": [],
+					"player2": [
+						0,
+						-30
+					],
+					"player3": [],
+					"anim": "singDOWN"
+				},
+				{
+					"player1": [],
+					"player2": [
+						-6,
+						50
+					],
+					"player3": [],
+					"anim": "singUP"
+				},
+				{
+					"player1": [],
+					"player2": [
+						-10,
+						10
+					],
+					"player3": [],
+					"anim": "singLEFT"
+				}
+			],
+			"dance_idle": false,
+			"no_antialiasing": false,
+			"cam_pos": [
+				0,
+				0
+			],
+			"sing_duration": 6.1,
+			"flip_x": false,
+			"genBy": "FNFBR; Animation Editor",
+			"char_pos2": [
+				0,
+				0
+			],
+			"like": null,
+			"spirit_trail": false,
+			"common_stage_offset": [],
+			"offset_flip": 1,
+			"scale": 1,
+			"char_pos": [],
+			"clone": "",
+			"cam_pos2": [
+				0,
+				0
+			],
+			"animations": [
+				{
+					"loop": false,
+					"anim": "idle",
+					"fps": 24,
+					"name": "Dad idle dance",
+					"indices": []
+				},
+				{
+					"loop": false,
+					"anim": "singUP",
+					"fps": 24,
+					"name": "Dad Sing Note UP",
+					"indices": []
+				},
+				{
+					"loop": false,
+					"anim": "singRIGHT",
+					"fps": 24,
+					"name": "Dad Sing Note RIGHT",
+					"indices": []
+				},
+				{
+					"loop": false,
+					"anim": "singDOWN",
+					"fps": 24,
+					"name": "Dad Sing Note DOWN",
+					"indices": []
+				},
+				{
+					"loop": false,
+					"anim": "singLEFT",
+					"fps": 24,
+					"name": "Dad Sing Note LEFT",
+					"indices": []
+				}
+			]
 		}
 		// Below is GFPixel's characterJSON, i can't get it to work. If you'd like to try, go ahead. If you do end up getting it working, then feel free to message superpoerrs04#3887 about it
 		
