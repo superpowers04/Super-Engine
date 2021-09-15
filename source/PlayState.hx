@@ -2944,7 +2944,7 @@ class PlayState extends MusicBeatState
 						totalNotesHit += 1;
 					
 
-					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,0.75).x = (FlxG.camera.x) + (FlxG.width * (0.25 * note.noteData + 1));
+					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,0.75);
 
 
 					switch (note.noteData)
