@@ -1375,7 +1375,7 @@ class PlayState extends MusicBeatState
 	var songTime:Float = 0;
 
 
-	var songStarted = false;
+	public var songStarted(default, null):Bool = false;
 
 	function startSong(?alrLoaded:Bool = false):Void
 	{
@@ -2538,6 +2538,7 @@ class PlayState extends MusicBeatState
 	function kadeInput(){
 		if (generatedMusic)
 			{
+				var _scrollSpeed = FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2); // Probably better to calculate this beforehand
 				notes.forEachAlive(function(daNote:Note)
 				{	
 
@@ -2559,9 +2560,9 @@ class PlayState extends MusicBeatState
 							if (FlxG.save.data.downscroll)
 							{
 								if (daNote.mustPress)
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								else
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
 									// Remember = minus makes notes go up, plus makes them go down
@@ -2584,9 +2585,9 @@ class PlayState extends MusicBeatState
 							}else
 							{
 								if (daNote.mustPress)
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								else
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
 									daNote.y -= daNote.height / 2;
@@ -2987,6 +2988,8 @@ class PlayState extends MusicBeatState
 	function kadeBRInput(){
 		if (generatedMusic)
 			{
+				var _scrollSpeed = FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2); // Probably better to calculate this beforehand
+
 				notes.forEachAlive(function(daNote:Note)
 				{	
 
@@ -3007,9 +3010,9 @@ class PlayState extends MusicBeatState
 							if (FlxG.save.data.downscroll)
 							{
 								if (daNote.mustPress)
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								else
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
 									// Remember = minus makes notes go up, plus makes them go down
@@ -3029,12 +3032,13 @@ class PlayState extends MusicBeatState
 										daNote.clipRect = swagRect;
 									}
 								}
+						
 							}else
 							{
 								if (daNote.mustPress)
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								else
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
+									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
 									daNote.y -= daNote.height / 2;
@@ -3053,6 +3057,7 @@ class PlayState extends MusicBeatState
 					if (daNote.skipNote) return;
 		
 	
+
 					if (dadShow && !daNote.mustPress && daNote.wasGoodHit )
 					{
 						if (SONG.song != 'Tutorial')
@@ -3175,6 +3180,7 @@ class PlayState extends MusicBeatState
 				}
 		 
 				// PRESSES, check for note hits
+				
 				if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
 				{
 					boyfriend.holdTimer = 0;
@@ -3182,10 +3188,13 @@ class PlayState extends MusicBeatState
 					var possibleNotes:Array<Note> = []; // notes that can be hit
 					var directionList:Array<Int> = []; // directions that can be hit
 					var dumbNotes:Array<Note> = []; // notes to kill later
-		 
+		 			var onScreenNote:Bool = false;
+
 					notes.forEachAlive(function(daNote:Note)
 					{
 						if (daNote.skipNote) return;
+
+						if (!onScreenNote && daNote.mustPress) onScreenNote = true;
 						if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 						{
 							if (directionList.contains(daNote.noteData))
@@ -3253,7 +3262,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-					else if (!FlxG.save.data.ghost)
+					else if (!FlxG.save.data.ghost && onScreenNote)
 						{
 							for (shit in 0...pressArray.length)
 								if (pressArray[shit])
@@ -3301,7 +3310,8 @@ class PlayState extends MusicBeatState
 						spr.animation.play('pressed');
 					if (!holdArray[spr.ID])
 						spr.animation.play('static');
-		 
+		 			
+
 					if (spr.animation.curAnim.name == 'confirm')
 					{
 						spr.centerOffsets();
