@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
@@ -33,6 +34,8 @@ class SearchMenuState extends MusicBeatState
 	var bg:FlxSprite;
 	var titleText:FlxText;
 	var infotext:FlxText;
+	var overLay:FlxGroup = new FlxTypedGroup();
+	var infoTextBoxSize:Int = 2;
 	var toggleables:Map<String,Bool> = [
 		"search" => true
 	];
@@ -81,24 +84,24 @@ class SearchMenuState extends MusicBeatState
 				//Searching
 				searchField = new FlxInputText(10, 100, 1152, 20);
 				searchField.maxLength = 81;
-				add(searchField);
+				overLay.add(searchField);
 		
 				searchButton = new FlxUIButton(10 + 1152 + 9, 100, buttonText["Find"], findButton);
 				searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
 				searchButton.resize(100, searchField.height);
-				add(searchButton);
+				overLay.add(searchButton);
 			}
 
 		var infotexttxt:String = "Hold shift to scroll faster";
-		infotext = new FlxText(5, FlxG.height - 40, FlxG.width - 100, infotexttxt, 16);
+		infotext = new FlxText(5, FlxG.height - (18 * infoTextBoxSize ), FlxG.width - 100, infotexttxt, 16);
 		infotext.wordWrap = true;
 		infotext.scrollFactor.set();
-		infotext.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(FlxG.width)),Std.int(50),FlxColor.BLACK);
+		infotext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var blackBorder = new FlxSprite(-30,FlxG.height - (18 * infoTextBoxSize )).makeGraphic((Std.int(FlxG.width)),(18 * infoTextBoxSize),FlxColor.BLACK);
 		blackBorder.alpha = 0.5;
-
-		add(blackBorder);
-		add(infotext);
+		overLay.add(blackBorder);
+		overLay.add(infotext);
+		// add(overLay);
 		FlxG.autoPause = true;
 		try{if(onlinemod.OnlinePlayMenuState.socket != null) onlinemod.OnlinePlayMenuState.receiver.HandleData = HandleData;}catch(e){}
 
@@ -114,6 +117,10 @@ class SearchMenuState extends MusicBeatState
 				if (i != 0)
 					controlLabel.alpha = 0.6;
 				grpSongs.add(controlLabel);
+	}
+	override function draw(){
+		super.draw();
+		overLay.draw();
 	}
 
 	function reloadList(?reload = false,?search=""){try{
@@ -166,7 +173,7 @@ class SearchMenuState extends MusicBeatState
 	}
 	function changeSelection(change:Int = 0)
 	{try{
-		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+		if (change != 0) FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 		if (grpSongs.length < 2){
 			return;
 		}
