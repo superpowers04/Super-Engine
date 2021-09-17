@@ -4,7 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
+import flixel.addons.transition.FlxTransitionSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
@@ -247,6 +247,7 @@ class TitleState extends MusicBeatState
 
 			FlxG.sound.music.fadeIn(4, 0, 1);
 			findosuBeatmaps();
+			MainMenuState.firstStart = true;
 		}
 
 		Conductor.changeBPM(70);
@@ -394,10 +395,10 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			MainMenuState.firstStart = true;
+			
 			#if !debug
-			if (FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
-				FlxG.switchState(new MainMenuState());
+			if (FlxG.keys.pressed.SHIFT || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
+				FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
 			else
 			{
 				new FlxTimer().start(2, function(tmr:FlxTimer)
@@ -421,18 +422,18 @@ class TitleState extends MusicBeatState
 							outdated = true;
 							
 						}
-						FlxG.switchState(new MainMenuState());
+						FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
 					}
 					http.onError = function (error) {
 					  trace('error: $error');
-					  FlxG.switchState(new MainMenuState()); // fail but we go anyway
+					  FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState()); // fail but we go anyway
 					}
 					
 					http.request();
 				});
 			}
 			#else
-				FlxG.switchState(new MainMenuState());
+				FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
 			#end
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
