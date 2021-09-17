@@ -1069,7 +1069,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.hitSound && hitSoundEff == null) hitSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hitSound.ogg')) 'mods/hitSound.ogg' else Paths.sound('Normal_Hit')));
 
 		if(hurtSoundEff == null) hurtSoundEff = Sound.fromFile(( if (FileSystem.exists('mods/hurtSound.ogg')) 'mods/hurtSound.ogg' else Paths.sound('ANGRY')));
-		if(vanillaHurtSounds[0] == null) vanillaHurtSounds = [Sound.fromFile('assets/shared/sounds/missnote1.ogg'),Sound.fromFile('assets/shared/sounds/missnote2.ogg'),Sound.fromFile('assets/shared/sounds/missnote3.ogg')];
+		if(vanillaHurtSounds[0] == null && FlxG.save.data.playMisses) vanillaHurtSounds = [Sound.fromFile('assets/shared/sounds/missnote1.ogg'),Sound.fromFile('assets/shared/sounds/missnote2.ogg'),Sound.fromFile('assets/shared/sounds/missnote3.ogg')];
 
 		startingSong = true;
 		
@@ -3402,7 +3402,7 @@ class PlayState extends MusicBeatState
 		}
 		if (!boyfriend.stunned)
 		{
-			if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 1);}else{FlxG.sound.play(vanillaHurtSounds[Math.round(Math.random() * 2)], FlxG.random.float(0.1, 0.2));}
+			if(FlxG.save.data.playMisses) if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], 1);}else{FlxG.sound.play(vanillaHurtSounds[Math.round(Math.random() * 2)], FlxG.random.float(0.1, 0.2));}
 			// FlxG.sound.play(hurtSoundEff, 1);
 			health += SONG.noteMetadata.missHealth;
 			switch (direction)

@@ -65,6 +65,7 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Misc", [
 			new FPSOption("Toggle the FPS Counter"),
 			new FPSCapOption("Cap your FPS"),
+			new MissSoundsOption("Play a sound when you miss"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),

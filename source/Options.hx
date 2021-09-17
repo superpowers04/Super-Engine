@@ -82,6 +82,8 @@ class DFJKOption extends Option
 	{
 		super();
 		this.controls = controls;
+		description = 'Change your controls';
+		acceptValues = true;
 	}
 
 	public override function press():Bool
@@ -89,7 +91,15 @@ class DFJKOption extends Option
 		OptionsMenu.instance.openSubState(new KeyBindMenu());
 		return false;
 	}
-
+	override function right():Bool {
+		return false;
+	}
+	override function left():Bool {
+		return false;
+	}
+	override function getValue():String {
+		return KeyBindMenu.getKeyBindsString();
+	}
 	private override function updateDisplay():String
 	{
 		return "Key Bindings";
@@ -1220,6 +1230,27 @@ class OpponentStrumlineOption extends Option
 	private override function updateDisplay():String
 	{
 		return "Show Opponent Strumline " + (!FlxG.save.data.oppStrumLine ? "off" : "on");
+	}
+
+}
+class MissSoundsOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.playMisses = !FlxG.save.data.playMisses;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Play miss sounds " + (!FlxG.save.data.playMisses ? "off" : "on");
 	}
 
 }
