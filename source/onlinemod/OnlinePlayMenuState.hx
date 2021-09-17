@@ -54,19 +54,19 @@ class OnlinePlayMenuState extends MusicBeatState
 
 
     var topText = new FlxText(0, FlxG.height * 0.05, "Connect to server");
-    topText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    topText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     topText.screenCenter(FlxAxes.X);
     add(topText);
 
 
     errorText = new FlxText(0, FlxG.height * 0.175, FlxG.width, errorMessage);
-    errorText.setFormat(Paths.font("vcr.ttf"), 32, errorColor, CENTER);
+    errorText.setFormat(CoolUtil.font, 32, errorColor, CENTER);
     add(errorText);
     SetErrorText(errorMessage, errorColor);
 
 
     var ipText:FlxText = new FlxText(FlxG.width/2 - 350, FlxG.height * 0.3 - 40, "IP Address:");
-    ipText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    ipText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(ipText);
 
 		ipField = new FlxInputText(0, FlxG.height * 0.3, 700, 32,FlxG.save.data.lastServer);
@@ -78,7 +78,7 @@ class OnlinePlayMenuState extends MusicBeatState
 
 
     var portText:FlxText = new FlxText(FlxG.width/2 - 350, FlxG.height * 0.5 - 40, "Port:");
-    portText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    portText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(portText);
 
 		portField = new FlxInputText(0, FlxG.height * 0.5, 700, 32,FlxG.save.data.lastServerPort);
