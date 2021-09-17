@@ -97,7 +97,7 @@ class OnlinePlayState extends PlayState
         scoreY = healthBarBG.y + 30 - 28*(clientsGroup.length + 1);
 
       var text = new FlxText(10, scoreY, '${OnlineLobbyState.clients[i]}: 0');
-      text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      text.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
       text.scrollFactor.set(0, 0);
       clientTexts[i] = clientsGroup.length;
       clientsGroup.add(text);
@@ -118,7 +118,7 @@ class OnlinePlayState extends PlayState
     }
     // Add XieneDev watermark
     var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.9 + 50, FlxG.width, "XieneDev Battle Royale", 16);
-		xieneDevWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		xieneDevWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		xieneDevWatermark.scrollFactor.set();
 		add(xieneDevWatermark);
     xieneDevWatermark.cameras = [camHUD];
@@ -131,7 +131,7 @@ class OnlinePlayState extends PlayState
     waitingBg.cameras = [camHUD];
 
     waitingText = new FlxText(0, 0, 'Waiting for players (?/${clientCount})');
-    waitingText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    waitingText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     waitingText.screenCenter(FlxAxes.XY);
     add(waitingText);
     waitingText.cameras = [camHUD];

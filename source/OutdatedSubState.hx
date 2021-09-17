@@ -41,7 +41,7 @@ class OutdatedSubState extends MusicBeatState
 		kadeLogo.alpha = 0.8;
 		add(kadeLogo);
 		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,if(TitleState.outdated) 'FNFBR is outdated, Your version: ${MainMenuState.ver} latest: ${needVer} ' else 'Up to date: ${MainMenuState.ver}' , 32);
-		outdatedLMAO.setFormat("VCR OSD Mono", 32, if(TitleState.outdated) FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		outdatedLMAO.setFormat(CoolUtil.font, 32, if(TitleState.outdated) FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		outdatedLMAO.scrollFactor.set();
 		outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
 		add(outdatedLMAO);
@@ -51,7 +51,7 @@ class OutdatedSubState extends MusicBeatState
 			+ "\n\nPress Space to get latest update's zip, D to open a invite to the Discord server or Escape to close.\n\nYou can install it by downloading the zip and dragging the files\n into your game folder",
 			32);
 		
-		txt.setFormat("VCR OSD Mono", 32, FlxColor.fromRGB(200, 200, 200), CENTER);
+		txt.setFormat(CoolUtil.font, 32, FlxColor.fromRGB(200, 200, 200), CENTER);
 		txt.borderColor = FlxColor.BLACK;
 		txt.borderSize = 3;
 		txt.borderStyle = FlxTextBorderStyle.OUTLINE;

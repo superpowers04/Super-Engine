@@ -23,18 +23,18 @@ class OnlineNickState extends MusicBeatState
 
 
     var topText = new FlxText(0, FlxG.height * 0.25, "Insert nickname");
-    topText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    topText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     topText.screenCenter(FlxAxes.X);
     add(topText);
 
 
     errorText = new FlxText(0, FlxG.height * 0.375, FlxG.width, "");
-    errorText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
+    errorText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, CENTER);
     add(errorText);
 
 
     var nickText:FlxText = new FlxText(FlxG.width/2 - 250, FlxG.height * 0.5 - 40, "Nickname:");
-    nickText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    nickText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(nickText);
 
     nickField = new FlxInputText(0, FlxG.height * 0.5, 500, 32);

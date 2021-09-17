@@ -72,12 +72,12 @@ class OnlineLoadState extends MusicBeatState
 
 
     loadingText = new FlxText(FlxG.width/4, FlxG.height/2 - 36, FlxG.width, "Downloading Chart...");
-    loadingText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    loadingText.setFormat(CoolUtil.font, 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(loadingText);
 
 
     fileSizeText = new FlxText(FlxG.width/4, FlxG.height/2 - 32, FlxG.width/2, "?/?");
-    fileSizeText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    fileSizeText.setFormat(CoolUtil.font, 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(fileSizeText);
 
 

@@ -22,18 +22,18 @@ class OnlineHostMenu extends MusicBeatState
 
 
     var topText = new FlxText(0, FlxG.height * 0.15, "Host server");
-    topText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    topText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     topText.screenCenter(FlxAxes.X);
     add(topText);
 
 
     errorText = new FlxText(0, FlxG.height * 0.275, FlxG.width, "");
-    errorText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
+    errorText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, CENTER);
     add(errorText);
 
 
     var portText:FlxText = new FlxText(FlxG.width/2 - 350, FlxG.height * 0.4 - 40, "Port:");
-    portText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    portText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(portText);
 
 		portField = new FlxInputText(0, FlxG.height * 0.4, 700, 32);
@@ -46,7 +46,7 @@ class OnlineHostMenu extends MusicBeatState
 
 
     var pwdText:FlxText = new FlxText(FlxG.width/2 - 350, FlxG.height * 0.6 - 40, "Password:");
-    pwdText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    pwdText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(pwdText);
 
 		pwdField = new FlxInputText(0, FlxG.height * 0.6, 700, 32);

@@ -61,7 +61,7 @@ class OnlineLobbyState extends MusicBeatState
 
 
     var topText:FlxText = new FlxText(0, FlxG.height * 0.05, "Lobby");
-    topText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    topText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     topText.screenCenter(FlxAxes.X);
     add(topText);
 
@@ -243,7 +243,7 @@ class OnlineLobbyState extends MusicBeatState
   function addPlayerUI(id:Int, nickname:String, ?color:FlxColor=FlxColor.WHITE)
   {
     var text:FlxText = new FlxText((clientCount % NAMES_PER_ROW) * FlxG.width/NAMES_PER_ROW, FlxG.height*0.2 + Std.int(clientCount / NAMES_PER_ROW) * NAMES_VERTICAL_SPACING, FlxG.width/NAMES_PER_ROW, nickname);
-    text.setFormat(Paths.font("vcr.ttf"), NAMES_SIZE, color, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    text.setFormat(CoolUtil.font, NAMES_SIZE, color, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     clientTexts[id] = clientsGroup.length;
     clientsGroup.add(text);
     clientCount++;

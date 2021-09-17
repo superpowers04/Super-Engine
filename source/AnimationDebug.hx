@@ -71,8 +71,8 @@ class AnimationDebug extends MusicBeatState
 	var characterX:Float = 0;
 	var characterY:Float = 0;
 	var UI:FlxGroup = new FlxGroup();
-	var tempMessage:FlxText;
-	var tempMessTimer:FlxTimer;
+	// var tempMessage:FlxText;
+	// var tempMessTimer:FlxTimer;
 	var offsetTopText:FlxText;
 	var isAbsoluteOffsets:Bool = false;
 	public static var charJson:CharacterJson;
@@ -136,7 +136,7 @@ class AnimationDebug extends MusicBeatState
 			stageFront.active = false;
 			add(stageFront);
 			offsetTopText = new FlxText(30,20,0,'');
-			offsetTopText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
+			offsetTopText.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			offsetTopText.scrollFactor.set();
 			if (charType != 2){
 				gf = new Character(400, 100, "gf",false,2,true);
@@ -160,7 +160,7 @@ class AnimationDebug extends MusicBeatState
 
 
 			var contText:FlxText = new FlxText(FlxG.width * 0.81,FlxG.height * 0.94,0,'Press H for help');
-			contText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
+			contText.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			contText.color = FlxColor.BLACK;
 			contText.scrollFactor.set();
 			// add(contText);
@@ -244,7 +244,7 @@ class AnimationDebug extends MusicBeatState
 			}
 			if (offsetText[animName] == null){
 				var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
-				text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
+				text.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 				text.scrollFactor.set();
 				text.visible = showOffsets;
 				UI.add(text);
@@ -267,11 +267,11 @@ class AnimationDebug extends MusicBeatState
 			default: LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
-	function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
+	override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
 		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}
 		trace(str);
 		tempMessage = new FlxText(40,60,24,str);
-		tempMessage.setFormat(Paths.font("vcr.ttf"), 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		tempMessage.scrollFactor.set();
 		tempMessage.autoSize = true;
 		tempMessage.wordWrap = false;
@@ -414,7 +414,7 @@ class AnimationDebug extends MusicBeatState
 		if (offsetText["charPos_internal"] == null){
 			offsetCount += 1;
 			var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
-			text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
+			text.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			// text.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 			text.width = FlxG.width;
 			text.scrollFactor.set();
@@ -612,7 +612,7 @@ class AnimHelpScreen extends FlxUISubState{
 		bg.scrollFactor.set();
 		helpObjs.push(bg);
 		var exitText:FlxText = new FlxText(FlxG.width * 0.7, FlxG.height * 0.9,0,'Press ESC to close.');
-		exitText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		exitText.setFormat(CoolUtil.font, 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		exitText.scrollFactor.set();
 		helpObjs.push(exitText);
 		var controlsText:FlxText = new FlxText(10,145,0,'Controls:'
@@ -642,7 +642,7 @@ class AnimHelpScreen extends FlxUISubState{
 		+'\nR - Reload character'
 		+"\nM - Change modes"
 		+'\n\nC - Open property editor in help screen\nEscape - Close animation debug');
-		controlsText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		controlsText.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlsText.scrollFactor.set();
 		helpObjs.push(controlsText);
 		animDebug = AnimationDebug.instance;
@@ -650,7 +650,7 @@ class AnimHelpScreen extends FlxUISubState{
 		if(!canEditJson){
 
 			var importantText:FlxText = new FlxText(10, 48,0,'You cannot save offsets for this character, You have to manually copy them');
-			importantText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
+			importantText.setFormat(CoolUtil.font, 28, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
 
 			// importantText.color = FlxColor.BLACK;
 			importantText.scrollFactor.set();
@@ -780,7 +780,7 @@ class AnimDebugOptions extends MusicBeatSubstate
 		infotext = new FlxText(5, FlxG.height - 40, FlxG.width - 100, infotexttxt, 16);
 		infotext.wordWrap = true;
 		infotext.scrollFactor.set();
-		infotext.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		infotext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(FlxG.width)),Std.int(50),FlxColor.BLACK);
 		blackBorder.alpha = 0.5;
 		add(blackBorder);

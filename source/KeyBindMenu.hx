@@ -78,7 +78,7 @@ class KeyBindMenu extends FlxSubState
 
         keyTextDisplay = new FlxText(-10, 0, 1280, "", 72);
         keyTextDisplay.scrollFactor.set(0, 0);
-        keyTextDisplay.setFormat("VCR OSD Mono", 42, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        keyTextDisplay.setFormat(CoolUtil.font, 42, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         keyTextDisplay.borderSize = 2;
         keyTextDisplay.borderQuality = 3;
 
@@ -87,7 +87,7 @@ class KeyBindMenu extends FlxSubState
 
         infoText = new FlxText(-10, 580, 1280, 'Current Mode: ${KeyBinds.gamepad ? 'GAMEPAD' : 'KEYBOARD'}. Press TAB to switch\n(${KeyBinds.gamepad ? 'RIGHT Trigger' : 'Escape'} to save, ${KeyBinds.gamepad ? 'LEFT Trigger' : 'Backspace'} to leave without saving. ${KeyBinds.gamepad ? 'START To change a keybind' : ''})', 72);
         infoText.scrollFactor.set(0, 0);
-        infoText.setFormat("VCR OSD Mono", 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        infoText.setFormat(CoolUtil.font, 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         infoText.borderSize = 2;
         infoText.borderQuality = 3;
         infoText.alpha = 0;

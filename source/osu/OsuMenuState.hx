@@ -36,7 +36,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
     super.create();
     bg.color = 0x006E006E;
     diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
-    diffText.font = Paths.font("vcr.ttf");
+    diffText.font = CoolUtil.font;
     add(diffText);
     changeDiff();
   }
@@ -142,7 +142,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
     diffText.text = modes[curSelected][selMode];
     diffText.x = 10;
     diffText.scrollFactor.set();
-    diffText.setFormat("VCR OSD Mono", if (diffText.text.length > 72) 16 else 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    diffText.setFormat(CoolUtil.font, if (diffText.text.length > 72) 16 else 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
   
   }

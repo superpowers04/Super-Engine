@@ -86,7 +86,7 @@ class Chat
       return;
 
     var text = new FlxText(0, 0, message);
-    text.setFormat(Paths.font("vcr.ttf"), 24, color, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    text.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     Chat.chatMessagesList.add(text);
 
     if (Chat.chatMessagesList.amountNext == 0)

@@ -32,7 +32,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     super.create();
     bg.color = 0x0000FF6E;
     diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
-    diffText.font = Paths.font("vcr.ttf");
+    diffText.font = CoolUtil.font;
     add(diffText);
     changeDiff();
   }

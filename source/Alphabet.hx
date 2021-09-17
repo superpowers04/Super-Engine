@@ -74,7 +74,7 @@ class Alphabet extends FlxSpriteGroup
 		}else if (text != "" && !useAlphabet){
 			textObj = new FlxText(0, 0, FlxG.width, text, 48);
 			textObj.scrollFactor.set();
-			textObj.setFormat("VCR OSD Mono", 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			textObj.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			textObj.borderSize = 5;
 			textObj.borderQuality = 1;
 			textObj.borderStyle = OUTLINE_FAST;

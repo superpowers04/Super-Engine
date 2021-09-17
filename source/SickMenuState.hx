@@ -147,16 +147,14 @@ class SickMenuState extends MusicBeatState
 
 		descriptionText = new FlxText(5, FlxG.height - 18, 0, descriptions[0], 12);
 		descriptionText.scrollFactor.set();
-		descriptionText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		var blackBorder:FlxSprite = new FlxSprite(-30,FlxG.height + 40).makeGraphic((Std.int(descriptionText.width + 900)),Std.int(descriptionText.height + 600),FlxColor.BLACK);
+		descriptionText.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var blackBorder:FlxSprite = new FlxSprite(-30,FlxG.height - 18).makeGraphic((FlxG.width),40,FlxColor.BLACK);
 		blackBorder.alpha = 0.5;
 
 		add(blackBorder);
 
 		add(descriptionText);
 
-		FlxTween.tween(descriptionText,{y: FlxG.height - 18},2,{ease: FlxEase.elasticInOut});
-		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
 
 		FlxG.mouse.visible = false;
 		FlxG.autoPause = true;

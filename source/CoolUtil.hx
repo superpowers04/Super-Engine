@@ -6,6 +6,8 @@ using StringTools;
 
 class CoolUtil
 {
+	public static var fontName = "vcr.ttf";
+	public static var font = Paths.font(fontName);
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
 	public static function difficultyString():String

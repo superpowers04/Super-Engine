@@ -27,7 +27,7 @@ class OnlineResultState extends MusicBeatState
 
 
     var topText:FlxText = new FlxText(0, FlxG.height * 0.05, "Results");
-    topText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    topText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     topText.screenCenter(FlxAxes.X);
     add(topText);
 
@@ -59,7 +59,7 @@ class OnlineResultState extends MusicBeatState
       if (!OnlineLobbyState.clients.exists(i) && i != -1)
         color = FlxColor.RED;
 
-      text.setFormat(Paths.font("vcr.ttf"), 24, color, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      text.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
       text.screenCenter(FlxAxes.X);
       add(text);
       x++;

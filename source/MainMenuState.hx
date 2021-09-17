@@ -74,13 +74,13 @@ class MainMenuState extends SickMenuState
 		bg.scrollFactor.set(0.1,0.1);
 		bg.color = MainMenuState.bgcolor;
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-BR ${ver}', 12);
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.scrollFactor.set();
 		add(versionShit);
 
 		if (TitleState.outdated){
 			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'FNFBR is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info', 32);
-			outdatedLMAO.setFormat("VCR OSD Mono", 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			outdatedLMAO.setFormat(CoolUtil.font, 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			outdatedLMAO.scrollFactor.set();
  			outdatedLMAO.screenCenter(FlxAxes.X);
 			add(outdatedLMAO);
@@ -106,7 +106,7 @@ class MainMenuState extends SickMenuState
 		    errorText.scrollFactor.set();
 		    errorText.wordWrap = true;
 		    errorText.fieldWidth = 1200;
-		    errorText.setFormat("VCR OSD Mono", 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		    errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		    add(errorText);
 		    MainMenuState.errorMessage="";
 		}
