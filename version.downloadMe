@@ -1,1 +1,8 @@
 0.5.2;
+- Option to disable miss sounds
+- If FFMPEG is installed on your computer, the executable is next to the game's executable, or is in a folder named ffmpeg, the game will now automatically convert mp3's to ogg's on osu beatmaps using that
+- You are now unable to miss when there are no notes onscreen with improved kade input
+- You can hold shift on title to go to options if needed
+- The selected character's healthicon will show in characterSelect
+- Many fixes to osu beatmap support
+- fix some text being unreaadable

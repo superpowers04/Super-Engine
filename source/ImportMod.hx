@@ -32,7 +32,8 @@ class ImportMod extends DirectoryListing
 	override function ret(){
   		FlxG.switchState(new OtherMenuState());
 	}
-	override function extraKeys(){
+	override function handleInput(){
+		super.handleInput();
 		if (FlxG.keys.justPressed.ONE) {
 			importExisting = !importExisting;
 			showTempmessage(if(importExisting)"Importing vanilla songs enabled" else "importing vanilla songs disabled");
@@ -87,7 +88,8 @@ class ImportModFromFolder extends MusicBeatState
   	try{
 
 	  	var assets = '${folder}assets/'; // For easy access
-	  	if (!FileSystem.exists(assets)) MainMenuState.handleError('${folder} doesn\'t have a assets folder!'); //This folder is not a mod!
+	  	if (!FileSystem.exists(assets)) {MainMenuState.handleError('${folder} doesn\'t have a assets folder!');return;} //This folder is not a mod!
+	  	if (folder == Sys.getCwd()) {MainMenuState.handleError('You\'re trying to import songs from me!'); return;} //This folder is the same folder that FNFBR is running in!
 	  	if(FileSystem.exists('${assets}songs/')){
 
 		  	for (directory in FileSystem.readDirectory('${assets}songs/')) {
