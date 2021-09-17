@@ -64,7 +64,7 @@ class OsuBeatMap{
 					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else 2.0,
 					validScore: false,
 					noteMetadata:Song.defNoteMetadata,
-					difficultyString: getSetting("Version")
+					difficultyString: '[${getSetting("Version")}]'
 				};
 				var hitobjsre:EReg = (~/\[HitObjects\]/gi);
 				hitobjsre.match(bm);
