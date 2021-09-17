@@ -136,6 +136,7 @@ class KadeEngineData
 		if (FlxG.save.data.useBadArrowTex == null) FlxG.save.data.useBadArrowTex = true;
 		if (FlxG.save.data.middleScroll == null) FlxG.save.data.middleScroll = false;
 		if (FlxG.save.data.oppStrumLine == null) FlxG.save.data.oppStrumLine = true;
+		if (FlxG.save.data.playMisses == null) FlxG.save.data.playMisses = true;
 	 
 
 		Conductor.recalculateTimings();

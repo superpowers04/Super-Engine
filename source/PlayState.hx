@@ -931,8 +931,8 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		add(grpNoteSplashes);
-		songDiff = if(stateType == 4) "mods/charts" else if (stateType == 5) "osu! beatmap" else (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
-
+		if (SONG.difficultyString != null && SONG.difficultyString != "") songDiff = SONG.difficultyString;
+		else songDiff = if(stateType == 4) "mods/charts" else if (stateType == 5) "osu! beatmap" else (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		cpuStrums = new FlxTypedGroup<FlxSprite>();
 
@@ -2569,7 +2569,7 @@ class PlayState extends MusicBeatState
 									if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
 										daNote.y += daNote.prevNote.height;
 									else
-										daNote.y += daNote.height / 2;
+										daNote.y += daNote.height * 0.5;
 	
 									// Only clip sustain notes when properly hit
 									if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
@@ -2590,7 +2590,7 @@ class PlayState extends MusicBeatState
 									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
-									daNote.y -= daNote.height / 2;
+									daNote.y -= daNote.height * 0.5;
 									if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
 									{
 										// Clip to strumline
@@ -3019,7 +3019,7 @@ class PlayState extends MusicBeatState
 									if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
 										daNote.y += daNote.prevNote.height;
 									else
-										daNote.y += daNote.height / 2;
+										daNote.y += daNote.height * 0.5;
 	
 									// Only clip sustain notes when properly hit
 									if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
@@ -3665,6 +3665,10 @@ class PlayState extends MusicBeatState
 			{
 				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
 			}
+			// if (SONG.notes[Math.floor(curStep / 16)].scrollSpeed != null)
+			// {
+			// 	curScrollSpeed = SONG.notes[Math.floor(curStep / 16)].scrollSpeed;
+			// }
 			// else
 			// Conductor.changeBPM(SONG.bpm);
 

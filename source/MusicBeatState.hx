@@ -10,6 +10,8 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 
 class MusicBeatState extends FlxUIState
 {
@@ -19,6 +21,9 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+
+	var tempMessage:FlxText;
+	var tempMessTimer:FlxTimer;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -33,7 +38,20 @@ class MusicBeatState extends FlxUIState
 		super.create();
 	}
 
-
+	function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
+		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}
+		trace(str);
+		tempMessage = new FlxText(40,60,24,str);
+		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		tempMessage.scrollFactor.set();
+		tempMessage.autoSize = true;
+		tempMessage.wordWrap = false;
+		add(tempMessage);
+		tempMessTimer = new FlxTimer().start(time, function(tmr:FlxTimer)
+		{
+			if (tempMessage != null) tempMessage.destroy();
+		},1);
+	}
 
 	var skippedFrames = 0;
 

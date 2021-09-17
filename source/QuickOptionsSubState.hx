@@ -81,7 +81,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		FlxTween.tween(bg, {alpha: 0.9}, 0.4, {ease: FlxEase.quartInOut});
+		FlxTween.tween(bg, {alpha: 0.5}, 0.4, {ease: FlxEase.quartInOut});
 		reloadList();
 		changeSelection(0);
 

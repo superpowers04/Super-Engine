@@ -27,7 +27,7 @@ class Note extends FlxSprite
 	public var shouldntBeHit:Bool = false;
 	// public var playerNote:Bool = false;
 	public var type:Int = 0; // Used for scriptable arrows 
-	// public var isSustainNoteEnd:Bool = false;
+	public var isSustainNoteEnd:Bool = false;
 
 	public var noteScore:Float = 1;
 
@@ -146,7 +146,7 @@ class Note extends FlxSprite
 				case 0:
 					animation.play('purpleholdend');
 			}
-			// isSustainNoteEnd = true;
+			isSustainNoteEnd = true;
 			updateHitbox();
 
 			x -= width / 2;
@@ -164,7 +164,7 @@ class Note extends FlxSprite
 					case 3:
 						prevNote.animation.play('redhold');
 				}
-				// prevNote.isSustainNoteEnd = false;
+				prevNote.isSustainNoteEnd = false;
 
 				if(FlxG.save.data.scrollSpeed != 1)
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;

@@ -109,7 +109,7 @@ class FinishSubState extends MusicBeatSubstate
 			comboText.scrollFactor.set();
 
 			var settingsText:FlxText = new FlxText(Std.int(FlxG.width * 0.45) + FlxG.save.data.guiGap,-30,0,
-			(if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${CoolUtil.difficultyString()}')
+			(if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
 			
 			+'\n\nSettings:'
 			+'\n\n Downscroll: ${FlxG.save.data.downscroll}'

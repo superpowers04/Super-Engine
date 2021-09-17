@@ -25,6 +25,7 @@ typedef SwagSong =
 	var stage:String;
 	var validScore:Bool;
 	var ?noteMetadata:NoteMetadata;
+	var ?difficultyString:String;
 }
 typedef NoteMetadata={
 	var badnoteHealth:Float;

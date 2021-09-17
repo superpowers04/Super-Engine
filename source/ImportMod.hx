@@ -21,18 +21,28 @@ using StringTools;
 
 class ImportMod extends DirectoryListing
 {
+	var importExisting = false;
 	var curReg:EReg = ~/.+\/(.*?)\//g;
 	override function create(){
+		infoTextBoxSize = 3;
 		super.create();
-		infotext.text = '${infotext.text}; Select the mods root folder, Example: "games/FNF" not "games/FNF/assets"';
+		infotext.text = '${infotext.text}\nPress 1 to toggle importing vanilla songs(Disabled by default to prevent clutter)\nSelect the mods root folder, Example: "games/FNF" not "games/FNF/assets"';
+	
 	}
 	override function ret(){
   		FlxG.switchState(new OtherMenuState());
 	}
+	override function extraKeys(){
+		if (FlxG.keys.justPressed.ONE) {
+			importExisting = !importExisting;
+			showTempmessage(if(importExisting)"Importing vanilla songs enabled" else "importing vanilla songs disabled");
+			FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+		}
+	}
 	override function selDir(sel:String){
 		curReg.match(sel);
 		
-		FlxG.switchState(new ImportModFromFolder(sel,curReg.matched(1)));
+		FlxG.switchState(new ImportModFromFolder(sel,curReg.matched(1),importExisting));
 	}
 }
 
@@ -41,20 +51,22 @@ class ImportModFromFolder extends MusicBeatState
 {
   var loadingText:FlxText;
   var progress:Float = 0;
-  var existingSongs:Array<String> = ["offsettest", 'tutorial', 'bopeebo', 'fresh', 'dad-battle', 'dad battle', 'dadbattle', 'spookeez', 'south', "monster", 'pico', 'philly-nice', 'philly nice', 'philly', 'phillynice', "blammed", 'satin panties','satin-panties','satinpanties', "high", "milf", 'cocoa', 'eggnog', 'winter-horrorland', 'winter horrorland', 'winterhorrorland', 'senpai', 'roses', 'thorns', 'test'];
+  static var existingSongs:Array<String> = ["offsettest", 'tutorial', 'bopeebo', 'fresh', 'dad-battle', 'dad battle', 'dadbattle', 'spookeez', 'south', "monster", 'pico', 'philly-nice', 'philly nice', 'philly', 'phillynice', "blammed", 'satin panties','satin-panties','satinpanties', "high", "milf", 'cocoa', 'eggnog', 'winter-horrorland', 'winter horrorland', 'winterhorrorland', 'senpai', 'roses', 'thorns', 'test'];
   var songName:EReg = ~/.+\/(.*?)\//g;
   var songsImported:Int = 0;
+  var importExisting:Bool = false;
 
   var name:String;
   var folder:String;
   var done:Bool = false;
 
-  public function new (folder:String,name:String)
+  public function new (folder:String,name:String,?importExisting:Bool = false)
   {
     super();
 
     this.name = name;
     this.folder = folder;
+    this.importExisting = importExisting;
   }
 
   override function create()
@@ -63,8 +75,8 @@ class ImportModFromFolder extends MusicBeatState
 		add(bg);
 
 
-    loadingText = new FlxText(FlxG.width/4, FlxG.height/2 - 36, FlxG.width, "Scanning for songs..");
-    loadingText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    loadingText = new FlxText(FlxG.width/4, FlxG.height/2 - 36, FlxG.width, "Scanning for songs..\nThe game may "+ (if(Sys.systemName() == "Windows")"'not respond'" else "freeze") + " during this process");
+    loadingText.setFormat(CoolUtil.font, 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(loadingText);
 
 
@@ -80,7 +92,7 @@ class ImportModFromFolder extends MusicBeatState
 
 		  	for (directory in FileSystem.readDirectory('${assets}songs/')) {
 					loadingText.text = 'Checking ${directory}...'; // Just display this text
-					if(!FileSystem.isDirectory('${assets}songs/${directory}') || existingSongs.contains(directory.toLowerCase())) continue; // Skip if it's a file or if it's on the existing songs list
+					if(!FileSystem.isDirectory('${assets}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
 					var dir:String = '${folder}assets/songs/${directory}/';
 					if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 
@@ -106,7 +118,7 @@ class ImportModFromFolder extends MusicBeatState
 		  		if (!directory.endsWith("inst.ogg")) continue;
 		  		directory = directory.substr(0,-8);
 					loadingText.text = 'Checking ${directory}...'; // Just display this text
-					if(existingSongs.contains(directory.toLowerCase())) {continue;} // Skip if it's a file or if it's on the existing songs list
+					if(!importExisting && existingSongs.contains(directory.toLowerCase())) {continue;} // Skip if it's on the existing songs list
 					var dir:String = '${folder}assets/music/${directory}-';
 					if(!FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" doesnt exist');continue;}
 

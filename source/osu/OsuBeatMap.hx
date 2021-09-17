@@ -42,7 +42,8 @@ class OsuBeatMap{
 				noteStyle: 'normal',
 				stage: 'stage',
 				speed: 2.0,
-				validScore: false
+				validScore: false,
+				difficultyString: "Unknown"
 			};
 			try{
 
@@ -62,14 +63,15 @@ class OsuBeatMap{
 					stage: 'stage',
 					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else 2.0,
 					validScore: false,
-					noteMetadata:Song.defNoteMetadata
+					noteMetadata:Song.defNoteMetadata,
+					difficultyString: getSetting("Version")
 				};
 				var hitobjsre:EReg = (~/\[HitObjects\]/gi);
 				hitobjsre.match(bm);
 				var timingPoints:Array<OsuTimingPoint> = [];
 				{ // Timing points   0,0.0,0,0,0,0,0,0 |  -28,461.538461538462,4,1,0,100,1,0
 
-					var regTP:EReg = (~/(^[0-9]*),([0-9.]*),([0-9.]*),([0-9]*),([0-9.]*),([0-9.]*),([01]),/gm);
+					var regTP:EReg = (~/(^[-0-9]*),([-0-9.]*),([-0-9.]*),([-0-9]*),([-0-9.]*),([-0-9.]*),([01]),/gm);
 					var input:String = bm;
 					while (regTP.match(input)) {
 						input=regTP.matchedRight();
@@ -93,8 +95,8 @@ class OsuBeatMap{
 				var isTimedReg:EReg = (~/([a-z]|)/gi);
 				{ // hitobjs
 					var hitobjs:Array<SwagSection> = [];
-					var hitobjval:EReg = (~/(^[0-9]*),([0-9]*),([0-9]*),([0-9]*),([0-9]*),([0-9A-z|:]*)/gm);
-					var sliderReg:EReg = (~/([A-z]\|[|0-9.]*),([0-9]*),([0-9]*),.*/gm);
+					var hitobjval:EReg = (~/(^[-0-9]*),([-0-9]*),([-0-9]*),([-0-9]*),([-0-9]*),([-0-9A-z|:]*)/gm);
+					var sliderReg:EReg = (~/([A-z]\|[|0-9.]*),([-0-9]*),([-0-9]*),.*/gm);
 					var maniaHoldReg:EReg = (~/([|0-9.]*):/gm);
 
 					var i = 0;
@@ -150,11 +152,14 @@ class OsuBeatMap{
 	 			var oggPath = '${OsuMenuState.songPath}/${ogg}';
 				var oggExist = FileSystem.exists(oggPath);
 	 			var mp3Path = '${OsuMenuState.songPath}/${mp3}';
-	 			// if (!oggExist && Sys.command('ffmpeg'#if windows + '.exe' #end) < 2){ // Check for FFMpeg, returns an exit code of 1 if present
-	 			// 	trace('Trying to convert ${mp3Path} to ${oggPath}');
-	 			// 	Sys.command('ffmpeg'#if windows + '.exe' #end,["-i",mp3Path,"-vn",oggPath]);
-	 			// }
-	 			if (!oggExist) {MainMenuState.handleError('Sadly Lime/OpenFL does not support mp3\'s, you will have to convert ${OsuMenuState.songPath}/${mp3} to an ogg');}
+	 			var ffmpegLoc = 'ffmpeg'#if windows + '.exe' #end;
+	 			if (FileSystem.exists(Sys.getCwd() + '/${ffmpegLoc}')) ffmpegLoc = Sys.getCwd() + '/${ffmpegLoc}' else if (FileSystem.exists(Sys.getCwd() + '/ffmpeg/${ffmpegLoc}')) ffmpegLoc = Sys.getCwd() + '/${ffmpegLoc}';
+	 			if (!oggExist && Sys.command(ffmpegLoc) < 2){ // Check for FFMpeg, returns an exit code of 1 if present
+	 				trace('Trying to convert ${mp3Path} to ${oggPath}');
+	 				Sys.command(ffmpegLoc,["-i",mp3Path,"-vn",oggPath]);
+					oggExist = FileSystem.exists(oggPath);
+	 			}
+	 			if (!oggExist) {MainMenuState.handleError('Sadly Lime/OpenFL does not support mp3\'s, you will have to convert ${mp3} to an ogg, or install ffmpeg');}
 				OsuPlayState.instFile = oggPath;
 				beatmap = "";
 				sys.io.File.saveContent("test.json",haxe.Json.stringify(song,' '));
