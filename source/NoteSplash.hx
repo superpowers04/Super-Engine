@@ -23,6 +23,7 @@ class NoteSplash extends FlxSprite
         frames = Paths.getSparrowAtlas("noteSplashes");
         //impact 1
         animation.addByPrefix("note1-0", "note impact 1  blue", 24, false);
+        animation.addByPrefix("note1-0", "note impact 1 blue", 24, false);
         animation.addByPrefix("note2-0", "note impact 1 green", 24, false);
         animation.addByPrefix("note0-0", "note impact 1 purple", 24, false);
         animation.addByPrefix("note3-0", "note impact 1 red", 24, false);
@@ -40,7 +41,7 @@ class NoteSplash extends FlxSprite
         alpha = 0.6;
         animation.play("note" + note + "-" + FlxG.random.int(0, 1), true);
         animation.finishCallback = finished;
-        animation.curAnim.frameRate = 24 - Conductor.crochet / 1000;
+        animation.curAnim.frameRate = 24;
         updateHitbox();
         offset.set(0.3 * width, 0.3 * height);
     }
