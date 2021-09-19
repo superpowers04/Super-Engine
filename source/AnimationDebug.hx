@@ -40,7 +40,6 @@ import flixel.ui.FlxBar;
 using StringTools;
 
 
-
 class AnimationDebug extends MusicBeatState
 {
 	public static var instance:AnimationDebug;
@@ -75,6 +74,7 @@ class AnimationDebug extends MusicBeatState
 	// var tempMessTimer:FlxTimer;
 	var offsetTopText:FlxText;
 	var isAbsoluteOffsets:Bool = false;
+	var absPos:Bool = false;
 	public static var charJson:CharacterJson;
 	public static var inHelp:Bool = false;
 	public static var canEditJson:Bool = false;
@@ -144,7 +144,6 @@ class AnimationDebug extends MusicBeatState
 				gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
 				add(gf);
 			}
-			spawnChar();
 
 
 			camFollow = new FlxObject(0, 0, 2, 2);
@@ -155,6 +154,7 @@ class AnimationDebug extends MusicBeatState
 
 			FlxG.camera.follow(camFollow);
 			super.create();
+			spawnChar();
 			updateCharPos(0,0,false,false);
 
 
@@ -178,6 +178,7 @@ class AnimationDebug extends MusicBeatState
 				// Destroy, otherwise there will be 4 characters
 				dad.destroy();
 				dadBG.destroy();
+
 				for (i => v in offsetText) {
 					v.destroy();
 				}
@@ -209,8 +210,10 @@ class AnimationDebug extends MusicBeatState
 			dadBG.debugMode = true;
 			dadBG.alpha = 0.75;
 			dadBG.color = 0xFF000000;
-			offsetTopText.text = offsetTopTextList[0];
+			// offsetTopText.text = offsetTopTextList[0];
+			toggleOffsetText(showOffsets);
 			isAbsoluteOffsets = false;
+			absPos = false;
 
 			add(dadBG);
 			add(dad);
@@ -296,6 +299,7 @@ class AnimationDebug extends MusicBeatState
 
 	}
 	function outputChar(){
+		var errorStage = 0;
 		try{
 			if(dad.loadedFrom == "" || !FileSystem.exists(dad.loadedFrom)) {
 				@:privateAccess
@@ -315,13 +319,12 @@ class AnimationDebug extends MusicBeatState
 				dad.loadedFrom = "output.json";
 			}
 			if(charJson == null) {FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Can't save, Character has no JSON?",FlxColor.RED);return;}
-
-		//FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Unable to save! Character does't use a specific JSON?",FlxColor.RED);return;
-			var animOffsetsJSON = "[";
+			errorStage = 1; // Offsets
+			var animOffsetsJSON:String = "[";
 			var animOffsets:Map<String, Map<String,Array<Float>>> = [];
 			for (name => v in dad.animOffsets) {
-				var x = v[0];
-				var y = v[1];
+				var x:Float = v[0];
+				var y:Float = v[1];
 				if (offset.get(name) != null){
 					x+=offset[name][0];
 					y+=offset[name][1];
@@ -334,16 +337,18 @@ class AnimationDebug extends MusicBeatState
 					animOffsets[i] = [ 'player${charType + 1}' => [v[0],v[1]]];
 				}
 			}
+			errorStage = 2; // Offsets
 			for (i => v in charJson.animations_offsets){
-				var name = v.anim;
-				// if (animOffsets.get(name) == null){
-				// 	animOffsets[name] = [];
-				// }
+				var name:String = v.anim;
+				if (animOffsets[name] == null){
+					animOffsets[name] = new Map();
+				}
 				if(v.player1 != null && animOffsets[name]["player1"] == null) animOffsets[name]["player1"] = v.player1;
 				if(v.player2 != null && animOffsets[name]["player2"] == null) animOffsets[name]["player2"] = v.player2;
 				if(v.player3 != null && animOffsets[name]["player3"] == null) animOffsets[name]["player3"] = v.player3;
 
 			}
+			errorStage = 3; // Offsets
 			charJson.animations_offsets = [];
 			for (name => v in animOffsets){
 				if(name == "all") {
@@ -351,9 +356,9 @@ class AnimationDebug extends MusicBeatState
 					dad.y -= v['player${charType + 1}'][1];
 					continue;
 				}
-				if(animOffsets[name]["player1"] == null) animOffsets[name]["player1"] = [];
-				if(animOffsets[name]["player2"] == null) animOffsets[name]["player2"] = [];
-				if(animOffsets[name]["player3"] == null) animOffsets[name]["player3"] = [];
+				if(animOffsets[name]["player1"] == null) animOffsets[name]["player1"] = [0.0,0.0];
+				if(animOffsets[name]["player2"] == null) animOffsets[name]["player2"] = [0.0,0.0];
+				if(animOffsets[name]["player3"] == null) animOffsets[name]["player3"] = [0.0,0.0];
 				charJson.animations_offsets.push({
 					"anim" : name,
 					"player1" : animOffsets[name]["player1"],
@@ -362,6 +367,8 @@ class AnimationDebug extends MusicBeatState
 				});
 			}
 
+			errorStage = 4; // metadata
+
 			charJson.char_pos = charJson.common_stage_offset = [];
 			charJson.offset_flip = 1;
 			charJson.like = charJson.clone;
@@ -369,12 +376,15 @@ class AnimationDebug extends MusicBeatState
 			// Compensate for the game moving the character's position
 
 			charJson.cam_pos = [0,0];
+			trace('${dad.x},${dad.y}');
+
 			dad.x -= characterX;
 			dad.y -= characterY;
-			
-			if(isAbsoluteOffsets){
-				dad.x = -dad.x;dad.y = -dad.y;
-			}else{dad.x -= charX;dad.y = -dad.y;}
+			dad.x = -dad.x;
+			dad.y = -dad.y;
+
+			trace('${dad.x},${dad.y}');
+			errorStage = 5; // Position
 			switch (charType) {
 				case 0: {
 					charJson.char_pos1 = [dad.x,dad.y];
@@ -390,15 +400,20 @@ class AnimationDebug extends MusicBeatState
 				};
 			}
 			charJson.genBy = "FNFBR; Animation Editor";
-			
+			errorStage = 6; // Saving
 			if (FileSystem.exists(dad.loadedFrom)) File.copy(dad.loadedFrom,dad.loadedFrom + "-bak.json");
 			File.saveContent(dad.loadedFrom,haxe.Json.stringify(charJson, "\t"));
-			showTempmessage("Saved to character.json successfully. Old character.json was backed up to character.json-bak.json.");
+			showTempmessage('Saved to ${if (dad.loadedFrom.length > 20) '...' + dad.loadedFrom.substring(-20) else dad.loadedFrom} successfully. Old json was backed up to -bak.json.');
 			FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 			spawnChar(true);
 
 
-		}catch(e){FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage('Error: ${e.message}',FlxColor.RED);trace('ERROR: ${e.message}');return;}
+		}catch(e){FlxG.sound.play(
+			Paths.sound('cancelMenu'));
+			showTempmessage('Error: ${e.message} Debug Info: ${errorStage}',FlxColor.RED);
+			trace('ERROR: ${e.message}');
+			return;
+		}
 	}
 
 
@@ -407,10 +422,18 @@ class AnimationDebug extends MusicBeatState
 		if (shiftPress){x=x*5;y=y*5;}
 		if (ctrlPress){x=x*0.1;y=y*0.1;}
 		charX+=x;charY-=y;
-		dad.x += x;
-		dad.y -= y;
-		dadBG.x += x;
-		dadBG.y -= y;
+		// dad.x += x;
+		// dad.y -= y;
+		// dadBG.x += x;
+		// dadBG.y -= y;
+		dad.animOffsets['all'][0] -= x;
+		dad.animOffsets['all'][1] += y;
+
+		dad.setOffsets(dad.animation.curAnim.name);
+		dadBG.animOffsets['all'][0] -= x;
+		dadBG.animOffsets['all'][1] += y;
+		dadBG.setOffsets(dad.animation.curAnim.name);
+
 		if (offsetText["charPos_internal"] == null){
 			offsetCount += 1;
 			var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
@@ -432,6 +455,7 @@ class AnimationDebug extends MusicBeatState
 		charX = 0;charY = 0;
 		dad.offset.set(0,0);
 		dadBG.offset.set(0,0);
+		absPos = true;
 		isAbsoluteOffsets = true;
 		offsetTopText.text = offsetTopTextList[1];
 	}
@@ -500,6 +524,7 @@ class AnimationDebug extends MusicBeatState
 					 (FlxG.keys.justPressed.TWO),
 					 (FlxG.keys.justPressed.THREE),
 					 (FlxG.keys.justPressed.M),
+					 (FlxG.keys.justPressed.FOUR),
 				];
 
 				var modifier = "";
@@ -547,6 +572,13 @@ class AnimationDebug extends MusicBeatState
 							case 16:
 								editMode = 1;
 								toggleOffsetText(false);
+
+							case 17: // Unload character offsets
+								dad.animOffsets['all'] = [0.0,0.0];
+								charX = 0;charY = 0;
+								updateCharPos(0,0,false,false);
+								dad.dance();
+								absPos = true;
 						}	
 					}
 				}
@@ -630,6 +662,7 @@ class AnimHelpScreen extends FlxUISubState{
 				+'\n1 - Unloads all offsets from the game or json file, including character position.\n'
 				+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
 				+(if(canEditJson)'\n3 - Write character info to characters JSON' else '\n3 - Write character info to output.json in FNFBR folder')
+				+'\n4 - Unloads character position from json file.(Useful if the game refuses to save the character\'s position)\n'
 				+"\nB - Hide/Show offset text";
 			case 1:
 				'\n\nArrows - Move camera, Moves per press for accuracy'

@@ -90,13 +90,13 @@ class OnlinePlayMenuState extends MusicBeatState
 
 
     var pwdText:FlxText = new FlxText(FlxG.width/2 - 350, FlxG.height * 0.7 - 40, "Password:");
-    pwdText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    pwdText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(pwdText);
 
 		pwdField = new FlxInputText(0, FlxG.height * 0.7, 700, 32);
 		pwdField.setFormat(32, FlxColor.BLACK, CENTER);
 		pwdField.screenCenter(FlxAxes.X);
-    pwdField.passwordMode = true;
+    // pwdField.passwordMode = true;
 		add(pwdField);
 
 

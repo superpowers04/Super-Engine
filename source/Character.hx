@@ -270,8 +270,12 @@ class Character extends FlxSprite
 					charY+=130;
 			}
 		}else{
-			loadOffsetsFromJSON(Reflect.field(TitleState.defCharJson.characters,curCharacter));
-
+			var e:Dynamic = Reflect.field(TitleState.defCharJson.characters,curCharacter);
+			loadOffsetsFromJSON(e);
+			if(!customColor && e.color != null){
+				definingColor = FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
+				customColor = true;
+			}
 
 		}
 	}
@@ -396,6 +400,10 @@ class Character extends FlxSprite
 
 		if (charProperties.flip_notes) flipNotes = charProperties.flip_notes;
 
+		if(!customColor && charProperties.color != null){
+			definingColor = FlxColor.fromRGB(isValidInt(charProperties.color[0]),isValidInt(charProperties.color[1]),isValidInt(charProperties.color[2],255));
+			customColor = true;
+		}
 
 		
 		trace('Loading Animations!');
@@ -974,8 +982,9 @@ class Character extends FlxSprite
 			}
 		}
 	}
-	public function setOffsets(AnimName:String = "",?offsetX:Float = 0,?offsetY:Float = 0){
+	public function setOffsets(?AnimName:String = "",?offsetX:Float = 0,?offsetY:Float = 0){
 		if (tintedAnims.contains(animation.curAnim.name)){this.color = 0x330066;}else{this.color = 0xffffff;}
+		
 		var daOffset = animOffsets.get(AnimName); // Get offsets
 		var offsets:Array<Float> = [offsetX,offsetY];
 		if (animOffsets.exists(AnimName)) // Set offsets if animation has any

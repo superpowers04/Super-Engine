@@ -84,12 +84,12 @@ class SearchMenuState extends MusicBeatState
 				//Searching
 				searchField = new FlxInputText(10, 100, 1152, 20);
 				searchField.maxLength = 81;
-				overLay.add(searchField);
+				add(searchField);
 		
 				searchButton = new FlxUIButton(10 + 1152 + 9, 100, buttonText["Find"], findButton);
 				searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
 				searchButton.resize(100, searchField.height);
-				overLay.add(searchButton);
+				add(searchButton);
 			}
 
 		var infotexttxt:String = "Hold shift to scroll faster";
