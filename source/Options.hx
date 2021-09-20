@@ -376,7 +376,8 @@ class FPSCapOption extends Option
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
 		}
 		else
-			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap + 10;
+			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap + 1;
+		if (FlxG.save.data.fpsCap < 20) FlxG.save.data.fpsCap = 20;
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 		return true;
@@ -385,10 +386,10 @@ class FPSCapOption extends Option
 	override function left():Bool {
 		if (FlxG.save.data.fpsCap > 290)
 			FlxG.save.data.fpsCap = 290;
-		else if (FlxG.save.data.fpsCap < 10)
-			FlxG.save.data.fpsCap = 30;
+		else if (FlxG.save.data.fpsCap < 20)
+			FlxG.save.data.fpsCap = 20;
 		else
-			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap - 10;
+			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap - 1;
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 		return true;
 	}
