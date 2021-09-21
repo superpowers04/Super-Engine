@@ -269,7 +269,7 @@ class OnlinePlayMenuState extends MusicBeatState
   public static function AddXieneText(state:FlxUIState)
   {
     var xieneText = new FlxText(0, FlxG.height - 30, "XieneDev");
-    xieneText.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    xieneText.setFormat(CoolUtil.font, 28, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     xieneText.screenCenter(FlxAxes.X);
     state.add(xieneText);
   }
