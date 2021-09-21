@@ -1,9 +1,10 @@
 0.5.2;
 - Add support for texturepacker json aliases. On aseprite, you can export a spritesheet with JSON export on and replace the XML with the json(still as a JSON file), The output settings have to be: Array instead of hash, Layers, Tags and Slices on, and the "Item Filename" needs to be `{tag}{frame}`. You have to tag every animation, however they can be named anything aslong as they're properly registered in the config.json
 - Option to disable miss sounds
-- If FFMPEG is installed on your computer, the executable is next to the game's executable, or is in a folder named ffmpeg, the game will now automatically convert mp3's to ogg's on osu beatmaps using that
+- If FFMPEG is installed on your computer, the executable is next to the game's executable, or is in a folder named ffmpeg next to the game's executable, the game will now automatically convert mp3's to ogg's on osu beatmaps using that
 - You are now unable to miss when there are no notes onscreen with improved kade input
 - You can hold shift on title to go to options if needed
 - The selected character's healthicon will show in characterSelect
 - Many fixes to osu beatmap support
 - fix some text being unreadable
+- You can nolonger softlock your game to 0 FPS
