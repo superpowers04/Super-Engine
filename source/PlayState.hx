@@ -938,6 +938,10 @@ class PlayState extends MusicBeatState
 
 		// startCountdown();
 
+
+		
+		parseHScript();
+
 		generateSong(SONG.song);
 
 		// add(strumLine);
@@ -1126,7 +1130,6 @@ class PlayState extends MusicBeatState
 		// FlxG.sound.cache("missnote1");
 		// FlxG.sound.cache("missnote2");
 		// FlxG.sound.cache("missnote3");
-		parseHScript();
 		super.create();
 	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
 
