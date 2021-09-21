@@ -36,13 +36,11 @@ class PauseSubState extends MusicBeatSubstate
 	var quitHeldBar:FlxBar;
 	var quitHeldBG:FlxSprite;
 	var oldBPM:Float = 0;
-
 	public function new(x:Float, y:Float)
 	{
 		super();
 		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
-		oldBPM = Conductor.bpm;
-		Conductor.changeBPM(120);
+
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
@@ -270,7 +268,7 @@ class PauseSubState extends MusicBeatSubstate
 					});
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
-					Conductor.changeBPM(oldBPM);
+
 					close();
 			}
 

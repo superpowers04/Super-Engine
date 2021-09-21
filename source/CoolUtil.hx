@@ -1,13 +1,14 @@
 package;
 
 import lime.utils.Assets;
+import sys.FileSystem;
 
 using StringTools;
 
 class CoolUtil
 {
 	public static var fontName = "vcr.ttf";
-	public static var font = Paths.font(fontName);
+	public static var font = if(FileSystem.exists('mods/font.ttf')) 'mods/font.ttf' else Paths.font(fontName);
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
 	public static function difficultyString():String
