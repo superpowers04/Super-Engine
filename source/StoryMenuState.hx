@@ -77,11 +77,7 @@ class StoryMenuState extends MusicBeatState
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		if (FlxG.sound.music != null)
-		{
-			if (!FlxG.sound.music.playing)
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
-		}
+		SickMenuState.musicHandle();
 
 		persistentUpdate = persistentDraw = true;
 
