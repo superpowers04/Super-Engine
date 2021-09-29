@@ -94,9 +94,11 @@ class Character extends FlxSprite
 			}catch(e){MainMenuState.handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}');}
 		}
 	function parseHScript(scriptContents:String){
+		if (amPreview) return; // Don't load in editor
 		var interp = HscriptUtils.createSimpleInterp();
 		var parser = new hscript.Parser();
 		var program:Expr;
+		try{
 		program = parser.parseString(scriptContents);
 		
 		interp.variables.set("hscriptPath", 'mods/characters/$curCharacter');
@@ -106,6 +108,10 @@ class Character extends FlxSprite
 		interp.variables.set("BRtools",new HSBrTools('mods/characters/$curCharacter/'));
 		interp.execute(program);
 		this.interp = interp;
+		}catch(e){
+			MainMenuState.handleError('Error parsing char ${curCharacter} hscript, Line:${parser.line}; Error:${e.message}');
+			interp = null;
+		}
 	}
 
 	function addOffsets(?character:String = "") // Handles offsets for characters with support for clones
@@ -893,6 +899,7 @@ class Character extends FlxSprite
 
 		callInterp("new",[]);
 		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
+	
 		if(animation.curAnim == null && !lonely){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
 		}catch(e){
 			#if debug

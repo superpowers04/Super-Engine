@@ -100,6 +100,7 @@ class PlayState extends MusicBeatState
 
 	public static var rep:Replay;
 	public static var loadRep:Bool = false;
+	public static inline var daPixelZoom:Int = 6;
 
 	public static var noteBools:Array<Bool> = [false, false, false, false];
 	public static var p2presses:Array<Int> = [0,0,0,0]; // 0 = not pressed, 1 = pressed, 2 = hold, 3 = miss
@@ -205,13 +206,11 @@ class PlayState extends MusicBeatState
 
 	var defaultCamZoom:Float = 1.05;
 
-	public static var daPixelZoom:Float = 6;
 
-	public static var theFunne:Bool = true;
-	var funneEffect:FlxSprite;
+	// public static var theFunne:Bool = true;
 	var inCutscene:Bool = false;
-	public static var repPresses:Int = 0;
-	public static var repReleases:Int = 0;
+	// public static var repPresses:Int = 0;
+	// public static var repReleases:Int = 0;
 
 	public static var timeCurrently:Float = 0;
 	public static var timeCurrentlyR:Float = 0;
@@ -260,8 +259,8 @@ class PlayState extends MusicBeatState
 		combo = 0;
 		maxCombo = 0;
 
-		repPresses = 0;
-		repReleases = 0;
+		// repPresses = 0;
+		// repReleases = 0;
 		songScore = 0;
 		Note.setOffscreen();
 
@@ -296,19 +295,24 @@ class PlayState extends MusicBeatState
 		if (songScript == "" || !QuickOptionsSubState.getSetting("Song hscripts")) {interp = null;return;}
 		var interp = HscriptUtils.createSimpleInterp();
 		var parser = new hscript.Parser();
-		var program:Expr;
-		program = parser.parseString(songScript);
+		try{
+			var program:Expr;
+			program = parser.parseString(songScript);
 
-		if (hsBrTools != null) 
-			interp.variables.set("BRtools",hsBrTools); 
-		else 
-			interp.variables.set("BRtools",new HSBrTools("assets/"));
-		interp.variables.set("charGet",charGet); 
-		interp.variables.set("charSet",charSet);
-		interp.variables.set("charAnim",charAnim); 
-		interp.execute(program);
-		this.interp = interp;
-		callInterp("initScript",[]);
+			if (hsBrTools != null) 
+				interp.variables.set("BRtools",hsBrTools); 
+			else 
+				interp.variables.set("BRtools",new HSBrTools("assets/"));
+			interp.variables.set("charGet",charGet); 
+			interp.variables.set("charSet",charSet);
+			interp.variables.set("charAnim",charAnim); 
+			interp.execute(program);
+			this.interp = interp;
+			callInterp("initScript",[]);
+		}catch(e){
+			MainMenuState.handleError('Error parsing song hscript, Line:${parser.line}; Error:${e.message}');
+			interp = null;
+		}
 		trace("Loaded script!");
 	}
 	static function charGet(charId:Int,field:String):Dynamic{
@@ -902,16 +906,16 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
-		if (loadRep)
-		{
-			FlxG.watch.addQuick('rep rpesses',repPresses);
-			FlxG.watch.addQuick('rep releases',repReleases);
+		// if (loadRep)
+		// {
+		// 	FlxG.watch.addQuick('rep rpesses',repPresses);
+		// 	FlxG.watch.addQuick('rep releases',repReleases);
 			
-			FlxG.save.data.botplay = true;
-			FlxG.save.data.scrollSpeed = rep.replay.noteSpeed;
-			FlxG.save.data.downscroll = rep.replay.isDownscroll;
-			// FlxG.watch.addQuick('Queued',inputsQueued);
-		}
+		// 	FlxG.save.data.botplay = true;
+		// 	FlxG.save.data.scrollSpeed = rep.replay.noteSpeed;
+		// 	FlxG.save.data.downscroll = rep.replay.isDownscroll;
+		// 	// FlxG.watch.addQuick('Queued',inputsQueued);
+		// }
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
@@ -1530,9 +1534,6 @@ class PlayState extends MusicBeatState
 				if (swagNote.mustPress)
 				{
 					swagNote.x += FlxG.width / 2; // general offset
-				}
-				else
-				{
 				}
 			}
 
@@ -2188,7 +2189,6 @@ class PlayState extends MusicBeatState
 		{
 			var noteDiff:Float = Math.abs(Conductor.songPosition - daNote.strumTime);
 			var wife:Float = EtternaFunctions.wife3(noteDiff, Conductor.timeScale);
-			// boyfriend.playAnim('hey');
 			vocals.volume = 1;
 			
 			var placement:String = Std.string(combo);

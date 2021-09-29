@@ -252,6 +252,8 @@ class TitleState extends MusicBeatState
 
 		Conductor.changeBPM(70);
 		persistentUpdate = true;
+		FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
+		FlxG.mouse.useSystemCursor = true; // Uses system cursor, did not know this was a thing until Forever Engine
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		// bg.antialiasing = true;
