@@ -34,9 +34,9 @@ class OptionsMenu extends MusicBeatState
 			new PlayerOption("Change the player character"),
 			new GFOption("Change the GF used"),
 			new NoteSelOption("Change the note assets used, pulled from mods/noteassets"),
-			new CharAutoOption("Allow the song to choose the opponent if you have them"),
-			new ReloadCharlist("Refreshes the character list, used for if you added characters"),
 			new SelStageOption("Select the stage to use, Default will use song default"),
+			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
+			new ReloadCharlist("Refreshes the character list, used for if you added characters")
 		]),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
@@ -49,9 +49,7 @@ class OptionsMenu extends MusicBeatState
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
-			// new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"), This didn't work before and it doesn't work again...
-			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
-			new InputHandlerOption("Change the input engine used, only works locally, Disables Kade options unless supported by engine")
+			new InputHandlerOption("Change the input engine used, only works locally.")
 		]),
 		new OptionCategory("Appearance", [
 			new GUIGapOption("Change the distance between the end of the screen and text"),
@@ -63,17 +61,18 @@ class OptionsMenu extends MusicBeatState
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
 		]),
 		new OptionCategory("Misc", [
+			new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
 			new FPSOption("Toggle the FPS Counter"),
-			new FPSCapOption("Cap your FPS"),
 			new MissSoundsOption("Play a sound when you miss"),
+			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF"),
 			new PlayVoicesOption("Plays your character's voices when you press a note.")
 		]),
-		new OptionCategory("Preformance", [
-			new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
+		new OptionCategory("Performance", [
+			new FPSCapOption("Cap your FPS"),
 			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),

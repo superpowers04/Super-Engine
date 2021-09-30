@@ -1,3 +1,3 @@
-0.5.2-1;
-- Fix steps and beats being reset when paused
-- Add the ability to use font.ttf in mods folder
+0.5.3;
+- Unhook the game from the framerate
+- some small fixes

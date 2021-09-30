@@ -740,7 +740,7 @@ class CharAutoOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return (!FlxG.save.data.charAuto ? "Use selected opponent" : "Use songs opponent when available");
+		return "Force selected opponent " + (!FlxG.save.data.charAuto ? "on" : "off");
 	}
 }
 class AnimDebugOption extends Option
