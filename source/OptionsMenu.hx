@@ -36,7 +36,7 @@ class OptionsMenu extends MusicBeatState
 			new NoteSelOption("Change the note assets used, pulled from mods/noteassets"),
 			new SelStageOption("Select the stage to use, Default will use song default"),
 			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
-			new ReloadCharlist("Refreshes the character list, used for if you added characters")
+			new ReloadCharlist("Refreshes the character and stage list, used for if you added characters or stages")
 		]),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),

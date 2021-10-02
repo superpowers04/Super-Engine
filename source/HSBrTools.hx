@@ -25,6 +25,9 @@ class HSBrTools {
         if (!path.endsWith('/')) path = path + "/";
 		trace('HSBrTools initialised in ${path}');
 	}
+    public function getPath(?str:String = ""){
+        return path + str;
+    }
     public function loadFlxSprite(x:Int,y:Int,pngPath:String):FlxSprite{
         if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
         return new FlxSprite(x, y).loadGraphic(spriteArray[pngPath]);

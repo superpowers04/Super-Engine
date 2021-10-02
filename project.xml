@@ -109,6 +109,7 @@
 	-->
 	<assets path="assets/fonts" embed='true'/>
 	<!-- _______________________________ Libraries ______________________________ -->
+	<haxedef name="hscriptPos" />
 
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />

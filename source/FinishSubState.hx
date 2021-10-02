@@ -29,42 +29,52 @@ class FinishSubState extends MusicBeatSubstate
 	var ready = false;
 	var camFollow:FlxObject;
 	var week:Bool = false;
-	public function new(x:Float, y:Float,?won = true,?camFollow:FlxObject,?week:Bool = false)
+	var errorMsg:String = "";
+	var isError:Bool = false;
+	public function new(x:Float, y:Float,?won = true,?camFollow:FlxObject,?week:Bool = false,?error:String = "")
 	{
+		if (error != ""){
+			isError = true;
+			errorMsg = error;
+			won = false;
+		}
 		this.week = week;
-		FlxG.state.persistentUpdate = true;
+		if(!isError) FlxG.state.persistentUpdate = true;
 		win = won;
 		FlxG.sound.pause();
 		PlayState.instance.generatedMusic = false;
 		var dad = PlayState.dad;
 		var boyfriend = PlayState.boyfriend;
-		if(win){
-			for (g in [PlayState.instance.cpuStrums,PlayState.instance.playerStrums]) {
-				g.forEach(function(i){
-					FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
-				});
-			}
-			if (FlxG.save.data.songPosition)
-			{
-				for (i in [PlayState.songPosBar,PlayState.songPosBG,PlayState.instance.songName]) {
-					FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
+
+			if(win){
+				for (g in [PlayState.instance.cpuStrums,PlayState.instance.playerStrums]) {
+					g.forEach(function(i){
+						FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
+					});
 				}
+				if (FlxG.save.data.songPosition)
+				{
+					for (i in [PlayState.songPosBar,PlayState.songPosBG,PlayState.instance.songName]) {
+						FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
+					}
+				}
+				FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
+				FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
 			}
-			FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
-			FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
-		}
-		if(win){
-			boyfriend.playAnim("hey",true);
-			boyfriend.playAnim("win",true);
-			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnim('singDOWNmiss');dad.playAnim('lose');}
-			PlayState.gf.playAnim('cheer',true);
-		}else{
-			boyfriend.playAnim('singDOWNmiss');
-			boyfriend.playAnim('lose');
-			dad.playAnim("hey",true);
-			dad.playAnim("win",true);
-			if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('sad'); else dad.playAnim("hey");
-			PlayState.gf.playAnim('sad',true);
+		if(!isError){
+			if(win){
+				boyfriend.playAnim("hey",true);
+				boyfriend.playAnim("win",true);
+				if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnim('singDOWNmiss');dad.playAnim('lose');}
+				PlayState.gf.playAnim('cheer',true);
+			}else{
+				boyfriend.playAnim('singDOWNmiss');
+				boyfriend.playAnim('lose');
+				dad.playAnim("hey",true);
+				dad.playAnim("win",true);
+				if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('sad'); else dad.playAnim("hey");
+				PlayState.gf.playAnim('sad',true);
+			}
 		}
 		super();
 		if (win) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
@@ -74,6 +84,8 @@ class FinishSubState extends MusicBeatSubstate
 			PlayState.instance.followChar(if(win) 0 else 1);
 		}
 	}
+
+
 
 	public function finishNew(?name:String){
 
@@ -96,58 +108,87 @@ class FinishSubState extends MusicBeatSubstate
 			var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 			bg.alpha = 0;
 			bg.scrollFactor.set();
+			if(isError){
+				var finishedText:FlxText = new FlxText(20,-55,0, "Error caught!" );
+				finishedText.size = 34;
+				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+				finishedText.color = FlxColor.RED;
+				finishedText.scrollFactor.set();
+				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,'Error Message:\n${errorMsg}\n\nIf you\'re not the creator of the character or chart,\nit is recommended that you report this to the chart/character\'s developer');
+				comboText.size = 28;
+				comboText.wordWrap = true;
+				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+				comboText.color = FlxColor.WHITE;
+				comboText.scrollFactor.set();
+				comboText.fieldWidth = FlxG.width - comboText.x;
+				var contText:FlxText = new FlxText(FlxG.width - 475,FlxG.height + 100,0,'Press ENTER to exit\nor R to reload.');
+				contText.size = 28;
+				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+				contText.color = FlxColor.WHITE;
+				contText.scrollFactor.set();
+				FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+				FlxTween.tween(finishedText, {y:20},0.5,{ease: FlxEase.expoInOut});
+				FlxTween.tween(comboText, {y:145},0.5,{ease: FlxEase.expoInOut});
+				FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
+				add(bg);
+				add(finishedText);
+				add(comboText);
+				add(contText);
+			}else{
 
-			var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0, (if(week) "Week" else "Song") + " " + (if(win) "Won!" else "failed...") );
-			finishedText.size = 34;
-			finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-			finishedText.color = FlxColor.WHITE;
-			finishedText.scrollFactor.set();
-			var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,'Song/Chart:\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
-			comboText.size = 28;
-			comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-			comboText.color = FlxColor.WHITE;
-			comboText.scrollFactor.set();
+				var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0, (if(week) "Week" else "Song") + " " + (if(win) "Won!" else "failed...") );
+				finishedText.size = 34;
+				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+				finishedText.color = FlxColor.WHITE;
+				finishedText.scrollFactor.set();
+				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,'Song/Chart:\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
+				comboText.size = 28;
+				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+				comboText.color = FlxColor.WHITE;
+				comboText.scrollFactor.set();
 
-			var settingsText:FlxText = new FlxText(Std.int(FlxG.width * 0.45) + FlxG.save.data.guiGap,-30,0,
-			(if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
-			
-			+'\n\nSettings:'
-			+'\n\n Downscroll: ${FlxG.save.data.downscroll}'
-			+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
-			+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}'
-			+'\n Safe Frames: ${FlxG.save.data.frames}'
-			+'\n Input Engine: ${PlayState.inputEngineName}'
-			+'\n Song Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms'
-			);
-			settingsText.size = 28;
-			settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-			settingsText.color = FlxColor.WHITE;
-			settingsText.scrollFactor.set();
+				var settingsText:FlxText = new FlxText(Std.int(FlxG.width * 0.45) + FlxG.save.data.guiGap,-30,0,
+				(if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
+				
+				+'\n\nSettings:'
+				+'\n\n Downscroll: ${FlxG.save.data.downscroll}'
+				+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
+				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}'
+				+'\n Safe Frames: ${FlxG.save.data.frames}'
+				+'\n Input Engine: ${PlayState.inputEngineName}'
+				+'\n Song Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms'
+				);
+				settingsText.size = 28;
+				settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+				settingsText.color = FlxColor.WHITE;
+				settingsText.scrollFactor.set();
 
-			var contText:FlxText = new FlxText(FlxG.width - 475 - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue\nor R to restart.');
-			contText.size = 28;
-			contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
-			contText.color = FlxColor.WHITE;
-			contText.scrollFactor.set();
-			// var chartInfoText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
-			// chartInfoText.size = 16;
-			// chartInfoText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
-			// chartInfoText.color = FlxColor.WHITE;
-			// chartInfoText.scrollFactor.set();
-			
-			add(bg);
-			add(finishedText);
-			add(comboText);
-			add(contText);
-			add(settingsText);
-			// add(chartInfoText);
+				var contText:FlxText = new FlxText(FlxG.width - 475 - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue\nor R to restart.');
+				contText.size = 28;
+				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
+				contText.color = FlxColor.WHITE;
+				contText.scrollFactor.set();
+				// var chartInfoText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
+				// chartInfoText.size = 16;
+				// chartInfoText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
+				// chartInfoText.color = FlxColor.WHITE;
+				// chartInfoText.scrollFactor.set();
+				
 
-			FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
-			FlxTween.tween(finishedText, {y:20},0.5,{ease: FlxEase.expoInOut});
-			FlxTween.tween(comboText, {y:145},0.5,{ease: FlxEase.expoInOut});
-			FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
-			// FlxTween.tween(chartInfoText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
-			FlxTween.tween(settingsText, {y:145},0.5,{ease: FlxEase.expoInOut});
+				add(bg);
+				add(finishedText);
+				add(comboText);
+				add(contText);
+				add(settingsText);
+				// add(chartInfoText);
+
+				FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+				FlxTween.tween(finishedText, {y:20},0.5,{ease: FlxEase.expoInOut});
+				FlxTween.tween(comboText, {y:145},0.5,{ease: FlxEase.expoInOut});
+				FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
+				// FlxTween.tween(chartInfoText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
+				FlxTween.tween(settingsText, {y:145},0.5,{ease: FlxEase.expoInOut});
+			}
 
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
 	}
@@ -171,10 +212,6 @@ class FinishSubState extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 		if (ready){
-			var upP = controls.UP_P;
-			var downP = controls.DOWN_P;
-			var leftP = controls.LEFT_P;
-			var rightP = controls.RIGHT_P;
 			var accepted = controls.ACCEPT;
 			var oldOffset:Float = 0;
 

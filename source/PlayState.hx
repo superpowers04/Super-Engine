@@ -240,6 +240,7 @@ class PlayState extends MusicBeatState
 	public static var inputEngineName:String = "Unspecified";
 	public static var songScript:String = "";
 	public static var hsBrTools:HSBrTools;
+	var errorMsg:String = "";
 
 	var hitSound:Bool = false;
 
@@ -268,6 +269,16 @@ class PlayState extends MusicBeatState
 
 	var interp:Interp;
 
+	public function handleError(error:String){
+		interp = null;
+		if(!startedCountdown){
+			errorMsg = error;
+			return;
+		}
+		generatedMusic = false;
+		openSubState(new FinishSubState(0,0,error));
+	}
+
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
 			if(func_name == "noteHitDad"){
 				charCall("noteHitSelf",[args[1]],1);
@@ -289,7 +300,7 @@ class PlayState extends MusicBeatState
 				case 2:
 					method(this,args[0], args[1]);
 			}
-			}catch(e){MainMenuState.handleError('Something went wrong with ${func_name} for ${SONG.song}, ${e.message}');}
+			}catch(e:hscript.Expr.Error){handleError('${func_name}:${e.line} for ${SONG.song}:\n ${e.toString()}');}
 		}
 	function parseHScript(){
 		if (songScript == "" || !QuickOptionsSubState.getSetting("Song hscripts")) {interp = null;return;}
@@ -299,10 +310,12 @@ class PlayState extends MusicBeatState
 			var program:Expr;
 			program = parser.parseString(songScript);
 
-			if (hsBrTools != null) 
-				interp.variables.set("BRtools",hsBrTools); 
-			else 
-				interp.variables.set("BRtools",new HSBrTools("assets/"));
+			if (hsBrTools != null) {
+				trace('Using hsBrTools');
+				interp.variables.set("BRtools",hsBrTools); }
+			else {
+				trace('Using assets folder');
+				interp.variables.set("BRtools",new HSBrTools("assets/"));}
 			interp.variables.set("charGet",charGet); 
 			interp.variables.set("charSet",charSet);
 			interp.variables.set("charAnim",charAnim); 
@@ -310,8 +323,8 @@ class PlayState extends MusicBeatState
 			this.interp = interp;
 			callInterp("initScript",[]);
 		}catch(e){
-			MainMenuState.handleError('Error parsing song hscript, Line:${parser.line}; Error:${e.message}');
-			interp = null;
+			handleError('Error parsing song hscript, Line:${parser.line};\n Error:${e.message}');
+			// interp = null;
 		}
 		trace("Loaded script!");
 	}
@@ -342,6 +355,7 @@ class PlayState extends MusicBeatState
 		strumLineNotes = null;
 		playerStrums = null;
 		cpuStrums = null;
+		// if (PlayState.songScript == "" && SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()] != null) songScript = SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()];
 		if (FlxG.save.data.fpsCap > 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(800);
 		
@@ -836,7 +850,6 @@ class PlayState extends MusicBeatState
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
 		camPos.set(camPos.x + dad.camX, camPos.y + dad.camY);
-
 		if (FlxG.save.data.bfShow) boyfriend = new Character(770, 100, SONG.player1,true,0); else boyfriend = new EmptyCharacter(400,100);
 		
 
@@ -904,8 +917,17 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			add(limo);
 
+
+		parseHScript();
+
+		charCall("addGF",[],-1);
+		callInterp("addGF",[]);
 		add(dad);
+		charCall("addDad",[],-1);
+		callInterp("addDad",[]);
 		add(boyfriend);
+		callInterp("addChars",[]);
+		charCall("addChars",[],-1);
 		// if (loadRep)
 		// {
 		// 	FlxG.watch.addQuick('rep rpesses',repPresses);
@@ -943,8 +965,6 @@ class PlayState extends MusicBeatState
 		// startCountdown();
 
 
-		
-		parseHScript();
 
 		generateSong(SONG.song);
 
@@ -1049,6 +1069,9 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon(SONG.player2, false,dad.clonedChar);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
+
+		callInterp("addUI",[]);
+		charCall("addUI",[],-1);
 
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
@@ -1279,6 +1302,7 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
+
 		var swagCounter:Int = 0;
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -1305,6 +1329,11 @@ class PlayState extends MusicBeatState
 			switch (swagCounter)
 			{
 				case 0:
+					if (errorMsg != ""){
+						handleError(errorMsg);
+						startTimer.cancel();
+						return;
+					}
 					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
 			
 				case 1:

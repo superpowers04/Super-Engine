@@ -1,3 +1,4 @@
 0.5.3;
 - Unhook the game from the framerate
-- some small fixes
+- Some small fixes
+- Several enhancements to hscript capabilities

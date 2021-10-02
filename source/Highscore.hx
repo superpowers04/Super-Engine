@@ -11,6 +11,9 @@ class Highscore
 	#end
 
 
+
+
+
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Void
 	{
 		// var daSong:String = formatSong(song, diff);

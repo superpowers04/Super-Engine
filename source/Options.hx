@@ -913,7 +913,7 @@ class ReloadCharlist extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Reload Character List";
+		return "Reload Char/Stage List";
 	}
 
 	override function getValue():String {

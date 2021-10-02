@@ -66,6 +66,8 @@ class Character extends FlxSprite
 	public var charXml:String;
 	public var definingColor:FlxColor;
 	public var animationList:Array<CharJsonAnimation> = [];
+	public var hscriptGen:Bool = false;
+	public var useHscript:Bool = true;
 	var customColor = false;
 	var flipNotes:Bool = true;
 	var needsInverted:Int= 1;
@@ -76,9 +78,12 @@ class Character extends FlxSprite
 
 
 	var interp:Interp;
+	public static function hasCharacter(char:String):Bool{
+		return (TitleState.retChar(char) != "");
+	}
 
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
-			if ((interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
+			if (!useHscript || (interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
 			try{
 
 			var method = interp.variables.get(func_name);
@@ -91,10 +96,10 @@ class Character extends FlxSprite
 				case 2:
 					method(this,args[0], args[1]);
 			}
-			}catch(e){MainMenuState.handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}');}
+			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}');}
 		}
 	function parseHScript(scriptContents:String){
-		if (amPreview) return; // Don't load in editor
+		if (amPreview || !useHscript) return; // Don't load in editor
 		var interp = HscriptUtils.createSimpleInterp();
 		var parser = new hscript.Parser();
 		var program:Expr;
@@ -109,8 +114,8 @@ class Character extends FlxSprite
 		interp.execute(program);
 		this.interp = interp;
 		}catch(e){
-			MainMenuState.handleError('Error parsing char ${curCharacter} hscript, Line:${parser.line}; Error:${e.message}');
-			interp = null;
+			handleError('Error parsing char ${curCharacter} hscript, Line:${parser.line}; Error:${e.message}');
+			
 		}
 	}
 
@@ -286,42 +291,44 @@ class Character extends FlxSprite
 		}
 	}
 	function loadVanillaChar(charProperties:CharacterJson){
-		if (charProperties.embedded){
-			tex = Paths.getSparrowAtlas(charProperties.path);
-		}else{		
-			var pngPath:String = '${charProperties.path}.png';
-			var xmlPath:String = '${charProperties.path}.xml';
-			if (charProperties.asset_files != null){
-				var forced = 0;
-				var invChIDs:Array<Int> = [1,0,2];
-				var selAssets = -10;
-				for (i => charFile in charProperties.asset_files) {
-					if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side == charType){continue;} // This if statement hurts my brain
-					if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
-					if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
-					var tagsMatched = 0;
-					if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
-						for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
-						if (tagsMatched == 0) continue;
+		if(tex == null){
+			if (charProperties.embedded){
+				tex = Paths.getSparrowAtlas(charProperties.path);
+			}else{		
+				var pngPath:String = '${charProperties.path}.png';
+				var xmlPath:String = '${charProperties.path}.xml';
+				if (charProperties.asset_files != null){
+					var forced = 0;
+					var invChIDs:Array<Int> = [1,0,2];
+					var selAssets = -10;
+					for (i => charFile in charProperties.asset_files) {
+						if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side == charType){continue;} // This if statement hurts my brain
+						if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
+						if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
+						var tagsMatched = 0;
+						if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
+							for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
+							if (tagsMatched == 0) continue;
+						}
+						
+						if (forced == 0 || tagsMatched == forced)
+							selAssets = i;
 					}
-					
-					if (forced == 0 || tagsMatched == forced)
-						selAssets = i;
+					if (selAssets != -10){
+						if (charProperties.asset_files[selAssets].png != null ) pngPath=charProperties.asset_files[selAssets].png;
+						if (charProperties.asset_files[selAssets].xml != null ) xmlPath=charProperties.asset_files[selAssets].xml;
+						if (charProperties.asset_files[selAssets].animations != null )charProperties.animations=charProperties.asset_files[selAssets].animations;
+						if (charProperties.asset_files[selAssets].animations_offsets != null )charProperties.animations_offsets=charProperties.asset_files[selAssets].animations_offsets;
+					}
 				}
-				if (selAssets != -10){
-					if (charProperties.asset_files[selAssets].png != null ) pngPath=charProperties.asset_files[selAssets].png;
-					if (charProperties.asset_files[selAssets].xml != null ) xmlPath=charProperties.asset_files[selAssets].xml;
-					if (charProperties.asset_files[selAssets].animations != null )charProperties.animations=charProperties.asset_files[selAssets].animations;
-					if (charProperties.asset_files[selAssets].animations_offsets != null )charProperties.animations_offsets=charProperties.asset_files[selAssets].animations_offsets;
-				}
+				if(!FileSystem.exists(pngPath) || !FileSystem.exists(xmlPath)) handleError('Invalid xml/png path for ${curCharacter}');
+				var charXml:String = File.getContent(xmlPath); // Loads the XML as a string
+				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+				if (amPreview) this.charXml = charXml;
+				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile(pngPath)), charXml);
 			}
-			if(!FileSystem.exists(pngPath) || !FileSystem.exists(xmlPath)) MainMenuState.handleError('Invalid xml/png path for ${curCharacter}');
-			var charXml:String = File.getContent(xmlPath); // Loads the XML as a string
-			if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-			if (amPreview) this.charXml = charXml;
-			tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile(pngPath)), charXml);
+			if(tex == null) handleError('Invalid texture for ${curCharacter}');
 		}
-		if(tex == null) MainMenuState.handleError('Invalid texture for ${curCharacter}');
 		frames = tex;
 		loadJSONChar(charProperties);
 	}
@@ -439,7 +446,7 @@ class Character extends FlxSprite
 			if (anima.indices.length > 0) { // Add using indices if specified
 				addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
 			}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
-			}catch(e){MainMenuState.handleError('${curCharacter} had an animation error ${e.message}');break;}
+			}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
 			animCount++;
 		}
 		trace('Registered ${animCount} animations');
@@ -463,7 +470,7 @@ class Character extends FlxSprite
 		isCustom = true;
 		var charPropJson:String = "";
 		if (charProperties == null) {charPropJson = File.getContent('mods/characters/$curCharacter/config.json');charProperties = haxe.Json.parse(CoolUtil.cleanJSON(charPropJson));}
-		if (charProperties == null || charProperties.animations == null || charProperties.animations[0] == null){MainMenuState.handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
+		if (charProperties == null || charProperties.animations == null || charProperties.animations[0] == null){handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
 		loadedFrom = 'mods/characters/$curCharacter/config.json';
 		var pngName:String = "character.png";
 		var xmlName:String = "character.xml";
@@ -497,15 +504,15 @@ class Character extends FlxSprite
 			var charJsonF:String = ('mods/characters/$curCharacter/${xmlName}').substr(0,-3) + "json";
 			if (FileSystem.exists(charJsonF)){
 				var charXml:String = File.getContent(charJsonF); 				
-				if (charXml == null){MainMenuState.handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
+				if (charXml == null){handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
 
 				tex = FlxAtlasFrames.fromTexturePackerJson(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
 			} else {
 				var charXml:String = File.getContent('mods/characters/$curCharacter/${xmlName}'); // Loads the XML as a string
-				if (charXml == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
 				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
 			}
-			if (tex == null){MainMenuState.handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
+			if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 		}
 		trace('Loaded "mods/characters/$curCharacter/${pngName}"');
 		frames = tex;
@@ -540,7 +547,23 @@ class Character extends FlxSprite
 		}
 	
 
-	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null) // CharTypes: 0=BF 1=Dad 2=GF
+	public static function newChar(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true):Character{
+		var e = new Character(x,y,character,isPlayer,charType,exitex,charJson);
+		e.hscriptGen = true;
+		return e;
+	}
+
+	public function handleError(error:String){
+		interp = null;
+		if (!amPreview && PlayState.instance != null){
+			PlayState.instance.handleError(error);
+		}else{
+			MainMenuState.handleError(error);
+		}
+	}
+
+
+	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true) // CharTypes: 0=BF 1=Dad 2=GF
 	{try{
 
 		super(x, y);
@@ -556,6 +579,7 @@ class Character extends FlxSprite
 		}
 		curCharacter = character;
 		this.charType = charType;
+		this.useHscript = useHscript;
 		if (curCharacter == 'dad'){dadVar = 6.1;}
 		this.isPlayer = isPlayer;
 		amPreview = preview;
@@ -1006,6 +1030,8 @@ class Character extends FlxSprite
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0)
 	{
 		var lastAnim = "";
+		
+		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
 
 		callInterp("playAnim",[AnimName]);
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
