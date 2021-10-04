@@ -264,7 +264,6 @@ class PlayState extends MusicBeatState
 		// repPresses = 0;
 		// repReleases = 0;
 		songScore = 0;
-		Note.setOffscreen();
 
 	}
 
@@ -846,16 +845,16 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		// if (getFromInterp("afterStage","stage") != null){
-			// revealToInterp(bfPos,"bfPos","stage");
-			// revealToInterp(gfPos,"gfPos","stage");
-			// revealToInterp(dadPos,"bfPos","stage");
-		callInterp("afterStage",[]);
-			// bfPos = getFromInterp("bfPos","stage",true,bfPos);
-			// gfPos = getFromInterp("gfPos","stage",true,gfPos);
-			// dadPos = getFromInterp("bfPos","stage",true,dadPos);
+		if (getFromInterp("afterStage","stage") != null){
+			revealToInterp(bfPos,"bfPos","stage");
+			revealToInterp(gfPos,"gfPos","stage");
+			revealToInterp(dadPos,"bfPos","stage");
+			callInterp("afterStage",[]);
+			bfPos = getFromInterp("bfPos","stage",true,bfPos);
+			gfPos = getFromInterp("gfPos","stage",true,gfPos);
+			dadPos = getFromInterp("bfPos","stage",true,dadPos);
 
-		// }
+		}
 
 		if (stateType == 0 || stateType == 1){
 		    PlayState.SONG.player1 = FlxG.save.data.playerChar;
@@ -1639,6 +1638,8 @@ class PlayState extends MusicBeatState
 			// switch (SONG.noteStyle)
 			// {
 			// 	case 'normal':
+			charCall("strumNoteLoad",[player],if (player == 1) 0 else 1);
+			callInterp("strumNoteLoad",[babyArrow,player == 1]);
 			babyArrow.frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 			babyArrow.animation.addByPrefix('green', 'arrowUP');
 			babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
@@ -1707,6 +1708,7 @@ class PlayState extends MusicBeatState
 			});
 
 			strumLineNotes.add(babyArrow);
+			charCall("strumNoteAdd",[player],if (player == 1) 0 else 1);
 			callInterp("strumNoteAdd",[babyArrow,player == 1]);
 		}
 	}

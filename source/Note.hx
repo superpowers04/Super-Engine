@@ -42,9 +42,7 @@ class Note extends FlxSprite
 
 	public var rating:String = "shit";
 
-	public static function setOffscreen(){
-		offscreenY = (if (FlxG.save.data.downscroll) offscreenY = 50; else offscreenY = FlxG.height + 50);
-	}
+
 
 	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
@@ -83,7 +81,7 @@ class Note extends FlxSprite
 			try{
 				if(frames == null && shouldntBeHit) {color = 0x220011;}
 				if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
-			}catch(e) throw("Unable to load arrow sprites!")
+			}catch(e) throw("Unable to load arrow sprites!");
 		}
 
 		animation.addByPrefix('greenScroll', 'green0');
@@ -108,8 +106,8 @@ class Note extends FlxSprite
 
 
 
-		animation.play(noteName + "Scroll");
 		x+= swagWidth * noteData;
+		animation.play(noteName + "Scroll");
 
 		// trace(prevNote);
 
@@ -124,19 +122,15 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 			
-			animation.play(noteName + "holdend");
 
 			x += width / 2;
 
+			animation.play(noteName + "holdend");
 			isSustainNoteEnd = true;
 			updateHitbox();
 
 			x -= width / 2;
 
-			if(FlxG.save.data.scrollSpeed != 1)
-				scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;
-			else
-				scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
 
 			if (prevNote.isSustainNote)
 			{
@@ -151,14 +145,14 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
-			visible = false;
 		}
+		visible = false;
 	}catch(e){MainMenuState.handleError('Caught "Note create" crash: ${e.message}');}}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (!skipNote || (!FlxG.save.data.downscroll && y < offscreenY || FlxG.save.data.downscroll && y > offscreenY)){ // doesn't calculate anything until they're on screen
+		if (!skipNote || isOnScreen()){ // doesn't calculate anything until they're on screen
 			skipNote = false;
 			visible = showNote;
 
