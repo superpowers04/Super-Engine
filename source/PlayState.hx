@@ -259,6 +259,7 @@ class PlayState extends MusicBeatState
 		misses = 0;
 		combo = 0;
 		maxCombo = 0;
+		// noteCount = 0;
 
 		// repPresses = 0;
 		// repReleases = 0;
@@ -267,10 +268,10 @@ class PlayState extends MusicBeatState
 
 	}
 
-	var interp:Interp;
+	var interps:Map<String,Interp> = new Map();
 
 	public function handleError(error:String){
-		interp = null;
+		resetInterps();
 		if(!startedCountdown){
 			errorMsg = error;
 			return;
@@ -279,18 +280,22 @@ class PlayState extends MusicBeatState
 		openSubState(new FinishSubState(0,0,error));
 	}
 
-	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
-			if(func_name == "noteHitDad"){
-				charCall("noteHitSelf",[args[1]],1);
-				charCall("noteHitOpponent",[args[1]],0);
-			}
-			if(func_name == "noteHit"){
-				charCall("noteHitSelf",[args[1]],0);
-				charCall("noteHitOpponent",[args[1]],1);
-			}
-			if ((interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
-			try{
-			var method = interp.variables.get(func_name);
+	public function revealToInterp(value:Dynamic,name:String,id:String){
+		if ((interps[id] == null )) {return;}
+		interps[id].variables.set(name,value); 
+
+	}
+	public function getFromInterp(name:String,id:String,?remove:Bool = false,?defVal:Dynamic = null):Dynamic{
+		if ((interps[id] == null )) {return defVal;}
+		var e = interps[id].variables.get(name); 
+		if(remove) interps[id].variables.set(name,null);
+		return e;
+	}
+
+	public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String){
+		try{
+			if ((interps[id] == null || !interps[id].variables.exists(func_name) )) {return;}
+			var method = interps[id].variables.get(func_name);
 			switch (args.length)
 			{
 				case 0:
@@ -300,10 +305,32 @@ class PlayState extends MusicBeatState
 				case 2:
 					method(this,args[0], args[1]);
 			}
-			}catch(e:hscript.Expr.Error){handleError('${func_name}:${e.line} for ${SONG.song}:\n ${e.toString()}');}
+		}catch(e:hscript.Expr.Error){handleError('${func_name}:${e.line} for ${id}:\n ${e.toString()}');}
+	}
+
+	public function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
+			if(func_name == "noteHitDad"){
+				charCall("noteHitSelf",[args[1]],1);
+				charCall("noteHitOpponent",[args[1]],0);
+			}
+			if(func_name == "noteHit"){
+				charCall("noteHitSelf",[args[1]],0);
+				charCall("noteHitOpponent",[args[1]],1);
+			}
+			if (id == "") {
+				for (name => interp in interps) {
+					callSingleInterp(func_name,args,name);
+				}
+			}else callSingleInterp(func_name,args,id);
+
 		}
-	function parseHScript(){
-		if (songScript == "" || !QuickOptionsSubState.getSetting("Song hscripts")) {interp = null;return;}
+	inline function resetInterps() interps = new Map();
+	function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song"){
+		var songScript = songScript;
+		var hsBrTools = hsBrTools;
+		if (script != "") songScript = script;
+		if (brTools != null) hsBrTools = brTools;
+		if (songScript == "" || !QuickOptionsSubState.getSetting("Song hscripts")) {resetInterps();return;}
 		var interp = HscriptUtils.createSimpleInterp();
 		var parser = new hscript.Parser();
 		try{
@@ -320,10 +347,10 @@ class PlayState extends MusicBeatState
 			interp.variables.set("charSet",charSet);
 			interp.variables.set("charAnim",charAnim); 
 			interp.execute(program);
-			this.interp = interp;
-			callInterp("initScript",[]);
+			interps[id] = interp;
+			callSingleInterp("initScript",[],id);
 		}catch(e){
-			handleError('Error parsing song hscript, Line:${parser.line};\n Error:${e.message}');
+			handleError('Error parsing ${id} hscript, Line:${parser.line};\n Error:${e.message}');
 			// interp = null;
 		}
 		trace("Loaded script!");
@@ -355,7 +382,7 @@ class PlayState extends MusicBeatState
 		strumLineNotes = null;
 		playerStrums = null;
 		cpuStrums = null;
-		// if (PlayState.songScript == "" && SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()] != null) songScript = SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()];
+		if (PlayState.songScript == "" && SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()] != null) songScript = SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()];
 		if (FlxG.save.data.fpsCap > 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(800);
 		
@@ -773,53 +800,71 @@ class PlayState extends MusicBeatState
 							curStage = SONG.stage;
 							stageTags = [];
 							var stagePath:String = 'mods/stages/$stage';
-							var stagePropJson:String = File.getContent('$stagePath/config.json');
-							var stageProperties:StageJSON = haxe.Json.parse(CoolUtil.cleanJSON(stagePropJson));
-							if (stageProperties == null || stageProperties.layers == null || stageProperties.layers[0] == null){MainMenuState.handleError('$stage\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
-							defaultCamZoom = stageProperties.camzoom;
-							for (layer in stageProperties.layers) {
-								if(layer.song != null && layer.song != "" && layer.song.toLowerCase() != SONG.song.toLowerCase()){continue;}
-								var curLayer:FlxSprite = new FlxSprite(0,0);
-								if(layer.animated){
-									var xml:String = File.getContent('$stagePath/${layer.name}.xml');
-									if (xml == null || xml == "")MainMenuState.handleError('$stage\'s XML is invalid!');
-									curLayer.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('$stagePath/${layer.name}.png')), xml);
-									curLayer.animation.addByPrefix(layer.animation_name,layer.animation_name,layer.fps,false);
-									curLayer.animation.play(layer.animation_name);
-								}else{
-									var png:BitmapData = BitmapData.fromFile('$stagePath/${layer.name}.png');
-									if (png == null) MainMenuState.handleError('$stage\'s PNG is invalid!');
-									curLayer.loadGraphic(png);
-								}
+							if (FileSystem.exists('$stagePath/config.json')){
+								var stagePropJson:String = File.getContent('$stagePath/config.json');
+								var stageProperties:StageJSON = haxe.Json.parse(CoolUtil.cleanJSON(stagePropJson));
+								if (stageProperties == null || stageProperties.layers == null || stageProperties.layers[0] == null){MainMenuState.handleError('$stage\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
+								defaultCamZoom = stageProperties.camzoom;
+								for (layer in stageProperties.layers) {
+									if(layer.song != null && layer.song != "" && layer.song.toLowerCase() != SONG.song.toLowerCase()){continue;}
+									var curLayer:FlxSprite = new FlxSprite(0,0);
+									if(layer.animated){
+										var xml:String = File.getContent('$stagePath/${layer.name}.xml');
+										if (xml == null || xml == "")MainMenuState.handleError('$stage\'s XML is invalid!');
+										curLayer.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('$stagePath/${layer.name}.png')), xml);
+										curLayer.animation.addByPrefix(layer.animation_name,layer.animation_name,layer.fps,false);
+										curLayer.animation.play(layer.animation_name);
+									}else{
+										var png:BitmapData = BitmapData.fromFile('$stagePath/${layer.name}.png');
+										if (png == null) MainMenuState.handleError('$stage\'s PNG is invalid!');
+										curLayer.loadGraphic(png);
+									}
 
-								if (layer.centered) curLayer.screenCenter();
-								if (layer.flip_x) curLayer.flipX = true;
-								curLayer.setGraphicSize(Std.int(curLayer.width * layer.scale));
-								curLayer.updateHitbox();
-								curLayer.x += layer.pos[0];
-								curLayer.y += layer.pos[1];
-								curLayer.antialiasing = layer.antialiasing;
-								curLayer.alpha = layer.alpha;
-								curLayer.active = false;
-								curLayer.scrollFactor.set(layer.scroll_factor[0],layer.scroll_factor[1]);
-								add(curLayer);
+									if (layer.centered) curLayer.screenCenter();
+									if (layer.flip_x) curLayer.flipX = true;
+									curLayer.setGraphicSize(Std.int(curLayer.width * layer.scale));
+									curLayer.updateHitbox();
+									curLayer.x += layer.pos[0];
+									curLayer.y += layer.pos[1];
+									curLayer.antialiasing = layer.antialiasing;
+									curLayer.alpha = layer.alpha;
+									curLayer.active = false;
+									curLayer.scrollFactor.set(layer.scroll_factor[0],layer.scroll_factor[1]);
+									add(curLayer);
+								}
+								if (stageProperties.no_gf) noGf = true; // This doesn't have to be provided, doing it this way
+								bfPos = stageProperties.bf_pos;
+								dadPos = stageProperties.dad_pos;
+								gfPos = stageProperties.gf_pos;
+								stageTags = stageProperties.tags;
 							}
-							if (stageProperties.no_gf) noGf = true; // This doesn't have to be provided, doing it this way
-							bfPos = stageProperties.bf_pos;
-							dadPos = stageProperties.dad_pos;
-							gfPos = stageProperties.gf_pos;
-							stageTags = stageProperties.tags;
+							if (FileSystem.exists('$stagePath/script.hscript')){
+								parseHScript(File.getContent('$stagePath/script.hscript'),new HSBrTools(stagePath),"stage");
+							}
 						}
 					}
 				}
 		}
+
+		// if (getFromInterp("afterStage","stage") != null){
+			// revealToInterp(bfPos,"bfPos","stage");
+			// revealToInterp(gfPos,"gfPos","stage");
+			// revealToInterp(dadPos,"bfPos","stage");
+		callInterp("afterStage",[]);
+			// bfPos = getFromInterp("bfPos","stage",true,bfPos);
+			// gfPos = getFromInterp("gfPos","stage",true,gfPos);
+			// dadPos = getFromInterp("bfPos","stage",true,dadPos);
+
+		// }
+
 		if (stateType == 0 || stateType == 1){
-	    PlayState.SONG.player1 = FlxG.save.data.playerChar;
-	    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
-	    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
-	    }else{
-	    	PlayState.SONG.player2 = FlxG.save.data.opponent;
-	    }}
+		    PlayState.SONG.player1 = FlxG.save.data.playerChar;
+		    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
+		    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
+		    }else{
+		    	PlayState.SONG.player2 = FlxG.save.data.opponent;
+	    	}
+		}
 		if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
 			var pl:Array<String> = [SONG.player1,SONG.player2];
 			SONG.player1 = pl[1];
@@ -1608,22 +1653,22 @@ class PlayState extends MusicBeatState
 				case 0:
 					babyArrow.x += Note.swagWidth * 0;
 					babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-					babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+					babyArrow.animation.addByPrefix('pressed', 'left press', 24, true);
 					babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
 				case 1:
 					babyArrow.x += Note.swagWidth * 1 ;
 					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-					babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+					babyArrow.animation.addByPrefix('pressed', 'down press', 24, true);
 					babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
 				case 2:
 					babyArrow.x += Note.swagWidth * 2;
 					babyArrow.animation.addByPrefix('static', 'arrowUP');
-					babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+					babyArrow.animation.addByPrefix('pressed', 'up press', 24, true);
 					babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
 				case 3:
 					babyArrow.x += Note.swagWidth * 3 + 4;
 					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+					babyArrow.animation.addByPrefix('pressed', 'right press', 24, true);
 					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
 			}
 
@@ -1790,6 +1835,8 @@ class PlayState extends MusicBeatState
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 		}
 
+		PlayState.canUseAlts = (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim);
+
 		super.update(elapsed);
 		callInterp("update",[elapsed]);
 
@@ -1877,103 +1924,88 @@ class PlayState extends MusicBeatState
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
 			// Make sure Girlfriend cheers only for certain songs
-			if(allowedToHeadbang)
-			{
-				// Don't animate GF if something else is already animating her (eg. train passing)
-				if(gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight' || gf.animation.curAnim.name == 'idle')
-				{
-					// Per song treatment since some songs will only have the 'Hey' at certain times
-					switch(curSong)
-					{
-						case 'Philly':
-						{
-							// General duration of the song
-							if(curBeat < 250)
-							{
-								// Beats to skip or to stop GF from cheering
-								if(curBeat != 184 && curBeat != 216)
-								{
-									if(curBeat % 16 == 8)
-									{
-										// Just a garantee that it'll trigger just once
-										if(!triggeredAlready)
-										{
-											gf.playAnim('cheer');
-											triggeredAlready = true;
-										}
-									}else triggeredAlready = false;
-								}
-							}
-						}
-						case 'Bopeebo':
-						{
-							// Where it starts || where it ends
-							if(curBeat > 5 && curBeat < 130)
-							{
-								if(curBeat % 8 == 7)
-								{
-									if(!triggeredAlready)
-									{
-										gf.playAnim('cheer');
-										triggeredAlready = true;
-									}
-								}else triggeredAlready = false;
-							}
-						}
-						case 'Blammed':
-						{
-							if(curBeat > 30 && curBeat < 190)
-							{
-								if(curBeat < 90 || curBeat > 128)
-								{
-									if(curBeat % 4 == 2)
-									{
-										if(!triggeredAlready)
-										{
-											gf.playAnim('cheer');
-											triggeredAlready = true;
-										}
-									}else triggeredAlready = false;
-								}
-							}
-						}
-						case 'Cocoa':
-						{
-							if(curBeat < 170)
-							{
-								if(curBeat < 65 || curBeat > 130 && curBeat < 145)
-								{
-									if(curBeat % 16 == 15)
-									{
-										if(!triggeredAlready)
-										{
-											gf.playAnim('cheer');
-											triggeredAlready = true;
-										}
-									}else triggeredAlready = false;
-								}
-							}
-						}
-						case 'Eggnog':
-						{
-							if(curBeat > 10 && curBeat != 111 && curBeat < 220)
-							{
-								if(curBeat % 8 == 7)
-								{
-									if(!triggeredAlready)
-									{
-										gf.playAnim('cheer');
-										triggeredAlready = true;
-									}
-								}else triggeredAlready = false;
-							}
-						}
-					}
-				}
-			}
+			// if(allowedToHeadbang)
+			// {
+			// 	// Don't animate GF if something else is already animating her (eg. train passing)
+			// 	if(gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight' || gf.animation.curAnim.name == 'idle')
+			// 	{
+			// 		// Per song treatment since some songs will only have the 'Hey' at certain times
+			// 		switch(curSong)
+			// 		{
+			// 			case 'Philly':
+			// 			{
+			// 				// General duration of the song
+
+			// 			}
+			// 			case 'Bopeebo':
+			// 			{
+			// 				// Where it starts || where it ends
+			// 				if(curBeat > 5 && curBeat < 130)
+			// 				{
+			// 					if(curBeat % 8 == 7)
+			// 					{
+			// 						if(!triggeredAlready)
+			// 						{
+			// 							gf.playAnim('cheer');
+			// 							triggeredAlready = true;
+			// 						}
+			// 					}else triggeredAlready = false;
+			// 				}
+			// 			}
+			// 			case 'Blammed':
+			// 			{
+			// 				if(curBeat > 30 && curBeat < 190)
+			// 				{
+			// 					if(curBeat < 90 || curBeat > 128)
+			// 					{
+			// 						if(curBeat % 4 == 2)
+			// 						{
+			// 							if(!triggeredAlready)
+			// 							{
+			// 								gf.playAnim('cheer');
+			// 								triggeredAlready = true;
+			// 							}
+			// 						}else triggeredAlready = false;
+			// 					}
+			// 				}
+			// 			}
+			// 			case 'Cocoa':
+			// 			{
+			// 				if(curBeat < 170)
+			// 				{
+			// 					if(curBeat < 65 || curBeat > 130 && curBeat < 145)
+			// 					{
+			// 						if(curBeat % 16 == 15)
+			// 						{
+			// 							if(!triggeredAlready)
+			// 							{
+			// 								gf.playAnim('cheer');
+			// 								triggeredAlready = true;
+			// 							}
+			// 						}else triggeredAlready = false;
+			// 					}
+			// 				}
+			// 			}
+			// 			case 'Eggnog':
+			// 			{
+			// 				if(curBeat > 10 && curBeat != 111 && curBeat < 220)
+			// 				{
+			// 					if(curBeat % 8 == 7)
+			// 					{
+			// 						if(!triggeredAlready)
+			// 						{
+			// 							gf.playAnim('cheer');
+			// 							triggeredAlready = true;
+			// 						}
+			// 					}else triggeredAlready = false;
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// }
 			
 
-			PlayState.canUseAlts = (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim);
+			
 			if (FlxG.save.data.camMovement){
 				if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 				{followChar(1);}
@@ -3783,17 +3815,19 @@ class PlayState extends MusicBeatState
 		}
 
 
-		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
+
+
+		stageShit();
+
+		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
 		{
-			boyfriend.playAnim('hey', true);
-		}
-
-		if (curBeat % 16 == 15 && SONG.song == 'Tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
-			{
-				boyfriend.playAnim('hey', true);
-				dad.playAnim('cheer', true);
+			if(FlxG.save.data.distractions){
+				lightningStrikeShit();
 			}
+		}
+	}
 
+	inline function stageShit(){
 		switch (curStage)
 		{
 			case 'school':
@@ -3845,13 +3879,6 @@ class PlayState extends MusicBeatState
 						trainStart();
 					}
 				}
-		}
-
-		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
-		{
-			if(FlxG.save.data.distractions){
-				lightningStrikeShit();
-			}
 		}
 	}
 	public function testanimdebug(){

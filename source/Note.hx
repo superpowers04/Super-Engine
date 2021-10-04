@@ -36,6 +36,7 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var GREEN_NOTE:Int = 2;
 	public static var RED_NOTE:Int = 3;
+	public static var noteNames:Array<String> = ["purple","blue","green",'red'];
 	public var skipNote:Bool = true;
 	var showNote = true;
 
@@ -73,16 +74,16 @@ class Note extends FlxSprite
 		this.noteData = _noteData % 4;
 		if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteCreate",[this,rawNote]);
 
-		var daStage:String = PlayState.curStage;
 
 		//defaults if no noteStyle was found in chart
-		var noteTypeCheck:String = 'normal';
 		if (frames == null){
 			try{
 				if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
-			}catch(e){trace("Couldn't load bad arrow texture, recoloring arrows instead!");}
-			if(frames == null && shouldntBeHit) {color = 0x220011;}
-			if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+			}catch(e){trace("Couldn't load bad arrow sprites, recoloring arrows instead!");}
+			try{
+				if(frames == null && shouldntBeHit) {color = 0x220011;}
+				if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+			}catch(e) throw("Unable to load arrow sprites!")
 		}
 
 		animation.addByPrefix('greenScroll', 'green0');
@@ -103,22 +104,12 @@ class Note extends FlxSprite
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
 		antialiasing = true;
+		var noteName = noteNames[noteData];
 
-		switch (noteData)
-		{
-			case 0:
-				x += swagWidth * 0;
-				animation.play('purpleScroll');
-			case 1:
-				x += swagWidth * 1;
-				animation.play('blueScroll');
-			case 2:
-				x += swagWidth * 2;
-				animation.play('greenScroll');
-			case 3:
-				x += swagWidth * 3 + 4;
-				animation.play('redScroll');
-		}
+
+
+		animation.play(noteName + "Scroll");
+		x+= swagWidth * noteData;
 
 		// trace(prevNote);
 
@@ -132,38 +123,25 @@ class Note extends FlxSprite
 		{
 			noteScore * 0.2;
 			alpha = 0.6;
+			
+			animation.play(noteName + "holdend");
 
 			x += width / 2;
 
-			switch (noteData)
-			{
-				case 2:
-					animation.play('greenholdend');
-				case 3:
-					animation.play('redholdend');
-				case 1:
-					animation.play('blueholdend');
-				case 0:
-					animation.play('purpleholdend');
-			}
 			isSustainNoteEnd = true;
 			updateHitbox();
 
 			x -= width / 2;
 
+			if(FlxG.save.data.scrollSpeed != 1)
+				scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;
+			else
+				scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+
 			if (prevNote.isSustainNote)
 			{
-				switch (prevNote.noteData)
-				{
-					case 0:
-						prevNote.animation.play('purplehold');
-					case 1:
-						prevNote.animation.play('bluehold');
-					case 2:
-						prevNote.animation.play('greenhold');
-					case 3:
-						prevNote.animation.play('redhold');
-				}
+				animation.play(noteName + "hold");
+
 				prevNote.isSustainNoteEnd = false;
 
 				if(FlxG.save.data.scrollSpeed != 1)

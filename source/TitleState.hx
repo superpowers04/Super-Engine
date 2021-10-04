@@ -129,7 +129,7 @@ class TitleState extends MusicBeatState
 		{
 		  for (directory in FileSystem.readDirectory(dataDir))
 		  {
-			if (FileSystem.exists(Sys.getCwd() + "mods/stages/"+directory+"/config.json"))
+			if (FileSystem.exists(Sys.getCwd() + "mods/stages/"+directory+"/config.json") || FileSystem.exists(Sys.getCwd() + "mods/stages/"+directory+"/script.hscript"))
 			{
 				customStages.push(directory);
 

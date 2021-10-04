@@ -1,4 +1,5 @@
-0.5.3;
+0.6.0;
+- Stages can now use HScripts, configs are still available but elements from them cannot be used in scripts
 - Unhook the game from the framerate
 - Some small fixes
 - Several enhancements to hscript capabilities

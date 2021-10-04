@@ -72,7 +72,11 @@ class HscriptUtils {
 		interp.variables.set("BRcolor", HscriptColor);
 		interp.variables.set("Reflect", Reflect);
         interp.variables.set("Character", Character);
-		interp.variables.set("PlayState", PlayState);
+        interp.variables.set("PlayState", PlayState);
+        interp.variables.set("Note", Note);
+        interp.variables.set("EmptyCharacter", EmptyCharacter);
+        interp.variables.set("HealthIcon", HealthIcon);
+		interp.variables.set("Alphabet", Alphabet);
 		
 		#if debug
 		interp.variables.set("debug", true);
