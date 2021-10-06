@@ -38,6 +38,8 @@ class Note extends FlxSprite
 	public static var RED_NOTE:Int = 3;
 	public static var noteNames:Array<String> = ["purple","blue","green",'red'];
 	public var skipNote:Bool = true;
+	public var childNotes:Array<Note> = [];
+	public var parentNote:Note = null;
 	var showNote = true;
 
 	public var rating:String = "shit";
@@ -134,8 +136,14 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				animation.play(noteName + "hold");
-
+				prevNote.animation.play(noteName + "hold");
+				if (prevNote.parentNote != null){
+					prevNote.parentNote.childNotes.push(this);
+					this.parentNote = prevNote.parentNote;
+				}else{
+					prevNote.childNotes.push(this);
+					this.parentNote = prevNote;
+				}
 				prevNote.isSustainNoteEnd = false;
 
 				if(FlxG.save.data.scrollSpeed != 1)
@@ -146,6 +154,7 @@ class Note extends FlxSprite
 				// prevNote.setGraphicSize();
 			}
 		}
+		if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteAdd",[this,rawNote]);
 		visible = false;
 	}catch(e){MainMenuState.handleError('Caught "Note create" crash: ${e.message}');}}
 

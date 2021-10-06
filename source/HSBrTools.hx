@@ -17,9 +17,10 @@ using StringTools;
 
 class HSBrTools {
 	var path:String;
-    var spriteArray:Map<String,FlxGraphic> = [];
-	var xmlArray:Map<String,String> = [];
-    var soundArray:Map<String,Sound> = [];
+    public var spriteArray:Map<String,FlxGraphic> = [];
+    public var xmlArray:Map<String,String> = [];
+	public var textArray:Map<String,String> = [];
+    public var soundArray:Map<String,Sound> = [];
 	public function new(_path:String){
         path = _path;
         if (!path.endsWith('/')) path = path + "/";
@@ -32,6 +33,11 @@ class HSBrTools {
         if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
         return new FlxSprite(x, y).loadGraphic(spriteArray[pngPath]);
     }
+    public function loadGraphic(pngPath:String):FlxGraphic{
+        if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
+        return spriteArray[pngPath];
+    }
+
     public function loadSparrowFrames(pngPath:String):FlxAtlasFrames{
         if(spriteArray[pngPath + ".png"] == null) spriteArray[pngPath + ".png"] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}.png'));
         if(xmlArray[pngPath + ".xml"] == null) xmlArray[pngPath + ".xml"] = File.getContent('${path}${pngPath}.xml');
@@ -51,14 +57,33 @@ class HSBrTools {
 
         return spr;
 	}
-    // public function loadSound(?x:Int=0,?y:Int=0,path:String):Sound{
-    //     if(soundArray[path] == null) soundArray[path] = BitmapData.fromFile('${path}${pngName}'));
-    //     return new FlxSprite(x, y).loadGraphic(spriteArray[path]);
-    // }
+
+
+    public function loadText(textPath:String):String{
+        if(textArray[textPath] == null) xmlArray[textPath] = File.getContent('${path}${textPath}');
+        return textArray[textPath];
+    }
+
+
+
     public function playSound(soundPath:String,?volume:Float = 1):FlxSound{
         if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
         return FlxG.sound.play(soundArray[soundPath],volume);
     }
+
+    public function unloadSound(soundPath:String){
+        soundArray[soundPath] = null;
+    }
+    public function unloadText(pngPath:String){
+        textArray[pngPath] = null;
+    }
+    public function unloadXml(pngPath:String){
+        textArray[pngPath] = null;
+    }
+    public function unloadSprite(pngPath:String){
+        spriteArray[pngPath] = null;
+    }
+
     public function cacheSound(soundPath:String){
         if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
     }

@@ -56,6 +56,7 @@ class Character extends FlxSprite
 	public var oneShotAnims:Array<String> = ["hey"];
 	public var tintedAnims:Array<String> = [];
 	public var loopAnimFrames:Map<String,Int> = [];
+	public var loopAnimTo:Map<String,String> = [];
 	public var flip:Bool = true;
 	public var tex:FlxAtlasFrames = null;
 	public var holdTimer:Float = 0;
@@ -104,15 +105,16 @@ class Character extends FlxSprite
 		var parser = new hscript.Parser();
 		var program:Expr;
 		try{
-		program = parser.parseString(scriptContents);
-		
-		interp.variables.set("hscriptPath", 'mods/characters/$curCharacter');
-		interp.variables.set("charName", curCharacter);
-		interp.variables.set("charProperties", charProperties);
-		interp.variables.set("PlayState", PlayState );
-		interp.variables.set("BRtools",new HSBrTools('mods/characters/$curCharacter/'));
-		interp.execute(program);
-		this.interp = interp;
+			parser.allowTypes = parser.allowJSON = true;
+			program = parser.parseString(scriptContents);
+			
+			interp.variables.set("hscriptPath", 'mods/characters/$curCharacter');
+			interp.variables.set("charName", curCharacter);
+			interp.variables.set("charProperties", charProperties);
+			interp.variables.set("PlayState", PlayState );
+			interp.variables.set("BRtools",new HSBrTools('mods/characters/$curCharacter/'));
+			interp.execute(program);
+			this.interp = interp;
 		}catch(e){
 			handleError('Error parsing char ${curCharacter} hscript, Line:${parser.line}; Error:${e.message}');
 			
@@ -442,6 +444,7 @@ class Character extends FlxSprite
 				anima.loop = false; // Looping when oneshot is a terrible idea
 			}
 			if(anima.loopStart != null && anima.loopStart != 0 )loopAnimFrames[anima.anim] = anima.loopStart;
+			if(anima.playAfter != null && anima.playAfter != '' )loopAnimTo[anima.anim] = anima.playAfter;
 
 			if (anima.indices.length > 0) { // Add using indices if specified
 				addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
@@ -938,6 +941,7 @@ class Character extends FlxSprite
 	{	try{
 
 		if(!amPreview){
+			if(animation.curAnim.finished && loopAnimTo[animation.curAnim.name] != null) playAnim(loopAnimTo[animation.curAnim.name]);
 			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
 			{
 				playAnim('idle', true, false, 10);

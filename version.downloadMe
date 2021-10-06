@@ -1,5 +1,7 @@
 0.6.0;
 - Stages can now use HScripts, configs are still available but elements from them cannot be used in scripts
+- Hscript errors now have a seperate error screen instead of booting you to the menu, allowing you to reload the character/song without having to restart the game
 - Unhook the game from the framerate
 - Some small fixes
+- Clean up note handling
 - Several enhancements to hscript capabilities

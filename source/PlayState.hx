@@ -270,15 +270,21 @@ class PlayState extends MusicBeatState
 	var interps:Map<String,Interp> = new Map();
 
 	public function handleError(error:String){
-		resetInterps();
-		if(!startedCountdown){
-			errorMsg = error;
-			return;
-		}
-		generatedMusic = false;
-		openSubState(new FinishSubState(0,0,error));
-	}
+		try{
 
+			resetInterps();
+			if(!startedCountdown){
+				errorMsg = error;
+				return;
+			}
+			generatedMusic = false;
+			persistentUpdate = false;
+			persistentDraw = false;
+			openSubState(new FinishSubState(0,0,error));
+		}catch(e){
+			MainMenuState.handleError(error);
+		}
+	}
 	public function revealToInterp(value:Dynamic,name:String,id:String){
 		if ((interps[id] == null )) {return;}
 		interps[id].variables.set(name,value); 
@@ -293,8 +299,10 @@ class PlayState extends MusicBeatState
 
 	public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String){
 		try{
-			if ((interps[id] == null || !interps[id].variables.exists(func_name) )) {return;}
+			if (interps[id] == null) {trace('No Interp ${id}!');return;}
+			if (!interps[id].variables.exists(func_name)) {return;}
 			var method = interps[id].variables.get(func_name);
+
 			switch (args.length)
 			{
 				case 0:
@@ -303,6 +311,12 @@ class PlayState extends MusicBeatState
 					method(this,args[0]);
 				case 2:
 					method(this,args[0], args[1]);
+				case 3:
+					method(this,args[0], args[1], args[2]);
+				case 4:
+					method(this,args[0], args[1], args[2], args[3]);
+				case 5:
+					method(this,args[0], args[1], args[2], args[3], args[4]);
 			}
 		}catch(e:hscript.Expr.Error){handleError('${func_name}:${e.line} for ${id}:\n ${e.toString()}');}
 	}
@@ -317,7 +331,7 @@ class PlayState extends MusicBeatState
 				charCall("noteHitOpponent",[args[1]],1);
 			}
 			if (id == "") {
-				for (name => interp in interps) {
+				for (name in interps.keys()) {
 					callSingleInterp(func_name,args,name);
 				}
 			}else callSingleInterp(func_name,args,id);
@@ -325,14 +339,17 @@ class PlayState extends MusicBeatState
 		}
 	inline function resetInterps() interps = new Map();
 	function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song"){
+		if (!QuickOptionsSubState.getSetting("Song hscripts")) {resetInterps();return;}
 		var songScript = songScript;
 		var hsBrTools = hsBrTools;
 		if (script != "") songScript = script;
 		if (brTools != null) hsBrTools = brTools;
-		if (songScript == "" || !QuickOptionsSubState.getSetting("Song hscripts")) {resetInterps();return;}
+		if (songScript == "") {return;}
 		var interp = HscriptUtils.createSimpleInterp();
 		var parser = new hscript.Parser();
 		try{
+			parser.allowTypes = parser.allowJSON = true;
+
 			var program:Expr;
 			program = parser.parseString(songScript);
 
@@ -352,7 +369,7 @@ class PlayState extends MusicBeatState
 			handleError('Error parsing ${id} hscript, Line:${parser.line};\n Error:${e.message}');
 			// interp = null;
 		}
-		trace("Loaded script!");
+		trace('Loaded ${id} script!');
 	}
 	static function charGet(charId:Int,field:String):Dynamic{
 		return Reflect.field(switch(charId){
@@ -845,16 +862,8 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (getFromInterp("afterStage","stage") != null){
-			revealToInterp(bfPos,"bfPos","stage");
-			revealToInterp(gfPos,"gfPos","stage");
-			revealToInterp(dadPos,"bfPos","stage");
-			callInterp("afterStage",[]);
-			bfPos = getFromInterp("bfPos","stage",true,bfPos);
-			gfPos = getFromInterp("gfPos","stage",true,gfPos);
-			dadPos = getFromInterp("bfPos","stage",true,dadPos);
 
-		}
+		callInterp("afterStage",[]);
 
 		if (stateType == 0 || stateType == 1){
 		    PlayState.SONG.player1 = FlxG.save.data.playerChar;
@@ -962,7 +971,7 @@ class PlayState extends MusicBeatState
 			add(limo);
 
 
-		parseHScript();
+		parseHScript(null,null,"song");
 
 		charCall("addGF",[],-1);
 		callInterp("addGF",[]);
@@ -1638,7 +1647,7 @@ class PlayState extends MusicBeatState
 			// switch (SONG.noteStyle)
 			// {
 			// 	case 'normal':
-			charCall("strumNoteLoad",[player],if (player == 1) 0 else 1);
+			charCall("strumNoteLoad",[babyArrow,player],if (player == 1) 0 else 1);
 			callInterp("strumNoteLoad",[babyArrow,player == 1]);
 			babyArrow.frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 			babyArrow.animation.addByPrefix('green', 'arrowUP');
@@ -1708,7 +1717,7 @@ class PlayState extends MusicBeatState
 			});
 
 			strumLineNotes.add(babyArrow);
-			charCall("strumNoteAdd",[player],if (player == 1) 0 else 1);
+			charCall("strumNoteAdd",[babyArrow,player],if (player == 1) 0 else 1);
 			callInterp("strumNoteAdd",[babyArrow,player == 1]);
 		}
 	}
@@ -2018,7 +2027,7 @@ class PlayState extends MusicBeatState
 				camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 				
 			}else{
-				FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
+				FlxG.camera.zoom = defaultCamZoom;
 				camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 				// FlxG.camera.zoom = 0.95;
 				// camHUD.zoom = 1;
@@ -2136,14 +2145,14 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		if (!loadRep)
-			rep.SaveReplay(saveNotes);
-		else
-		{
-			FlxG.save.data.botplay = false;
-			FlxG.save.data.scrollSpeed = 1;
-			FlxG.save.data.downscroll = false;
-		}
+		// if (!loadRep)
+		// 	rep.SaveReplay(saveNotes);
+		// else
+		// {
+		// 	FlxG.save.data.botplay = false;
+		// 	FlxG.save.data.scrollSpeed = 1;
+		// 	FlxG.save.data.downscroll = false;
+		// }
 
 		if (FlxG.save.data.fpsCap > 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
@@ -2878,7 +2887,7 @@ class PlayState extends MusicBeatState
 									noteMiss(shit, null);
 						}
 
-					if(dontCheck && possibleNotes.length > 0 && FlxG.save.data.ghost && !FlxG.save.data.botplay)
+					if(dontCheck && possibleNotes.length > 0 && FlxG.save.data.ghost)
 					{
 						if (mashViolations > 8)
 						{
@@ -2892,33 +2901,9 @@ class PlayState extends MusicBeatState
 
 				}
 				
-				notes.forEachAlive(function(daNote:Note)
-				{
-					if (daNote.skipNote) return;
-					if(FlxG.save.data.downscroll && daNote.y > strumLine.y ||
-					!FlxG.save.data.downscroll && daNote.y < strumLine.y)
-					{
-						// Force good note hit regardless if it's too late to hit it or not as a fail safe
-						if(FlxG.save.data.botplay && daNote.canBeHit && daNote.mustPress ||
-						FlxG.save.data.botplay && daNote.tooLate && daNote.mustPress)
-						{
-							if(loadRep)
-							{
-								//trace('ReplayNote ' + tmpRepNote.strumtime + ' | ' + tmpRepNote.direction);
-								if(rep.replay.songNotes.contains(HelperFunctions.truncateFloat(daNote.strumTime, 2)))
-								{
-									goodNoteHit(daNote);
-									boyfriend.holdTimer = daNote.sustainLength;
-								}
-							}else {
-								goodNoteHit(daNote);
-								boyfriend.holdTimer = daNote.sustainLength;
-							}
-						}
-					}
-				});
+
 				
-				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true) || FlxG.save.data.botplay))
+				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true)))
 				{
 					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
 						boyfriend.playAnim('idle');
@@ -3337,33 +3322,9 @@ class PlayState extends MusicBeatState
 
 
 				}
-				notes.forEachAlive(function(daNote:Note)
-				{
-					if (daNote.skipNote) return;
-					if(FlxG.save.data.downscroll && daNote.y > strumLine.y ||
-					!FlxG.save.data.downscroll && daNote.y < strumLine.y)
-					{
-						// Force good note hit regardless if it's too late to hit it or not as a fail safe
-						if(FlxG.save.data.botplay && daNote.canBeHit && daNote.mustPress ||
-						FlxG.save.data.botplay && daNote.tooLate && daNote.mustPress)
-						{
-							if(loadRep)
-							{
-								//trace('ReplayNote ' + tmpRepNote.strumtime + ' | ' + tmpRepNote.direction);
-								if(rep.replay.songNotes.contains(HelperFunctions.truncateFloat(daNote.strumTime, 2)))
-								{
-									goodNoteHit(daNote);
-									boyfriend.holdTimer = daNote.sustainLength;
-								}
-							}else {
-								goodNoteHit(daNote);
-								boyfriend.holdTimer = daNote.sustainLength;
-							}
-						}
-					}
-				});
+
 				
-				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true) || FlxG.save.data.botplay))
+				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true)))
 				{
 					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
 						boyfriend.playAnim('idle');
@@ -3668,6 +3629,9 @@ class PlayState extends MusicBeatState
 	}
 
 	var danced:Bool = false;
+
+
+
 
 	override function stepHit()
 	{

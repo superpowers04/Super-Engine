@@ -39,7 +39,7 @@ class FinishSubState extends MusicBeatSubstate
 			won = false;
 		}
 		this.week = week;
-		if(!isError) FlxG.state.persistentUpdate = true;
+		if(!isError) FlxG.state.persistentUpdate = true; else FlxG.state.persistentUpdate = false;
 		win = won;
 		FlxG.sound.pause();
 		PlayState.instance.generatedMusic = false;
@@ -236,7 +236,11 @@ class FinishSubState extends MusicBeatSubstate
 		ready = false;
 		FlxG.sound.music.stop();
 		FlxG.sound.play(Paths.music('gameOverEnd'));
-		FlxG.resetState();
+		if (isError){
+			FlxG.switchState(new PlayState());
+
+		}else
+			FlxG.resetState();
 	}
 	override function destroy()
 	{

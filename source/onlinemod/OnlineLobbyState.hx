@@ -193,8 +193,8 @@ class OnlineLobbyState extends MusicBeatState
       var args:Array<String> = command.split(' ');
       switch (args[1]){
         case "set":
-          if (args[3] == "true" || args[3] == "false"){ 
-            var bool = (args[3] == "true");
+          if (args[3] == "true" || args[3] == "on" || args[3] == "false" || args[3] == "off"){ 
+            var bool = (args[3] == "true" || args[3] == "on");
             switch(args[2]){
               case "invertnotes":
                 PlayState.invertedChart = bool;

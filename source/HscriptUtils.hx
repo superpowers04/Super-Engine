@@ -27,6 +27,10 @@ import hscript.Interp;
 import flixel.FlxG;
 import flash.media.Sound;
 import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.addons.effects.FlxTrail;
+import flixel.addons.effects.FlxTrailArea;
+import flixel.math.FlxPoint;
 
 
 class HscriptUtils {
@@ -52,13 +56,14 @@ class HscriptUtils {
     }
      public static function addVarsToInterp<T:Interp>(interp:T):T {
 		interp.variables.set("Conductor", Conductor);
-		interp.variables.set("FlxSprite", FlxSprite);
+        interp.variables.set("FlxSprite", FlxSprite);
 		interp.variables.set("FlxSound", FlxSound);
 		interp.variables.set("FlxGroup", flixel.group.FlxGroup);
 		interp.variables.set("FlxAngle", flixel.math.FlxAngle);
         interp.variables.set("FlxMath", flixel.math.FlxMath);
         interp.variables.set("FlxAnimation", flixel.animation.FlxAnimation);
-		interp.variables.set("FlxBaseAnimation", flixel.animation.FlxBaseAnimation);
+        interp.variables.set("FlxBaseAnimation", flixel.animation.FlxBaseAnimation);
+		interp.variables.set("FlxBackdrop", flixel.addons.display.FlxBackdrop);
 		interp.variables.set("TitleState", TitleState);
 		interp.variables.set("makeRangeArray", CoolUtil.numberArray);
 		// // : )
@@ -77,12 +82,19 @@ class HscriptUtils {
         interp.variables.set("EmptyCharacter", EmptyCharacter);
         interp.variables.set("HealthIcon", HealthIcon);
 		interp.variables.set("Alphabet", Alphabet);
+
+        interp.variables.set("FlxTypedGroup", FlxTypedGroup);
+        interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
+        interp.variables.set("FlxTrail", FlxTrail);
+        interp.variables.set("FlxTrailArea", FlxTrailArea);
+		interp.variables.set("FlxPoint", FlxPoint);
 		
 		#if debug
 		interp.variables.set("debug", true);
 		#else
 		interp.variables.set("debug", false);
 		#end
+        
         return interp;
     }
 }

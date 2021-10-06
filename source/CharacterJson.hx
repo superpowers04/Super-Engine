@@ -47,6 +47,7 @@ typedef CharJsonAnimation ={
 	var loop:Bool;
 	var indices:Array<Int>;
 	var ?loopStart:Null<Int>; // Tells the game where to restart the animation if looped
+	var ?playAfter:Null<String>; // Tells the game to swap animations, useful for a start animation and then a loop animation
 	var ?stage:Null<String>; // Set on specific stage
 	var ?song:Null<String>; // Set on specific songname
 	var ?char_side:Null<Int>; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
