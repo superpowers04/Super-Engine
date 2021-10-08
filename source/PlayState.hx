@@ -385,7 +385,14 @@ class PlayState extends MusicBeatState
 		var e = switch(charId){case 1: dad; case 2: gf; default: boyfriend;};
 		e.playAnim(animation);
 	}
-
+	function clearVariables(){
+		stepAnimEvents = [];
+		beatAnimEvents = [];
+		unspawnNotes = [];
+		strumLineNotes = null;
+		playerStrums = null;
+		cpuStrums = null;
+	}
 
 	override public function create()
 	{try{
@@ -393,11 +400,8 @@ class PlayState extends MusicBeatState
 		if (instance != null) instance.destroy();
 		setInputHandlers(); // Sets all of the handlers for input
 		instance = this;
-		stepAnimEvents = [];
-		beatAnimEvents = [];
-		strumLineNotes = null;
-		playerStrums = null;
-		cpuStrums = null;
+		clearVariables();
+
 		if (PlayState.songScript == "" && SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()] != null) songScript = SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()];
 		if (FlxG.save.data.fpsCap > 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(800);
@@ -1548,6 +1552,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.list.add(vocals);
 		if (notes == null) 
 			notes = new FlxTypedGroup<Note>();
+		
 		notes.clear();
 		add(notes);
 
@@ -2749,7 +2754,7 @@ class PlayState extends MusicBeatState
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 	
-					if ((daNote.mustPress && daNote.tooLate && !FlxG.save.data.downscroll || daNote.mustPress && daNote.tooLate && FlxG.save.data.downscroll) && daNote.mustPress)
+					if (daNote.mustPress && daNote.tooLate )
 					{
 							if (daNote.isSustainNote && daNote.wasGoodHit)
 							{
@@ -3109,12 +3114,12 @@ class PlayState extends MusicBeatState
 		
 	
 
+					if (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim) PlayState.canUseAlts = true;
 					if (dadShow && !daNote.mustPress && daNote.wasGoodHit )
 					{
 						if (SONG.song != 'Tutorial')
 							camZooming = true;
 						if (!p2canplay){
-							if (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim) PlayState.canUseAlts = true;
 							switch (Math.abs(daNote.noteData))
 							{
 								case 2:
@@ -3179,7 +3184,7 @@ class PlayState extends MusicBeatState
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 	
-					if ((daNote.mustPress && daNote.tooLate && !FlxG.save.data.downscroll || daNote.mustPress && daNote.tooLate && FlxG.save.data.downscroll) && daNote.mustPress)
+					if (daNote.mustPress && daNote.tooLate)
 					{
 							if (daNote.isSustainNote && daNote.wasGoodHit)
 							{
@@ -3237,28 +3242,30 @@ class PlayState extends MusicBeatState
 					boyfriend.holdTimer = 0;
 		 
 					var possibleNotes:Array<Note> = []; // notes that can be hit
-					var directionList:Array<Int> = []; // directions that can be hit
+					var directionList:Array<Bool> = [false,false,false,false]; // directions that can be hit
 					var dumbNotes:Array<Note> = []; // notes to kill later
 		 			var onScreenNote:Bool = false;
+		 			var looped = 0;
 
 					notes.forEachAlive(function(daNote:Note)
 					{
-						if (daNote.skipNote) return;
+						looped++;
+						if (daNote.skipNote || !daNote.mustPress) return;
 
-						if (!onScreenNote && daNote.mustPress) onScreenNote = true;
-						if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+						if (!onScreenNote) onScreenNote = true;
+						if (daNote.canBeHit && !daNote.tooLate && !daNote.wasGoodHit)
 						{
-							if (directionList.contains(daNote.noteData))
+							if (directionList[daNote.noteData])
 							{
 								for (coolNote in possibleNotes)
 								{
-									if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
-									{ // if it's the same note twice at < 10ms distance, just delete it
-										// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
-										dumbNotes.push(daNote);
-										break;
-									}
-									else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
+									// if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
+									// { // if it's the same note twice at < 10ms distance, just delete it
+									// 	// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
+									// 	dumbNotes.push(daNote);
+									// 	break;
+									// }
+									if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
 									{ // if daNote is earlier than existing note (coolNote), replace
 										possibleNotes.remove(coolNote);
 										possibleNotes.push(daNote);
@@ -3269,38 +3276,35 @@ class PlayState extends MusicBeatState
 							else
 							{
 								possibleNotes.push(daNote);
-								directionList.push(daNote.noteData);
+								directionList[daNote.noteData] = true;
 							}
 						}
 					});
+					// for (note in dumbNotes)
+					// {
+					// 	FlxG.log.add("killing dumb ass note at " + note.strumTime);
+					// 	note.kill();
+					// 	notes.remove(note, true);
+					// 	note.destroy();
+					// }
 		 
-					for (note in dumbNotes)
-					{
-						FlxG.log.add("killing dumb ass note at " + note.strumTime);
-						note.kill();
-						notes.remove(note, true);
-						note.destroy();
-					}
-		 
-					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+					// possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));  Should already be sorted
 		 
 					var dontCheck = false;
 
-					for (i in 0...pressArray.length)
+					for (i in 0...3)
 					{
-						if (pressArray[i] && !directionList.contains(i))
+						if (pressArray[i] && !directionList[i])
 							dontCheck = true;
 					}
-
-					if (perfectMode)
-						goodNoteHit(possibleNotes[0]);
-					else if (possibleNotes.length > 0 && !dontCheck)
+					
+					if (possibleNotes.length > 0 && !dontCheck)
 					{
 						if (!FlxG.save.data.ghost)
 						{
 							for (shit in 0...pressArray.length)
 								{ // if a direction is hit that shouldn't be
-									if (pressArray[shit] && !directionList.contains(shit))
+									if (pressArray[shit] && !directionList[shit])
 										noteMiss(shit, null);
 								}
 						}
@@ -3400,6 +3404,7 @@ class PlayState extends MusicBeatState
 					
 					note.wasGoodHit = true;
 					if (boyfriend.useVoices){boyfriend.voiceSounds[note.noteData].play(1);boyfriend.voiceSounds[note.noteData].time = 0;vocals.volume = 0;}else vocals.volume = 1;
+					note.skipNote = true;
 					note.kill();
 					notes.remove(note, true);
 					note.destroy();

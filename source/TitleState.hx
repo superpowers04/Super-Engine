@@ -57,8 +57,8 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
-	public static function loadNoteAssets(){
-		if (NoteAssets == null || NoteAssets.name != FlxG.save.data.noteAsset){
+	public static function loadNoteAssets(?forced:Bool = false){
+		if (NoteAssets == null || NoteAssets.name != FlxG.save.data.noteAsset || forced){
 			new NoteAssets(FlxG.save.data.noteAsset);
 		}
 	}

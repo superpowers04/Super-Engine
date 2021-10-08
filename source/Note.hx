@@ -45,6 +45,41 @@ class Note extends FlxSprite
 	public var rating:String = "shit";
 
 
+	function loadFrames(){
+		if (frames == null){
+			try{
+				if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
+			}catch(e){trace("Couldn't load bad arrow sprites, recoloring arrows instead!");}
+			try{
+				if(frames == null && shouldntBeHit) {color = 0x220011;}
+				if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+			}catch(e) {
+				try{
+					TitleState.loadNoteAssets(true);
+					if(shouldntBeHit) {color = 0x220011;}
+					frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+				}catch(e){
+					MainMenuState.handleError("Unable to load note assets, please restart your game!");
+					
+				}
+			}
+		}
+
+		animation.addByPrefix('greenScroll', 'green0');
+		animation.addByPrefix('redScroll', 'red0');
+		animation.addByPrefix('blueScroll', 'blue0');
+		animation.addByPrefix('purpleScroll', 'purple0');
+
+		animation.addByPrefix('purpleholdend', 'pruple end hold');
+		animation.addByPrefix('greenholdend', 'green hold end');
+		animation.addByPrefix('redholdend', 'red hold end');
+		animation.addByPrefix('blueholdend', 'blue hold end');
+
+		animation.addByPrefix('purplehold', 'purple hold piece');
+		animation.addByPrefix('greenhold', 'green hold piece');
+		animation.addByPrefix('redhold', 'red hold piece');
+		animation.addByPrefix('bluehold', 'blue hold piece');
+	}
 
 	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
@@ -76,30 +111,7 @@ class Note extends FlxSprite
 
 
 		//defaults if no noteStyle was found in chart
-		if (frames == null){
-			try{
-				if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
-			}catch(e){trace("Couldn't load bad arrow sprites, recoloring arrows instead!");}
-			try{
-				if(frames == null && shouldntBeHit) {color = 0x220011;}
-				if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
-			}catch(e) throw("Unable to load arrow sprites!");
-		}
-
-		animation.addByPrefix('greenScroll', 'green0');
-		animation.addByPrefix('redScroll', 'red0');
-		animation.addByPrefix('blueScroll', 'blue0');
-		animation.addByPrefix('purpleScroll', 'purple0');
-
-		animation.addByPrefix('purpleholdend', 'pruple end hold');
-		animation.addByPrefix('greenholdend', 'green hold end');
-		animation.addByPrefix('redholdend', 'red hold end');
-		animation.addByPrefix('blueholdend', 'blue hold end');
-
-		animation.addByPrefix('purplehold', 'purple hold piece');
-		animation.addByPrefix('greenhold', 'green hold piece');
-		animation.addByPrefix('redhold', 'red hold piece');
-		animation.addByPrefix('bluehold', 'blue hold piece');
+		loadFrames();
 
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
