@@ -35,7 +35,6 @@ class PauseSubState extends MusicBeatSubstate
 	var quitHeld:Int = 0;
 	var quitHeldBar:FlxBar;
 	var quitHeldBG:FlxSprite;
-	var oldBPM:Float = 0;
 	public function new(x:Float, y:Float)
 	{
 		super();

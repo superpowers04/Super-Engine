@@ -6,7 +6,7 @@ class SongHScripts {
 	"bopeebo"=> "
 		var triggeredAlready = false;
 		function canAnimGF(){
-			return (gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight' || gf.animation.curAnim.name == 'idle');
+			return (PlayState.gf.animation.curAnim.name == 'danceLeft' || PlayState.gf.animation.curAnim.name == 'danceRight' || PlayState.gf.animation.curAnim.name == 'idle');
 		}
 		function beatHit(ps){
 			if(ps.generatedMusic && PlayState.SONG.notes[Std.int(ps.curStep / 16)] != null){
@@ -41,7 +41,7 @@ class SongHScripts {
 	"philly"=>"
 		var triggeredAlready = false;
 		function canAnimGF(){
-			return (gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight' || gf.animation.curAnim.name == 'idle');
+			return (PlayState.gf.animation.curAnim.name == 'danceLeft' || PlayState.gf.animation.curAnim.name == 'danceRight' || PlayState.gf.animation.curAnim.name == 'idle');
 		}
 
 		function beatHit(ps){
@@ -66,7 +66,7 @@ class SongHScripts {
 	"blammed"=>"
 		var triggeredAlready = false;
 		function canAnimGF(){
-			return (gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight' || gf.animation.curAnim.name == 'idle');
+			return (PlayState.gf.animation.curAnim.name == 'danceLeft' || PlayState.gf.animation.curAnim.name == 'danceRight' || PlayState.gf.animation.curAnim.name == 'idle');
 		}
 
 		function beatHit(ps){
@@ -90,7 +90,7 @@ class SongHScripts {
 	"cocoa"=>"
 		var triggeredAlready = false;
 		function canAnimGF(){
-			return (gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight' || gf.animation.curAnim.name == 'idle');
+			return (PlayState.gf.animation.curAnim.name == 'danceLeft' || PlayState.gf.animation.curAnim.name == 'danceRight' || PlayState.gf.animation.curAnim.name == 'idle');
 		}
 
 		function beatHit(ps){
@@ -115,7 +115,7 @@ class SongHScripts {
 	'eggnog'=>"
 		var triggeredAlready = false;
 		function canAnimGF(){
-			return (gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight' || gf.animation.curAnim.name == 'idle');
+			return (PlayState.gf.animation.curAnim.name == 'danceLeft' || PlayState.gf.animation.curAnim.name == 'danceRight' || PlayState.gf.animation.curAnim.name == 'idle');
 		}
 
 		function beatHit(ps){

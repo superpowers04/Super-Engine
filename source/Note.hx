@@ -45,7 +45,7 @@ class Note extends FlxSprite
 	public var rating:String = "shit";
 
 
-	function loadFrames(){
+	public function loadFrames(){
 		if (frames == null){
 			try{
 				if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
