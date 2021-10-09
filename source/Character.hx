@@ -100,7 +100,10 @@ class Character extends FlxSprite
 			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}');}
 		}
 	function parseHScript(scriptContents:String){
-		if (amPreview || !useHscript) return; // Don't load in editor
+		if (amPreview || !useHscript){
+			interp = null;
+			return; // Don't load in editor
+		} 
 		var interp = HscriptUtils.createSimpleInterp();
 		var parser = new hscript.Parser();
 		var program:Expr;
