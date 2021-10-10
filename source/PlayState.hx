@@ -3223,7 +3223,12 @@ class PlayState extends MusicBeatState
 					controls.UP_R,
 					controls.RIGHT_R
 				];
+				var hitArray:Array<Bool> = [false,false,false,false];
+		 		callInterp("keyShit",[pressArray,holdArray]);
+		 		charCall("keyShit",[pressArray,holdArray]);
 		 
+
+
 		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
 				// HOLDS, check for sustain notes
 				if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
@@ -3312,6 +3317,7 @@ class PlayState extends MusicBeatState
 						{
 							if (pressArray[coolNote.noteData])
 							{
+								hitArray[coolNote.noteData] = true;
 								scoreTxt.color = FlxColor.WHITE;
 								goodNoteHit(coolNote);
 							}
@@ -3326,7 +3332,8 @@ class PlayState extends MusicBeatState
 
 
 				}
-
+		 		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);
+		 		charCall("keyShitAfter",[pressArray,holdArray,hitArray]);
 				
 				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true)))
 				{
