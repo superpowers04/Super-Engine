@@ -113,6 +113,8 @@ class Song
 		var oppNotes:Array<Int> = [0,1,2,3];
 
 		for (sid => section in swagShit.notes) {
+			if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
+
 			var sN:Array<Array<Dynamic>> = [];
 			haxe.ds.ArraySort.sort(section.sectionNotes, function(a, b) {
 				if(a[0] > b[0]) return -1;
@@ -120,19 +122,24 @@ class Song
 				else return 0;
 			});
 
-			for (nid => note in section.sectionNotes){ // Regenerate section, as bit fucky but only happens when loading
-				var nextNote = section.sectionNotes[nid + 1];
+			for (nid => note in section.sectionNotes){ // Regenerate section, is a bit fucky but only happens when loading
+
+				var nextNote:Array<Dynamic> = [];
+				if (section.sectionNotes[nid + 1] != null){
+					nextNote = section.sectionNotes[nid + 1];
+				}
 				// This is fucky but checking if notes are less than 10 ms apart every frame is disgusting and should be faster than last method, which looped every section 5 times
 				if ((!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1])) ||
-				( nextNote != null && nextNote[0] < note[0] + 10 && nextNote[0] > note[0] - 10 && nextNote[1] == note[1] ) ) )
+				( nextNote[0] != null && nextNote[0] < note[0] + 10 && nextNote[0] > note[0] - 10 && nextNote[1] == note[1] ) ) )
 					continue;
 
 				if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-					if((note[4] == 1 || note[1] > 7) ) {note[nid][3] = 1;} // Support for Andromeda and tricky notes
+					if((note[4] == 1 || note[1] > 7) ) {note[3] = 1;} // Support for Andromeda and tricky notes
 				}else{
 					note[3] = 0;
 				}
 				sN.push(note);
+
 			}
 			swagShit.notes[sid].sectionNotes = sN;
 
@@ -151,20 +158,42 @@ class Song
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
-		swagShit.validScore = true;
-		swagShit.defplayer1 = swagShit.player1;
-		swagShit.defplayer2 = swagShit.player2;
-		if (PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) swagShit = invertChart(swagShit);
-		swagShit = modifyChart(swagShit);
-		// if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null) swagShit = convHurtArrows(swagShit);
-		// if (onlinemod.OnlinePlayMenuState.socket == null){
-		// 	if (!QuickOptionsSubState.getSetting("Opponent arrows")) swagShit = removeOpponentArrows(swagShit);
-		// 	if (!QuickOptionsSubState.getSetting("Hurt notes")) swagShit = removeHurtArrows(swagShit);
-		// }
-		if(QuickOptionsSubState.getSetting("Scroll speed") > 0) swagShit.speed = QuickOptionsSubState.getSetting("Scroll speed");
-		if (swagShit.noteMetadata == null) swagShit.noteMetadata = Song.defNoteMetadata;
-		swagShit.defgf = swagShit.gfVersion;
-		return swagShit;
+		#if !debug
+		try{
+		#end
+			var swagShit:SwagSong = cast Json.parse(rawJson).song;
+			swagShit.validScore = true;
+			swagShit.defplayer1 = swagShit.player1;
+			swagShit.defplayer2 = swagShit.player2;
+			if (PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) swagShit = invertChart(swagShit);
+			swagShit = modifyChart(swagShit);
+			// if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null) swagShit = convHurtArrows(swagShit);
+			// if (onlinemod.OnlinePlayMenuState.socket == null){
+			// 	if (!QuickOptionsSubState.getSetting("Opponent arrows")) swagShit = removeOpponentArrows(swagShit);
+			// 	if (!QuickOptionsSubState.getSetting("Hurt notes")) swagShit = removeHurtArrows(swagShit);
+			// }
+			if(QuickOptionsSubState.getSetting("Scroll speed") > 0) swagShit.speed = QuickOptionsSubState.getSetting("Scroll speed");
+			if (swagShit.noteMetadata == null) swagShit.noteMetadata = Song.defNoteMetadata;
+			swagShit.defgf = swagShit.gfVersion;
+			return swagShit;
+		#if !debug
+		}catch(e){
+			MainMenuState.handleError('Error parsing chart: ${e.message}');
+			return {
+				song: "Unable to load chart",
+				notes: [],
+				bpm: 120,
+				needsVoices: false,
+				player1: 'bf',
+				player2: 'bf',
+				gfVersion: 'gf',
+				noteStyle: 'normal',
+				stage: 'stage',
+				speed: 2.0,
+				validScore: false,
+				difficultyString: "e"
+			};
+		}
+		#end
 	}
 }

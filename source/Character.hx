@@ -84,7 +84,7 @@ class Character extends FlxSprite
 	}
 
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
-			if (!useHscript || (interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
+			if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
 			try{
 
 			var method = interp.variables.get(func_name);
@@ -102,6 +102,7 @@ class Character extends FlxSprite
 	function parseHScript(scriptContents:String){
 		if (amPreview || !useHscript){
 			interp = null;
+			trace("Skipping HScript for " + curCharacter);
 			return; // Don't load in editor
 		} 
 		var interp = HscriptUtils.createSimpleInterp();
@@ -542,7 +543,7 @@ class Character extends FlxSprite
 			voiceSounds = [new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_left.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_down.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_up.ogg')),new FlxSound().loadEmbedded(Sound.fromFile('mods/characters/$curCharacter/custom_right.ogg'))];
 
 		}
-		if (FileSystem.exists('mods/characters/$curCharacter/script.hscript')){
+		if (!amPreview && FileSystem.exists('mods/characters/$curCharacter/script.hscript')){
 			parseHScript(File.getContent('mods/characters/$curCharacter/script.hscript'));
 			trace("Loaded HScript");
 			callInterp("initScript",[],true);

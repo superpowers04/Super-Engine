@@ -41,7 +41,10 @@ class OfflinePlayState extends PlayState
     loadedInst = Sound.fromFile(instFile);
   }
   function loadJSON(){
-  	if (!ChartingState.charting) PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+  	try{
+
+  		if (!ChartingState.charting) PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+  	}catch(e) MainMenuState.handleError('Error loading chart \'${chartFile}\': ${e.message}');
   }
   override function create()
   {
