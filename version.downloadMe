@@ -1,2 +1,7 @@
 0.6.1;
-- Some fixes
+- Move duplicate note removal to chart loading instead of running every frame
+- Rework how hurt notes and chart modifiers work
+- Properly disable hscripts when in animation debug
+- Add keyShit to hscript
+- Character now has "skipNextAnim"
+- Fix mainmenu never playing morning music

@@ -35,6 +35,8 @@ class PauseSubState extends MusicBeatSubstate
 	var quitHeld:Int = 0;
 	var quitHeldBar:FlxBar;
 	var quitHeldBG:FlxSprite;
+
+	var songPath = '';
 	public function new(x:Float, y:Float)
 	{
 		super();
@@ -106,7 +108,7 @@ class PauseSubState extends MusicBeatSubstate
 		quitHeldBar.scrollFactor.set();
 		quitHeldBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 		add(quitHeldBar);
-
+		songPath = 'assets/data/' + PlayState.SONG.song.toLowerCase() + '/';
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 	}
@@ -124,7 +126,6 @@ class PauseSubState extends MusicBeatSubstate
 		var rightP = controls.RIGHT_P;
 		var accepted = controls.ACCEPT;
 		var oldOffset:Float = 0;
-		var songPath = 'assets/data/' + PlayState.SONG.song.toLowerCase() + '/';
 
 		if (upP)
 		{

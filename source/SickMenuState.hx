@@ -80,7 +80,7 @@ class SickMenuState extends MusicBeatState
 
 			var time:Int = Date.now().getHours();
 			var curMusicTime = 1;
-			for (i in 1 ... SickMenuState.musicList.length) {
+			for (i in 0 ... SickMenuState.musicList.length) {
 				var v = SickMenuState.musicList[i];
 				if (!v.wrapAround && time >= v.begin && time <= v.end || (v.wrapAround && (time >= v.begin || time <= v.end))){
 					curMusicTime = i;

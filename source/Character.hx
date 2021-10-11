@@ -75,6 +75,7 @@ class Character extends FlxSprite
 	var danced:Bool = false;
 	var lonely:Bool = false;
 	var altAnims:Array<String> = []; 
+	public var skipNextAnim:Bool = false;
 	// HScript related shit
 
 
@@ -82,21 +83,30 @@ class Character extends FlxSprite
 	public static function hasCharacter(char:String):Bool{
 		return (TitleState.retChar(char) != "");
 	}
-
+	@privateAccess
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
 			if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
 			try{
-
+			args.insert(0,this);
 			var method = interp.variables.get(func_name);
-			switch (args.length)
-			{
-				case 0:
-					method(this);
-				case 1:
-					method(this,args[0]);
-				case 2:
-					method(this,args[0], args[1]);
-			}
+			Reflect.callMethod(interp,method,args);
+			// interp.call(interp,func_name,args);
+
+			// switch (args.length)
+			// {
+			// 	case 0:
+			// 		method(this);
+			// 	case 1:
+			// 		method(this,args[0]);
+			// 	case 2:
+			// 		method(this,args[0], args[1]);
+			// 	case 3:
+			// 		method(this,args[0], args[1], args[2]);
+			// 	case 4:
+			// 		method(this,args[0], args[1], args[2], args[3]);
+			// 	case 5:
+			// 		method(this,args[0], args[1], args[2], args[3], args[4]);
+			// }
 			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}');}
 		}
 	function parseHScript(scriptContents:String){
@@ -1042,6 +1052,11 @@ class Character extends FlxSprite
 		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
 
 		callInterp("playAnim",[AnimName]);
+		if (skipNextAnim){
+			skipNextAnim = false;
+			return;
+		}
+		skipNextAnim = false;
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
 		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)

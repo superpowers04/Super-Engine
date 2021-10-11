@@ -2793,6 +2793,8 @@ class PlayState extends MusicBeatState
 					controls.UP_R,
 					controls.RIGHT_R
 				];
+		 		callInterp("keyShit",[pressArray,holdArray]);
+		 		charCall("keyShit",[pressArray,holdArray]);
 		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
 				// HOLDS, check for sustain notes
 				if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
@@ -2803,7 +2805,7 @@ class PlayState extends MusicBeatState
 							goodNoteHit(daNote);
 					});
 				}
-		 
+		 		var hitArray = [false,false,false,false];
 				// PRESSES, check for note hits
 				if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
 				{
@@ -2878,6 +2880,7 @@ class PlayState extends MusicBeatState
 						{
 							if (pressArray[coolNote.noteData])
 							{
+								hitArray[coolNote.noteData] = true;
 								if (mashViolations != 0)
 									mashViolations--;
 								scoreTxt.color = FlxColor.WHITE;
@@ -2905,6 +2908,8 @@ class PlayState extends MusicBeatState
 					}
 
 				}
+		 		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);
+		 		charCall("keyShitAfter",[pressArray,holdArray,hitArray]);
 				
 
 				

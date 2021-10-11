@@ -13,7 +13,8 @@ class CoolUtil
 
 	public static function difficultyString():String
 	{
-		return difficultyArray[PlayState.storyDifficulty];
+
+		return if (PlayState.stateType == 4) PlayState.actualSongName else difficultyArray[PlayState.storyDifficulty];
 	}
 	public static function coolTextFile(path:String):Array<String>
 	{
@@ -26,6 +27,21 @@ class CoolUtil
 
 		return daList;
 	}
+	// static var songNames:Map<String,String> = [
+	// 	'dad-battle'=> "Dad Battle",
+	// 	'dadbattle'=> "Dad Battle",
+	// 	'phillynice' =>"philly",
+	// 	'philly-nice' =>"philly",
+	// 	'philly nice' =>"philly",
+	// 	'winter-horrorland' =>"winterhorrorland",
+	// 	'winterhorrorland' =>"Winter Horrorland",
+	// 	'satin-panties' => "satinpanties"
+	// ];
+	// public static function getNativeSongname(?song:String = "",?convLower:Bool = false):String{
+
+	// 	if (songNames[song.toLowerCase()] != null) return if (convLower) songNames[song.toLowerCase()].toLowerCase() else songNames[song.toLowerCase()];
+	// 	return if (convLower) song.toLowerCase() else song;
+	// }
 	
 	public static function coolStringFile(path:String):Array<String>
 		{
