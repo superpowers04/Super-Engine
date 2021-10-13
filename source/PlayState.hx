@@ -278,8 +278,6 @@ class PlayState extends MusicBeatState
 				return;
 			}
 			generatedMusic = false;
-			persistentUpdate = false;
-			persistentDraw = false;
 			openSubState(new FinishSubState(0,0,error));
 		}catch(e){
 			MainMenuState.handleError(error);
@@ -1662,26 +1660,27 @@ class PlayState extends MusicBeatState
 
 			babyArrow.antialiasing = true;
 			babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+			babyArrow.x += Note.swagWidth * i + i;
 
 			switch (Math.abs(i))
 			{
 				case 0:
-					babyArrow.x += Note.swagWidth * 0;
+					// babyArrow.x += Note.swagWidth * 0;
 					babyArrow.animation.addByPrefix('static', 'arrowLEFT');
 					babyArrow.animation.addByPrefix('pressed', 'left press', 24, true);
 					babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
 				case 1:
-					babyArrow.x += Note.swagWidth * 1 ;
+					// babyArrow.x += Note.swagWidth * 1 ;
 					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('pressed', 'down press', 24, true);
 					babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
 				case 2:
-					babyArrow.x += Note.swagWidth * 2;
+					// babyArrow.x += Note.swagWidth * 2;
 					babyArrow.animation.addByPrefix('static', 'arrowUP');
 					babyArrow.animation.addByPrefix('pressed', 'up press', 24, true);
 					babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
 				case 3:
-					babyArrow.x += Note.swagWidth * 3 + 4;
+					// babyArrow.x += Note.swagWidth * 3 + 4;
 					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 					babyArrow.animation.addByPrefix('pressed', 'right press', 24, true);
 					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
