@@ -277,7 +277,8 @@ class PlayState extends MusicBeatState
 				errorMsg = error;
 				return;
 			}
-			generatedMusic = false;
+			// generatedMusic = false;
+			persistentUpdate = false;
 			openSubState(new FinishSubState(0,0,error));
 		}catch(e){
 			MainMenuState.handleError(error);
@@ -1571,10 +1572,14 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				if(songNotes[1] == -1) continue;
-				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset + songOffset;
+				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
+
 				if (daStrumTime < 0)
 					daStrumTime = 0;
+
+
 				var daNoteData:Int = songNotes[1];
+
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
@@ -1582,7 +1587,6 @@ class PlayState extends MusicBeatState
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
-				
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -3268,17 +3272,20 @@ class PlayState extends MusicBeatState
 							{
 								for (coolNote in possibleNotes)
 								{
-									// if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
-									// { // if it's the same note twice at < 10ms distance, just delete it
-									// 	// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
-									// 	dumbNotes.push(daNote);
-									// 	break;
-									// }
-									if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
-									{ // if daNote is earlier than existing note (coolNote), replace
-										possibleNotes.remove(coolNote);
-										possibleNotes.push(daNote);
-										break;
+									if (coolNote.noteData == daNote.noteData){
+
+										if (Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
+										{ // if it's the same note twice at < 10ms distance, just delete it
+											// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
+											dumbNotes.push(daNote);
+											break;
+										}
+										if (daNote.strumTime < coolNote.strumTime)
+										{ // if daNote is earlier than existing note (coolNote), replace
+											possibleNotes.remove(coolNote);
+											possibleNotes.push(daNote);
+											break;
+										}
 									}
 								}
 							}
@@ -3289,13 +3296,13 @@ class PlayState extends MusicBeatState
 							}
 						}
 					});
-					// for (note in dumbNotes)
-					// {
-					// 	FlxG.log.add("killing dumb ass note at " + note.strumTime);
-					// 	note.kill();
-					// 	notes.remove(note, true);
-					// 	note.destroy();
-					// }
+					for (note in dumbNotes)
+					{
+						FlxG.log.add("killing dumb ass note at " + note.strumTime);
+						note.kill();
+						notes.remove(note, true);
+						note.destroy();
+					}
 		 
 					// possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));  Should already be sorted
 		 
@@ -3339,7 +3346,7 @@ class PlayState extends MusicBeatState
 		 		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);
 		 		charCall("keyShitAfter",[pressArray,holdArray,hitArray]);
 				
-				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true)))
+				if (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 && (!holdArray.contains(true)))
 				{
 					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
 						boyfriend.playAnim('idle');
