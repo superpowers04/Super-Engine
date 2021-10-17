@@ -172,103 +172,103 @@ class OnlinePlayState extends PlayState
     
   }catch(e){MainMenuState.handleError('Crash in "startsong" caught: ${e.message}');}}
 
-  override function generateSong(dataPath:String)
-  {
-    // I have to code the entire code over so that I can remove the offset thing
-    var songData = PlayState.SONG;
-		Conductor.changeBPM(songData.bpm);
+  // override function generateSong(dataPath:String)
+  // {
+  //   // I have to code the entire code over so that I can remove the offset thing
+  //   var songData = PlayState.SONG;
+		// Conductor.changeBPM(songData.bpm);
 
-		curSong = songData.song;
+		// curSong = songData.song;
 
-		if (PlayState.SONG.needsVoices)
-			vocals = loadedVoices;
-		else
-			vocals = new FlxSound();
+		// if (PlayState.SONG.needsVoices)
+		// 	vocals = loadedVoices;
+		// else
+		// 	vocals = new FlxSound();
 
-		FlxG.sound.list.add(vocals);
+		// FlxG.sound.list.add(vocals);
 
-		notes = new FlxTypedGroup<Note>();
-		add(notes);
+		// notes = new FlxTypedGroup<Note>();
+		// add(notes);
 
-		var noteData:Array<SwagSection>;
+		// var noteData:Array<SwagSection>;
 
-		// NEW SHIT
-		noteData = songData.notes;
+		// // NEW SHIT
+		// noteData = songData.notes;
 
-		var playerCounter:Int = 0;
+		// var playerCounter:Int = 0;
 
-		// Per song offset check
-		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
-		for (section in noteData)
-		{
-			var coolSection:Int = Std.int(section.lengthInSteps / 4);
+		// // Per song offset check
+		// var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
+		// for (section in noteData)
+		// {
+		// 	var coolSection:Int = Std.int(section.lengthInSteps / 4);
 
-			for (songNotes in section.sectionNotes)
-			{
-				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
-				if (daStrumTime < 0)
-					daStrumTime = 0;
-				var daNoteData:Int = songNotes[1];
+		// 	for (songNotes in section.sectionNotes)
+		// 	{
+		// 		var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
+		// 		if (daStrumTime < 0)
+		// 			daStrumTime = 0;
+		// 		var daNoteData:Int = songNotes[1];
 
-				var gottaHitNote:Bool = section.mustHitSection;
+		// 		var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes[1] > 3)
-				{
-					gottaHitNote = !section.mustHitSection;
-				}
+		// 		if (songNotes[1] > 3)
+		// 		{
+		// 			gottaHitNote = !section.mustHitSection;
+		// 		}
 
-				var oldNote:Note;
-				if (unspawnNotes.length > 0)
-					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-				else
-					oldNote = null;
+		// 		var oldNote:Note;
+		// 		if (unspawnNotes.length > 0)
+		// 			oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+		// 		else
+		// 			oldNote = null;
 
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,null,null,songNotes[3] == 1);
-				swagNote.sustainLength = songNotes[2];
-				swagNote.scrollFactor.set(0, 0);
+		// 		var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,null,null,songNotes[3] == 1);
+		// 		swagNote.sustainLength = songNotes[2];
+		// 		swagNote.scrollFactor.set(0, 0);
 
-				var susLength:Float = swagNote.sustainLength;
+		// 		var susLength:Float = swagNote.sustainLength;
 
-				susLength = susLength / Conductor.stepCrochet;
-				unspawnNotes.push(swagNote);
+		// 		susLength = susLength / Conductor.stepCrochet;
+		// 		unspawnNotes.push(swagNote);
 
-				for (susNote in 0...Math.floor(susLength))
-				{
-					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+		// 		for (susNote in 0...Math.floor(susLength))
+		// 		{
+		// 			oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,null,songNotes[3] == 1);
-					sustainNote.scrollFactor.set();
-					unspawnNotes.push(sustainNote);
+		// 			var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,null,songNotes[3] == 1);
+		// 			sustainNote.scrollFactor.set();
+		// 			unspawnNotes.push(sustainNote);
 
-					sustainNote.mustPress = gottaHitNote;
+		// 			sustainNote.mustPress = gottaHitNote;
 
-					if (sustainNote.mustPress)
-					{
-						sustainNote.x += FlxG.width / 2; // general offset
-					}
-				}
+		// 			if (sustainNote.mustPress)
+		// 			{
+		// 				sustainNote.x += FlxG.width / 2; // general offset
+		// 			}
+		// 		}
 
-				swagNote.mustPress = gottaHitNote;
+		// 		swagNote.mustPress = gottaHitNote;
 
-				if (swagNote.mustPress)
-				{
-					swagNote.x += FlxG.width / 2; // general offset
-				}
-				else
-				{
-				}
-			}
-			daBeats += 1;
-		}
+		// 		if (swagNote.mustPress)
+		// 		{
+		// 			swagNote.x += FlxG.width / 2; // general offset
+		// 		}
+		// 		else
+		// 		{
+		// 		}
+		// 	}
+		// 	daBeats += 1;
+		// }
 
-		// trace(unspawnNotes.length);
-		// playerCounter += 1;
+		// // trace(unspawnNotes.length);
+		// // playerCounter += 1;
 
-		unspawnNotes.sort(sortByShit);
+		// unspawnNotes.sort(sortByShit);
 
-		generatedMusic = true;
-  }
+		// generatedMusic = true;
+  // }
 
   override function popUpScore(daNote:Note):Void
   {

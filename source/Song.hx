@@ -129,8 +129,7 @@ class Song
 					nextNote = section.sectionNotes[nid + 1];
 				}
 				// This is fucky but checking if notes are less than 10 ms apart every frame is disgusting and should be faster than last method, which looped every section 5 times
-				if ((!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1])) ||
-				( nextNote[0] != null && nextNote[0] < note[0] + 10 && nextNote[0] > note[0] - 10 && nextNote[1] == note[1] ) ) )
+				if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1])))
 					continue;
 
 				if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
