@@ -525,6 +525,15 @@ class AnimationDebug extends MusicBeatState
 					 (FlxG.keys.justPressed.THREE),
 					 (FlxG.keys.justPressed.M),
 					 (FlxG.keys.justPressed.FOUR),
+					 // Shift to move when pressed instead of hammering key
+					 (FlxG.keys.pressed.UP), // Adjust offsets
+					 (FlxG.keys.pressed.LEFT),
+					 (FlxG.keys.pressed.DOWN),
+					 (FlxG.keys.pressed.RIGHT),
+					 (FlxG.keys.pressed.I), // Adjust Character position
+					 (FlxG.keys.pressed.J),
+					 (FlxG.keys.pressed.K),
+					 (FlxG.keys.pressed.L),
 				];
 
 				var modifier = "";
@@ -546,22 +555,22 @@ class AnimationDebug extends MusicBeatState
 								dad.dance();
 								
 							case 5: // Offset adjusting
-								moveOffset(0,1,shiftPress,ctrlPress);
+								moveOffset(0,1,false,ctrlPress);
 							case 6:
-								moveOffset(1,0,shiftPress,ctrlPress);
+								moveOffset(1,0,false,ctrlPress);
 							case 7:
-								moveOffset(0,-1,shiftPress,ctrlPress);
+								moveOffset(0,-1,false,ctrlPress);
 							case 8:
-								moveOffset(-1,0,shiftPress,ctrlPress);
+								moveOffset(-1,0,false,ctrlPress);
 
 							case 9: // Char position
-								updateCharPos(0,1,shiftPress,ctrlPress);
+								updateCharPos(0,1,false,ctrlPress);
 							case 10:
-								updateCharPos(-1,0,shiftPress,ctrlPress);
+								updateCharPos(-1,0,false,ctrlPress);
 							case 11:
-								updateCharPos(0,-1,shiftPress,ctrlPress);
+								updateCharPos(0,-1,false,ctrlPress);
 							case 12:
-								updateCharPos(1,0,shiftPress,ctrlPress);
+								updateCharPos(1,0,false,ctrlPress);
 
 							case 13: // Unload character offsets
 								resetOffsets();
@@ -579,6 +588,31 @@ class AnimationDebug extends MusicBeatState
 								updateCharPos(0,0,false,false);
 								dad.dance();
 								absPos = true;
+
+							case 18: // Offset adjusting
+								if (shiftPress)
+									moveOffset(0,1,false,ctrlPress);
+							case 19:
+								if (shiftPress)
+									moveOffset(1,0,false,ctrlPress);
+							case 20:
+								if (shiftPress)
+									moveOffset(0,-1,false,ctrlPress);
+							case 21:
+								if (shiftPress)
+									moveOffset(-1,0,false,ctrlPress);
+							case 22: // Char position
+								if (shiftPress)
+									updateCharPos(0,1,false,ctrlPress);
+							case 23:
+								if (shiftPress)
+									updateCharPos(-1,0,false,ctrlPress);
+							case 24:
+								if (shiftPress)
+									updateCharPos(0,-1,false,ctrlPress);
+							case 25:
+								if (shiftPress)
+									updateCharPos(1,0,false,ctrlPress);
 						}	
 					}
 				}
@@ -656,7 +690,7 @@ class AnimHelpScreen extends FlxUISubState{
 				+'\n *Ctrl - Alt Variant'
 				+'\nIJKL - Move char, Moves per press for accuracy'
 				+'\nArrows - Move Offset, Moves per press for accuracy'
-				+'\n *Shift - Move by 5(Combine with CTRL to move 0.5)'
+				+'\n *Shift - Hold to move'
 				+'\n *Ctrl - Move by *0.1'
 				+"\n\nUtilities:\n"
 				+'\n1 - Unloads all offsets from the game or json file, including character position.\n'
@@ -666,7 +700,7 @@ class AnimHelpScreen extends FlxUISubState{
 				+"\nB - Hide/Show offset text";
 			case 1:
 				'\n\nArrows - Move camera, Moves per press for accuracy'
-				+'\n *Shift - Move by 5(Combine with CTRL to move 0.5)'
+				+'\n *Shift - Hold to move'
 				+'\n *Ctrl - Move by *0.1'
 				+'\n\nUtilities:\n';
 			default:
