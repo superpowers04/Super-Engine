@@ -76,6 +76,7 @@ class Character extends FlxSprite
 	var lonely:Bool = false;
 	var altAnims:Array<String> = []; 
 	public var skipNextAnim:Bool = false;
+	public var nextAnimation:String = "";
 	// HScript related shit
 
 
@@ -1051,17 +1052,21 @@ class Character extends FlxSprite
 		
 		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
 
+		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
+			AnimName = AnimName + '-alt'; // Alt animations
+		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
+		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
 		callInterp("playAnim",[AnimName]);
 		if (skipNextAnim){
 			skipNextAnim = false;
 			return;
 		}
-		skipNextAnim = false;
-		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
-		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
-		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
-			AnimName = AnimName + '-alt'; // Alt animations
-		else if (animation.getByName(AnimName) == null) return;
+		if(nextAnimation != ""){
+			AnimName = nextAnimation;
+			nextAnimation = "";
+		}
+
+		if (animation.getByName(AnimName) == null) return;
 		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){Frame = loopAnimFrames[AnimName];}
 		animation.play(AnimName, Force, Reversed, Frame);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
@@ -1080,6 +1085,7 @@ class Character extends FlxSprite
 					danced = !danced;
 			}
 		}
+		skipNextAnim = false;
 	}
 	public function cloneAnimation(name:String,anim:FlxAnimation){
 		try{

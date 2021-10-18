@@ -91,7 +91,21 @@ class OfflinePlayState extends PlayState
     // We be good and actually just use an argument to not load the song instead of "pausing" the game
     super.startSong(true);
   }
+  override function generateSong(?dataPath:String = "")
+  {
+  //   // I have to code the entire code over so that I can remove the offset thing
+  //   var songData = PlayState.SONG;
+		// Conductor.changeBPM(songData.bpm);
 
+		// curSong = songData.song;
+
+		if (PlayState.SONG.needsVoices)
+			vocals = loadedVoices;
+		else
+			vocals = new FlxSound();
+    super.generateSong(dataPath);
+
+  }
   // override function generateSong(dataPath:String)
   // {try{
   //   // I have to code the entire code over so that I can remove the offset thing

@@ -172,18 +172,21 @@ class OnlinePlayState extends PlayState
     
   }catch(e){MainMenuState.handleError('Crash in "startsong" caught: ${e.message}');}}
 
-  // override function generateSong(dataPath:String)
-  // {
+  override function generateSong(?dataPath:String = "")
+  {
   //   // I have to code the entire code over so that I can remove the offset thing
   //   var songData = PlayState.SONG;
 		// Conductor.changeBPM(songData.bpm);
 
 		// curSong = songData.song;
 
-		// if (PlayState.SONG.needsVoices)
-		// 	vocals = loadedVoices;
-		// else
-		// 	vocals = new FlxSound();
+		if (PlayState.SONG.needsVoices)
+			vocals = loadedVoices;
+		else
+			vocals = new FlxSound();
+    super.generateSong(dataPath);
+
+  }
 
 		// FlxG.sound.list.add(vocals);
 
