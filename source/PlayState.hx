@@ -1534,7 +1534,7 @@ class PlayState extends MusicBeatState
 
 	var debugNum:Int = 0;
 
-	private function generateSong(dataPath:String):Void
+	private function generateSong(?dataPath:String = ""):Void
 	{
 		// FlxG.log.add(ChartParser.parse());
 
@@ -1542,11 +1542,12 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(songData.bpm);
 
 		curSong = songData.song;
-
-		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
-		else
-			vocals = new FlxSound();
+		if (vocals == null){
+			if (SONG.needsVoices)
+				vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+			else
+				vocals = new FlxSound();
+		}
 
 		FlxG.sound.list.add(vocals);
 		if (notes == null) 
@@ -3305,7 +3306,6 @@ class PlayState extends MusicBeatState
 					}
 		 
 					// possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));  Should already be sorted
-		 
 					var dontCheck = false;
 
 					for (i in 0...3)
@@ -3415,8 +3415,8 @@ class PlayState extends MusicBeatState
 					callInterp("noteHit",[boyfriend,note]);
 
 
-					if(!loadRep && note.mustPress)
-						saveNotes.push(HelperFunctions.truncateFloat(note.strumTime, 2));
+					// if(!loadRep && note.mustPress)
+					// 	saveNotes.push(HelperFunctions.truncateFloat(note.strumTime, 2));
 					
 					BFStrumPlayAnim(note.noteData);
 					
