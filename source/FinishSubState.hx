@@ -146,17 +146,18 @@ class FinishSubState extends MusicBeatSubstate
 				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				comboText.color = FlxColor.WHITE;
 				comboText.scrollFactor.set();
-
-				var settingsText:FlxText = new FlxText(Std.int(FlxG.width * 0.45) + FlxG.save.data.guiGap,-30,0,
+// Std.int(FlxG.width * 0.45)
+				var settingsText:FlxText = new FlxText(comboText.width * 1.10 + FlxG.save.data.guiGap,-30,0,
 				(if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
 				
 				+'\n\nSettings:'
 				+'\n\n Downscroll: ${FlxG.save.data.downscroll}'
 				+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
+				+'\n Practice: ${FlxG.save.data.practiceMode}'
 				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}'
 				+'\n Safe Frames: ${FlxG.save.data.frames}'
 				+'\n Input Engine: ${PlayState.inputEngineName}'
-				+'\n Song Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms'
+				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'
 				);
 				settingsText.size = 28;
 				settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);

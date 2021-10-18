@@ -68,7 +68,7 @@ class Overlay extends TextField
 		if (currentCount != cacheCount /*&& visible*/)
 		{
 			// text = "FPS: " + currentFPS;
-			text = "FPS: " + currentFPS + "\nMemory: " + mem + " MB\nPeak Memory: " + memPeak + " MB";
+			text = "FPS: " + currentFPS + "\nMemory/Peak: " + mem + "/" + memPeak + " MB";
 		}
 
 		cacheCount = currentCount;
