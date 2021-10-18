@@ -31,6 +31,7 @@ class SongHScripts {
 	",
 	"tutorial"=>"
 		function beatHit(ps){
+			var curBeat = ps.curBeat;
 			if (curBeat % 16 == 15 && PlayState.dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
 				{
 					charAnim(0, 'hey');
@@ -46,7 +47,7 @@ class SongHScripts {
 
 		function beatHit(ps){
 			if(ps.generatedMusic && PlayState.SONG.notes[Std.int(ps.curStep / 16)] != null){
-				curBeat = ps.curBeat;
+				var curBeat = ps.curBeat;
 
 				if(curBeat < 250 && curBeat != 184 && curBeat != 216 && canAnimGF())
 				{
@@ -71,7 +72,7 @@ class SongHScripts {
 
 		function beatHit(ps){
 			if(ps.generatedMusic && PlayState.SONG.notes[Std.int(ps.curStep / 16)] != null){
-				curBeat = ps.curBeat;
+				var curBeat = ps.curBeat;
 
 				if(curBeat > 30 && curBeat < 190 && (curBeat < 90 || curBeat > 128) && canAnimGF())
 					{
@@ -95,7 +96,7 @@ class SongHScripts {
 
 		function beatHit(ps){
 			if(ps.generatedMusic && PlayState.SONG.notes[Std.int(ps.curStep / 16)] != null){
-				curBeat = ps.curBeat;
+				var curBeat = ps.curBeat;
 
 
 				if(curBeat < 170 && (curBeat < 65 || curBeat > 130 && curBeat < 145) && canAnimGF())
@@ -120,7 +121,7 @@ class SongHScripts {
 
 		function beatHit(ps){
 			if(ps.generatedMusic && PlayState.SONG.notes[Std.int(ps.curStep / 16)] != null){
-				curBeat = ps.curBeat;
+				var curBeat = ps.curBeat;
 
 
 				if(curBeat > 10 && curBeat != 111 && curBeat < 220 && canAnimGF())
