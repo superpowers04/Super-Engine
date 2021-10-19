@@ -28,15 +28,21 @@ class NoteAssets{
 				image = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png'));
 				xml = File.getContent("assets/shared/images/NOTE_assets.xml");
 				return;
-			}
+			} // Default arrows
 		
 			if (FileSystem.exists('${path}/${name}splash.png') && FileSystem.exists('${path}/${name}splash.xml')){
 				noteSplashAsset = new SplashNoteAsset(name,'${path}');
-			}else{noteSplashAsset = new SplashNoteAsset();}
-			if (FileSystem.exists('${path}/${name}-bad.png') && FileSystem.exists('${path}/${name}-bad.xml')){
+			}else{noteSplashAsset = new SplashNoteAsset();} // Splash notes
+
+			if (FileSystem.exists('${path}/${name}-bad.png') && FileSystem.exists('${path}/${name}-bad.xml')){ // Hurt notes
 				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}-bad.png'));
 				badXml = File.getContent('${path}/${name}-bad.xml');
-			}else{noteSplashAsset = new SplashNoteAsset();}
+			}else{
+				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets_bad.png'));
+				badXml = File.getContent("assets/shared/images/NOTE_assets_bad.xml");
+			}
+
+				
 			if (!FileSystem.exists('${path}/${name}.png') || !FileSystem.exists('${path}/${name}.xml')) MainMenuState.handleError('${name} isn\'t a valid note asset!');
 			image = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}.png'));
 			xml = File.getContent('${path}/${name}.xml');
