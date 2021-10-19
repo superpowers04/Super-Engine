@@ -60,7 +60,7 @@ class HSBrTools {
 
 
     public function loadText(textPath:String):String{
-        if(textArray[textPath] == null) xmlArray[textPath] = File.getContent('${path}${textPath}');
+        if(textArray[textPath] == null) textArray[textPath] = File.getContent('${path}${textPath}');
         return textArray[textPath];
     }
 
@@ -78,7 +78,7 @@ class HSBrTools {
         textArray[pngPath] = null;
     }
     public function unloadXml(pngPath:String){
-        textArray[pngPath] = null;
+        xmlArray[pngPath] = null;
     }
     public function unloadSprite(pngPath:String){
         spriteArray[pngPath] = null;
