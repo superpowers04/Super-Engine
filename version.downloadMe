@@ -1,6 +1,2 @@
-0.6.2;
-- Fix Ghost notes
-- Some minor changes
-- Add nextAnimation to characters, for replacing animations
-- Fix tutorial instantly crashing
-- Finish state now shows if you're in practice mode and the text is 
+0.6.3;
+- Fix the game reloading splash notes instead of loading default hurt notes(Don't ask)

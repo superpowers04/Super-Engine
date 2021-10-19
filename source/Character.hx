@@ -483,6 +483,14 @@ class Character extends FlxSprite
 		loadOffsetsFromJSON(charProperties);
 
 	}
+	function isSelectedChar():Bool{
+		switch ( charType ) {
+			default: return FlxG.save.data.playerChar == curCharacter;
+			case 1: return FlxG.save.data.opponent == curCharacter;
+			case 2: return FlxG.save.data.gfChar == curCharacter;
+		}
+	}
+
 	function loadCustomChar(){
 		trace('Loading a custom character "$curCharacter"! ');				
 		isCustom = true;
