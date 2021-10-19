@@ -454,7 +454,7 @@ class Character extends FlxSprite
 				
 				// PlayState.regAnimEvent(charType,anima.ifstate,anima.anim);
 			}
-			if (anima.oneshot == true){ // "On static platforms, null can't be used as basic type Bool" bruh
+			if (anima.oneshot == true && !amPreview){ // "On static platforms, null can't be used as basic type Bool" bruh
 				oneShotAnims.push(anima.anim);
 				anima.loop = false; // Looping when oneshot is a terrible idea
 			}
@@ -1063,7 +1063,7 @@ class Character extends FlxSprite
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
 			AnimName = AnimName + '-alt'; // Alt animations
 		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
-		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name)){return;} // Don't do anything if the current animation is oneShot
+		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
 		callInterp("playAnim",[AnimName]);
 		if (skipNextAnim){
 			skipNextAnim = false;
