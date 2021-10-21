@@ -12,6 +12,8 @@ import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.FlxState;
+import flixel.tweens.FlxEase;
 
 class MusicBeatState extends FlxUIState
 {
@@ -36,6 +38,9 @@ class MusicBeatState extends FlxUIState
 			trace('reg ' + transIn.region);
 
 		super.create();
+		var oldY = FlxG.camera.x;
+		FlxG.camera.x -= 300;
+		FlxTween.tween(FlxG.camera, {x:oldY},0.7,{ease: FlxEase.expoOut});
 	}
 
 	function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
@@ -116,5 +121,10 @@ class MusicBeatState extends FlxUIState
 		#else
 		FlxG.openURL(schmancy);
 		#end
+	}
+	override function switchTo(nextState:FlxState):Bool{
+		FlxTween.tween(FlxG.camera, {x:FlxG.width},0.9,{ease: FlxEase.expoIn});
+		FlxTween.tween(FlxG.camera, {zoom:2},1,{ease: FlxEase.expoIn});
+		return super.switchTo(nextState);
 	}
 }
