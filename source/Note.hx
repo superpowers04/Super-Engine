@@ -69,8 +69,17 @@ class Note extends FlxSprite
 		animation.addByPrefix('redScroll', 'red0');
 		animation.addByPrefix('blueScroll', 'blue0');
 		animation.addByPrefix('purpleScroll', 'purple0');
+		// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]}0');
+		// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold piece');
+		// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} end hold');
+		// // Kade support, I guess
+		// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]} alone');
+		// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold');
+		// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} tail'); 
 
-		animation.addByPrefix('purpleholdend', 'pruple end hold');
+
+
+		animation.addByPrefix('purpleholdend', 'pruple end hold'); // Fucking default names
 		animation.addByPrefix('purpleholdend', 'purple end hold');
 		animation.addByPrefix('greenholdend', 'green hold end');
 		animation.addByPrefix('redholdend', 'red hold end');
@@ -128,9 +137,8 @@ class Note extends FlxSprite
 
 		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
 		// and flip it so it doesn't look weird.
-		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
-		if (FlxG.save.data.downscroll && sustainNote) 
-			flipY = true;
+		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS 
+		flipY = (FlxG.save.data.downscroll && sustainNote);
 
 		if (isSustainNote && prevNote != null)
 		{
@@ -146,7 +154,6 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-
 			if (prevNote.isSustainNote)
 			{
 				prevNote.animation.play(noteName + "hold");
@@ -158,11 +165,7 @@ class Note extends FlxSprite
 					this.parentNote = prevNote;
 				}
 				prevNote.isSustainNoteEnd = false;
-
-				if(FlxG.save.data.scrollSpeed != 1)
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;
-				else
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (if(FlxG.save.data.scrollSpeed != 1) FlxG.save.data.scrollSpeed else PlayState.SONG.speed);
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
@@ -184,25 +187,23 @@ class Note extends FlxSprite
 				if ((isSustainNote && (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5) && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
 				    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
 						canBeHit = true;
-					else
-						canBeHit = false;
 
-				if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale && !wasGoodHit)
+				if (!wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale){
+					canBeHit = false;
 					tooLate = true;
+					alpha = 0.3;
+				}
 			}
 			else
 			{
-				canBeHit = false;
-
 				if (strumTime <= Conductor.songPosition)
 					wasGoodHit = true;
 			}
 
-			if (tooLate)
-			{
-				if (alpha > 0.3)
-					alpha = 0.3;
-			}
+			// if (tooLate)
+			// {
+			// 	if (alpha > 0.3)
+			// }
 		}
 	}
 }

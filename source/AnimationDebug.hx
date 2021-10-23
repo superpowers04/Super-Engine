@@ -1068,7 +1068,7 @@ class AnimDebugOptions extends MusicBeatSubstate
 				description:"Enables the trail used for the Spirit character"},
 			"flip_notes" => {type:0,value:getValue("flip_notes",true),
 				description:"Whether to flip left/right when on the right, true by default"},
-			"sing_duration" => {type:0,value:getValue("sing_duration",true),
+			"sing_duration" => {type:2,value:getValue("sing_duration",4),
 				description:"How long to play the Character's sing animations for"},
 		];
 

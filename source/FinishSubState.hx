@@ -16,6 +16,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.FlxObject;
+import flixel.ui.FlxBar;
 
 class FinishSubState extends MusicBeatSubstate
 {
@@ -31,6 +32,10 @@ class FinishSubState extends MusicBeatSubstate
 	var week:Bool = false;
 	var errorMsg:String = "";
 	var isError:Bool = false;
+	var healthBarBG:FlxSprite;
+	var healthBar:FlxBar;
+	var iconP1:HealthIcon; //making these public again because i may be stupid
+	var iconP2:HealthIcon; //what could go wrong?
 	public function new(x:Float, y:Float,?won = true,?camFollow:FlxObject,?week:Bool = false,?error:String = "")
 	{
 		if (error != ""){
@@ -46,6 +51,16 @@ class FinishSubState extends MusicBeatSubstate
 		var dad = PlayState.dad;
 		var boyfriend = PlayState.boyfriend;
 
+		// For healthbar shit
+		healthBar = PlayState.instance.healthBar;
+		healthBarBG = PlayState.instance.healthBarBG;
+		iconP1 = PlayState.instance.iconP1;
+		iconP2 = PlayState.instance.iconP2;
+		// add(healthBar);
+		// add(healthBarBG);
+		// add(iconP2);
+		// add(iconP1);
+
 			if(win){
 				for (g in [PlayState.instance.cpuStrums,PlayState.instance.playerStrums]) {
 					g.forEach(function(i){
@@ -58,6 +73,15 @@ class FinishSubState extends MusicBeatSubstate
 						FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
 					}
 				}
+
+				FlxTween.tween(healthBar, {y:Std.int(FlxG.height * 0.10)},1,{ease: FlxEase.expoIn});
+				FlxTween.tween(healthBarBG, {y:Std.int(FlxG.height * 0.10 - 4)},1,{ease: FlxEase.expoIn});
+				FlxTween.tween(iconP1, {y:Std.int(FlxG.height * 0.10 - (iconP1.height * 0.5))},0.8,{ease: FlxEase.expoIn});
+				FlxTween.tween(iconP2, {y:Std.int(FlxG.height * 0.10 - (iconP2.height * 0.5))},0.8,{ease: FlxEase.expoIn});
+
+
+
+
 				FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
 				FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
 			}

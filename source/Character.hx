@@ -662,7 +662,7 @@ class Character extends FlxSprite
 		this.isPlayer = isPlayer;
 		amPreview = preview;
 		if(charJson != null) charProperties = charJson;
-		definingColor = switch(charType){case 1:0xdd0000;default:0x00dd00;};
+		switch(charType){case 1:definingColor = FlxColor.RED;default:definingColor = FlxColor.GREEN;}
 		
 		if (exitex != null) tex = exitex;
 		antialiasing = true;
