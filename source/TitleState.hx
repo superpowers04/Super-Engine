@@ -44,6 +44,7 @@ class TitleState extends MusicBeatState
 	public static var choosableStagesLower:Map<String,String> = [];
 	public static var choosableCharactersLower:Map<String,String> = [];
 	public static var characterDescriptions:Map<String,String> = [];
+	public static var invalidCharacters:Array<String> = [];
 	public static var defCharJson:CharacterMetadataJSON = {characters:[], aliases:[]};
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;
@@ -81,6 +82,7 @@ class TitleState extends MusicBeatState
 		choosableCharacters = ["bf","bf-pixel","bf-christmas","gf",'gf-pixel',"dad","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","monster"];
 		choosableCharactersLower = ["bf" => "bf","bf-pixel" => "bf-pixel","bf-christmas" => "bf-christmas","gf" => "gf","gf-pixel" => "gf-pixel","dad" => "dad","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","monster" => "monster"];
 		characterDescriptions = ["automatic" => "Automatically uses character from song json"];
+		invalidCharacters = [];
 		#if sys
 		// Loading like this is probably not a good idea
 		var dataDir:String = "mods/characters/";
@@ -89,11 +91,14 @@ class TitleState extends MusicBeatState
 		{
 		  for (directory in FileSystem.readDirectory(dataDir))
 		  {
-			if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json")))
+			if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/config.json"))
 			{
 				customCharacters.push(directory);
 				if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/description.txt"))
 					characterDescriptions[directory] = File.getContent('mods/characters/${directory}/description.txt');
+			}else if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
+				invalidCharacters.push(directory);
+				customCharacters.push(directory);
 			}
 		  }
 		}
@@ -228,7 +233,7 @@ class TitleState extends MusicBeatState
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
-
+	override function tranOut(){return;}
 	function startIntro()
 	{
 		if (!initialized)
@@ -237,13 +242,14 @@ class TitleState extends MusicBeatState
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
 
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(-1, 0), {asset: diamond, width: 32, height: 32},
+				new FlxRect(-FlxG.width * 0.5, -FlxG.height * 0.5, FlxG.width * 2, FlxG.height * 2));
+			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(1, 0),
+				{asset: diamond, width: 32, height: 32}, new FlxRect(-FlxG.width * 0.5, -FlxG.height * 0.5, FlxG.width * 2, FlxG.height * 2));
 
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
+
 
 			// HAD TO MODIFY SOME BACKEND SHIT
 			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
@@ -401,7 +407,7 @@ class TitleState extends MusicBeatState
 			if (FlxG.save.data.flashing)
 				titleText.animation.play('press');
 
-			FlxG.camera.flash(FlxColor.WHITE, 1);
+			// FlxG.camera.flash(FlxColor.WHITE, 1);
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 			transitioning = true;
@@ -487,7 +493,6 @@ class TitleState extends MusicBeatState
 			textGroup.remove(textGroup.members[0], true);
 		}
 	}
-
 	override function beatHit()
 	{
 		super.beatHit();

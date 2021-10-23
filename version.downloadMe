@@ -1,2 +1,5 @@
 0.6.3;
 - Fix the game reloading splash notes instead of loading default hurt notes(Don't ask)
+- Oneshot no longer takes effect in Animation Debug
+- The ability to change animation bindings in Animation Debug
+- Enter and Escape are now hardcoded to be an accept/back

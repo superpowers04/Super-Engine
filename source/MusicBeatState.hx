@@ -38,9 +38,7 @@ class MusicBeatState extends FlxUIState
 			trace('reg ' + transIn.region);
 
 		super.create();
-		var oldY = FlxG.camera.x;
-		FlxG.camera.x -= 300;
-		FlxTween.tween(FlxG.camera, {x:oldY},0.7,{ease: FlxEase.expoOut});
+		tranIn();
 	}
 
 	function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
@@ -123,8 +121,22 @@ class MusicBeatState extends FlxUIState
 		#end
 	}
 	override function switchTo(nextState:FlxState):Bool{
+		tranOut();
+		return super.switchTo(nextState);
+	}
+
+	function tranIn(){ // Replace with empty functions to disable
+		var oldY = FlxG.camera.x;
+		FlxG.camera.x -= 300;
+		FlxTween.tween(FlxG.camera, {x:oldY},0.7,{ease: FlxEase.expoOut});
+		var oldZoom = FlxG.camera.zoom;
+		FlxG.camera.zoom += 1;
+		FlxTween.tween(FlxG.camera, {zoom:oldZoom},0.7,{ease: FlxEase.expoOut});
+
+	}
+	function tranOut(){
 		FlxTween.tween(FlxG.camera, {x:FlxG.width},0.9,{ease: FlxEase.expoIn});
 		FlxTween.tween(FlxG.camera, {zoom:2},1,{ease: FlxEase.expoIn});
-		return super.switchTo(nextState);
+
 	}
 }

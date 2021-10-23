@@ -152,8 +152,8 @@ class PlayState extends MusicBeatState
 	private var ss:Bool = false;
 
 
-	private var healthBarBG:FlxSprite;
-	private var healthBar:FlxBar;
+	public var healthBarBG:FlxSprite;
+	public var healthBar:FlxBar;
 	private var songPositionBar:Float = 0;
 	
 	public var generatedMusic:Bool = false;
@@ -392,7 +392,7 @@ class PlayState extends MusicBeatState
 		playerStrums = null;
 		cpuStrums = null;
 	}
-
+	public static var hasStarted = false;
 	override public function create()
 	{try{
 
@@ -400,6 +400,7 @@ class PlayState extends MusicBeatState
 		setInputHandlers(); // Sets all of the handlers for input
 		instance = this;
 		clearVariables();
+		hasStarted = true;
 
 		if (PlayState.songScript == "" && SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()] != null) songScript = SongHScripts.scriptList[PlayState.SONG.song.toLowerCase()];
 		if (FlxG.save.data.fpsCap > 290)

@@ -339,9 +339,9 @@ class Character extends FlxSprite
 					}
 				}
 				if(!FileSystem.exists(pngPath) || !FileSystem.exists(xmlPath)) handleError('Invalid xml/png path for ${curCharacter}');
-				var charXml:String = File.getContent(xmlPath); // Loads the XML as a string
+				charXml = File.getContent(xmlPath); // Loads the XML as a string
 				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-				if (amPreview) this.charXml = charXml;
+				// if (amPreview) this.charXml = charXml;
 				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile(pngPath)), charXml);
 			}
 			if(tex == null) handleError('Invalid texture for ${curCharacter}');
@@ -405,20 +405,32 @@ class Character extends FlxSprite
 	function loadJSONChar(charProperties:CharacterJson){
 		
 		trace('Loading Json animations!');
-		// BF's animations, they're used by default to prevent crashes
-		addAnimation('idle', 'BF idle dance', 24, false);
-		addAnimation('singUP', 'BF NOTE UP0', 24, false);
-		// WHY DO THESE NEED TO BE FLIPPED?
-		addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
-		addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
-		addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
-		addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
+		// Check if the XML has BF's animations, if so, add them
+		var hasBFAnims:Bool = false;
+		{
+			var regTP:EReg = (~/<SubTexture name="BF idle dance/g);
+			var input:String = charXml;
+			while (regTP.match(input)) {
+				hasBFAnims = true;
+				break;
+			}
+		}
+		if (hasBFAnims){
+			addAnimation('idle', 'BF idle dance', 24, false);
+			addAnimation('singUP', 'BF NOTE UP0', 24, false);
+			// WHY DO THESE NEED TO BE FLIPPED?
+			addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
+			addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
+			addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
+			addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
 
-		addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
-		addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
+			addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
+			addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
 
-		addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-		addAnimation('hey', 'BF HEY', 24, false);
+			addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+			addAnimation('hey', 'BF HEY', 24, false);
+		}
+
 
 
 
@@ -438,34 +450,36 @@ class Character extends FlxSprite
 		
 		trace('Loading Animations!');
 		var animCount = 0;
-		for (anima in charProperties.animations){
-			try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
-			if (anima.stage != "" && anima.stage != null){if(PlayState.curStage.toLowerCase() != anima.stage.toLowerCase()){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
-			if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies song, skip if it doesn't match PlayState's song
-			if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
-			if (anima.char_side != null && anima.char_side != 3 && anima.char_side == charType){continue;} // This if statement hurts my brain
-			if (anima.ifstate != null){
-				trace("Loading a animation with ifstatement...");
-				if (anima.ifstate.check == 1 ){ // Do on step or beat
-					if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.stepAnimEvents[charType][anima.anim] = anima.ifstate;
-				} else {
-					if (PlayState.beatAnimEvents[charType] == null) PlayState.beatAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.beatAnimEvents[charType][anima.anim] = anima.ifstate;
+		if(charProperties.animations.length > 0){
+			for (anima in charProperties.animations){
+				try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
+				if (anima.stage != "" && anima.stage != null){if(PlayState.curStage.toLowerCase() != anima.stage.toLowerCase()){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
+				if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies song, skip if it doesn't match PlayState's song
+				if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
+				if (anima.char_side != null && anima.char_side != 3 && anima.char_side == charType){continue;} // This if statement hurts my brain
+				if (anima.ifstate != null){
+					trace("Loading a animation with ifstatement...");
+					if (anima.ifstate.check == 1 ){ // Do on step or beat
+						if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.stepAnimEvents[charType][anima.anim] = anima.ifstate;
+					} else {
+						if (PlayState.beatAnimEvents[charType] == null) PlayState.beatAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.beatAnimEvents[charType][anima.anim] = anima.ifstate;
+					}
+					
+					// PlayState.regAnimEvent(charType,anima.ifstate,anima.anim);
 				}
-				
-				// PlayState.regAnimEvent(charType,anima.ifstate,anima.anim);
-			}
-			if (anima.oneshot == true && !amPreview){ // "On static platforms, null can't be used as basic type Bool" bruh
-				oneShotAnims.push(anima.anim);
-				anima.loop = false; // Looping when oneshot is a terrible idea
-			}
-			if(anima.loopStart != null && anima.loopStart != 0 )loopAnimFrames[anima.anim] = anima.loopStart;
-			if(anima.playAfter != null && anima.playAfter != '' )loopAnimTo[anima.anim] = anima.playAfter;
+				if (anima.oneshot == true && !amPreview){ // "On static platforms, null can't be used as basic type Bool" bruh
+					oneShotAnims.push(anima.anim);
+					anima.loop = false; // Looping when oneshot is a terrible idea
+				}
+				if(anima.loopStart != null && anima.loopStart != 0 )loopAnimFrames[anima.anim] = anima.loopStart;
+				if(anima.playAfter != null && anima.playAfter != '' )loopAnimTo[anima.anim] = anima.playAfter;
 
-			if (anima.indices.length > 0) { // Add using indices if specified
-				addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
-			}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
-			}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
-			animCount++;
+				if (anima.indices.length > 0) { // Add using indices if specified
+					addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
+				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
+				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
+				animCount++;
+			}
 		}
 		trace('Registered ${animCount} animations');
 		setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
@@ -495,8 +509,46 @@ class Character extends FlxSprite
 		trace('Loading a custom character "$curCharacter"! ');				
 		isCustom = true;
 		var charPropJson:String = "";
-		if (charProperties == null) {charPropJson = File.getContent('mods/characters/$curCharacter/config.json');charProperties = haxe.Json.parse(CoolUtil.cleanJSON(charPropJson));}
-		if (charProperties == null || charProperties.animations == null || charProperties.animations[0] == null){handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
+		try{
+			if (charProperties == null) {charPropJson = File.getContent('mods/characters/$curCharacter/config.json');charProperties = haxe.Json.parse(CoolUtil.cleanJSON(charPropJson));}
+		}catch(e){
+			if(amPreview){
+				var idleName:String = "";
+				{ // Load characters without an idle animation, hopefully
+					var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+[iI][dD][lL][eE][A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
+					var input:String = charXml;
+					while (regTP.match(input)) {
+						input=regTP.matchedRight();
+						// addAnimation("Idle", regTP.matched(1));
+						idleName = regTP.matched(1);
+						break;
+					}
+				}
+				charProperties = haxe.Json.parse('{
+					"clone":"",
+					"flip_x":false,
+					"sing_duration":6.1,
+					"scale":1,
+					"dance_idle":false,
+					"voices":"",
+					"no_antialiasing":false,
+					"animations": [{
+						"anim":"idle",
+						"name":"${idleName}",
+						"loop":false,
+						"fps":24,
+						"indices":[],
+						"oneshot":false
+					}]
+				}');
+			}else{
+				MainMenuState.handleError('Character ${curCharacter} is missing a config.json! You need to set them up in character selection');
+			}
+		}
+		if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && !amPreview){handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
+		// if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && amPreview){
+
+		// }
 		loadedFrom = 'mods/characters/$curCharacter/config.json';
 		var pngName:String = "character.png";
 		var xmlName:String = "character.xml";
@@ -529,12 +581,12 @@ class Character extends FlxSprite
 		if (tex == null){
 			var charJsonF:String = ('mods/characters/$curCharacter/${xmlName}').substr(0,-3) + "json";
 			if (FileSystem.exists(charJsonF)){
-				var charXml:String = File.getContent(charJsonF); 				
+				charXml = File.getContent(charJsonF); 				
 				if (charXml == null){handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
 
 				tex = FlxAtlasFrames.fromTexturePackerJson(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
 			} else {
-				var charXml:String = File.getContent('mods/characters/$curCharacter/${xmlName}'); // Loads the XML as a string
+				charXml = File.getContent('mods/characters/$curCharacter/${xmlName}'); // Loads the XML as a string
 				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
 				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
 			}
@@ -950,7 +1002,7 @@ class Character extends FlxSprite
 		callInterp("new",[]);
 		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
 	
-		if(animation.curAnim == null && !lonely){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
+		if(animation.curAnim == null && !lonely && !amPreview){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
 		}catch(e){
 			#if debug
 			trace('Error with $curCharacter: ${e.stack} ${e.message}');

@@ -38,6 +38,7 @@ class MainMenuState extends SickMenuState
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
+	static var hasWarnedInvalid:Bool = false;
 	public static function handleError(?error:String = "An error occurred",?details:String=""):Void{
 		if (errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		MainMenuState.errorMessage = error;
@@ -58,6 +59,7 @@ class MainMenuState extends SickMenuState
 			errorMessage = Main.errorMessage;
 			Main.errorMessage = "";
 		}
+
 		options = ['online', 'downloaded songs','modded songs','other',"changelog",'get characters', 'options'];
 		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally",'Other playing modes',"Check the latest update and it's changes","Download characters to play as ingame",'Customise your experience to fit you'];
 		trace(errorMessage);
@@ -98,6 +100,11 @@ class MainMenuState extends SickMenuState
 			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
 			FlxG.save.data.gfChar = "gf";
 		}
+
+		if (MainMenuState.errorMessage == "" && TitleState.invalidCharacters.length > 0 && !hasWarnedInvalid) {
+			errorMessage = "You have some characters missing config.json files.";
+			hasWarnedInvalid = true;
+		} 
 		if (MainMenuState.errorMessage != ""){
 
 			FlxG.sound.play(Paths.sound('cancelMenu'));
