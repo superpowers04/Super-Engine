@@ -6,7 +6,7 @@ class OtherMenuState extends SickMenuState{
 	override function create(){
 		options = ["story mode","freeplay","Convert Charts from other mods"];
 		descriptions = ['Play through the story mode', 'Play any song from the game', 'Convert charts from other mods to work here. Will put them in Multi Songs, will not be converted to work with FNF Multi though.'];
-		if (TitleState.osuBeatmapLoc != '') options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");
+		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		bgImage = 'menuBG';
 		options.push("back"); descriptions.push("Go back to the main menu");
 		super.create();
