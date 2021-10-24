@@ -83,12 +83,12 @@ class Main extends Sprite
 		}
 		// var crashDumper = new CrashDumper(SessionData.generateID("FNFBR-"));
 		#if !debug
-		initialState = TitleState;
+			initialState = TitleState;
 		#end
 
 		// Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 
-		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
+		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
 
 		addChild(game);
 
@@ -106,7 +106,7 @@ class Main extends Sprite
 		#end
 	}
 
-	var game:FlxGame;
+	public static var game:FlxGameEnhanced;
 
 	var fpsCounter:Overlay;
 	// var fpsOverlay:Overlay;
@@ -170,5 +170,13 @@ class Main extends Sprite
 		Sys.println("Crash dump saved in " + path);
 		// errorMessage = 'Uncaught error forced game to reboot, Crash dump saved in "${Path.normalize(path)}"';
 		setupGame();
+	}
+}
+
+
+class FlxGameEnhanced extends FlxGame{
+	public function forceStateSwitch(state:FlxState){ // Might be a bad idea but allows an error to force a state change to Mainmenu instead of softlocking
+		_requestedState = state;
+		switchState();
 	}
 }
