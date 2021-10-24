@@ -180,7 +180,7 @@ class FinishSubState extends MusicBeatSubstate
 				+'\n Practice: ${FlxG.save.data.practiceMode}'
 				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}'
 				+'\n Safe Frames: ${FlxG.save.data.frames}'
-				+'\n Input Engine: ${PlayState.inputEngineName}'
+				+'\n Input Engine: ${PlayState.inputEngineName}, V${MainMenuState.ver}'
 				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'
 				);
 				settingsText.size = 28;
@@ -221,14 +221,20 @@ class FinishSubState extends MusicBeatSubstate
 	function retMenu(){
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
-		switch (PlayState.stateType)
-		{
-			case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
-			case 4:FlxG.switchState(new multi.MultiMenuState());
-			case 5:FlxG.switchState(new osu.OsuMenuState());
-				
+		PlayState.instance.persistentUpdate = true;
+		if (isError){
+			Main.game.forceStateSwitch(new MainMenuState());
 
-			default:FlxG.switchState(new FreeplayState());
+		}else{
+			switch (PlayState.stateType)
+			{
+				case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+				case 4:FlxG.switchState(new multi.MultiMenuState());
+				case 5:FlxG.switchState(new osu.OsuMenuState());
+					
+
+				default:FlxG.switchState(new FreeplayState());
+			}
 		}
 		return;
 	}
@@ -261,8 +267,9 @@ class FinishSubState extends MusicBeatSubstate
 		ready = false;
 		FlxG.sound.music.stop();
 		FlxG.sound.play(Paths.music('gameOverEnd'));
+		PlayState.instance.persistentUpdate = true;
 		if (isError){
-			FlxG.switchState(new PlayState());
+			Main.game.forceStateSwitch(new PlayState());
 
 		}else
 			FlxG.resetState();

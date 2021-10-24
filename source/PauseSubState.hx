@@ -37,6 +37,7 @@ class PauseSubState extends MusicBeatSubstate
 	var quitHeldBG:FlxSprite;
 
 	var songPath = '';
+	var shouldveLeft = false;
 	public function new(x:Float, y:Float)
 	{
 		super();
@@ -145,7 +146,7 @@ class PauseSubState extends MusicBeatSubstate
 			quitHeld += 5;
 			quitHeldBar.visible = true;
 			quitHeldBG.visible = true;
-			if (quitHeld > 1000) quit(); 
+			if (quitHeld > 1000) {quit();quitHeld = 0;} 
 			}else if (quitHeld > 0){
 			quitHeld -= 10;
 
@@ -180,11 +181,13 @@ class PauseSubState extends MusicBeatSubstate
 		if (FlxG.save.data.fpsCap > 290) (cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
 
 		retMenu();
+
 		return;
 	}
 	function retMenu(){
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
+		if (shouldveLeft) {Main.game.forceStateSwitch(new MainMenuState());return;}
 		switch (PlayState.stateType)
 		{
 			case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
@@ -194,6 +197,7 @@ class PauseSubState extends MusicBeatSubstate
 
 			default:FlxG.switchState(new MainMenuState());
 		}
+		shouldveLeft = true;
 		return;
 	}
 	function countdown(){try{
