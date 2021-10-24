@@ -53,7 +53,7 @@
 			"animations":
 			[
 				{
-					"anim": "Idle",
+					"anim": "idle",
 					"name": "BF idle dance",
 					"fps": 24,
 					"loop": false,
