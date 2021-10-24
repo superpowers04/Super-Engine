@@ -2,6 +2,7 @@ package;
 
 import Controls.KeyboardScheme;
 import flixel.FlxG;
+import flixel.FlxGame;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
@@ -39,6 +40,7 @@ class MainMenuState extends SickMenuState
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
 	static var hasWarnedInvalid:Bool = false;
+	
 	public static function handleError(?error:String = "An error occurred",?details:String=""):Void{
 		if (errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		MainMenuState.errorMessage = error;
@@ -49,7 +51,8 @@ class MainMenuState extends SickMenuState
 				onlinemod.OnlinePlayMenuState.socket=null;
 			}catch(e){trace('You just got an exception in yo exception ${e.message}');}
 		}
-		FlxG.switchState(new MainMenuState());
+		// FlxG.switchState(new MainMenuState());
+		Main.game.forceStateSwitch(new MainMenuState());
 		
 	}
 
