@@ -210,8 +210,8 @@ class ChartRepoState extends SearchMenuState
 		if(installing > 0){
 			installingText.text = 'Installing ${installing} mod${if (installing != 1) 's' else '' }.';
 		}else{installingText.text = 'Nothing is installing.';}
-		installedText.text = if (FileSystem.exists(repoArray.charts[curSelected].name)) "Installed" else "Not Installed";
-		if (FileSystem.exists(repoArray.charts[curSelected].name)) installedText.color = FlxColor.GREEN;
+		installedText.text = if (FileSystem.exists('mods/charts/${repoArray.charts[curSelected].name}/')) "Installed" else "Not Installed";
+		if (FileSystem.exists('mods/charts/${repoArray.charts[curSelected].name}/')) installedText.color = FlxColor.GREEN;
 	}
 	function finishDownload(data:Bytes,char:RepoChartsJSON,sel:Int){
 		FileSystem.createDirectory('mods/charts/');

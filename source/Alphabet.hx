@@ -48,6 +48,7 @@ class Alphabet extends FlxSpriteGroup
 	var isBold:Bool = false;
 	public var xOffset:Float = 70;
 	public var useAlphabet:Bool = true;
+	public var selected:Bool = false;
 
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, shouldMove:Bool = false,?xOffset:Float = 70,?useAlphabet:Bool = true)
 	{
@@ -242,7 +243,7 @@ class Alphabet extends FlxSpriteGroup
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
 			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48),10 * elapsed);
-			x = FlxMath.lerp(x, (targetY * 20) + xOffset, 10 * elapsed);
+			x = FlxMath.lerp(x, xOffset, 10 * elapsed);
 		}
 
 		super.update(elapsed);

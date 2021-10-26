@@ -102,7 +102,18 @@ class OnlinePlayMenuState extends MusicBeatState
 
 		var connectButton = new FlxUIButton(0, FlxG.height * 0.85, "Connect", () -> {
       try
-  		{
+  		{ 
+        
+
+        socket = new Socket();
+        socket.timeout = 10000;
+        socket.addEventListener(Event.CONNECT, (e:Event) -> {
+          Sender.SendPacket(Packets.SEND_CLIENT_TOKEN, [Tokens.clientToken], socket);
+        });
+        socket.addEventListener(IOErrorEvent.IO_ERROR, OnError);
+        socket.addEventListener(Event.CLOSE, OnClose);
+        socket.addEventListener(ProgressEvent.SOCKET_DATA, OnData);
+        receiver = new Receiver(HandleData);
         FlxG.save.data.lastServer = ipField.text;
         FlxG.save.data.lastServerPort = portField.text;
   			socket.connect(ipField.text, Std.parseInt(portField.text));
@@ -110,6 +121,7 @@ class OnlinePlayMenuState extends MusicBeatState
   			trace(e);
   		}
     });
+    if (socket != null && socket.connected) socket.close();
 		connectButton.setLabelFormat(32, FlxColor.BLACK, CENTER);
 		connectButton.resize(300, FlxG.height * 0.1);
 		connectButton.screenCenter(FlxAxes.X);
@@ -229,9 +241,10 @@ class OnlinePlayMenuState extends MusicBeatState
       {
         FlxG.switchState(new MainMenuState());
 
-        if (socket.connected)
+        if (socket != null)
         {
-          socket.close();
+          if(socket.connected) socket.close();
+          socket = null;
         }
       }
 		}

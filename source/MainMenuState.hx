@@ -151,7 +151,7 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
 			case 'modded songs':
 				FlxG.switchState(new multi.MultiMenuState());
-			case 'downloaded songs':
+			case 'online songs':
 				FlxG.switchState(new onlinemod.OfflineMenuState());
 			case 'changelog':
 				FlxG.switchState(new OutdatedSubState());

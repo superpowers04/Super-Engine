@@ -26,7 +26,7 @@ class Note extends FlxSprite
 	public var isSustainNote:Bool = false;
 	public var shouldntBeHit:Bool = false;
 	// public var playerNote:Bool = false;
-	public var type:Int = 0; // Used for scriptable arrows 
+	public var type:Dynamic = 0; // Used for scriptable arrows 
 	public var isSustainNoteEnd:Bool = false;
 
 	public var noteScore:Float = 1;
@@ -91,7 +91,7 @@ class Note extends FlxSprite
 		animation.addByPrefix('bluehold', 'blue hold piece');
 	}
 
-	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_shouldntBeHit:Bool = false,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
+	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_type:Dynamic = 0,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
 		super();
 		
@@ -101,10 +101,10 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		mustPress = playerNote; 
+		type = _type;
 
 		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
-		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || _shouldntBeHit);
-
+		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt" || _type == true));
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
