@@ -63,8 +63,8 @@ class MainMenuState extends SickMenuState
 			Main.errorMessage = "";
 		}
 
-		options = ['online', 'downloaded songs','modded songs','other',"changelog",'get characters', 'options'];
-		descriptions = ["Play online with other people.","Play songs that have been downloaded during online games.","Play Funkin Multi format songs locally",'Other playing modes',"Check the latest update and it's changes","Download characters to play as ingame",'Customise your experience to fit you'];
+		options = ['modded songs','online', 'online songs','other',"changelog", 'options'];
+		descriptions = ["Play songs from your mods/charts folder","Play online with other people.","Play songs that have been downloaded during online games.",'Story mode, Freeplay, Osu beatmaps, and download characters or songs',"Check the latest update and it's changes",'Customise your experience to fit you'];
 		trace(errorMessage);
 
 		persistentUpdate = persistentDraw = true;
@@ -78,8 +78,9 @@ class MainMenuState extends SickMenuState
 
 		bg.scrollFactor.set(0.1,0.1);
 		bg.color = MainMenuState.bgcolor;
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-Engine ${ver}', 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-Engine ${ver}', 12);
 		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.borderSize = 2;
 		versionShit.scrollFactor.set();
 		add(versionShit);
 
@@ -152,8 +153,6 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new multi.MultiMenuState());
 			case 'downloaded songs':
 				FlxG.switchState(new onlinemod.OfflineMenuState());
-			case 'get characters':
-				FlxG.switchState(new RepoState());
 			case 'changelog':
 				FlxG.switchState(new OutdatedSubState());
 			case 'options':

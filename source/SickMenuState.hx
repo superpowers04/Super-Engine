@@ -145,11 +145,12 @@ class SickMenuState extends MusicBeatState
 		add(grpControls);
 		generateList();
 
-		descriptionText = new FlxText(5, FlxG.height - 18, 0, descriptions[0], 12);
+		descriptionText = new FlxText(5, FlxG.height - 28, 0, descriptions[0], 12);
 		descriptionText.scrollFactor.set();
-		descriptionText.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		var blackBorder:FlxSprite = new FlxSprite(-30,FlxG.height - 18).makeGraphic((FlxG.width),40,FlxColor.BLACK);
-		blackBorder.alpha = 0.5;
+		descriptionText.setFormat(CoolUtil.font, 22, FlxColor.WHITE, LEFT, NONE, FlxColor.BLACK);
+		descriptionText.borderSize = 2;
+		var blackBorder:FlxSprite = new FlxSprite(-30,FlxG.height - 30).makeGraphic((FlxG.width),40,FlxColor.fromString("0x220011"));
+		blackBorder.alpha = 0.8;
 
 		add(blackBorder);
 
