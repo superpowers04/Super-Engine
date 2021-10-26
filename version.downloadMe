@@ -2,3 +2,4 @@
 - Fix the game softlocking on certain errors
 - Add a few HScript classes/features
 - Public name is now Super engine, Internal name will still stay the same for compatbility
+- Several improvements to Animation Debug

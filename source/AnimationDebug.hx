@@ -295,6 +295,7 @@ class AnimationDebug extends MusicBeatState
 			add(dad);
 			charJson = dad.charProperties;
 			animList = [];
+			charAnims = ["**Unbind"];
 			if (dad.charXml != null){
 				var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
 				var input:String = dad.charXml;
@@ -605,7 +606,7 @@ class AnimationDebug extends MusicBeatState
 		dad.addAnimation("tempanimdebuganimation",animName);
 		animToPlay = "tempanimdebuganimation";
 	}
-	function editAnimation(Anim:String,charAnim:CharJsonAnimation,?replace:Bool = false){
+	function editAnimation(Anim:String,charAnim:CharJsonAnimation,?replace:Bool = false,?unbind:Bool = false){
 		var exists:Bool = false;
 		var id:Int = 0;
 		trace(haxe.Json.stringify(charAnim,"\t"));
@@ -613,6 +614,11 @@ class AnimationDebug extends MusicBeatState
 			if (v.anim == Anim) {exists=true;id = i;break;}
 		}
 		if (replace){
+			if (unbind){
+				if (exists)
+					charJson.animations[id] = null;
+				return;
+			}
 			if (exists){
 				charJson.animations[id] = charAnim;
 			}else{
@@ -677,7 +683,11 @@ class AnimationDebug extends MusicBeatState
 		looped.checked = false;
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
-		var animFPS = new FlxUIInputText(30, 80, null, "24");
+		var oneshot = new FlxUICheckBox(30, 60, null, null, "oneshot/High priority");
+		oneshot.checked = false;
+		uiMap["oneshot"] = oneshot;
+		uiBox.add(oneshot);
+		var animFPS = new FlxUIInputText(30, 100, null, "24");
 		// animFPS.customFilterPattern = ~/[^0-9]/;
 		// animFPS.text = "24";
 		animFPS.filterMode = 2;
@@ -694,8 +704,8 @@ class AnimationDebug extends MusicBeatState
 				loop: uiMap["loop"].checked,
 				fps: Std.parseInt(uiMap["FPS"].text),
 				indices: [],
-				oneshot: (animUICurAnim == "hey" || animUICurAnim == "lose")
-			},true);
+				oneshot: (uiMap["oneshot"].checked || animUICurAnim == "hey" || animUICurAnim == "lose")
+			},true,(animUICurName == "**Unbind"));
 			spawnChar(true,false,charJson);
 		});
 		uiBox.add(commitButton);
@@ -1035,9 +1045,8 @@ class AnimDebugOptions extends MusicBeatSubstate
 	}
 
 	function reloadList():Void{
-		if(grpMenuShit != null) grpMenuShit.destroy();
-		grpMenuShit = new FlxTypedGroup<Alphabet>();
-		add(grpMenuShit);
+		grpMenuShit.clear();
+		
 
 		menuItems = [];
 		var i = 0;
@@ -1069,13 +1078,15 @@ class AnimDebugOptions extends MusicBeatSubstate
 			"flip_notes" => {type:0,value:getValue("flip_notes",true),
 				description:"Whether to flip left/right when on the right, true by default"},
 			"sing_duration" => {type:2,value:getValue("sing_duration",4),
-				description:"How long to play the Character's sing animations for"},
+				description:"How long to play the Character's sing animations for"}
 		];
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.0;
 		bg.scrollFactor.set();
 		add(bg);
+		grpMenuShit = new FlxTypedGroup<Alphabet>();
+		add(grpMenuShit);
 
 		var infotexttxt:String = "";
 		infotext = new FlxText(5, FlxG.height - 40, FlxG.width - 100, infotexttxt, 16);
@@ -1133,8 +1144,12 @@ class AnimDebugOptions extends MusicBeatSubstate
 			setValue(menuItems[sel],val);
 		}
 
-
-		reloadList();
+		grpMenuShit.members[sel].destroy();
+		var songText:Alphabet = new Alphabet(0, (70) + 30, '${menuItems[sel]}: ${settings[menuItems[sel]].value}', true, false,70,false);
+		songText.isMenuItem = true;
+		songText.targetY = 0;
+		grpMenuShit.members[sel] = songText;
+		// reloadList();
 	}
 
 	function changeSelection(?change:Int = 0)
