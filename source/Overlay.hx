@@ -17,6 +17,7 @@ class Overlay extends TextField
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
+	public static var debugVar:String = "";
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
 	{
@@ -25,7 +26,7 @@ class Overlay extends TextField
 		this.x = x;
 		this.y = y;
 		width = 200;
-		height = 70;
+		height = 150;
 
 		currentFPS = 0;
 		selectable = false;
@@ -68,7 +69,7 @@ class Overlay extends TextField
 		if (currentCount != cacheCount /*&& visible*/)
 		{
 			// text = "FPS: " + currentFPS;
-			text = "FPS: " + currentFPS + "\nMemory/Peak: " + mem + "/" + memPeak + " MB";
+			text = "FPS: " + currentFPS + "\nMemory/Peak: " + mem + "/" + memPeak + " MB" +  debugVar;
 		}
 
 		cacheCount = currentCount;

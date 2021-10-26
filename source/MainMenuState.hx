@@ -29,7 +29,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.7.0";
+	public static var ver:String = "0.7.1";
 	
 	public static var firstStart:Bool = true;
 
@@ -78,13 +78,13 @@ class MainMenuState extends SickMenuState
 
 		bg.scrollFactor.set(0.1,0.1);
 		bg.color = MainMenuState.bgcolor;
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-BR ${ver}', 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 36, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-Engine ${ver}', 12);
 		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.scrollFactor.set();
 		add(versionShit);
 
 		if (TitleState.outdated){
-			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'FNFBR is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info', 32);
+			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'SE/BR is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info', 32);
 			outdatedLMAO.setFormat(CoolUtil.font, 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			outdatedLMAO.scrollFactor.set();
  			outdatedLMAO.screenCenter(FlxAxes.X);

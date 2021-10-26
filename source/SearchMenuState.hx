@@ -142,7 +142,7 @@ class SearchMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{try{
 		super.update(elapsed);
-		if (searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
+		if (toggleables['search'] && searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
 			SetVolumeControls(true);
 			handleInput();
 		}
@@ -151,7 +151,7 @@ class SearchMenuState extends MusicBeatState
 		trace("You forgot to replace the select function!");
 	}
 	function handleInput(){
-			if (controls.BACK)
+			if (controls.BACK || FlxG.keys.justPressed.ESCAPE)
 			{
 				ret();
 			}

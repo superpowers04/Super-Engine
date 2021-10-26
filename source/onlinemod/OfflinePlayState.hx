@@ -19,6 +19,7 @@ class OfflinePlayState extends PlayState
   var loadingtext:FlxText;
   var shouldLoadJson:Bool = true;
   var stateType = 2;
+  var shouldLoadSongs = true;
   public static var chartFile:String = "";
   function loadSongs(){
 
@@ -65,7 +66,7 @@ class OfflinePlayState extends PlayState
 	    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg')){
 	    // 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg';
 	    // }
-	    loadSongs();
+	    if (shouldLoadSongs) loadSongs();
 
 
 	    super.create();

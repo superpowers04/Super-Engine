@@ -217,12 +217,12 @@ class FinishSubState extends MusicBeatSubstate
 
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
 	}
-
+	var shouldveLeft = false;
 	function retMenu(){
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
 		PlayState.instance.persistentUpdate = true;
-		if (isError){
+		if (shouldveLeft){
 			Main.game.forceStateSwitch(new MainMenuState());
 
 		}else{
@@ -236,6 +236,7 @@ class FinishSubState extends MusicBeatSubstate
 				default:FlxG.switchState(new FreeplayState());
 			}
 		}
+		shouldveLeft = true;
 		return;
 	}
 
@@ -265,14 +266,30 @@ class FinishSubState extends MusicBeatSubstate
 	function restart()
 	{
 		ready = false;
-		FlxG.sound.music.stop();
-		FlxG.sound.play(Paths.music('gameOverEnd'));
-		PlayState.instance.persistentUpdate = true;
-		if (isError){
-			Main.game.forceStateSwitch(new PlayState());
-
-		}else
+		// FlxG.sound.music.stop();
+		// FlxG.sound.play(Paths.music('gameOverEnd'));
+		if(isError){
 			FlxG.resetState();
+			if (shouldveLeft){ // Error if the state hasn't changed and the user pressed r already
+				MainMenuState.handleError("Caught softlock!");
+			}
+			shouldveLeft = true;
+			return;
+		}
+		// Holyshit this is probably a bad idea but whatever
+		// PlayState.instance.resetInterps();
+		// Conductor.songPosition = 0;
+		// Conductor.songPosition -= Conductor.crochet * 5;
+		
+		// PlayState.instance.persistentUpdate = true;
+		// PlayState.instance.resetScore();
+		// PlayState.songStarted = false;
+
+		// PlayState.strumLineNotes = null;
+		// PlayState.instance.generateSong();
+		// PlayState.instance.startCountdown();
+		// close();
+		FlxG.resetState();
 	}
 	override function destroy()
 	{

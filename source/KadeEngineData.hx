@@ -114,7 +114,7 @@ class KadeEngineData
 
 		if (FlxG.save.data.guiGap == null) FlxG.save.data.guiGap = 0;
 
-		if (FlxG.save.data.inputHandler == null) FlxG.save.data.inputHandler = 0;
+		if (FlxG.save.data.inputHandler == null) FlxG.save.data.inputHandler = 1;
 
 		if (FlxG.save.data.hitSound == null) FlxG.save.data.hitSound = false;
 

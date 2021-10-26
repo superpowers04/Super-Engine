@@ -250,7 +250,7 @@ class PlayState extends MusicBeatState
 	public function addObject(object:FlxBasic) { add(object); }
 	public function removeObject(object:FlxBasic) { remove(object); }
 
-	function resetScore(){
+	public function resetScore(){
 		sicks = 0;
 		bads = 0;
 		shits = 0;
@@ -269,15 +269,19 @@ class PlayState extends MusicBeatState
 
 	var interps:Map<String,Interp> = new Map();
 
-	public function handleError(error:String){
+	public function handleError(?error:String = "Unknown error!"){
 		try{
 
 			resetInterps();
 			if(!startedCountdown){
-				errorMsg = error;
-				return;
+				startTimer.manager.clear();
+				// startTimer.cancel();
+				songStarted = false;
+				startingSong = false;
+				inCutscene = false;
 			}
 			// generatedMusic = false;
+			generatedMusic = false;
 			persistentUpdate = false;
 			openSubState(new FinishSubState(0,0,error));
 		}catch(e){
@@ -301,22 +305,8 @@ class PlayState extends MusicBeatState
 			if (interps[id] == null) {trace('No Interp ${id}!');return;}
 			if (!interps[id].variables.exists(func_name)) {return;}
 			var method = interps[id].variables.get(func_name);
-
-			switch (args.length)
-			{
-				case 0:
-					method(this);
-				case 1:
-					method(this,args[0]);
-				case 2:
-					method(this,args[0], args[1]);
-				case 3:
-					method(this,args[0], args[1], args[2]);
-				case 4:
-					method(this,args[0], args[1], args[2], args[3]);
-				case 5:
-					method(this,args[0], args[1], args[2], args[3], args[4]);
-			}
+			args.insert(0,this);
+			Reflect.callMethod(interps[id],method,args);
 		}catch(e:hscript.Expr.Error){handleError('${func_name}:${e.line} for ${id}:\n ${e.toString()}');}
 	}
 
@@ -337,7 +327,8 @@ class PlayState extends MusicBeatState
 
 		}
 	inline function resetInterps() interps = new Map();
-	function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song"){
+	
+	public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song"){
 		if (!QuickOptionsSubState.getSetting("Song hscripts")) {resetInterps();return;}
 		var songScript = songScript;
 		var hsBrTools = hsBrTools;
@@ -384,7 +375,7 @@ class PlayState extends MusicBeatState
 		var e = switch(charId){case 1: dad; case 2: gf; default: boyfriend;};
 		e.playAnim(animation);
 	}
-	function clearVariables(){
+	public function clearVariables(){
 		stepAnimEvents = [];
 		beatAnimEvents = [];
 		unspawnNotes = [];
@@ -395,7 +386,6 @@ class PlayState extends MusicBeatState
 	public static var hasStarted = false;
 	override public function create()
 	{try{
-
 		if (instance != null) instance.destroy();
 		setInputHandlers(); // Sets all of the handlers for input
 		instance = this;
@@ -1331,7 +1321,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 				else
-					startCountdown();
+					startCountdownFirst();
 
 				remove(black);
 			}
@@ -1341,19 +1331,37 @@ class PlayState extends MusicBeatState
 	var startTimer:FlxTimer;
 	var perfectMode:Bool = false;
 
-
-
-	function startCountdown():Void
-	{
-		inCutscene = false;
-
-		generateStaticArrows(0);
-		generateStaticArrows(1);
-
-
+	function startCountdownFirst(){ // Skip the 
+		callInterp("startCountdownFirst",[]);
 		FlxG.camera.zoom = FlxMath.lerp(0.90, FlxG.camera.zoom, 0.95);
 		camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 		camFollow.setPosition(720, 500);
+		if (!playCountdown){
+			playCountdown = true;
+			return;
+		}
+		startCountdown();
+	}
+
+	var playCountdown = true;
+	var generatedArrows = false;
+	public function startCountdown():Void
+	{
+
+
+
+		inCutscene = false;
+		if (!generatedArrows){
+			generatedArrows = true;
+			generateStaticArrows(0);
+			generateStaticArrows(1);
+		}
+		FlxG.camera.zoom = FlxMath.lerp(0.90, FlxG.camera.zoom, 0.95);
+		camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+		camFollow.setPosition(720, 500);
+
+
+		
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
@@ -1361,6 +1369,7 @@ class PlayState extends MusicBeatState
 
 
 		var swagCounter:Int = 0;
+		callInterp("startCountdown",[]);
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
@@ -1382,6 +1391,7 @@ class PlayState extends MusicBeatState
 			// 		introAlts = introAssets.get(value);
 			// 	}
 			// }
+			callInterp("startTimerStep",[swagCounter]);
 
 			switch (swagCounter)
 			{
@@ -1535,7 +1545,7 @@ class PlayState extends MusicBeatState
 
 	var debugNum:Int = 0;
 
-	private function generateSong(?dataPath:String = ""):Void
+	public function generateSong(?dataPath:String = ""):Void
 	{
 		// FlxG.log.add(ChartParser.parse());
 
@@ -1940,6 +1950,9 @@ class PlayState extends MusicBeatState
 			}
 
 			// Conductor.lastSongPos = FlxG.sound.music.time;
+		}
+		if(FlxG.save.data.animDebug){
+			Overlay.debugVar += '\nHealth:${health}\nVocalVol:${vocals.volume}';
 		}
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
@@ -2551,7 +2564,7 @@ class PlayState extends MusicBeatState
 
 	function setInputHandlers(){
 		inputMode = FlxG.save.data.inputHandler;
-		var inputEngines = ["KE " + MainMenuState.kadeEngineVer,"KE1.5.2-BR"];
+		var inputEngines = ["KE " + MainMenuState.kadeEngineVer,"KE1.5.2-SE"];
 		if (onlinemod.OnlinePlayMenuState.socket != null && inputMode != 0) {inputMode = 0;trace("Loading with non-kade in online. Forcing kade!");} // This is to prevent input differences between clients
 		trace('Using ${inputMode}');
 		switch(inputMode){
@@ -3664,8 +3677,8 @@ class PlayState extends MusicBeatState
 		{
 			resyncVocals();
 		}
-		callInterp("stepHit",[]);
 		try{
+			callInterp("stepHit",[]);
 			for (i => v in stepAnimEvents) {
 				for (anim => ifState in v) {
 					var variable:Dynamic = Reflect.field(this,ifState.variable);

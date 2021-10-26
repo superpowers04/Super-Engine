@@ -91,23 +91,7 @@ class Character extends FlxSprite
 			args.insert(0,this);
 			var method = interp.variables.get(func_name);
 			Reflect.callMethod(interp,method,args);
-			// interp.call(interp,func_name,args);
-
-			// switch (args.length)
-			// {
-			// 	case 0:
-			// 		method(this);
-			// 	case 1:
-			// 		method(this,args[0]);
-			// 	case 2:
-			// 		method(this,args[0], args[1]);
-			// 	case 3:
-			// 		method(this,args[0], args[1], args[2]);
-			// 	case 4:
-			// 		method(this,args[0], args[1], args[2], args[3]);
-			// 	case 5:
-			// 		method(this,args[0], args[1], args[2], args[3], args[4]);
-			// }
+			
 			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}');}
 		}
 	function parseHScript(scriptContents:String){

@@ -68,7 +68,7 @@ class OptionsMenu extends MusicBeatState
 			new ResetButtonOption("Toggle pressing R to gameover."),
 
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
-			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF"),
+			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF. Also shows extra information"),
 			new PlayVoicesOption("Plays your character's voices when you press a note.")
 		]),
 		new OptionCategory("Performance", [

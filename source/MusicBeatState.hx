@@ -72,6 +72,9 @@ class MusicBeatState extends FlxUIState
 
 		if ((cast (Lib.current.getChildAt(0), Main)).getFPSCap != FlxG.save.data.fpsCap && FlxG.save.data.fpsCap <= 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		if(FlxG.save.data.animDebug){
+			Overlay.debugVar = '\ncurBeat:${curBeat}\ncurStep:${curStep}';
+		}
 
 		super.update(elapsed);
 	}

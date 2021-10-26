@@ -29,6 +29,8 @@ class MultiPlayState extends onlinemod.OfflinePlayState
     {try{
     if (scriptLoc != "") PlayState.songScript = File.getContent(scriptLoc); else PlayState.songScript = "";
     stateType=4;
+    shouldLoadSongs = false;
+    loadSongs();
   	super.create();
 
   }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
