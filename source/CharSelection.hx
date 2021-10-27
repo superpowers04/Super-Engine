@@ -23,6 +23,11 @@ class CharSelection extends SearchMenuState
   override function create()
   {try{
 	searchList = TitleState.choosableCharacters;
+	if(TitleState.invalidCharacters.length > 0){
+		for (i in 0 ... TitleState.invalidCharacters.length) {
+			searchList.insert(0,TitleState.invalidCharacters[i]);
+		}
+	}
 	if (Options.PlayerOption.playerEdit == 0){
 	  if(!searchList.contains("automatic")) searchList.insert(0,"automatic");
 	} else if (searchList.contains("automatic")) searchList.remove("automatic");

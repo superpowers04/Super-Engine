@@ -102,9 +102,11 @@ class Note extends FlxSprite
 		isSustainNote = sustainNote;
 		mustPress = playerNote; 
 		type = _type;
+		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
+
 
 		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
-		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt" || _type == true));
+		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;

@@ -21,6 +21,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
   var selMode:Int = 0;
   var blockedFiles:Array<String> = ['picospeaker.json','meta.json','config.json'];
   static var lastSel:Int = 0;
+  static var lastSearch:String = "";
 
   var songNames:Array<String> = [];
   override function findButton(){
@@ -35,15 +36,19 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
     diffText.font = CoolUtil.font;
     add(diffText);
+
     changeSelection(lastSel);
+    searchField.text = lastSearch;
+    if(lastSearch != "") reloadList(true,lastSearch);
+
+    lastSearch = "";
     lastSel = 0;
     changeDiff();
   }
   override function reloadList(?reload=false,?search = ""){
     curSelected = 0;
-    if(reload){grpSongs.destroy();}
-    grpSongs = new FlxTypedGroup<Alphabet>();
-    add(grpSongs);
+    if(reload){grpSongs.clear();}
+
     songs = ["No Songs!"];
     songNames = ["Nothing"];
     modes = [0 => ["None"]];
@@ -114,6 +119,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
       PlayState.actualSongName = songJSON;
       MultiPlayState.voicesFile = '';
       lastSel = curSelected;
+      lastSearch = searchField.text;
       if (FileSystem.exists('${selSong}/Voices.ogg')) MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
       if (FileSystem.exists('${selSong}/script.hscript')) {
         trace("Song has script!");

@@ -478,8 +478,6 @@ class AnimationDebug extends MusicBeatState
 
 			dad.x -= characterX;
 			dad.y -= characterY;
-			// dad.x = dad.x;
-			// dad.y = dad.y;
 
 			trace('${dad.x},${dad.y}');
 			errorStage = 5; // Position
@@ -622,7 +620,6 @@ class AnimationDebug extends MusicBeatState
 			if (exists){
 				charJson.animations[id] = charAnim;
 			}else{
-
 				charJson.animations.push(charAnim);
 			}
 		}else{
@@ -651,30 +648,38 @@ class AnimationDebug extends MusicBeatState
 		uiBox = new FlxUITabMenu(null, [{name:"Animation binder",label:"Animation binder"}], true);
 		uiBox.cameras = [camHUD];
 
-		uiBox.resize(250, 300);
+		uiBox.resize(250, 330);
 		uiBox.x = FlxG.width - 275;
 		uiBox.y = 80;
 		uiBox.scrollFactor.set();
 		add(uiBox);
+		uiMap["animSel"] = new FlxUIInputText(11, 230, 100, '');
+		// animSel.text = "idle";
+
 		var animDropDown2 = new FlxUIDropDownMenu(10, 260, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
-		{
-			trace('Drop2: ${Std.parseInt(anim)}');
-			animUICurAnim = INTERNALANIMATIONLIST[Std.parseInt(anim)];
+		{			// animUICurAnim = INTERNALANIMATIONLIST[Std.parseInt(anim)];
+
+			uiMap["animSel"].text = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 		});
 		animDropDown2.selectedLabel = '';animDropDown2.cameras = [camHUD];
+		// animFPS.checked = false;
 		uiBox.add(animDropDown2);
-		var animTxt = new FlxText(10, 230,0,"Internal Name");
-		uiBox.add(animTxt);
+		uiBox.add(uiMap["animSel"]);
 		
 		animUICurName = charAnims[0];
-		animDropDown3 = new FlxUIDropDownMenu(140, 260, FlxUIDropDownMenu.makeStrIdLabelArray(charAnims, true), function(anim:String)
+		animDropDown3 = new FlxUIDropDownMenu(125, 150, FlxUIDropDownMenu.makeStrIdLabelArray(charAnims, true), function(anim:String)
 		{
 			// trace('Drop3: ${Std.parseInt(anim)}');
 			animUICurName = charAnims[Std.parseInt(anim)];
+			// uiMap["animSel"].text = charAnims[Std.parseInt(anim)];
 		});
 		animDropDown3.selectedLabel = '';animDropDown3.cameras = [camHUD];
 		uiBox.add(animDropDown3);
-		var animTxt = new FlxText(140, 230,0,"XML Name");
+
+		var animTxt = new FlxText(10, 200,0,"Internal Name");
+		uiBox.add(animTxt);
+
+		var animTxt = new FlxText(140, 130,0,"XML Name");
 		uiBox.add(animTxt);
 
 		// Toggles
@@ -697,9 +702,9 @@ class AnimationDebug extends MusicBeatState
 		var animTxt = new FlxText(animFPS.x, animFPS.y - 20,0,"Animation FPS");
 		uiBox.add(animTxt);
 
-		var commitButton = new FlxUIButton(50,160,"Add animation",function(){
-			editAnimation(animUICurAnim,{
-				anim: animUICurAnim,
+		var commitButton = new FlxUIButton(20,160,"Add animation",function(){
+			editAnimation(uiMap["animSel"].text,{
+				anim: uiMap["animSel"].text,
 				name: animUICurName,
 				loop: uiMap["loop"].checked,
 				fps: Std.parseInt(uiMap["FPS"].text),
@@ -736,7 +741,7 @@ class AnimationDebug extends MusicBeatState
 		var ctrlPress = FlxG.keys.pressed.CONTROL;
 		var rPress = FlxG.keys.justPressed.R;
 		var hPress = FlxG.keys.justPressed.H;
-		if (hPress) openSubState(new AnimHelpScreen(canEditJson,editMode));
+		if (hPress && editMode != 2) openSubState(new AnimHelpScreen(canEditJson,editMode));
 		switch(editMode){
 			case 0:{
 				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
