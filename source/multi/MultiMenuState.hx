@@ -170,6 +170,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
   override function goOptions(){
       lastSel = curSelected;
+      lastSearch = searchField.text;
       FlxG.mouse.visible = false;
       OptionsMenu.lastState = 4;
       FlxG.switchState(new OptionsMenu());

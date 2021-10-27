@@ -87,25 +87,8 @@ class Song
 		}
 		return swagShit;
 	}
-	static function removeOpponentArrows(swagShit:SwagSong):SwagSong{
-		var invertedNotes:Array<Int> = [4,5,6,7];
-		var oppNotes:Array<Int> = [0,1,2,3];
 
-		for (sid => section in swagShit.notes) {
-			for (nid => note in section.sectionNotes){
-				if (!section.mustHitSection && invertedNotes.contains(note[1]) || section.mustHitSection && oppNotes.contains(note[1])) continue;
-			}
-		}
-		return swagShit;
-	}
-	static function removeHurtArrows(swagShit:SwagSong):SwagSong{
-		for (sid => section in swagShit.notes) {
-			for (nid => note in section.sectionNotes){
-				swagShit.notes[sid].sectionNotes[nid][3] = 0;
-			}
-		}
-		return swagShit;
-	}
+
 	static function modifyChart(swagShit:SwagSong):SwagSong{
 		var hurtArrows = (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null);
 		var opponentArrows = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows"));
@@ -116,24 +99,15 @@ class Song
 			if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
 
 			var sN:Array<Array<Dynamic>> = [];
-			haxe.ds.ArraySort.sort(section.sectionNotes, function(a, b) {
-				if(a[0] > b[0]) return -1;
-				else if(b[0] > a[0]) return 1;
-				else return 0;
-			});
 
-			for (nid => note in section.sectionNotes){ // Regenerate section, is a bit fucky but only happens when loading
+			for (nid in 0 ... section.sectionNotes.length){ // Regenerate section, is a bit fucky but only happens when loading
+				var note:Array<Dynamic> = section.sectionNotes[nid];
+				// Removes opponent arrows 
+				if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");continue;}
 
-				var nextNote:Array<Dynamic> = [];
-				if (section.sectionNotes[nid + 1] != null){
-					nextNote = section.sectionNotes[nid + 1];
-				}
-				// This is fucky but checking if notes are less than 10 ms apart every frame is disgusting and should be faster than last method, which looped every section 5 times
-				if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1])))
-					continue;
 
 				if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-					if((note[4] == 1 || note[1] > 7) ) {note[3] = 1;} // Support for Andromeda and tricky notes
+					if(note[4] == 1 || note[1] > 7) {note[3] = 1;} // Support for Andromeda and tricky notes
 				}else{
 					note[3] = 0;
 				}

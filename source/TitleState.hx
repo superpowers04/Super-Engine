@@ -98,7 +98,7 @@ class TitleState extends MusicBeatState
 					characterDescriptions[directory] = File.getContent('mods/characters/${directory}/description.txt');
 			}else if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
 				invalidCharacters.push(directory);
-				customCharacters.push(directory);
+				// customCharacters.push(directory);
 			}
 		  }
 		}

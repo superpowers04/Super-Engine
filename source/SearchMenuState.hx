@@ -78,7 +78,9 @@ class SearchMenuState extends MusicBeatState
 		bg.color = 0xFFFF6E6E;
 		bg.scrollFactor.set(0.01,0.01);
 		add(bg);
+		grpSongs = new FlxTypedGroup<Alphabet>();
 		reloadList();
+		add(grpSongs);
 		if (toggleables['search']){
 				FlxG.mouse.visible = true;
 				//Searching
@@ -106,6 +108,7 @@ class SearchMenuState extends MusicBeatState
 		try{if(onlinemod.OnlinePlayMenuState.socket != null) onlinemod.OnlinePlayMenuState.receiver.HandleData = HandleData;}catch(e){}
 
 		super.create();
+		openfl.system.System.gc();
 		
 	}catch(e) MainMenuState.handleError('Error with searchmenu "create" ${e.message}');}
 
@@ -125,9 +128,7 @@ class SearchMenuState extends MusicBeatState
 
 	function reloadList(?reload = false,?search=""){try{
 		curSelected = 0;
-		if(reload){grpSongs.destroy();}
-		grpSongs = new FlxTypedGroup<Alphabet>();
-		add(grpSongs);
+		if(reload){grpSongs.clear();}
 		songs = [];
 
 		var i:Int = 0;
