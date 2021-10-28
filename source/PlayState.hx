@@ -3028,7 +3028,7 @@ class PlayState extends MusicBeatState
 
 				note.rating = Ratings.CalculateRating(noteDiff);
 
-				if(note.shouldntBeHit && note.rating != "miss" && note.rating != "shit" && note.rating != "bad"){noteMiss(note.noteData,note,true); return;}
+				if(note.shouldntBeHit){if(note.rating != "miss" && note.rating != "shit" && note.rating != "bad") {noteMiss(note.noteData,note,true);} return;}
 
 				// if (note.canMiss){ Disabled for now, It seemed to add to the lag and isn't even properly implemented
 					
@@ -3430,7 +3430,7 @@ class PlayState extends MusicBeatState
 				note.rating = Ratings.CalculateRating(noteDiff);
 
 
-				if(note.shouldntBeHit && note.rating != "miss" && note.rating != "shit" && note.rating != "bad"){noteMiss(note.noteData,note,true); return;}
+				if(note.shouldntBeHit){if(note.rating != "miss" && note.rating != "shit" && note.rating != "bad") {noteMiss(note.noteData,note,true);} return;}
 
 				if (!note.isSustainNote)
 					notesHitArray.unshift(Date.now());
