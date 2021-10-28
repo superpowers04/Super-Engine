@@ -868,6 +868,10 @@ class AnimationDebug extends MusicBeatState
 					 (FlxG.keys.justPressed.LEFT),
 					 (FlxG.keys.justPressed.DOWN),
 					 (FlxG.keys.justPressed.RIGHT),
+					 (FlxG.keys.pressed.UP), // Adjust camera position
+					 (FlxG.keys.pressed.LEFT),
+					 (FlxG.keys.pressed.DOWN),
+					 (FlxG.keys.pressed.RIGHT),
 				];
 				for (i => v in pressArray) {
 					if (v){
@@ -877,13 +881,25 @@ class AnimationDebug extends MusicBeatState
 								setupUI(false);
 								toggleOffsetText(false);
 							case 1: // Offset adjusting
-								updateCameraPos(true,0,-1,shiftPress,ctrlPress);
+								updateCameraPos(true,0,-1,false,ctrlPress);
 							case 2:
-								updateCameraPos(true,-1,0,shiftPress,ctrlPress);
+								updateCameraPos(true,-1,0,false,ctrlPress);
 							case 3:
-								updateCameraPos(true,0,1,shiftPress,ctrlPress);
+								updateCameraPos(true,0,1,false,ctrlPress);
 							case 4:
-								updateCameraPos(true,1,0,shiftPress,ctrlPress);
+								updateCameraPos(true,1,0,false,ctrlPress);
+							case 5: // Offset adjusting
+								if (shiftPress)
+									updateCameraPos(true,0,-1,false,ctrlPress);
+							case 6:
+								if (shiftPress)
+									updateCameraPos(true,-1,0,false,ctrlPress);
+							case 7:
+								if (shiftPress)
+									updateCameraPos(true,0,1,false,ctrlPress);
+							case 8:
+								if (shiftPress)
+									updateCameraPos(true,1,0,false,ctrlPress);
 						}	
 					}
 				}

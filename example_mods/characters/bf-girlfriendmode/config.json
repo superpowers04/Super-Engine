@@ -1,18 +1,5 @@
 {
-	"clone": "", "": "Copies the offsets of a character and a few interactions, disable it by removing this line or leaving it blank",
-	"no_antialiasing": false, "": "If set to true, forces antialiasing to be disabled, useful for Pixel characters",
-	"sing_duration": 4, "": "Duration of character sing animation's mult, Dad clones use 6.1 while everyone else uses 4",
-	"dance_idle": false, "": "Makes the character use danceRight/danceLeft animations instead of Idle, useful for Skid & Pump/GF clones",
-
-	"scale": 1, "": "Sprite scale on common stages, online lobby and Character Select screen, Senpai uses 6 while BF-Pixel/Spirit uses 6.6, everyone else uses 1",
-	"scale_pixel": 0.91, "": "Sprite scale on Pixel stages, Senpai/Spirit/BF-Pixel uses 6, everyone else uses 0.91",
-	"pixel_offset_scale": 0.91, "": "Fixes the animation offsets being a bit broken on Pixel stages for non-pixel characters, usually just set this to the same value as scale_pixel. This is dumb",
-	"online_offset_scale": 0.7, "": "Fixes the singing animations being a bit broken on Online Mode Lobby, Spirit/Senpai/BF-Pixel uses 1, everyone else uses 0.7. This is also dumb",
-	"alt_anims": false, "": "Enables alt animations like those from Parents-Christmas",
-	"flip_x": true, "": "Flips X axis from the sprite, useful for Boyfriend/Pico/Tankman clones",
-	"spirit_trail": false, "": "Enables Spirit's visual effect",
-	"read_only": false, "": "Hides it from character select (Both online, local mp and singleplayer), useful for decreasing your list size for characters you will never play with",
-	"offset_flip": 1,
+	"dance_idle": false,
 	"asset_files":[
 		{
 			"png":"skins/bfCar.png",
@@ -25,81 +12,241 @@
 			"tags":["christmas"]
 		}
 	],
-
-	"animations":
-	[
+	"animations_offsets": [
 		{
-			"anim": "hey",
-			"name": "BF HEY",
-			"fps": 24,
+			"player1": [
+				-40,
+				23
+			],
+			"player2": [
+				-29.1,
+				19
+			],
+			"player3": [
+				0,
+				0
+			],
+			"anim": "singRIGHTmiss"
+		},
+		{
+			"player1": [
+				-17,
+				-51
+			],
+			"player2": [
+				-17,
+				-50
+			],
+			"player3": [
+				0,
+				0
+			],
+			"anim": "singDOWN"
+		},
+		{
+			"player1": [
+				9,
+				20
+			],
+			"player2": [
+				29,
+				23
+			],
+			"player3": [
+				0,
+				0
+			],
+			"anim": "singLEFTmiss"
+		},
+		{
+			"player1": [
+				-40,
+				31
+			],
+			"player2": [
+				0,
+				26
+			],
+			"player3": [
+				0,
+				0
+			],
+			"anim": "singUP"
+		},
+		{
+			"player1": [
+				-46,
+				-5
+			],
+			"player2": [
+				-29,
+				-7
+			],
+			"player3": [
+				0,
+				0
+			],
+			"anim": "singRIGHT"
+		},
+		{
+			"player1": [
+				-17,
+				-21
+			],
+			"player2": [
+				-17,
+				-20
+			],
+			"player3": [
+				0,
+				0
+			],
+			"anim": "singDOWNmiss"
+		},
+		{
+			"player1": [
+				9,
+				-6
+			],
+			"player2": [
+				35,
+				-5
+			],
+			"player3": [
+				0,
+				0
+			],
+			"anim": "singLEFT"
+		},
+		{
+			"player1": [
+				-36,
+				31
+			],
+			"player2": [
+				-4,
+				26
+			],
+			"player3": [
+				0,
+				0
+			],
+			"anim": "singUPmiss"
+		}
+	],
+	"voices": "",
+	"no_antialiasing": false,
+	"cam_pos": [
+		0,
+		0
+	],
+	"color":[49,176,209],
+	"sing_duration": 6.1,
+	"char_pos1": [
+		-76,
+		-311
+	],
+	"flip_x": true,
+	"like": "",
+	"genBy": "FNFBR; Animation Editor",
+	"char_pos2": [
+		-79,
+		-299
+	],
+	"common_stage_offset": [],
+	"offset_flip": 1,
+	"scale": 1,
+	"char_pos": [],
+	"cam_pos1": [
+		-255,
+		270
+	],
+	"clone": "",
+	"cam_pos2": [
+		0,
+		0
+	],
+	"animations": [
+		{
+			"oneshot": false,
 			"loop": false,
+			"anim": "idle",
+			"fps": 24,
+			"name": "BF idle dance",
 			"indices": []
 		},
 		{
-			"anim": "scared",
-			"name": "BF idle shaking",
+			"oneshot": false,
+			"loop": false,
+			"anim": "singDOWN",
 			"fps": 24,
-			"loop": true,
+			"name": "BF NOTE DOWN",
+			"indices": []
+		},
+		{
+			"oneshot": false,
+			"loop": false,
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "BF NOTE LEFT",
+			"indices": []
+		},
+		{
+			"oneshot": false,
+			"loop": false,
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "BF NOTE RIGHT",
+			"indices": []
+		},
+		{
+			"oneshot": false,
+			"loop": false,
+			"anim": "singUP",
+			"fps": 24,
+			"name": "BF NOTE UP",
+			"indices": []
+		},
+		{
+			"oneshot": false,
+			"loop": false,
+			"anim": "singDOWNmiss",
+			"fps": 24,
+			"name": "BF NOTE DOWN MISS",
+			"indices": []
+		},
+		{
+			"oneshot": false,
+			"loop": false,
+			"anim": "singLEFTmiss",
+			"fps": 24,
+			"name": "BF NOTE LEFT MISS",
+			"indices": []
+		},
+		{
+			"oneshot": false,
+			"loop": false,
+			"anim": "singUPmiss",
+			"fps": 24,
+			"name": "BF NOTE UP MISS",
+			"indices": []
+		},
+		{
+			"oneshot": false,
+			"loop": false,
+			"anim": "lose",
+			"fps": 24,
+			"name": "BF dies",
+			"indices": []
+		},
+		{
+			"oneshot": false,
+			"loop": false,
+			"anim": "dodge",
+			"fps": 24,
+			"name": "BF idle shaking",
 			"indices": []
 		}
-	], "": "The idle/sing/miss animations are added automatically with the same values as Boyfriend's, you just have to add animations to this array if you want to edit something or add Hey/Scared animations to it",
-
-	"animations_offsets":
-		[
-			{
-				"anim": "idle",
-				"player1": [0, 0],
-				"player2": [0, 0]
-			},
-			{
-				"anim": "singUP",
-				"player1": [-45, 25],
-				"player2": [5, 30]
-			},
-			{
-				"anim": "singRIGHT",
-				"player1": [-40, -7],
-				"player2": [-35, -5.5]
-			},
-			{
-				"anim": "singLEFT",
-				"player1": [8, -6],
-				"player2": [40, -5]
-			},
-			{
-				"anim": "singDOWN",
-				"player1": [-20, -50],
-				"player2": [-20, -50]
-			},
-			{
-				"anim": "singUPmiss",
-				"player1": [-41, 25],
-				"player2": [1, 30]
-			},
-			{
-				"anim": "singRIGHTmiss",
-				"player1": [-34, 21],
-				"player2": [-35.8, 20.5]
-			},
-			{
-				"anim": "singLEFTmiss",
-				"player1": [8, 20],
-				"player2": [40, 23]
-			},
-			{
-				"anim": "singDOWNmiss",
-				"player1": [-20, -20],
-				"player2": [-20, -20]
-			}
-		],
-
-
-	"common_stage_offset": [0,-300, 0, -340], "": "Your character's offset ingame on common stages as Player 1 and 2",
-	"cam_pos":[0,0],
-	"pixel_stage_offset": [0, 0, 0, 0], "": "Your character's offset ingame on Pixel stages as Player 1 and 2",
-	"local_multiplayer_offset": [0, 0], "": "Your character's offset on the Local Multiplayer/Singleplayer Character Select screen",
-	"online_offset": [0, 0], "": "Your character's offset on Online Mode lobby",
-	"playername_relative": 0, "": "Relative (Y) position from the Player Name to their character on Online Mode Lobby",
-
-	"": "Sometimes i hate my own code, good luck messing with this! I will probably convert the Animation Debug into a Character Editor someday, idk"
+	],
+	"flip_notes": true
 }

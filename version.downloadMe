@@ -3,3 +3,6 @@
 - Add a few HScript classes/features
 - Public name is now Super engine, Internal name will still stay the same for compatbility
 - Several improvements to Animation Debug
+- Fixed a bug where strings in notes would be replaced with 0
+- The 4th item in a note will now automatically be applied to note.type
+- New song repo, accessable from Other > Download charts

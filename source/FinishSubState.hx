@@ -42,7 +42,10 @@ class FinishSubState extends MusicBeatSubstate
 			isError = true;
 			errorMsg = error;
 			won = false;
+			
 		}
+		FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
+
 		this.week = week;
 		if(!isError) FlxG.state.persistentUpdate = true; else FlxG.state.persistentUpdate = false;
 		win = won;
@@ -69,7 +72,7 @@ class FinishSubState extends MusicBeatSubstate
 				}
 				if (FlxG.save.data.songPosition)
 				{
-					for (i in [PlayState.songPosBar,PlayState.songPosBG,PlayState.instance.songName]) {
+					for (i in [PlayState.songPosBar,PlayState.songPosBG,PlayState.instance.songName,PlayState.instance.songTimeTxt]) {
 						FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
 					}
 				}

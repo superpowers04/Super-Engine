@@ -110,15 +110,8 @@ class OnlinePauseSubState extends MusicBeatSubstate
 					FlxG.resetState();
 				case "Exit to menu":
 					PlayState.loadRep = false;
-					// if (PlayState.lua != null)
-					// {
-					// 	Lua.close(PlayState.lua);
-					// 	PlayState.lua = null;
-					// }
-					// Close the socket
-					if (!offline && OnlinePlayMenuState.socket.connected)
-						OnlinePlayMenuState.socket.close();
-					FlxG.switchState(new MainMenuState());
+					
+					FlxG.switchState(new OnlineLobbyState());
 			}
 		}
 	}
