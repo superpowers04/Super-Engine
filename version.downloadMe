@@ -1,4 +1,4 @@
-0.7.1;
+0.8.0;
 - Fix the game softlocking on certain errors
 - Add a few HScript classes/features
 - Public name is now Super engine, Internal name will still stay the same for compatbility
@@ -6,3 +6,5 @@
 - Fixed a bug where strings in notes would be replaced with 0
 - The 4th item in a note will now automatically be applied to note.type
 - New song repo, accessable from Other > Download charts
+- Notes now have a "hit" and "miss" function that can be replaced
+- Psych engine Play Animations now work

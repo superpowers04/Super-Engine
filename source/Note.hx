@@ -41,8 +41,10 @@ class Note extends FlxSprite
 	public var childNotes:Array<Note> = [];
 	public var parentNote:Note = null;
 	public var showNote = true;
+	public var info:Array<Dynamic> = [];
 
 	public var rating:String = "shit";
+	public var eventNote:Bool = false;
 
 
 	public function loadFrames(){
@@ -90,6 +92,24 @@ class Note extends FlxSprite
 		animation.addByPrefix('redhold', 'red hold piece');
 		animation.addByPrefix('bluehold', 'blue hold piece');
 	}
+	dynamic public function hit(?charID:Int = 0){
+		switch (charID) {
+			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
+			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
+		};
+		PlayState.charAnim(charID,noteAnims[noteData],true);
+	}
+	dynamic public function miss(?charID:Int = 0){
+		switch (charID) {
+			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
+			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
+		};
+		PlayState.charAnim(charID,noteAnims[noteData] + "miss",true);
+	}
+	public static var noteAnims:Array<String> = ['singLEFT','singDOWN','singUP','singRIGHT'];
+
+
+	static var psychChars:Array<Int> = [1,0,2]; // Psych uses different character ID's than SE
 
 	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_type:Dynamic = 0,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
@@ -102,11 +122,30 @@ class Note extends FlxSprite
 		isSustainNote = sustainNote;
 		mustPress = playerNote; 
 		type = _type;
+
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
 
 
 		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
+		if(rawNote[1] == -1){ // Psych event notes, These should not be shown, and should not appear on the player's side
+			shouldntBeHit = false;
+			showNote = false;
+			noteData = 0;
+			mustPress = false;
+			eventNote = true;
+			type =rawNote[2];
+			if(rawNote[2] == "Play Animation"){
+				try{
+					info = [rawNote[3],psychChars[Std.parseInt(rawNote[4])]];
+				}catch(e){info = [rawNote[3],0];}
+				hit = function(?charID:Int = 0){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);};
+				trace('Animation note processed');
+			}else{ // Don't trigger hit animation
+				hit = function(?charID:Int = 0){return;};
+			}
+		}
+
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
@@ -129,7 +168,7 @@ class Note extends FlxSprite
 		updateHitbox();
 		antialiasing = true;
 		var noteName = noteNames[noteData];
-
+		if(eventNote) noteName = noteNames[0];
 
 
 		x+= swagWidth * noteData;
@@ -179,7 +218,7 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (!skipNote || isOnScreen()){ // doesn't calculate anything until they're on screen
+		if ((!skipNote || isOnScreen())){ // doesn't calculate anything until they're on screen
 			skipNote = false;
 			visible = showNote;
 
