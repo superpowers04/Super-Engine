@@ -40,7 +40,7 @@ class Note extends FlxSprite
 	public var skipNote:Bool = true;
 	public var childNotes:Array<Note> = [];
 	public var parentNote:Note = null;
-	var showNote = true;
+	public var showNote = true;
 
 	public var rating:String = "shit";
 
