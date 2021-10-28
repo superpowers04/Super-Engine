@@ -129,7 +129,8 @@ class AnimationDebug extends MusicBeatState
 			// 	var e = new PlayState();
 			// 	e.destroy();
 			// }catch(e){
-			MainMenuState.handleError("A song needs to be loaded first due to a crashing bug!");
+			MainMenuState.handleError("A song needs to be loaded first!");
+			return;
 			// }
 		} 
 			// MainMenuState.handleError("A song needs to be loaded first due to a crashing bug!");
@@ -653,13 +654,14 @@ class AnimationDebug extends MusicBeatState
 		uiBox.y = 80;
 		uiBox.scrollFactor.set();
 		add(uiBox);
-		uiMap["animSel"] = new FlxUIInputText(11, 230, 100, '');
+		uiMap["animSel"] = new FlxInputTextUpdatable(11, 230, 100, '');
 		// animSel.text = "idle";
 
 		var animDropDown2 = new FlxUIDropDownMenu(10, 260, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
 		{			// animUICurAnim = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 
-			uiMap["animSel"].text = INTERNALANIMATIONLIST[Std.parseInt(anim)];
+			uiMap["animSel"].updateText(INTERNALANIMATIONLIST[Std.parseInt(anim)]);
+			// uiMap["animSel"].textField.text = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 		});
 		animDropDown2.selectedLabel = '';animDropDown2.cameras = [camHUD];
 		// animFPS.checked = false;
@@ -905,7 +907,7 @@ class AnimationDebug extends MusicBeatState
 				}
 			}
 			case 2:{
-				if (FlxG.keys.justPressed.M){
+				if (FlxG.keys.justPressed.M && (uiMap["FPS"] == null || !uiMap["FPS"].focused && !uiMap["animSel"].focused)){
 					editMode = 0;
 					setupUI(true);
 					toggleOffsetText(false);
