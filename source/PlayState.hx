@@ -1642,7 +1642,7 @@ class PlayState extends MusicBeatState
 
 				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
-				var lastSusNote = true;
+				var lastSusNote = false; // If the last note is a sus note
 
 				for (susNote in 0...Math.floor(susLength))
 				{
@@ -1661,7 +1661,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (lastSusNote){
+				if (lastSusNote){ // Moves last sustain note so it looks right, hopefully
 					unspawnNotes[Std.int(unspawnNotes.length - 1)].strumTime -= (Conductor.stepCrochet * 0.4);
 				}
 
