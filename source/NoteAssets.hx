@@ -58,17 +58,16 @@ class NoteAssets{
 	}
 }
 class SplashNoteAsset{
-	public static var name:String;
+	// public var name:String;
 	var path:String = "mods/noteassets";
-	public static var image:FlxGraphic;
-	public static var xml:String;
+	// public var image:FlxGraphic;
+	// public var xml:String;
 	public function new(?name_:String = "noteSplashes",?path_:String = "assets/shared/images/"):Void{
 		try{
 
-		name = name_;
-		path = path_;
-		NoteAssets.splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}.png'));
-		NoteAssets.splashXml = File.getContent('${path}/${name}.xml');
+
+		NoteAssets.splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path_}/${name_}.png'));
+		NoteAssets.splashXml = File.getContent('${path_}/${name_}.xml');
 		return;
 		}catch(e) MainMenuState.handleError('Error occurred while loading splashes ${e.message}');
 		
