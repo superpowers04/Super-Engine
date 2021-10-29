@@ -250,7 +250,7 @@ class OnlineLoadState extends MusicBeatState
 			}
 		}catch(e){
 			Chat.OutputChatMessage("[Client] You had an error while trying to download a song:\n" + e.message);
-			FlxG.switchState(new OnlineLobbyState());
+			FlxG.switchState(new OnlineLobbyState(true));
 		}
 	}
 
