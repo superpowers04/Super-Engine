@@ -94,6 +94,7 @@ class ImportModFromFolder extends MusicBeatState
 
 		  	for (directory in FileSystem.readDirectory('${assets}songs/')) {
 					loadingText.text = 'Checking ${directory}...'; // Just display this text
+					draw();
 					if(!FileSystem.isDirectory('${assets}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
 					var dir:String = '${folder}assets/songs/${directory}/';
 					if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
@@ -104,12 +105,14 @@ class ImportModFromFolder extends MusicBeatState
 					for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg','${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
 						try{
 							loadingText.text = 'Copying ${i}...';// Just display this text
+					draw();
 							File.copy(i,v);
 						}catch(e) trace('$i caused ${e.message}');
 					}
 					for (file in FileSystem.readDirectory('${assets}data/${directory}/')) {
 						try{
 							loadingText.text = 'Copying ${file}...';// Just display this text
+					draw();
 							File.copy('${assets}data/${directory}/${file}','${outDir}${file}');
 						}catch(e) trace('$file caused ${e.message}');
 
@@ -120,6 +123,7 @@ class ImportModFromFolder extends MusicBeatState
 		  		if (!directory.endsWith("inst.ogg")) continue;
 		  		directory = directory.substr(0,-8);
 					loadingText.text = 'Checking ${directory}...'; // Just display this text
+					draw();
 					if(!importExisting && existingSongs.contains(directory.toLowerCase())) {continue;} // Skip if it's on the existing songs list
 					var dir:String = '${folder}assets/music/${directory}-';
 					if(!FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" doesnt exist');continue;}
@@ -131,18 +135,21 @@ class ImportModFromFolder extends MusicBeatState
 					     			'${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
 						try{
 							loadingText.text = 'Copying ${i}...';// Just display this text
+					draw();
 							File.copy(i,v);
 						}catch(e) trace('$i caused ${e.message}');
 					}
 					for (file in FileSystem.readDirectory('${assets}data/${directory}/')) {
 						try{
 							loadingText.text = 'Copying ${file}...';// Just display this text
+					draw();
 							File.copy('${assets}data/${directory}/${file}','${outDir}${file}');
 						}catch(e) trace('$file caused ${e.message}');
 
 				} songsImported++;}
 		}
-  	loadingText.text = 'Imported ${songsImported} songs. Press any key to go to the main menu';
+  	loadingText.text = 'Imported ${songsImported} songs. All song names are prefixed with "${name.substr(0,5)}-" \nPress any key to go to the main menu';
+  	loadingText -= 50
   	done = true;
   	}catch(e) MainMenuState.handleError('Error while trying to scan for songs, ${e.message}');
   }
