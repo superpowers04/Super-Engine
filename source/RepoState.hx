@@ -45,7 +45,11 @@ typedef RepoCharsJSON = {
 class RepoState extends SickMenuState
 {
 	var repo = "https://raw.githubusercontent.com/superpowers04/FNFBR-Repo/main/characters.json";
+	#if windows
+	var unarExe = "C:\\Program Files\\7-Zip\\7z.exe";
+	#else
 	var unarExe = "/bin/7z";
+	#end
 	var repoArray:RepoJSON;
 	var repoRet:String = "";
 	var installing:Int = 0;
@@ -80,9 +84,6 @@ class RepoState extends SickMenuState
 			return;
 		#end
 		descriptions = [];
-		#if windows
-			unarExe = "C:\\Program Files\\7-Zip\\7z.exe";
-		#end
 		if (!sys.FileSystem.exists(unarExe)) {
 			MainMenuState.handleError("This feature requires 7-Zip to be installed");
 			return;			

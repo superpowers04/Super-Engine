@@ -149,7 +149,7 @@ class ImportModFromFolder extends MusicBeatState
 				} songsImported++;}
 		}
   	loadingText.text = 'Imported ${songsImported} songs. All song names are prefixed with "${name.substr(0,5)}-" \nPress any key to go to the main menu';
-  	loadingText -= 50
+  	loadingText.x -= 50;
   	done = true;
   	}catch(e) MainMenuState.handleError('Error while trying to scan for songs, ${e.message}');
   }
