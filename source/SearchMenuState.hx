@@ -72,11 +72,11 @@ class SearchMenuState extends MusicBeatState
 	}
 	override function create()
 	{try{
-		SickMenuState.musicHandle();
 		PlayState.songScript = "";PlayState.hsBrTools = null;
 		bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 		bg.color = 0xFFFF6E6E;
 		bg.scrollFactor.set(0.01,0.01);
+		SickMenuState.musicHandle(bg);
 		add(bg);
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		reloadList();

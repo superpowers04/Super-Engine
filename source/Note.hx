@@ -129,17 +129,19 @@ class Note extends FlxSprite
 		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
 		if(rawNote[1] == -1){ // Psych event notes, These should not be shown, and should not appear on the player's side
-			shouldntBeHit = false;
-			showNote = false;
-			noteData = 0;
-			mustPress = false;
-			eventNote = true;
+			shouldntBeHit = false; // Make sure it doesn't become a hurt note
+			showNote = false; // Don't show the note
+			noteData = 0; // Set it to 0, to prevent issues
+			mustPress = false; // The player CANNOT recieve this note
+			eventNote = true; // Just an identifier
 			type =rawNote[2];
 			if(rawNote[2] == "Play Animation"){
 				try{
-					info = [rawNote[3],psychChars[Std.parseInt(rawNote[4])]];
+					// Info can be set to anything, it's being used for storing the Animation and character
+					info = [rawNote[3],psychChars[Std.parseInt(rawNote[4])]]; 
 				}catch(e){info = [rawNote[3],0];}
-				hit = function(?charID:Int = 0){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);};
+				// Replaces hit func
+				hit = function(?charID:Int = 0){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);}; 
 				trace('Animation note processed');
 			}else{ // Don't trigger hit animation
 				hit = function(?charID:Int = 0){return;};

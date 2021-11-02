@@ -959,6 +959,8 @@ class PlayState extends MusicBeatState
 			var bfTrail = new FlxTrail(boyfriend, null, 4, 24, 0.3, 0.069);
 			add(bfTrail);
 		}
+		parseHScript(null,null,"song");
+
 		add(gf);
 
 		// Shitty layering but whatev it works LOL
@@ -966,7 +968,7 @@ class PlayState extends MusicBeatState
 			add(limo);
 
 
-		parseHScript(null,null,"song");
+		
 
 		charCall("addGF",[],-1);
 		callInterp("addGF",[]);
