@@ -76,15 +76,15 @@ class CharSelection extends SearchMenuState
 	super.changeSelection(change);
 	retAfter = true;
 
-	if (songs[curSelected] != "" && TitleState.invalidCharacters.contains(songs[curSelected])){
-	  grpSongs.members[curSelected].color = FlxColor.RED;
-	  updateInfoText('This character is invalid, you need to set them up in Animation Debug. To set them up now, press 1 for BF, 2 for dad, 3 for GF. If you need help please ask on my Discord, you can access it from the changelog screen');
-	}else if (songs[curSelected] != "" && TitleState.characterDescriptions[songs[curSelected]] != null && TitleState.characterDescriptions[songs[curSelected]] != "" ){
-	  updateInfoText('${defText}; ' + TitleState.characterDescriptions[songs[curSelected]]);
-	}else{
-	  updateInfoText('${defText}; No description for this character.');
-	}
-	uiIcon.changeSprite(songs[curSelected],'face',false);
+		if (songs[curSelected] != "" && TitleState.invalidCharacters.contains(songs[curSelected])){
+		  grpSongs.members[curSelected].color = FlxColor.RED;
+		  updateInfoText('This character is invalid, you need to set them up in Animation Debug. To set them up now, press 1 for BF, 2 for dad, 3 for GF. If you need help please ask on my Discord, you can access it from the changelog screen');
+		}else if (songs[curSelected] != "" && TitleState.characterDescriptions[songs[curSelected]] != null && TitleState.characterDescriptions[songs[curSelected]] != "" ){
+		  updateInfoText('${defText}; ' + TitleState.characterDescriptions[songs[curSelected]]);
+		}else{
+		  updateInfoText('${defText}; No description for this character.');
+		}
+		uiIcon.changeSprite(songs[curSelected],'face',false);
   }
 
   override function select(sel:Int = 0){
