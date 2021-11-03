@@ -198,11 +198,12 @@ class SearchMenuState extends MusicBeatState
 					}
 					item.targetY = bullShit - curSelected;
 
-					item.color = 0xdddddd;
+					// item.color = 0xdddddd;
+					item.alpha = 0.8;
 					if (item.targetY == 0)
 					{
 						item.alpha = 1;
-						item.color = 0xffffff;
+						// item.color = 0xffffff;
 					}
 				}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
 				bullShit++;

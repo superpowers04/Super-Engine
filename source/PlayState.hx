@@ -326,10 +326,10 @@ class PlayState extends MusicBeatState
 			}else callSingleInterp(func_name,args,id);
 
 		}
-	inline function resetInterps() interps = new Map();
+	inline function resetInterps() {interps = new Map();interpCount=0;}
 	
 	public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song"){
-		if (!QuickOptionsSubState.getSetting("Song hscripts")) {resetInterps();return;}
+		if (!QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null) {resetInterps();return;}
 		var songScript = songScript;
 		var hsBrTools = hsBrTools;
 		if (script != "") songScript = script;
@@ -355,6 +355,7 @@ class PlayState extends MusicBeatState
 			interp.execute(program);
 			interps[id] = interp;
 			callSingleInterp("initScript",[],id);
+			interpCount++;
 		}catch(e){
 			handleError('Error parsing ${id} hscript, Line:${parser.line};\n Error:${e.message}');
 			// interp = null;
@@ -960,6 +961,16 @@ class PlayState extends MusicBeatState
 			add(bfTrail);
 		}
 		parseHScript(null,null,"song");
+		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null && FlxG.save.data.scripts != null){
+			for (i in 0 ... FlxG.save.data.scripts.length) {
+				
+				var v = FlxG.save.data.scripts[i];
+				trace('Checking for ${v}');
+				if (FileSystem.exists('mods/scripts/${v}/script.hscript')){
+					parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}'),'global-${v}');
+				}else{trace('Global script \'${v}\' doesn\'t exist!');}
+			}
+		}
 
 		add(gf);
 
@@ -1089,7 +1100,14 @@ class PlayState extends MusicBeatState
 			kadeEngineWatermark.y = FlxG.height * 0.9 + 45 + FlxG.save.data.guiGap;
 
 		scoreTxtX = FlxG.width / 2 - 350;
-		scoreTxt = new FlxText(scoreTxtX, healthBarBG.y + 30 - FlxG.save.data.guiGap, 0, "", 20);
+		
+		if (FlxG.save.data.songInfo == 0 || FlxG.save.data.songInfo == 2) {
+			scoreTxt = new FlxText(scoreTxtX, healthBarBG.y + 30 - FlxG.save.data.guiGap, 0, "NPS: 000000\nScore:00000000\nCombo:00000 (Max 00000)\nCombo Breaks:00000\nAccuracy:0000 %\n Unknown", 20); // Long ass text to make sure it's sized correctly
+			scoreTxt.autoSize = false;
+			scoreTxt.alignment = "left";
+		}else scoreTxt = new FlxText(10 + FlxG.save.data.guiGap, FlxG.height * 0.46 , 0, "", 20);
+
+		
 		// if (!FlxG.save.data.accuracyDisplay)
 		// 	scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -1862,7 +1880,7 @@ class PlayState extends MusicBeatState
 
 	var songLengthTxt = "N/A";
 
-
+	public var interpCount:Int = 0;
 
 	override public function update(elapsed:Float)
 	{
@@ -1916,7 +1934,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.text = Ratings.CalculateRanking(songScore,songScoreDef,nps,maxNPS,accuracy);
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.text = "Score: " + songScore;
-		scoreTxt.x = scoreTxtX - scoreTxt.text.length;
+		if(FlxG.save.data.songInfo == 0) scoreTxt.x = scoreTxtX - scoreTxt.text.length;
 		if (updateTime) songTimeTxt.text = FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + songLengthTxt;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
@@ -1995,7 +2013,7 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 		if(FlxG.save.data.animDebug){
-			Overlay.debugVar += '\nHealth:${health}\nVocalVol:${vocals.volume}';
+			Overlay.debugVar += '\nHealth:${health}\nVocalVol:${vocals.volume}\nScript Count:${interpCount}';
 		}
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)

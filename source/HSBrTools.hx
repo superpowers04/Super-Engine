@@ -12,6 +12,8 @@ import sys.io.File;
 import flash.display.BitmapData;
 import Xml;
 
+// Made specifically for Super Engine
+
 
 using StringTools;
 

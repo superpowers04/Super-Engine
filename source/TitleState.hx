@@ -132,6 +132,16 @@ class TitleState extends MusicBeatState
 		}
 		#end
 		checkStages();
+		if(FlxG.save.data.scripts != null){
+			trace('Currently enabled scripts: ${FlxG.save.data.scripts}');
+			for (i in 0 ... FlxG.save.data.scripts.length) {
+				var v = FlxG.save.data.scripts[i];
+				if(!FileSystem.exists('mods/scripts/${v}/')){
+					FlxG.save.data.scripts.remove(v);
+					trace('Script $v doesn\'t exist! Disabling');
+				}
+			}
+		}
 	}
 	public static function checkStages(){
 		choosableStages = ["default","stage",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];

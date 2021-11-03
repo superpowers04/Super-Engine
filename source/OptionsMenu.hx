@@ -35,6 +35,7 @@ class OptionsMenu extends MusicBeatState
 			new GFOption("Change the GF used"),
 			new NoteSelOption("Change the note assets used, pulled from mods/noteassets"),
 			new SelStageOption("Select the stage to use, Default will use song default"),
+			new SelScriptOption("Enable/Disable scripts that run withsongs"),
 			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
 			new ReloadCharlist("Refreshes the character and stage list, used for if you added characters or stages")
 		]),
@@ -59,6 +60,7 @@ class OptionsMenu extends MusicBeatState
 			new AccuracyOption("Display accuracy information."),
 			new SongPositionOption("Show the songs current position (as a bar)"),
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
+			new SongInfoOption("Change how your performance is displayed"),
 		]),
 		new OptionCategory("Misc", [
 			new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
@@ -258,10 +260,10 @@ class OptionsMenu extends MusicBeatState
 				if (isCat)
 				{
 					if (currentSelectedCat.getOptions()[curSelected].press()) {
-						grpControls.remove(grpControls.members[curSelected]);
 						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, currentSelectedCat.getOptions()[curSelected].getDisplay(), true, false);
 						ctrl.isMenuItem = true;
-						grpControls.add(ctrl);
+						// grpControls.add(ctrl);
+						grpControls.replace(grpControls.members[curSelected],ctrl);
 					}
 				}
 				else

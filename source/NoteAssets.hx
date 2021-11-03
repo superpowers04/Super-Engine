@@ -5,12 +5,11 @@ import flixel.graphics.FlxGraphic;
 import sys.io.File;
 import sys.FileSystem;
 import flash.display.BitmapData;
-import Xml;
 
 
 class NoteAssets{
 	public static var name:String;
-	var path:String = "mods/noteassets"; // The slash not being here is just for ease of reading
+	static var path:String = "mods/noteassets"; // The slash not being here is just for ease of reading
 	public static var image:FlxGraphic;
 	public static var xml:String;
 	// public static var splashImage:String; // Is this getting cleared or something?
@@ -29,9 +28,6 @@ class NoteAssets{
 				return;
 			} // Default arrows
 		
-			// if (FileSystem.exists('${path}/${name}splash.png') && FileSystem.exists('${path}/${name}splash.xml')){
-			// 	genSplashes(name,'${path}');
-			// }else{genSplashes();} // Splash notes
 
 			if (FileSystem.exists('${path}/${name}-bad.png') && FileSystem.exists('${path}/${name}-bad.xml')){ // Hurt notes
 				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}-bad.png'));

@@ -1234,6 +1234,44 @@ class OpponentStrumlineOption extends Option
 	}
 
 }
+
+class SongInfoOption extends Option
+{
+	var ies:Array<String> = ["Opposite of scroll direction","side","vanilla + misses","Disabled"];
+	var iesDesc:Array<String> = ["Kade 1.7- styled","Kade 1.8+ styled","Vanilla styled with misses","Disabled altogether"];
+	public function new(desc:String)
+	{
+		super();
+		if (FlxG.save.data.songInfo >= ies.length) FlxG.save.data.songInfo = 0;
+		description = desc;
+
+		acceptValues = true;
+	}
+
+	override function getValue():String {
+		return iesDesc[FlxG.save.data.songInfo];
+	}
+
+	override function right():Bool {
+		FlxG.save.data.songInfo += 1;
+		if (FlxG.save.data.songInfo >= ies.length) FlxG.save.data.songInfo = 0;
+		display = updateDisplay();
+		return true;
+	}
+	override function left():Bool {
+		FlxG.save.data.songInfo -= 1;
+		if (FlxG.save.data.songInfo < 0) FlxG.save.data.songInfo = ies.length - 1;
+		display = updateDisplay();
+		return true;
+	}
+	public override function press():Bool{return right();}
+
+	private override function updateDisplay():String
+	{
+		return 'Song Info: ${ies[FlxG.save.data.songInfo]}';
+	}
+}
+
 class MissSoundsOption extends Option
 {
 	public function new(desc:String)
@@ -1252,6 +1290,38 @@ class MissSoundsOption extends Option
 	private override function updateDisplay():String
 	{
 		return "Play miss sounds " + (!FlxG.save.data.playMisses ? "off" : "on");
+	}
+
+}
+
+class SelScriptOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+
+	}
+	override function right():Bool {
+		return false;
+	}
+	override function left():Bool {
+		return false;
+	}
+	public override function press():Bool
+	{
+		FlxG.switchState(new ScriptSel());
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Toggle scripts";
+	}
+
+	override function getValue():String {
+		return "Current Script count: " + FlxG.save.data.scripts.length;
 	}
 
 }
