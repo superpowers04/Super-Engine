@@ -108,7 +108,7 @@ class Ratings
         " | Combo Breaks:" + PlayState.misses + 																				    // Misses/Combo Breaks
         " | Accuracy:" + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  			    	// Accuracy
         " | " + GenerateLetterRank(accuracy) :                                                                                      // Letter Rank
-        "pretty sure Super remove the bot so it not be use now"                                                                     // bot text was here
+        "pretty sure Super remove the bot so it not gonna be use now"                                                               // bot text was here
         );
     }
 }
