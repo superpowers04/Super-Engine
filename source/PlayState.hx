@@ -130,9 +130,9 @@ class PlayState extends MusicBeatState
 
 	private static var prevCamFollow:FlxObject;
 
-	public var strumLineNotes:FlxTypedGroup<FlxSprite> = null;
-	public var playerStrums:FlxTypedGroup<FlxSprite> = null;
-	public var cpuStrums:FlxTypedGroup<FlxSprite> = null;
+	public var strumLineNotes:FlxTypedGroup<StrumArrow> = null;
+	public var playerStrums:FlxTypedGroup<StrumArrow> = null;
+	public var cpuStrums:FlxTypedGroup<StrumArrow> = null;
 	public static var dadShow = true;
 	var canPause:Bool = true;
 
@@ -304,8 +304,9 @@ class PlayState extends MusicBeatState
 		try{
 			if (interps[id] == null) {trace('No Interp ${id}!');return;}
 			if (!interps[id].variables.exists(func_name)) {return;}
+			// trace('$func_name:$id $args');
+			
 			var method = interps[id].variables.get(func_name);
-			args.insert(0,this);
 			Reflect.callMethod(interps[id],method,args);
 		}catch(e:hscript.Expr.Error){handleError('${func_name}:${e.line} for ${id}:\n ${e.toString()}');}
 	}
@@ -319,8 +320,14 @@ class PlayState extends MusicBeatState
 				charCall("noteHitSelf",[args[1]],0);
 				charCall("noteHitOpponent",[args[1]],1);
 			}
+			args.insert(0,this);
 			if (id == "") {
+
 				for (name in interps.keys()) {
+					// var ag:Array<Dynamic> = [];
+					// for (i => v in args) { // Recreates the array
+					// 	ag[i] = v;
+					// }
 					callSingleInterp(func_name,args,name);
 				}
 			}else callSingleInterp(func_name,args,id);
@@ -354,7 +361,7 @@ class PlayState extends MusicBeatState
 			interp.variables.set("charAnim",charAnim); 
 			interp.execute(program);
 			interps[id] = interp;
-			callSingleInterp("initScript",[],id);
+			callInterp("initScript",[],id);
 			interpCount++;
 		}catch(e){
 			handleError('Error parsing ${id} hscript, Line:${parser.line};\n Error:${e.message}');
@@ -1014,14 +1021,14 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.downscroll)
 			strumLine.y = FlxG.height - 165;
 
-		strumLineNotes = new FlxTypedGroup<FlxSprite>();
+		strumLineNotes = new FlxTypedGroup<StrumArrow>();
 		add(strumLineNotes);
 
 		add(grpNoteSplashes);
 		if (SONG.difficultyString != null && SONG.difficultyString != "") songDiff = SONG.difficultyString;
 		else songDiff = if(stateType == 4) "mods/charts" else if (stateType == 5) "osu! beatmap" else (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
-		playerStrums = new FlxTypedGroup<FlxSprite>();
-		cpuStrums = new FlxTypedGroup<FlxSprite>();
+		playerStrums = new FlxTypedGroup<StrumArrow>();
+		cpuStrums = new FlxTypedGroup<StrumArrow>();
 
 		// startCountdown();
 
@@ -1101,7 +1108,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxtX = FlxG.width / 2 - 350;
 		
-		if (FlxG.save.data.songInfo == 0 || FlxG.save.data.songInfo == 2) {
+		if (FlxG.save.data.songInfo == 0 || FlxG.save.data.songInfo == 3) {
 			scoreTxt = new FlxText(scoreTxtX, healthBarBG.y + 30 - FlxG.save.data.guiGap, 0, "NPS: 000000\nScore:00000000\nCombo:00000 (Max 00000)\nCombo Breaks:00000\nAccuracy:0000 %\n Unknown", 20); // Long ass text to make sure it's sized correctly
 			scoreTxt.autoSize = false;
 			scoreTxt.alignment = "left";
@@ -1716,46 +1723,47 @@ class PlayState extends MusicBeatState
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
-			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
+			var babyArrow:StrumArrow = new StrumArrow(i,0, strumLine.y);
 
 			// switch (SONG.noteStyle)
 			// {
 			// 	case 'normal':
 			charCall("strumNoteLoad",[babyArrow,player],if (player == 1) 0 else 1);
 			callInterp("strumNoteLoad",[babyArrow,player == 1]);
-			babyArrow.frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
-			babyArrow.animation.addByPrefix('green', 'arrowUP');
-			babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-			babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-			babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-
-			babyArrow.antialiasing = true;
-			babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 			babyArrow.x += Note.swagWidth * i + i;
+			babyArrow.init();
+			// babyArrow.frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+			// babyArrow.animation.addByPrefix('green', 'arrowUP');
+			// babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
+			// babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
+			// babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
 
-			switch (Math.abs(i))
-			{
-				case 0:
-					// babyArrow.x += Note.swagWidth * 0;
-					babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-					babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-				case 1:
-					// babyArrow.x += Note.swagWidth * 1 ;
-					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-					babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-				case 2:
-					// babyArrow.x += Note.swagWidth * 2;
-					babyArrow.animation.addByPrefix('static', 'arrowUP');
-					babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-				case 3:
-					// babyArrow.x += Note.swagWidth * 3 + 4;
-					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-			}
+			// babyArrow.antialiasing = true;
+			// babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+
+			// switch (Math.abs(i))
+			// {
+			// 	case 0:
+			// 		// babyArrow.x += Note.swagWidth * 0;
+			// 		babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+			// 		babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+			// 		babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+			// 	case 1:
+			// 		// babyArrow.x += Note.swagWidth * 1 ;
+			// 		babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+			// 		babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+			// 		babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+			// 	case 2:
+			// 		// babyArrow.x += Note.swagWidth * 2;
+			// 		babyArrow.animation.addByPrefix('static', 'arrowUP');
+			// 		babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+			// 		babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+			// 	case 3:
+			// 		// babyArrow.x += Note.swagWidth * 3 + 4;
+			// 		babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+			// 		babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+			// 		babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+			// }
 
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
@@ -1792,6 +1800,7 @@ class PlayState extends MusicBeatState
 			});
 
 			strumLineNotes.add(babyArrow);
+			babyArrow.ID = i;
 			charCall("strumNoteAdd",[babyArrow,player],if (player == 1) 0 else 1);
 			callInterp("strumNoteAdd",[babyArrow,player == 1]);
 		}
