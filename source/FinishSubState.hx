@@ -87,6 +87,7 @@ class FinishSubState extends MusicBeatSubstate
 
 				FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
 				FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
+				FlxTween.tween(PlayState.instance.judgementCounter, {x: -200},1,{ease: FlxEase.expoIn});
 			}
 		if(!isError){
 			if(win){
