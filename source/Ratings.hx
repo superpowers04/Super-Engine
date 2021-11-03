@@ -105,7 +105,6 @@ class Ratings
         (FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ") | " : "") + (!FlxG.save.data.botplay ?                  // NPS Toggle
         "Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                                      // Score
         " | Combo:" + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +         // combo
-        " | Combo Breaks:" + PlayState.misses + 																				    // Misses/Combo Breaks
         " | Accuracy:" + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  			    	// Accuracy
         " | " + GenerateLetterRank(accuracy) :                                                                                      // Letter Rank
         "pretty sure Super remove the bot so it not gonna be use now"                                                               // bot text was here
