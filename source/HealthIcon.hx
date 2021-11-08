@@ -23,6 +23,13 @@ class HealthIcon extends FlxSprite
 		changeSprite(char,"");
 	}
 
+	public function updateAnim(health:Float){
+		if (health < 20)
+			animation.curAnim.curFrame = 1;
+		else
+			animation.curAnim.curFrame = 0;
+	}
+
 	public function changeSprite(?char:String = 'bf',?clone:String = "face",?useClone:Bool = true)
 	{
 		var chars:Array<String> = ["bf","spooky","pico","mom","mom-car",'parents-christmas',"senpai","senpai-angry","spirit","spooky","bf-pixel","gf","dad","monster","monster-christmas","parents-christmas","bf-old","gf-pixel","gf-christmas","face","tankman"];

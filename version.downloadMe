@@ -1,5 +1,7 @@
-0.8.1;
+0.9.0;
 - New notesplashes, they're the ones from Psych
 - some minor fixes
 - Shorten transitions between states
 - Scripts can now be loaded from mods/scripts
+- note hit and note miss now have the note as an argument
+- Event notes actually work now

@@ -19,6 +19,7 @@ class NoteAssets{
 	public function new(?name_:String = 'default'):Void{
 		try{
 			name = name_;
+			trace('Loading noteAssets');
 			if (name == 'default'){
 				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets_bad.png'));
 				badXml = File.getContent("assets/shared/images/NOTE_assets_bad.xml");

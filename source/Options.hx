@@ -1237,8 +1237,8 @@ class OpponentStrumlineOption extends Option
 
 class SongInfoOption extends Option
 {
-	var ies:Array<String> = ["Opposite of scroll direction","side","vanilla + misses","Disabled"];
-	var iesDesc:Array<String> = ["Kade 1.7- styled","Kade 1.8+ styled","Vanilla styled with misses","Disabled altogether"];
+	var ies:Array<String> = ["Opposite of scroll direction","side","Advanced Side","vanilla + misses","Disabled"];
+	var iesDesc:Array<String> = ["Kade 1.7 styled","Show on the side","Also shows judgements","Vanilla styled with misses","Disabled altogether"];
 	public function new(desc:String)
 	{
 		super();

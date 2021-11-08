@@ -29,7 +29,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.8.1";
+	public static var ver:String = "0.9.0";
 	
 	public static var firstStart:Bool = true;
 
@@ -42,7 +42,7 @@ class MainMenuState extends SickMenuState
 	static var hasWarnedInvalid:Bool = false;
 	
 	public static function handleError(?error:String = "An error occurred",?details:String=""):Void{
-		if (errorMessage != "") return; // Prevents it from trying to switch states multiple times
+		if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		MainMenuState.errorMessage = error;
 		if(details != "") trace(details);
 		if (onlinemod.OnlinePlayMenuState.socket != null){

@@ -491,6 +491,7 @@ class Character extends FlxSprite
 
 	function loadCustomChar(){
 		trace('Loading a custom character "$curCharacter"! ');				
+		if(TitleState.retChar(curCharacter) != "" && !amPreview) curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
 		isCustom = true;
 		var charPropJson:String = "";
 		try{
@@ -581,6 +582,16 @@ class Character extends FlxSprite
 
 
 		if (charProperties == null) trace("No charProperites?");
+		if(charProperties.sprites != null && charProperties.sprites[0] != null){
+			for (i in charProperties.sprites) {
+				var e = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
+				for (i => v in e.framesHash) {
+					frames.framesHash[i] = v;
+				}
+			}
+		}
+
+
 		loadJSONChar(charProperties);
 		// Custom misses
 		if (charType == 0 && !amPreview && !debugMode){

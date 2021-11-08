@@ -16,7 +16,8 @@ using StringTools;
 
 class ScriptSel extends SearchMenuState
 {
-
+	static var defText:String = "Use shift to scroll faster";
+	var descriptions:Map<String,String> = new Map<String,String>();
 	override function addToList(char:String,i:Int = 0){
 		songs.push(char);
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false);
@@ -45,6 +46,9 @@ class ScriptSel extends SearchMenuState
 					if (FileSystem.exists("mods/scripts/"+directory+"/script.hscript"))
 					{
 						searchList.push(directory);
+						if (FileSystem.exists("mods/scripts/"+directory+"/description.txt")){
+							descriptions[directory] = File.getContent('mods/scripts/${directory}/description.txt');
+						}
 					}
 				}
 		}
@@ -52,6 +56,16 @@ class ScriptSel extends SearchMenuState
 		// searchList = TitleState.choosableStages;
 		super.create();
 	}catch(e) MainMenuState.handleError('Error with stagesel "create" ${e.message}');}
+
+	override function changeSelection(change:Int = 0){
+		super.changeSelection(change);
+		if (songs[curSelected] != "" && descriptions[songs[curSelected]] != null ){
+		  updateInfoText('${defText}; ' + descriptions[songs[curSelected]]);
+		}else{
+		  updateInfoText('${defText}; No description for this script.');
+		}
+	}
+
 	override function select(sel:Int = 0){
 		// FlxG.save.data.selStage = songs[sel];
 		if(songs[sel] != 'No scripts found!'){
