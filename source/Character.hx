@@ -582,14 +582,14 @@ class Character extends FlxSprite
 
 
 		if (charProperties == null) trace("No charProperites?");
-		if(charProperties.sprites != null && charProperties.sprites[0] != null){
-			for (i in charProperties.sprites) {
-				var e = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${pngName}')), charXml);
-				for (i => v in e.framesHash) {
-					frames.framesHash[i] = v;
-				}
-			}
-		}
+		// if(charProperties.sprites != null && charProperties.sprites[0] != null){
+		// 	for (i in charProperties.sprites) {
+		// 		var e = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${i}.png')), File.getContent('mods/characters/$curCharacter/${i}.xml'));
+		// 		for (i => v in e.framesHash) {
+		// 			frames.framesHash[i] = v;
+		// 		}
+		// 	}
+		// }
 
 
 		loadJSONChar(charProperties);

@@ -1,0 +1,11 @@
+{
+	"options":[
+		{
+			"name":"Color Arrows", // The name of the option
+			"type":2, // The type, 0 is float, 1 is int and 2 is bool
+			"def":true, // What the default value is
+			"description":"Whether arrows should be colored depending on rating" // Description
+			// min and max are required for floats or ints
+		}
+	]
+}
