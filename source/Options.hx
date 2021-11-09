@@ -11,6 +11,7 @@ import openfl.Lib;
 class OptionCategory
 {
 	private var _options:Array<Option> = new Array<Option>();
+	public var modded:Bool = false;
 	public final function getOptions():Array<Option>
 	{
 		return _options;
@@ -32,10 +33,11 @@ class OptionCategory
 		return _name;
 	}
 
-	public function new (catName:String, options:Array<Option>)
+	public function new (catName:String, options:Array<Option>,?mod:Bool = false)
 	{
 		_name = catName;
 		_options = options;
+		this.modded = mod;
 	}
 }
 
@@ -124,7 +126,7 @@ class CpuStrums extends Option
 
 	private override function updateDisplay():String
 	{
-		return  FlxG.save.data.cpuStrums ? "Light CPU Strums" : "CPU Strums stay static";
+		return  FlxG.save.data.cpuStrums ? "Animated CPU Strums" : "Static CPU Strums";
 	}
 
 }
@@ -1324,4 +1326,115 @@ class SelScriptOption extends Option
 		return "Current Script count: " + FlxG.save.data.scripts.length;
 	}
 
+}
+
+class IntOption extends Option{
+	var min:Int = 0;
+	var max:Int;
+	var script:String;
+	var name:String;
+
+	public function new(desc:String,name:String,min:Int,max:Int,mod:String)
+	{
+		this.name = name;
+		// display = name;
+		script = mod;
+		this.min = min;
+		this.max = max;
+		super();
+		acceptValues = true;
+		description = desc;
+
+	}
+	override function getValue():String {
+		return '${OptionsMenu.modOptions[script][name]}';
+	}
+
+	override function right():Bool {
+
+		OptionsMenu.modOptions[script][name] += 1;
+		if (OptionsMenu.modOptions[script][name] > max) OptionsMenu.modOptions[script][name] = min;
+		display = updateDisplay();
+		return true;
+	}
+	override function left():Bool {
+		OptionsMenu.modOptions[script][name] -= 1;
+		if (OptionsMenu.modOptions[script][name] < min) OptionsMenu.modOptions[script][name] = max;
+		display = updateDisplay();
+		return true;
+	}
+	public override function press():Bool{return right();}
+	private override function updateDisplay():String
+	{
+		return name + ":" + getValue();
+	}
+}
+class FloatOption extends Option{
+	var min:Float = 0;
+	var max:Float;
+	var script:String;
+	var name:String;
+
+	public function new(desc:String,name:String,min:Float,max:Float,mod:String)
+	{
+		this.name = name;
+		// display = name;
+		script = mod;
+		this.min = min;
+		this.max = max;
+		super();
+		acceptValues = true;
+		description = desc;
+
+	}
+	override function getValue():String {
+		return '${OptionsMenu.modOptions[script][name]}';
+	}
+
+	override function right():Bool {
+
+		OptionsMenu.modOptions[script][name] += 0.1;
+		if (OptionsMenu.modOptions[script][name] > max) OptionsMenu.modOptions[script][name] = min;
+		display = updateDisplay();
+		return true;
+	}
+	override function left():Bool {
+		OptionsMenu.modOptions[script][name] -= 0.1;
+		if (OptionsMenu.modOptions[script][name] < min) OptionsMenu.modOptions[script][name] = max;
+		display = updateDisplay();
+		return true;
+	}
+	public override function press():Bool{return right();}
+	private override function updateDisplay():String
+	{
+		return name + ":" + getValue();
+	}
+}
+class BoolOption extends Option{
+	var script:String;
+	var name:String;
+
+	public function new(desc:String,name:String,mod:String)
+	{
+		// acceptValues = true;
+		this.name = name;
+		// display = name;
+		script = mod;
+		super();
+		description = desc;
+
+	}
+	override function getValue():String {
+		return '${OptionsMenu.modOptions[script][name]}';
+	}
+	public override function press():Bool{
+		OptionsMenu.modOptions[script][name] = !OptionsMenu.modOptions[script][name];
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return name + ":" + getValue();
+	}
 }

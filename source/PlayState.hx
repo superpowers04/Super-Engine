@@ -395,7 +395,10 @@ class PlayState extends MusicBeatState
 	}
 	public static var hasStarted = false;
 	override public function create()
-	{try{
+	{
+		#if !debug
+		try{
+		#end
 		if (instance != null) instance.destroy();
 		setInputHandlers(); // Sets all of the handlers for input
 		instance = this;
@@ -976,7 +979,7 @@ class PlayState extends MusicBeatState
 				var v = FlxG.save.data.scripts[i];
 				trace('Checking for ${v}');
 				if (FileSystem.exists('mods/scripts/${v}/script.hscript')){
-					parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}'),'global-${v}');
+					parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'global-${v}');
 				}else{trace('Global script \'${v}\' doesn\'t exist!');}
 			}
 		}
@@ -3339,7 +3342,7 @@ class PlayState extends MusicBeatState
 								{
 									if (coolNote.noteData == daNote.noteData){
 
-										if (Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
+										if (Math.abs(daNote.strumTime - coolNote.strumTime) < 5)
 										{ // if it's the same note twice at < 10ms distance, just delete it
 											// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
 											dumbNotes.push(daNote);
@@ -3955,10 +3958,10 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.switchState(new AnimationDebug(gfChar,false,2));
 			}
-			if (FlxG.keys.justPressed.SEVEN )
-			{
-				FlxG.switchState(new ChartingState());
-			}
+			// if (FlxG.keys.justPressed.SEVEN )
+			// {
+			// 	FlxG.switchState(new ChartingState());
+			// }
 		}
 	}
 	var curLight:Int = 0;

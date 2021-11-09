@@ -17,6 +17,10 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 import flixel.addons.ui.FlxUIState;
 import flixel.util.FlxTimer;
+import sys.FileSystem;
+import sys.io.File;
+import OptionsFileDef;
+import Reflect;
 
 class OptionsMenu extends MusicBeatState
 {
@@ -27,6 +31,9 @@ class OptionsMenu extends MusicBeatState
 	var curSelected:Int = 0;
 	var selCat:Int = 0;
 	var transitioning:Bool = false;
+
+	public static var modOptions:Map<String,Map<String,Dynamic>> = new Map<String,Map<String,Dynamic>>();
+	public static var ScriptOptions:Map<String,OptionsFileDef> = new Map<String,OptionsFileDef>();
 
 	var options:Array<OptionCategory> = [
 		new OptionCategory("Customization", [
@@ -110,6 +117,9 @@ class OptionsMenu extends MusicBeatState
 	{
 
 		instance = this;
+		
+		initOptions();
+
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 
 		menuBG.color = 0xFFea71fd;
@@ -172,16 +182,8 @@ class OptionsMenu extends MusicBeatState
 		if (acceptInput)
 		{
 			if (controls.BACK && !isCat){
-				// var id = TitleState.returnStateID;
-				// TitleState.returnStateID = 0; // Reset
-				// switch(id){
-				// 	case 0:
-				// 		FlxG.switchState(new MainMenuState());
 
-				// 	case 1:
-				// 		FlxG.switchState(new onlinemod.OfflineMenuState());
-				// }}
-				FlxG.save.flush(); // Save when exiting, not every fucking frame
+				saveChanges(); // Save when exiting, not every fucking frame
 				goBack();
 			}
 				
@@ -339,13 +341,15 @@ class OptionsMenu extends MusicBeatState
 		if (isCat) return;
 		// catControls = new FlxTypedGroup<Alphabet>();
 		// add(catControls);
-
+		var ia = 0;
+		if (options[curSelected].modded) ia = 1;
 		for (i in 0...options[curSelected].getOptions().length)
 		{
 			// if(i >= 4) break; // No reason to add more than 4 // Actually, probably not a good idea, slower machines don't load the rest for some reason
+			
 			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[curSelected].getOptions()[i].getDisplay(), true, false, true,FlxG.width * 0.60);
 			controlLabel.isMenuItem = true;
-			controlLabel.targetY = i;
+			controlLabel.targetY = i + ia;
 			controlLabel.alpha = 0.3;
 			controlLabel.color = 0xdddddd;
 			controlLabel.x = 80;
@@ -391,5 +395,120 @@ class OptionsMenu extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+	function initOptions(){
+		trace('Initializing script options');
+		if(FlxG.save.data.scripts.length < 1) return;
+		try{FileSystem.createDirectory('mods/scriptOptions/');}catch(e){trace('Unable to create dir! ${e}');}
+		for (si in 0 ... FlxG.save.data.scripts.length) {
+			var script = FlxG.save.data.scripts[si];
+			if(!FileSystem.exists('mods/scripts/$script/options.json')) {
+				trace('$script has no options');
+				continue;
+			}
+			trace('$script has options');
+			try{
+				var sOptions:OptionsFileDef = haxe.Json.parse(CoolUtil.cleanJSON(File.getContent('mods/scripts/$script/options.json')));
+				// var curOptions:Map<String,Dynamic> = new Map<String,Dynamic>();
+				modOptions[script] = new Map<String,Dynamic>();
+				if(FileSystem.exists('mods/scriptOptions/$script.json')){
+					var scriptJson:Map<String,Dynamic> = loadScriptOptions('mods/scriptOptions/$script.json');
+					trace('scriptJson: $scriptJson'); 
+					if(scriptJson != null) {
+						// modOptions[script] = scriptJson;
+						modOptions[script] = scriptJson;
+						trace('Loaded "mods/scriptOptions/$script.json"');
+					}else{
+						trace('$script has an empty settings file, skipping!');
+					}
+				}
+
+				if(sOptions.options == null){'$script has no options defined in it\'s options.json!';continue;}
+				var saveOptions:Bool = false;
+				var category:Array<Option> = [];
+				trace('$script: Setting up user settings');
+				for (v in sOptions.options) {
+					var i = v.name;
+					trace('$script,$i: Registering. Info: ${v.type},${v.description},${v.def}');
+					try{
+
+						if(modOptions[script][i] == null) {
+							trace('$script,$i: Reseting to default value');
+							if(v.def == null){
+								 
+								switch(v.type){
+									case 0,1: modOptions[script][i] = 0;
+									case 2: modOptions[script][i] = false;
+								}
+							}else{
+								modOptions[script][i] = v.def;
+							
+							}
+							saveOptions=true;
+						}
+						trace('$script,$i: Adding to list');
+						switch (v.type) {
+							case 0:category.push(new FloatOption(v.description,i,Std.int(v.min),Std.int(v.max),script));
+							case 1:category.push(new IntOption(v.description,i,Std.int(v.min),Std.int(v.max),script));
+							case 2:category.push(new BoolOption(v.description,i,script));
+						}
+					}catch(e){
+						trace('Error for $script,$i: ${e.message}');
+						MainMenuState.errorMessage += '\nError for $script,$i: ${e.message}';
+						modOptions[script][i] = null;
+					}
+				}
+				if(category.length < 1){
+					throw("No options loaded!");
+				}
+				trace('$script: Pushing to options list');
+				options.push(new OptionCategory('*${script}',category,true));
+				trace('$script: Globalising options');
+				// modOptions[script] = curOptions;
+				trace('$script: Globalising option definitions');
+				ScriptOptions[script] = sOptions;
+				trace('$script: Saving options');
+				if (saveOptions) saveScriptOptions('mods/scriptOptions/$script.json',modOptions[script]);
+				trace('$script registered');
+			}catch(e){
+				trace('Error for $script options: ${e.message}');
+				MainMenuState.errorMessage += '\nError for $script options: ${e.message}';
+				modOptions[script] = null;
+				ScriptOptions[script] = null;
+			}
+		}
+	}
+	static function saveScriptOptions(path:String,obj:Map<String,Dynamic>){
+		var _obj:Array<OptionF> = [];
+		for (i => v in obj) {
+			_obj.push({name:i,value:v});
+		}
+		File.saveContent(path,haxe.Json.stringify(_obj));
+	}
+	public static function loadScriptOptions(path:String):Null<Map<String,Dynamic>>{ // Holy shit this is terrible but whatever
+		
+		var ret:Map<String,Dynamic> = new Map<String,Dynamic>();
+		var obj:Array<OptionF> = haxe.Json.parse(CoolUtil.cleanJSON(File.getContent(path)));
+		if(obj == null) return null;
+		for (i in obj) {
+			ret[i.name] = i.value;
+		}
+		return ret;
+	}
+
+	function saveChanges(){
+		FlxG.save.flush();
+		// File.saveContent('SEOPTIONS.json',haxe.Json.stringify(FlxG.save.data));
+		for (i => v in modOptions) {
+			try{
+				// File.saveContent('mods/scriptOptions/$i.json',haxe.Json.stringify({options:v}));
+				saveScriptOptions('mods/scriptOptions/$i.json',v);
+				trace('Saved mods/scriptOptions/$i.json');
+			}catch(e){
+				trace('Error saving $i, ${e.message}');
+				MainMenuState.errorMessage += '\nError saving $i, ${e.message}';
+			}
+		}
+		modOptions = new Map<String,Map<String,Dynamic>>();
 	}
 }
