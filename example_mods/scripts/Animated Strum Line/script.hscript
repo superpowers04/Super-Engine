@@ -3,8 +3,16 @@ var strumX = [];
 var strumy = [];
 var timer;
 var coloredArrows:Bool = true;
+var xShake:Bool = true;
+var yShake:Bool = true;
+var shakeIntensity:Float = 1;
+
+
 function initScript(ps){
 	coloredArrows = BRtools.getSetting("Color Arrows"); // Grabs a setting
+	xShake = BRtools.getSetting("Shake left/right"); // Grabs a setting
+	yShake = BRtools.getSetting("Shake up/down"); // Grabs a setting
+	shakeIntensity = BRtools.getSetting("Shake intensity");
 }
 function strumNoteAdd(ps,note,player){
 	if(player) strums[note.id] = note;
@@ -21,7 +29,7 @@ function noteMiss(ps,_,note){
 	if(strums[data] == null) return;
 	setColor(data,[1,0,0]);
 
-	FlxTween.tween(strums[data],{y: strumy[data] + 10},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){ // Shakes the note up and down
+	if(yShake) FlxTween.tween(strums[data],{y: strumy[data] + 10},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){ // Shakes the note up and down
 		FlxTween.tween(strums[data],{y: strumy[data] - 10},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){
 			FlxTween.tween(strums[data],{y: strumy[data]},0.05,{ease:FlxEase.cubeIn});
 		}});
@@ -37,13 +45,13 @@ function miss(ps,_){
 	for(direction in [0,1,2,3]){
 		setColor(direction,[1,0,0]);
 
-		var dir = if(direction > 1) 10 else -10; // Adjust shake depending on if the note is on the left or right
-		FlxTween.tween(strums[direction],{x: strumX[direction] + dir},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){ // Shakes the strumline left and right
+		var dir = (if(direction > 1) 10 else -10) * shakeIntensity; // Adjust shake depending on if the note is on the left or right
+		if(xShake) FlxTween.tween(strums[direction],{x: strumX[direction] + dir},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){ // Shakes the strumline left and right
 			FlxTween.tween(strums[direction],{x: strumX[direction] - dir},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){
 				FlxTween.tween(strums[direction],{x: strumX[direction]},0.05,{ease:FlxEase.cubeIn});
 			}});
 		}});
-		FlxTween.tween(strums[direction],{y: strumy[direction] + 10},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){ // Shakes the strumline up and down
+		if(yShake) FlxTween.tween(strums[direction],{y: strumy[direction] + 10},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){ // Shakes the strumline up and down
 			FlxTween.tween(strums[direction],{y: strumy[direction] - 10},0.05,{ease:FlxEase.cubeIn,onComplete: function(_){
 				FlxTween.tween(strums[direction],{y: strumy[direction]},0.05,{ease:FlxEase.cubeIn});
 			}});
@@ -58,9 +66,9 @@ function update(ps,el){
 	if(coloredArrows){
 		for(direction in [0,1,2,3]){ // Fades back to normal colors
 
-			if(strums[direction].colorTransform.redMultiplier < 1) strums[direction].colorTransform.redMultiplier += 0.05;
-			if(strums[direction].colorTransform.greenMultiplier < 1) strums[direction].colorTransform.greenMultiplier += 0.05;
-			if(strums[direction].colorTransform.blueMultiplier < 1) strums[direction].colorTransform.blueMultiplier += 0.05;
+			if(strums[direction].colorTransform.redMultiplier < 1) strums[direction].colorTransform.redMultiplier += 0.025;
+			if(strums[direction].colorTransform.greenMultiplier < 1) strums[direction].colorTransform.greenMultiplier += 0.025;
+			if(strums[direction].colorTransform.blueMultiplier < 1) strums[direction].colorTransform.blueMultiplier += 0.025;
 		}
 	}
 }
