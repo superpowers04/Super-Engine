@@ -3021,11 +3021,12 @@ class PlayState extends MusicBeatState
 				if (p2canplay){ // The above but for P2
 					p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 					var p2holds:Array<Bool> = [p2presses[4],p2presses[5],p2presses[6],p2presses[7]];
-					if (p2presses[0] || p2holds[0]) dad.playAnim('singLEFT', true);
-					else if (p2presses[1] || p2holds[1]) dad.playAnim('singDOWN', true);
-					else if (p2presses[2] || p2holds[2]) dad.playAnim('singUP', true);
-					else if (p2presses[3] || p2holds[3]) dad.playAnim('singRIGHT', true);
-					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true);
+					// Shitty animation handling
+					if (p2presses[0] || p2holds[0]) dad.playAnim('singLEFT', true); // Left
+					else if (p2presses[1] || p2holds[1]) dad.playAnim('singDOWN', true); // Down
+					else if (p2presses[2] || p2holds[2]) dad.playAnim('singUP', true); // Up
+					else if (p2presses[3] || p2holds[3]) dad.playAnim('singRIGHT', true); // Right 
+					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true); // Idle
 					cpuStrums.forEach(function(spr:FlxSprite)
 					{
 						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')

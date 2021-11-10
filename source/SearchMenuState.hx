@@ -143,6 +143,8 @@ class SearchMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{try{
 		super.update(elapsed);
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
 		if (toggleables['search'] && searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
 			SetVolumeControls(true);
 			handleInput();

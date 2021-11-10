@@ -991,6 +991,28 @@ class NoteSelOption extends Option
 	}
 }
 
+class MMCharOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.mainMenuChar = !FlxG.save.data.mainMenuChar;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Char on main menu : " + (!FlxG.save.data.mainMenuChar ? "off" : "on");
+	}
+}
+
+
 class HitSoundOption extends Option
 {
 	public function new(desc:String)

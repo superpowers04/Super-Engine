@@ -20,6 +20,7 @@ typedef MusicTime ={
 	var end:Int;
 	var color:Int;
 	var wrapAround:Bool;
+	var bpm:Float;
 }
 
 class SickMenuState extends MusicBeatState
@@ -43,19 +44,19 @@ class SickMenuState extends MusicBeatState
 	public static var musicList:Array<MusicTime> = [
 		{
 			file: if(FileSystem.exists("mods/title-morning.ogg")) "mods/title-morning.ogg" else Paths.music("breakfast"),
-			begin:6,end:10,wrapAround:false,color:0xdd9911
+			begin:6,end:10,wrapAround:false,color:0xdd9911,bpm:160
 		},
 		{
 			file: if(FileSystem.exists("mods/title-day.ogg")) "mods/title-day.ogg" else Paths.music('freakyMenu'),
-			wrapAround:false,end:100,begin:101,color:0xECD77F // Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
+			wrapAround:false,end:100,begin:101,color:0xECD77F,bpm:204 // Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
 		},
 		{
 			file: if(FileSystem.exists("mods/title-evening.ogg")) "mods/title-evening.ogg" else Paths.music("GiveaLilBitBack"),
-			begin:17,end:19,wrapAround:false,color:0xdd9911
+			begin:17,end:19,wrapAround:false,color:0xdd9911,bpm:125
 		},
 		{
 			file: if(FileSystem.exists("mods/title-night.ogg")) "mods/title-night.ogg" else Paths.music("freshChillMix"),
-			begin:20,end:5,wrapAround:true,color:0x113355
+			begin:20,end:5,wrapAround:true,color:0x113355,bpm:117
 		},
 	];
 	var isMainMenu:Bool = false;
@@ -117,6 +118,7 @@ class SickMenuState extends MusicBeatState
 				SickMenuState.musicFileLoc = mt.file;
 				SickMenuState.menuMusic = Sound.fromFile(SickMenuState.musicFileLoc);
 				SickMenuState.musicTime = curMusicTime;
+				Conductor.changeBPM(mt.bpm);
 
 			// if (_bg != null){ }
 
@@ -167,6 +169,8 @@ class SickMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
 		if (selected) return;
 		if (controls.BACK)
 		{

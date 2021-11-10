@@ -91,6 +91,7 @@ class OptionsMenu extends MusicBeatState
 			new ShowP2Option("Show Opponent"),
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),
+			new MMCharOption("Show character on main menu, hold shift or ctrl on switch to main menu to skip if required"),
 		])
 	];
 

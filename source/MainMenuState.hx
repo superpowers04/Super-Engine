@@ -39,6 +39,7 @@ class MainMenuState extends SickMenuState
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
+	var char:Character = null;
 	static var hasWarnedInvalid:Bool = false;
 	
 	public static function handleError(?error:String = "An error occurred",?details:String=""):Void{
@@ -104,6 +105,13 @@ class MainMenuState extends SickMenuState
 			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
 			FlxG.save.data.gfChar = "gf";
 		}
+		if(FlxG.save.data.mainMenuChar && MainMenuState.errorMessage == "" && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
+			try{
+				char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0);
+				if(char != null) add(char);
+			}catch(e){trace(e);char = null;}
+		}
+
 
 		if (MainMenuState.errorMessage == "" && TitleState.invalidCharacters.length > 0 && !hasWarnedInvalid) {
 			errorMessage = "You have some characters missing config.json files.";
@@ -136,10 +144,17 @@ class MainMenuState extends SickMenuState
 		}
 		super.update(elapsed);
 	}
-	
+	override function beatHit(){
+		super.beatHit();
+		if(char != null && char.animation.curAnim.finished) char.dance();
+	}
+	override function changeSelection(change:Int = 0){
+		if(char != null) char.playAnim(Note.noteAnims[FlxG.random.int(0,3)],true);
+		super.changeSelection(change);
+	}
   override function select(sel:Int){
-  	    if (selected){return;}
-    	selected = true;
+		if (selected){return;}
+		selected = true;
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));
 		
