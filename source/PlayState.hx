@@ -1179,6 +1179,8 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		iconP1.y = healthBarBG.y - (iconP1.height / 2);
+		iconP2.y = healthBarBG.y - (iconP2.height / 2);
 		// if (FlxG.save.data.songPosition)
 		// {
 		// 	songPosBG.cameras = [camHUD];
@@ -2011,11 +2013,13 @@ class PlayState extends MusicBeatState
 		if(!FlxG.save.data.practiceMode){
 			var iconOffset:Int = 26;
 			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - iconOffset;
-			var y = 
-			iconP1.y = playerStrums.members[0].y - (iconP1.height / 2);
-			iconP2.y = playerStrums.members[0].y - (iconP2.height / 2);
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - iconOffset - Std.int(iconP1.width * 0.45);
+
 		}
+		// else{
+		// 	iconP1.y = playerStrums.members[0].y - (iconP1.height / 2);
+		// 	iconP2.y = playerStrums.members[0].y - (iconP2.height / 2);
+		// }
 
 		if (health > 2)
 			health = 2;

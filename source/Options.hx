@@ -308,11 +308,11 @@ class Judgement extends Option
 
 	override function getValue():String {
 		return "Safe Frames: " + Conductor.safeFrames +
-		" - SIK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
-		"ms GD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
-		"ms BD: " + HelperFunctions.truncateFloat(135 * Conductor.timeScale, 0) + 
-		"ms SHT: " + HelperFunctions.truncateFloat(155 * Conductor.timeScale, 0) +
-		"ms TOTAL: " + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
+		" | SICK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
+		"ms, GOOD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
+		"ms, BAD: " + HelperFunctions.truncateFloat(125 * Conductor.timeScale, 0) + 
+		"ms, SHIT: " + HelperFunctions.truncateFloat(156 * Conductor.timeScale, 0) +
+		"ms, TOTAL: " + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
 	}
 
 	override function right():Bool {
@@ -533,7 +533,7 @@ class AccuracyDOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Accuracy Mode: " + (FlxG.save.data.accuracyMod == 0 ? "Accurate" : "Complex");
+		return "Accuracy Mode: " + (FlxG.save.data.accuracyMod == 0 ? "Simple" : "Complex");
 	}
 }
 
@@ -1366,7 +1366,7 @@ class IntOption extends Option{
 	public override function press():Bool{return right();}
 	private override function updateDisplay():String
 	{
-		return name + ":" + getValue();
+		return name;
 	}
 }
 class FloatOption extends Option{
@@ -1407,7 +1407,7 @@ class FloatOption extends Option{
 	public override function press():Bool{return right();}
 	private override function updateDisplay():String
 	{
-		return name + ":" + getValue();
+		return name;
 	}
 }
 class BoolOption extends Option{
