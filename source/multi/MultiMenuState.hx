@@ -37,11 +37,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
     diffText.font = CoolUtil.font;
     add(diffText);
 
-    changeSelection(lastSel);
     searchField.text = lastSearch;
     if(lastSearch != "") reloadList(true,lastSearch);
 
     lastSearch = "";
+    changeSelection(lastSel);
     lastSel = 0;
     changeDiff();
   }
