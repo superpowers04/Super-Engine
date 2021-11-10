@@ -65,7 +65,12 @@ class SickMenuState extends MusicBeatState
 	function goBack(){
 		FlxG.switchState(new MainMenuState());
 	}
-	function generateList(){
+	function generateList(?reload:Bool = false){
+		if(reload){
+			grpControls = new FlxTypedGroup<Alphabet>();
+			add(grpControls);
+		}
+		grpControls.clear();
 		for (i in 0...options.length)
 		{
 			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i], true, false);
@@ -143,9 +148,8 @@ class SickMenuState extends MusicBeatState
 		musicHandle(isMainMenu,bg);
 
 
-		grpControls = new FlxTypedGroup<Alphabet>();
-		add(grpControls);
-		generateList();
+
+		generateList(true);
 
 		descriptionText = new FlxText(5, FlxG.height - 28, 0, descriptions[0], 12);
 		descriptionText.scrollFactor.set();

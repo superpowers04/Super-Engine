@@ -91,7 +91,7 @@ class OptionsMenu extends MusicBeatState
 			new ShowP2Option("Show Opponent"),
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),
-			new MMCharOption("Show character on main menu, hold shift or ctrl on switch to main menu to skip if required"),
+			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
 		])
 	];
 
@@ -325,11 +325,16 @@ class OptionsMenu extends MusicBeatState
 	var isSettingControl:Bool = false;
 
 	function updateOffsetText(){
+		// versionShit.color = FlxColor.WHITE;
 		if (isCat)
 		{
 			if (currentSelectedCat.getOptions()[curSelected].getAccept())
 				versionShit.text =  currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
 			else
+				// if(currentDescription.substr(0,2) == "**" ){
+				// 	versionShit.color = FlxColor.RED;
+
+				// }
 				versionShit.text = "Description - " + currentDescription;
 		}
 		else
@@ -355,6 +360,7 @@ class OptionsMenu extends MusicBeatState
 			controlLabel.color = 0xdddddd;
 			controlLabel.x = 80;
 			controlLabel.y = FlxG.height * 0.50;
+			// if(options[curSelected].getOptions()[i].getDisplay().length > 24) controlLabel.scale.set(0.6);
 			catControls.add(controlLabel);
 		}
 	}
@@ -407,7 +413,7 @@ class OptionsMenu extends MusicBeatState
 				trace('$script has no options');
 				continue;
 			}
-			trace('$script has options');
+			trace('$script has valid options file');
 			try{
 				var sOptions:OptionsFileDef = haxe.Json.parse(CoolUtil.cleanJSON(File.getContent('mods/scripts/$script/options.json')));
 				// var curOptions:Map<String,Dynamic> = new Map<String,Dynamic>();
@@ -418,7 +424,7 @@ class OptionsMenu extends MusicBeatState
 					if(scriptJson != null) {
 						// modOptions[script] = scriptJson;
 						modOptions[script] = scriptJson;
-						trace('Loaded "mods/scriptOptions/$script.json"');
+						// trace('Loaded "mods/scriptOptions/$script.json"');
 					}else{
 						trace('$script has an empty settings file, skipping!');
 					}
@@ -434,7 +440,7 @@ class OptionsMenu extends MusicBeatState
 					try{
 
 						if(modOptions[script][i] == null) {
-							trace('$script,$i: Reseting to default value');
+							// trace('$script,$i: Reseting to default value');
 							if(v.def == null){
 								 
 								switch(v.type){
@@ -447,7 +453,7 @@ class OptionsMenu extends MusicBeatState
 							}
 							saveOptions=true;
 						}
-						trace('$script,$i: Adding to list');
+						// trace('$script,$i: Adding to list');
 						switch (v.type) {
 							case 0:category.push(new FloatOption(v.description,i,Std.int(v.min),Std.int(v.max),script));
 							case 1:category.push(new IntOption(v.description,i,Std.int(v.min),Std.int(v.max),script));
@@ -462,15 +468,15 @@ class OptionsMenu extends MusicBeatState
 				if(category.length < 1){
 					throw("No options loaded!");
 				}
-				trace('$script: Pushing to options list');
+				// trace('$script: Pushing to options list');
 				options.push(new OptionCategory('*${script}',category,true));
-				trace('$script: Globalising options');
+				// trace('$script: Globalising options');
 				// modOptions[script] = curOptions;
-				trace('$script: Globalising option definitions');
+				// trace('$script: Globalising option definitions');
 				ScriptOptions[script] = sOptions;
-				trace('$script: Saving options');
+				// trace('$script: Saving options');
 				if (saveOptions) saveScriptOptions('mods/scriptOptions/$script.json',modOptions[script]);
-				trace('$script registered');
+				trace('$script registered successfully');
 			}catch(e){
 				trace('Error for $script options: ${e.message}');
 				MainMenuState.errorMessage += '\nError for $script options: ${e.message}';
@@ -504,7 +510,7 @@ class OptionsMenu extends MusicBeatState
 			try{
 				// File.saveContent('mods/scriptOptions/$i.json',haxe.Json.stringify({options:v}));
 				saveScriptOptions('mods/scriptOptions/$i.json',v);
-				trace('Saved mods/scriptOptions/$i.json');
+				// trace('Saved mods/scriptOptions/$i.json');
 			}catch(e){
 				trace('Error saving $i, ${e.message}');
 				MainMenuState.errorMessage += '\nError saving $i, ${e.message}';

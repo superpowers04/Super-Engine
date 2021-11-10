@@ -63,7 +63,7 @@ class RepoState extends SickMenuState
 	override function goBack(){
 		if(installing<=0){super.goBack();}
 	}
-	override function generateList(){
+	override function generateList(?regen:Bool = false){
 	    for (i in 0...repoArray.characters.length)
 	    {
 	      var name = repoArray.characters[i].name;

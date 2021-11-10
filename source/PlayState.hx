@@ -2013,7 +2013,7 @@ class PlayState extends MusicBeatState
 		if(!FlxG.save.data.practiceMode){
 			var iconOffset:Int = 26;
 			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - iconOffset - Std.int(iconP1.width * 0.45);
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - iconOffset - Std.int(iconP1.width * 0.80);
 
 		}
 		// else{
