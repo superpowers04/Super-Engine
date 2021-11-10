@@ -3175,7 +3175,8 @@ class PlayState extends MusicBeatState
 								if(daNote.isSustainNote)
 								{
 									daNote.y -= daNote.height / 2;
-									if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+									// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
+									if((daNote.wasGoodHit || !daNote.mustPress) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
@@ -3396,7 +3397,7 @@ class PlayState extends MusicBeatState
 							if (pressArray[coolNote.noteData])
 							{
 								hitArray[coolNote.noteData] = true;
-								scoreTxt.color = FlxColor.WHITE;
+								// scoreTxt.color = FlxColor.WHITE;
 								goodNoteHit(coolNote);
 							}
 						}
