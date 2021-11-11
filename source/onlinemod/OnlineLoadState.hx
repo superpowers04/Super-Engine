@@ -200,7 +200,7 @@ class OnlineLoadState extends MusicBeatState
 				case Packets.SEND_VOICES:
 					var file:Bytes = cast(data[0], Bytes);
 
-					if (!FileSystem.exists('assets/onlinedata/data/${folder.toLowerCase()}')) FileSystem.createDirectory('assets/onlinedata/data/${folder.toLowerCase()}');
+					if (!FileSystem.exists('assets/onlinedata/songs/${folder.toLowerCase()}')) FileSystem.createDirectory('assets/onlinedata/songs/${folder.toLowerCase()}');
 					File.saveBytes('assets/onlinedata/songs/${folder.toLowerCase()}/Voices.ogg', file);
 
 					voices = new FlxSound().loadEmbedded(Sound.fromAudioBuffer(AudioBuffer.fromBytes(file)));
@@ -249,7 +249,9 @@ class OnlineLoadState extends MusicBeatState
 					FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
 			}
 		}catch(e){
-			Chat.OutputChatMessage("[Client] You had an error while trying to download a song:\n" + e.message);
+			Chat.OutputChatMessage("[Client] You had an error while trying to download a song:");
+			Chat.OutputChatMessage(e.message);
+			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OnlineLobbyState(true));
 		}
 	}

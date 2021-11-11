@@ -1,4 +1,4 @@
-0.9.0;
+0.9.0-hotfix;
 - New notesplashes, they're the ones from Psych
 - some minor fixes
 - Scripts can now be loaded from mods/scripts
@@ -6,3 +6,6 @@
 - Note judgements have been altered slightly
 - The hit window for notes is a bit smaller
 - Reworked how swapping characters works
+Hotfix:
+- Fix some small bugs
+- Fix issues with networking

@@ -1112,23 +1112,32 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.downscroll)
 			kadeEngineWatermark.y = FlxG.height * 0.9 + 45 + FlxG.save.data.guiGap;
 
-		scoreTxtX = FlxG.width / 2 - 350;
+		// scoreTxtX = FlxG.width * ;
 		
 		if (FlxG.save.data.songInfo == 0 || FlxG.save.data.songInfo == 3) {
-			scoreTxt = new FlxText(scoreTxtX, healthBarBG.y + 30 - FlxG.save.data.guiGap, 0, "NPS: 000000\nScore:00000000\nCombo:00000 (Max 00000)\nCombo Breaks:00000\nAccuracy:0000 %\n Unknown", 20); // Long ass text to make sure it's sized correctly
+			scoreTxt = new FlxText(50, healthBarBG.y + 30 - FlxG.save.data.guiGap, 0, (FlxG.save.data.npsDisplay ? "NPS: 0000 (Max 0000)" : "") +                // NPS Toggle
+				" | Score:00000000"+                               // Score
+				" | Combo:00000"+
+				" | Combo Breaks:00000" + PlayState.misses + 																				// Misses/Combo Breaks
+				"\n | Accuracy:000.000%" +  				// Accuracy
+				" | F", 20);
 			scoreTxt.autoSize = false;
+			scoreTxt.wordWrap = false;
 			scoreTxt.alignment = "left";
-		}else scoreTxt = new FlxText(10 + FlxG.save.data.guiGap, FlxG.height * 0.46 , 0, "", 20);
+		}else {
+			scoreTxt = new FlxText(10 + FlxG.save.data.guiGap, FlxG.height * 0.46 , 600, "NPS: 000000\nScore:00000000\nCombo:00000 (Max 00000)\nCombo Breaks:00000\nAccuracy:0000 %\n Unknown", 20); // Long ass text to make sure it's sized correctly
+			// scoreTxt.autoSize = true;
+			// scoreTxt.width += 300;
+			scoreTxt.wordWrap = false;
+			scoreTxt.alignment = "center";
+		}
 
 		
 		// if (!FlxG.save.data.accuracyDisplay)
 		// 	scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
-		if (offsetTesting)
-			scoreTxt.x += 300;
-		if(FlxG.save.data.botplay) scoreTxt.x = FlxG.width / 2 - 250;													  
-		
+
 		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0, "REPLAY", 20);
 		replayTxt.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		replayTxt.scrollFactor.set();
@@ -1991,7 +2000,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.text = Ratings.CalculateRanking(songScore,songScoreDef,nps,maxNPS,accuracy);
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.text = "Score: " + songScore;
-		if(FlxG.save.data.songInfo == 0) scoreTxt.x = scoreTxtX - scoreTxt.text.length;
+		// if(FlxG.save.data.songInfo == 0) scoreTxt.x = scoreTxtX - scoreTxt.text.length;
 		if (updateTime) songTimeTxt.text = FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + songLengthTxt;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)

@@ -181,7 +181,7 @@ class FinishSubState extends MusicBeatSubstate
 				+'\n\n Downscroll: ${FlxG.save.data.downscroll}'
 				+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
 				+'\n Practice: ${FlxG.save.data.practiceMode}'
-				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}' + (QuickOptionsSubState.getSetting("Song hscripts") ? '\nScript Count:${PlayState.instance.interpCount}' : "")
+				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}' + (QuickOptionsSubState.getSetting("Song hscripts") ? '\n  Script Count:${PlayState.instance.interpCount}' : "")
 				+'\n Safe Frames: ${FlxG.save.data.frames}'
 				+'\n Input Engine: ${PlayState.inputEngineName}, V${MainMenuState.ver}'
 				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'

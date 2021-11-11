@@ -105,21 +105,23 @@ class Ratings
 				" | Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				" | Combo:" + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
 				" | Combo Breaks:" + PlayState.misses + 																				// Misses/Combo Breaks
-				" | Accuracy:" + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
-				" | " + GenerateLetterRank(accuracy);
+				"\n | Accuracy:" + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
+				"| " + GenerateLetterRank(accuracy) + " |";
 			case 1:(FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
 				"\nScore: " + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				"\nCombo: " + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
 				"\nCombo Breaks: " + PlayState.misses + 																				// Misses/Combo Breaks
 				"\nAccuracy: " + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
-				"\nRank: " + GenerateLetterRank(accuracy);
+				"\nRank: " + GenerateLetterRank(accuracy) +
+				'\nflixel cringe'; 
 			case 2:(FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
 				"\nScore: " + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				"\nCombo: " + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
-				"\nCombo Breaks: " + PlayState.misses + 																				// Misses/Combo Breaks
-				'\nSicks: ${PlayState.sicks}\nGoods: ${PlayState.goods}\nBads: ${PlayState.bads}\nShits: ${PlayState.shits}\nMisses: ${PlayState.misses}' +
+				"\nCombo Breaks/Misses: " + PlayState.misses + 																				// Misses/Combo Breaks
+				'\nSicks: ${PlayState.sicks}\nGoods: ${PlayState.goods}\nBads: ${PlayState.bads}\nShits: ${PlayState.shits}'+
 				"\nAccuracy: " + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
-				"\nRank: " + GenerateLetterRank(accuracy);
+				"\nRank: " + GenerateLetterRank(accuracy) +
+				'\nflixel cringe'; 
 			case 3:'Misses:${PlayState.misses}    Score:' + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score);
 			default:"";
 
