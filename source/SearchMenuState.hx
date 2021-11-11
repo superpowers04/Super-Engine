@@ -70,11 +70,12 @@ class SearchMenuState extends MusicBeatState
 		infotext.text = str;
 		infotext.scrollFactor.set();
 	}
+	// var bgColor:FlxColor = 0xFFFF6E6E;
 	override function create()
 	{try{
 		PlayState.songScript = "";PlayState.hsBrTools = null;
 		bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
-		bg.color = 0xFFFF6E6E;
+		bg.color = bgColor;
 		bg.scrollFactor.set(0.01,0.01);
 		SickMenuState.musicHandle(bg);
 		add(bg);

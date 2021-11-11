@@ -294,7 +294,11 @@ class Character extends FlxSprite
 	function loadVanillaChar(charProperties:CharacterJson){
 		if(tex == null){
 			if (charProperties.embedded){
-				tex = Paths.getSparrowAtlas(charProperties.path);
+				// tex = Paths.getSparrowAtlas(charProperties.path);
+				charXml = File.getContent('assets/shared/images/${charProperties.path}.xml'); // Loads the XML as a string
+				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+	
+				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/${charProperties.path}.png')), charXml);
 			}else{		
 				var pngPath:String = '${charProperties.path}.png';
 				var xmlPath:String = '${charProperties.path}.xml';

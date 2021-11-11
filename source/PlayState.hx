@@ -1401,7 +1401,7 @@ class PlayState extends MusicBeatState
 
 	var playCountdown = true;
 	var generatedArrows = false;
-
+	public var swappedChars = false;
 	public function startCountdown():Void
 	{
 
@@ -1420,6 +1420,7 @@ class PlayState extends MusicBeatState
 			dad = bf;
 			boyfriend.isPlayer = true;
 			dad.isPlayer = false;
+			swappedChars = true;
 			if(!FlxG.save.data.middleScroll){ // This is dumb but whatever
 				var plStrumX = [];
 				var oppStrumX = [];
@@ -2037,7 +2038,6 @@ class PlayState extends MusicBeatState
 
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
-
 		testanimdebug();
 
 		if (startingSong)
