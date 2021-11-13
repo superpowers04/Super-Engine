@@ -24,6 +24,7 @@ import lime.app.Application;
 import openfl.Assets;
 import sys.io.File;
 import sys.FileSystem;
+import flixel.math.FlxMath;
 
 
 using StringTools;
@@ -274,12 +275,12 @@ class TitleState extends MusicBeatState
 			FlxG.sound.music.fadeIn(4, 0, 1);
 			findosuBeatmaps();
 			MainMenuState.firstStart = true;
+			Conductor.changeBPM(70);
+			persistentUpdate = true;
+			FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
+			FlxG.mouse.useSystemCursor = true; // Uses system cursor, did not know this was a thing until Forever Engine
 		}
 
-		Conductor.changeBPM(70);
-		persistentUpdate = true;
-		FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
-		FlxG.mouse.useSystemCursor = true; // Uses system cursor, did not know this was a thing until Forever Engine
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		// bg.antialiasing = true;
@@ -296,7 +297,7 @@ class TitleState extends MusicBeatState
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
-		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
+		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.3);
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
@@ -530,18 +531,18 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = 'In association \nwith';
 			// credTextShit.screenCenter();
 			case 5:
-				if (Main.watermarks)
-					createCoolText(['Kade Engine', 'by']);
-				else
+				// if (Main.watermarks)  You're not more important than fucking newgrounds
+				// 	createCoolText(['Kade Engine', 'by']);
+				// else
 					createCoolText(['In Partnership', 'with']);
 			case 7:
-				if (Main.watermarks)
-					addMoreText('KadeDeveloper');
-				else
-				{
+				// if (Main.watermarks)
+				// 	addMoreText('KadeDeveloper');
+				// else
+				// {
 					addMoreText('Newgrounds');
 					ngSpr.visible = true;
-				}
+				// }
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
 				deleteCoolText();
@@ -586,6 +587,7 @@ class TitleState extends MusicBeatState
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);
 			skippedIntro = true;
+			FlxTween.tween(gfDance,{y:FlxG.height * 0.07},1);
 		}
 	}
 }

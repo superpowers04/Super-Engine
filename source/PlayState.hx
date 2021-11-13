@@ -1745,7 +1745,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (lastSusNote){ // Moves last sustain note so it looks right, hopefully
+				if (onlinemod.OnlinePlayMenuState.socket == null && lastSusNote){ // Moves last sustain note so it looks right, hopefully
 					unspawnNotes[Std.int(unspawnNotes.length - 1)].strumTime -= (Conductor.stepCrochet * 0.4);
 				}
 
@@ -3031,14 +3031,16 @@ class PlayState extends MusicBeatState
 					p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 					var p2holds:Array<Bool> = [p2presses[4],p2presses[5],p2presses[6],p2presses[7]];
 					// Shitty animation handling
+
 					if (p2presses[0] || p2holds[0]) dad.playAnim('singLEFT', true); // Left
 					else if (p2presses[1] || p2holds[1]) dad.playAnim('singDOWN', true); // Down
 					else if (p2presses[2] || p2holds[2]) dad.playAnim('singUP', true); // Up
 					else if (p2presses[3] || p2holds[3]) dad.playAnim('singRIGHT', true); // Right 
 					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true); // Idle
+					
 					cpuStrums.forEach(function(spr:FlxSprite)
 					{
-						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
+						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm')
 							spr.animation.play('pressed');
 
 						if (!p2holds[spr.ID])
@@ -3230,19 +3232,19 @@ class PlayState extends MusicBeatState
 							// }
 							daNote.hit(1,daNote);
 							callInterp("noteHitDad",[dad,daNote]);
+
+							dad.holdTimer = 0;
+		
+							if (dad.useVoices){dad.voiceSounds[daNote.noteData].play(1);dad.voiceSounds[daNote.noteData].time = 0;vocals.volume = 0;}else if (SONG.needsVoices) vocals.volume = 1;
+
+		
+							daNote.active = false;
+
+
+							daNote.kill();
+							notes.remove(daNote, true);
+							daNote.destroy();
 						}
-
-						dad.holdTimer = 0;
-	
-						if (dad.useVoices){dad.voiceSounds[daNote.noteData].play(1);dad.voiceSounds[daNote.noteData].time = 0;vocals.volume = 0;}else if (SONG.needsVoices) vocals.volume = 1;
-
-	
-						daNote.active = false;
-
-
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
 					} else if (!daNote.mustPress && daNote.wasGoodHit && !dadShow && SONG.needsVoices){
 						daNote.active = false;
 						vocals.volume = 0;

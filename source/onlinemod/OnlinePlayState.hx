@@ -456,7 +456,7 @@ class OnlinePlayState extends PlayState
 			case Packets.DISCONNECT:
 				FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
 		}}catch(e){
-			Chat.OutputChatMessage("[Client] You had an error when receiving a packet:");
+			Chat.OutputChatMessage("[Client] You had an error when receiving packet '" + '$packetId' + "':");
 			Chat.OutputChatMessage(e.message);
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OnlineLobbyState(true));

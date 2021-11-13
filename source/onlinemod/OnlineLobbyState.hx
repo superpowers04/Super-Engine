@@ -92,6 +92,7 @@ class OnlineLobbyState extends MusicBeatState
       Sender.SendPacket(Packets.JOINED_LOBBY, [], OnlinePlayMenuState.socket);
 
     optionsButton = new FlxUIButton(1100, 30, "Quick Options", () -> {
+      Chat.created = false;
       FlxG.switchState(new OnlineOptionsMenu());
     });
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);

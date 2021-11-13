@@ -118,8 +118,9 @@ class OptionsMenu extends MusicBeatState
 	{
 
 		instance = this;
-		
-		initOptions();
+		if(onlinemod.OnlinePlayMenuState.socket == null){
+			initOptions();
+		}
 
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 

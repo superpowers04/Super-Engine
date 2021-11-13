@@ -132,7 +132,8 @@ class MainMenuState extends SickMenuState
 
 	override function goBack(){
 		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;}
-		FlxG.switchState(new TitleState());
+		// FlxG.switchState(new TitleState());
+		// do nothing
 	}
 
 	override function update(elapsed:Float)
