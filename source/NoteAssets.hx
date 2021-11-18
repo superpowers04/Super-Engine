@@ -12,10 +12,16 @@ class NoteAssets{
 	static var path:String = "mods/noteassets"; // The slash not being here is just for ease of reading
 	public static var image:FlxGraphic;
 	public static var xml:String;
-	// public static var splashImage:String; // Is this getting cleared or something?
-	// public static var splashXml:String;
+	public static var splashImage:FlxGraphic; // Is this getting cleared or something?
+	public static var splashXml:String;
 	public static var badImage:FlxGraphic;
 	public static var badXml:String;
+	function perm(){
+		for (i in [badImage,image,splashImage]){
+			i.destroyOnNoUse = false;
+			i.persist = true;
+		}
+	}
 	public function new(?name_:String = 'default'):Void{
 		try{
 			name = name_;
@@ -26,9 +32,20 @@ class NoteAssets{
 				// genSplashes();
 				image = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png'));
 				xml = File.getContent("assets/shared/images/NOTE_assets.xml");
+				splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/noteSplashes.png'));
+				splashXml = File.getContent("assets/shared/images/noteSplashes.xml");
+				perm();
 				return;
 			} // Default arrows
 		
+
+			if (FileSystem.exists('${path}/${name}-splash.png') && FileSystem.exists('${path}/${name}-splash.xml')){ // Splashes
+				splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}-splash.png'));
+				splashXml = File.getContent('${path}/${name}-splash.xml');
+			}else{
+				splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/noteSplashes.png'));
+				splashXml = File.getContent("assets/shared/images/noteSplashes.xml");
+			}
 
 			if (FileSystem.exists('${path}/${name}-bad.png') && FileSystem.exists('${path}/${name}-bad.xml')){ // Hurt notes
 				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}-bad.png'));
@@ -42,6 +59,7 @@ class NoteAssets{
 			if (!FileSystem.exists('${path}/${name}.png') || !FileSystem.exists('${path}/${name}.xml')) MainMenuState.handleError('${name} isn\'t a valid note asset!');
 			image = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}.png'));
 			xml = File.getContent('${path}/${name}.xml');
+			perm();
 
 
 			if (badImage == null) {

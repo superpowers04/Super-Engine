@@ -13,13 +13,13 @@ using StringTools;
 
 class NoteSplash extends FlxSprite
 {  
-	static var fram:FlxFramesCollection;
 	override public function new()
 	{
 		try{
 
 			super();
-			frames = Paths.getSparrowAtlas("noteSplashes");
+			// frames = Paths.getSparrowAtlas("noteSplashes");
+			frames = FlxAtlasFrames.fromSparrow(NoteAssets.splashImage,NoteAssets.splashXml);
 			
 			animation.addByPrefix("note1-0", "note splash blue 1", 24, false);
 			animation.addByPrefix("note2-0", "note splash green 1", 24, false);
