@@ -24,6 +24,7 @@ class HSBrTools {
 	public var textArray:Map<String,String> = [];
 	public var soundArray:Map<String,Sound> = [];
 	var optionsMap:Map<String,Dynamic> = new Map<String,Dynamic>();
+	public static var shared:Map<String,Dynamic> = new Map<String,Dynamic>();
 	public function new(_path:String,?id:String = ""){
 		path = _path;
 		if (!path.endsWith('/')) path = path + "/";
@@ -40,6 +41,9 @@ class HSBrTools {
 		}
 		return false;
 	}
+
+
+
 	public function getPath(?str:String = ""){
 		return path + str;
 	}

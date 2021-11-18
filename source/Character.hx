@@ -1146,6 +1146,14 @@ class Character extends FlxSprite
 		}
 		skipNextAnim = false;
 	}
+	public function playAnimAvailable(animList:Array<String>){
+		for (i in animList) {
+			if(animation.getByName(i) != null){
+				playAnim(i);
+				return;
+			}
+		}
+	}
 	public function cloneAnimation(name:String,anim:FlxAnimation){
 		try{
 

@@ -42,7 +42,9 @@ class StrumArrow extends FlxSprite{
 	static var arrowIDs:Array<String> = ['left','down','up',"right"];
 	public function init(){
 		TitleState.loadNoteAssets();
-		if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+		if (frames == null) {
+			frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+		}
 		// trace('Created new strumline');
 		// animation.addByPrefix('green', 'arrowUP');
 		// animation.addByPrefix('blue', 'arrowDOWN');

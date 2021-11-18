@@ -17,6 +17,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.FlxObject;
 import flixel.ui.FlxBar;
+import flixel.FlxCamera;
 
 class FinishSubState extends MusicBeatSubstate
 {
@@ -90,15 +91,18 @@ class FinishSubState extends MusicBeatSubstate
 			}
 		if(!isError){
 			if(win){
-				boyfriend.playAnim("hey",true);
-				boyfriend.playAnim("win",true);
-				if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnim('singDOWNmiss');dad.playAnim('lose');}
+				boyfriend.playAnimAvailable(['win','hey','singUP']);
+				
+				if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnimAvailable(['lose','singDOWNmiss']);}
 				PlayState.gf.playAnim('cheer',true);
 			}else{
-				boyfriend.playAnim('singDOWNmiss');
-				boyfriend.playAnim('lose');
-				dad.playAnim("hey",true);
-				dad.playAnim("win",true);
+				// boyfriend.playAnim('singDOWNmiss');
+				// boyfriend.playAnim('lose');
+
+				// dad.playAnim("hey",true);
+				// dad.playAnim("win",true);
+				boyfriend.playAnimAvailable(['lose','singDOWNmiss']);
+				dad.playAnimAvailable(['win','hey','singUP']);
 				if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('sad'); else dad.playAnim("hey");
 				PlayState.gf.playAnim('sad',true);
 			}
@@ -113,9 +117,12 @@ class FinishSubState extends MusicBeatSubstate
 	}
 
 
-
+	var cam:FlxCamera;
 	public function finishNew(?name:String){
-
+			FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
+			cam = new FlxCamera();
+			FlxG.cameras.add(cam);
+			FlxCamera.defaultCameras = [cam];
 			if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
 			ready = true;
 			FlxG.state.persistentUpdate = false;
