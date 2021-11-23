@@ -8,7 +8,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
-
+ 
 import sys.io.File;
 import sys.FileSystem;
 
@@ -19,7 +19,10 @@ class DirectoryListing extends SearchMenuState{
 	override function findButton(){
 		var nextDir:String = searchField.text;
 		if (!FileSystem.exists(nextDir) || !FileSystem.isDirectory(nextDir)){
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			// FlxG.sound.play(Paths.sound('cancelMenu'));
+			reloadList(true,nextDir);
+			searchField.hasFocus = false;
+			changeSelection(0);
 			return;
 		}
 		nextDir = (~/[\\]/g).replace(nextDir.toLowerCase(),'/'); // Converts from \ to /
@@ -29,16 +32,17 @@ class DirectoryListing extends SearchMenuState{
 	}
 	override function create()
 	{
+		useAlphabet = false;
 		dataDir = Sys.getCwd();
-		buttonText["Find"] = "Go to";
+		buttonText["Find"] = "Go to/Search";
 		super.create();
 		infotext.text = '${infotext.text}; Use LEFT to go back, RIGHT to go into a folder, and Enter to select it.';
 		bg.color = 0x0000FF6E;
 	}
   override function reloadList(?reload=false,?search = ""){
 	try {
-	curSelected = 0;
-	if(reload){grpSongs.destroy();}
+		curSelected = 0;
+		if(reload){grpSongs.destroy();}
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 		songs = [];
@@ -54,12 +58,13 @@ class DirectoryListing extends SearchMenuState{
 				MainMenuState.handleError('Scanning for drives doesnt work yet, due to the developer lacking a Windows system(and 20 gigs) for testing.');
 			}else{
 			#end
-				addToList("../");
 				if (FileSystem.exists(dataDir))
 				{
+					addToList("../");
+					var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i');
 					for (directory in FileSystem.readDirectory(dataDir))
 					{
-						if(!FileSystem.isDirectory('${dataDir}${directory}')) continue;
+						if(!FileSystem.isDirectory('${dataDir}${directory}') || (search != "" && !query.match(directory.toLowerCase())) ) continue;
 						addToList(directory + "/");
 					}
 				}else{
@@ -71,6 +76,7 @@ class DirectoryListing extends SearchMenuState{
 		changeSelection(0);
 		}catch(e){MainMenuState.handleError('Error while checking directory. ${e.message}');}
   }
+
   function upDir(){
   	if (curDirReg.match(dataDir)) {
   		dataDir = curDirReg.matched(1);

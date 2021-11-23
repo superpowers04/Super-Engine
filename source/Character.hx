@@ -394,29 +394,32 @@ class Character extends FlxSprite
 		
 		trace('Loading Json animations!');
 		// Check if the XML has BF's animations, if so, add them
-		var hasBFAnims:Bool = false;
-		{
-			var regTP:EReg = (~/<SubTexture name="BF idle dance/g);
-			var input:String = charXml;
-			while (regTP.match(input)) {
-				hasBFAnims = true;
-				break;
+		if(!amPreview){
+			
+			var hasBFAnims:Bool = false;
+			{
+				var regTP:EReg = (~/<SubTexture name="BF idle dance/g);
+				var input:String = charXml;
+				while (regTP.match(input)) {
+					hasBFAnims = true;
+					break;
+				}
 			}
-		}
-		if (hasBFAnims){
-			addAnimation('idle', 'BF idle dance', 24, false);
-			addAnimation('singUP', 'BF NOTE UP0', 24, false);
-			// WHY DO THESE NEED TO BE FLIPPED?
-			addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
-			addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
-			addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
-			addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
+			if (hasBFAnims){
+				addAnimation('idle', 'BF idle dance', 24, false);
+				addAnimation('singUP', 'BF NOTE UP0', 24, false);
+				// WHY DO THESE NEED TO BE FLIPPED?
+				addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
+				addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
+				addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
+				addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
 
-			addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
-			addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
+				addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
+				addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
 
-			addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-			addAnimation('hey', 'BF HEY', 24, false);
+				addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+				addAnimation('hey', 'BF HEY', 24, false);
+			}
 		}
 
 
