@@ -13,6 +13,7 @@ using StringTools;
 
 class NoteSplash extends FlxSprite
 {  
+	public var data:Int = 0;
 	override public function new()
 	{
 		try{
@@ -45,6 +46,7 @@ class NoteSplash extends FlxSprite
 		animation.play("note" + note + "-" + FlxG.random.int(0, 1), true);
 		animation.finishCallback = finished;
 		animation.curAnim.frameRate = 24;
+		data = note;
 		updateHitbox();
 		// Stolen from psych but whatever
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);

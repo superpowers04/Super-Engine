@@ -308,7 +308,7 @@ class PlayState extends MusicBeatState
 			
 			var method = interps[id].variables.get(func_name);
 			Reflect.callMethod(interps[id],method,args);
-		}catch(e:hscript.Expr.Error){handleError('${func_name}:${e.line} for ${id}:\n ${e.toString()}');}
+		}catch(e:hscript.Expr.Error){handleError('${func_name} for ${id}:\n ${e.toString()}');}
 	}
 
 	public function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
@@ -2369,6 +2369,7 @@ class PlayState extends MusicBeatState
 
 	var timeShown = 0;
 	var currentTimingShown:FlxText = null;
+	var lastNoteSplash:NoteSplash;
 	private function popUpScore(daNote:Note):Void
 		{
 			var noteDiff:Float = Math.abs(Conductor.songPosition - daNote.strumTime);
@@ -2429,6 +2430,7 @@ class PlayState extends MusicBeatState
 					if (FlxG.save.data.noteSplash){
 						var a:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
 						a.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+						lastNoteSplash = a;
 						grpNoteSplashes.add(a);
 					}
 			}

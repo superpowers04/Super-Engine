@@ -42,6 +42,7 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super();
 		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
+		PlayState.instance.callInterp("pauseLoad",[this]);
 
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
@@ -112,12 +113,14 @@ class PauseSubState extends MusicBeatSubstate
 		songPath = 'assets/data/' + PlayState.SONG.song.toLowerCase() + '/';
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		PlayState.instance.callInterp("pause",[this]);
 	}
 
 	override function update(elapsed:Float)
 	{if (ready){
 		if (pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
+		PlayState.instance.callInterp("pauseUpdate",[this]);
 
 		super.update(elapsed);
 
@@ -273,6 +276,7 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
 
+					PlayState.instance.callInterp("pauseExit",[]);
 					close();
 			}
 

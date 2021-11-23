@@ -37,6 +37,8 @@ class FinishSubState extends MusicBeatSubstate
 	var healthBar:FlxBar;
 	var iconP1:HealthIcon; //making these public again because i may be stupid
 	var iconP2:HealthIcon; //what could go wrong?
+	public static var pauseGame:Bool = true;
+	public static var autoEnd:Bool = true;
 	public function new(x:Float, y:Float,?won = true,?camFollow:FlxObject,?week:Bool = false,?error:String = "")
 	{
 		if (error != ""){
@@ -46,6 +48,13 @@ class FinishSubState extends MusicBeatSubstate
 			
 		}
 		FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
+		PlayState.instance.followChar(0);
+		if(!isError){
+			var inName = if(won)"winSong" else "loseSong";
+			PlayState.instance.callInterp(inName,[]);
+			PlayState.dad.callInterp(inName,[]);
+			PlayState.boyfriend.callInterp(inName,[]);
+		}
 
 		this.week = week;
 		if(!isError) FlxG.state.persistentUpdate = true; else FlxG.state.persistentUpdate = false;
@@ -108,11 +117,14 @@ class FinishSubState extends MusicBeatSubstate
 			}
 		}
 		super();
-		if (win) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
-		FlxG.camera.zoom = 1;
-		PlayState.instance.camHUD.zoom = 1;
-		if (FlxG.save.data.camMovement && camFollow != null){
-			PlayState.instance.followChar(if(win) 0 else 1);
+		if(autoEnd){
+
+			// FlxG.camera.zoom = 1;
+			// PlayState.instance.camHUD.zoom = 1;
+			if (win) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+			if (FlxG.save.data.camMovement && camFollow != null){
+				PlayState.instance.followChar(if(win) 0 else 1);
+			}
 		}
 	}
 
@@ -125,7 +137,9 @@ class FinishSubState extends MusicBeatSubstate
 			FlxCamera.defaultCameras = [cam];
 			if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
 			ready = true;
-			FlxG.state.persistentUpdate = false;
+			FlxG.state.persistentUpdate = !isError || pauseGame;
+			pauseGame = true;
+			autoEnd = true;
 			FlxG.sound.pause();
 
 			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'StartItchBuild' else 'gameOver'), true, true);
@@ -135,7 +149,7 @@ class FinishSubState extends MusicBeatSubstate
 				music.onComplete = function(){music = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);music.play(false);} 
 
 			}
-			FlxG.camera.zoom = PlayState.instance.camHUD.zoom = 1;
+			// FlxG.camera.zoom = PlayState.instance.camHUD.zoom = 1;
 
 			FlxG.sound.list.add(music);
 

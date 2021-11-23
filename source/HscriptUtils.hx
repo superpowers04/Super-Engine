@@ -78,6 +78,9 @@ class HscriptUtils {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("TitleState", TitleState);
 		interp.variables.set("makeRangeArray", CoolUtil.numberArray);
+		interp.variables.set("SEVersion",MainMenuState.ver);
+		interp.variables.set("FinishSubState",FinishSubState);
+
 
 		// SE clones of other libaries
 		interp.variables.set("FlxG", HscriptGlobals);
@@ -114,7 +117,6 @@ class HscriptUtils {
 		interp.variables.set("Std", Std);
 		interp.variables.set("StringTools", StringTools);
 		interp.variables.set("Reflect", Reflect);
-		interp.variables.set("Version",MainMenuState.ver);
 
 
 		

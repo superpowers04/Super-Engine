@@ -243,7 +243,7 @@ class Note extends FlxSprite
 			else
 			{
 				if (strumTime <= Conductor.songPosition)
-					wasGoodHit = (!shouldntBeHit);
+					wasGoodHit = true;
 			}
 
 			// if (tooLate)
