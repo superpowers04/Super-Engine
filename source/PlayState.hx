@@ -1064,7 +1064,7 @@ class PlayState extends MusicBeatState
 			camFollow = prevCamFollow;
 			prevCamFollow = null;
 		}
-
+		followChar(0,true);
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast (Lib.current.getChildAt(0), Main)).getFPS()));
@@ -1414,8 +1414,10 @@ class PlayState extends MusicBeatState
 		callInterp("startCountdownFirst",[]);
 		FlxG.camera.zoom = FlxMath.lerp(0.90, FlxG.camera.zoom, 0.95);
 		camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
-		camFollow.setPosition(720, 500);
+		// camFollow.setPosition(720, 500);
+
 		canPause = true;
+		updateCharacterCamPos();
 		if (!playCountdown){
 			playCountdown = true;
 			return;
@@ -1465,7 +1467,7 @@ class PlayState extends MusicBeatState
 		}
 		FlxG.camera.zoom = FlxMath.lerp(0.90, FlxG.camera.zoom, 0.95);
 		camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
-		camFollow.setPosition(720, 500);
+		// camFollow.setPosition(720, 500);
 
 
 		
@@ -2110,13 +2112,9 @@ class PlayState extends MusicBeatState
 		{
 			
 
-			
-			if (FlxG.save.data.camMovement){
-				if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
-				{followChar(1);}
-
-				if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
-				{followChar();}
+			var locked = (FlxG.save.data.camMovement || !camLocked || PlayState.SONG.notes[Std.int(curStep / 16)].sectionNotes[0] == null);
+			if (PlayState.SONG.notes[Std.int(curStep / 16)] != null) followChar((PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection ? 0 : 1),locked);
+			if (FlxG.save.data.camMovement || !camLocked){
 				FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 				camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 				
@@ -2212,46 +2210,63 @@ class PlayState extends MusicBeatState
 	#end
 }
 
-	public function followChar(?char:Int = 0){
-		switch (char) {
-			case 1:{
-				var offsetX = 0;
-				var offsetY = 0;
-				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX+ dad.camX, dad.getMidpoint().y - 100 + offsetY + dad.camY);
-				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
-
-				switch (dad.curCharacter)
-				{
-					case 'mom':
-						camFollow.y = dad.getMidpoint().y;
-					case 'senpai':
-						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
-					case 'senpai-angry':
-						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
-				}
-
-				if (dad.curCharacter == 'mom')
-					vocals.volume = 1;}
-			default:
-				{
-					var offsetX = 0;
-					var offsetY = 0;
-
-					camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX+ boyfriend.camX, boyfriend.getMidpoint().y - 100 + offsetY+ boyfriend.camY);
-
-
-					switch (curStage)
-					{
-						case 'limo':
-							camFollow.x = boyfriend.getMidpoint().x - 300;
-						case 'mall':
-							camFollow.y = boyfriend.getMidpoint().y - 200;
-					}
-				}
-
+	public function followChar(?char:Int = 0,?locked:Bool = false){
+		focusedCharacter = char;
+		if(!locked || cameraPositions[char] == null){
+			camIsLocked = true;
+			camFollow.x = lockedCamPos[0] + additionCamPos[0];
+			camFollow.y = lockedCamPos[1] + additionCamPos[1];
+			return; 
 		}
+		camFollow.x = cameraPositions[char][0] + additionCamPos[0];
+		camFollow.y = cameraPositions[char][1] + additionCamPos[1];
+
+
+	}
+	public function getDefaultCamPos():Array<Float>{
+		if(camIsLocked){
+			return lockedCamPos; 
+		}
+		return cameraPositions[focusedCharacter];
+	}
+	public var cameraPositions:Array<Array<Float>> = [];
+	public var camLocked:Bool = false;
+	public var camIsLocked:Bool = false;
+	public var defLockedCamPos:Array<Float> = [720, 500];
+	public var lockedCamPos:Array<Float> = [720, 500];
+	public var additionCamPos:Array<Float> = [0,0];
+	public var focusedCharacter:Int = 0;
+	public function updateCharacterCamPos(){ // Resets all camera positions
+		var offsetX = boyfriend.getMidpoint().x - 100 + boyfriend.camX;
+		var offsetY = boyfriend.getMidpoint().y - 100 + boyfriend.camY;
+
+
+		switch (curStage)
+		{
+			case 'limo':
+				offsetX -= 300;
+			case 'mall':
+				offsetY -= 200;
+		}
+		cameraPositions = [[offsetX,offsetY]];
+		var offsetX = dad.getMidpoint().x + 150 + dad.camX;
+		var offsetY = dad.getMidpoint().y - 100 + dad.camY;
+		// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+
+		switch (dad.curCharacter)
+		{
+			case 'mom':
+				offsetY = dad.getMidpoint().y;
+			case 'senpai':
+				offsetY = dad.getMidpoint().y - 430;
+				offsetX = dad.getMidpoint().x - 100;
+			case 'senpai-angry':
+				offsetY = dad.getMidpoint().y - 430;
+				offsetX = dad.getMidpoint().x - 100;
+		}
+		cameraPositions.push([offsetX,offsetY]);
+		cameraPositions.push([gf.getMidpoint().x,gf.getMidpoint().y - 100]);
+		lockedCamPos = defLockedCamPos;
 	}
 
 
