@@ -2080,7 +2080,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
-			Conductor.songPosition += FlxG.elapsed * 1000;
+			Conductor.songPosition += FlxG.game.ticks - previousFrameTime;
 			/*@:privateAccess
 			{
 				FlxG.sound.music._channel.

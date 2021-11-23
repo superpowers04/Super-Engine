@@ -8,6 +8,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
+import flash.media.Sound;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -44,6 +45,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		changeSelection(lastSel);
 		lastSel = 0;
 		changeDiff();
+		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental of song.');
 	}
 	override function reloadList(?reload=false,?search = ""){
 		curSelected = 0;
@@ -166,7 +168,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			// PlayState.SONG = Song.parseJSONshit(File.getContent('${selSong}/${songJSON}'));
 
 	}
-
+	var curPlaying = "";
 	override function handleInput(){
 			if (controls.BACK)
 			{
@@ -178,6 +180,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if(controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
 			if(controls.LEFT_P){changeDiff(-1);}
 			if(controls.RIGHT_P){changeDiff(1);}
+			if(FlxG.keys.justPressed.CONTROL){
+				if(curPlaying != songs[curSelected]){
+					curPlaying = songs[curSelected];
+					FlxG.sound.playMusic(Sound.fromFile('/mods/charts/${songs[curSelected]}/Inst.ogg'),1,true);
+
+				}
+			}
 			extraKeys();
 			if (controls.ACCEPT && songs.length > 0)
 			{
@@ -195,6 +204,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		diffText.text = modes[curSelected][selMode];
 		diffText.x = (FlxG.width) - (diffText.text.length * 14) - 10;
 	}
+
 	override function changeSelection(change:Int = 0)
 	{
 		super.changeSelection(change);
