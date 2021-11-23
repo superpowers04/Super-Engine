@@ -480,6 +480,7 @@ class AnimationDebug extends MusicBeatState
 
 			dad.x -= characterX;
 			dad.y -= characterY;
+			dad.y = -dad.y;
 
 			trace('${dad.x},${dad.y}');
 			errorStage = 5; // Position
@@ -684,6 +685,11 @@ class AnimationDebug extends MusicBeatState
 
 		var animTxt = new FlxText(140, 130,0,"XML Name");
 		uiBox.add(animTxt);
+		if(dad.charType == 0){
+
+			var warning = new FlxText(2, 180,0,"Anims might not add correctly when editing as BF.\nIt is recommended to add anims as Dad, save and then swap back to editing BF");
+			uiBox.add(warning);
+		}
 
 		// Toggles
 
@@ -691,7 +697,7 @@ class AnimationDebug extends MusicBeatState
 		looped.checked = false;
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
-		var oneshot = new FlxUICheckBox(30, 60, null, null, "oneshot/High priority");
+		var oneshot = new FlxUICheckBox(30, 60, null, null, "Oneshot/High priority");
 		oneshot.checked = false;
 		uiMap["oneshot"] = oneshot;
 		uiBox.add(oneshot);
@@ -744,6 +750,7 @@ class AnimationDebug extends MusicBeatState
 		var ctrlPress = FlxG.keys.pressed.CONTROL;
 		var rPress = FlxG.keys.justPressed.R;
 		var hPress = FlxG.keys.justPressed.H;
+		dadBG.y = dad.y;
 		if (hPress && editMode != 2) openSubState(new AnimHelpScreen(canEditJson,editMode));
 		switch(editMode){
 			case 0:{
@@ -780,7 +787,7 @@ class AnimationDebug extends MusicBeatState
 				];
 
 				var modifier = "";
-				if (shiftPress) modifier += "miss";
+				if (shiftPress) {modifier += "miss";}
 				if (ctrlPress) modifier += "-alt";
 				// var animToPlay = "";
 				for (i => v in pressArray) {
