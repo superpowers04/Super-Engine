@@ -92,6 +92,9 @@ class PlayState extends MusicBeatState
 	public static var bads:Int = 0;
 	public static var goods:Int = 0;
 	public static var sicks:Int = 0;
+	public static var mania:Int = 0;
+	public static var maniaToChange:Int = 0;
+	public static var keyAmmo:Array<Int> = [4, 6, 7, 9];
 	public static var stateType=0;
 	public static var invertedChart:Bool = false;
 
@@ -151,6 +154,9 @@ class PlayState extends MusicBeatState
 	private var totalPlayed:Int = 0;
 	private var ss:Bool = false;
 
+	var hold:Array<Bool>;
+	var press:Array<Bool>;
+	var release:Array<Bool>;
 
 	public var healthBarBG:FlxSprite;
 	public var healthBar:FlxBar;
@@ -162,6 +168,8 @@ class PlayState extends MusicBeatState
 	public var iconP1:HealthIcon; //making these public again because i may be stupid
 	public var iconP2:HealthIcon; //what could go wrong?
 	public var camHUD:FlxCamera;
+	public var camSustains:FlxCamera;
+	public var camNotes:FlxCamera;
 	public var camGame:FlxCamera;
 
 	public static var offsetTesting:Bool = false;
@@ -423,6 +431,10 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
+		camSustains = new FlxCamera();
+		camSustains.bgColor.alpha = 0;
+		camNotes = new FlxCamera();
+		camNotes.bgColor.alpha = 0;
 
 		// Note splashes
 
@@ -433,14 +445,20 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
+		FlxG.cameras.add(camSustains);
+		FlxG.cameras.add(camNotes);
 
 		FlxCamera.defaultCameras = [camGame];
 
 		persistentUpdate = true;
 		persistentDraw = true;
 
+		mania = SONG.mania;
+
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
+
+		maniaToChange = mania;
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -1407,7 +1425,7 @@ class PlayState extends MusicBeatState
 		}
 		startCountdown();
 	}
-
+	var keys = [false, false, false, false, false, false, false, false, false];
 	var playCountdown = true;
 	var generatedArrows = false;
 	public var swappedChars = false;
@@ -1422,6 +1440,19 @@ class PlayState extends MusicBeatState
 			generateStaticArrows(0);
 			generateStaticArrows(1);
 		}
+
+		switch(mania) //moved it here because i can lol
+		{
+			case 0: 
+				keys = [false, false, false, false];
+			case 1: 
+				keys = [false, false, false, false, false, false];
+			case 2: 
+				keys = [false, false, false, false, false, false, false];
+			case 3: 
+				keys = [false, false, false, false, false, false, false, false, false];
+		}
+
 		if (invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Swap characters"))){
 			var bf:Character = boyfriend;
 			var opp:Character = dad;
@@ -1439,10 +1470,10 @@ class PlayState extends MusicBeatState
 				for (i in cpuStrums.members) {
 					oppStrumX[i.ID] = i.x;
 				}
-				for (i in [0,1,2,3]) {
+				for (i in 0...keyAmmo[mania]) {
 					playerStrums.members[i].x = oppStrumX[i];
 				}
-				for (i in [0,1,2,3]) {
+				for (i in 0...keyAmmo[mania]) {
 					cpuStrums.members[i].x = plStrumX[i];
 				}
 			}
@@ -1694,24 +1725,38 @@ class PlayState extends MusicBeatState
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 		for (section in noteData)
 		{
+			var mn:Int = keyAmmo[mania];
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
+			var dataForThisSection:Array<Int> = [];
+			var randomDataForThisSection:Array<Int> = [];
+			//var maxNoteData:Int = 3;
+			switch (maniaToChange) //sets up the max data for each section based on mania
+			{
+				case 0: 
+					dataForThisSection = [0,1,2,3];
+				case 1: 
+					dataForThisSection = [0,1,2,3,4,5];
+				case 2: 
+					dataForThisSection = [0,1,2,3,4,5,6];
+				case 3: 
+					dataForThisSection = [0,1,2,3,4,5,6,7,8];
+			}
+
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
 
 				if (daStrumTime < 0)
 					daStrumTime = 0;
-
-
-				var daNoteData:Int = songNotes[1];
-
+				var daNoteData:Int = Std.int(songNotes[1] % mn);
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes[1] > 3)
+				if (songNotes[1] >= mn)
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
+				
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -1776,51 +1821,16 @@ class PlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Int):Void
 	{
-
-		for (i in 0...4)
+		for (i in 0...keyAmmo[mania])
 		{
-			// FlxG.log.add(i);
+			//FlxG.log.add(i);
+			trace('Create note ${i}');
 			var babyArrow:StrumArrow = new StrumArrow(i,0, strumLine.y);
 
-			// switch (SONG.noteStyle)
-			// {
-			// 	case 'normal':
 			charCall("strumNoteLoad",[babyArrow,player],if (player == 1) 0 else 1);
 			callInterp("strumNoteLoad",[babyArrow,player == 1]);
 			babyArrow.x += Note.swagWidth * i + i;
 			babyArrow.init();
-			// babyArrow.frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
-			// babyArrow.animation.addByPrefix('green', 'arrowUP');
-			// babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-			// babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-			// babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-
-			// babyArrow.antialiasing = true;
-			// babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-
-			// switch (Math.abs(i))
-			// {
-			// 	case 0:
-			// 		// babyArrow.x += Note.swagWidth * 0;
-			// 		babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-			// 		babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-			// 		babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-			// 	case 1:
-			// 		// babyArrow.x += Note.swagWidth * 1 ;
-			// 		babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-			// 		babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-			// 		babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-			// 	case 2:
-			// 		// babyArrow.x += Note.swagWidth * 2;
-			// 		babyArrow.animation.addByPrefix('static', 'arrowUP');
-			// 		babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-			// 		babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-			// 	case 3:
-			// 		// babyArrow.x += Note.swagWidth * 3 + 4;
-			// 		babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-			// 		babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-			// 		babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-			// }
 
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
@@ -1841,13 +1851,15 @@ class PlayState extends MusicBeatState
 				case 1:
 					playerStrums.add(babyArrow);
 			}
-
+			if(mania == 3){babyArrow.x -= Note.tooMuch;};
 			babyArrow.animation.play('static'); 
 			// Todo, clean this shitty code up
-			 babyArrow.x += if (!(FlxG.save.data.middleScroll && player == 1)) 50 else 100;
+			babyArrow.x += if (!(FlxG.save.data.middleScroll && player == 1 && mania == 0)) 50 else if (!(FlxG.save.data.middleScroll && player == 1 && mania > 0)) 45 else 100;
 
 			babyArrow.x += if (FlxG.save.data.middleScroll) ((FlxG.width / 4) * player) else ((FlxG.width / 2) * player);
-			if (FlxG.save.data.middleScroll && player == 0 && i > 1) babyArrow.x += Note.swagWidth * 6;
+			if (FlxG.save.data.middleScroll && player == 0 && i > 1 && mania == 0) babyArrow.x += Note.swagWidth * 6;
+			else if (FlxG.save.data.middleScroll && player == 0 && i > 2 && mania == 1) babyArrow.x += Note.swagWidth * 8;
+			else if (FlxG.save.data.middleScroll && player == 0 && mania > 1) babyArrow.x -= 1000;
 			babyArrow.visible = (player == 1 || FlxG.save.data.oppStrumLine);
 
 			
@@ -1857,7 +1869,6 @@ class PlayState extends MusicBeatState
 			});
 
 			strumLineNotes.add(babyArrow);
-			babyArrow.ID = i;
 			charCall("strumNoteAdd",[babyArrow,player],if (player == 1) 0 else 1);
 			callInterp("strumNoteAdd",[babyArrow,player == 1]);
 		}
@@ -2156,7 +2167,6 @@ class PlayState extends MusicBeatState
 				unspawnNotes.splice(index, 1);
 			}
 		}
-
 		// if (addNotes && FlxG.random.int(0,1000) > 700){
 		// 	var note:Array<Dynamic> = [Conductor.songPosition + FlxG.random.int(400,1000),FlxG.random.int(0,3),0];
 		// 	var swagNote:Note = new Note(note[0], note[1], null,null,null,0,note,true);
@@ -2409,7 +2419,7 @@ class PlayState extends MusicBeatState
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 1;
 					sicks++;
-					if (FlxG.save.data.noteSplash){
+					if (FlxG.save.data.noteSplash && mania == 0){
 						var a:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
 						a.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
 						grpNoteSplashes.add(a);
@@ -2870,20 +2880,89 @@ class PlayState extends MusicBeatState
  	private function kadeKeyShit():Void // I've invested in emma stocks
 			{
 				// control arrays, order L D R U
-				var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-				
-				var pressArray:Array<Bool> = [
+				switch(maniaToChange)
+				{
+					case 0: 
+						hold = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+						press = [
 					controls.LEFT_P,
 					controls.DOWN_P,
 					controls.UP_P,
 					controls.RIGHT_P
 				];
-				var releaseArray:Array<Bool> = [
+						release = [
 					controls.LEFT_R,
 					controls.DOWN_R,
 					controls.UP_R,
 					controls.RIGHT_R
 				];
+					case 1: 
+						hold = [controls.L1, controls.D1, controls.R1, controls.L2, controls.U1, controls.R2];
+						press = [
+							controls.L1_P,
+							controls.D1_P,
+							controls.R1_P,
+							controls.L2_P,
+							controls.U1_P,
+							controls.R2_P
+						];
+						release = [
+							controls.L1_R,
+							controls.D1_R,
+							controls.R1_R,
+							controls.L2_R,
+							controls.U1_R,
+							controls.R2_R
+						];
+					case 2: 
+						hold = [controls.L1, controls.D1, controls.R1, controls.N4, controls.L2, controls.U1, controls.R2];
+						press = [
+							controls.L1_P,
+							controls.D1_P,
+							controls.R1_P,
+							controls.N4_P,
+							controls.L2_P,
+							controls.U1_P,
+							controls.R2_P
+						];
+						release = [
+							controls.L1_R,
+							controls.D1_R,
+							controls.R1_R,
+							controls.N4_R,
+							controls.L2_R,
+							controls.U1_R,
+							controls.R2_R
+						];
+					case 3: 
+						hold = [controls.N0, controls.N1, controls.N2, controls.N3, controls.N4, controls.N5, controls.N6, controls.N7, controls.N8];
+						press = [
+							controls.N0_P,
+							controls.N1_P,
+							controls.N2_P,
+							controls.N3_P,
+							controls.N4_P,
+							controls.N5_P,
+							controls.N6_P,
+							controls.N7_P,
+							controls.N8_P
+						];
+						release = [
+							controls.N0_R,
+							controls.N1_R,
+							controls.N2_R,
+							controls.N3_R,
+							controls.N4_R,
+							controls.N5_R,
+							controls.N6_R,
+							controls.N7_R,
+							controls.N8_R
+						];
+				}
+				var holdArray:Array<Bool> = hold;
+				var pressArray:Array<Bool> = press;
+				var releaseArray:Array<Bool> = release;
+				
 		 		callInterp("keyShit",[pressArray,holdArray]);
 		 		charCall("keyShit",[pressArray,holdArray]);
 		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
@@ -2896,7 +2975,18 @@ class PlayState extends MusicBeatState
 							goodNoteHit(daNote);
 					});
 				}
-		 		var hitArray = [false,false,false,false];
+				var hitArray = [false,false,false,false,false,false,false,false,false];
+				switch(mania)
+				{
+					case 0: 
+						hitArray = [false, false, false, false];
+					case 1: 
+						hitArray = [false, false, false, false, false, false];
+					case 2: 
+						hitArray = [false, false, false, false, false, false, false];
+					case 3: 
+						hitArray = [false, false, false, false, false, false, false, false, false];
+				}
 				// PRESSES, check for note hits
 				if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
 				{
@@ -3302,21 +3392,102 @@ class PlayState extends MusicBeatState
  	private function kadeBRKeyShit():Void // I've invested in emma stocks
 			{
 				// control arrays, order L D R U
-				var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-				p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-				var pressArray:Array<Bool> = [
+				switch(maniaToChange)
+				{
+					case 0: 
+						hold = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+						press = [
 					controls.LEFT_P,
 					controls.DOWN_P,
 					controls.UP_P,
 					controls.RIGHT_P
 				];
-				var releaseArray:Array<Bool> = [
+						release = [
 					controls.LEFT_R,
 					controls.DOWN_R,
 					controls.UP_R,
 					controls.RIGHT_R
 				];
-				var hitArray:Array<Bool> = [false,false,false,false];
+					case 1: 
+						hold = [controls.L1, controls.D1, controls.R1, controls.L2, controls.U1, controls.R2];
+						press = [
+							controls.L1_P,
+							controls.D1_P,
+							controls.R1_P,
+							controls.L2_P,
+							controls.U1_P,
+							controls.R2_P
+						];
+						release = [
+							controls.L1_R,
+							controls.D1_R,
+							controls.R1_R,
+							controls.L2_R,
+							controls.U1_R,
+							controls.R2_R
+						];
+					case 2: 
+						hold = [controls.L1, controls.D1, controls.R1, controls.N4, controls.L2, controls.U1, controls.R2];
+						press = [
+							controls.L1_P,
+							controls.D1_P,
+							controls.R1_P,
+							controls.N4_P,
+							controls.L2_P,
+							controls.U1_P,
+							controls.R2_P
+						];
+						release = [
+							controls.L1_R,
+							controls.D1_R,
+							controls.R1_R,
+							controls.N4_R,
+							controls.L2_R,
+							controls.U1_R,
+							controls.R2_R
+						];
+					case 3: 
+						hold = [controls.N0, controls.N1, controls.N2, controls.N3, controls.N4, controls.N5, controls.N6, controls.N7, controls.N8];
+						press = [
+							controls.N0_P,
+							controls.N1_P,
+							controls.N2_P,
+							controls.N3_P,
+							controls.N4_P,
+							controls.N5_P,
+							controls.N6_P,
+							controls.N7_P,
+							controls.N8_P
+						];
+						release = [
+							controls.N0_R,
+							controls.N1_R,
+							controls.N2_R,
+							controls.N3_R,
+							controls.N4_R,
+							controls.N5_R,
+							controls.N6_R,
+							controls.N7_R,
+							controls.N8_R
+						];
+				}
+				
+				var holdArray:Array<Bool> = hold;
+				var pressArray:Array<Bool> = press;
+				var releaseArray:Array<Bool> = release;
+				
+				var hitArray = [false,false,false,false,false,false,false,false,false];
+				switch(mania)
+				{
+					case 0: 
+						hitArray = [false, false, false, false];
+					case 1: 
+						hitArray = [false, false, false, false, false, false];
+					case 2: 
+						hitArray = [false, false, false, false, false, false, false];
+					case 3: 
+						hitArray = [false, false, false, false, false, false, false, false, false];
+				}
 		 		callInterp("keyShit",[pressArray,holdArray]);
 		 		charCall("keyShit",[pressArray,holdArray]);
 		 
@@ -3390,7 +3561,7 @@ class PlayState extends MusicBeatState
 					// possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));  Should already be sorted
 					var dontCheck = false;
 
-					for (i in 0...3)
+					for (i in 0...keyAmmo[mania])
 					{
 						if (pressArray[i] && !directionList[i])
 							dontCheck = true;
@@ -3973,10 +4144,10 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.switchState(new AnimationDebug(gfChar,false,2));
 			}
-			// if (FlxG.keys.justPressed.SEVEN )
-			// {
-			// 	FlxG.switchState(new ChartingState());
-			// }
+			/*if (FlxG.keys.justPressed.SEVEN )
+			{
+				FlxG.switchState(new ChartingState());
+			}*/
 		}
 	}
 	var curLight:Int = 0;

@@ -22,7 +22,7 @@ class ArrowSelection extends SearchMenuState
 	function generateStaticArrows(player:Int):Void
 	{
 
-		for (i in 0...4)
+		for (i in 0...PlayState.keyAmmo[PlayState.mania])
 		{
 			// FlxG.log.add(i);
 			var babyArrow:StrumArrow = new StrumArrow(i,0, if (FlxG.save.data.downscroll) FlxG.height - 165 else 50);
@@ -79,9 +79,9 @@ class ArrowSelection extends SearchMenuState
 			}else{MainMenuState.handleError('mods/noteassets is not a folder!');}
 			// customCharacters.sort((a, b) -> );
 			haxe.ds.ArraySort.sort(customArrows, function(a, b) {
-						 if(a < b) return -1;
-						 else if(b > a) return 1;
-						 else return 0;
+						if(a < b) return -1;
+						else if(b > a) return 1;
+						else return 0;
 					});
 			for (char in customArrows){
 				searchList.push(char);
@@ -103,6 +103,11 @@ class ArrowSelection extends SearchMenuState
 	}
 	override function select(sel:Int = 0){
 		FlxG.save.data.noteAsset = songs[curSelected];
-
 	}
+	/*override function extraKeys(){
+		if (FlxG.keys.justPressed.ONE){PlayState.mania = 0;trace('mania = ${PlayState.mania}');}
+		if (FlxG.keys.justPressed.TWO){PlayState.mania = 1;trace('mania = ${PlayState.mania}');}
+		if (FlxG.keys.justPressed.THREE){PlayState.mania = 2;trace('mania = ${PlayState.mania}');}
+		if (FlxG.keys.justPressed.FOUR){PlayState.mania = 3;trace('mania = ${PlayState.mania}');}
+	}it doesn't work and if you press it you can't go back in ArrowSelectoion until you play any song*/
 }

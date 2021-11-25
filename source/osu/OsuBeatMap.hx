@@ -43,7 +43,8 @@ class OsuBeatMap{
 				stage: 'stage',
 				speed: 2.0,
 				validScore: false,
-				difficultyString: "Unknown"
+				difficultyString: "Unknown",
+				mania: 0
 			};
 			try{
 
@@ -57,14 +58,15 @@ class OsuBeatMap{
 					bpm: 120,
 					needsVoices: false,
 					player1: 'bf',
-					player2: 'bf',
+					player2: 'gf',
 					gfVersion: 'gf',
 					noteStyle: 'normal',
 					stage: 'stage',
 					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else 2.0,
 					validScore: false,
 					noteMetadata:Song.defNoteMetadata,
-					difficultyString: '[${getSetting("Version")}]'
+					difficultyString: '[${getSetting("Version")}]',
+					mania:0
 				};
 				var hitobjsre:EReg = (~/\[HitObjects\]/gi);
 				hitobjsre.match(bm);

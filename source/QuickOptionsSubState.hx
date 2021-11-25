@@ -34,7 +34,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 			"Opponent arrows" => {type:0,value:true},
 			"Song hscripts" => {type:0,value:true},
 			"Hurt notes" => {type:0,value:true},
-			"Scroll speed" => {type:2,value:0,min:0,max:10,lang:[0 => "Chart"]}
+			"Scroll speed" => {type:2,value:0,min:0,max:10}// my compiler also don't like this
 		];
 	public static var osuSettings:Map<String,QOSetting> = [
 			"Scroll speed" => {type:2,value:0,min:0,max:10}

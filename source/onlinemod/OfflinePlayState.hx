@@ -203,12 +203,12 @@ class OfflinePlayState extends PlayState
 		// generatedMusic = true;
   //  }catch(e){MainMenuState.handleError('Caught "gensong" crash: ${e.message}');}}
 
-  override function endSong()
-  {
+override function endSong()
+{
     canPause = false;
     FlxG.sound.music.onComplete = null;
-  	if (ChartingState.charting){
-  	    	FlxG.switchState(new ChartingState());return;}
+	if (ChartingState.charting){
+		FlxG.switchState(new ChartingState());return;}
 		persistentUpdate = false;
 		persistentDraw = true;
 		paused = true;
@@ -217,7 +217,7 @@ class OfflinePlayState extends PlayState
 		FlxG.sound.music.stop();
 
     	super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true,camFollow));
-  }
+}
 }
 
 

@@ -30,12 +30,18 @@ class Note extends FlxSprite
 	public var isSustainNoteEnd:Bool = false;
 
 	public var noteScore:Float = 1;
+	public static var mania:Int = 0;
 
 	public static var swagWidth:Float = 160 * 0.7;
+	public static var noteScale:Float = 0.7;
+	public static var longnoteScale:Float;
+	public static var newNoteScale:Float = 0;
+	public static var prevNoteScale:Float = 0.5;
 	public static var PURP_NOTE:Int = 0;
 	public static var BLUE_NOTE:Int = 1;
 	public static var GREEN_NOTE:Int = 2;
 	public static var RED_NOTE:Int = 3;
+	public static var tooMuch:Float = 30;
 	public static var noteNames:Array<String> = ["purple","blue","green",'red'];
 	public var skipNote:Bool = true;
 	public var childNotes:Array<Note> = [];
@@ -66,20 +72,10 @@ class Note extends FlxSprite
 				}
 			}
 		}
-
 		animation.addByPrefix('greenScroll', 'green0');
 		animation.addByPrefix('redScroll', 'red0');
 		animation.addByPrefix('blueScroll', 'blue0');
 		animation.addByPrefix('purpleScroll', 'purple0');
-		// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]}0');
-		// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold piece');
-		// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} end hold');
-		// // Kade support, I guess
-		// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]} alone');
-		// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold');
-		// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} tail'); 
-
-
 
 		animation.addByPrefix('purpleholdend', 'pruple end hold'); // Fucking default names
 		animation.addByPrefix('purpleholdend', 'purple end hold');
@@ -113,6 +109,35 @@ class Note extends FlxSprite
 
 	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_type:Dynamic = 0,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
+		swagWidth = 160 * 0.7; //factor not the same as noteScale
+		noteScale = 0.7;
+		longnoteScale = 1.5;
+		mania = 0;
+		noteAnims = ['singLEFT','singDOWN','singUP','singRIGHT'];
+		if (PlayState.SONG.mania == 1)
+		{
+			swagWidth = 120 * 0.7;
+			noteScale = 0.6;
+			longnoteScale = 1.75;
+			mania = 1;
+			noteAnims = ['singLEFT','singDOWN','singRIGHT','singLEFT','singUP','singRIGHT'];
+		}
+		else if (PlayState.SONG.mania == 2)
+		{
+			swagWidth = 110 * 0.7;
+			noteScale = 0.58;
+			longnoteScale = 2;
+			mania = 2;
+			noteAnims = ['singLEFT','singDOWN','singRIGHT','singUP','singLEFT','singUP','singRIGHT'];
+		}
+		else if (PlayState.SONG.mania == 3)
+		{
+			swagWidth = 95 * 0.7;
+			noteScale = 0.5;
+			longnoteScale = 2.25;
+			mania = 3;
+			noteAnims = ['singLEFT','singDOWN','singUP','singRIGHT','singUP','singLEFT','singDOWN','singUP','singRIGHT'];
+		}
 		super();
 		
 		if (prevNote == null)
@@ -125,7 +150,7 @@ class Note extends FlxSprite
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
 
 
-		this.noteData = _noteData % 4; 
+		this.noteData = _noteData % 9; 
 		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
 		if(rawNote[1] == -1){ // Psych event notes, These should not be shown, and should not appear on the player's side
@@ -151,6 +176,10 @@ class Note extends FlxSprite
 		}
 
 		x += 50;
+		if (PlayState.SONG.mania == 3)
+			{
+				x -= tooMuch;
+			}
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		if (inCharter)
@@ -168,12 +197,24 @@ class Note extends FlxSprite
 		//defaults if no noteStyle was found in chart
 		loadFrames();
 
-		setGraphicSize(Std.int(width * 0.7));
+		setGraphicSize(Std.int(width * noteScale));
 		updateHitbox();
 		antialiasing = true;
 		var noteName = noteNames[noteData];
 		if(eventNote) noteName = noteNames[0];
 
+		switch (mania)
+		{
+			case 0:
+				noteNames = ["purple","blue","green",'red'];
+			case 1: 
+				noteNames = ['purple', 'blue', 'red', 'purple', 'green', 'red'];
+			case 2: 
+				noteNames = ['purple', 'blue', 'red', 'green', 'purple', 'green', 'red'];
+			case 3: 
+				noteNames = ['purple', 'blue', 'green', 'red', 'green', 'purple', 'blue', 'green', 'red'];
+
+		}
 
 		x+= swagWidth * noteData;
 		animation.play(noteName + "Scroll");
@@ -210,7 +251,7 @@ class Note extends FlxSprite
 					this.parentNote = prevNote;
 				}
 				prevNote.isSustainNoteEnd = false;
-				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (if(FlxG.save.data.scrollSpeed != 1) FlxG.save.data.scrollSpeed else PlayState.SONG.speed);
+				prevNote.scale.y *= Conductor.stepCrochet / 100 * longnoteScale * (if(FlxG.save.data.scrollSpeed != 1) FlxG.save.data.scrollSpeed else PlayState.SONG.speed);
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
@@ -233,7 +274,14 @@ class Note extends FlxSprite
 				if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
 				    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
 						canBeHit = true;
-
+				if (shouldntBeHit)
+				{
+					if (strumTime - Conductor.songPosition <= (45 * Conductor.timeScale)
+						&& strumTime - Conductor.songPosition >= (-45 * Conductor.timeScale))
+						canBeHit = true;
+					else
+						canBeHit = false;	
+				}//make hurt note hit box smaller YAY
 				if (!wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale){
 					canBeHit = false;
 					tooLate = true;

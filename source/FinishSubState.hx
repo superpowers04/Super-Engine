@@ -87,7 +87,6 @@ class FinishSubState extends MusicBeatSubstate
 
 				FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
 				FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
-				FlxTween.tween(PlayState.instance.judgementCounter, {x: -200},1,{ease: FlxEase.expoIn});
 			}
 		if(!isError){
 			if(win){
@@ -106,7 +105,6 @@ class FinishSubState extends MusicBeatSubstate
 		}
 		super();
 		if (win) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
-		FlxG.camera.zoom = 1;
 		PlayState.instance.camHUD.zoom = 1;
 		if (FlxG.save.data.camMovement && camFollow != null){
 			PlayState.instance.followChar(if(win) 0 else 1);
@@ -129,7 +127,7 @@ class FinishSubState extends MusicBeatSubstate
 				music.onComplete = function(){music = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);music.play(false);} 
 
 			}
-			FlxG.camera.zoom = PlayState.instance.camHUD.zoom = 1;
+			PlayState.instance.camHUD.zoom = 1; // every custom stage i have cam zoom lower than 0.5 so it look pretty bad when it zoom in
 
 			FlxG.sound.list.add(music);
 
@@ -186,6 +184,7 @@ class FinishSubState extends MusicBeatSubstate
 				+'\n Safe Frames: ${FlxG.save.data.frames}'
 				+'\n Input Engine: ${PlayState.inputEngineName}, V${MainMenuState.ver}'
 				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'
+				+'\n Key count: ${PlayState.keyAmmo[PlayState.mania]}K'
 				);
 				settingsText.size = 28;
 				settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);

@@ -48,6 +48,8 @@ class OptionsMenu extends MusicBeatState
 		]),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
+			new SixKeyMenu(controls),
+			new NineKeyMenu(controls),
 		    new PracticeModeOption("Disables the ability to get a gameover."),
 			new DownscrollOption("Change the layout of the strumline."),
 			new MiddlescrollOption("Move the strumline to the middle of the screen"),

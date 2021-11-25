@@ -93,7 +93,7 @@ class ChartingState extends MusicBeatState
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
-
+	var keyAmmo:Array<Int> = [4, 6, 7, 9];
 	private var lastNote:Note;
 	var claps:Array<Note> = [];
 
@@ -103,6 +103,7 @@ class ChartingState extends MusicBeatState
 	{
 		curSection = lastSection;
 		new onlinemod.OfflinePlayState();
+		new multi.MultiPlayState();
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
@@ -118,7 +119,8 @@ class ChartingState extends MusicBeatState
 				noteStyle: 'normal',
 				stage: 'stage',
 				speed: 1,
-				validScore: false
+				validScore: false,
+				mania: 0
 			};
 		}
 

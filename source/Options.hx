@@ -104,10 +104,63 @@ class DFJKOption extends Option
 	}
 	private override function updateDisplay():String
 	{
-		return "Key Bindings";
+		return "Key Bindings for 4K";
 	}
 }
 
+class SixKeyMenu extends Option
+{
+	private var controls:Controls;
+
+	public function new(controls:Controls)
+	{
+		super();
+		this.controls = controls;
+		description = 'Change your controls';
+		acceptValues = true;
+	}
+
+	public override function press():Bool
+	{
+		OptionsMenu.instance.openSubState(new SixKeyBindMenu());
+		return false;
+	}
+	override function getValue():String {
+		return SixKeyBindMenu.getKeyBindsString();
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Key Bindings for 6K";
+	}
+}
+
+class NineKeyMenu extends Option
+{
+	private var controls:Controls;
+
+	public function new(controls:Controls)
+	{
+		super();
+		this.controls = controls;
+		description = 'Change your controls';
+		acceptValues = true;
+	}
+
+	public override function press():Bool
+	{
+		OptionsMenu.instance.openSubState(new NineKeyBindMenu());
+		return false;
+	}
+	override function getValue():String {
+		return NineKeyBindMenu.getKeyBindsString();
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Key Bindings for 9K";
+	}
+}
 class CpuStrums extends Option
 {
 	public function new(desc:String)

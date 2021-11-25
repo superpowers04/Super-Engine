@@ -14,6 +14,7 @@ typedef SwagSong =
 	var bpm:Float;
 	var needsVoices:Bool;
 	var speed:Float;
+	var mania:Int;
 
 	var player1:String;
 	var player2:String;
@@ -43,6 +44,7 @@ class Song
 	public var bpm:Float;
 	public var needsVoices:Bool = true;
 	public var speed:Float = 1;
+	public var mania:Int = 0;
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
@@ -107,7 +109,7 @@ class Song
 
 
 				if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-					if(note[4] == 1 || note[1] > 7) {note[3] = 1;} // Support for Andromeda and tricky notes
+					if(note[4] == 1 || note[1] > PlayState.keyAmmo[PlayState.mania] * 2 - 1) {note[3] = 1;} // Support for Andromeda and tricky notes // toon note : idk why it only apply after restart the song
 				}else{
 					note[3] = 0;
 				}
@@ -164,7 +166,8 @@ class Song
 				stage: 'stage',
 				speed: 2.0,
 				validScore: false,
-				difficultyString: "e"
+				difficultyString: "e",
+				mania: 0
 			};
 		}
 		#end
