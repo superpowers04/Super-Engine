@@ -135,6 +135,9 @@ class KadeEngineData
 		if (FlxG.save.data.middleScroll == null) FlxG.save.data.middleScroll = false;
 		if (FlxG.save.data.oppStrumLine == null) FlxG.save.data.oppStrumLine = true;
 		if (FlxG.save.data.playMisses == null) FlxG.save.data.playMisses = true;
+		if (FlxG.save.data.scripts == null) FlxG.save.data.scripts = [];
+		if (FlxG.save.data.songInfo == null) FlxG.save.data.songInfo = 0;
+		if (FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
 	 
 
 		Conductor.recalculateTimings();

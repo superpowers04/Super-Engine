@@ -92,6 +92,7 @@ class AnimationDebug extends MusicBeatState
 	public static var reloadChar:Bool = false;
 	var animationList:Array<String> = [];
 	var xmlAnimList:Array<String> = [];
+
 	public var editMode:Int = 0;
 	static var showOffsets:Bool = false;
 	static var offsetTopTextList:Array<String> = [

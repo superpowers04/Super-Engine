@@ -1,11 +1,11 @@
-0.8.0;
-- Fix the game softlocking on certain errors
-- Add a few HScript classes/features
-- Public name is now Super engine, Internal name will still stay the same for compatbility
-- Several improvements to Animation Debug
-- Fixed a bug where strings in notes would be replaced with 0
-- The 4th item in a note will now automatically be applied to note.type
-- New song repo, accessable from Other > Download charts
-- Notes now have a "hit" and "miss" function that can be replaced
-- Psych engine Play Animations now work
-- Several fixes and other things
+0.9.0-Hotfix;
+- New notesplashes, they're the ones from Psych
+- some minor fixes
+- Scripts can now be loaded from mods/scripts
+- Event notes actually work now
+- Note judgements have been altered slightly
+- The hit window for notes is a bit smaller
+- Reworked how swapping characters works
+Hotfix:
+- Fix some small bugs
+- Fix issues with networking

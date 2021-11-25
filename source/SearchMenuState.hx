@@ -70,13 +70,14 @@ class SearchMenuState extends MusicBeatState
 		infotext.text = str;
 		infotext.scrollFactor.set();
 	}
+	// var bgColor:FlxColor = 0xFFFF6E6E;
 	override function create()
 	{try{
-		SickMenuState.musicHandle();
 		PlayState.songScript = "";PlayState.hsBrTools = null;
 		bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
-		bg.color = 0xFFFF6E6E;
+		bg.color = bgColor;
 		bg.scrollFactor.set(0.01,0.01);
+		SickMenuState.musicHandle(bg);
 		add(bg);
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		reloadList();
@@ -143,6 +144,8 @@ class SearchMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{try{
 		super.update(elapsed);
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
 		if (toggleables['search'] && searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
 			SetVolumeControls(true);
 			handleInput();
@@ -198,11 +201,12 @@ class SearchMenuState extends MusicBeatState
 					}
 					item.targetY = bullShit - curSelected;
 
-					item.color = 0xdddddd;
+					// item.color = 0xdddddd;
+					item.alpha = 0.8;
 					if (item.targetY == 0)
 					{
 						item.alpha = 1;
-						item.color = 0xffffff;
+						// item.color = 0xffffff;
 					}
 				}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
 				bullShit++;

@@ -132,6 +132,16 @@ class TitleState extends MusicBeatState
 		}
 		#end
 		checkStages();
+		if(FlxG.save.data.scripts != null){
+			trace('Currently enabled scripts: ${FlxG.save.data.scripts}');
+			for (i in 0 ... FlxG.save.data.scripts.length) {
+				var v = FlxG.save.data.scripts[i];
+				if(!FileSystem.exists('mods/scripts/${v}/')){
+					FlxG.save.data.scripts.remove(v);
+					trace('Script $v doesn\'t exist! Disabling');
+				}
+			}
+		}
 	}
 	public static function checkStages(){
 		choosableStages = ["default","stage",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
@@ -242,9 +252,9 @@ class TitleState extends MusicBeatState
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
 
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(-1, 0), {asset: diamond, width: 32, height: 32},
+			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(-1, 0), {asset: diamond, width: 32, height: 32},
 				new FlxRect(-FlxG.width * 0.5, -FlxG.height * 0.5, FlxG.width * 2, FlxG.height * 2));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(1, 0),
+			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(1, 0),
 				{asset: diamond, width: 32, height: 32}, new FlxRect(-FlxG.width * 0.5, -FlxG.height * 0.5, FlxG.width * 2, FlxG.height * 2));
 
 			transIn = FlxTransitionableState.defaultTransIn;

@@ -96,7 +96,7 @@ class OnlinePlayState extends PlayState
 			else
 				scoreY = healthBarBG.y + 30 - 28*(clientsGroup.length + 1);
 
-			var text = new FlxText(10, scoreY, '${OnlineLobbyState.clients[i]}: 0');
+			var text = new FlxText(20, scoreY, '${OnlineLobbyState.clients[i]}: 0');
 			text.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			text.scrollFactor.set(0, 0);
 			clientTexts[i] = clientsGroup.length;
@@ -409,6 +409,7 @@ class OnlinePlayState extends PlayState
 
 				clientsGroup.members[clientTexts[id]].setFormat(24, FlxColor.RED);
 				clientsGroup.members[clientTexts[id]].setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				if(clientScores[id] == null) clientsGroup.members[clientTexts[id]].text = '$nickname: left';
 
 				OnlineLobbyState.removePlayer(id);
 				Chat.PLAYER_LEAVE(nickname);
@@ -430,11 +431,36 @@ class OnlinePlayState extends PlayState
 					];
 
 				}
+			case Packets.BROADCAST_NEW_PLAYER:
+				var id:Int = data[0];
+				var nickname:String = data[1];
 
+				// OnlineLobbyState.addPlayerUI(id, nickname);
+				OnlineLobbyState.addPlayer(id, nickname);
+				Chat.PLAYER_JOIN(nickname);
+				clientCount++;
+				var i:Int = id;
+
+				var scoreY:Float;
+				if (FlxG.save.data.downscroll)
+					scoreY = 10 + 28*(clientsGroup.length);
+				else
+					scoreY = healthBarBG.y + 30 - 28*(clientsGroup.length + 1);
+
+				var text = new FlxText(20, scoreY, '${nickname}: In lobby');
+				text.setFormat(CoolUtil.font, 24, FlxColor.YELLOW, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				text.scrollFactor.set(0, 0);
+				clientTexts[i] = clientsGroup.length;
+				clientsGroup.add(text);
+				text.cameras = [camHUD];
 			case Packets.DISCONNECT:
 				FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
-		}
-	}catch(e){MainMenuState.handleError('Crash in "HandleData" caught: ${e.message}');}}
+		}}catch(e){
+			Chat.OutputChatMessage("[Client] You had an error when receiving a packet:");
+			Chat.OutputChatMessage(e.message);
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.switchState(new OnlineLobbyState(true));
+		}}
 	
 
 	function SendScore()

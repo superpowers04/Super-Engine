@@ -11,6 +11,7 @@ import openfl.Lib;
 class OptionCategory
 {
 	private var _options:Array<Option> = new Array<Option>();
+	public var modded:Bool = false;
 	public final function getOptions():Array<Option>
 	{
 		return _options;
@@ -32,10 +33,11 @@ class OptionCategory
 		return _name;
 	}
 
-	public function new (catName:String, options:Array<Option>)
+	public function new (catName:String, options:Array<Option>,?mod:Bool = false)
 	{
 		_name = catName;
 		_options = options;
+		this.modded = mod;
 	}
 }
 
@@ -124,7 +126,7 @@ class CpuStrums extends Option
 
 	private override function updateDisplay():String
 	{
-		return  FlxG.save.data.cpuStrums ? "Light CPU Strums" : "CPU Strums stay static";
+		return  FlxG.save.data.cpuStrums ? "Animated CPU Strums" : "Static CPU Strums";
 	}
 
 }
@@ -306,11 +308,11 @@ class Judgement extends Option
 
 	override function getValue():String {
 		return "Safe Frames: " + Conductor.safeFrames +
-		" - SIK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
-		"ms GD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
-		"ms BD: " + HelperFunctions.truncateFloat(135 * Conductor.timeScale, 0) + 
-		"ms SHT: " + HelperFunctions.truncateFloat(155 * Conductor.timeScale, 0) +
-		"ms TOTAL: " + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
+		" | SICK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
+		"ms, GOOD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
+		"ms, BAD: " + HelperFunctions.truncateFloat(125 * Conductor.timeScale, 0) + 
+		"ms, SHIT: " + HelperFunctions.truncateFloat(156 * Conductor.timeScale, 0) +
+		"ms, TOTAL: " + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
 	}
 
 	override function right():Bool {
@@ -531,7 +533,7 @@ class AccuracyDOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Accuracy Mode: " + (FlxG.save.data.accuracyMod == 0 ? "Accurate" : "Complex");
+		return "Accuracy Mode: " + (FlxG.save.data.accuracyMod == 0 ? "Simple" : "Complex");
 	}
 }
 
@@ -989,6 +991,28 @@ class NoteSelOption extends Option
 	}
 }
 
+class MMCharOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.mainMenuChar = !FlxG.save.data.mainMenuChar;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Char on main menu : " + (!FlxG.save.data.mainMenuChar ? "off" : "on");
+	}
+}
+
+
 class HitSoundOption extends Option
 {
 	public function new(desc:String)
@@ -1234,6 +1258,44 @@ class OpponentStrumlineOption extends Option
 	}
 
 }
+
+class SongInfoOption extends Option
+{
+	var ies:Array<String> = ["Opposite of scroll direction","side","Advanced Side","vanilla + misses","Disabled"];
+	var iesDesc:Array<String> = ["Kade 1.7 styled","Show on the side","Also shows judgements","Vanilla styled with misses","Disabled altogether"];
+	public function new(desc:String)
+	{
+		super();
+		if (FlxG.save.data.songInfo >= ies.length) FlxG.save.data.songInfo = 0;
+		description = desc;
+
+		acceptValues = true;
+	}
+
+	override function getValue():String {
+		return iesDesc[FlxG.save.data.songInfo];
+	}
+
+	override function right():Bool {
+		FlxG.save.data.songInfo += 1;
+		if (FlxG.save.data.songInfo >= ies.length) FlxG.save.data.songInfo = 0;
+		display = updateDisplay();
+		return true;
+	}
+	override function left():Bool {
+		FlxG.save.data.songInfo -= 1;
+		if (FlxG.save.data.songInfo < 0) FlxG.save.data.songInfo = ies.length - 1;
+		display = updateDisplay();
+		return true;
+	}
+	public override function press():Bool{return right();}
+
+	private override function updateDisplay():String
+	{
+		return 'Song Info: ${ies[FlxG.save.data.songInfo]}';
+	}
+}
+
 class MissSoundsOption extends Option
 {
 	public function new(desc:String)
@@ -1254,4 +1316,147 @@ class MissSoundsOption extends Option
 		return "Play miss sounds " + (!FlxG.save.data.playMisses ? "off" : "on");
 	}
 
+}
+
+class SelScriptOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+
+	}
+	override function right():Bool {
+		return false;
+	}
+	override function left():Bool {
+		return false;
+	}
+	public override function press():Bool
+	{
+		FlxG.switchState(new ScriptSel());
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Toggle scripts";
+	}
+
+	override function getValue():String {
+		return "Current Script count: " + FlxG.save.data.scripts.length;
+	}
+
+}
+
+class IntOption extends Option{
+	var min:Int = 0;
+	var max:Int;
+	var script:String;
+	var name:String;
+
+	public function new(desc:String,name:String,min:Int,max:Int,mod:String)
+	{
+		this.name = name;
+		// display = name;
+		script = mod;
+		this.min = min;
+		this.max = max;
+		super();
+		acceptValues = true;
+		description = desc;
+
+	}
+	override function getValue():String {
+		return '${OptionsMenu.modOptions[script][name]}';
+	}
+
+	override function right():Bool {
+
+		OptionsMenu.modOptions[script][name] += 1;
+		if (OptionsMenu.modOptions[script][name] > max) OptionsMenu.modOptions[script][name] = min;
+		display = updateDisplay();
+		return true;
+	}
+	override function left():Bool {
+		OptionsMenu.modOptions[script][name] -= 1;
+		if (OptionsMenu.modOptions[script][name] < min) OptionsMenu.modOptions[script][name] = max;
+		display = updateDisplay();
+		return true;
+	}
+	public override function press():Bool{return right();}
+	private override function updateDisplay():String
+	{
+		return name;
+	}
+}
+class FloatOption extends Option{
+	var min:Float = 0;
+	var max:Float;
+	var script:String;
+	var name:String;
+
+	public function new(desc:String,name:String,min:Float,max:Float,mod:String)
+	{
+		this.name = name;
+		// display = name;
+		script = mod;
+		this.min = min;
+		this.max = max;
+		super();
+		acceptValues = true;
+		description = desc;
+
+	}
+	override function getValue():String {
+		return '${OptionsMenu.modOptions[script][name]}';
+	}
+
+	override function right():Bool {
+
+		OptionsMenu.modOptions[script][name] += 0.1;
+		if (OptionsMenu.modOptions[script][name] > max) OptionsMenu.modOptions[script][name] = min;
+		display = updateDisplay();
+		return true;
+	}
+	override function left():Bool {
+		OptionsMenu.modOptions[script][name] -= 0.1;
+		if (OptionsMenu.modOptions[script][name] < min) OptionsMenu.modOptions[script][name] = max;
+		display = updateDisplay();
+		return true;
+	}
+	public override function press():Bool{return right();}
+	private override function updateDisplay():String
+	{
+		return name;
+	}
+}
+class BoolOption extends Option{
+	var script:String;
+	var name:String;
+
+	public function new(desc:String,name:String,mod:String)
+	{
+		// acceptValues = true;
+		this.name = name;
+		// display = name;
+		script = mod;
+		super();
+		description = desc;
+
+	}
+	override function getValue():String {
+		return '${OptionsMenu.modOptions[script][name]}';
+	}
+	public override function press():Bool{
+		OptionsMenu.modOptions[script][name] = !OptionsMenu.modOptions[script][name];
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return name + ":" + getValue();
+	}
 }

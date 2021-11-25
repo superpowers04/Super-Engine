@@ -31,17 +31,17 @@ class MultiMenuState extends onlinemod.OfflineMenuState
   override function create()
   {
     dataDir = "mods/charts/";
+    bgColor = 0x00FF6E;
     super.create();
-    bg.color = 0x0000FF6E;
     diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
     diffText.font = CoolUtil.font;
     add(diffText);
 
-    changeSelection(lastSel);
     searchField.text = lastSearch;
     if(lastSearch != "") reloadList(true,lastSearch);
 
     lastSearch = "";
+    changeSelection(lastSel);
     lastSel = 0;
     changeDiff();
   }

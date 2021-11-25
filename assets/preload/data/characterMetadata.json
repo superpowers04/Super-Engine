@@ -131,7 +131,10 @@
 				},
 				{"anim":"dodge","name": "boyfriend dodge","oneshot":true,"fps": 24,"loop": false,"indices":[]},
 				{"anim":"attack","name": "boyfriend attack","oneshot":true,"fps": 24,"loop": false,"indices":[]},
-				{"anim":"preattack","name": "bf pre attack","oneshot":true,"fps": 24,"loop": false,"indices":[]}
+				{"anim":"hit","name": "boyfriend hit","oneshot":true,"fps": 24,"loop": false,"indices":[]},
+				{"anim":"preattack","name": "bf pre attack","oneshot":true,"fps": 24,"loop": false,"indices":[]},
+				{"anim":"dies","name": "bf dies","oneshot":true,"fps": 24,"loop": false,"indices":[]}
+
 				
 			], "": "The idle/sing/miss animations are added automatically with the same values as Boyfriend's, you just have to add animations to this array if you want to edit something or add Hey/Scared animations to it",
 

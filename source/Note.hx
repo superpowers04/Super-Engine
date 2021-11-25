@@ -92,14 +92,14 @@ class Note extends FlxSprite
 		animation.addByPrefix('redhold', 'red hold piece');
 		animation.addByPrefix('bluehold', 'blue hold piece');
 	}
-	dynamic public function hit(?charID:Int = 0){
+	dynamic public function hit(?charID:Int = 0,note:Note){
 		switch (charID) {
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		};
 		PlayState.charAnim(charID,noteAnims[noteData],true);
 	}
-	dynamic public function miss(?charID:Int = 0){
+	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		switch (charID) {
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
@@ -115,7 +115,6 @@ class Note extends FlxSprite
 	{try{
 		super();
 		
-
 		if (prevNote == null)
 			prevNote = this;
 		this.prevNote = prevNote;
@@ -126,23 +125,28 @@ class Note extends FlxSprite
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
 
 
+		this.noteData = _noteData % 4; 
 		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
 		if(rawNote[1] == -1){ // Psych event notes, These should not be shown, and should not appear on the player's side
-			shouldntBeHit = false;
-			showNote = false;
-			noteData = 0;
-			mustPress = false;
-			eventNote = true;
+			shouldntBeHit = false; // Make sure it doesn't become a hurt note
+			showNote = false; // Don't show the note
+			this.noteData = 1; // Set it to 0, to prevent issues
+			mustPress = false; // The player CANNOT recieve this note
+			eventNote = true; // Just an identifier
 			type =rawNote[2];
+			// _update = function(elapsed:Float){if (strumTime <= Conductor.songPosition) wasGoodHit = true;};
 			if(rawNote[2] == "Play Animation"){
 				try{
-					info = [rawNote[3],psychChars[Std.parseInt(rawNote[4])]];
+					// Info can be set to anything, it's being used for storing the Animation and character
+					info = [rawNote[3],psychChars[Std.parseInt(rawNote[4])]]; 
 				}catch(e){info = [rawNote[3],0];}
-				hit = function(?charID:Int = 0){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);};
+				// Replaces hit func
+				hit = function(?charID:Int = 0,note){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);}; 
 				trace('Animation note processed');
 			}else{ // Don't trigger hit animation
-				hit = function(?charID:Int = 0){return;};
+				trace('Note with "${rawNote[2]}" hidden');
+				hit = function(?charID:Int = 0,note){trace("hit a event note");return;};
 			}
 		}
 
@@ -157,7 +161,7 @@ class Note extends FlxSprite
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
 
-		this.noteData = _noteData % 4;
+		
 		if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteCreate",[this,rawNote]);
 
 
@@ -215,17 +219,18 @@ class Note extends FlxSprite
 		visible = false;
 	}catch(e){MainMenuState.handleError('Caught "Note create" crash: ${e.message}');}}
 
+	var missedNote:Bool = false;
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 		if ((!skipNote || isOnScreen())){ // doesn't calculate anything until they're on screen
 			skipNote = false;
-			visible = showNote;
+			visible = (!eventNote && showNote);
 
 			if (mustPress)
 			{
 				// ass
-				if ((isSustainNote && (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5) && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
+				if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
 				    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
 						canBeHit = true;
 
@@ -238,7 +243,7 @@ class Note extends FlxSprite
 			else
 			{
 				if (strumTime <= Conductor.songPosition)
-					wasGoodHit = true;
+					wasGoodHit = (!shouldntBeHit);
 			}
 
 			// if (tooLate)

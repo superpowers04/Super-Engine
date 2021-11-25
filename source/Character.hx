@@ -294,7 +294,11 @@ class Character extends FlxSprite
 	function loadVanillaChar(charProperties:CharacterJson){
 		if(tex == null){
 			if (charProperties.embedded){
-				tex = Paths.getSparrowAtlas(charProperties.path);
+				// tex = Paths.getSparrowAtlas(charProperties.path);
+				charXml = File.getContent('assets/shared/images/${charProperties.path}.xml'); // Loads the XML as a string
+				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+	
+				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/${charProperties.path}.png')), charXml);
 			}else{		
 				var pngPath:String = '${charProperties.path}.png';
 				var xmlPath:String = '${charProperties.path}.xml';
@@ -491,6 +495,7 @@ class Character extends FlxSprite
 
 	function loadCustomChar(){
 		trace('Loading a custom character "$curCharacter"! ');				
+		if(TitleState.retChar(curCharacter) != "" && !amPreview) curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
 		isCustom = true;
 		var charPropJson:String = "";
 		try{
@@ -581,6 +586,16 @@ class Character extends FlxSprite
 
 
 		if (charProperties == null) trace("No charProperites?");
+		// if(charProperties.sprites != null && charProperties.sprites[0] != null){
+		// 	for (i in charProperties.sprites) {
+		// 		var e = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$curCharacter/${i}.png')), File.getContent('mods/characters/$curCharacter/${i}.xml'));
+		// 		for (i => v in e.framesHash) {
+		// 			frames.framesHash[i] = v;
+		// 		}
+		// 	}
+		// }
+
+
 		loadJSONChar(charProperties);
 		// Custom misses
 		if (charType == 0 && !amPreview && !debugMode){

@@ -30,6 +30,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 	public static var normalSettings:Map<String,QOSetting> = [
 			"Inverted chart" => {type:0,value:false},
+			"Swap characters" => {type:0,value:false},
 			"Opponent arrows" => {type:0,value:true},
 			"Song hscripts" => {type:0,value:true},
 			"Hurt notes" => {type:0,value:true},

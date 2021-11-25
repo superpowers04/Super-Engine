@@ -29,7 +29,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.8.0";
+	public static var ver:String = "0.9.0-Hotfix";
 	
 	public static var firstStart:Bool = true;
 
@@ -39,10 +39,11 @@ class MainMenuState extends SickMenuState
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
+	var char:Character = null;
 	static var hasWarnedInvalid:Bool = false;
 	
 	public static function handleError(?error:String = "An error occurred",?details:String=""):Void{
-		if (errorMessage != "") return; // Prevents it from trying to switch states multiple times
+		if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		MainMenuState.errorMessage = error;
 		if(details != "") trace(details);
 		if (onlinemod.OnlinePlayMenuState.socket != null){
@@ -62,9 +63,7 @@ class MainMenuState extends SickMenuState
 			errorMessage = Main.errorMessage;
 			Main.errorMessage = "";
 		}
-
-		options = ['modded songs','online', 'online songs','other',"changelog", 'options'];
-		descriptions = ["Play songs from your mods/charts folder","Play online with other people.","Play songs that have been downloaded during online games.",'Story mode, Freeplay, Osu beatmaps, and download characters or songs',"Check the latest update and it's changes",'Customise your experience to fit you'];
+		mmSwitch(false);
 		trace(errorMessage);
 
 		persistentUpdate = persistentDraw = true;
@@ -104,6 +103,13 @@ class MainMenuState extends SickMenuState
 			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
 			FlxG.save.data.gfChar = "gf";
 		}
+		// if(FlxG.save.data.mainMenuChar && MainMenuState.errorMessage == "" && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
+		// 	try{
+		// 		char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0,true);
+		// 		if(char != null) add(char);
+		// 	}catch(e){trace(e);char = null;}
+		// }
+
 
 		if (MainMenuState.errorMessage == "" && TitleState.invalidCharacters.length > 0 && !hasWarnedInvalid) {
 			errorMessage = "You have some characters missing config.json files.";
@@ -125,6 +131,7 @@ class MainMenuState extends SickMenuState
 	}
 
 	override function goBack(){
+		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;}
 		FlxG.switchState(new TitleState());
 	}
 
@@ -136,17 +143,51 @@ class MainMenuState extends SickMenuState
 		}
 		super.update(elapsed);
 	}
-	
+	override function beatHit(){
+		super.beatHit();
+		// if(char != null && char.animation.curAnim.finished) char.dance(true);
+	}
+	override function changeSelection(change:Int = 0){
+		if(char != null && change != 0) char.playAnim(Note.noteAnims[FlxG.random.int(0,3)],true);
+		super.changeSelection(change);
+	}
+
+	var otherMenu:Bool = false;
+
+	function otherSwitch(){
+		options = ["story mode","freeplay","Convert Charts from other mods","download charts","download characters"];
+		descriptions = ['Play through the story mode', 'Play any song from the game', 'Convert charts from other mods to work here. Will put them in Multi Songs, will not be converted to work with FNF Multiplayer though.',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
+		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
+		options.push("back"); descriptions.push("Go back to the main menu");
+		generateList();
+		curSelected = 0;
+		otherMenu = true;
+		selected = false;
+		changeSelection();
+	}
+	function mmSwitch(regen:Bool = false){
+		options = ['modded songs','online', 'online songs','other',"changelog", 'options'];
+		descriptions = ["Play songs from your mods/charts folder","Play online with other people.","Play songs that have been downloaded during online games.",'Story mode, Freeplay, Osu beatmaps, and download characters or songs',"Check the latest update and it's changes",'Customise your experience to fit you'];
+		if(regen)generateList();
+		curSelected = 0;
+		if(regen)changeSelection();
+		selected = false;
+		otherMenu = false;
+
+	}
+
   override function select(sel:Int){
-  	    if (selected){return;}
-    	selected = true;
+		if (selected){return;}
+		// if(char != null) {char.playAnim("hey",true);char.playAnim("win",true);}
+		selected = true;
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));
 		
 		switch (daChoice)
 		{
 			case 'other':
-				FlxG.switchState(new OtherMenuState());
+				// FlxG.switchState(new OtherMenuState());
+				otherSwitch();
 			case 'online':
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
 			case 'modded songs':
@@ -157,6 +198,24 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new OutdatedSubState());
 			case 'options':
 				FlxG.switchState(new OptionsMenu());
+			// case "Setup characters":
+			// 	FlxG.switchState(new SetupCharactersList());
+
+			case "download charts":
+				FlxG.switchState(new ChartRepoState());
+			case 'story mode':
+				FlxG.switchState(new StoryMenuState());
+			case 'freeplay':
+				FlxG.switchState(new FreeplayState());
+			case 'osu beatmaps':
+				FlxG.switchState(new osu.OsuMenuState());
+			case "Convert Charts from other mods":
+				FlxG.switchState(new ImportMod());
+			case 'download characters':
+				FlxG.switchState(new RepoState());
+			
+			case "back":
+				mmSwitch(true);
 		}
 	}
 }
