@@ -19,7 +19,6 @@ class Ratings
 		else
 			ranking = "(Clear)";
 
-<<<<<<< HEAD
         // WIFE TIME :)))) (based on Wife3)
         // fuck you unwife you wife
 
@@ -64,51 +63,6 @@ class Ratings
                 break;
             }
         }
-=======
-		// WIFE TIME :)))) (based on Wife3)
-
-		var wifeConditions:Array<Bool> = [
-			accuracy >= 99, // SS
-			accuracy >= 95, // S
-			accuracy >= 90, // A
-			accuracy >= 80, // B
-			accuracy >= 70, // back to C
-			accuracy >= 69, // nice
-			accuracy >= 60, // C
-			accuracy >= 50, // D
-			accuracy < 50, // F
-		];
-
-		for(i in 0...wifeConditions.length)
-		{
-			var b = wifeConditions[i];
-			if (b)
-			{
-				switch(i)
-				{
-					case 0:
-						ranking += " SS";
-					case 1:
-						ranking += " S";
-					case 2:
-						ranking += " A";
-					case 3:
-						ranking += " B";
-					case 4:
-						ranking += " C";
-					case 5:
-						ranking += " Nice";
-					case 6:
-						ranking += " C";
-					case 7:
-						ranking += " D";
-					case 8:
-						ranking += " F";
-				}
-				break;
-			}
-		}
->>>>>>> b78f5c729fef6b5202f5b3a97d7ba97e7957ea83
 
 		if (accuracy == 0)
 			ranking = "N/A";
@@ -145,19 +99,6 @@ class Ratings
 		return "sick";
 	}
 
-<<<<<<< HEAD
-    public static function CalculateRanking(score:Int,scoreDef:Int,nps:Int,maxNPS:Int,accuracy:Float):String
-    {
-        return 
-        (FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ") | " : "") + (!FlxG.save.data.botplay ?                  // NPS Toggle
-        "Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                                      // Score
-        " | Combo:" + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +         // combo
-        " | Accuracy:" + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  			    	// Accuracy
-        " | " + GenerateLetterRank(accuracy) :                                                                                      // Letter Rank
-        "pretty sure Super remove the bot so it not gonna be use now"                                                               // bot text was here
-        );
-    }
-=======
 	public static function CalculateRanking(score:Int,scoreDef:Int,nps:Int,maxNPS:Int,accuracy:Float):String
 	{
 		return switch(FlxG.save.data.songInfo){
@@ -185,5 +126,4 @@ class Ratings
 
 		}
 	}
->>>>>>> b78f5c729fef6b5202f5b3a97d7ba97e7957ea83
 }
