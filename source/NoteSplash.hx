@@ -50,8 +50,8 @@ class NoteSplash extends FlxSprite
 		updateHitbox();
 		// Stolen from psych but whatever
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-		offset.set(10, 10);
-		// offset.set(0.3 * width, 0.3 * height);
+		offset.set(-40, -40);
+		// offset.set(-0.5 * -width, 0.5 * -height);
 	}
 	function finished(name:String){
 		kill();

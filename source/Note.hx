@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.graphics.FlxGraphic;
 import PlayState;
 
 using StringTools;
@@ -136,6 +137,7 @@ class Note extends FlxSprite
 			eventNote = true; // Just an identifier
 			type =rawNote[2];
 			// _update = function(elapsed:Float){if (strumTime <= Conductor.songPosition) wasGoodHit = true;};
+			frames = new flixel.graphics.frames.FlxFramesCollection(FlxGraphic.fromRectangle(1,1,0x00000000,false,"blank.mp4"));
 			if(rawNote[2] == "Play Animation"){
 				try{
 					// Info can be set to anything, it's being used for storing the Animation and character
