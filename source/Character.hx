@@ -28,6 +28,9 @@ import hscript.InterpEx;
 import hscript.ParserEx;
 
 
+
+
+
 using StringTools;
 
 class Character extends FlxSprite
@@ -91,8 +94,7 @@ class Character extends FlxSprite
 			args.insert(0,this);
 			var method = interp.variables.get(func_name);
 			Reflect.callMethod(interp,method,args);
-			
-			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}');}
+			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}'); return;}
 		}
 	function parseHScript(scriptContents:String){
 		if (amPreview || !useHscript){

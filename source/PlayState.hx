@@ -206,7 +206,7 @@ class PlayState extends MusicBeatState
 
 	public static var campaignScore:Int = 0;
 
-	var defaultCamZoom:Float = 1.05;
+	public var defaultCamZoom:Float = 1.05;
 
 
 	// public static var theFunne:Bool = true;
@@ -1169,7 +1169,7 @@ class PlayState extends MusicBeatState
 
 		iconP2 = new HealthIcon(SONG.player2, false,dad.clonedChar);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
-		iconP2.offset.set(0,iconP2.width);
+		// iconP2.offset.set(0,iconP2.width);
 
 		add(iconP2);
 
@@ -1481,6 +1481,8 @@ class PlayState extends MusicBeatState
 		var swagCounter:Int = 0;
 		
 		callInterp("startCountdown",[]);
+		
+		
 
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -1959,7 +1961,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.volume = 0;
 		this.vocals.volume = 0;
 
-		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win,camFollow));
+		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
 		
 	}
 
@@ -2041,8 +2043,8 @@ class PlayState extends MusicBeatState
 
 		if(!FlxG.save.data.practiceMode){
 			var iconOffset:Int = 26;
-			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - iconOffset - Std.int(iconP1.width * 0.80);
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - (iconOffset));
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - (iconP2.width - iconOffset));
 
 		}
 		// else{
@@ -3687,6 +3689,7 @@ class PlayState extends MusicBeatState
 			fastCarCanDrive = true;
 		}
 	}
+
 
 	function fastCarDrive()
 	{

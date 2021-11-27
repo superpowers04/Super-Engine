@@ -111,29 +111,29 @@ class AnimationDebug extends MusicBeatState
 
 	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false)
 	{
-		if (!PlayState.hasStarted){
-			// try{
-			// 	PlayState.SONG = {
-			// 		song: "Nothing",
-			// 		notes: [],
-			// 		bpm: 120,
-			// 		needsVoices: false,
-			// 		player1: 'bf',
-			// 		player2: 'bf',
-			// 		gfVersion: 'gf',
-			// 		noteStyle: 'normal',
-			// 		stage: 'stage',
-			// 		speed: 2.0,
-			// 		validScore: false,
-			// 		difficultyString: "Unknown"
-			// 	};
-			// 	var e = new PlayState();
-			// 	e.destroy();
-			// }catch(e){
-			MainMenuState.handleError("A song needs to be loaded first!");
-			return;
-			// }
-		} 
+		// if (!PlayState.hasStarted){
+		// 	// try{
+		// 	// 	PlayState.SONG = {
+		// 	// 		song: "Nothing",
+		// 	// 		notes: [],
+		// 	// 		bpm: 120,
+		// 	// 		needsVoices: false,
+		// 	// 		player1: 'bf',
+		// 	// 		player2: 'bf',
+		// 	// 		gfVersion: 'gf',
+		// 	// 		noteStyle: 'normal',
+		// 	// 		stage: 'stage',
+		// 	// 		speed: 2.0,
+		// 	// 		validScore: false,
+		// 	// 		difficultyString: "Unknown"
+		// 	// 	};
+		// 	// 	var e = new PlayState();
+		// 	// 	e.destroy();
+		// 	// }catch(e){
+		// 	MainMenuState.handleError("A song needs to be loaded first!");
+		// 	return;
+		// 	// }
+		// } 
 			// MainMenuState.handleError("A song needs to be loaded first due to a crashing bug!");
 		super();
 		
@@ -146,7 +146,10 @@ class AnimationDebug extends MusicBeatState
 		trace('Animation debug with ${daAnim},${if(isPlayer) "true" else "false"},${charType}');
 
 	}
-
+	override function beatHit(){
+		super.beatHit();
+		if(gf != null) gf.dance();
+	}
 	override function create()
 	{
 		try{
@@ -188,6 +191,14 @@ class AnimationDebug extends MusicBeatState
 			if (charType != 2){
 				gf = new Character(400, 100, "gf",false,2,true);
 				gf.scrollFactor.set(0.95, 0.95);
+				gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
+				gf.cameras = [camGame];
+				add(gf);
+			}
+			if (charType == 2){
+				gf = new Character(790, 100, "bf",true,2,true);
+				gf.scrollFactor.set(0.95, 0.95);
+				gf.dance();
 				gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
 				gf.cameras = [camGame];
 				add(gf);
@@ -295,6 +306,7 @@ class AnimationDebug extends MusicBeatState
 
 			add(dadBG);
 			add(dad);
+			if (charType == 2){remove(gf);add(gf);};
 			charJson = dad.charProperties;
 			animList = [];
 			charAnims = ["**Unbind"];
@@ -308,7 +320,6 @@ class AnimationDebug extends MusicBeatState
 					}
 				}
 			}
-			if (charAnims[0] == null){charAnims.push("");}
 			try{
 				if(charJson == null || dad.loadedFrom == "")
 				   canEditJson = false; 
@@ -603,10 +614,10 @@ class AnimationDebug extends MusicBeatState
 		}
 	}
 
-	function showRawAnim(animName:String){
-		dad.addAnimation("tempanimdebuganimation",animName);
-		animToPlay = "tempanimdebuganimation";
-	}
+
+	// var editorAnim:Map;
+
+
 	function editAnimation(Anim:String,charAnim:CharJsonAnimation,?replace:Bool = false,?unbind:Bool = false){
 		var exists:Bool = false;
 		var id:Int = 0;
@@ -629,7 +640,6 @@ class AnimationDebug extends MusicBeatState
 
 		} // Finish this later
 	}
-	// var editorAnim:Map;
 
 	var uiMap:Map<String,Dynamic> = new Map<String,Dynamic>(); 
 	var uiBox:FlxUITabMenu;
@@ -642,8 +652,11 @@ class AnimationDebug extends MusicBeatState
 			uiBox.destroy();
 			uiBox = null;
 			animDropDown.visible = true;
-			if (animDropDown3 != null) animDropDown3.destroy();
-			if (animDropDown2 != null) animDropDown2.destroy();
+			// if (animDropDown3 != null) animDropDown3.destroy();
+			// if (animDropDown2 != null) animDropDown2.destroy();
+			for (_ => v in uiMap) {
+				if (v.destroy != null) v.destroy();
+			}
 			return;
 		}
 
@@ -724,10 +737,66 @@ class AnimationDebug extends MusicBeatState
 		});
 		uiBox.add(commitButton);
 
+
+
+		// Other UI
+		var uiBox2 = new FlxUITabMenu(null, [{name:"Config Editor",label:"Config Editor"}], true);
+		uiBox2.cameras = [camHUD];
+
+		uiBox2.resize(250, 330);
+		uiBox2.x = 15;
+		uiBox2.y = 80;
+		uiBox2.scrollFactor.set();
+		add(uiBox2);
+		uiMap["uiBox2"] = uiBox2;
+
+		var looped = checkBox(30, 40,"No antialiasing","no_antialiasing");
+		uiBox2.add(looped);
+		var looped = checkBox(30, 60,"Flip X","flip_x");
+		uiBox2.add(looped);
+		var looped = checkBox(30, 80,"Spirit Trail","spirit_trail");
+		uiBox2.add(looped);
+
+
+		var commitButton = new FlxUIButton(20,240,"Update character to show changes",function(){
+			spawnChar(true,false,charJson);
+		});
+		commitButton.resize(120,30);
+		uiBox2.add(commitButton);
+
+		var commitButton = new FlxUIButton(20,280,"Back to Offsetting",function(){
+			editMode = 0;
+			setupUI(true);
+			toggleOffsetText(false);
+		});
+		commitButton.resize(120,20);
+		uiBox2.add(commitButton);
+
+	}
+	// static function textBox(x:Float,y:Float,defText:String,name:String,internalName:String):FlxInputTextUpdatable{
+	// 	var ret = new FlxUIInputText(30, 100, null, "24");
+	// 	ret.checked = Reflect.field(charJson,internalName);
+	// 	ret.callback = function(){
+	// 		Reflect.setField(charJson,internalName,uiMap[name].checked);
+	// 	}
+	// 	uiMap[name] = ret;
+	// 	var animTxt = new FlxText(140, 130,0,"XML Name");
+	// 	return ret;
+	// }
+	function checkBox(x:Float,y:Float,name:String,internalName:String):FlxUICheckBox{
+		var ret = new FlxUICheckBox(x, y, null, null, name);
+		ret.checked = Reflect.field(charJson,internalName);
+		ret.callback = function(){
+			Reflect.setField(charJson,internalName,uiMap[name].checked);
+		}
+		uiMap[name] = ret;
+		return ret;
 	}
 	var animToPlay:String = "";
 	var animDropDown3:FlxUIDropDownMenu;
 	var animDropDown2:FlxUIDropDownMenu;
+	// inline function canSwitch():Bool {return uiMap["FPS"] == null || (!uiMap["FPS"].focused && !uiMap["animSel"].focused );} // This is disgusting but whatever
+
 
 	override function update(elapsed:Float)
 	{
@@ -915,12 +984,12 @@ class AnimationDebug extends MusicBeatState
 				}
 			}
 			case 2:{
-				if (FlxG.keys.justPressed.M && (uiMap["FPS"] == null || !uiMap["FPS"].focused && !uiMap["animSel"].focused)){
-					editMode = 0;
-					setupUI(true);
-					toggleOffsetText(false);
+				// if (FlxG.keys.justPressed.M && canSwitch()){
+				// 	editMode = 0;
+				// 	setupUI(true);
+				// 	toggleOffsetText(false);
 
-				}
+				// }
 			}
 		}
 		if (rPress && !pressArray.contains(true)) spawnChar(true);
@@ -976,11 +1045,13 @@ class AnimHelpScreen extends FlxUISubState{
 				+'\n *Shift - Hold to move'
 				+'\n *Ctrl - Move by *0.1'
 				+'\n\nUtilities:\n';
+			case 2:
+				'';
 			default:
 				'This should not happen, please report this!.\nEdit mode:${editMode}';
 		})
 		+'\nR - Reload character'
-		+"\nM - Change between Offsetting, Camera and Animation binder modes"
+		+"\nM - Cycle between Offsetting, Camera and config/animation editing modes"
 		+'\n\nC - Open property editor in help screen\nEscape - Close animation debug');
 		controlsText.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlsText.scrollFactor.set();

@@ -11,6 +11,7 @@ import flash.media.Sound;
 import sys.io.File;
 import flash.display.BitmapData;
 import Xml;
+import sys.FileSystem;
 
 // Made specifically for Super Engine
 
@@ -25,6 +26,7 @@ class HSBrTools {
 	public var soundArray:Map<String,Sound> = [];
 	var optionsMap:Map<String,Dynamic> = new Map<String,Dynamic>();
 	public static var shared:Map<String,Dynamic> = new Map<String,Dynamic>();
+	var id = "Unspecified script";
 	public function new(_path:String,?id:String = ""){
 		path = _path;
 		if (!path.endsWith('/')) path = path + "/";
@@ -32,6 +34,7 @@ class HSBrTools {
 			trace('$id has user settings');
 			var scriptJson:Map<String,Dynamic> = OptionsMenu.loadScriptOptions('mods/scriptOptions/$id.json');
 			if(scriptJson != null) optionsMap = scriptJson;
+			this.id = id;
 		}
 		trace('HSBrTools initialised in ${path}');
 	}
@@ -48,22 +51,49 @@ class HSBrTools {
 		return path + str;
 	}
 	public function loadFlxSprite(x:Int,y:Int,pngPath:String):FlxSprite{
+		if(!FileSystem.exists('${path}${pngPath}')){
+			PlayState.instance.handleError('${id}: "${path}${pngPath}" doesn\'t exist!');
+			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
+		}
 		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
 		return new FlxSprite(x, y).loadGraphic(spriteArray[pngPath]);
 	}
 	public function loadGraphic(pngPath:String):FlxGraphic{
+		if(!FileSystem.exists('${path}${pngPath}')){
+			PlayState.instance.handleError('${id}: "${path}${pngPath}" doesn\'t exist!');
+			return FlxGraphic.fromRectangle(0,0,0); // Prevents the script from throwing a null error or something
+		}
 		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
 		return spriteArray[pngPath];
 	}
 
 	public function loadSparrowFrames(pngPath:String):FlxAtlasFrames{
+		if(!FileSystem.exists('${path}${pngPath}.png')){
+			PlayState.instance.handleError('${id}: "${path}${pngPath}.png" doesn\'t exist!');
+			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
+		}
+		if(!FileSystem.exists('${path}${pngPath}.xml')){
+			PlayState.instance.handleError('${id}: "${path}${pngPath}.xml" doesn\'t exist!');
+			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
+		}
 		if(spriteArray[pngPath + ".png"] == null) spriteArray[pngPath + ".png"] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}.png'));
 		if(xmlArray[pngPath + ".xml"] == null) xmlArray[pngPath + ".xml"] = File.getContent('${path}${pngPath}.xml');
 
 		return FlxAtlasFrames.fromSparrow(spriteArray[pngPath + ".png"],xmlArray[pngPath + ".xml"]);
 	}
 	public function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
-		if(spriteArray[pngPath + ".png"] == null) spriteArray[pngPath + ".png"] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}.png'));
+
+		if(!FileSystem.exists('${path}${pngPath}.png')){
+			PlayState.instance.handleError('${id}: "${path}${pngPath}.png" doesn\'t exist!');
+			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
+		}
+		if(!FileSystem.exists('${path}${pngPath}.xml')){
+			PlayState.instance.handleError('${id}: "${path}${pngPath}.xml" doesn\'t exist!');
+			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
+		}
+		if(spriteArray[pngPath + ".png"] == null){ 
+			spriteArray[pngPath + ".png"] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}.png'));
+		}
 		var spr = new FlxSprite(x, y);
 		if(xmlArray[pngPath + ".xml"] == null) xmlArray[pngPath + ".xml"] = File.getContent('${path}${pngPath}.xml');
 
@@ -106,6 +136,10 @@ class HSBrTools {
 		if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
 	}
 	public function cacheSprite(pngPath:String){
+		if(!FileSystem.exists('${path}${pngPath}.png')){
+			PlayState.instance.handleError('"${path}${pngPath}.png" doesn\'t exist!');
+			return;
+		}
 		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
 	}
 }
