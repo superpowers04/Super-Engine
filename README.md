@@ -6,6 +6,8 @@ This is client aims to allow people to use normal Funkin Battle Royale servers w
 Last Build:[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml) Click on a commit and go to the artifacts to download, you need a github account to download artifacts
 <br>[Discord server](https://discord.gg/28GPGTRuuR)
 
+<br><br>For an **unofficial** version that supports more keys, [You can use cartoon032's fork](https://github.com/cartoon032/FunkinBattleRoyale-Mod)
+
 
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide

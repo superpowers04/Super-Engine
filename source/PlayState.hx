@@ -2120,7 +2120,7 @@ class PlayState extends MusicBeatState
 		{
 			
 
-			var locked = (FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[Std.int(curStep / 16)].sectionNotes[0] == null);
+			var locked = (!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[Std.int(curStep / 16)].sectionNotes[0] == null);
 			if (PlayState.SONG.notes[Std.int(curStep / 16)] != null) followChar((PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection ? 0 : 1),locked);
 			if (FlxG.save.data.camMovement || !camLocked){
 				FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);

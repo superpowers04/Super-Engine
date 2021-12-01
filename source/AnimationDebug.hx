@@ -203,7 +203,7 @@ class AnimationDebug extends MusicBeatState
 				gf.cameras = [camGame];
 				add(gf);
 			}
-			animDropDown = new FlxUIDropDownMenu(FlxG.width - 300, 50, FlxUIDropDownMenu.makeStrIdLabelArray([''], true), function(id:String)
+			animDropDown = new PsychDropDown(FlxG.width - 300, 50, FlxUIDropDownMenu.makeStrIdLabelArray([''], true), function(id:String)
 			{
 				trace('Drop: ${Std.parseInt(id)}');
 				var anim = animList[Std.parseInt(id)];
@@ -311,7 +311,7 @@ class AnimationDebug extends MusicBeatState
 			animList = [];
 			charAnims = ["**Unbind"];
 			if (dad.charXml != null){
-				var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
+				var regTP:EReg = (~/<SubTexture name="([A-z0-9\-_ .,\\\|]+)[0-9][0-9][0-9][0-9]"/gm);
 				var input:String = dad.charXml;
 				while (regTP.match(input)) {
 					input=regTP.matchedRight();
@@ -644,7 +644,7 @@ class AnimationDebug extends MusicBeatState
 
 	var uiMap:Map<String,Dynamic> = new Map<String,Dynamic>(); 
 	var uiBox:FlxUITabMenu;
-	var animDropDown:FlxUIDropDownMenu;
+	var animDropDown:PsychDropDown;
 	var charAnims:Array<String> = [];
 	var animUICurAnim:String = "idle";
 	var animUICurName:String = "";
@@ -673,7 +673,7 @@ class AnimationDebug extends MusicBeatState
 		uiMap["animSel"] = new FlxInputTextUpdatable(11, 230, 100, '');
 		// animSel.text = "idle";
 
-		var animDropDown2 = new FlxUIDropDownMenu(10, 260, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
+		var animDropDown2 = new PsychDropDown(10, 260, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
 		{			// animUICurAnim = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 
 			uiMap["animSel"].updateText(INTERNALANIMATIONLIST[Std.parseInt(anim)]);
@@ -685,8 +685,9 @@ class AnimationDebug extends MusicBeatState
 		uiBox.add(uiMap["animSel"]);
 		
 		animUICurName = charAnims[0];
-		uiMap["animSel"].text = animDropDown2.selectedLabel = animUICurName;
-		animDropDown3 = new FlxUIDropDownMenu(125, 150, FlxUIDropDownMenu.makeStrIdLabelArray(charAnims, true), function(anim:String)
+		uiMap["animSel"].text = "idle";
+		animDropDown2.selectedLabel = animUICurName;
+		animDropDown3 = new PsychDropDown(125, 150, FlxUIDropDownMenu.makeStrIdLabelArray(charAnims, true), function(anim:String)
 		{
 			// trace('Drop3: ${Std.parseInt(anim)}');
 			animUICurName = charAnims[Std.parseInt(anim)];
@@ -698,7 +699,7 @@ class AnimationDebug extends MusicBeatState
 		var animTxt = new FlxText(10, 200,0,"Internal Name");
 		uiBox.add(animTxt);
 
-		var animTxt = new FlxText(140, 130,0,"XML Name");
+		var animTxt = new FlxText(140, 135,0,"XML Name");
 		uiBox.add(animTxt);
 		if(dad.charType == 0){
 
@@ -716,7 +717,7 @@ class AnimationDebug extends MusicBeatState
 		oneshot.checked = false;
 		uiMap["oneshot"] = oneshot;
 		uiBox.add(oneshot);
-		var animTxt = new FlxText(30, 70,0,"Animation FPS");
+		var animTxt = new FlxText(30, 60,0,"Animation FPS");
 		uiMap["FPStxt"] = animTxt;
 		var animFPS = new FlxUIInputText(30, 80, null, "24");
 		// animFPS.customFilterPattern = ~/[^0-9]/;
@@ -728,7 +729,7 @@ class AnimationDebug extends MusicBeatState
 		uiBox.add(animTxt);
 		// var animTxt = new FlxText(140, 130,0,"XML Name");
 		// uiBox.add(animTxt);
-		var animTxt = new FlxText(30, 110,0,"Loop Start Frame");
+		var animTxt = new FlxText(30, 100,0,"Loop Start Frame");
 		uiMap["lstxt"] = animTxt;
 		uiBox.add(animTxt);
 		var animFPS = new FlxUIInputText(30, 120, null, "0");
@@ -819,8 +820,8 @@ class AnimationDebug extends MusicBeatState
 	// 	return ret;
 	// }
 	var animToPlay:String = "";
-	var animDropDown3:FlxUIDropDownMenu;
-	var animDropDown2:FlxUIDropDownMenu;
+	var animDropDown3:PsychDropDown;
+	var animDropDown2:PsychDropDown;
 	// inline function canSwitch():Bool {return uiMap["FPS"] == null || (!uiMap["FPS"].focused && !uiMap["animSel"].focused );} // This is disgusting but whatever
 
 
