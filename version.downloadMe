@@ -1,4 +1,4 @@
-0.9.1;
+0.10.0;
 - Rewrite some of the camera system to be scriptable
 - Songs can be previewed on the modded charts menu
 - FinishSubState can now be delayed or can be prevented from pausing the game
