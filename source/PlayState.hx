@@ -207,6 +207,8 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	public static var songScore:Int = 0;
+	public static var fnfScore:Int = 0;
+	public static var osuScore:Int = 0;
 	var songScoreDef:Int = 0;
 	public var scoreTxt:FlxText;
 	var scoreTxtX:Float;
@@ -274,6 +276,8 @@ class PlayState extends MusicBeatState
 		// repPresses = 0;
 		// repReleases = 0;
 		songScore = 0;
+		fnfScore = 0;
+		osuScore = 0;
 
 	}
 
@@ -2419,7 +2423,7 @@ class PlayState extends MusicBeatState
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 1;
 					sicks++;
-					if (FlxG.save.data.noteSplash && mania == 0){
+					if (FlxG.save.data.noteSplash){
 						var a:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
 						a.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
 						grpNoteSplashes.add(a);
@@ -2431,7 +2435,9 @@ class PlayState extends MusicBeatState
 				{
 	
 			
-			songScore += Math.round(score);
+			if(FlxG.save.data.osuscore){songScore += Math.round(score + (score * ((combo - 1) / 25)));} else {songScore += Math.round(score);}
+			fnfScore += Math.round(score);
+			osuScore += Math.round(score + (score * ((combo - 1) / 25)));
 			songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
 	
 			/* if (combo > 60)

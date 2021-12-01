@@ -34,13 +34,16 @@ class OnlineOptionsMenu extends OptionsMenu
       ]),
       new OptionCategory("Gameplay", [
         new DFJKOption(controls),
+        new SixKeyMenu(controls),
+        new NineKeyMenu(controls),
         new DownscrollOption("Change the layout of the strumline."),
         new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
         new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
         new FPSCapOption("Cap your FPS"),
         new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
         new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
-        new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg")
+        new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
+        new Osuscore("The more combo you have the more score you get")
         // new InputHandlerOption("Change the input engine used, only works locally, Disables Kade options unless supported by engine")
       ]),
       new OptionCategory("Appearance", [

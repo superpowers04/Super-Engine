@@ -29,7 +29,7 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.9.0-Hotfix";
+	public static var ver:String = "0.9.0 - T Mod V.2";
 	
 	public static var firstStart:Bool = true;
 
@@ -83,13 +83,13 @@ class MainMenuState extends SickMenuState
 		versionShit.scrollFactor.set();
 		add(versionShit);
 
-		if (TitleState.outdated){
+		/*if (TitleState.outdated){
 			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'SE/BR is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info', 32);
 			outdatedLMAO.setFormat(CoolUtil.font, 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			outdatedLMAO.scrollFactor.set();
  			outdatedLMAO.screenCenter(FlxAxes.X);
 			add(outdatedLMAO);
-		}
+		}*/
 		//  Whole bunch of checks to prevent crashing
 		if (!TitleState.choosableCharacters.contains(FlxG.save.data.playerChar) && FlxG.save.data.playerChar != "automatic"){
 			errorMessage += '\n${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';

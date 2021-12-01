@@ -48,7 +48,7 @@ class OutdatedSubState extends MusicBeatState
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
 			"\n\nChangelog:\n\n"
 			+ currChanges
-			+ "\n\n\nPress Space to get latest update's zip, D to open a invite to the Discord server or Escape to close.\n\nYou can install it by downloading the zip and dragging the files\n into your game folder",
+			+ "\n\n\nPress D to open a invite to the Discord server or Escape to close.",
 			32);
 		
 		txt.setFormat(CoolUtil.font, 32, FlxColor.fromRGB(200, 200, 200), CENTER);
@@ -83,10 +83,6 @@ class OutdatedSubState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.ACCEPT || FlxG.keys.justPressed.SPACE)
-		{
-			fancyOpenURL("https://nightly.link/superpowers04/FunkinBattleRoyale-Mod/workflows/main/master/windowsBuild-Minimal.zip");
-		}
 		if (FlxG.keys.justPressed.D)
 		{
 			fancyOpenURL("https://discord.gg/28GPGTRuuR");

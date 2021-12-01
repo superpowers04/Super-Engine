@@ -55,11 +55,11 @@ class OptionsMenu extends MusicBeatState
 			new MiddlescrollOption("Move the strumline to the middle of the screen"),
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
-
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
-			new InputHandlerOption("Change the input engine used, only works locally.")
+			new InputHandlerOption("Change the input engine used, only works locally."),
+			new Osuscore("The more combo you have the more score you get")
 		]),
 		new OptionCategory("Appearance", [
 			new GUIGapOption("Change the distance between the end of the screen and text"),

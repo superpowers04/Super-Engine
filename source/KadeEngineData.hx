@@ -82,7 +82,6 @@ class KadeEngineData
 		if (FlxG.save.data.opponent == null)
 			FlxG.save.data.opponent = "dad";
 
-
 		if (FlxG.save.data.playerChar == null)
 			FlxG.save.data.playerChar = "bf";
 
@@ -138,7 +137,8 @@ class KadeEngineData
 		if (FlxG.save.data.scripts == null) FlxG.save.data.scripts = [];
 		if (FlxG.save.data.songInfo == null) FlxG.save.data.songInfo = 0;
 		if (FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
-	 
+
+		if (FlxG.save.data.osuscore == null) FlxG.save.data.osuscore = false;
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();

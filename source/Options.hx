@@ -1012,6 +1012,26 @@ class InputHandlerOption extends Option
 		return '${ies[FlxG.save.data.inputHandler]} Input Engine';
 	}
 }
+class Osuscore extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.osuscore = !FlxG.save.data.osuscore;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Osu score system " + (!FlxG.save.data.osuscore ? "off" : "on");
+	}
+}
 class NoteSelOption extends Option
 {
 	public function new(desc:String)

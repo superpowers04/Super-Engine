@@ -100,7 +100,7 @@ class StrumArrow extends FlxSprite{
 						animation.addByPrefix('confirm', 'right confirm', 24, false);
 				}
 			case 2:
-				arrowIDs = ['left','down','right','up','left','up','right'];
+				arrowIDs = ['left','down','right','space','left','up','right'];
 				setGraphicSize(Std.int(width * Note.noteScale));
 				switch (id)
 				{
@@ -117,9 +117,9 @@ class StrumArrow extends FlxSprite{
 						animation.addByPrefix('pressed', 'right press', 24, false);
 						animation.addByPrefix('confirm', 'right confirm', 24, false);
 					case 3:
-						animation.addByPrefix('static', 'arrowUP');
-						animation.addByPrefix('pressed', 'up press', 24, false);
-						animation.addByPrefix('confirm', 'up confirm', 24, false);
+						animation.addByPrefix('static', 'arrowSPACE');
+						animation.addByPrefix('pressed', 'space press', 24, false);
+						animation.addByPrefix('confirm', 'space confirm', 24, false);
 					case 4:
 						animation.addByPrefix('static', 'arrowLEFT');
 						animation.addByPrefix('pressed', 'left press', 24, false);
@@ -134,7 +134,7 @@ class StrumArrow extends FlxSprite{
 						animation.addByPrefix('confirm', 'right confirm', 24, false);
 				}
 			case 3:
-				arrowIDs = ['left','down','up','right','up','left','down','up','right'];
+				arrowIDs = ['left','down','up','right','space','left','down','up','right'];
 				setGraphicSize(Std.int(width * Note.noteScale));
 				switch (id)
 				{
@@ -155,9 +155,9 @@ class StrumArrow extends FlxSprite{
 						animation.addByPrefix('pressed', 'right press', 24, false);
 						animation.addByPrefix('confirm', 'right confirm', 24, false);
 					case 4:
-						animation.addByPrefix('static', 'arrowUP');
-						animation.addByPrefix('pressed', 'up press', 24, false);
-						animation.addByPrefix('confirm', 'up confirm', 24, false);
+						animation.addByPrefix('static', 'arrowSPACE');
+						animation.addByPrefix('pressed', 'space press', 24, false);
+						animation.addByPrefix('confirm', 'space confirm', 24, false);
 					case 5:
 						animation.addByPrefix('static', 'arrowLEFT');
 						animation.addByPrefix('pressed', 'left press', 24, false);

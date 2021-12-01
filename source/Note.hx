@@ -42,7 +42,7 @@ class Note extends FlxSprite
 	public static var GREEN_NOTE:Int = 2;
 	public static var RED_NOTE:Int = 3;
 	public static var tooMuch:Float = 30;
-	public static var noteNames:Array<String> = ["purple","blue","green",'red'];
+	public static var noteNames:Array<String> = ["purple","blue","green",'red','white'];
 	public var skipNote:Bool = true;
 	public var childNotes:Array<Note> = [];
 	public var parentNote:Note = null;
@@ -76,17 +76,20 @@ class Note extends FlxSprite
 		animation.addByPrefix('redScroll', 'red0');
 		animation.addByPrefix('blueScroll', 'blue0');
 		animation.addByPrefix('purpleScroll', 'purple0');
+		animation.addByPrefix('whiteScroll', 'white0');
 
 		animation.addByPrefix('purpleholdend', 'pruple end hold'); // Fucking default names
 		animation.addByPrefix('purpleholdend', 'purple end hold');
 		animation.addByPrefix('greenholdend', 'green hold end');
 		animation.addByPrefix('redholdend', 'red hold end');
 		animation.addByPrefix('blueholdend', 'blue hold end');
+		animation.addByPrefix('whiteholdend', 'white hold end');
 
 		animation.addByPrefix('purplehold', 'purple hold piece');
 		animation.addByPrefix('greenhold', 'green hold piece');
 		animation.addByPrefix('redhold', 'red hold piece');
 		animation.addByPrefix('bluehold', 'blue hold piece');
+		animation.addByPrefix('whitehold', 'white hold piece');
 	}
 	dynamic public function hit(?charID:Int = 0,note:Note){
 		switch (charID) {
@@ -210,9 +213,9 @@ class Note extends FlxSprite
 			case 1: 
 				noteNames = ['purple', 'blue', 'red', 'purple', 'green', 'red'];
 			case 2: 
-				noteNames = ['purple', 'blue', 'red', 'green', 'purple', 'green', 'red'];
+				noteNames = ['purple', 'blue', 'red', 'white', 'purple', 'green', 'red'];
 			case 3: 
-				noteNames = ['purple', 'blue', 'green', 'red', 'green', 'purple', 'blue', 'green', 'red'];
+				noteNames = ['purple', 'blue', 'green', 'red', 'white', 'purple', 'blue', 'green', 'red'];
 
 		}
 
