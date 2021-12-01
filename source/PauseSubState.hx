@@ -42,7 +42,7 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super();
 		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
-		PlayState.instance.callInterp("pauseLoad",[this]);
+		PlayState.instance.callInterp("pauseCreate",[this]);
 
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
@@ -212,6 +212,7 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.destroy();
 		levelInfo.destroy();
 		perSongOffset.destroy();
+		PlayState.instance.callInterp("pauseResume",[this]);
 
 
 

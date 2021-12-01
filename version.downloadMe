@@ -9,3 +9,4 @@
 - Note styles can properly replace note splashes now
 - New note splashes *again*
 - The game will properly show missing file errors on scripts
+- Notes actually clip to strumline *finally*
