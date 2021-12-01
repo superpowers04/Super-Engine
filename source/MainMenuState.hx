@@ -44,7 +44,7 @@ class MainMenuState extends SickMenuState
 	
 	public static function handleError(?error:String = "An error occurred",?details:String=""):Void{
 		if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
-		MainMenuState.errorMessage = error;
+		MainMenuState.errorMessage += "\n" + error;
 		if(details != "") trace(details);
 		if (onlinemod.OnlinePlayMenuState.socket != null){
 			try{

@@ -227,6 +227,7 @@ class FinishSubState extends MusicBeatSubstate
 				add(contText);
 				add(settingsText);
 				// add(chartInfoText);
+				healthBar.cameras = healthBarBG.cameras = iconP1.cameras = iconP2.cameras = [cam];
 
 				FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 				FlxTween.tween(finishedText, {y:20},0.5,{ease: FlxEase.expoInOut});

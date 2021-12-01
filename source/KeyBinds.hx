@@ -25,6 +25,10 @@ class KeyBinds
         FlxG.save.data.gpdownBind = "DPAD_DOWN";
         FlxG.save.data.gpleftBind = "DPAD_LEFT";
         FlxG.save.data.gprightBind = "DPAD_RIGHT";
+        FlxG.save.data.AltupBind = "N";
+        FlxG.save.data.AltdownBind = "X";
+        FlxG.save.data.AltleftBind = "Z";
+        FlxG.save.data.AltrightBind = "M";
         PlayerSettings.player1.controls.loadKeyBinds();
 
     }
@@ -64,6 +68,22 @@ class KeyBinds
         if(FlxG.save.data.gprightBind == null){
             FlxG.save.data.gprightBind = "DPAD_RIGHT";
             trace("No GRIGHT");
+        }
+        if(FlxG.save.data.AltupBind == null){
+            FlxG.save.data.AltupBind = "N";
+            trace("No UP");
+        }
+        if(FlxG.save.data.AltdownBind == null){
+            FlxG.save.data.AltdownBind = "X";
+            trace("No DOWN");
+        }
+        if(FlxG.save.data.AltleftBind == null){
+            FlxG.save.data.AltleftBind = "Z";
+            trace("No LEFT");
+        }
+        if(FlxG.save.data.AltrightBind == null){
+            FlxG.save.data.AltrightBind = "M";
+            trace("No RIGHT");
         }
     if(FlxG.save.data.killBind == null){
             FlxG.save.data.killBind = "R";

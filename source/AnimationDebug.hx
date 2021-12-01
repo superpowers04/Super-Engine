@@ -625,6 +625,7 @@ class AnimationDebug extends MusicBeatState
 		for (i => v in charJson.animations) {
 			if (v.anim == Anim) {exists=true;id = i;break;}
 		}
+
 		if (replace){
 			if (unbind){
 				if (exists)
@@ -678,12 +679,13 @@ class AnimationDebug extends MusicBeatState
 			uiMap["animSel"].updateText(INTERNALANIMATIONLIST[Std.parseInt(anim)]);
 			// uiMap["animSel"].textField.text = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 		});
-		animDropDown2.selectedLabel = '';animDropDown2.cameras = [camHUD];
+		animDropDown2.cameras = [camHUD];
 		// animFPS.checked = false;
 		uiBox.add(animDropDown2);
 		uiBox.add(uiMap["animSel"]);
 		
 		animUICurName = charAnims[0];
+		uiMap["animSel"].text = animDropDown2.selectedLabel = animUICurName;
 		animDropDown3 = new FlxUIDropDownMenu(125, 150, FlxUIDropDownMenu.makeStrIdLabelArray(charAnims, true), function(anim:String)
 		{
 			// trace('Drop3: ${Std.parseInt(anim)}');
@@ -704,32 +706,43 @@ class AnimationDebug extends MusicBeatState
 			uiBox.add(warning);
 		}
 
-		// Toggles
+		// Togglables 
 
-		var looped = new FlxUICheckBox(30, 40, null, null, "Loop anim");
+		var looped = new FlxUICheckBox(30, 20, null, null, "Loop anim");
 		looped.checked = false;
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
-		var oneshot = new FlxUICheckBox(30, 60, null, null, "Oneshot/High priority");
+		var oneshot = new FlxUICheckBox(30, 40, null, null, "Oneshot/High priority");
 		oneshot.checked = false;
 		uiMap["oneshot"] = oneshot;
 		uiBox.add(oneshot);
-		var animFPS = new FlxUIInputText(30, 100, null, "24");
+		var animTxt = new FlxText(30, 70,0,"Animation FPS");
+		uiMap["FPStxt"] = animTxt;
+		var animFPS = new FlxUIInputText(30, 80, null, "24");
 		// animFPS.customFilterPattern = ~/[^0-9]/;
 		// animFPS.text = "24";
 		animFPS.filterMode = 2;
 		// animFPS.checked = false;
 		uiMap["FPS"] = animFPS;
 		uiBox.add(animFPS);
-		var animTxt = new FlxText(animFPS.x, animFPS.y - 20,0,"Animation FPS");
 		uiBox.add(animTxt);
-
+		// var animTxt = new FlxText(140, 130,0,"XML Name");
+		// uiBox.add(animTxt);
+		var animTxt = new FlxText(30, 110,0,"Loop Start Frame");
+		uiMap["lstxt"] = animTxt;
+		uiBox.add(animTxt);
+		var animFPS = new FlxUIInputText(30, 120, null, "0");
+		animFPS.filterMode = 2;
+		uiMap["loopStart"] = animFPS;
+		uiBox.add(animFPS);
 		var commitButton = new FlxUIButton(20,160,"Add animation",function(){
-			editAnimation(uiMap["animSel"].text,{
-				anim: uiMap["animSel"].text,
+			var Anim = uiMap["animSel"].text;
+			editAnimation(Anim,{
+				anim: Anim,
 				name: animUICurName,
 				loop: uiMap["loop"].checked,
 				fps: Std.parseInt(uiMap["FPS"].text),
+				loopStart:Std.parseInt(uiMap["loopStart"].text),
 				indices: [],
 				oneshot: (uiMap["oneshot"].checked || animUICurAnim == "hey" || animUICurAnim == "lose")
 			},true,(animUICurName == "**Unbind"));
@@ -739,7 +752,11 @@ class AnimationDebug extends MusicBeatState
 
 
 
-		// Other UI
+		// ----------------
+		// Config editor
+		// ----------------
+
+
 		var uiBox2 = new FlxUITabMenu(null, [{name:"Config Editor",label:"Config Editor"}], true);
 		uiBox2.cameras = [camHUD];
 
@@ -792,6 +809,15 @@ class AnimationDebug extends MusicBeatState
 		uiMap[name] = ret;
 		return ret;
 	}
+	// function textBox(x:Float,y:Float,name:String,internalName:String):FlxUICheckBox{
+	// 	var ret = new FlxUIInputText(x, y, null, null, name);
+	// 	ret.checked = Reflect.field(charJson,internalName);
+	// 	ret.callback = function(){
+	// 		Reflect.setField(charJson,internalName,uiMap[name].checked);
+	// 	}
+	// 	uiMap[name] = ret;
+	// 	return ret;
+	// }
 	var animToPlay:String = "";
 	var animDropDown3:FlxUIDropDownMenu;
 	var animDropDown2:FlxUIDropDownMenu;

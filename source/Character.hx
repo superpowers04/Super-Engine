@@ -301,7 +301,7 @@ class Character extends FlxSprite
 				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
 	
 				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/${charProperties.path}.png')), charXml);
-			}else{		
+			}else{
 				var pngPath:String = '${charProperties.path}.png';
 				var xmlPath:String = '${charProperties.path}.xml';
 				if (charProperties.asset_files != null){
@@ -310,16 +310,15 @@ class Character extends FlxSprite
 					var selAssets = -10;
 					for (i => charFile in charProperties.asset_files) {
 						if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side == charType){continue;} // This if statement hurts my brain
-						if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
-						if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
+						if (charFile.stage != "" && charFile.stage != null && (PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()) ){continue;} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
+						if (charFile.song != "" && charFile.song != null && (PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()) ){continue;} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
 						var tagsMatched = 0;
 						if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
 							for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
 							if (tagsMatched == 0) continue;
 						}
 						
-						if (forced == 0 || tagsMatched == forced)
-							selAssets = i;
+						if (forced == 0 || tagsMatched == forced) selAssets = i;
 					}
 					if (selAssets != -10){
 						if (charProperties.asset_files[selAssets].png != null ) pngPath=charProperties.asset_files[selAssets].png;
@@ -363,16 +362,18 @@ class Character extends FlxSprite
 
 
 		switch(charType){
-			case 0: if (charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
-			case 1: if (charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
-			case 2: if (charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
+			case 0: 
+				if (charProperties.char_pos1 != null){addOffset('all',charProperties.char_pos1[0],charProperties.char_pos1[1]);}
+				if (charProperties.cam_pos1 != null){camX += charProperties.cam_pos1[0];camY += charProperties.cam_pos1[1];}
+			case 1: 
+				if (charProperties.char_pos2 != null){addOffset('all',charProperties.char_pos2[0],charProperties.char_pos2[1]);}
+				if (charProperties.cam_pos2 != null){camX += charProperties.cam_pos2[0];camY += charProperties.cam_pos2[1];}
+			case 2: 
+				if (charProperties.char_pos3 != null){addOffset('all',charProperties.char_pos3[0],charProperties.char_pos3[1]);}
+				if (charProperties.cam_pos3 != null){camX += charProperties.cam_pos3[0];camY += charProperties.cam_pos3[1];}
 		}
 
-		switch(charType){
-			case 0: if (charProperties.cam_pos1 != null){camX += charProperties.cam_pos1[0];camY += charProperties.cam_pos1[1];}
-			case 1: if (charProperties.cam_pos2 != null){camX += charProperties.cam_pos2[0];camY += charProperties.cam_pos2[1];}
-			case 2: if (charProperties.cam_pos3 != null){camX += charProperties.cam_pos3[0];camY += charProperties.cam_pos3[1];}
-		}
+
 		if(charProperties.common_stage_offset != null){
 			if (needsInverted == 1 && !isPlayer){
 				addOffset('all',charProperties.common_stage_offset[2],charProperties.common_stage_offset[3]); // Load common stage offset
@@ -384,9 +385,9 @@ class Character extends FlxSprite
 				camY-=charProperties.common_stage_offset[1]; // Load common stage offset for camera too
 			}
 		}
-		if(!customColor && charProperties.color != null){
+		if(!customColor && charProperties.color != null)
 			definingColor = FlxColor.fromRGB(isValidInt(charProperties.color[0]),isValidInt(charProperties.color[1]),isValidInt(charProperties.color[2],255));
-		}
+		
 		if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
 		if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 		trace('Loaded ${offsetCount} offsets!');
@@ -1011,7 +1012,7 @@ class Character extends FlxSprite
 			#if debug
 			trace('Error with $curCharacter: ${e.stack} ${e.message}');
 			#end
-			MainMenuState.handleError('Error with $curCharacter: ' + e.message + "");
+			MainMenuState.handleError('Error with $curCharacter: ${e}');
 			return;
 		}
 	}
@@ -1047,7 +1048,7 @@ class Character extends FlxSprite
 		}
 
 		super.update(elapsed);
-	}catch(e:Dynamic){MainMenuState.handleError('Caught character "update" crash: ${e.message}');}}
+	}catch(e:Dynamic){MainMenuState.handleError('Caught character "update" crash: ${e}');}}
 
 
 	/**

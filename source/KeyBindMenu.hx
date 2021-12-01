@@ -34,19 +34,23 @@ class KeyBindMenu extends FlxSubState
     var keyTextDisplay:FlxText;
     var keyWarning:FlxText;
     var warningTween:FlxTween;
-    var keyText:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
-    var defaultKeys:Array<String> = ["A", "S", "W", "D", "R"];
+    var keyText:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT", "ALTLEFT", "ALTDOWN", "ALTUP", "ALTRIGHT"];
+    var defaultKeys:Array<String> = ["A", "S", "W", "D", "J", "K", "I", "L", "R"];
     var defaultGpKeys:Array<String> = ["DPAD_LEFT", "DPAD_DOWN", "DPAD_UP", "DPAD_RIGHT"];
     var curSelected:Int = 0;
 
     var keys:Array<String> = [FlxG.save.data.leftBind,
-                              FlxG.save.data.downBind,
-                              FlxG.save.data.upBind,
-                              FlxG.save.data.rightBind];
+                                FlxG.save.data.downBind,
+                                FlxG.save.data.upBind,
+                                FlxG.save.data.rightBind,
+                                FlxG.save.data.AltleftBind,
+                                FlxG.save.data.AltdownBind,
+                                FlxG.save.data.AltupBind,
+                                FlxG.save.data.AltrightBind];
     var gpKeys:Array<String> = [FlxG.save.data.gpleftBind,
-                              FlxG.save.data.gpdownBind,
-                              FlxG.save.data.gpupBind,
-                              FlxG.save.data.gprightBind];
+                                FlxG.save.data.gpdownBind,
+                                FlxG.save.data.gpupBind,
+                                FlxG.save.data.gprightBind];
     var tempKey:String = "";
     var blacklist:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT","ESCAPE", "ENTER", "BACKSPACE", "SPACE", "TAB","ONE","TWO","SEVEN","THREE"];
 
@@ -59,9 +63,7 @@ class KeyBindMenu extends FlxSubState
         if (KeyBinds.gamepad) {
             return '${FlxG.save.data.gpleftBind}-${FlxG.save.data.gpdownBind}-${FlxG.save.data.gpupBind}-${FlxG.save.data.gprightBind}';
         }
-        return '${FlxG.save.data.leftBind}-${FlxG.save.data.downBind}-${FlxG.save.data.upBind}-${FlxG.save.data.rightBind}';
-
-
+        return '${FlxG.save.data.leftBind}-${FlxG.save.data.downBind}-${FlxG.save.data.upBind}-${FlxG.save.data.rightBind} Alt ${FlxG.save.data.AltleftBind}-${FlxG.save.data.AltdownBind}-${FlxG.save.data.AltupBind}-${FlxG.save.data.AltrightBind}';
     }
 
     override function create()
@@ -272,7 +274,7 @@ class KeyBindMenu extends FlxSubState
         }
         else
         {
-            for(i in 0...4){
+            for(i in 0...8){
 
                 var textStart = (i == curSelected) ? "> " : "  ";
                 keyTextDisplay.text += textStart + keyText[i] + ": " + ((keys[i] != keyText[i]) ? (keys[i] + " / ") : "" ) + keyText[i] + " ARROW\n";
@@ -290,6 +292,10 @@ class KeyBindMenu extends FlxSubState
         FlxG.save.data.downBind = keys[1];
         FlxG.save.data.leftBind = keys[0];
         FlxG.save.data.rightBind = keys[3];
+        FlxG.save.data.AltupBind = keys[6];
+        FlxG.save.data.AltdownBind = keys[5];
+        FlxG.save.data.AltleftBind = keys[4];
+        FlxG.save.data.AltrightBind = keys[7];
         
         FlxG.save.data.gpupBind = gpKeys[2];
         FlxG.save.data.gpdownBind = gpKeys[1];
@@ -400,9 +406,9 @@ class KeyBindMenu extends FlxSubState
     {
         curSelected += _amount;
                 
-        if (curSelected > 3)
+        if (curSelected > 7)
             curSelected = 0;
         if (curSelected < 0)
-            curSelected = 3;
+            curSelected = 7;
     }
 }

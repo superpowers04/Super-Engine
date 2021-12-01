@@ -388,6 +388,12 @@ class PlayState extends MusicBeatState
 	public function clearVariables(){
 		stepAnimEvents = [];
 		beatAnimEvents = [];
+		if(unspawnNotes != null){
+			for (i in unspawnNotes) {
+				i.destroy();
+			}
+		}
+		notesHitArray = [];
 		unspawnNotes = [];
 		strumLineNotes = null;
 		playerStrums = null;
@@ -2114,7 +2120,7 @@ class PlayState extends MusicBeatState
 		{
 			
 
-			var locked = (FlxG.save.data.camMovement || !camLocked || PlayState.SONG.notes[Std.int(curStep / 16)].sectionNotes[0] == null);
+			var locked = (FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[Std.int(curStep / 16)].sectionNotes[0] == null);
 			if (PlayState.SONG.notes[Std.int(curStep / 16)] != null) followChar((PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection ? 0 : 1),locked);
 			if (FlxG.save.data.camMovement || !camLocked){
 				FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
@@ -3366,8 +3372,19 @@ class PlayState extends MusicBeatState
 				{
 					notes.forEachAlive(function(daNote:Note)
 					{
-						if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData])
-							goodNoteHit(daNote);
+						if (daNote.mustPress && daNote.isSustainNote && daNote.canBeHit && holdArray[daNote.noteData]){ // Clip note to strumline
+							var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+							swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+							swagRect.height -= swagRect.y;
+
+							daNote.clipRect = swagRect;
+							if(daNote.strumTime <= Conductor.songPosition) // Only destroy the note when properly hit
+								goodNoteHit(daNote);
+
+
+
+
+						}
 					});
 				}
 		 
