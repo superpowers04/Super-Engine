@@ -7,7 +7,7 @@ Last Build:[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/act
 <br>[Discord server](https://discord.gg/28GPGTRuuR)
 
 <br><br>For an **unofficial** version that supports more keys, [You can use cartoon032's fork](https://github.com/cartoon032/FunkinBattleRoyale-Mod)
-
+<br><br>Note that due to the setup on my end, I push commits all at once, so pull requests and other things might be out of date and need to be merged manually
 
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide

@@ -43,7 +43,8 @@ class MainMenuState extends SickMenuState
 	static var hasWarnedInvalid:Bool = false;
 	
 	public static function handleError(?error:String = "An error occurred",?details:String=""):Void{
-		if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
+		// if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
+		if(MainMenuState.errorMessage.contains(error)) return; // Prevents the same error from showing twice
 		MainMenuState.errorMessage += "\n" + error;
 		if(details != "") trace(details);
 		if (onlinemod.OnlinePlayMenuState.socket != null){
@@ -125,7 +126,6 @@ class MainMenuState extends SickMenuState
 		    errorText.fieldWidth = 1200;
 		    errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		    add(errorText);
-		    MainMenuState.errorMessage="";
 		}
 		
 	}
@@ -150,6 +150,7 @@ class MainMenuState extends SickMenuState
 	}
 	override function changeSelection(change:Int = 0){
 		if(char != null && change != 0) char.playAnim(Note.noteAnims[FlxG.random.int(0,3)],true);
+		
 		super.changeSelection(change);
 	}
 
@@ -178,6 +179,7 @@ class MainMenuState extends SickMenuState
 	}
 
   override function select(sel:Int){
+		MainMenuState.errorMessage="";
 		if (selected){return;}
 		// if(char != null) {char.playAnim("hey",true);char.playAnim("win",true);}
 		selected = true;
