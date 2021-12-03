@@ -32,7 +32,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function create()
 	{
 		dataDir = "mods/charts/";
-		bgColor = 0x00FF6E;
+		bgColor = 0x00661E;
 		super.create();
 		diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
 		diffText.font = CoolUtil.font;

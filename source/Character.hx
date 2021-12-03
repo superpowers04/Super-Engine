@@ -5,7 +5,10 @@ import flixel.graphics.FlxGraphic;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.animation.FlxAnimation;
+import flixel.animation.FlxAnimationController;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.frames.FlxFramesCollection;
 import haxe.Json;
 import haxe.format.JsonParser;
 import haxe.DynamicAccess;
@@ -32,6 +35,20 @@ import hscript.ParserEx;
 
 
 using StringTools;
+
+class CharAnimController extends FlxAnimationController{
+	override function findByPrefix(AnimFrames:Array<FlxFrame>, Prefix:String):Void
+	{
+		var regTP:EReg = new EReg('${Prefix}[- ]*[0-9][0-9]?[0-9]?[0-9]?','ig'); // Fixes the game improperly registering frames from other animations
+		for (frame in _sprite.frames.frames)
+		{
+			if (frame.name != null && regTP.match(frame.name))
+			{
+				AnimFrames.push(frame);
+			}
+		}
+	}
+}
 
 class Character extends FlxSprite
 {
@@ -286,10 +303,7 @@ class Character extends FlxSprite
 		}else{
 			var e:Dynamic = Reflect.field(TitleState.defCharJson.characters,curCharacter);
 			loadOffsetsFromJSON(e);
-			if(!customColor && e.color != null){
-				definingColor = FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
-				customColor = true;
-			}
+			getDefColor(e);
 
 		}
 	}
@@ -393,11 +407,87 @@ class Character extends FlxSprite
 		trace('Loaded ${offsetCount} offsets!');
 	}
 	function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
+	function getDefColor(e:CharacterJson){
+		if(!customColor && e.color != null){
+			// switch(Type.typeof(e.color)){
+				if(Std.isOfType(e.color,String)){
+
+					definingColor = FlxColor.fromString(e.color);
+					customColor = true;
+				}else if (Std.isOfType(e.color,Int)){
+					definingColor = FlxColor.fromInt(e.color);
+					customColor = true;
+				}else{
+					if(e.color[0] != null){
+						definingColor = FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
+						customColor = true;
+					}
+					else
+						customColor = false;
+				}
+			// }
+		}
+	}
 	function loadJSONChar(charProperties:CharacterJson){
 		
 		trace('Loading Json animations!');
 		// Check if the XML has BF's animations, if so, add them
-		if(!amPreview){
+
+
+
+
+
+		dadVar = charProperties.sing_duration; // As the varname implies
+		flipX=charProperties.flip_x; // Flip for BF clones
+		spiritTrail=charProperties.spirit_trail; // Spirit TraiL
+		antialiasing = !charProperties.no_antialiasing; 
+		dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+
+		if (charProperties.flip_notes) flipNotes = charProperties.flip_notes;
+
+		// if(!customColor && charProperties.color != null){
+		// 	definingColor = FlxColor.fromRGB(isValidInt(charProperties.color[0]),isValidInt(charProperties.color[1]),isValidInt(charProperties.color[2],255));
+		// 	customColor = true;
+		// }
+		getDefColor(charProperties);
+		
+		trace('Loading Animations!');
+		var animCount = 0;
+		var hasIdle = false;
+		if(charProperties.animations.length > 0){
+			for (anima in charProperties.animations){
+				try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
+				if (anima.stage != "" && anima.stage != null){if(PlayState.curStage.toLowerCase() != anima.stage.toLowerCase()){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
+				if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies song, skip if it doesn't match PlayState's song
+				if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
+				if (anima.char_side != null && anima.char_side != 3 && anima.char_side == charType){continue;} // This if statement hurts my brain
+				if (anima.ifstate != null){
+					trace("Loading a animation with ifstatement...");
+					if (anima.ifstate.check == 1 ){ // Do on step or beat
+						if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.stepAnimEvents[charType][anima.anim] = anima.ifstate;
+					} else {
+						if (PlayState.beatAnimEvents[charType] == null) PlayState.beatAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.beatAnimEvents[charType][anima.anim] = anima.ifstate;
+					}
+					
+					// PlayState.regAnimEvent(charType,anima.ifstate,anima.anim);
+				}
+				if (anima.oneshot == true && !amPreview){ // "On static platforms, null can't be used as basic type Bool" bruh
+					oneShotAnims.push(anima.anim);
+					anima.loop = false; // Looping when oneshot is a terrible idea
+				}
+				if(anima.loopStart != null && anima.loopStart != 0 )loopAnimFrames[anima.anim] = anima.loopStart;
+				if(anima.playAfter != null && anima.playAfter != '' )loopAnimTo[anima.anim] = anima.playAfter;
+				if(anima.anim == "idle" || anima.anim == "danceLeft")hasIdle = true;
+				if (anima.indices.length > 0) { // Add using indices if specified
+					addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
+				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
+
+				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
+				animCount++;
+			}
+		}
+		trace('Registered ${animCount} animations');
+		if(!amPreview && !hasIdle){
 			
 			var hasBFAnims:Bool = false;
 			{
@@ -424,58 +514,6 @@ class Character extends FlxSprite
 				addAnimation('hey', 'BF HEY', 24, false);
 			}
 		}
-
-
-
-
-		dadVar = charProperties.sing_duration; // As the varname implies
-		flipX=charProperties.flip_x; // Flip for BF clones
-		spiritTrail=charProperties.spirit_trail; // Spirit TraiL
-		antialiasing = !charProperties.no_antialiasing; 
-		dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
-
-		if (charProperties.flip_notes) flipNotes = charProperties.flip_notes;
-
-		if(!customColor && charProperties.color != null){
-			definingColor = FlxColor.fromRGB(isValidInt(charProperties.color[0]),isValidInt(charProperties.color[1]),isValidInt(charProperties.color[2],255));
-			customColor = true;
-		}
-
-		
-		trace('Loading Animations!');
-		var animCount = 0;
-		if(charProperties.animations.length > 0){
-			for (anima in charProperties.animations){
-				try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
-				if (anima.stage != "" && anima.stage != null){if(PlayState.curStage.toLowerCase() != anima.stage.toLowerCase()){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
-				if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies song, skip if it doesn't match PlayState's song
-				if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
-				if (anima.char_side != null && anima.char_side != 3 && anima.char_side == charType){continue;} // This if statement hurts my brain
-				if (anima.ifstate != null){
-					trace("Loading a animation with ifstatement...");
-					if (anima.ifstate.check == 1 ){ // Do on step or beat
-						if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.stepAnimEvents[charType][anima.anim] = anima.ifstate;
-					} else {
-						if (PlayState.beatAnimEvents[charType] == null) PlayState.beatAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.beatAnimEvents[charType][anima.anim] = anima.ifstate;
-					}
-					
-					// PlayState.regAnimEvent(charType,anima.ifstate,anima.anim);
-				}
-				if (anima.oneshot == true && !amPreview){ // "On static platforms, null can't be used as basic type Bool" bruh
-					oneShotAnims.push(anima.anim);
-					anima.loop = false; // Looping when oneshot is a terrible idea
-				}
-				if(anima.loopStart != null && anima.loopStart != 0 )loopAnimFrames[anima.anim] = anima.loopStart;
-				if(anima.playAfter != null && anima.playAfter != '' )loopAnimTo[anima.anim] = anima.playAfter;
-
-				if (anima.indices.length > 0) { // Add using indices if specified
-					addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop);
-				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
-				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
-				animCount++;
-			}
-		}
-		trace('Registered ${animCount} animations');
 		setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
 		updateHitbox();
 
@@ -666,6 +704,9 @@ class Character extends FlxSprite
 		if (curCharacter == 'dad'){dadVar = 6.1;}
 		this.isPlayer = isPlayer;
 		amPreview = preview;
+
+		animation = new CharAnimController(this);
+
 		if(charJson != null) charProperties = charJson;
 		switch(charType){case 1:definingColor = FlxColor.RED;default:definingColor = FlxColor.GREEN;}
 		

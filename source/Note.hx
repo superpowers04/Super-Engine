@@ -22,7 +22,6 @@ class Note extends FlxSprite
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
-	public var modifiedByLua:Bool = false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 	public var shouldntBeHit:Bool = false;
@@ -31,6 +30,7 @@ class Note extends FlxSprite
 	public var isSustainNoteEnd:Bool = false;
 
 	public var noteScore:Float = 1;
+	public var inCharter:Bool = false;
 
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
@@ -43,9 +43,11 @@ class Note extends FlxSprite
 	public var parentNote:Note = null;
 	public var showNote = true;
 	public var info:Array<Dynamic> = [];
+	
 
 	public var rating:String = "shit";
 	public var eventNote:Bool = false;
+	public var aiShouldPress:Bool = true;
 
 
 	public function loadFrames(){
@@ -97,17 +99,21 @@ class Note extends FlxSprite
 		switch (charID) {
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
-		};
-		PlayState.charAnim(charID,noteAnims[noteData],true);
+		}; // Strums
+
+		PlayState.charAnim(charID,noteAnims[noteData],true); // Play animation
 	}
+
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		switch (charID) {
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
-		};
-		PlayState.charAnim(charID,noteAnims[noteData] + "miss",true);
+		}; // Strums
+
+		PlayState.charAnim(charID,noteAnims[noteData] + "miss",true);// Play animation
 	}
-	public static var noteAnims:Array<String> = ['singLEFT','singDOWN','singUP','singRIGHT'];
+	// Array of animations, to be used above
+	public static var noteAnims:Array<String> = ['singLEFT','singDOWN','singUP','singRIGHT']; 
 
 
 	static var psychChars:Array<Int> = [1,0,2]; // Psych uses different character ID's than SE
@@ -122,6 +128,7 @@ class Note extends FlxSprite
 		isSustainNote = sustainNote;
 		mustPress = playerNote; 
 		type = _type;
+		this.inCharter = inCharter;
 
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
 
@@ -129,7 +136,7 @@ class Note extends FlxSprite
 		this.noteData = _noteData % 4; 
 		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
-		if(rawNote[1] == -1){ // Psych event notes, These should not be shown, and should not appear on the player's side
+		if(!inCharter && rawNote[1] == -1){ // Psych event notes, These should not be shown, and should not appear on the player's side
 			shouldntBeHit = false; // Make sure it doesn't become a hurt note
 			showNote = false; // Don't show the note
 			this.noteData = 1; // Set it to 0, to prevent issues
@@ -162,9 +169,9 @@ class Note extends FlxSprite
 
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
+		if(PlayState.SONG != null && shouldntBeHit && PlayState.SONG.inverthurtnotes) mustPress=!mustPress;
 
-		
-		if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteCreate",[this,rawNote]);
+		if(!inCharter && rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteCreate",[this,rawNote]);
 
 
 		//defaults if no noteStyle was found in chart
@@ -244,7 +251,7 @@ class Note extends FlxSprite
 			}
 			else
 			{
-				if (strumTime <= Conductor.songPosition)
+				if (strumTime <= Conductor.songPosition && aiShouldPress)
 					wasGoodHit = true;
 			}
 

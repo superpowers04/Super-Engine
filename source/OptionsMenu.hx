@@ -36,7 +36,7 @@ class OptionsMenu extends MusicBeatState
 	public static var ScriptOptions:Map<String,OptionsFileDef> = new Map<String,OptionsFileDef>();
 
 	var options:Array<OptionCategory> = [
-		new OptionCategory("Customization", [
+		new OptionCategory("Modifications", [
 			new OpponentOption("Change the opponent character"),
 			new PlayerOption("Change the player character"),
 			new GFOption("Change the GF used"),
@@ -48,17 +48,20 @@ class OptionsMenu extends MusicBeatState
 		]),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
-		    new PracticeModeOption("Disables the ability to get a gameover."),
 			new DownscrollOption("Change the layout of the strumline."),
 			new MiddlescrollOption("Move the strumline to the middle of the screen"),
-			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
-			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 
-			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
 			new InputHandlerOption("Change the input engine used, only works locally.")
 		]),
+		new OptionCategory("Modifiers", [
+		    new PracticeModeOption("Disables the ability to get a gameover."),
+			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
+			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
+			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)")
+		]),
+
 		new OptionCategory("Appearance", [
 			new GUIGapOption("Change the distance between the end of the screen and text"),
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
@@ -83,16 +86,20 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your FPS"),
 			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
-			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
 			new NoteRatingOption("Toggles the rating that appears when you press a note"),
-			new UnloadSongOption("Unload the song when exiting the game, can cause issues but should help with memory"),
+			// new UnloadSongOption("Unload the song when exiting the game"),
+			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
+		]),
+		new OptionCategory("Visibility", [
+            new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),
+			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new OpponentStrumlineOption("Whether to show the opponent's notes or not"),
 			new ShowP2Option("Show Opponent"),
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
-		])
+		]),
 	];
 
 	public var acceptInput:Bool = true;
@@ -124,7 +131,7 @@ class OptionsMenu extends MusicBeatState
 
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 
-		menuBG.color = 0xFFea71fd;
+		menuBG.color = 0x793397;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
@@ -459,6 +466,7 @@ class OptionsMenu extends MusicBeatState
 							case 0:category.push(new FloatOption(v.description,i,Std.int(v.min),Std.int(v.max),script));
 							case 1:category.push(new IntOption(v.description,i,Std.int(v.min),Std.int(v.max),script));
 							case 2:category.push(new BoolOption(v.description,i,script));
+							// case 3:category.push(new KeyOption(v.description,i,script));
 						}
 					}catch(e){
 						trace('Error for $script,$i: ${e.message}');

@@ -1443,3 +1443,23 @@ class BoolOption extends Option{
 		return name + ":" + getValue();
 	}
 }
+class FontOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.useFontEverywhere = !FlxG.save.data.useFontEverywhere;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Force generic font " + (FlxG.save.data.useFontEverywhere ? "on" : "off");
+	}
+}

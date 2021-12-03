@@ -1,10 +1,15 @@
 import openfl.Lib;
 import flixel.FlxG;
+import sys.FileSystem;
 
 class KadeEngineData
 {
     public static function initSave()
     {
+
+    	// if(FileSystem.exists('SEOPTIONS.json')){ // JSON file
+    	// 	FlxG.save.data = haxe.Json.parse('SEOPTIONS.json');
+    	// }
 
 		if (FlxG.save.data.downscroll == null)
 			FlxG.save.data.downscroll = false;
@@ -19,7 +24,7 @@ class KadeEngineData
 			FlxG.save.data.offset = 0;
 
 		if (FlxG.save.data.songPosition == null)
-			FlxG.save.data.songPosition = false;
+			FlxG.save.data.songPosition = true;
 
 		if (FlxG.save.data.fps == null)
 			FlxG.save.data.fps = false;
@@ -31,8 +36,7 @@ class KadeEngineData
 			FlxG.save.data.changedHit = false;
 		}
 
-		if (FlxG.save.data.fpsRain == null)
-			FlxG.save.data.fpsRain = false;
+
 
 		if (FlxG.save.data.fpsCap == null)
 			FlxG.save.data.fpsCap = 120;
@@ -56,7 +60,7 @@ class KadeEngineData
 			FlxG.save.data.watermark = true;
 
 		if (FlxG.save.data.ghost == null)
-			FlxG.save.data.ghost = true;
+			FlxG.save.data.ghost = false;
 
 		if (FlxG.save.data.distractions == null)
 			FlxG.save.data.distractions = true;
@@ -67,11 +71,11 @@ class KadeEngineData
 		if (FlxG.save.data.resetButton == null)
 			FlxG.save.data.resetButton = false;
 		
-		if (FlxG.save.data.botplay == null) // Dammit, disabing botplay broke stuff
+		if (FlxG.save.data.botplay == null)
 			FlxG.save.data.botplay = false;
 
 		if (FlxG.save.data.cpuStrums == null)
-			FlxG.save.data.cpuStrums = false;
+			FlxG.save.data.cpuStrums = true;
 
 		if (FlxG.save.data.strumline == null)
 			FlxG.save.data.strumline = false;
@@ -138,6 +142,7 @@ class KadeEngineData
 		if (FlxG.save.data.scripts == null) FlxG.save.data.scripts = [];
 		if (FlxG.save.data.songInfo == null) FlxG.save.data.songInfo = 0;
 		if (FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
+		if (FlxG.save.data.useFontEverywhere == null) FlxG.save.data.useFontEverywhere = false;
 	 
 
 		Conductor.recalculateTimings();

@@ -58,8 +58,8 @@ class Alphabet extends FlxSpriteGroup
 		this.text = text;
 		isBold = bold;
 		this.xOffset = xOffset;
+		if(FlxG.save.data.useFontEverywhere) this.useAlphabet = useAlphabet = false;
 		this.useAlphabet = useAlphabet;
-
 		if (text != "" && useAlphabet)
 		{
 			listOAlphabets = new List<AlphaCharacter>();

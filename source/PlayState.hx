@@ -2218,9 +2218,9 @@ class PlayState extends MusicBeatState
 	#end
 }
 
-	public function followChar(?char:Int = 0,?locked:Bool = false){
+	public function followChar(?char:Int = 0,?locked:Bool = true){
 		focusedCharacter = char;
-		if(!locked || cameraPositions[char] == null){
+		if(locked || cameraPositions[char] == null){
 			camIsLocked = true;
 			camFollow.x = lockedCamPos[0] + additionCamPos[0];
 			camFollow.y = lockedCamPos[1] + additionCamPos[1];
@@ -3809,6 +3809,7 @@ class PlayState extends MusicBeatState
 		}
 		try{
 			callInterp("stepHit",[]);
+			charCall("stepHit",[curStep]);
 			for (i => v in stepAnimEvents) {
 				for (anim => ifState in v) {
 					var variable:Dynamic = Reflect.field(this,ifState.variable);
@@ -3841,6 +3842,7 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 		callInterp("beatHit",[]);
+		charCall("beatHit",[curBeat]);
 
 		if (generatedMusic)
 		{

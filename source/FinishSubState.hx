@@ -134,7 +134,7 @@ class FinishSubState extends MusicBeatSubstate
 			FlxCamera.defaultCameras = [cam];
 			if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
 			ready = true;
-			FlxG.state.persistentUpdate = !isError || !pauseGame;
+			FlxG.state.persistentUpdate = !isError && !pauseGame;
 			pauseGame = true;
 			autoEnd = true;
 			FlxG.sound.pause();

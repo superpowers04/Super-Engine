@@ -27,7 +27,7 @@ typedef CharacterJson =
 	var char_pos3:Array<Float>;
 	var custom_misses:Int;
 	var ?flip_notes:Bool; // Tells the game if it should flip left and right notes on the right
-	var color:Null<Array<Int>>;
+	var color:Dynamic;
 	var sprites:Array<String>;
 
 	var embedded:Bool; // For embedded JSON chars, will not effect custom chars. Tells the game whether to use Lime assets or load them like a custom character

@@ -2,11 +2,12 @@
 - Rewrite some of the camera system to be scriptable
 - Songs can be previewed on the modded charts menu
 - FinishSubState can now be delayed or can be prevented from pausing the game
-- Some fixes to animation debug
-- Scripts can replace the countdown, share variables using shared, 
-|- Characters now have "playAnimAvailable" which supports a array of animations and will play the first option the character has
+- Animation debug changes
+- Scripts can replace the countdown, share variables using shared, and more
 - Many fixes to online play
 - Note styles can properly replace note splashes now
-- New note splashes *again*
+- New note splashes *again*. This time, proper original ones made by HenryBATIM
 - The game will properly show missing file errors on scripts
 - Notes actually clip to strumline *finally*
+- Added the ability to force the game to use a generic font for everything(Embedded or the font file at mods/font.ttf)
+- Character colors now support Strings, Integers and Arrays of integers
