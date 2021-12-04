@@ -40,17 +40,30 @@ class NoteSplash extends FlxSprite
 
 	public function setupNoteSplash(xPos:Float, yPos:Float,?note:Int = 0)
 	{
-		x = xPos;
-		y = yPos;
-		alpha = 0.6;
-		animation.play("note" + note + "-" + FlxG.random.int(0, 1), true);
-		animation.finishCallback = finished;
-		animation.curAnim.frameRate = 24;
-		data = note;
-		updateHitbox();
-		// Stolen from psych but whatever
-		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-		offset.set(-40, -40);
+		try{
+			x = xPos;
+			y = yPos;
+			alpha = 0.6;
+			animation.play("note" + note + "-" + FlxG.random.int(0, 1), true);
+			animation.finishCallback = finished;
+			animation.curAnim.frameRate = 24;
+			data = note;
+			updateHitbox();
+			switch (NoteAssets.splashType) {
+				case "psych":
+					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+					offset.set(10, 10);
+				case "vanilla": // From DotEngine
+					offset.set(width * 0.3, height * 0.3);
+				case "custom":
+					// Do nothing
+				default:
+					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+					offset.set(-40, -40);
+			}
+		}catch(e){
+			MainMenuState.handleError('Error while setting up a NoteSplash ${e.message}');
+		}
 		// offset.set(-0.5 * -width, 0.5 * -height);
 	}
 	function finished(name:String){

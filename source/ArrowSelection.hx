@@ -90,6 +90,7 @@ class ArrowSelection extends SearchMenuState
 		generateStaticArrows(1);
 		super.create();
 		add(playerStrums);
+		changeSelection();
 
 	}catch(e) MainMenuState.handleError('Error with notesel "create" ${e.message}');}
 	override function changeSelection(change:Int = 0){

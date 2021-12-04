@@ -78,7 +78,7 @@ class SearchMenuState extends MusicBeatState
 		bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 		bg.color = bgColor;
 		bg.scrollFactor.set(0.01,0.01);
-		SickMenuState.musicHandle(bg);
+		SickMenuState.musicHandle();
 		add(bg);
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		reloadList();
