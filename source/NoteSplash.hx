@@ -21,7 +21,7 @@ class NoteSplash extends FlxSprite
 			super();
 			// frames = Paths.getSparrowAtlas("noteSplashes");
 			frames = FlxAtlasFrames.fromSparrow(NoteAssets.splashImage,NoteAssets.splashXml);
-			
+			// Psych styled
 			animation.addByPrefix("note1-0", "note splash blue 1", 24, false);
 			animation.addByPrefix("note2-0", "note splash green 1", 24, false);
 			animation.addByPrefix("note0-0", "note splash purple 1", 24, false);
@@ -31,6 +31,16 @@ class NoteSplash extends FlxSprite
 			animation.addByPrefix("note2-1", "note splash green 2", 24, false);
 			animation.addByPrefix("note0-1", "note splash purple 2", 24, false);
 			animation.addByPrefix("note3-1", "note splash red 2", 24, false);
+			// Vanilla
+			animation.addByPrefix("note1-0", "note impact 1  blue", 24, false);
+			animation.addByPrefix("note1-0", "note impact 1 blue", 24, false);
+			animation.addByPrefix("note2-0", "note impact 1 green", 24, false);
+			animation.addByPrefix("note0-0", "note impact 1 purple", 24, false);
+			animation.addByPrefix("note3-0", "note impact 1 red", 24, false);
+			animation.addByPrefix("note1-1", "note impact 2 blue", 24, false);
+			animation.addByPrefix("note2-1", "note impact 2 green", 24, false);
+			animation.addByPrefix("note0-1", "note impact 2 purple", 24, false);
+			animation.addByPrefix("note3-1", "note impact 2 red", 24, false);
 		}catch(e){
 			MainMenuState.handleError('Error while loading NoteSplashes ${e.message}');
 		}
