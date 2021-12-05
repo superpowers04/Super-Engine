@@ -1761,6 +1761,7 @@ class PlayState extends MusicBeatState
 
 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,null,songNotes[3],songNotes,gottaHitNote);
 					sustainNote.scrollFactor.set();
+					sustainNote.sustainLength = susLength;
 					unspawnNotes.push(sustainNote);
 					lastSusNote = true;
 
@@ -3378,7 +3379,7 @@ class PlayState extends MusicBeatState
 							swagRect.height -= swagRect.y;
 
 							daNote.clipRect = swagRect;
-							if(daNote.strumTime <= Conductor.songPosition) // Only destroy the note when properly hit
+							if(daNote.strumTime <= Conductor.songPosition || daNote.sustainLength < 2) // Only destroy the note when properly hit
 								goodNoteHit(daNote);
 
 
