@@ -1,4 +1,4 @@
-# FunkinBattleRoyale-Mod
+# Super Engine
 This is a mod of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/)<br>
 This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine) with a hint of [FPSPlus](https://github.com/ThatRozebudDude/FPS-Plus-Public/) added in and with some inspiration from [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine)/[FNF Multi](https://shadowmario.itch.io/funkinmulti) <br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
