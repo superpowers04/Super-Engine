@@ -143,6 +143,7 @@ class KadeEngineData
 		if (FlxG.save.data.songInfo == null) FlxG.save.data.songInfo = 0;
 		if (FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
 		if (FlxG.save.data.useFontEverywhere == null) FlxG.save.data.useFontEverywhere = false;
+		if (FlxG.save.data.accurateNoteSustain == null) FlxG.save.data.accurateNoteSustain = false;
 	 
 
 		Conductor.recalculateTimings();

@@ -85,7 +85,7 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT || FlxG.keys.justPressed.SPACE)
 		{
-			fancyOpenURL("https://nightly.link/superpowers04/FunkinBattleRoyale-Mod/workflows/main/master/windowsBuild-Minimal.zip");
+			fancyOpenURL("https://nightly.link/superpowers04/Super-Engine/workflows/main/master/windowsBuild-Minimal.zip");
 		}
 		if (FlxG.keys.justPressed.D)
 		{

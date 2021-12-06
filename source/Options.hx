@@ -1463,3 +1463,28 @@ class FontOption extends Option
 		return "Force generic font " + (FlxG.save.data.useFontEverywhere ? "on" : "off");
 	}
 }
+class AccurateNoteHoldOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		if(FlxG.save.data.inputHandler == 1){
+
+			FlxG.save.data.accurateNoteSustain = !FlxG.save.data.accurateNoteSustain;
+			display = updateDisplay();
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	private override function updateDisplay():String
+	{
+		return (FlxG.save.data.inputHandler == 1 ? "Accurate Note Sustain: Kade" : "Accurate Note Sustain: " + (FlxG.save.data.accurateNoteSustain ? "on" : "off"));
+	}
+}

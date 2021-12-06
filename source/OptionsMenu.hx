@@ -59,7 +59,8 @@ class OptionsMenu extends MusicBeatState
 		    new PracticeModeOption("Disables the ability to get a gameover."),
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
-			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)")
+			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
+			new AccurateNoteHoldOption("Adjust accuracy of not sustains"),
 		]),
 
 		new OptionCategory("Appearance", [
