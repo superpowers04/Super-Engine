@@ -11,7 +11,7 @@ class OtherMenuState extends SickMenuState{
 		bgImage = 'menuBG';
 		options.push("back"); descriptions.push("Go back to the main menu");
 		super.create();
-	}
+	} 
 	override function select(sel:Int){
 		selected=true;
 		switch (options[sel]) {

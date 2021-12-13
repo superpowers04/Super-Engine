@@ -205,18 +205,22 @@ class OfflinePlayState extends PlayState
 
   override function endSong()
   {
-    canPause = false;
-    FlxG.sound.music.onComplete = null;
-  	if (ChartingState.charting){
-  	    	FlxG.switchState(new ChartingState());return;}
-		persistentUpdate = false;
-		persistentDraw = true;
-		paused = true;
+  	if(PlayState.isStoryMode){
+  		super.endSong();
+  	}else{
 
-		vocals.stop();
-		FlxG.sound.music.stop();
+	    canPause = false;
+	    FlxG.sound.music.onComplete = null;
+	  	if (ChartingState.charting){FlxG.switchState(new ChartingState());return;}
+			persistentUpdate = false;
+			persistentDraw = true;
+			paused = true;
 
-    	super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
+			vocals.stop();
+			FlxG.sound.music.stop();
+
+	    	super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
+  	}
   }
 }
 

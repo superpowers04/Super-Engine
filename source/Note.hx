@@ -169,9 +169,9 @@ class Note extends FlxSprite
 
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
-		if(PlayState.SONG != null && shouldntBeHit && PlayState.SONG.inverthurtnotes) mustPress=!mustPress;
+		if(shouldntBeHit && PlayState.SONG != null && PlayState.SONG.inverthurtnotes) mustPress=!mustPress;
 
-		if(!inCharter && rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteCreate",[this,rawNote]);
+		if(!inCharter && rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteCreate",[this,rawNote]); 
 
 
 		//defaults if no noteStyle was found in chart

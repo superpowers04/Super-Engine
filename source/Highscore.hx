@@ -32,23 +32,23 @@ class Highscore
 		// }else trace('BotPlay detected. Score saving is disabled.');
 	}
 
-	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0):Void
+	public static function saveWeekScore(week:Dynamic = 1, score:Int = 0, ?diff:Int = 0):Void
 	{
 
 
 
-		// if(!FlxG.save.data.botplay)
-		// {
-		// 	var daWeek:String = formatSong('week' + week, diff);
+		if(!FlxG.save.data.botplay)
+		{
+			var daWeek:String = formatSong('week$week', diff);
 
-		// 	if (songScores.exists(daWeek))
-		// 	{
-		// 		if (songScores.get(daWeek) < score)
-		// 			setScore(daWeek, score);
-		// 	}
-		// 	else
-		// 		setScore(daWeek, score);
-		// }else trace('BotPlay detected. Score saving is disabled.');
+			if (songScores.exists(daWeek))
+			{
+				if (songScores.get(daWeek) < score)
+					setScore(daWeek, score);
+			}
+			else
+				setScore(daWeek, score);
+		}else trace('BotPlay detected. Score saving is disabled.');
 	}
 
 	/**
@@ -82,7 +82,7 @@ class Highscore
 		return songScores.get(formatSong(song, diff));
 	}
 
-	public static function getWeekScore(week:Int, diff:Int):Int
+	public static function getWeekScore(week:Dynamic, diff:Int):Int
 	{
 		if (!songScores.exists(formatSong('week' + week, diff)))
 			setScore(formatSong('week' + week, diff), 0);

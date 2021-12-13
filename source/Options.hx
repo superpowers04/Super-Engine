@@ -1485,6 +1485,6 @@ class AccurateNoteHoldOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return (FlxG.save.data.inputHandler == 1 ? "Accurate Note Sustain: Kade" : "Accurate Note Sustain: " + (FlxG.save.data.accurateNoteSustain ? "on" : "off"));
+		return (FlxG.save.data.inputHandler == 0 ? "Kade Note Sustain" : "Accurate Note Sustain " + (FlxG.save.data.accurateNoteSustain ? "on" : "off"));
 	}
 }

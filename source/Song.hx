@@ -21,7 +21,7 @@ typedef SwagSong =
 	var ?defplayer2:String;
 	var ?defgf:String;
 	var gfVersion:String;
-	var noteStyle:String;
+	var ?noteStyle:String;
 	var stage:String;
 	var validScore:Bool;
 	var ?noteMetadata:NoteMetadata;

@@ -42,7 +42,7 @@ class MainMenuState extends SickMenuState
 	var char:Character = null;
 	static var hasWarnedInvalid:Bool = false;
 	
-	public static function handleError(?error:String = "An error occurred",?details:String=""):Void{
+	public static function handleError(?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
 		// if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		if(MainMenuState.errorMessage.contains(error)) return; // Prevents the same error from showing twice
 		MainMenuState.errorMessage += "\n" + error;
@@ -53,8 +53,11 @@ class MainMenuState extends SickMenuState
 				onlinemod.OnlinePlayMenuState.socket=null;
 			}catch(e){trace('You just got an exception in yo exception ${e.message}');}
 		}
-		// FlxG.switchState(new MainMenuState());
-		Main.game.forceStateSwitch(new MainMenuState());
+
+		if(forced)
+			Main.game.forceStateSwitch(new MainMenuState());
+		else
+			FlxG.switchState(new MainMenuState());
 		
 	}
 

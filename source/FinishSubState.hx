@@ -31,7 +31,7 @@ class FinishSubState extends MusicBeatSubstate
 	var ready = false;
 	var week:Bool = false;
 	var errorMsg:String = "";
-	var isError:Bool = false;
+	var isError:Bool = false; 
 	var healthBarBG:FlxSprite;
 	var healthBar:FlxBar;
 	var iconP1:HealthIcon; 
@@ -62,6 +62,7 @@ class FinishSubState extends MusicBeatSubstate
 		PlayState.instance.generatedMusic = false;
 		var dad = PlayState.dad;
 		var boyfriend = PlayState.boyfriend;
+		Conductor.changeBPM(70);
 
 		// For healthbar shit
 		healthBar = PlayState.instance.healthBar;
@@ -127,9 +128,13 @@ class FinishSubState extends MusicBeatSubstate
 
 	var cam:FlxCamera;
 	public function finishNew(?name:String){
+			Conductor.changeBPM(70);
 			FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
-			FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
+			// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
+			var camPos = PlayState.instance.cameraPositions[(win ? 0 : 1)];
+			PlayState.instance.camGame.setPosition(camPos[0],camPos[1]);
 			cam = new FlxCamera();
+
 			FlxG.cameras.add(cam);
 			FlxCamera.defaultCameras = [cam];
 			if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
@@ -193,7 +198,7 @@ class FinishSubState extends MusicBeatSubstate
 				comboText.scrollFactor.set();
 // Std.int(FlxG.width * 0.45)
 				var settingsText:FlxText = new FlxText(comboText.width * 1.10 + FlxG.save.data.guiGap,-30,0,
-				(if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
+				(if(week) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
 				
 				+'\n\nSettings:'
 				+'\n\n Downscroll: ${FlxG.save.data.downscroll}'

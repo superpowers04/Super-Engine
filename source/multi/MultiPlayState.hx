@@ -18,6 +18,10 @@ class MultiPlayState extends onlinemod.OfflinePlayState
 	public static var voicesFile = "";
   public static var instFile = "";
   public static var scriptLoc= "";
+  // public static var playlistMode = false;
+  // override function new(?plMode:Bool = false){ // This should be reset by the next song
+  //   playlistMode = plMode;
+  // }
   override function loadSongs(){
     {try{
 
@@ -27,21 +31,11 @@ class MultiPlayState extends onlinemod.OfflinePlayState
   }
   override function create()
     {try{
-    if (scriptLoc != "") PlayState.songScript = File.getContent(scriptLoc); else PlayState.songScript = "";
-    stateType=4;
+    if (scriptLoc != "" ) PlayState.songScript = File.getContent(scriptLoc); else PlayState.songScript = "";
+    if(!PlayState.isStoryMode) stateType=4;
     shouldLoadSongs = false;
     loadSongs();
   	super.create();
 
   }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
-  override function openSubState(SubState:FlxSubState)
-  {
-    if (Type.getClass(SubState) == PauseSubState)
-    {
-      super.openSubState(new PauseSubState(PlayState.boyfriend.x,PlayState.boyfriend.y));
-      return;
-    }
-
-    super.openSubState(SubState);
-  }
 }

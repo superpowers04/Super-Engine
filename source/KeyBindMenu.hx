@@ -34,8 +34,9 @@ class KeyBindMenu extends FlxSubState
     var keyTextDisplay:FlxText;
     var keyWarning:FlxText;
     var warningTween:FlxTween;
-    var keyText:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT", "ALTLEFT", "ALTDOWN", "ALTUP", "ALTRIGHT"];
-    var defaultKeys:Array<String> = ["A", "S", "W", "D", "J", "K", "I", "L", "R"];
+    var keyText:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT", "ALT LEFT", "ALT DOWN", "ALT UP", "ALT RIGHT"];
+    var keyAlt:Array<String> = ["LEFT ARROW", "DOWN ARROW", "UP ARROW", "RIGHT ARROW"];
+    var defaultKeys:Array<String> = ["A", "S", "W", "D", "Z", "X", "N", "M", "R"];
     var defaultGpKeys:Array<String> = ["DPAD_LEFT", "DPAD_DOWN", "DPAD_UP", "DPAD_RIGHT"];
     var curSelected:Int = 0;
 
@@ -277,7 +278,7 @@ class KeyBindMenu extends FlxSubState
             for(i in 0...8){
 
                 var textStart = (i == curSelected) ? "> " : "  ";
-                keyTextDisplay.text += textStart + keyText[i] + ": " + ((keys[i] != keyText[i]) ? (keys[i] + " / ") : "" ) + keyText[i] + " ARROW\n";
+                keyTextDisplay.text += textStart + keyText[i] + ": " + ((keys[i] != keyText[i]) ? (keys[i] + " / ") : "" ) + (keyAlt[i] == null ? "" : keyAlt[i]) + "\n";
 
             }
         }

@@ -6,17 +6,27 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.text.FlxText;
 
 class MenuItem extends FlxSpriteGroup
 {
 	public var targetY:Float = 0;
-	public var week:FlxSprite;
+	public var week:Dynamic;
 	public var flashingInt:Int = 0;
 
-	public function new(x:Float, y:Float, weekNum:Int = 0)
+	public function new(x:Float, y:Float, weekNum:Int = 0,weekName:String = "")
 	{
 		super(x, y);
-		week = new FlxSprite().loadGraphic(Paths.image('storymenu/week' + weekNum));
+		if(weekName == ""){
+
+			week = new FlxSprite().loadGraphic(Paths.image('storymenu/week' + weekNum));
+		}else{
+			var size = Std.int(48 - (weekName.length * 0.4));
+			week = new FlxText(0,0,0,weekName,size);
+			// week.font = CoolUtil.font;
+			week.setFormat(CoolUtil.font,size);
+			week.y += week.height * 0.50;
+		}
 		add(week);
 	}
 

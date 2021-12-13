@@ -7,8 +7,8 @@ using StringTools;
 
 class CoolUtil
 {
-	public static var fontName = "vcr.ttf";
-	public static var font = if(FileSystem.exists('mods/font.ttf')) 'mods/font.ttf' else Paths.font(fontName);
+	public static var fontName:String = "vcr.ttf";
+	public static var font:String = if(FileSystem.exists('mods/font.ttf')) 'mods/font.ttf' else Paths.font(fontName);
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
 	public static function difficultyString():String
@@ -23,6 +23,18 @@ class CoolUtil
 		for (i in 0...daList.length)
 		{
 			daList[i] = daList[i].trim();
+			daList[i].replace("\\n","\n");
+		}
+
+		return daList;
+	}
+	public static function coolFormat(text:String){
+		var daList:Array<String> = text.trim().split('\n');
+
+		for (i in 0...daList.length)
+		{
+			daList[i] = daList[i].trim();
+			daList[i] = daList[i].replace("\\n","\n");
 		}
 
 		return daList;

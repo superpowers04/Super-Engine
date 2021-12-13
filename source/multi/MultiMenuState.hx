@@ -139,12 +139,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				MultiPlayState.voicesFile = '';
 
 				if (FileSystem.exists('${selSong}/Voices.ogg')) MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
+				PlayState.hsBrTools = new HSBrTools('${selSong}');
 				if (FileSystem.exists('${selSong}/script.hscript')) {
 					trace("Song has script!");
 					MultiPlayState.scriptLoc = '${selSong}/script.hscript';
-					PlayState.hsBrTools = new HSBrTools('${selSong}');
-				}else {PlayState.hsBrTools = null;MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
+					
+				}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
 				MultiPlayState.instFile = '${selSong}/Inst.ogg';
+				PlayState.stateType = 4;
 				LoadingState.loadAndSwitchState(new MultiPlayState());
 			}catch(e){
 				MainMenuState.handleError('Error while loading chart ${e.message}');
@@ -183,8 +185,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if(FlxG.keys.justPressed.CONTROL){
 				if(curPlaying != songs[curSelected]){
 					curPlaying = songs[curSelected];
-					FlxG.sound.playMusic(Sound.fromFile('/mods/charts/${songs[curSelected]}/Inst.ogg'),1,true);
-
+					FlxG.sound.music.stop();
+					FlxG.sound.playMusic(Sound.fromFile('mods/charts/${songs[curSelected]}/Inst.ogg'),1,true);
+					FlxG.sound.playMusic(Sound.fromFile('mods/charts/${songs[curSelected]}/Voices.ogg'),1,true);
+					if (!FlxG.sound.music.playing){
+						curPlaying = "";
+						SickMenuState.musicHandle();
+					}
 				}
 			}
 			extraKeys();
