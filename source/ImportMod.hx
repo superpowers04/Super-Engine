@@ -74,6 +74,7 @@ class ImportModFromFolder extends MusicBeatState
 		this.importExisting = importExisting;
 	}
 
+
 	override function create()
 	{
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('onlinemod/online_bg2'));
@@ -118,6 +119,21 @@ class ImportModFromFolder extends MusicBeatState
 				valid = true;
 			}
 		}
+		if(FileSystem.exists('${folder}mods/')){
+			if(FileSystem.exists('${folder}mods/songs')){
+				folderList.push('${folder}mods/');
+			}else{
+
+				for (directory in FileSystem.readDirectory('${folder}mods/')) {
+					// if(!importExisting && existingSongs.contains(directory.toLowerCase())) {continue;} // Skip if it's on the existing songs list
+					var dir:String = '${folder}mods/${directory}';
+					if(!FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" doesnt exist');continue;}
+					
+					folderList.push('${folder}mods/${directory}/');
+					valid = true;
+				}
+			}
+		}
 		if(valid){
 			updateLoadinText(false,true);
 		}else{
@@ -128,10 +144,12 @@ class ImportModFromFolder extends MusicBeatState
 
 		}
 	}
-	function scanSongs(){
+	function scanSongs(?folder:String = "",assets:String=""){
 		try{
-
-			var assets = '${folder}assets/'; // For easy access
+			// if(fold != ""){
+			// 	folder = fold; 
+			// }
+			// var assets = ; // For easy access
 			if(FileSystem.exists('${assets}songs/')){
 
 				for (directory in FileSystem.readDirectory('${assets}songs/')) {
@@ -191,11 +209,16 @@ class ImportModFromFolder extends MusicBeatState
 			}
 			songsImported++;
 		}}
-		loadingText.text = 'Imported ${songsImported} songs. All song names are prefixed with "${chartPrefix}" \nPress any key to go to the main menu';
-		loadingText.x -= 70;
-		done = true;
 		}catch(e) MainMenuState.handleError('Error while trying to scan for songs, ${e.message}');
 	}
+	var folderList:Array<String> = []; 
+	function scanSongFolders(){
+		scanSongs(folder,'${folder}assets/');
+		for (i => v in folderList) {
+			scanSongs(v,v);
+		}
+	}
+
 
 	function updateLoadinText(shiftPress:Bool = false,sub:Bool = false,?skip:Bool = false){
 		if(!skip){
@@ -230,7 +253,12 @@ class ImportModFromFolder extends MusicBeatState
 			if(FlxG.keys.justPressed.ENTER){
 				selectedLength = true;
 				loadingText.text = "Scanning for songs..\nThe game may "+ (if(Sys.systemName() == "Windows")"'not respond'" else "freeze") + " during this process";
-				new FlxTimer().start(0.6, function(tmr:FlxTimer){scanSongs();}); // Make sure the text is actually printed onto the screen before doing anything
+				new FlxTimer().start(0.6, function(tmr:FlxTimer){
+				scanSongFolders();
+				loadingText.text = 'Imported ${songsImported} songs. All song names are prefixed with "${chartPrefix}" \nPress any key to go to the main menu';
+				loadingText.x -= 70;
+				done = true;
+				}); // Make sure the text is actually printed onto the screen before doing anything
 			}
 			if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT){
 				updateLoadinText(FlxG.keys.pressed.SHIFT,FlxG.keys.justPressed.LEFT);
