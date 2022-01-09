@@ -80,6 +80,7 @@ class HscriptUtils {
 		interp.variables.set("makeRangeArray", CoolUtil.numberArray);
 		interp.variables.set("SEVersion",MainMenuState.ver);
 		interp.variables.set("FinishSubState",FinishSubState);
+		interp.variables.set("Paths",Paths);
 
 
 		// SE clones of other libaries

@@ -529,7 +529,7 @@ class Character extends FlxSprite
 		loadOffsetsFromJSON(charProperties);
 
 	}
-	function isSelectedChar():Bool{
+	public function isSelectedChar():Bool{
 		switch ( charType ) {
 			default: return FlxG.save.data.playerChar == curCharacter;
 			case 1: return FlxG.save.data.opponent == curCharacter;

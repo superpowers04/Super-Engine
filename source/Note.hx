@@ -236,17 +236,27 @@ class Note extends FlxSprite
 			skipNote = false;
 			visible = (!eventNote && showNote);
 
+
 			if (mustPress)
 			{
 				// ass
-				if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
-				    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
+				if (shouldntBeHit)
+				{
+					if (strumTime - Conductor.songPosition <= (45 * Conductor.timeScale) && strumTime - Conductor.songPosition >= (-45 * Conductor.timeScale))
 						canBeHit = true;
+					else
+						canBeHit = false;
+				}else{
+					
+					if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
+					    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
+							canBeHit = true;
 
-				if (!wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale){
-					canBeHit = false;
-					tooLate = true;
-					alpha = 0.3;
+					if (!wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale){
+						canBeHit = false;
+						tooLate = true;
+						alpha = 0.3;
+					}
 				}
 			}
 			else

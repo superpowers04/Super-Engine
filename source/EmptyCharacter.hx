@@ -28,7 +28,7 @@ class EmptyCharacter extends Character
 
 	override public function new(x:Float, y:Float, ?character:String = "lonely", ?isPlayer:Bool = false,?char_type:Int = 0,?preview:Bool = false) // CharTypes: 0=BF 1=Dad 2=GF
 	{
-		super.lonely = true;
+		this.lonely = true;
 		super(x, y);
 		animOffsets = new Map<String, Array<Float>>();
 		animOffsets['all'] = [0.0, 0.0];
