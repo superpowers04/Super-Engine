@@ -18,6 +18,19 @@ import flixel.util.FlxTimer;
 import flixel.FlxObject;
 import flixel.ui.FlxBar;
 import flixel.FlxCamera;
+import sys.FileSystem;
+import sys.io.File;
+import PlayState.OutNote;
+
+using StringTools;
+
+
+typedef ActionsFile = {
+	var info:String;
+	var notes:Array<OutNote>;
+
+}
+
 
 class FinishSubState extends MusicBeatSubstate
 {
@@ -29,7 +42,7 @@ class FinishSubState extends MusicBeatSubstate
 	var offsetChanged:Bool = false;
 	var win:Bool = true;
 	var ready = false;
-	var week:Bool = false;
+	// static var week:Bool = false;
 	var errorMsg:String = "";
 	var isError:Bool = false; 
 	var healthBarBG:FlxSprite;
@@ -38,13 +51,14 @@ class FinishSubState extends MusicBeatSubstate
 	var iconP2:HealthIcon;
 	public static var pauseGame:Bool = true;
 	public static var autoEnd:Bool = true;
-	public function new(x:Float, y:Float,?won = true,?week:Bool = false,?error:String = "")
+	public static var forceBFAnim:Bool = false;
+	public function new(x:Float, y:Float,?won = true,?error:String = "")
 	{
 		if (error != ""){
 			isError = true;
 			errorMsg = error;
 			won = false;
-			
+			// PlayState.instance.paused = true;
 		}
 		FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
 		PlayState.instance.followChar(0);
@@ -55,7 +69,6 @@ class FinishSubState extends MusicBeatSubstate
 			PlayState.boyfriend.callInterp(inName,[]);
 		}
 
-		this.week = week;
 		if(!isError) FlxG.state.persistentUpdate = true; else FlxG.state.persistentUpdate = false;
 		win = won;
 		FlxG.sound.pause();
@@ -118,10 +131,12 @@ class FinishSubState extends MusicBeatSubstate
 
 			// FlxG.camera.zoom = 1;
 			// PlayState.instance.camHUD.zoom = 1;
-			if (win) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+
+			if (win || forceBFAnim) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 			if (FlxG.save.data.camMovement){
-				PlayState.instance.followChar(if(win) 0 else 1);
+				PlayState.instance.followChar(if(win && !forceBFAnim) 0 else 1);
 			}
+			forceBFAnim = false;
 		}
 	}
 
@@ -146,11 +161,13 @@ class FinishSubState extends MusicBeatSubstate
 
 			music = new FlxSound().loadEmbedded(Paths.music(if(win) 'StartItchBuild' else 'gameOver'), true, true);
 			music.play(false);
+
 			if(win){
 				music.looped = false;
 				music.onComplete = function(){music = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);music.play(false);} 
 
 			}
+
 			// FlxG.camera.zoom = PlayState.instance.camHUD.zoom = 1;
 
 			FlxG.sound.list.add(music);
@@ -186,19 +203,19 @@ class FinishSubState extends MusicBeatSubstate
 				add(contText);
 			}else{
 
-				var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0, (if(week) "Week" else "Song") + " " + (if(win) "Won!" else "failed...") );
+				var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0, (if(PlayState.isStoryMode) "Week" else "Song") + " " + (if(win) "Won!" else "Failed...") );
 				finishedText.size = 34;
 				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				finishedText.color = FlxColor.WHITE;
 				finishedText.scrollFactor.set();
-				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,'Song/Chart:\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
+				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState.isStoryMode ? 'Song/Chart' : "Week") + ':\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
 				comboText.size = 28;
 				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				comboText.color = FlxColor.WHITE;
 				comboText.scrollFactor.set();
 // Std.int(FlxG.width * 0.45)
 				var settingsText:FlxText = new FlxText(comboText.width * 1.10 + FlxG.save.data.guiGap,-30,0,
-				(if(week) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
+				(if(PlayState.isStoryMode) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
 				
 				+'\n\nSettings:'
 				+'\n\n Downscroll: ${FlxG.save.data.downscroll}'
@@ -240,6 +257,55 @@ class FinishSubState extends MusicBeatSubstate
 				FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
 				// FlxTween.tween(chartInfoText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
 				FlxTween.tween(settingsText, {y:145},0.5,{ease: FlxEase.expoInOut});
+				if(PlayState.logGameplay){
+
+					try{
+						var info = '--- Game Info:\n${comboText.text}\n\n${settingsText.text}\n\nScripts:';
+						for (i => v in PlayState.instance.interps) {
+							info += '\n- $v';
+						}
+						var eventLog:ActionsFile = {
+							info:info,
+							notes:PlayState.instance.eventLog
+						};
+						var events:String = info + '\n\n--- Hits and Misses:\n
+/ Example Note
+|- TIME
+|- DIRECTION
+|- RATING
+|- IS SUSTAIN
+|- NOTE STRUM TIME
+\\
+
+
+';
+						var noteCount = 0;
+						for (_ => v in PlayState.instance.eventLog ) {
+							events += '
+/
+|- ${v.time}
+|- ${Note.noteDirections[v.direction]}
+|- ${v.rating}
+|- ${v.isSustain}
+|- ${v.strumTime}
+\\';
+							if(!v.isSustain && v.rating != "Missed without note")noteCount++;
+						}
+						var eventsjson:String = haxe.Json.stringify(eventLog);
+						events += '\n---\nLog generated at ${Date.now()}, Assumed Note Count: ${noteCount}. USE THE JSON FOR AUTOMATION';
+						if(!FileSystem.exists("songLogs/"))
+							FileSystem.createDirectory("songLogs/");
+						var curDate = Date.now();
+						var songName = if(PlayState.isStoryMode) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}';
+						songName.replace(".json","");
+						if(PlayState.invertedChart) songName = songName + "-inverted";
+						if(!FileSystem.exists('songLogs/${songName}/'))
+							FileSystem.createDirectory('songLogs/${songName}/');
+						File.saveContent('songLogs/${songName}/${curDate.getDate()}-${curDate.getMonth()}-${curDate.getFullYear()}_AT_${curDate.getHours()}-${curDate.getMinutes()}-${curDate.getSeconds()}.log',events);
+						File.saveContent('songLogs/${songName}/${curDate.getTime()}.json',eventsjson);
+					}catch(e){trace("Something went wrong when trying to output event log! " + e.message);}
+				}
+
 			}
 
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 

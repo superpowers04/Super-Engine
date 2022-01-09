@@ -52,7 +52,7 @@ class HSBrTools {
 	}
 	public function loadFlxSprite(x:Int,y:Int,pngPath:String):FlxSprite{
 		if(!FileSystem.exists('${path}${pngPath}')){
-			PlayState.instance.handleError('${id}: "${path}${pngPath}" doesn\'t exist!');
+			PlayState.instance.handleError('${id}: Image "${path}${pngPath}" doesn\'t exist!');
 			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
 		}
 		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
@@ -69,11 +69,11 @@ class HSBrTools {
 
 	public function loadSparrowFrames(pngPath:String):FlxAtlasFrames{
 		if(!FileSystem.exists('${path}${pngPath}.png')){
-			PlayState.instance.handleError('${id}: "${path}${pngPath}.png" doesn\'t exist!');
+			PlayState.instance.handleError('${id}: SparrowFrame PNG "${path}${pngPath}.png" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
 		if(!FileSystem.exists('${path}${pngPath}.xml')){
-			PlayState.instance.handleError('${id}: "${path}${pngPath}.xml" doesn\'t exist!');
+			PlayState.instance.handleError('${id}: SparrowFrame XML "${path}${pngPath}.xml" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
 		if(spriteArray[pngPath + ".png"] == null) spriteArray[pngPath + ".png"] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}.png'));
@@ -84,11 +84,11 @@ class HSBrTools {
 	public function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
 
 		if(!FileSystem.exists('${path}${pngPath}.png')){
-			PlayState.instance.handleError('${id}: "${path}${pngPath}.png" doesn\'t exist!');
+			PlayState.instance.handleError('${id}: SparrowSprite PNG "${path}${pngPath}.png" doesn\'t exist!');
 			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
 		}
 		if(!FileSystem.exists('${path}${pngPath}.xml')){
-			PlayState.instance.handleError('${id}: "${path}${pngPath}.xml" doesn\'t exist!');
+			PlayState.instance.handleError('${id}: SparrowSprite XML "${path}${pngPath}.xml" doesn\'t exist!');
 			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
 		}
 		if(spriteArray[pngPath + ".png"] == null){ 
@@ -111,6 +111,10 @@ class HSBrTools {
 		if(textArray[textPath] == null) textArray[textPath] = File.getContent('${path}${textPath}');
 		return textArray[textPath];
 	}
+	// public function saveText(textPath:String,text:String):Bool{
+	// 	File.saveContent('${path}${textPath}',text);
+	// 	return true;
+	// }
 
 
 
@@ -133,14 +137,23 @@ class HSBrTools {
 	}
 
 	public function cacheSound(soundPath:String){
-		if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
+		if(soundArray[soundPath] == null) {
+			if(!FileSystem.exists('${path}${soundPath}')){
+				trace('${id} : CacheSound: "${path}${soundPath}" doesn\'t exist!');
+				return;
+			}
+			soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
+		}
 	}
 	public function cacheSprite(pngPath:String){
-		if(!FileSystem.exists('${path}${pngPath}.png')){
-			PlayState.instance.handleError('"${path}${pngPath}.png" doesn\'t exist!');
-			return;
+
+		if(spriteArray[pngPath] == null) {
+			if(!FileSystem.exists('${path}${pngPath}.png')){
+				PlayState.instance.handleError('${id} : CacheSprite: "${path}${pngPath}.png" doesn\'t exist!');
+				return;
+			}
+			spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
 		}
-		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
 	}
 }
 
