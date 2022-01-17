@@ -7,9 +7,11 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
+import flixel.text.FlxText;
+
 import PlayState;
 
-using StringTools;
+using StringTools; 
 
 class Note extends FlxSprite
 {
@@ -44,10 +46,12 @@ class Note extends FlxSprite
 	public var showNote = true;
 	public var info:Array<Dynamic> = [];
 	
-
+	// public var kill:Bool = false;
 	public var rating:String = "shit";
 	public var eventNote:Bool = false;
 	public var aiShouldPress:Bool = true;
+	var ntText:FlxText;
+	public var vanillaFrames:Bool = false;
 
 
 	public function loadFrames(){
@@ -58,11 +62,13 @@ class Note extends FlxSprite
 			try{
 				if(frames == null && shouldntBeHit) {color = 0x220011;}
 				if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+				vanillaFrames = true;
 			}catch(e) {
 				try{
 					TitleState.loadNoteAssets(true);
 					if(shouldntBeHit) {color = 0x220011;}
 					frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+					vanillaFrames = true;
 				}catch(e){
 					MainMenuState.handleError("Unable to load note assets, please restart your game!");
 					
@@ -114,9 +120,11 @@ class Note extends FlxSprite
 	}
 	// Array of animations, to be used above
 	public static var noteAnims:Array<String> = ['singLEFT','singDOWN','singUP','singRIGHT']; 
-
+	public static var noteDirections:Array<String> = ['LEFT','DOWN','UP','RIGHT','NONE']; 
+	public var killNote = false;
 
 	static var psychChars:Array<Int> = [1,0,2]; // Psych uses different character ID's than SE
+
 
 	public function new(strumTime:Float, _noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false,?_type:Dynamic = 0,?rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
@@ -142,9 +150,10 @@ class Note extends FlxSprite
 			this.noteData = 1; // Set it to 0, to prevent issues
 			mustPress = false; // The player CANNOT recieve this note
 			eventNote = true; // Just an identifier
+			aiShouldPress = true;
 			type =rawNote[2];
 			// _update = function(elapsed:Float){if (strumTime <= Conductor.songPosition) wasGoodHit = true;};
-			frames = new flixel.graphics.frames.FlxFramesCollection(FlxGraphic.fromRectangle(1,1,0x00000000,false,"blank.mp4"));
+			frames = new flixel.graphics.frames.FlxFramesCollection(FlxGraphic.fromRectangle(1,1,0x01000000,false,"blank.mp4"));
 			if(rawNote[2] == "Play Animation"){
 				try{
 					// Info can be set to anything, it's being used for storing the Animation and character
@@ -172,7 +181,7 @@ class Note extends FlxSprite
 		if(shouldntBeHit && PlayState.SONG != null && PlayState.SONG.inverthurtnotes) mustPress=!mustPress;
 
 		if(!inCharter && rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteCreate",[this,rawNote]); 
-
+		if(killNote){return;}
 
 		//defaults if no noteStyle was found in chart
 		loadFrames();
@@ -224,11 +233,23 @@ class Note extends FlxSprite
 				// prevNote.setGraphicSize();
 			}
 		}
-		if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteAdd",[this,rawNote]);
+		// if(inCharter){
+		// 	ntText = new FlxText(4,4,('$_type').substr(0,1),16);
+		// 	ntText.setFormat(48,if(_type == "" || _type == 0) FlxColor.WHITE else FlxColor.BLUE );
+		// 	ntText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		// 	// FlxG.state.add(ntText);
+		// }
 		visible = false;
+		if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteAdd",[this,rawNote]);
 	}catch(e){MainMenuState.handleError('Caught "Note create" crash: ${e.message}');}}
 
 	var missedNote:Bool = false;
+	override function draw(){
+		if(!eventNote && showNote){
+			super.draw();
+		}
+		// if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -237,7 +258,7 @@ class Note extends FlxSprite
 			visible = (!eventNote && showNote);
 
 
-			if (mustPress)
+			if (mustPress && !eventNote)
 			{
 				// ass
 				if (shouldntBeHit)
@@ -247,7 +268,7 @@ class Note extends FlxSprite
 					else
 						canBeHit = false;
 				}else{
-					
+
 					if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
 					    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
 							canBeHit = true;
@@ -259,16 +280,23 @@ class Note extends FlxSprite
 					}
 				}
 			}
-			else
+			else if(eventNote){
+				if (strumTime <= Conductor.songPosition){
+
+					this.hit(1,this);
+					this.destroy();
+				}
+			}
+			else if (aiShouldPress && strumTime <= Conductor.songPosition)
 			{
-				if (strumTime <= Conductor.songPosition && aiShouldPress)
-					wasGoodHit = true;
+				wasGoodHit = true;
 			}
 
 			// if (tooLate)
 			// {
 			// 	if (alpha > 0.3)
 			// }
+
 		}
 	}
 }

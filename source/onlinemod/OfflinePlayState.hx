@@ -14,29 +14,35 @@ import Section.SwagSection;
 
 class OfflinePlayState extends PlayState
 {
-  var loadedVoices:FlxSound;
-  var loadedInst:Sound;
+	public static var instanc:OfflinePlayState;
+  public var loadedVoices:FlxSound;
+  public var loadedInst:Sound;
   var loadingtext:FlxText;
   var shouldLoadJson:Bool = true;
   var stateType = 2;
   var shouldLoadSongs = true;
+	public static var voicesFile = "";
+  public static var instFile = "";
   public static var chartFile:String = "";
   function loadSongs(){
 
-  	var voicesFile = "";
-    var instFile = "";
-    for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg']) {
-    	if (FileSystem.exists('${Sys.getCwd()}/$i')){
-    		instFile = i;
-    	}
-    }
-    if (instFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a inst file!');}
-    for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg']) {
-    	if (FileSystem.exists('${Sys.getCwd()}/$i')){
-    		voicesFile = i;
-    	}
-    }
-    if (voicesFile != ""){loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));}
+		if(instFile == ""){
+
+			for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg']) {
+				if (FileSystem.exists('${Sys.getCwd()}/$i')){
+					instFile = i;
+				}
+			}
+			if (instFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a inst file!');}
+			for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg']) {
+				if (FileSystem.exists('${Sys.getCwd()}/$i')){
+					voicesFile = i;
+				}
+			}
+			if (voicesFile != ""){loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));}
+		}else{
+			if (voicesFile != ""){loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));}
+		}
     trace('Loading $voicesFile, $instFile');
     
     loadedInst = Sound.fromFile(instFile);
@@ -50,9 +56,10 @@ class OfflinePlayState extends PlayState
   override function create()
   {
   	try{
+  		instanc = this;
 	  	if (shouldLoadJson) loadJSON();
 	    PlayState.SONG.player1 = FlxG.save.data.playerChar;
-	    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
+	    if ((FlxG.save.data.charAuto) && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
 	    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
 	    }else{
 	    	PlayState.SONG.player2 = FlxG.save.data.opponent;
@@ -202,6 +209,7 @@ class OfflinePlayState extends PlayState
 
 		// generatedMusic = true;
   //  }catch(e){MainMenuState.handleError('Caught "gensong" crash: ${e.message}');}}
+
 
   override function endSong()
   {

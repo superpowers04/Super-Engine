@@ -71,9 +71,9 @@ class CharSelection extends SearchMenuState
 	}catch(e) MainMenuState.handleError('Error with charsel "create" ${e.message}');}
 	override function extraKeys(){
 	if (songs[curSelected] != "automatic" && songs[curSelected] != "" && onlinemod.OnlinePlayMenuState.socket == null){
-		if (FlxG.keys.justPressed.ONE){FlxG.switchState(new AnimationDebug(songs[curSelected],true,0,true));}
-		if (FlxG.keys.justPressed.TWO){FlxG.switchState(new AnimationDebug(songs[curSelected],false,1,true));}
-		if (FlxG.keys.justPressed.THREE){FlxG.switchState(new AnimationDebug(songs[curSelected],false,2,true));}
+		if (FlxG.keys.justPressed.ONE){LoadingState.loadAndSwitchState(new AnimationDebug(songs[curSelected],true,0,true));}
+		if (FlxG.keys.justPressed.TWO){LoadingState.loadAndSwitchState(new AnimationDebug(songs[curSelected],false,1,true));}
+		if (FlxG.keys.justPressed.THREE){LoadingState.loadAndSwitchState(new AnimationDebug(songs[curSelected],false,2,true));}
 		}
 	}
 	override function changeSelection(change:Int = 0){

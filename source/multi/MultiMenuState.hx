@@ -136,16 +136,16 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.songDiff = songJSON;
 				PlayState.storyDifficulty = switch(songJSON){case '${songName}-easy.json': 0; case '${songName}-hard.json': 2; default: 1;};
 				PlayState.actualSongName = songJSON;
-				MultiPlayState.voicesFile = '';
+				onlinemod.OfflinePlayState.voicesFile = '';
 
-				if (FileSystem.exists('${selSong}/Voices.ogg')) MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
+				if (FileSystem.exists('${selSong}/Voices.ogg')) onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';
 				PlayState.hsBrTools = new HSBrTools('${selSong}');
 				if (FileSystem.exists('${selSong}/script.hscript')) {
 					trace("Song has script!");
 					MultiPlayState.scriptLoc = '${selSong}/script.hscript';
 					
 				}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
-				MultiPlayState.instFile = '${selSong}/Inst.ogg';
+				onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
 				PlayState.stateType = 4;
 				LoadingState.loadAndSwitchState(new MultiPlayState());
 			}catch(e){
@@ -186,8 +186,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				if(curPlaying != songs[curSelected]){
 					curPlaying = songs[curSelected];
 					FlxG.sound.music.stop();
-					FlxG.sound.playMusic(Sound.fromFile('mods/charts/${songs[curSelected]}/Inst.ogg'),1,true);
-					FlxG.sound.playMusic(Sound.fromFile('mods/charts/${songs[curSelected]}/Voices.ogg'),1,true);
+					FlxG.sound.playMusic(Sound.fromFile('${songs[curSelected]}/Inst.ogg'),1,true);
 					if (!FlxG.sound.music.playing){
 						curPlaying = "";
 						SickMenuState.musicHandle();

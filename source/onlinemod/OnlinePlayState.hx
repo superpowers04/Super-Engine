@@ -57,6 +57,7 @@ class OnlinePlayState extends PlayState
 
 	override function create()
 	{try{
+		OnlinePlayMenuState.SetVolumeControls(true); // Make sure volume is enabled
 		if (customSong){
 			for (i => v in useSongChar) {
 				if (v != ""){
@@ -283,7 +284,6 @@ class OnlinePlayState extends PlayState
 	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
 	{
 		super.noteMiss(direction, daNote,forced);
-
 		SendScore();
 	}
 
@@ -407,7 +407,7 @@ class OnlinePlayState extends PlayState
 				var id:Int = data[0];
 				var nickname:String = OnlineLobbyState.clients[id];
 
-				clientsGroup.members[clientTexts[id]].setFormat(24, FlxColor.RED);
+				clientsGroup.members[clientTexts[id]].setFormat(CoolUtil.font,24, FlxColor.RED);
 				clientsGroup.members[clientTexts[id]].setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				if(clientScores[id] == null) clientsGroup.members[clientTexts[id]].text = '$nickname: left';
 

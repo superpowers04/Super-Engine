@@ -17,16 +17,11 @@ class MenuItem extends FlxSpriteGroup
 	public function new(x:Float, y:Float, weekNum:Int = 0,weekName:String = "")
 	{
 		super(x, y);
-		if(weekName == ""){
-
-			week = new FlxSprite().loadGraphic(Paths.image('storymenu/week' + weekNum));
-		}else{
-			var size = Std.int(48 - (weekName.length * 0.4));
-			week = new FlxText(0,0,0,weekName,size);
-			// week.font = CoolUtil.font;
-			week.setFormat(CoolUtil.font,size);
-			week.y += week.height * 0.50;
-		}
+		var size = Std.int(48 - (weekName.length * 0.4));
+		week = new FlxText(0,0,0,weekName,size);
+		// week.font = CoolUtil.font;
+		week.setFormat(CoolUtil.font,size);
+		week.y += week.height * 0.50;
 		add(week);
 	}
 

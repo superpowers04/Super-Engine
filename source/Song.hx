@@ -27,7 +27,9 @@ typedef SwagSong =
 	var ?noteMetadata:NoteMetadata;
 	var ?difficultyString:String;
 	var ?inverthurtnotes:Bool;
+	var ?rawJSON:Dynamic;
 }
+
 typedef NoteMetadata={
 	var badnoteHealth:Float;
 	var badnoteScore:Int;
@@ -135,7 +137,9 @@ class Song
 		#if !debug
 		try{
 		#end
-			var swagShit:SwagSong = cast Json.parse(rawJson).song;
+			var rawJson:Dynamic = Json.parse(rawJson);
+			var swagShit:SwagSong = cast rawJson.song;
+			swagShit.rawJSON = rawJson;
 			swagShit.validScore = true;
 			swagShit.defplayer1 = swagShit.player1;
 			swagShit.defplayer2 = swagShit.player2;

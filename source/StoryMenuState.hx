@@ -117,6 +117,14 @@ class StoryMenuState extends MusicBeatState
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 
+	public static var weekScore:Int = 0;
+	public static var weekMisses:Int = 0;
+	public static var weekSicks:Int = 0;
+	public static var weekGoods:Int = 0;
+	public static var weekBads:Int = 0;
+	public static var weekShits:Int = 0;
+	public static var weekMaxCombo:Int = 0;
+
 	function resetWeeks(){
 		weekData = [
 			['Tutorial'],
@@ -128,7 +136,7 @@ class StoryMenuState extends MusicBeatState
 			['Senpai', 'Roses', 'Thorns']
 		];
 		weekDirectories = [
-			"",
+			"Learning The Ropes",
 			"Daddy Dearest",
 			"Spooky Month",
 			"PICO",
@@ -160,7 +168,7 @@ class StoryMenuState extends MusicBeatState
 		];
 
 		weekNames = [
-			"",
+			"Learning The Ropes",
 			"Daddy Dearest",
 			"Spooky Month",
 			"PICO",
@@ -208,10 +216,10 @@ class StoryMenuState extends MusicBeatState
 							}
 						}
 					}
-					var char2 = (if(si > 0) "bf" else "");
+					// var char2 = ;
 					weekData[i] = songList;
-					weekCharacters[i] =[char2,'bf','gf'];
-					weekNames[i] = json.name;
+					weekCharacters[i] = (if(si > 0) ['bf','bf','gf'] else ['','','']);
+					weekNames[i] = if(json.name == "") directory else json.name;
 					weekChartNames[i] = chartList;
 					weekDirectories[i] = directory;
 					weekEmbedded[i] = false;
@@ -286,12 +294,12 @@ class StoryMenuState extends MusicBeatState
 			// PlayState.actualSongName = songJSON;
 
 
-			MultiPlayState.voicesFile = '';
+			onlinemod.OfflinePlayState.voicesFile = '';
 			PlayState.stateType = 6;
 			PlayState.isStoryMode = true;
 			PlayState.hsBrTools = new HSBrTools('${selSong}');
 
-			if (FileSystem.exists('${selSong}/Voices.ogg')) MultiPlayState.voicesFile = '${selSong}/Voices.ogg';
+			if (FileSystem.exists('${selSong}/Voices.ogg')) onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';
 			if (FileSystem.exists('${selSong}/script.hscript')) {
 				trace("Song has script!");
 				MultiPlayState.scriptLoc = '${selSong}/script.hscript';
@@ -309,7 +317,7 @@ class StoryMenuState extends MusicBeatState
 				trace("Song has endDialogue!");
 				PlayState.endDialogue = CoolUtil.coolFormat(File.getContent('${selSong}/end-dialogue.txt'));
 			}else {PlayState.endDialogue = [];}
-			MultiPlayState.instFile = '${selSong}/Inst.ogg';
+			onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
 			// LoadingState.loadAndSwitchState(new MultiPlayState());
 						new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
@@ -330,7 +338,13 @@ class StoryMenuState extends MusicBeatState
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		SickMenuState.musicHandle();
+		weekSicks = 0;
+		weekBads = 0;
+		weekShits = 0;
+		weekGoods = 0;
+		weekMisses = 0;
+		weekMaxCombo = 0;
+
 
 		persistentUpdate = persistentDraw = true;
 
@@ -348,10 +362,11 @@ class StoryMenuState extends MusicBeatState
 		rankText.screenCenter(X);
 
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
-		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
+		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFFFFFFF);
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
+		SickMenuState.musicHandle(yellowBG,true);
 
 		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
 		add(blackBarThingie);
@@ -365,7 +380,7 @@ class StoryMenuState extends MusicBeatState
 
 		for (i in 0...weekData.length)
 		{
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10,i,weekDirectories[i]);
+			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10,i,weekNames[i]);
 			weekThing.y += ((weekThing.height + 20) * i);
 			weekThing.targetY = i;
 			grpWeekText.add(weekThing);
@@ -596,7 +611,7 @@ class StoryMenuState extends MusicBeatState
 		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
 		sprDifficulty.y = leftArrow.y - 15;
 		if(isVanillaWeek)
-			intendedScore = Highscore.getWeekScore("custom-" + weekNames[curWeek], curDifficulty);
+			intendedScore = Highscore.getWeekScore("-custom-" + weekNames[curWeek], curDifficulty);
 		else
 			intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 

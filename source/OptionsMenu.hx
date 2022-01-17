@@ -82,7 +82,8 @@ class OptionsMenu extends MusicBeatState
 
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF. Also shows extra information"),
-			new PlayVoicesOption("Plays your character's voices when you press a note.")
+			new PlayVoicesOption("Plays your character's voices when you press a note."),
+			new LogGameplayOption("Logs your game to a text file")
 		]),
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your FPS"),

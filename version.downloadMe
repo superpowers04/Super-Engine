@@ -1,6 +1,21 @@
-0.10.1;
-**Ingame downloader will not work due to Github repo changing name**
+0.11.0;
+**Ingame download link will not work due to Github repo changing name, You will have to download from the link in #info on the Discord**
 - Update downloads to use Super-Engine instead of older Battle-Royale
 - Fix one note sustains
 - Support for customs weeks(Due to a unknown bug, custom notes will get turned into hurt notes)
+- Make hit windows smaaller for hurt notes, thanks to Cartoon31
+- Menus now have a overlay sprite, so you can have a background that isn't affected by color
+Script related:
+- Add Paths to scripts for loading vanilla assets
 - HsBrTools is always initialised in week or modded songs, opposed to only when a script is present. Other scripts can access this using PlayState.instance.hsBrTools
+- Semisandboxed File/FileSystem is now exposed to hscript(Note that they're both the same thing, File's getContent and getBytes aappear on FileSystem and vice versa)
+- FinishSubstate has forcedBFAnim which will force the camera to focus on BF and wait until BF's animation is finished when autoEnd is true
+- Fixed StringTools
+- `close(scriptName);` can be called to close the current script
+- Add loadSound to BRtools
+- Fix FlxG.mouse returning null
+- SongJson's now contain their raw JSON as a dynamic type, for handling things like custom events in a seperate json tag
+- generateSongBefore now exists
+- BRtools now has Global which is a direct link to HsBrTools.shared
+- Notes now have vanillaFrames, which is true if the game used the normal note texture 
+- Type and FlxAxes(For screenCenter) are exposed to HScript

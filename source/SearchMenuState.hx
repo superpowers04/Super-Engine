@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -36,6 +37,8 @@ class SearchMenuState extends MusicBeatState
 	var infotext:FlxText;
 	var overLay:FlxGroup = new FlxTypedGroup();
 	var infoTextBoxSize:Int = 2;
+	public static var background:FlxGraphic;
+	public static var backgroundOver:FlxGraphic;
 	var toggleables:Map<String,Bool> = [
 		"search" => true
 	];
@@ -72,14 +75,32 @@ class SearchMenuState extends MusicBeatState
 		infotext.scrollFactor.set();
 	}
 	// var bgColor:FlxColor = 0xFFFF6E6E;
+	static public inline function resetVars(){
+		if (ChartingState.charting) ChartingState.charting = false;
+		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
+		PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
+		SickMenuState.chgTime = true;
+	}
 	override function create()
 	{try{
-		PlayState.songScript = "";PlayState.hsBrTools = null;
-		bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
-		bg.color = bgColor;
+		resetVars();
+		if(bg == null){
+			// if(FileSystem.exists("mods/bg.png")){
+			// 	bg = new FlxSprite().loadGraphic(Paths.getImageDirect("mods/bg.png"));
+			// }else{
+			// 	bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
+
+			// }
+			bg = new FlxSprite().loadGraphic(SearchMenuState.background); 
+			// bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
+			bg.color = bgColor;
+		}
 		bg.scrollFactor.set(0.01,0.01);
 		SickMenuState.musicHandle();
 		add(bg);
+		var bgOver = new FlxSprite().loadGraphic(SearchMenuState.backgroundOver);
+		bgOver.scrollFactor.set(0.01,0.01);
+		add(bgOver);
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		reloadList();
 		add(grpSongs);
@@ -202,12 +223,13 @@ class SearchMenuState extends MusicBeatState
 					}
 					item.targetY = bullShit - curSelected;
 
-					// item.color = 0xdddddd;
+					if(!useAlphabet) item.color = 0xbbbbbb;
 					item.alpha = 0.8;
 					if (item.targetY == 0)
 					{
 						item.alpha = 1;
-						// item.color = 0xffffff;
+
+						if(!useAlphabet) item.color = 0xffffff;
 					}
 				}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
 				bullShit++;

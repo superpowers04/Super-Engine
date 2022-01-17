@@ -4,6 +4,8 @@ import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
+import flixel.graphics.FlxGraphic;
+import flash.display.BitmapData;
 
 class Paths
 {
@@ -34,6 +36,9 @@ class Paths
 
 		return getPreloadPath(file);
 	}
+	// static function getFileExists(file:String, type:AssetType, library:Null<String>){
+	// 	return OpenFlAssets.exists(levelPath, type);
+	// }
 
 	static public function getLibraryPath(file:String, library = "preload")
 	{
@@ -127,5 +132,8 @@ class Paths
 	static public function getPackerAtlas(key:String, ?library:String)
 	{
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+	}
+	static public function getImageDirect(path:String):FlxGraphic{
+		return FlxGraphic.fromBitmapData(BitmapData.fromFile(path));
 	}
 }
