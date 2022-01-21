@@ -1,9 +1,9 @@
-0.11.0;
+0.11.0-N0;
 **Ingame download link will not work due to Github repo changing name, You will have to download from the link in #info on the Discord**
 - Update downloads to use Super-Engine instead of older Battle-Royale
 - Fix one note sustains
 - Support for customs weeks(Due to a unknown bug, custom notes will get turned into hurt notes)
-- Make hit windows smaaller for hurt notes, thanks to Cartoon31
+- Make hit windows smaller for hurt notes, thanks to Cartoon31
 - Menus now have a overlay sprite, so you can have a background that isn't affected by color
 - Swap over to https://github.com/JWambaugh/TJSON for JSON instead of Haxe.JSON for speed and readability(No new dependancies as it's modified and part of SE
 )
@@ -13,7 +13,7 @@ Script related:
 - Semisandboxed File/FileSystem is now exposed to hscript(Note that they're both the same thing, File's getContent and getBytes aappear on FileSystem and vice versa)
 - FinishSubstate has forcedBFAnim which will force the camera to focus on BF and wait until BF's animation is finished when autoEnd is true
 - Fixed StringTools
-- `close(scriptName);` can be called to close the current script
+- `close(scriptName);` can be called to close the stage/global/song scripts
 - Add loadSound to BRtools
 - Fix FlxG.mouse returning null
 - SongJson's now contain their raw JSON as a dynamic type, for handling things like custom events in a seperate json tag
