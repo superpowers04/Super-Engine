@@ -27,7 +27,7 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
-import haxe.Json;
+import tjson.Json;
 import lime.utils.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -42,6 +42,10 @@ import sys.io.File;
 import lime.media.AudioBuffer;
 import flash.geom.Rectangle;
 import haxe.io.Bytes;
+import lime.app.Future;
+import lime.app.Promise;
+import lime.ui.FileDialog;
+import lime.ui.FileDialogType;
 
 using StringTools;
 
@@ -87,6 +91,7 @@ class ChartingState extends MusicBeatState
 	var waveformUseInstrumental:FlxUICheckBox;
 
 	var gridBG:FlxSprite;
+	var gridBGEvent:FlxSprite;
 	var gridBGAbove:FlxSprite;
 	var gridBGBelow:FlxSprite;
 
@@ -115,7 +120,6 @@ class ChartingState extends MusicBeatState
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
-	var keyAmmo:Array<Int> = [4, 6, 7, 9, 5, 8, 1, 2, 3, 21];
 
 	private var lastNote:Note;
 	var claps:Array<Note> = [];
@@ -279,6 +283,10 @@ class ChartingState extends MusicBeatState
 		{
 			saveLevel();
 		});
+		// var loadButton:FlxButton = new FlxButton(20, 27, "Load", function()
+		// {
+		// 	loadLevel_();
+		// });
 
 		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
 		{
@@ -387,6 +395,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
+		// tab_group_song.add(loadButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
@@ -460,7 +469,7 @@ class ChartingState extends MusicBeatState
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
 			{
 				var note = _song.notes[curSection].sectionNotes[i];
-				note[1] = (note[1] + 4) % (4 * 2);
+				note[1] = (note[1] + 4) % 8;
 				_song.notes[curSection].sectionNotes[i] = note;
 				updateGrid();
 			}
@@ -552,8 +561,8 @@ class ChartingState extends MusicBeatState
 
 	function loadAudioBuffer() {
 
-		audioBuffers[0] = AudioBuffer.fromFile(if(onlinemod.OfflinePlayState.instFile != "") onlinemod.OfflinePlayState.instFile else Paths.inst(_song.song));
-		audioBuffers[1] = AudioBuffer.fromFile(if(onlinemod.OfflinePlayState.voicesFile != "") onlinemod.OfflinePlayState.voicesFile else Paths.inst(_song.song));
+		audioBuffers[0] = AudioBuffer.fromFile(if(onlinemod.OfflinePlayState.instFile != "") onlinemod.OfflinePlayState.instFile else ('assets/songs/' + _song.song.toLowerCase() + "/Inst.ogg"));
+		audioBuffers[1] = AudioBuffer.fromFile(if(onlinemod.OfflinePlayState.voicesFile != "") onlinemod.OfflinePlayState.voicesFile else ('assets/songs/' + _song.song.toLowerCase() + "/Voices.ogg"));
 		
 	}
 
@@ -565,14 +574,14 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		loadedInst = Sound.fromFile(if(onlinemod.OfflinePlayState.instFile != "") onlinemod.OfflinePlayState.instFile else Paths.inst(_song.song));
-		FlxG.sound.playMusic(loadedInst, 0.6);
+			loadedInst = Sound.fromFile(if(onlinemod.OfflinePlayState.instFile != "") onlinemod.OfflinePlayState.instFile else 'assets/songs/' + _song.song.toLowerCase() + "/Inst.ogg");
+			FlxG.sound.playMusic(loadedInst, 0.6,true);
 
 
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		if(_song.needsVoices || (onlinemod.OfflinePlayState.voicesFile != "" && FileSystem.exists(onlinemod.OfflinePlayState.voicesFile))){
-			vocals = new FlxSound().loadEmbedded(Sound.fromFile(if(onlinemod.OfflinePlayState.voicesFile != "") onlinemod.OfflinePlayState.voicesFile else Paths.inst(_song.song)));
+			vocals = new FlxSound().loadEmbedded(Sound.fromFile(if(onlinemod.OfflinePlayState.voicesFile != "")  onlinemod.OfflinePlayState.voicesFile else ('assets/songs/' + _song.song.toLowerCase() + "/Voices.ogg")));
 
 		} 
 
@@ -775,23 +784,23 @@ class ChartingState extends MusicBeatState
 
 		var pressArray = [left, down, up, right, leftO, downO, upO, rightO];
 		var delete = false;
-		curRenderedNotes.forEach(function(note:Note)
-			{
-				if (strumLine.overlaps(note) && pressArray[Math.floor(Math.abs(note.noteData))])
-				{
-					deleteNote(note);
-					delete = true;
-					trace('deelte note');
-				}
-			});
-		for (p in 0...pressArray.length)
-		{
-			var i = pressArray[p];
-			if (i && !delete)
-			{
-				addNote(new Note(Conductor.songPosition,p));
-			}
-		}
+		// curRenderedNotes.forEach(function(note:Note)
+		// 	{
+		// 		if (strumLine.overlaps(note) && pressArray[Math.floor(Math.abs(note.noteData))])
+		// 		{
+		// 			deleteNote(note);
+		// 			delete = true;
+		// 			trace('deelte note');
+		// 		}
+		// 	});
+		// for (p in 0...pressArray.length)
+		// {
+		// 	var i = pressArray[p];
+		// 	if (i && !delete)
+		// 	{
+		// 		addNote(new Note(Conductor.songPosition,p));
+		// 	}
+		// }
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime(curSection)) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 		
@@ -1113,7 +1122,7 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.DOWN)
 				Conductor.changeBPM(Conductor.bpm - 1); */
 
-		bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
+		bpmTxt.text = 'UNFINISH AS FUCK\n'+ Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
 			+ ' / '
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
 			+ '\nSection: '
@@ -1406,7 +1415,7 @@ class ChartingState extends MusicBeatState
 			var daSus = i[2];
 			var daType = i[3];
 
-			var note:Note = new Note(daStrumTime, daNoteInfo % 4, daType, false, true, i[3], i[4]);
+			var note:Note = new Note(daStrumTime, daNoteInfo, daType, false, true, i[3], i[4]);
 			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
@@ -1436,7 +1445,7 @@ class ChartingState extends MusicBeatState
 						var daSus = i[2];
 						var daType = i[3];
 			
-						var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, false, true, i[3], i[4]);
+						var note:Note = new Note(daStrumTime, daNoteInfo, null, false, true, i[3], i[4]);
 						note.sustainLength = daSus;
 						note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 						note.updateHitbox();
@@ -1465,7 +1474,7 @@ class ChartingState extends MusicBeatState
 				var daSus = i[2];
 				var daType = i[3];
 	
-				var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, false, true, i[3], i[4]);
+				var note:Note = new Note(daStrumTime, daNoteInfo, null, false, true, i[3], i[4]);
 				note.sustainLength = daSus;
 				note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 				note.updateHitbox();
@@ -1507,7 +1516,7 @@ class ChartingState extends MusicBeatState
 
 		for (i in _song.notes[curSection].sectionNotes)
 		{
-			if (i.strumTime == note.strumTime && i.noteData % 4 == note.noteData)
+			if (i.strumTime == note.strumTime && i.noteData == note.noteData)
 			{
 				curSelectedNote = _song.notes[curSection].sectionNotes[swagNum];
 			}
@@ -1525,7 +1534,7 @@ class ChartingState extends MusicBeatState
 			lastNote = note;
 			for (i in _song.notes[curSection].sectionNotes)
 			{
-				if (i[0] == note.strumTime && i[1] % 4 == note.noteData)
+				if (i[0] == note.strumTime && i[1] == note.noteData)
 				{
 					_song.notes[curSection].sectionNotes.remove(i);
 				}
@@ -1615,25 +1624,31 @@ class ChartingState extends MusicBeatState
 		}
 	private function addNote(?n:Note):Void
 	{
-		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime(curSection);
-		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
-		var noteSus = 0;
-		var type:Dynamic = 0;
-		if(forcehurtnote.checked){type = "hurt note";} else {type = anothertypingshit.text;}
+		try{
 
-		if (n != null)
-			_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, n.type]);
-		else
-			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, type]);
+			var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime(curSection);
+			var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
+			trace(noteData);
+			var noteSus = 0;
+			var type:Dynamic = 0;
+			if(forcehurtnote.checked){type = "hurt note";} else {type = anothertypingshit.text;}
 
-		var thingy = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
+			if (n != null)
+				_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, n.type]);
+			else
+				_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, type]);
 
-		curSelectedNote = thingy;
+			var thingy = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
-		updateGrid();
-		updateNoteUI();
+			curSelectedNote = thingy;
 
-		autosaveSong();
+			updateGrid();
+			updateNoteUI();
+
+			autosaveSong();
+		}catch(e){
+			MainMenuState.handleError('Error while placing note! ${e.message}');
+		}
 	}
 
 	function getStrumTime(yPos:Float):Float
@@ -1708,30 +1723,74 @@ class ChartingState extends MusicBeatState
 		FlxG.resetState();
 	}
 
-	function autosaveSong():Void
+	inline function autosaveSong():Void
 	{
-		FlxG.save.data.autosave = Json.stringify({
-			"song": _song
-		});
-		FlxG.save.flush();
+		// FlxG.save.data.autosave = Json.stringify({
+		// 	"song": _song
+		// });
+		// FlxG.save.flush();
 	}
+	var fd:FileDialog;
+	private function loadLevel_()
+	{
+		// var json:Dynamic = {
+		// 	"song": _song
+		// };
+		try{
 
+			trace("Load song...");
+			var data:String = Json.encode(_song,"fancy",true);
+			if ((data != null) && (data.length > 0))
+			{// Not copied from FunkinVortex, dunno what you mean
+				fd = new FileDialog();
+				fd.onSelect.add(function(path){
+				// _file = new FileReference();
+				// _file.addEventListener(Event.COMPLETE, onSaveComplete);
+				// _file.addEventListener(Event.CANCEL, onSaveCancel);
+				// _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+				// // Bodgey as hell but doesn't work otherwise
+				// _file.save('{"song":' + data + "}", path);
+
+
+					_song = Json.parse(sys.io.File.getContent(path));
+					updateGrid();
+					showTempmessage('Loaded chart from ${path}');
+				
+
+				});
+				fd.browse(FileDialogType.OPEN, 'json', null, "Load chart");
+			}
+		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
+	}
 	private function saveLevel()
 	{
-		var json = {
-			"song": _song
-		};
+		// var json:Dynamic = {
+		// 	"song": _song
+		// };
+		try{
 
-		var data:String = Json.stringify(json);
+			trace("Saving song...");
+			var data:String = Json.encode(_song,"fancy",true);
+			if ((data != null) && (data.length > 0))
+			{// Not copied from FunkinVortex, dunno what you mean
+				fd = new FileDialog();
+				fd.onSelect.add(function(path){
+				// _file = new FileReference();
+				// _file.addEventListener(Event.COMPLETE, onSaveComplete);
+				// _file.addEventListener(Event.CANCEL, onSaveCancel);
+				// _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+				// _file.save('{"song":' + data + "}", path);
 
-		if ((data != null) && (data.length > 0))
-		{
-			_file = new FileReference();
-			_file.addEventListener(Event.COMPLETE, onSaveComplete);
-			_file.addEventListener(Event.CANCEL, onSaveCancel);
-			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
-		}
+
+				//Bodgey as hell but doesn't work otherwise
+				sys.io.File.saveContent(path,'{"song":' + data + "}");
+				showTempmessage('Saved chart to ${path}');
+				
+
+				});
+				fd.browse(FileDialogType.SAVE, 'json', null, "Save chart");
+			}
+		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 	}
 
 	function onSaveComplete(_):Void
@@ -1741,6 +1800,7 @@ class ChartingState extends MusicBeatState
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
 		FlxG.log.notice("Successfully saved LEVEL DATA.");
+		showTempmessage("Saved chart to chartOutput.json");
 	}
 
 	/**

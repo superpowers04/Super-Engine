@@ -22,7 +22,7 @@ import openfl.net.FileReference;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 
-import haxe.Json;
+import tjson.Json;
 
 import flixel.graphics.FlxGraphic;
 import flixel.addons.ui.FlxInputText;
@@ -510,8 +510,11 @@ class AnimationDebug extends MusicBeatState
 			trace('${dad.x},${dad.y}');
 
 			dad.x -= characterX;
-			dad.y -= characterY;
+			if(charType != 3){
+				
+				dad.y -= characterY;
 			dad.y = -dad.y;
+			}
 
 			trace('${dad.x},${dad.y}');
 			errorStage = 5; // Position

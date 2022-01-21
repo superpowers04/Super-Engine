@@ -17,6 +17,8 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 import flixel.addons.ui.FlxUIState;
 import flixel.util.FlxTimer;
+
+import tjson.Json;
 import sys.FileSystem;
 import sys.io.File;
 import OptionsFileDef;
@@ -145,7 +147,7 @@ class OptionsMenu extends MusicBeatState
 
 		for (i in 0...options.length)
 		{
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false, true);
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
 			grpControls.add(controlLabel);
@@ -363,7 +365,7 @@ class OptionsMenu extends MusicBeatState
 		{
 			// if(i >= 4) break; // No reason to add more than 4 // Actually, probably not a good idea, slower machines don't load the rest for some reason
 			
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[curSelected].getOptions()[i].getDisplay(), true, false, true,FlxG.width * 0.60);
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[curSelected].getOptions()[i].getDisplay(), true, false, false,FlxG.width * 0.60);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i + ia;
 			controlLabel.alpha = 0.3;
@@ -425,7 +427,7 @@ class OptionsMenu extends MusicBeatState
 			}
 			trace('$script has valid options file');
 			try{
-				var sOptions:OptionsFileDef = haxe.Json.parse(CoolUtil.cleanJSON(File.getContent('mods/scripts/$script/options.json')));
+				var sOptions:OptionsFileDef = Json.parse(CoolUtil.cleanJSON(File.getContent('mods/scripts/$script/options.json')));
 				// var curOptions:Map<String,Dynamic> = new Map<String,Dynamic>();
 				modOptions[script] = new Map<String,Dynamic>();
 				if(FileSystem.exists('mods/scriptOptions/$script.json')){

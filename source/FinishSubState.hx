@@ -29,6 +29,10 @@ using StringTools;
 typedef ActionsFile = {
 	var info:String;
 	var notes:Array<OutNote>;
+	var bf:String;
+	var gf:String;
+	var opp:String;
+	var ver:String;
 
 }
 
@@ -265,13 +269,17 @@ class FinishSubState extends MusicBeatSubstate
 				if(PlayState.logGameplay){
 
 					try{
-						var info = '--- Game Info:\n${comboText.text}\n\n${settingsText.text}\n\nScripts:';
+						var info = '--- Game Info:\n${comboText.text}\n\n${settingsText.text}\n\nCharacters(Dad,GF,BF): ${PlayState.dad.curCharacter},${PlayState.gf.curCharacter},${PlayState.boyfriend.curCharacter}\n\nScripts:';
 						for (i => v in PlayState.instance.interps) {
-							info += '\n- $v';
+							info += '\n- $i';
 						}
 						var eventLog:ActionsFile = {
 							info:info,
-							notes:PlayState.instance.eventLog
+							notes:PlayState.instance.eventLog,
+							bf:PlayState.boyfriend.curCharacter,
+							opp:PlayState.dad.curCharacter,
+							gf:PlayState.gf.curCharacter,
+							ver:${MainMenuState.ver}
 						};
 						var events:String = info + '\n\n--- Hits and Misses:\n
 / Example Note

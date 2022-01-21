@@ -46,13 +46,12 @@ import flixel.input.touch.FlxTouch;
 #end
 import sys.FileSystem;
 import sys.io.File;
+import tjson.Json;
 
 
 import haxe.iterators.StringIterator;
 import haxe.iterators.StringKeyValueIterator;
-
 using cpp.NativeString;
-
 class HscriptUtils {
    public static var interp = new InterpEx();
 	public static var hscriptClasses:Array<String> = [];
@@ -148,10 +147,10 @@ class HscriptUtils {
 }
 class SEJson {
 	public static function parse(txt:String):Dynamic{
-		return haxe.Json.parse(CoolUtil.cleanJSON(txt));
+		return Json.parse(CoolUtil.cleanJSON(txt));
 	}
-	public static function stringify(obj:Dynamic):String{
-		return haxe.Json.stringify(obj);
+	public static function stringify(obj:Dynamic,?style:String = "fancy"):String{
+		return Json.stringify(obj,style);
 	}
 }
 

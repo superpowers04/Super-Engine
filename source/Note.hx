@@ -144,7 +144,8 @@ class Note extends FlxSprite
 		this.noteData = _noteData % 4; 
 		showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
-		if(!inCharter && rawNote[1] == -1){ // Psych event notes, These should not be shown, and should not appear on the player's side
+		if(!inCharter && (rawNote[1] == -1 || rawNote[2] == "eventNote")){ // Psych event notes, These should not be shown, and should not appear on the player's side
+			if(rawNote[2] == "eventNote")rawNote.remove(2);
 			shouldntBeHit = false; // Make sure it doesn't become a hurt note
 			showNote = false; // Don't show the note
 			this.noteData = 1; // Set it to 0, to prevent issues
@@ -154,17 +155,38 @@ class Note extends FlxSprite
 			type =rawNote[2];
 			// _update = function(elapsed:Float){if (strumTime <= Conductor.songPosition) wasGoodHit = true;};
 			frames = new flixel.graphics.frames.FlxFramesCollection(FlxGraphic.fromRectangle(1,1,0x01000000,false,"blank.mp4"));
-			if(rawNote[2] == "Play Animation"){
-				try{
-					// Info can be set to anything, it's being used for storing the Animation and character
-					info = [rawNote[3],psychChars[Std.parseInt(rawNote[4])]]; 
-				}catch(e){info = [rawNote[3],0];}
-				// Replaces hit func
-				hit = function(?charID:Int = 0,note){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);}; 
-				trace('Animation note processed');
-			}else{ // Don't trigger hit animation
-				trace('Note with "${rawNote[2]}" hidden');
-				hit = function(?charID:Int = 0,note){trace("hit a event note");return;};
+			switch (rawNote[2]) {
+				case "Play Animation": {
+					try{
+						// Info can be set to anything, it's being used for storing the Animation and character
+						info = [rawNote[3],psychChars[Std.parseInt(rawNote[4])]]; 
+					}catch(e){info = [rawNote[3],0];}
+					// Replaces hit func
+					hit = function(?charID:Int = 0,note){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);}; 
+					trace('Animation note processed');
+				}
+				case "ChangeBPM": {
+					try{
+						// Info can be set to anything, it's being used for storing the BPM
+						info = [Std.parseFloat(rawNote[4])]; 
+					}catch(e){info = [120,0];}
+					// Replaces hit func
+					hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
+					trace('BPM note processed');
+				}
+				case "ChangeScrollSpeed": {
+					try{
+						// Info can be set to anything, it's being used for storing the BPM
+						info = [Std.parseFloat(rawNote[4])]; 
+					}catch(e){info = [2,0];}
+					// Replaces hit func
+					hit = function(?charID:Int = 0,note){PlayState.SONG.speed = info[0];}; 
+					trace('BPM note processed');
+				}
+				default:{ // Don't trigger hit animation
+					trace('Note with "${rawNote[2]}" hidden');
+					hit = function(?charID:Int = 0,note){trace("hit a event note");return;};
+				}
 			}
 		}
 

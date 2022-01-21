@@ -91,10 +91,14 @@ class PauseSubState extends MusicBeatSubstate
 
 		for (i in 0...menuItems.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false,true);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpMenuShit.add(songText);
+			songText.screenCenter(X);
+			var sX = songText.x;
+			songText.x = 100 - songText.width * 0.5;
+			FlxTween.tween(songText,{x : sX},1,{ease:FlxEase.bounceOut});
 		}
 
 		changeSelection();
@@ -164,21 +168,23 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					countdown();
 				case "Restart Song":
+					disappearMenu();
 					FlxG.resetState();
 				case "Exit to menu":
+					disappearMenu();
 					quit();
 			}
 		}
 
-	}
-}
-	function quit(){
-		if(PlayState.loadRep)
+	}}
+	function disappearMenu(){
+		for (_ => v in grpMenuShit.members)
 		{
-			FlxG.save.data.botplay = false;
-			FlxG.save.data.scrollSpeed = 1;
-			FlxG.save.data.downscroll = false;
+
+			FlxTween.tween(v,{x : -(100 + v.width)},0.4,{ease:FlxEase.cubeIn});
 		}
+	}
+	function quit(){
 		PlayState.loadRep = false;
 
 		if (FlxG.save.data.fpsCap > 290) (cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
@@ -208,7 +214,8 @@ class PauseSubState extends MusicBeatSubstate
 		var swagCounter:Int = 1;
 		pauseMusic.stop();
 		pauseMusic.destroy();
-		grpMenuShit.destroy();
+		// grpMenuShit.destroy();
+		disappearMenu();
 		levelDifficulty.destroy();
 		levelInfo.destroy();
 		perSongOffset.destroy();

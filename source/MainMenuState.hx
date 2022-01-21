@@ -33,7 +33,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "";
+	public static var nightly:String = "-0";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
@@ -41,6 +41,7 @@ class MainMenuState extends SickMenuState
 	public static var bgcolor:Int = 0;
 	var char:Character = null;
 	static var hasWarnedInvalid:Bool = false;
+	static var hasWarnedNightly:Bool = (nightly == "");
 	
 	public static function handleError(?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
 		// if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
@@ -118,6 +119,10 @@ class MainMenuState extends SickMenuState
 		if (MainMenuState.errorMessage == "" && TitleState.invalidCharacters.length > 0 && !hasWarnedInvalid) {
 			errorMessage = "You have some characters missing config.json files.";
 			hasWarnedInvalid = true;
+		} 
+		if (!hasWarnedNightly) {
+			errorMessage = "This is a nightly build, expect bugs, and things changing without warning!";
+			hasWarnedNightly = true;
 		} 
 		if (MainMenuState.errorMessage != ""){
 

@@ -85,7 +85,7 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT || FlxG.keys.justPressed.SPACE)
 		{
-			fancyOpenURL("https://nightly.link/superpowers04/Super-Engine/workflows/main/master/windowsBuild-Minimal.zip");
+			fancyOpenURL(if(MainMenuState.nightly == "")"https://nightly.link/superpowers04/Super-Engine/workflows/main/master/windowsBuild-Minimal.zip" else "https://nightly.link/superpowers04/Super-Engine/workflows/main/nightly/windowsBuild-Minimal.zip");
 		}
 		if (FlxG.keys.justPressed.D)
 		{
