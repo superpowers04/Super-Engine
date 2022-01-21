@@ -33,7 +33,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "-0";
+	public static var nightly:String = "N-0";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
@@ -82,11 +82,7 @@ class MainMenuState extends SickMenuState
 
 		bg.scrollFactor.set(0.1,0.1);
 		bg.color = MainMenuState.bgcolor;
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-Engine ${ver}', 12);
-		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		versionShit.borderSize = 2;
-		versionShit.scrollFactor.set();
-		add(versionShit);
+
 
 		if (TitleState.outdated){
 			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'SE/BR is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info', 32);
@@ -121,9 +117,16 @@ class MainMenuState extends SickMenuState
 			hasWarnedInvalid = true;
 		} 
 		if (!hasWarnedNightly) {
-			errorMessage = "This is a nightly build, expect bugs, and things changing without warning!";
+			errorMessage = "This is a nightly build for " + ver +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
+			ver+=nightly;
 			hasWarnedNightly = true;
 		} 
+
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-Engine ${ver}', 12);
+		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.borderSize = 2;
+		versionShit.scrollFactor.set();
+		add(versionShit);
 		if (MainMenuState.errorMessage != ""){
 
 			FlxG.sound.play(Paths.sound('cancelMenu'));

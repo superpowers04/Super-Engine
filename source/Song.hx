@@ -1,9 +1,10 @@
 package;
 
 import Section.SwagSection;
-import haxe.Json;
+import tjson.Json;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
+import flixel.FlxG;
 
 using StringTools;
 
@@ -97,29 +98,162 @@ class Song
 		var opponentArrows = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows"));
 		var invertedNotes:Array<Int> = [4,5,6,7];
 		var oppNotes:Array<Int> = [0,1,2,3];
+		// if(FlxG.save.data.regenSong){
+		// 	var notes:Array<Array<Dynamic>> = [];
+		// 	var curBPM:Float = swagShit.bpm;
+		// 	var totalSteps:Int = 0;
+		// 	var lastPos:Float = 0;
+		// 	var totalPos:Float = 0;
+		// 	// var 
+		// 	// var sections = Array<SwagSection>;
+		// 	// var noteTimeEnding:Float = 0;
+		// 	for (sid => section in swagShit.notes) {
+		// 		if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
 
-		for (sid => section in swagShit.notes) {
-			if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
+		// 		// var sN:Array<Array<Dynamic>> = [];
 
-			var sN:Array<Array<Dynamic>> = [];
-
-			for (nid in 0 ... section.sectionNotes.length){ // Regenerate section, is a bit fucky but only happens when loading
-				var note:Array<Dynamic> = section.sectionNotes[nid];
-				// Removes opponent arrows 
-				if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");continue;}
+		// 		for (nid in 0 ... section.sectionNotes.length){ // Regenerate section, is a bit fucky but only happens when loading
+		// 			var note:Array<Dynamic> = section.sectionNotes[nid];
+		// 			// Removes opponent arrows 
+		// 			if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");continue;}
 
 
-				if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-					if(note[4] == 1 || note[1] > 7) {note[3] = 1;} // Support for Andromeda and tricky notes
-				}else{
-					note[3] = 0;
+		// 			if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
+		// 				if(note[4] == 1 || note[1] > 7) {note[3] = 1;} // Support for Andromeda and tricky notes
+		// 			}else{
+		// 				note[3] = 0;
+		// 			}
+		// 			note[note.length + 1] =section.mustHitSection; 
+		// 			// sN.push(note);
+		// 			notes.push(note);
+		// 		}
+		// 		section.sectionNotes = [];
+		// 		// swagShit.notes[sid].sectionNotes = sN;
+
+		// 	}
+		// 	haxe.ds.ArraySort.sort(notes, function(a, b) {
+		// 	   if(a[0] < b[0]) return -1;
+		// 	   else if(b[0] > a[0]) return 1;
+		// 	   else return 0;
+		// 	});
+		// 	notes.reverse();
+		// 	for (sid => section in swagShit.notes) {
+		// 		if(section.changeBPM){
+		// 			curBPM = section.bpm;
+		// 		}
+		// 		if(section.changeBPM && section.bpm != curBPM)
+		// 		{
+		// 			curBPM = section.bpm;
+		// 		}
+
+		// 		var deltaSteps:Int = section.lengthInSteps;
+		// 		totalSteps += deltaSteps;
+		// 		totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
+		// 		var notesLeft = true;
+		// 		while (notesLeft){
+		// 			var note = notes[notes.length];
+		// 			if(notes[0][0] > lastPos && notes[0][0] < totalPos){
+		// 				if(section.mustHitSection != note[note.length] && note[1] > -1) {note[1] = note[1] + 4 % 8 - 1;}
+		// 				note[note.length] = null;
+		// 				section.sectionNotes.push(notes.pop());
+		// 			}else{notesLeft = false;}
+		// 		}
+		// 		lastPos = totalPos;
+		// 	}
+		// 	if(notes[0] != null){
+		// 		while(notes[0] != null){
+		// 			var section:SwagSection = {
+		// 				sectionNotes : [],
+		// 				typeOfSection:0,
+		// 				lengthInSteps:16,
+		// 				bpm:curBPM,
+		// 				changeBPM:false,
+		// 				altAnim:false,
+		// 				mustHitSection:false
+		// 			};
+		// 			totalSteps += 16;
+		// 			totalPos += ((60 / curBPM) * 1000 / 4) * 16;
+		// 			var notesLeft = true;
+		// 			while (notesLeft){
+		// 				var note = notes[notes.length];
+
+		// 				if(note[0] > lastPos && note[0] < totalPos){
+		// 					if(section.mustHitSection != note[note.length] && note[1] > -1){
+		// 						note[1] = note[1] + 4 % 8 - 1;
+		// 					}; 
+		// 					note[note.length] = null;
+		// 					section.sectionNotes.push(notes.pop());
+		// 				}else{
+		// 					notesLeft = false;
+		// 				}
+		// 			}
+		// 			lastPos = totalPos;
+		// 			swagShit.notes.push(section);
+		// 		}
+		// 	}
+
+		// }else{
+
+			for (sid => section in swagShit.notes) {
+				if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
+
+				var sN:Array<Array<Dynamic>> = [];
+
+				for (nid in 0 ... section.sectionNotes.length){ // Regenerate section, is a bit fucky but only happens when loading
+					var note:Array<Dynamic> = section.sectionNotes[nid];
+					// Removes opponent arrows 
+					if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");continue;}
+
+
+					if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
+						if(note[4] == 1 || note[1] > 7) {note[3] = 1;} // Support for Andromeda and tricky notes
+					}else{
+						note[3] = 0;
+					}
+					sN.push(note);
+
 				}
-				sN.push(note);
-
+				swagShit.notes[sid].sectionNotes = sN;
+				
+				haxe.ds.ArraySort.sort(swagShit.notes[sid].sectionNotes, function(a, b) {
+				   if(a[0] < b[0]) return -1;
+				   else if(b[0] > a[0]) return 1;
+				   else return 0;
+				});
 			}
-			swagShit.notes[sid].sectionNotes = sN;
 
-		}
+		// }
+		// if(swagShit.events[0] != null){
+		// 	var sect:SwagSection = {
+		// 		changeBPM : false,
+		// 		sectionNotes : [],
+		// 		bpm:0,
+		// 		altAnim:false,
+		// 		mustHitSection:false,
+		// 		typeOfSection:0,
+		// 		lengthInSteps:16
+		// 	};
+		// 	for (i => v in swagShit.events) {
+		// 			// [
+		// 			// 	131368.421052631,
+		// 			// 	[
+		// 			// 		[
+		// 			// 			"Hey!",
+		// 			// 			"BF",
+		// 			// 			"1"
+		// 			// 		]
+		// 			// 	]
+		// 			// ]
+		// 		for (id in 0 ... v[1].length) {
+		// 			var note = [v[0],-1];
+		// 			note.concat(v[1][id]);
+		// 			sect.sectionNotes.push(note);
+		// 		}
+		// 	}
+		// 		trace(sect);
+		// 	swagShit.notes.push(sect);
+
+		// }
 		return swagShit;
 
 	}

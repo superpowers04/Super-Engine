@@ -503,12 +503,12 @@ class OptionsMenu extends MusicBeatState
 		for (i => v in obj) {
 			_obj.push({name:i,value:v});
 		}
-		File.saveContent(path,haxe.Json.stringify(_obj));
+		File.saveContent(path,Json.stringify(_obj));
 	}
 	public static function loadScriptOptions(path:String):Null<Map<String,Dynamic>>{ // Holy shit this is terrible but whatever
 		
 		var ret:Map<String,Dynamic> = new Map<String,Dynamic>();
-		var obj:Array<OptionF> = haxe.Json.parse(CoolUtil.cleanJSON(File.getContent(path)));
+		var obj:Array<OptionF> = Json.parse(CoolUtil.cleanJSON(File.getContent(path)));
 		if(obj == null) return null;
 		for (i in obj) {
 			ret[i.name] = i.value;
@@ -518,10 +518,10 @@ class OptionsMenu extends MusicBeatState
 
 	function saveChanges(){
 		FlxG.save.flush();
-		// File.saveContent('SEOPTIONS.json',haxe.Json.stringify(FlxG.save.data));
+		// File.saveContent('SEOPTIONS.json',Json.stringify(FlxG.save.data));
 		for (i => v in modOptions) {
 			try{
-				// File.saveContent('mods/scriptOptions/$i.json',haxe.Json.stringify({options:v}));
+				// File.saveContent('mods/scriptOptions/$i.json',Json.stringify({options:v}));
 				saveScriptOptions('mods/scriptOptions/$i.json',v);
 				// trace('Saved mods/scriptOptions/$i.json');
 			}catch(e){

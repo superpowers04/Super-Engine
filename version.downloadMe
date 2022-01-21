@@ -5,6 +5,8 @@
 - Support for customs weeks(Due to a unknown bug, custom notes will get turned into hurt notes)
 - Make hit windows smaaller for hurt notes, thanks to Cartoon31
 - Menus now have a overlay sprite, so you can have a background that isn't affected by color
+- Swap over to https://github.com/JWambaugh/TJSON for JSON instead of Haxe.JSON for speed and readability(No new dependancies as it's modified and part of SE
+)
 Script related:
 - Add Paths to scripts for loading vanilla assets
 - HsBrTools is always initialised in week or modded songs, opposed to only when a script is present. Other scripts can access this using PlayState.instance.hsBrTools

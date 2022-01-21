@@ -48,7 +48,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
-import haxe.Json;
+import tjson.Json;
 import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
@@ -338,26 +338,28 @@ class PlayState extends MusicBeatState
 	}
 
 	public function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
-			if(func_name == "noteHitDad"){
-				charCall("noteHitSelf",[args[1]],1);
-				charCall("noteHitOpponent",[args[1]],0);
-			}
-			if(func_name == "noteHit"){
-				charCall("noteHitSelf",[args[1]],0);
-				charCall("noteHitOpponent",[args[1]],1);
-			}
-			// if(func_name != "update") trace('Called $func_name for ${(if(id != "")id else "Global")}');
-			args.insert(0,this);
-			if (id == "") {
-
-				for (name in interps.keys()) {
-					// var ag:Array<Dynamic> = [];
-					// for (i => v in args) { // Recreates the array
-					// 	ag[i] = v;
-					// }
-					callSingleInterp(func_name,args,name);
+			try{
+				if(func_name == "noteHitDad"){
+					charCall("noteHitSelf",[args[1]],1);
+					charCall("noteHitOpponent",[args[1]],0);
 				}
-			}else callSingleInterp(func_name,args,id);
+				if(func_name == "noteHit"){
+					charCall("noteHitSelf",[args[1]],0);
+					charCall("noteHitOpponent",[args[1]],1);
+				}
+				// if(func_name != "update") trace('Called $func_name for ${(if(id != "")id else "Global")}');
+				args.insert(0,this);
+				if (id == "") {
+
+					for (name in interps.keys()) {
+						// var ag:Array<Dynamic> = [];
+						// for (i => v in args) { // Recreates the array
+						// 	ag[i] = v;
+						// }
+						callSingleInterp(func_name,args,name);
+					}
+				}else callSingleInterp(func_name,args,id);
+			}catch(e:hscript.Expr.Error){handleError('${func_name} for "${id}":\n ${e.toString()}');}
 
 		}
 	public function resetInterps() {interps = new Map();interpCount=0;HSBrTools.shared.clear();}
@@ -396,6 +398,7 @@ class PlayState extends MusicBeatState
 			interp.variables.set("close",function(id:String){PlayState.instance.unloadInterp(id);}); // Closes a script
 			interp.execute(program);
 			interps[id] = interp;
+			if(brTools != null)brTools.reset();
 			callInterp("initScript",[],id);
 			interpCount++;
 		}catch(e){
@@ -1073,7 +1076,7 @@ class PlayState extends MusicBeatState
 			// doof.x += 70;
 			// doof.y = FlxG.height * 0.5;
 			doof.scrollFactor.set();
-			doof.finishThing = startCountdown;
+			doof.finishThing = startCountdownFirst;
 		}
 
 		Conductor.songPosition = -5000;
@@ -2412,13 +2415,13 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
-		#if !switch
-		if (SONG.validScore && stateType != 2 && stateType != 4)
-		{
+		// #if !switch
+		// if (SONG.validScore && stateType != 2 && stateType != 4)
+		// {
 			
-			Highscore.saveScore(SONG.song, Math.round(songScore), storyDifficulty);
-		}
-		#end
+		// 	Highscore.saveScore(SONG.song, Math.round(songScore), storyDifficulty);
+		// }
+		// #end
 
 		charCall("endSong",[]);
 		callInterp("endSong",[]);
@@ -4210,5 +4213,11 @@ class PlayState extends MusicBeatState
 		resetInterps();
 		return super.switchTo(nextState);
 	}
+	public override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
+		super.showTempmessage(str,color,time);
+		tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		
+	}
+
 	var curLight:Int = 0;
 }

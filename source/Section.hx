@@ -6,7 +6,7 @@ typedef SwagSection =
 	var lengthInSteps:Int;
 	var typeOfSection:Int;
 	var mustHitSection:Bool;
-	var scrollSpeed:Int;
+	var ?scrollSpeed:Float;
 	var bpm:Float;
 	var changeBPM:Bool;
 	var altAnim:Bool;

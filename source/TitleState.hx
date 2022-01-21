@@ -30,6 +30,7 @@ import flixel.math.FlxMath;
 using StringTools;
 
 
+
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
@@ -279,6 +280,9 @@ class TitleState extends MusicBeatState
 			persistentUpdate = true;
 			FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
 			FlxG.mouse.useSystemCursor = true; // Uses system cursor, did not know this was a thing until Forever Engine
+
+
+
 		}
 
 
@@ -434,7 +438,7 @@ class TitleState extends MusicBeatState
 				{
 					// Get current version of FNFBR, Uses kade's update checker 
 	
-					var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/Super-Engine/master/version.downloadMe"); // It's recommended to change this if forking
+					var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/Super-Engine/" + (if(MainMenuState.nightly == "") "master" else "nightly") + "/version.downloadMe"); // It's recommended to change this if forking
 					var returnedData:Array<String> = [];
 					
 					http.onData = function (data:String)
@@ -445,7 +449,7 @@ class TitleState extends MusicBeatState
 						updatedVer = returnedData[0];
 						OutdatedSubState.needVer = updatedVer;
 						OutdatedSubState.currChanges = returnedData[1];
-						if (!MainMenuState.ver.contains(updatedVer.trim()))
+						if ((MainMenuState.nightly == "" && !MainMenuState.ver.contains(updatedVer.trim())) || !(MainMenuState.ver + MainMenuState.nightly).contains(updatedVer.trim()))
 						{
 							trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
 							outdated = true;
