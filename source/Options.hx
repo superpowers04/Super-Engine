@@ -1487,6 +1487,7 @@ class AccurateNoteHoldOption extends Option
 	{
 		return (FlxG.save.data.inputHandler == 0 ? "Kade Note Sustain" : "Accurate Note Sustain " + (FlxG.save.data.accurateNoteSustain ? "on" : "off"));
 	}
+}
 class LogGameplayOption extends Option
 {
 	public function new(desc:String)
