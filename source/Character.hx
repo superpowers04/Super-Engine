@@ -1047,7 +1047,7 @@ class Character extends FlxSprite
 	}
 
 
-	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true) // CharTypes: 0=BF 1=Dad 2=GF
+	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true,?charPath:String = "") // CharTypes: 0=BF 1=Dad 2=GF
 	{
 		#if !debug 
 		try{
@@ -1069,6 +1069,7 @@ class Character extends FlxSprite
 		if (curCharacter == 'dad'){dadVar = 6.1;}
 		this.isPlayer = isPlayer;
 		amPreview = preview;
+		if(charPath != "") charLoc = charPath;
 
 		animation = new CharAnimController(this);
 
@@ -1082,7 +1083,10 @@ class Character extends FlxSprite
 			loadVanillaChar(Reflect.field(TitleState.defCharJson.characters,curCharacter));
 			trace("Loaded vanilla json character");
 		}else {
-			trace("Not a JSON built-in char");
+			// trace("Not a JSON built-in char");
+			if(charPath != "" && TitleState.characterPaths[curCharacter] != null){
+				charLoc = TitleState.characterPaths[curCharacter];
+			}
 			loadChar();
 		}
 

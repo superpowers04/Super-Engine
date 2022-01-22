@@ -68,6 +68,7 @@ class CharSelection extends SearchMenuState
 		var charID = searchList.indexOf(curChar);
 		changeSelection(if (charID >= 0) charID else 0); 
 	}
+
 	}catch(e) MainMenuState.handleError('Error with charsel "create" ${e.message}');}
 	override function extraKeys(){
 	if (songs[curSelected] != "automatic" && songs[curSelected] != "" && onlinemod.OnlinePlayMenuState.socket == null){
