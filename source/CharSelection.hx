@@ -38,10 +38,10 @@ class CharSelection extends SearchMenuState
 	super.create();
 	var title = "";
 	switch (Options.PlayerOption.playerEdit){
-		case 0: title="Change BF";
-		case 1: title="Change Opponent";
-		case 2: title="Change GF";
-		default: title= "You found a secret, You should exit this menu to prevent further 'secrets'";
+		case 0: title="Change BF";bg.color = 0x007799;
+		case 1: title="Change Opponent";bg.color = 0x600060;
+		case 2: title="Change GF";bg.color = 0x771521;
+		default: title= "You found a 'secret', You should exit this menu to prevent further 'secret's";bg.color = 0xff0000;
 	}
 
 
