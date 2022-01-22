@@ -46,6 +46,7 @@ class TitleState extends MusicBeatState
 	public static var choosableStagesLower:Map<String,String> = [];
 	public static var choosableCharactersLower:Map<String,String> = [];
 	public static var characterDescriptions:Map<String,String> = [];
+	public static var characterPaths:Map<String,String> = [];
 	public static var invalidCharacters:Array<String> = [];
 	public static var defCharJson:CharacterMetadataJSON = {characters:[], aliases:[]};
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
@@ -84,6 +85,7 @@ class TitleState extends MusicBeatState
 		choosableCharacters = ["bf","bf-pixel","bf-christmas","gf",'gf-pixel',"dad","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","monster"];
 		choosableCharactersLower = ["bf" => "bf","bf-pixel" => "bf-pixel","bf-christmas" => "bf-christmas","gf" => "gf","gf-pixel" => "gf-pixel","dad" => "dad","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","monster" => "monster"];
 		characterDescriptions = ["automatic" => "Automatically uses character from song json"];
+		characterPaths = [];
 		invalidCharacters = [];
 		#if sys
 		// Loading like this is probably not a good idea
@@ -93,18 +95,55 @@ class TitleState extends MusicBeatState
 		{
 		  for (directory in FileSystem.readDirectory(dataDir))
 		  {
-			if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/config.json"))
+			if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/config.json"))
 			{
 				customCharacters.push(directory);
-				if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/description.txt"))
-					characterDescriptions[directory] = File.getContent('mods/characters/${directory}/description.txt');
-			}else if (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
+				if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/description.txt"))
+					characterDescriptions[directory] = File.getContent('${dataDir}/${directory}/description.txt');
+				choosableCharactersLower[directory.toLowerCase()] = directory;
+			}else if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
 				invalidCharacters.push(directory);
 				// customCharacters.push(directory);
 			}
 		  }
 		}
-		// customCharacters.sort((a, b) -> );
+
+		
+		for (_ => dataDir in ['mods/weeks/','mods/packs/']) {
+			
+			if (FileSystem.exists(dataDir))
+			{
+			  for (_dir in FileSystem.readDirectory(dataDir))
+			  {
+				// trace(_dir);
+				if (FileSystem.exists(dataDir + _dir + "/characters/"))
+				{
+					var dir = dataDir + _dir + "/characters/";
+					trace('Checking ${dir} for characters');
+					for (char in FileSystem.readDirectory(dir))
+					{
+						if (FileSystem.exists(dir+"/"+char+"/config.json"))
+						{
+							// var charPack = _dir+"|"+char;
+							customCharacters.push(char);
+							var desc = 'Provided by ' + _dir;
+							if (FileSystem.exists('${dir}/${char}/description.txt'))
+								desc += ";" +File.getContent('${dir}/${char}/description.txt');
+							characterDescriptions[char] = desc;
+							
+							choosableCharactersLower[char.toLowerCase()] = char;
+							characterPaths[char] = dir+"/"+char;
+						}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
+							invalidCharacters.push(char);
+							characterPaths[char] = dir+"/";
+							// customCharacters.push(directory);
+						}
+					}
+				}		
+			  }
+			}
+		}
+
 		haxe.ds.ArraySort.sort(customCharacters, function(a, b) {
 		   if(a < b) return -1;
 		   else if(b > a) return 1;
@@ -112,8 +151,12 @@ class TitleState extends MusicBeatState
 		});
 		for (char in customCharacters){
 			choosableCharacters.push(char);
-			choosableCharactersLower[char.toLowerCase()] = char;
+			// choosableCharactersLower[char.toLowerCase()] = char;
 		}
+		// for (char in customCharacters){
+		// 	choosableCharacters.push(char);
+		// 	choosableCharactersLower[char.toLowerCase()] = char;
+		// }
 		// var rawJson = Assets.getText('assets/data/characterMetadata.json');
 		try{
 
@@ -427,7 +470,7 @@ class TitleState extends MusicBeatState
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
-
+			MainMenuState.ver += MainMenuState.nightly;
 			
 			#if !debug
 			if (FlxG.keys.pressed.SHIFT || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
@@ -449,7 +492,7 @@ class TitleState extends MusicBeatState
 						updatedVer = returnedData[0];
 						OutdatedSubState.needVer = updatedVer;
 						OutdatedSubState.currChanges = returnedData[1];
-						if ((MainMenuState.nightly == "" && !MainMenuState.ver.contains(updatedVer.trim())) || !(MainMenuState.ver + MainMenuState.nightly).contains(updatedVer.trim()))
+						if (!MainMenuState.ver.contains(updatedVer.trim()))
 						{
 							trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
 							outdated = true;

@@ -33,7 +33,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N-0";
+	public static var nightly:String = "N-1";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
@@ -117,8 +117,8 @@ class MainMenuState extends SickMenuState
 			hasWarnedInvalid = true;
 		} 
 		if (!hasWarnedNightly) {
-			errorMessage = "This is a nightly build for " + ver +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
-			ver+=nightly;
+			errorMessage = "This is a nightly build for " + ver.substring(0,ver.length - nightly.length) +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
+			// ver+=nightly;
 			hasWarnedNightly = true;
 		} 
 

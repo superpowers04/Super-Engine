@@ -55,7 +55,7 @@ class OptionsMenu extends MusicBeatState
 
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
-			new InputHandlerOption("Change the input engine used, only works locally.")
+			new InputHandlerOption("Change the input engine used, only works locally. Kade is considered legacy and will not be improved")
 		]),
 		new OptionCategory("Modifiers", [
 		    new PracticeModeOption("Disables the ability to get a gameover."),

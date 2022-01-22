@@ -208,6 +208,13 @@ class SickMenuState extends MusicBeatState
 			select(curSelected);
 		}
 	}
+	var curTween:FlxTween;
+	override function beatHit(){
+		super.beatHit();
+		grpControls.members[curSelected].scale.set(1.2,1.2);
+		if(curTween != null)curTween.cancel();
+		curTween = FlxTween.tween(grpControls.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm));
+	}
 	function select(sel:Int){
 		trace("Why wasn't this replaced?");
 	}

@@ -9,9 +9,11 @@ import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
 import flash.media.Sound;
-
+import Song;
 import sys.io.File;
 import sys.FileSystem;
+import tjson.Json;
+
 
 using StringTools;
 
@@ -23,6 +25,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var blockedFiles:Array<String> = ['picospeaker.json','meta.json','config.json'];
 	static var lastSel:Int = 0;
 	static var lastSearch:String = "";
+	var beetHit:Bool = false;
 
 	var songNames:Array<String> = [];
 	override function findButton(){
@@ -77,7 +80,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						}
 						songs[i] = dataDir + directory;
 						songNames[i] =directory;
-								
+
 						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
 						controlLabel.isMenuItem = true;
 						controlLabel.targetY = i;
@@ -187,7 +190,17 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					curPlaying = songs[curSelected];
 					FlxG.sound.music.stop();
 					FlxG.sound.playMusic(Sound.fromFile('${songs[curSelected]}/Inst.ogg'),1,true);
-					if (!FlxG.sound.music.playing){
+					if (FlxG.sound.music.playing){
+						if(modes[curSelected][selMode] != "No charts for this song!" && FileSystem.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
+							try{
+
+								var e:SwagSong = cast Json.parse(File.getContent(songs[curSelected] + "/" + modes[curSelected][selMode])).song;
+								if(e.bpm > 0){
+									Conductor.changeBPM(e.bpm);
+								}
+							}
+						}
+					}else{
 						curPlaying = "";
 						SickMenuState.musicHandle();
 					}

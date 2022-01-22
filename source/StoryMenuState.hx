@@ -13,6 +13,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
 
+import tjson.Json;
+
 import sys.io.File;
 import sys.FileSystem;
 import multi.MultiPlayState;
@@ -25,6 +27,7 @@ typedef WeekJSON = {
 	var songs:Array<Dynamic>;
 	var songList:Array<String>;
 	// var difficulties:Array<String>;
+	var dontLoadDialog:Bool;
 	var name:String;
 }
 typedef WeekSong = {
@@ -90,6 +93,7 @@ class StoryMenuState extends MusicBeatState
 		"RED SNOW",
 		"Hating Simulator ft. Moawling"
 	];
+	static var weekDialogue:Array<Bool> = [true,true,true,true,true,true,true];
 	static var weekDirectories:Array<String> = [
 			"",
 			"Daddy Dearest",
@@ -124,6 +128,7 @@ class StoryMenuState extends MusicBeatState
 	public static var weekBads:Int = 0;
 	public static var weekShits:Int = 0;
 	public static var weekMaxCombo:Int = 0;
+	public static var loadDialog:Bool = true;
 
 	function resetWeeks(){
 		weekData = [
@@ -190,7 +195,7 @@ class StoryMenuState extends MusicBeatState
 			  	curDir = directory;
 				if (FileSystem.exists(Sys.getCwd() + "mods/weeks/"+directory+"/config.json"))
 				{
-					var json:WeekJSON = haxe.Json.parse(File.getContent("mods/weeks/"+directory+"/config.json"));
+					var json:WeekJSON = Json.parse(File.getContent("mods/weeks/"+directory+"/config.json"));
 					var songList:Array<String> = [];
 					var chartList:Array<String> = [];
 					var si = 0;
@@ -219,10 +224,12 @@ class StoryMenuState extends MusicBeatState
 					// var char2 = ;
 					weekData[i] = songList;
 					weekCharacters[i] = (if(si > 0) ['bf','bf','gf'] else ['','','']);
-					weekNames[i] = if(json.name == "") directory else json.name;
+					weekNames[i] = if(json.name == null || json.name == "") directory else json.name;
 					weekChartNames[i] = chartList;
 					weekDirectories[i] = directory;
+					weekDialogue[i] = !json.dontLoadDialog;
 					weekEmbedded[i] = false;
+
 					i++;
 				}
 			  }

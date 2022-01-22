@@ -10,6 +10,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
+import flixel.tweens.FlxTween;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -46,6 +47,7 @@ class SearchMenuState extends MusicBeatState
 		"Find" => "Find"
 	];
 	var useAlphabet:Bool = true;
+
 	
 
 	function addTitleText(str:String = ""){
@@ -192,6 +194,13 @@ class SearchMenuState extends MusicBeatState
 	}
 	function extraKeys(){
 		return;
+	}
+	var curTween:FlxTween;
+	override function beatHit(){
+		super.beatHit();
+		grpSongs.members[curSelected].scale.set(1.2,1.2);
+		if(curTween != null)curTween.cancel();
+		curTween = FlxTween.tween(grpSongs.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm));
 	}
 	function ret(){
 		FlxG.mouse.visible = false;

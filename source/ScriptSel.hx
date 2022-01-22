@@ -55,6 +55,7 @@ class ScriptSel extends SearchMenuState
 		if (searchList[0] == null){searchList.push('No scripts found!');trace('No scripts found!');}
 		// searchList = TitleState.choosableStages;
 		super.create();
+		bg.color = 0x444460;
 	}catch(e) MainMenuState.handleError('Error with stagesel "create" ${e.message}');}
 
 	override function changeSelection(change:Int = 0){
