@@ -41,7 +41,7 @@ Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/14264) ⋅ [late
  - [Kawai Sprite](https://twitter.com/kawaisprite) - Music
 
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp.
-## Funkin Battle Royale Mod
+## Super Engine
 - [Superpowers04](https://github.com/superpowers04) - Pretty much everything
 - [NayToon](https://github.com/cartoon032) - Some help and providing early Windows builds
 - [XieneDev](https://github.com/XieneDev/) - Responsible for the base mod
@@ -68,4 +68,5 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 - [V.S. Ex Tabi](https://gamebanana.com/mods/286388) - The arrow examples are from here
 - [Smoke 'Em Out Struggle](https://gamebanana.com/mods/166531) - Used Garcello's character for testing custom characters/custom animations
 ### Special Thanks
+- [JWambaugh](https://github.com/JWambaugh) - The epic tjson library that I copied and modified for Super Engine
 - [NoLime](https://gamebanana.com/members/1762727) - Giving permission to have [BF Girlfriend mode](https://gamebanana.com/mods/185105) as a built-in character
