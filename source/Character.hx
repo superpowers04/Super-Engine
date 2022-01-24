@@ -568,7 +568,7 @@ class Character extends FlxSprite
 		if(TitleState.retChar(curCharacter) != "" && !amPreview) curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
 		isCustom = true;
 		var charPropJson:String = "";
-		if(!FileSystem.exists('${charLoc}/$curCharacter/config.json')){
+		if(!FileSystem.exists('${charLoc}/$curCharacter/config.json') && charProperties == null){
 			if(amPreview){
 				var idleName:String = "";
 				{ // Load characters without an idle animation, hopefully

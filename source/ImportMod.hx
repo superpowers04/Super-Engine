@@ -107,7 +107,7 @@ class ImportModFromFolder extends MusicBeatState
 			for (directory in FileSystem.readDirectory('${assets}songs/')) {
 				if(!FileSystem.isDirectory('${assets}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
 				var dir:String = '${folder}assets/songs/${directory}/';
-				if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
+				if(!FileSystem.exists('${dir}Inst.ogg') || (!FileSystem.isDirectory('${assets}data/${directory}/') && !FileSystem.isDirectory('${assets}data/songs/${directory}/')) ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 				valid = true;
 			}
 		}
@@ -146,18 +146,14 @@ class ImportModFromFolder extends MusicBeatState
 	}
 	function scanSongs(?folder:String = "",assets:String=""){
 		try{
-			// if(fold != ""){
-			// 	folder = fold; 
-			// }
-			// var assets = ; // For easy access
-			if(FileSystem.exists('${assets}songs/')){
-
+			if(FileSystem.exists('${assets}songs/')){ // Chad github style
+				var inCharts = (if(FileSystem.isDirectory('${assets}data/songs/')) '${assets}data/songs/' else '${assets}data/'); // Fuckin later versions of kade engine
 				for (directory in FileSystem.readDirectory('${assets}songs/')) {
 					loadingText.text = 'Checking ${directory}...'; // Just display this text
 					draw();
 					if(!FileSystem.isDirectory('${assets}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
 					var dir:String = '${folder}assets/songs/${directory}/';
-					if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
+					if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${inCharts}${directory}/') ) {trace('"${inCharts}${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 
 					var outDir:String = Sys.getCwd() + 'mods/charts/${chartPrefix}${directory}/';
 					try{FileSystem.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
@@ -169,16 +165,16 @@ class ImportModFromFolder extends MusicBeatState
 							File.copy(i,v);
 						}catch(e) trace('$i caused ${e.message}');
 					}
-					for (file in FileSystem.readDirectory('${assets}data/${directory}/')) {
+					for (file in FileSystem.readDirectory('${inCharts}${directory}/')) {
 						try{
 							loadingText.text = 'Copying ${file}...';// Just display this text
 					draw();
-							File.copy('${assets}data/${directory}/${file}','${outDir}${file}');
+							File.copy('${inCharts}${directory}/${file}','${outDir}${file}');
 						}catch(e) trace('$file caused ${e.message}');
 
 				}songsImported++;}
 			}
-		if(FileSystem.exists('${assets}music/')){
+		if(FileSystem.exists('${assets}music/')){ // Older itch.io style
 			for (directory in FileSystem.readDirectory('${assets}music/')) {
 				if (!directory.endsWith("inst.ogg")) continue;
 				directory = directory.substr(0,-8);
@@ -246,8 +242,8 @@ class ImportModFromFolder extends MusicBeatState
 	}
 	override function update(elapsed:Float)
 	{
-		if (done && FlxG.keys.justPressed.ANY) {
-			FlxG.switchState(new OtherMenuState());
+		if ((done && FlxG.keys.justPressed.ANY) || FlxG.keys.justPressed.ESCAPE) {
+			FlxG.switchState(new MainMenuState());
 		}
 		if(!selectedLength){
 			if(FlxG.keys.justPressed.ENTER){

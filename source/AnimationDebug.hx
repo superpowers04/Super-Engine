@@ -536,7 +536,7 @@ class AnimationDebug extends MusicBeatState
 			errorStage = 6; // Saving
 			var backed = false;
 			if (FileSystem.exists(dad.loadedFrom)) {backed=true;File.copy(dad.loadedFrom,dad.loadedFrom + "-bak.json");}
-			File.saveContent(dad.loadedFrom,haxe.Json.stringify(charJson, "\t"));
+			File.saveContent(dad.loadedFrom,Json.stringify(charJson, "fancy"));
 			showTempmessage('Saved to ${if (dad.loadedFrom.length > 20) '...' + dad.loadedFrom.substring(-20) else dad.loadedFrom} successfully.' + (if(backed) "Old json was backed up to -bak.json." else ""));
 			FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 			spawnChar(true);
@@ -644,7 +644,6 @@ class AnimationDebug extends MusicBeatState
 	function editAnimation(Anim:String,charAnim:CharJsonAnimation,?replace:Bool = false,?unbind:Bool = false){
 		var exists:Bool = false;
 		var id:Int = 0;
-		trace(haxe.Json.stringify(charAnim,"\t"));
 		for (i => v in charJson.animations) {
 			if (v.anim == Anim) {exists=true;id = i;break;}
 		}

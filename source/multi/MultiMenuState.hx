@@ -22,7 +22,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var modes:Map<Int,Array<String>> = [];
 	var diffText:FlxText;
 	var selMode:Int = 0;
-	var blockedFiles:Array<String> = ['picospeaker.json','meta.json','config.json'];
+	var blockedFiles:Array<String> = ['picospeaker.json','_meta.json','meta.json','config.json'];
 	static var lastSel:Int = 0;
 	static var lastSearch:String = "";
 	var beetHit:Bool = false;
@@ -198,6 +198,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 								if(e.bpm > 0){
 									Conductor.changeBPM(e.bpm);
 								}
+							}catch(e){
+								showTempmessage("Unable to get BPM from chart automatically. BPM will be out of sync");
 							}
 						}
 					}else{

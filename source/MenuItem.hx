@@ -21,7 +21,7 @@ class MenuItem extends FlxSpriteGroup
 		week = new FlxText(0,0,0,weekName,size);
 		// week.font = CoolUtil.font;
 		week.setFormat(CoolUtil.font,size);
-		week.wordWrap = true;
+		// week.wordWrap = true;
 		week.y += week.height * 0.50;
 		add(week);
 	}

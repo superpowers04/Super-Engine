@@ -227,7 +227,7 @@ class StoryMenuState extends MusicBeatState
 					weekNames[i] = if(json.name == null || json.name == "") directory else json.name;
 					weekChartNames[i] = chartList;
 					weekDirectories[i] = directory;
-					weekDialogue[i] = !json.dontLoadDialog;
+					weekDialogue[i] = (if(json.dontLoadDialog) false else true);
 					weekEmbedded[i] = false;
 
 					i++;

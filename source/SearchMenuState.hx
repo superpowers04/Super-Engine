@@ -198,9 +198,12 @@ class SearchMenuState extends MusicBeatState
 	var curTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
-		grpSongs.members[curSelected].scale.set(1.2,1.2);
-		if(curTween != null)curTween.cancel();
-		curTween = FlxTween.tween(grpSongs.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm));
+		if(grpSongs.members[curSelected].useAlphabet){
+			
+			grpSongs.members[curSelected].scale.set(1.2,1.2);
+			if(curTween != null)curTween.cancel();
+			curTween = FlxTween.tween(grpSongs.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm));
+		}
 	}
 	function ret(){
 		FlxG.mouse.visible = false;
