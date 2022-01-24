@@ -13,8 +13,8 @@ import lime.app.Application;
 class OutdatedSubState extends MusicBeatState
 {
 
-	public static var needVer:String = "IDFK LOL";
-	public static var currChanges:String = "dk";
+	public static var needVer:String = "Unknown";
+	public static var currChanges:String = "Check for Updates needs to be enabled in Options > Misc!";
 	
 	private var bgColors:Array<String> = [
 		'#314d7f',
@@ -45,9 +45,10 @@ class OutdatedSubState extends MusicBeatState
 		outdatedLMAO.scrollFactor.set();
 		outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
 		add(outdatedLMAO);
+
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
 			"\n\nChangelog:\n\n"
-			+ currChanges
+			+ currChanges.substring(0,1000)
 			+ "\n\n\nPress Space to get latest update's zip, D to open a invite to the Discord server or Escape to close.\n\nYou can install it by downloading the zip and dragging the files\n into your game folder",
 			32);
 		
