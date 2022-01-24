@@ -387,6 +387,7 @@ class PlayState extends MusicBeatState
 			if (brTools != null) {
 				trace('Using hsBrTools');
 				interp.variables.set("BRtools",brTools); 
+				brTools.reset();
 			}else {
 				trace('Using assets folder');
 				interp.variables.set("BRtools",new HSBrTools("assets/"));
@@ -1963,12 +1964,12 @@ class PlayState extends MusicBeatState
 			// if (FlxG.save.data.middleScroll && player == 0 && i > 1) babyArrow.x += Note.swagWidth * 6;
 				switch(player){
 					case 1:{
-						babyArrow.x = FlxG.width * 0.625;
+						babyArrow.x = FlxG.width * 0.750;
 						// babyArrow.x -= Note.swagWidth * 0.5;
 					}
 					case 0:
 						// babyArrow.screenCenter(X);
-						babyArrow.x = FlxG.width * 0.20;
+						babyArrow.x = FlxG.width * 0.15;
 						// babyArrow.x += (Note.swagWidth * i + i) - (Note.swagWidth * 2 + 2);
 				}
 				babyArrow.x += (Note.swagWidth * i + i) - (Note.swagWidth * 1 );
@@ -4209,8 +4210,9 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
+
 	override function switchTo(nextState:FlxState):Bool{
-		resetInterps();
+		if(!paused)resetInterps();
 		return super.switchTo(nextState);
 	}
 	public override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
