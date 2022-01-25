@@ -65,7 +65,7 @@ class ChartRepoState extends SearchMenuState
 		Sys.command(unarExe,['x','-y',from,'-o${to}']);
 	}
 	override function ret(){
-		if(installing<=0){FlxG.mouse.visible = false;FlxG.switchState(new OtherMenuState());}else{installingText.color = FlxColor.RED;}
+		if(installing<=0){FlxG.mouse.visible = false;FlxG.switchState(new MainMenuState());}else{installingText.color = FlxColor.RED;}
 	}
 	override function reloadList(?reload = false,?search=""){
 		curSelected = 0;
@@ -148,6 +148,7 @@ class ChartRepoState extends SearchMenuState
 		}
 		toggleables['search'] = true;
 		super.create();
+		bg.color = 0x335566;
 
 		installingText = new FlxText(FlxG.width * 0.12, 5, 0,'Installing ${installing}', 32);
 		installingText.scrollFactor.set();

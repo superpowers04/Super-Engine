@@ -129,6 +129,7 @@ class RepoState extends SickMenuState
 		}
 
 		super.create();
+		bg.color = 0x335533;
 
 		installingText = new FlxText(FlxG.width * 0.12, 5, 0,'Installing ${installing}', 32);
 		installingText.scrollFactor.set();

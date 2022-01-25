@@ -564,8 +564,12 @@ class Character extends FlxSprite
 	}
 
 	function loadCustomChar(){
-		trace('Loading a custom character "$curCharacter"! ');				
 		if(TitleState.retChar(curCharacter) != "" && !amPreview) curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
+		trace('Loading a custom character "$curCharacter"! ');				
+		if(charLoc == "mods/characters" && TitleState.characterPaths[curCharacter] != null){
+			charLoc = TitleState.characterPaths[curCharacter];
+			trace('$curCharacter is loading from $charLoc');
+		}
 		isCustom = true;
 		var charPropJson:String = "";
 		if(!FileSystem.exists('${charLoc}/$curCharacter/config.json') && charProperties == null){
@@ -1084,9 +1088,7 @@ class Character extends FlxSprite
 			trace("Loaded vanilla json character");
 		}else {
 			// trace("Not a JSON built-in char");
-			if(charPath != "" && TitleState.characterPaths[curCharacter] != null){
-				charLoc = TitleState.characterPaths[curCharacter];
-			}
+
 			loadChar();
 		}
 

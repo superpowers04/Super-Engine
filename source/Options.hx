@@ -902,7 +902,7 @@ class ReloadCharlist extends Option
 	}
 
 	override function getValue():String {
-		return '${TitleState.choosableCharacters.length} character${CoolUtil.multiInt(TitleState.choosableCharacters.length)} loaded';
+		return '${TitleState.choosableCharacters.length} char${CoolUtil.multiInt(TitleState.choosableCharacters.length)}, and ${TitleState.choosableStages.length} stage${CoolUtil.multiInt(TitleState.choosableStages.length)} recognized';
 	}
 
 }
