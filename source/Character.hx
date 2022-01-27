@@ -1078,7 +1078,7 @@ class Character extends FlxSprite
 		animation = new CharAnimController(this);
 
 		if(charJson != null) charProperties = charJson;
-		switch(charType){case 1:definingColor = FlxColor.RED;default:definingColor = FlxColor.GREEN;}
+		if(!amPreview) switch(charType){case 1:definingColor = FlxColor.RED;default:definingColor = FlxColor.GREEN;} else definingColor = FlxColor.WHITE;
 		
 		if (exitex != null) tex = exitex;
 		antialiasing = true;

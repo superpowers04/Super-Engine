@@ -139,7 +139,7 @@ class OnlinePlayState extends PlayState
 
 
 		// Remove healthbar
-		if (FlxG.save.data.downscroll){scoreTxt.y = 10;}
+		// if (FlxG.save.data.downscroll){scoreTxt.y = 10;}
 		remove(healthBarBG);
 		remove(healthBar);
 		remove(iconP1);
@@ -300,7 +300,7 @@ class OnlinePlayState extends PlayState
 	{
 		clients[-1] = OnlineNickState.nickname;
 		clientScores[-1] = PlayState.songScore;
-		clientText[-1] = "S:" + PlayState.songScore+ " M:" + PlayState.misses+ " A:" + PlayState.accuracy;
+		clientText[-1] = "S:" + PlayState.songScore+ " M:" + PlayState.misses+ " A:" + Std.int(PlayState.accuracy);
 
 		canPause = false;
 		FlxG.sound.playMusic(loadedInst, 1, true);

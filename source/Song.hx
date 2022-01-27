@@ -94,8 +94,8 @@ class Song
 
 
 	static function modifyChart(swagShit:SwagSong):SwagSong{
-		var hurtArrows = (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null);
-		var opponentArrows = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows"));
+		var hurtArrows = (QuickOptionsSubState.getSetting("Custom Arrows") || onlinemod.OnlinePlayMenuState.socket != null);
+		var opponentArrows = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Custom Arrows"));
 		var invertedNotes:Array<Int> = [4,5,6,7];
 		var oppNotes:Array<Int> = [0,1,2,3];
 		// if(FlxG.save.data.regenSong){
@@ -203,12 +203,11 @@ class Song
 					var note:Array<Dynamic> = section.sectionNotes[nid];
 					// Removes opponent arrows 
 					if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");continue;}
-
-
+					
 					if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-						if(note[4] == 1 || note[1] > 7) {note[3] = 1;} // Support for Andromeda and tricky notes
+						if(note[3] == 0 && (note[4] == 1 || note[1] > 7)) {note[3] = 1;} // Support for Andromeda and tricky notes
 					}else{
-						note[3] = 0;
+						note[3] = null;
 					}
 					sN.push(note);
 

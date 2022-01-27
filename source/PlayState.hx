@@ -1964,7 +1964,7 @@ class PlayState extends MusicBeatState
 			// if (FlxG.save.data.middleScroll && player == 0 && i > 1) babyArrow.x += Note.swagWidth * 6;
 				switch(player){
 					case 1:{
-						babyArrow.x = FlxG.width * 0.750;
+						babyArrow.x = FlxG.width * 0.625;
 						// babyArrow.x -= Note.swagWidth * 0.5;
 					}
 					case 0:
