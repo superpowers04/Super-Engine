@@ -518,7 +518,7 @@ class ChartingState extends MusicBeatState
 		var stepperSusLengthLabel = new FlxText(75,10,'Note Sustain Length');
 
 		var notetypetxt = new FlxUIText(120,10,'Note Type');
-		var notetypeinput = new FlxUIInputText(notetypetxt.x , notetypetxt.y + 20, 120, '0', 8);
+		var notetypeinput = new FlxUIInputText(notetypetxt.x , notetypetxt.y + 20, 120,null, 8);
 		anothertypingshit = notetypeinput;
 
 		forcehurtnote = new FlxUICheckBox(notetypeinput.x , notetypeinput.y + 20 ,null,null, 'Is hurt note, Will overwrite Note Type!');
@@ -859,7 +859,7 @@ class ChartingState extends MusicBeatState
 		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
 
-			if (_song.notes[curSection + 1] == null)
+			if (_song.notes[curSection + 1] == null || _song.notes[curSection + 2] == null)
 			{
 				addSection();
 			}
@@ -1066,10 +1066,17 @@ class ChartingState extends MusicBeatState
 
 				// trace(Conductor.stepCrochet / snap);
 
-				if (doSnapShit)
-					FlxG.sound.music.time = stepMs - (FlxG.mouse.wheel * Conductor.stepCrochet / snap);
-				else
-					FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet);
+				// if (doSnapShit)
+				// 	FlxG.sound.music.time = stepMs - (FlxG.mouse.wheel * Conductor.stepCrochet / snap);
+				// else
+				var addedTime = FlxG.sound.music.time - (FlxG.mouse.wheel * Conductor.stepCrochet);
+				if(addedTime < 1){
+					FlxG.sound.music.time = FlxG.sound.music.length - FlxG.sound.music.time - (FlxG.mouse.wheel * Conductor.stepCrochet);
+				}else if(addedTime > FlxG.sound.music.length){
+					FlxG.sound.music.time = -(FlxG.mouse.wheel * Conductor.stepCrochet);
+				} else{
+					FlxG.sound.music.time = addedTime;
+				}
 				// trace(stepMs + " + " + Conductor.stepCrochet / snap + " -> " + FlxG.sound.music.time);
 
 				vocals.time = FlxG.sound.music.time;
@@ -1534,7 +1541,7 @@ class ChartingState extends MusicBeatState
 			lastNote = note;
 			for (i in _song.notes[curSection].sectionNotes)
 			{
-				if (i[0] == note.strumTime && i[1] == note.noteData)
+				if (i[0] == note.strumTime && i[1] % 4 == note.strumTime)
 				{
 					_song.notes[curSection].sectionNotes.remove(i);
 				}

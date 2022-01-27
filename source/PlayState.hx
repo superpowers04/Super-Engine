@@ -3374,10 +3374,9 @@ class PlayState extends MusicBeatState
 						
 							}else
 							{
-								if (daNote.mustPress)
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
-								else
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
+								
+								
+								daNote.y = ((if (daNote.mustPress)playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))]).y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
 									daNote.y -= daNote.height / 2;

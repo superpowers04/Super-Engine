@@ -1,4 +1,4 @@
-0.11.0-N2;
+0.11.0-N3;
 **Ingame download link will not work due to Github repo changing name, You will have to download from the link in #info on the Discord**
 - Update downloads to use Super-Engine instead of older Battle-Royale
 - Fix one note sustains
@@ -7,6 +7,8 @@
 - Menus now have a overlay sprite, so you can have a background that isn't affected by color
 - Swap over to https://github.com/JWambaugh/TJSON for JSON instead of Haxe.JSON for speed and readability(No new dependancies as it's modified and part of SE
 )
+- Weeks can provide charts and characters
+- Folders put in mods/packs will now load characters and charts from them
 Script related:
 - Add Paths to scripts for loading vanilla assets
 - HsBrTools is always initialised in week or modded songs, opposed to only when a script is present. Other scripts can access this using PlayState.instance.hsBrTools

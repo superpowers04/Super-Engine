@@ -197,28 +197,33 @@ class Song
 			for (sid => section in swagShit.notes) {
 				if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
 
-				var sN:Array<Array<Dynamic>> = [];
+				var sN:Array<Int> = [];
 
-				for (nid in 0 ... section.sectionNotes.length){ // Regenerate section, is a bit fucky but only happens when loading
+				for (nid in 0 ... section.sectionNotes.length){ // Edit section
 					var note:Array<Dynamic> = section.sectionNotes[nid];
+					var modified = false;
 					// Removes opponent arrows 
-					if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");continue;}
+					if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");sN.push(nid);continue;}
 					
 					if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-						if(note[3] == 0 && (note[4] == 1 || note[1] > 7)) {note[3] = 1;} // Support for Andromeda and tricky notes
+						if(Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > 7)) {note[3] = 1;modified = true;} // Support for Andromeda and tricky notes
 					}else{
-						note[3] = null;
+						note[3] = null;modified = true;
 					}
-					sN.push(note);
+					if(modified)section.sectionNotes[nid] = note;
 
 				}
-				swagShit.notes[sid].sectionNotes = sN;
+				for (_ => v in sN) {
+					section.sectionNotes[v] = null;
+				}
+
+				// swagShit.notes[sid].sectionNotes = sN;
 				
-				haxe.ds.ArraySort.sort(swagShit.notes[sid].sectionNotes, function(a, b) {
-				   if(a[0] < b[0]) return -1;
-				   else if(b[0] > a[0]) return 1;
-				   else return 0;
-				});
+				// haxe.ds.ArraySort.sort(swagShit.notes[sid].sectionNotes, function(a, b) {
+				//    if(a[0] < b[0]) return -1;
+				//    else if(b[0] > a[0]) return 1;
+				//    else return 0;
+				// });
 			}
 
 		// }
