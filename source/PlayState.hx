@@ -2818,7 +2818,7 @@ class PlayState extends MusicBeatState
 	function setInputHandlers(){
 		inputMode = FlxG.save.data.inputHandler;
 		var inputEngines = ["KE " + MainMenuState.kadeEngineVer,"KE1.5.2-SE" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")];
-		if (onlinemod.OnlinePlayMenuState.socket != null && inputMode != 0) {inputMode = 0;trace("Loading with non-kade in online. Forcing kade!");} // This is to prevent input differences between clients
+		// if (onlinemod.OnlinePlayMenuState.socket != null && inputMode != 0) {inputMode = 0;trace("Loading with non-kade in online. Forcing kade!");} // This is to prevent input differences between clients
 		trace('Using ${inputMode}');
 		switch(inputMode){
 			case 0:
