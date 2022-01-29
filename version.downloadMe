@@ -9,6 +9,7 @@
 )
 - Weeks can provide charts and characters
 - Folders put in mods/packs will now load characters and charts from them
+- Characters will automatically play "songStart" when the character is loaded
 Script related:
 - Add Paths to scripts for loading vanilla assets
 - HsBrTools is always initialised in week or modded songs, opposed to only when a script is present. Other scripts can access this using PlayState.instance.hsBrTools

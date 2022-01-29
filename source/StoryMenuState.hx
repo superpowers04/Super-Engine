@@ -325,6 +325,7 @@ class StoryMenuState extends MusicBeatState
 				PlayState.endDialogue = CoolUtil.coolFormat(File.getContent('${selSong}/end-dialogue.txt'));
 			}else {PlayState.endDialogue = [];}
 			onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
+			onlinemod.OfflinePlayState.nameSpace = weekNames[curWeek];
 			// LoadingState.loadAndSwitchState(new MultiPlayState());
 						new FlxTimer().start(1, function(tmr:FlxTimer)
 			{

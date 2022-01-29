@@ -45,6 +45,7 @@ class TitleState extends MusicBeatState
 	public static var choosableStages:Array<String> = ["default","stage",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
 	public static var choosableStagesLower:Map<String,String> = [];
 	public static var choosableCharactersLower:Map<String,String> = [];
+	public static var weekChars:Map<String,Array<String>> = [];
 	public static var characterDescriptions:Map<String,String> = [];
 	public static var characterPaths:Map<String,String> = [];
 	public static var invalidCharacters:Array<String> = [];
@@ -86,6 +87,7 @@ class TitleState extends MusicBeatState
 		choosableCharactersLower = ["bf" => "bf","bf-pixel" => "bf-pixel","bf-christmas" => "bf-christmas","gf" => "gf","gf-pixel" => "gf-pixel","dad" => "dad","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","monster" => "monster"];
 		characterDescriptions = ["automatic" => "Automatically uses character from song json"];
 		characterPaths = [];
+		weekChars = [];
 		invalidCharacters = [];
 		#if sys
 		// Loading like this is probably not a good idea
@@ -124,15 +126,29 @@ class TitleState extends MusicBeatState
 					{
 						if (FileSystem.exists(dir+"/"+char+"/config.json"))
 						{
-							// var charPack = _dir+"|"+char;
+							var charPack = "";
+							if(choosableCharactersLower[char.toLowerCase()] != null){
+								var e = charPack;
+								charPack = _dir+"|"+char;
+								char = e;
+							}
 							customCharacters.push(char);
 							var desc = 'Provided by ' + _dir;
 							if (FileSystem.exists('${dir}/${char}/description.txt'))
 								desc += ";" +File.getContent('${dir}/${char}/description.txt');
 							characterDescriptions[char] = desc;
-							
-							choosableCharactersLower[char.toLowerCase()] = char;
-							characterPaths[char] = dir;
+							if(choosableCharactersLower[char.toLowerCase()] != null){
+
+								choosableCharactersLower[charPack.toLowerCase()] = char;
+								if(weekChars[char] == null){
+									weekChars[char] = [];
+								}
+								weekChars[char].push(charPack);
+								characterPaths[charPack] = dir;
+							}else{
+								choosableCharactersLower[char.toLowerCase()] = char;
+								characterPaths[char] = dir;
+							}
 
 						}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
 							invalidCharacters.push(char);

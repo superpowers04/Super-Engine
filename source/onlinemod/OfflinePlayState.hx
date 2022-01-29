@@ -24,6 +24,7 @@ class OfflinePlayState extends PlayState
 	public static var voicesFile = "";
   public static var instFile = "";
   public static var chartFile:String = "";
+  public static var nameSpace:String = "";
   function loadSongs(){
 
 		if(instFile == ""){
@@ -50,7 +51,17 @@ class OfflinePlayState extends PlayState
   function loadJSON(){
   	try{
 
-  		if (!ChartingState.charting) PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+  		if (!ChartingState.charting) {PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+  				if(nameSpace != ""){
+  					if(TitleState.retChar(nameSpace + "|" + PlayState.SONG.player2) != null){
+  						PlayState.SONG.player2 = nameSpace + "|" + PlayState.SONG.player2;
+  					}
+  					if(TitleState.retChar(nameSpace + "|" + PlayState.SONG.player1) != null){
+  						PlayState.SONG.player1 = nameSpace + "|" + PlayState.SONG.player1;
+  					}
+  				
+  				}
+  		}
   	}catch(e) MainMenuState.handleError('Error loading chart \'${chartFile}\': ${e.message}');
   }
   override function create()

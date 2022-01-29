@@ -14,12 +14,14 @@ class HealthIcon extends FlxSprite
 	var vanIcon:Bool = false;
 	var isPlayer:Bool = false;
 	var isMenuIcon:Bool = false;
+	public var pathh = "mods/characters";
 
-	public function new(?char:String = 'bf', ?isPlayer:Bool = false,?clone:String = "",?isMenuIcon:Bool = false)
+	public function new(?char:String = 'bf', ?isPlayer:Bool = false,?clone:String = "",?isMenuIcon:Bool = false,?path:String = "mods/characters")
 	{
 		super();
 		this.isPlayer = isPlayer;
 		this.isMenuIcon = isMenuIcon;
+		this.pathh = path + "/";
 		changeSprite(char,"");
 	}
 
@@ -32,16 +34,17 @@ class HealthIcon extends FlxSprite
 
 	public function changeSprite(?char:String = 'bf',?clone:String = "face",?useClone:Bool = true)
 	{
+		var path = pathh;
 		var chars:Array<String> = ["bf","spooky","pico","mom","mom-car",'parents-christmas',"senpai","senpai-angry","spirit","spooky","bf-pixel","gf","dad","monster","monster-christmas","parents-christmas","bf-old","gf-pixel","gf-christmas","face","tankman"];
 		var relAnims:Bool = true;
-		if (!chars.contains(char) &&FileSystem.exists(Sys.getCwd() + "mods/characters/"+char+"/healthicon.png")){
+		if (!chars.contains(char) &&FileSystem.exists(path+char+"/healthicon.png")){
 			// trace('Custom character with custom icon! Loading custom icon.');
-			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$char/healthicon.png')), true, 150, 150);
+			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}$char/healthicon.png')), true, 150, 150);
 			char = "bf";
 			vanIcon = false;
-		}else if ((chars.contains(char) || chars.contains(clone)) && FileSystem.exists(Sys.getCwd() + "mods/characters/"+char+"/icongrid.png")){
+		}else if ((chars.contains(char) || chars.contains(clone)) && FileSystem.exists(path+char+"/icongrid.png")){
 			// trace('Custom character with custom icongrid! Loading custom icon.');
-			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/characters/$char/icongrid.png')), true, 150, 150);
+			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}$char/icongrid.png')), true, 150, 150);
 			if (clone != "") char = clone;
 			vanIcon = false;
 		}else{

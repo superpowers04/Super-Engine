@@ -566,7 +566,10 @@ class Character extends FlxSprite
 	function loadCustomChar(){
 		if(TitleState.retChar(curCharacter) != "" && !amPreview) curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
 		trace('Loading a custom character "$curCharacter"! ');				
-		if(charLoc == "mods/characters" && TitleState.characterPaths[curCharacter] != null){
+		if(charLoc == "mods/characters" && TitleState.weekChars[curCharacter] != null && TitleState.weekChars[curCharacter].contains(onlinemod.OfflinePlayState.nameSpace) && TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter] != null){
+			charLoc = TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter];
+			trace('$curCharacter is loading from $charLoc');
+		}else if(charLoc == "mods/characters" && TitleState.characterPaths[curCharacter] != null){
 			charLoc = TitleState.characterPaths[curCharacter];
 			trace('$curCharacter is loading from $charLoc');
 		}
@@ -1140,6 +1143,9 @@ class Character extends FlxSprite
 		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
 	
 		if(animation.curAnim == null && !lonely && !amPreview){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
+		if(animation.getByName('songStart') != null && !lonely && !amPreview){
+			playAnim('songStart');
+		}
 		#if !debug
 		}catch(e){
 

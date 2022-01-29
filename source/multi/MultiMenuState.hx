@@ -28,6 +28,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var beetHit:Bool = false;
 
 	var songNames:Array<String> = [];
+	var nameSpaces:Array<String> = [];
 	override function findButton(){
 		super.findButton();
 		changeDiff();
@@ -123,6 +124,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							if (i != 0)
 								controlLabel.alpha = 0.6;
 							grpSongs.add(controlLabel);
+							nameSpaces[i] = dataDir;
 							i++;
 						}
 					}
@@ -160,6 +162,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							if (i != 0)
 								controlLabel.alpha = 0.6;
 							grpSongs.add(controlLabel);
+							nameSpaces[i] = dataDir;
 							i++;
 						}
 					}

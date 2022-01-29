@@ -82,6 +82,7 @@ class SearchMenuState extends MusicBeatState
 		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
 		PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
 		SickMenuState.chgTime = true;
+		onlinemod.OfflinePlayState.nameSpace = "";
 	}
 	override function create()
 	{try{
