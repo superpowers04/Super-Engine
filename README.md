@@ -2,7 +2,7 @@
 This is a mod of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/)<br>
 This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine) with a hint of [FPSPlus](https://github.com/ThatRozebudDude/FPS-Plus-Public/) added in and with some inspiration from [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine)/[FNF Multi](https://shadowmario.itch.io/funkinmulti) <br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
-This is client aims to allow people to use normal Funkin Battle Royale servers with custom characters or play custom charts and such when offline<br>
+This client aims to allow people to use normal Funkin Battle Royale servers with custom characters or play custom charts and such when offline<br>
 Last Build:[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml) Click on a commit and go to the artifacts to download, you need a github account to download artifacts
 <br>[Discord server](https://discord.gg/28GPGTRuuR)
 
