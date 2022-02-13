@@ -64,6 +64,10 @@ class TitleState extends MusicBeatState
 	var wackyImage:FlxSprite;
 	public static function loadNoteAssets(?forced:Bool = false){
 		if (NoteAssets == null || NoteAssets.name != FlxG.save.data.noteAsset || forced){
+			if (!FileSystem.exists('mods/noteassets/${FlxG.save.data.noteAsset}.png') || !FileSystem.exists('mods/noteassets/${FlxG.save.data.noteAsset}.xml')){
+				FlxG.save.data.noteAsset = "default";
+
+			} // Hey, requiring an entire reset of the game's settings when noteasset goes missing is not a good idea
 			new NoteAssets(FlxG.save.data.noteAsset);
 		}
 	}
@@ -83,8 +87,8 @@ class TitleState extends MusicBeatState
 	}
 	public static function checkCharacters(){
 
-		choosableCharacters = ["bf","bf-pixel","bf-christmas","gf",'gf-pixel',"dad","spooky","pico","mom",'parents-christmas',"senpai","senpai-angry","spirit","monster"];
-		choosableCharactersLower = ["bf" => "bf","bf-pixel" => "bf-pixel","bf-christmas" => "bf-christmas","gf" => "gf","gf-pixel" => "gf-pixel","dad" => "dad","spooky" => "spooky","pico" => "pico","mom" => "mom","parents-christmas" => "parents-christmas","senpai" => "senpai","senpai-angry" => "senpai-angry","spirit" => "spirit","monster" => "monster"];
+		choosableCharacters = ["bf","gf"];
+		choosableCharactersLower = ["bf" => "bf","gf" => "gf"];
 		characterDescriptions = ["automatic" => "Automatically uses character from song json"];
 		characterPaths = [];
 		weekChars = [];
@@ -93,6 +97,31 @@ class TitleState extends MusicBeatState
 		// Loading like this is probably not a good idea
 		var dataDir:String = "mods/characters/";
 		var customCharacters:Array<String> = [];
+
+		if (FileSystem.exists("assets/characters/"))
+		{
+			var dir = "assets/characters";
+			trace('Checking ${dir} for characters');
+			for (char in FileSystem.readDirectory(dir))
+			{
+				if (FileSystem.exists(dir+"/"+char+"/config.json"))
+				{
+					customCharacters.push(char);
+					var desc = 'Built-in character';
+					if (FileSystem.exists('${dir}/${char}/description.txt'))
+						desc += ";" +File.getContent('${dir}/${char}/description.txt');
+					characterDescriptions[char] = desc;
+					choosableCharactersLower[char.toLowerCase()] = char;
+					characterPaths[char] = dir;
+
+				}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
+					invalidCharacters.push(char);
+					characterPaths[char] = dir;
+					// customCharacters.push(directory);
+				}
+			}
+		}
+
 		if (FileSystem.exists(dataDir))
 		{
 		  for (directory in FileSystem.readDirectory(dataDir))
@@ -111,7 +140,8 @@ class TitleState extends MusicBeatState
 		}
 
 		
-		for (_ => dataDir in ['mods/weeks/','mods/packs/']) {
+
+		for (_ => dataDir in ['mods/weeks/','mods/packs/','assets/characters/']) {
 			
 			if (FileSystem.exists(dataDir))
 			{
@@ -170,28 +200,23 @@ class TitleState extends MusicBeatState
 			choosableCharacters.push(char);
 			// choosableCharactersLower[char.toLowerCase()] = char;
 		}
-		// for (char in customCharacters){
-		// 	choosableCharacters.push(char);
-		// 	choosableCharactersLower[char.toLowerCase()] = char;
-		// }
-		// var rawJson = Assets.getText('assets/data/characterMetadata.json');
-		try{
+		// try{
 
-			var rawJson = File.getContent('assets/data/characterMetadata.json');
-			// trace('Char Json: \n${rawJson}');
-			TitleState.defCharJson = haxe.Json.parse(CoolUtil.cleanJSON(rawJson));
-			if (defCharJson == null || TitleState.defCharJson.characters == null || TitleState.defCharJson.aliases == null) {defCharJson = {
-				characters:[],
-				aliases:[]
-			};trace("Character characterMetadata is null!");}
-		}catch(e){
-			MainMenuState.errorMessage = 'An error occurred when trying to parse Character Metadata:\n ${e.message}.\n You can reload this using Reload Char/Stage List';
-			if (defCharJson == null || TitleState.defCharJson.characters == null || TitleState.defCharJson.aliases == null) {defCharJson = {
-				characters:[],
-				aliases:[]
-			};
-			}
-		}
+		// 	var rawJson = File.getContent('assets/data/characterMetadata.json');
+		// 	// trace('Char Json: \n${rawJson}');
+		// 	TitleState.defCharJson = haxe.Json.parse(CoolUtil.cleanJSON(rawJson));
+		// 	if (defCharJson == null || TitleState.defCharJson.characters == null || TitleState.defCharJson.aliases == null) {defCharJson = {
+		// 		characters:[],
+		// 		aliases:[]
+		// 	};trace("Character characterMetadata is null!");}
+		// }catch(e){
+		// 	MainMenuState.errorMessage = 'An error occurred when trying to parse Character Metadata:\n ${e.message}.\n You can reload this using Reload Char/Stage List';
+		// 	if (defCharJson == null || TitleState.defCharJson.characters == null || TitleState.defCharJson.aliases == null) {defCharJson = {
+		// 		characters:[],
+		// 		aliases:[]
+		// 	};
+		// 	}
+		// }
 		#end
 		checkStages();
 		if(FlxG.save.data.scripts != null){
@@ -333,7 +358,7 @@ class TitleState extends MusicBeatState
 			// music.play();
 			FlxG.sound.playMusic(Paths.music('StartItchBuild'), 0.1);
 
-			FlxG.sound.music.fadeIn(4, 0, 1);
+			FlxG.sound.music.fadeIn(4, 0, FlxG.save.data.instVol);
 			findosuBeatmaps();
 			MainMenuState.firstStart = true;
 			Conductor.changeBPM(70);
@@ -422,6 +447,7 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		else
 			initialized = true;
+		FlxG.sound.volume = FlxG.save.data.masterVol;
 
 		// credGroup.add(credTextShit);
 	}

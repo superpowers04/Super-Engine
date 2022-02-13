@@ -14,15 +14,14 @@ class HealthIcon extends FlxSprite
 	var vanIcon:Bool = false;
 	var isPlayer:Bool = false;
 	var isMenuIcon:Bool = false;
-	public var pathh = "mods/characters";
+	// public var pathh = "mods/characters";
 
 	public function new(?char:String = 'bf', ?isPlayer:Bool = false,?clone:String = "",?isMenuIcon:Bool = false,?path:String = "mods/characters")
 	{
 		super();
 		this.isPlayer = isPlayer;
 		this.isMenuIcon = isMenuIcon;
-		this.pathh = path + "/";
-		changeSprite(char,"");
+		changeSprite(char,"",path);
 	}
 
 	public function updateAnim(health:Float){
@@ -32,9 +31,9 @@ class HealthIcon extends FlxSprite
 			animation.curAnim.curFrame = 0;
 	}
 
-	public function changeSprite(?char:String = 'bf',?clone:String = "face",?useClone:Bool = true)
+	public function changeSprite(?char:String = 'bf',?clone:String = "face",?useClone:Bool = true,?pathh:String = "mods/characters")
 	{
-		var path = pathh;
+		var path = pathh + "/";
 		var chars:Array<String> = ["bf","spooky","pico","mom","mom-car",'parents-christmas',"senpai","senpai-angry","spirit","spooky","bf-pixel","gf","dad","monster","monster-christmas","parents-christmas","bf-old","gf-pixel","gf-christmas","face","tankman"];
 		var relAnims:Bool = true;
 		if (!chars.contains(char) &&FileSystem.exists(path+char+"/healthicon.png")){

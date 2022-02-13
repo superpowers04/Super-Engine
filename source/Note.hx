@@ -16,7 +16,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
-	static var offscreenY:Int = 0; //+50 to prevent notes from randomly appearing
+	public var skipXAdjust:Bool = false;
 
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
@@ -278,7 +278,7 @@ class Note extends FlxSprite
 		if ((!skipNote || isOnScreen())){ // doesn't calculate anything until they're on screen
 			skipNote = false;
 			visible = (!eventNote && showNote);
-
+			PlayState.instance.callInterp("noteUpdate",[this]);
 
 			if (mustPress && !eventNote)
 			{
@@ -313,6 +313,7 @@ class Note extends FlxSprite
 			{
 				wasGoodHit = true;
 			}
+			PlayState.instance.callInterp("noteUpdateAfter",[this]);
 
 			// if (tooLate)
 			// {

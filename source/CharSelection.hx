@@ -78,8 +78,8 @@ class CharSelection extends SearchMenuState
 		}
 	}
 	override function changeSelection(change:Int = 0){
-	super.changeSelection(change);
-	retAfter = true;
+		super.changeSelection(change);
+		retAfter = true;
 
 		if (songs[curSelected] != "" && TitleState.invalidCharacters.contains(songs[curSelected])){
 			grpSongs.members[curSelected].color = FlxColor.RED;
@@ -89,7 +89,7 @@ class CharSelection extends SearchMenuState
 		}else{
 			updateInfoText('${defText}; No description for this character.');
 		}
-		uiIcon.changeSprite(songs[curSelected],'face',false);
+		uiIcon.changeSprite(songs[curSelected],'face',false,(if(TitleState.characterPaths[songs[curSelected]] != null) TitleState.characterPaths[songs[curSelected]] else null) );
 	}
 
 	override function select(sel:Int = 0){

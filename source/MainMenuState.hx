@@ -97,8 +97,8 @@ class MainMenuState extends SickMenuState
 			FlxG.save.data.playerChar = "bf";
 		}
 		if (!TitleState.choosableCharacters.contains(FlxG.save.data.opponent)){
-			errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to Dad!';
-			FlxG.save.data.opponent = "dad";
+			errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to BF!';
+			FlxG.save.data.opponent = "bf";
 		}
 		if (!TitleState.choosableCharacters.contains(FlxG.save.data.gfChar)){
 			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
@@ -110,6 +110,13 @@ class MainMenuState extends SickMenuState
 		// 		if(char != null) add(char);
 		// 	}catch(e){trace(e);char = null;}
 		// }
+		if(firstStart){
+			// FlxG.sound.volumeHandler = function(volume:Float){
+			// 	FlxG.save.data.masterVol = volume;
+			// 	FlxG.save.data.flush();
+			// };
+			firstStart = false;
+		}
 
 
 		if (MainMenuState.errorMessage == "" && TitleState.invalidCharacters.length > 0 && !hasWarnedInvalid) {
@@ -121,6 +128,7 @@ class MainMenuState extends SickMenuState
 			// ver+=nightly;
 			hasWarnedNightly = true;
 		} 
+
 
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-Engine ${ver}', 12);
 		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);

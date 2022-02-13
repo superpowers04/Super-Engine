@@ -142,6 +142,17 @@ class KadeEngineData
 		if (FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
 		if (FlxG.save.data.useFontEverywhere == null) FlxG.save.data.useFontEverywhere = false;
 		if (FlxG.save.data.accurateNoteSustain == null) FlxG.save.data.accurateNoteSustain = false;
+		if (FlxG.save.data.undlaSize == null) FlxG.save.data.undlaSize = 0;
+		if (FlxG.save.data.undlaTrans == null) FlxG.save.data.undlaTrans = 0.1;
+
+
+		if (FlxG.save.data.instVol == null) FlxG.save.data.instVol = 0.8;
+		if (FlxG.save.data.masterVol == null) FlxG.save.data.masterVol = 1;
+		if (FlxG.save.data.voicesVol == null) FlxG.save.data.voicesVol = 1;
+		if (FlxG.save.data.missVol == null) FlxG.save.data.missVol = 0.1;
+		if (FlxG.save.data.hitVol == null) FlxG.save.data.hitVol = 0.6;
+		if (FlxG.save.data.otherVol == null) FlxG.save.data.otherVol = 0.6;
+
 	 
 
 		Conductor.recalculateTimings();

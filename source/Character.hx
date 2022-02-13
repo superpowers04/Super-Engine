@@ -154,76 +154,6 @@ class Character extends FlxSprite
 		if (Reflect.field(TitleState.defCharJson.characters,curCharacter) == null){
 
 			switch(character){
-				case 'gf','gf-christmas':
-					addOffset('all',0,30);
-					addOffset('cheer');
-					addOffset('sad', -2, -2);
-					addOffset('danceLeft', 0, -9);
-					addOffset('danceRight', 0, -9);
-
-					addOffset("singUP", 0, 4);
-					addOffset("singRIGHT", 0, -20);
-					addOffset("singLEFT", 0, -19);
-					addOffset("singDOWN", 0, -20);
-					addOffset('hairBlow', 45, -8);
-					addOffset('hairFall', 0, -9);
-
-					addOffset('scared', -2, -17);
-					flip = false;
-				case 'gf-car':
-					addOffset('all',0,30);
-					addOffset('danceLeft', 0);
-					addOffset('danceRight', 0);
-					flip = false;
-				case 'gf-pixel':
-					addOffset('all',0,30);
-					addOffset('danceLeft', 0);
-					addOffset('danceRight', 0);
-					flip = false;
-				case "dad":
-					addOffset('idle');
-					addOffset("singUP", -6, 50);
-					addOffset("singRIGHT", 0, 27);
-					addOffset("singLEFT", -10, 10);
-					addOffset("singDOWN", 0, -30);
-				case 'mom','mom-car':
-					addOffset('idle');
-					addOffset("singUP", 14, 71);
-					addOffset("singRIGHT", 10, -60);
-					addOffset("singLEFT", 250, -23);
-					addOffset("singDOWN", 20, -160);
-				case 'spooky':
-					addOffset('danceLeft');
-					addOffset('danceRight');
-
-					addOffset("singUP", -20, 26);
-					addOffset("singRIGHT", -130, -14);
-					addOffset("singLEFT", 130, -10);
-					addOffset("singDOWN", -50, -130);
-					charY+=130;
-				case "pico":
-					if(isPlayer){
-						// needsInverted = true;
-						addOffset('singDOWN', 87, -80);
-						addOffset('singDOWNmiss', 87, -29);
-						addOffset('singRIGHT', -48, 0);
-						addOffset('singRIGHTmiss', -40, 50);
-						addOffset('singUP', 19, 27);
-						addOffset('singUPmiss', 19, 67);
-						addOffset('singLEFT', 75, -9);
-						addOffset('singLEFTmiss', 75, 25);
-					}else{
-						addOffset("singUP", -43, 29);
-						addOffset("singRIGHT", -85, -11);
-						addOffset("singLEFT", 54, 2);
-						addOffset("singDOWN", 198, -76);
-						addOffset("singUPmiss", -29, 67);
-						addOffset("singRIGHTmiss", -70, 28);
-						addOffset("singLEFTmiss", 62, 50);
-						addOffset("singDOWNmiss", 200, -34);}
-
-					charY+=330;
-					if(!isPlayer){camX-=100;}
 				case 'bf','bf-christmas','bf-car':
 					charY+=330;
 					needsInverted = 0;
@@ -251,63 +181,6 @@ class Character extends FlxSprite
 						addOffset("hey", 7, 4);
 						addOffset('scared', -4);
 					}
-				case "bf-pixel":
-					needsInverted = 0;
-					charY+=330;
-				case 'spirit':
-					addOffset('idle', -220, -280);
-					addOffset('singUP', -220, -240);
-					addOffset("singRIGHT", -220, -280);
-					addOffset("singLEFT", -200, -280);
-					addOffset("singDOWN", 170, 110);
-					charX-=150;
-					charY-=100;
-					// camX+=300;
-
-				case 'senpai':
-					addOffset('idle');
-					addOffset("singUP", 5, 37);
-					addOffset("singRIGHT");
-					addOffset("singLEFT", 40);
-					addOffset("singDOWN", 14);
-					charX+=150;
-					charY+=320;
-					camX+=300;
-
-				case 'senpai-angry':
-					addOffset('idle');
-					addOffset("singUP", 5, 37);
-					addOffset("singRIGHT");
-					addOffset("singLEFT", 40);
-					addOffset("singDOWN", 14);
-					charX+=150;
-					charY+=320;
-					// camX+=300;
-				case 'parents-christmas':
-					addOffset('idle');
-					addOffset("singUP", -47, 24);
-					addOffset("singRIGHT", -1, -23);
-					addOffset("singLEFT", -30, 16);
-					addOffset("singDOWN", -31, -29);
-					addOffset("singUP-alt", -47, 24);
-					addOffset("singRIGHT-alt", -1, -24);
-					addOffset("singLEFT-alt", -30, 15);
-					addOffset("singDOWN-alt", -30, -27);
-					charX-=500;
-				case 'monster':
-					addOffset('idle');
-					addOffset("singUP", -20, 50);
-					addOffset("singRIGHT", -51);
-					addOffset("singLEFT", -30);
-					addOffset("singDOWN", -30, -40);
-					charY+=100;
-				case 'monster-christmas':
-					addOffset('idle');
-					addOffset("singUP", -20, 50);
-					addOffset("singRIGHT", -51);
-					addOffset("singLEFT", -30);
-					addOffset("singDOWN", -30, -40);
-					charY+=130;
 			}
 		}else{
 			var e:Dynamic = Reflect.field(TitleState.defCharJson.characters,curCharacter);
@@ -316,51 +189,7 @@ class Character extends FlxSprite
 
 		}
 	}
-	function loadVanillaChar(charProperties:CharacterJson){
-		if(tex == null){
-			if (charProperties.embedded){
-				// tex = Paths.getSparrowAtlas(charProperties.path);
-				charXml = File.getContent('assets/shared/images/${charProperties.path}.xml'); // Loads the XML as a string
-				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-	
-				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/${charProperties.path}.png')), charXml);
-			}else{
-				var pngPath:String = '${charProperties.path}.png';
-				var xmlPath:String = '${charProperties.path}.xml';
-				if (charProperties.asset_files != null){
-					var forced = 0;
-					var invChIDs:Array<Int> = [1,0,2];
-					var selAssets = -10;
-					for (i => charFile in charProperties.asset_files) {
-						if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side == charType){continue;} // This if statement hurts my brain
-						if (charFile.stage != "" && charFile.stage != null && (PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()) ){continue;} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
-						if (charFile.song != "" && charFile.song != null && (PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()) ){continue;} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
-						var tagsMatched = 0;
-						if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
-							for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
-							if (tagsMatched == 0) continue;
-						}
-						
-						if (forced == 0 || tagsMatched == forced) selAssets = i;
-					}
-					if (selAssets != -10){
-						if (charProperties.asset_files[selAssets].png != null ) pngPath=charProperties.asset_files[selAssets].png;
-						if (charProperties.asset_files[selAssets].xml != null ) xmlPath=charProperties.asset_files[selAssets].xml;
-						if (charProperties.asset_files[selAssets].animations != null )charProperties.animations=charProperties.asset_files[selAssets].animations;
-						if (charProperties.asset_files[selAssets].animations_offsets != null )charProperties.animations_offsets=charProperties.asset_files[selAssets].animations_offsets;
-					}
-				}
-				if(!FileSystem.exists(pngPath) || !FileSystem.exists(xmlPath)) handleError('Invalid xml/png path for ${curCharacter}');
-				charXml = File.getContent(xmlPath); // Loads the XML as a string
-				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-				// if (amPreview) this.charXml = charXml;
-				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile(pngPath)), charXml);
-			}
-			if(tex == null) handleError('Invalid texture for ${curCharacter}');
-		}
-		frames = tex;
-		loadJSONChar(charProperties);
-	}
+
 	function loadOffsetsFromJSON(?charProperties:CharacterJson){
 		if (charProperties == null) return;
 		if (charProperties.offset_flip != null ) needsInverted = charProperties.offset_flip;
@@ -553,7 +382,6 @@ class Character extends FlxSprite
 		if (charProperties.like != null && charProperties.like != "") clonedChar = charProperties.like;
 		trace('Adding custom offsets');
 		loadOffsetsFromJSON(charProperties);
-
 	}
 	public function isSelectedChar():Bool{
 		switch ( charType ) {
@@ -625,49 +453,53 @@ class Character extends FlxSprite
 
 		// }
 		loadedFrom = '${charLoc}/$curCharacter/config.json';
-		var pngName:String = "character.png";
-		var xmlName:String = "character.xml";
-		var forced:Int = 0;
-		if (charProperties.asset_files != null){
-			var invChIDs:Array<Int> = [1,0,2];
-			var selAssets = -10;
-			for (i => charFile in charProperties.asset_files) {
-				if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side == charType){continue;} // This if statement hurts my brain
-				if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
-				if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
-				var tagsMatched = 0;
-				if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
-					for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
-					if (tagsMatched == 0) continue;
+		if(frames == null){
+
+
+			var pngName:String = "character.png";
+			var xmlName:String = "character.xml";
+			var forced:Int = 0;
+			if (charProperties.asset_files != null){
+				var invChIDs:Array<Int> = [1,0,2];
+				var selAssets = -10;
+				for (i => charFile in charProperties.asset_files) {
+					if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side == charType){continue;} // This if statement hurts my brain
+					if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
+					if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
+					var tagsMatched = 0;
+					if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
+						for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
+						if (tagsMatched == 0) continue;
+					}
+					
+					if (forced == 0 || tagsMatched == forced)
+						selAssets = i;
 				}
-				
-				if (forced == 0 || tagsMatched == forced)
-					selAssets = i;
+				if (selAssets != -10){
+					if (charProperties.asset_files[selAssets].png != null )pngName=charProperties.asset_files[selAssets].png;
+					if (charProperties.asset_files[selAssets].xml != null )xmlName=charProperties.asset_files[selAssets].xml;
+					if (charProperties.asset_files[selAssets].animations != null )charProperties.animations=charProperties.asset_files[selAssets].animations;
+					if (charProperties.asset_files[selAssets].animations_offsets != null )charProperties.animations_offsets=charProperties.asset_files[selAssets].animations_offsets;
+				}
 			}
-			if (selAssets != -10){
-				if (charProperties.asset_files[selAssets].png != null )pngName=charProperties.asset_files[selAssets].png;
-				if (charProperties.asset_files[selAssets].xml != null )xmlName=charProperties.asset_files[selAssets].xml;
-				if (charProperties.asset_files[selAssets].animations != null )charProperties.animations=charProperties.asset_files[selAssets].animations;
-				if (charProperties.asset_files[selAssets].animations_offsets != null )charProperties.animations_offsets=charProperties.asset_files[selAssets].animations_offsets;
+
+
+			if (tex == null){
+				var charJsonF:String = ('${charLoc}/$curCharacter/${xmlName}').substr(0,-3) + "json";
+				if (FileSystem.exists(charJsonF)){
+					charXml = File.getContent(charJsonF); 				
+					if (charXml == null){handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
+
+					tex = FlxAtlasFrames.fromTexturePackerJson(FlxGraphic.fromBitmapData(BitmapData.fromFile('${charLoc}/$curCharacter/${pngName}')), charXml);
+				} else {
+					charXml = File.getContent('${charLoc}/$curCharacter/${xmlName}'); // Loads the XML as a string
+					if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${charLoc}/$curCharacter/${pngName}')), charXml);
+				}
+				if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 			}
+			trace('Loaded "${charLoc}/$curCharacter/${pngName}"');
 		}
-
-
-		if (tex == null){
-			var charJsonF:String = ('${charLoc}/$curCharacter/${xmlName}').substr(0,-3) + "json";
-			if (FileSystem.exists(charJsonF)){
-				charXml = File.getContent(charJsonF); 				
-				if (charXml == null){handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
-
-				tex = FlxAtlasFrames.fromTexturePackerJson(FlxGraphic.fromBitmapData(BitmapData.fromFile('${charLoc}/$curCharacter/${pngName}')), charXml);
-			} else {
-				charXml = File.getContent('${charLoc}/$curCharacter/${xmlName}'); // Loads the XML as a string
-				if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-				tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${charLoc}/$curCharacter/${pngName}')), charXml);
-			}
-			if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
-		}
-		trace('Loaded "${charLoc}/$curCharacter/${pngName}"');
 		frames = tex;
 
 
@@ -774,283 +606,21 @@ class Character extends FlxSprite
 			{
 				case 'gf':
 					// GIRLFRIEND CODE
-					tex = Paths.getSparrowAtlas('characters/GF_assets');
-				case 'gf-christmas':
-					tex = Paths.getSparrowAtlas('characters/gfChristmas');
-				case 'mom':
-					tex = Paths.getSparrowAtlas('characters/Mom_Assets');
-				case 'mom-car':
-					tex = Paths.getSparrowAtlas('characters/momCar');
-				case 'monster-christmas':
-					tex = Paths.getSparrowAtlas('characters/monsterChristmas');
-				case 'monster':
-					tex = Paths.getSparrowAtlas('characters/Monster_Assets');
+					frames = tex = Paths.getSparrowAtlas('characters/GF_assets');
 				case 'bf','bfHC':
-					tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
-				case 'bf-christmas':
-					tex = Paths.getSparrowAtlas('characters/bfChristmas');
-				case 'bf-car':
-					tex = Paths.getSparrowAtlas('characters/bfCar');
+					frames = tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
 			}
+
 			switch (curCharacter)
 			{
-				case 'lonely','Lonely':
-					tex = Paths.getSparrowAtlas('onlinemod/lonely');
-					frames=tex;
-					addAnimation('Idle', 'Idle', 24, false);
-					visible = false;
 
+				case 'bf':// Hardcoded to atleast have a single character
+					charProperties = Json.parse(BFJSON);
+				case 'gf':// The game crashes if she doesn't exist, BF and GF must not be seperated
+					charProperties = Json.parse(GFJSON);
 
-				case 'gf','gf-christmas': // Condensed to reduce duplicate code
-					// GIRLFRIEND CODE
-					frames = tex;
-					dance_idle = true;
-					addAnimation('cheer', 'GF Cheer', 24, false);
-					addAnimation('singLEFT', 'GF left note', 24, false);
-					addAnimation('singRIGHT', 'GF Right Note', 24, false);
-					addAnimation('singUP', 'GF Up Note', 24, false);
-					addAnimation('singDOWN', 'GF Down Note', 24, false);
-					addAnimation('sad', 'gf sad', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
-					addAnimation('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-					addAnimation('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-					addAnimation('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
-					addAnimation('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
-					addAnimation('scared', 'GF FEAR', 24);
-
-					addOffsets('gf');
-
-					playAnim('danceRight');
-				case 'gf-car':
-					tex = Paths.getSparrowAtlas('characters/gfCar');
-					frames = tex;
-					addAnimation('singUP', 'GF Dancing Beat Hair blowing CAR', [0], "", 24, false);
-					addAnimation('danceLeft', 'GF Dancing Beat Hair blowing CAR', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-					addAnimation('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
-						false);
-					dance_idle = true;
-
-					addOffsets('gf-car');
-					playAnim('danceRight');
-				case 'gf-pixel':
-					tex = Paths.getSparrowAtlas('characters/gfPixel');
-					frames = tex;
-					addAnimation('singUP', 'GF IDLE', [2], "", 24, false);
-					addAnimation('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-					addAnimation('danceRight', 'GF IDLE', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-					dance_idle = true;
-					addOffsets('gf-pixel');
-					playAnim('danceRight');
-					
-
-					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-					updateHitbox();
-					antialiasing = false;
-				case 'dad':
-					// DAD ANIMATION LOADING CODE
-					tex = Paths.getSparrowAtlas('characters/DADDY_DEAREST');
-					frames = tex;
-					addAnimation('idle', 'Dad idle dance', 24);
-					addAnimation('singUP', 'Dad Sing Note UP', 24);
-					addAnimation('singRIGHT', 'Dad Sing Note RIGHT', 24);
-					addAnimation('singDOWN', 'Dad Sing Note DOWN', 24);
-					addAnimation('singLEFT', 'Dad Sing Note LEFT', 24);
-
-					addOffsets("dad");
-
-					playAnim('idle');
-				case 'spooky':
-					tex = Paths.getSparrowAtlas('characters/spooky_kids_assets');
-					frames = tex;
-					addAnimation('singUP', 'spooky UP NOTE', 24, false);
-					addAnimation('singDOWN', 'spooky DOWN note', 24, false);
-					addAnimation('singLEFT', 'note sing left', 24, false);
-					addAnimation('singRIGHT', 'spooky sing right', 24, false);
-					addAnimation('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
-					addAnimation('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
-
-					dance_idle = true;
-					addOffsets('spooky');
-
-					playAnim('danceRight');
-				case 'mom','mom-car': // Condensed to reduce duplicate code
-					frames = tex;
-
-					addAnimation('idle', "Mom Idle", 24, false);
-					addAnimation('singUP', "Mom Up Pose", 24, false);
-					addAnimation('singDOWN', "MOM DOWN POSE", 24, false);
-					addAnimation('singLEFT', 'Mom Left Pose', 24, false);
-					// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
-					// CUZ DAVE IS DUMB!
-					addAnimation('singRIGHT', 'Mom Pose Left', 24, false);
-
-					addOffsets('mom');
-
-					playAnim('idle');
-				case 'monster','monster-christmas': // Condensed to reduce duplicate code
-					frames = tex;
-					addAnimation('idle', 'monster idle', 24, false);
-					addAnimation('singUP', 'monster up note', 24, false);
-					addAnimation('singDOWN', 'monster down', 24, false);
-					addAnimation('singLEFT', 'Monster left note', 24, false);
-					addAnimation('singRIGHT', 'Monster Right note', 24, false);
-
-					addOffsets('monster');
-					playAnim('idle');
-				case 'pico':
-					tex = Paths.getSparrowAtlas('characters/Pico_FNF_assetss');
-					frames = tex;
-					addAnimation('idle', "Pico Idle Dance", 24);
-					addAnimation('singUP', 'pico Up note0', 24, false);
-					addAnimation('singDOWN', 'Pico Down Note0', 24, false);
-
-					addAnimation('singLEFT', 'Pico Note Right0', 24, false);
-					addAnimation('singRIGHT', 'Pico NOTE LEFT0', 24, false);
-					addAnimation('singRIGHTmiss', 'Pico Note Right Miss', 24, false);
-					addAnimation('singLEFTmiss', 'Pico NOTE LEFT miss', 24, false);
-
-					addAnimation('singUPmiss', 'pico Up note miss', 24);
-					addAnimation('singDOWNmiss', 'Pico Down Note MISS', 24);
-
-					addOffsets('pico');
-
-					playAnim('idle');
-
-					flipX = true;
-				case 'bf','bf-christmas','bf-car','bfHC':// Condensed to reduce duplicate code
-					frames = tex;
-
-					addAnimation('idle', 'BF idle dance', 24, false);
-					addAnimation('singUP', 'BF NOTE UP0', 24, false);
-					// WHY DO THESE NEED TO BE FLIPPED?
-					addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
-					addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
-					addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
-					addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
-					addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
-					addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
-					addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-					addAnimation('hey', 'BF HEY', 24, false);
-
-					addAnimation('firstDeath', "BF dies", 24, false);
-					addAnimation('deathLoop', "BF Dead Loop", 24, true);
-					addAnimation('deathConfirm', "BF Dead confirm", 24, false);
-
-					addAnimation('scared', 'BF idle shaking', 24);
-
-					addOffsets('bf');
-
-					playAnim('idle');
-
-					flipX = true;
-				case 'bf-pixel':
-					frames = Paths.getSparrowAtlas('characters/bfPixel');
-					addAnimation('idle', 'BF IDLE', 24, false);
-					addAnimation('singUP', 'BF UP NOTE', 24, false);
-					// Flipped for some reason
-					addAnimation('singLEFT', 'BF RIGHT NOTE', 24, false);
-					addAnimation('singRIGHT', 'BF LEFT NOTE', 24, false);
-					addAnimation('singDOWN', 'BF DOWN NOTE', 24, false);
-					addAnimation('singUPmiss', 'BF UP MISS', 24, false);
-					addAnimation('singRIGHTmiss', 'BF LEFT MISS', 24, false);
-					addAnimation('singLEFTmiss', 'BF RIGHT MISS', 24, false);
-					addAnimation('singDOWNmiss', 'BF DOWN MISS', 24, false);
-					addOffsets('bf-pixel');
-
-					setGraphicSize(Std.int(width * 6));
-					updateHitbox();
-
-					playAnim('idle');
-
-					width -= 100;
-					height -= 100;
-
-					antialiasing = false;
-
-					flipX = true;
-				case 'bf-pixel-dead':
-					frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD');
-					addAnimation('singUP', "BF Dies pixel", 24, false);
-					addAnimation('firstDeath', "BF Dies pixel", 24, false);
-					addAnimation('deathLoop', "Retry Loop", 24, true);
-					addAnimation('deathConfirm', "RETRY CONFIRM", 24, false);
-					animation.play('firstDeath');
-
-					addOffset('firstDeath');
-					addOffset('deathLoop', -37);
-					addOffset('deathConfirm', -37);
-					playAnim('firstDeath');
-					// pixel bullshit
-					setGraphicSize(Std.int(width * 6));
-					updateHitbox();
-					antialiasing = false;
-					flipX = true;
-				case 'senpai':
-					frames = Paths.getSparrowAtlas('characters/senpai');
-
-					addAnimation('idle', 'Senpai Idle', 24, false);
-					addAnimation('singUP', 'SENPAI UP NOTE', 24, false);
-					addAnimation('singLEFT', 'SENPAI LEFT NOTE', 24, false);
-					addAnimation('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
-					addAnimation('singDOWN', 'SENPAI DOWN NOTE', 24, false);
-
-					addOffsets("senpai");
-
-					playAnim('idle');
-
-					setGraphicSize(Std.int(width * 6));
-					updateHitbox();
-
-					antialiasing = false;
-				case 'senpai-angry':
-					frames = Paths.getSparrowAtlas('characters/senpai');
-					addAnimation('idle', 'Angry Senpai Idle', 24, false);
-					addAnimation('singUP', 'Angry Senpai UP NOTE', 24, false);
-					addAnimation('singLEFT', 'Angry Senpai LEFT NOTE', 24, false);
-					addAnimation('singRIGHT', 'Angry Senpai RIGHT NOTE', 24, false);
-					addAnimation('singDOWN', 'Angry Senpai DOWN NOTE', 24, false);
-
-					addOffsets('senpai-angry');
-					playAnim('idle');
-
-					setGraphicSize(Std.int(width * 6));
-					updateHitbox();
-
-					antialiasing = false;
-				case 'spirit':
-					frames = Paths.getPackerAtlas('characters/spirit');
-					addAnimation('idle', "idle spirit_", 24, false);
-					addAnimation('singUP', "up_", 24, false);
-					addAnimation('singRIGHT', "right_", 24, false);
-					addAnimation('singLEFT', "left_", 24, false);
-					addAnimation('singDOWN', "spirit down_", 24, false);
-					addOffsets('spirit');
-					setGraphicSize(Std.int(width * 6));
-					updateHitbox();
-					spiritTrail = true;
-					playAnim('idle');
-
-					antialiasing = false;
-				case 'parents-christmas':
-					frames = Paths.getSparrowAtlas('characters/mom_dad_christmas_assets');
-					addAnimation('idle', 'Parent Christmas Idle', 24, false);
-					addAnimation('singUP', 'Parent Up Note Dad', 24, false);
-					addAnimation('singDOWN', 'Parent Down Note Dad', 24, false);
-					addAnimation('singLEFT', 'Parent Left Note Dad', 24, false);
-					addAnimation('singRIGHT', 'Parent Right Note Dad', 24, false);
-
-					addAnimation('singUP-alt', 'Parent Up Note Mom', 24, false);
-
-					addAnimation('singDOWN-alt', 'Parent Down Note Mom', 24, false);
-					addAnimation('singLEFT-alt', 'Parent Left Note Mom', 24, false);
-					addAnimation('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
-
-					addOffsets('parents-christmas');
-					hasAlts=true;
-
-					playAnim('idle');
-				default: // Custom characters pog
-					loadCustomChar();
 			}
+			loadCustomChar();
 	}
 
 
@@ -1074,9 +644,15 @@ class Character extends FlxSprite
 		this.charType = charType;
 		this.useHscript = useHscript;
 		if (curCharacter == 'dad'){dadVar = 6.1;}
+
 		this.isPlayer = isPlayer;
 		amPreview = preview;
 		if(charPath != "") charLoc = charPath;
+
+
+		if(TitleState.retChar(curCharacter) == null && charProperties == null && !amPreview && exitex == null){
+			curCharacter = "bf";
+		}
 
 		animation = new CharAnimController(this);
 
@@ -1086,10 +662,7 @@ class Character extends FlxSprite
 		if (exitex != null) tex = exitex;
 		antialiasing = true;
 		if (Reflect.field(TitleState.defCharJson.aliases,curCharacter) != null) curCharacter = Reflect.field(TitleState.defCharJson.aliases,curCharacter); // Due to some haxe weirdness, need to use reflect
-		if (Reflect.field(TitleState.defCharJson.characters,curCharacter) != null){
-			loadVanillaChar(Reflect.field(TitleState.defCharJson.characters,curCharacter));
-			trace("Loaded vanilla json character");
-		}else {
+		else {
 			// trace("Not a JSON built-in char");
 
 			loadChar();
@@ -1364,4 +937,505 @@ class Character extends FlxSprite
 			animation.addByPrefix(anim, prefix, fps, loop);
 		}
 	}
+
+
+	static var BFJSON = '{
+			"no_antialiasing": false, 
+			"sing_duration": 4, 
+			"dance_idle": false, 
+			"embedded":true,
+			"path":"characters/BOYFRIEND",
+			"scale": 1, 
+
+			"flip_x": true, 
+			"spirit_trail": false, 
+			"color":[49,176,209],
+
+			"animations":
+			[
+				{
+					"anim": "idle",
+					"name": "BF idle dance",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singUP",
+					"name": "BF NOTE UP0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singDOWN",
+					"name": "BF NOTE DOWN0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singRIGHT",
+					"name": "BF NOTE LEFT0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singLEFT",
+					"name": "BF NOTE RIGHT0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singUPmiss",
+					"name": "BF NOTE UP0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singDOWNmiss",
+					"name": "BF NOTE DOWN0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singLEFTmiss",
+					"name": "BF NOTE LEFT0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "singRIGHTmiss",
+					"name": "BF NOTE RIGHT0",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "hey",
+					"name": "BF HEY",
+					"fps": 24,
+					"loop": false,
+					"indices": []
+				},
+				{
+					"anim": "scared",
+					"name": "BF idle shaking",
+					"fps": 24,
+					"loop": true,
+					"indices": []
+				},
+				{"anim":"dodge","name": "boyfriend dodge","oneshot":true,"fps": 24,"loop": false,"indices":[]},
+				{"anim":"attack","name": "boyfriend attack","oneshot":true,"fps": 24,"loop": false,"indices":[]},
+				{"anim":"hit","name": "boyfriend hit","oneshot":true,"fps": 24,"loop": false,"indices":[]},
+				{"anim":"preattack","name": "bf pre attack","oneshot":true,"fps": 24,"loop": false,"indices":[]},
+				{"anim":"dies","name": "bf dies","oneshot":true,"fps": 24,"loop": false,"indices":[]}
+
+				
+			], 
+
+			"animations_offsets":
+			[			
+				{
+					"anim": "idle",
+					"player1": [0, 0],
+					"player2": [0, 0]
+				},
+				{
+					"anim": "singUP",
+					"player1": [-45, 25],
+					"player2": [5, 30]
+				},
+				{
+					"anim": "singRIGHT",
+					"player1": [-40, -7],
+					"player2": [-35, -5.5]
+				},
+				{
+					"anim": "singLEFT",
+					"player1": [8, -6],
+					"player2": [40, -5]
+				},
+				{
+					"anim": "singDOWN",
+					"player1": [-20, -50],
+					"player2": [-20, -50]
+				},
+				{
+					"anim": "singUPmiss",
+					"player1": [-41, 25],
+					"player2": [1, 30]
+				},
+				{
+					"anim": "singRIGHTmiss",
+					"player1": [-34, 21],
+					"player2": [-35.8, 20.5]
+				},
+				{
+					"anim": "singLEFTmiss",
+					"player1": [8, 20],
+					"player2": [40, 23]
+				},
+				{
+					"anim": "singDOWNmiss",
+					"player1": [-20, -20],
+					"player2": [-20, -20]
+				}
+			],
+
+			"hey_anim": "hey", 
+			"scared_anim": "scared", 
+
+			"common_stage_offset": [0, 0, 0, 0], 
+			"char_pos": [0, -300], 
+			"cam_pos": [0, 300],
+		}';
+
+	static var GFJSON = '{
+				"animations_offsets": [
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							-2,
+							-17
+						],
+						"anim": "scared"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							0,
+							-9
+						],
+						"anim": "danceRight"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							0,
+							-20
+						],
+						"anim": "singDOWN"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							0,
+							-9
+						],
+						"anim": "danceLeft"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							0,
+							4
+						],
+						"anim": "singUP"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							45,
+							-8
+						],
+						"anim": "hairBlow"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							0,
+							-20
+						],
+						"anim": "singRIGHT"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							0,
+							0
+						],
+						"anim": "cheer"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							0,
+							-9
+						],
+						"anim": "hairFall"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							0,
+							-19
+						],
+						"anim": "singLEFT"
+					},
+					{
+						"player1": [
+							0,
+							0
+						],
+						"player2": [
+							0,
+							0
+						],
+						"player3": [
+							-2,
+							-2
+						],
+						"anim": "sad"
+					}
+				],
+				"dance_idle": true,
+				"no_antialiasing": false,
+				"cam_pos": [
+					0,
+					0
+				],
+				"sing_duration": 4,
+				"flip_x": false,
+				"genBy": "FNFBR; Animation Editor",
+				"like": null,
+				"spirit_trail": false,
+				"common_stage_offset": [],
+				"char_pos3": [
+					0,
+					30
+				],
+				"offset_flip": 1,
+				"scale": 1,
+				"char_pos": [],
+				"clone": "",
+				"animations": [
+					{
+						"loop": false,
+						"anim": "cheer",
+						"fps": 24,
+						"name": "GF Cheer",
+						"indices": []
+					},
+					{
+						"loop": false,
+						"anim": "singLEFT",
+						"fps": 24,
+						"name": "GF left note",
+						"indices": []
+					},
+					{
+						"loop": false,
+						"anim": "singRIGHT",
+						"fps": 24,
+						"name": "GF Right Note",
+						"indices": []
+					},
+					{
+						"loop": false,
+						"anim": "singUP",
+						"fps": 24,
+						"name": "GF Up Note",
+						"indices": []
+					},
+					{
+						"loop": false,
+						"anim": "singDOWN",
+						"fps": 24,
+						"name": "GF Down Note",
+						"indices": []
+					},
+					{
+						"loop": false,
+						"anim": "sad",
+						"fps": 24,
+						"name": "gf sad",
+						"indices": [
+							0,
+							1,
+							2,
+							3,
+							4,
+							5,
+							6,
+							7,
+							8,
+							9,
+							10,
+							11,
+							12
+						]
+					},
+					{
+						"loop": false,
+						"anim": "danceLeft",
+						"fps": 24,
+						"name": "GF Dancing Beat",
+						"indices": [
+							30,
+							0,
+							1,
+							2,
+							3,
+							4,
+							5,
+							6,
+							7,
+							8,
+							9,
+							10,
+							11,
+							12,
+							13,
+							14
+						]
+					},
+					{
+						"loop": false,
+						"anim": "danceRight",
+						"fps": 24,
+						"name": "GF Dancing Beat",
+						"indices": [
+							15,
+							16,
+							17,
+							18,
+							19,
+							20,
+							21,
+							22,
+							23,
+							24,
+							25,
+							26,
+							27,
+							28,
+							29
+						]
+					},
+					{
+						"loop": false,
+						"anim": "hairBlow",
+						"fps": 24,
+						"name": "GF Dancing Beat Hair blowing",
+						"indices": [
+							0,
+							1,
+							2,
+							3
+						]
+					},
+					{
+						"loop": false,
+						"anim": "hairFall",
+						"fps": 24,
+						"name": "GF Dancing Beat Hair Landing",
+						"indices": [
+							0,
+							1,
+							2,
+							3,
+							4,
+							5,
+							6,
+							7,
+							8,
+							9,
+							10,
+							11
+						]
+					},
+					{
+						"loop": false,
+						"anim": "scared",
+						"fps": 24,
+						"name": "GF FEAR",
+						"indices": []
+					}
+				],
+				"embedded":true,
+				"path":"characters/GF_assets",
+				"color":"#A5004D",
+				"cam_pos3": [
+					0,
+					0
+				]
+			}';
+
+
 }

@@ -323,11 +323,41 @@ class DialogueBox extends FlxSpriteGroup
 			updatePortrait(false);
 		}else if (curCharacter.contains("bf") || curCharacter.contains("player")){
 			updatePortrait(true);
+		}else if (curCharacter.contains("none") || curCharacter.contains("unknown")){
+			updatePortrait(false,false);
 		}
 	}
-	function updatePortrait(isPlayer:Bool){
-		if(playerTalk != isPlayer){
+	var isNotChar:Bool = false;
+	function updatePortrait(isPlayer:Bool,?isChar:Bool = false){
+		if(!isChar){
+			if(isNotChar == !isChar)return;
+			// playerTalk = isPlayer;
+			isPlayer = playerTalk;
+			isNotChar = !isChar;
+			portraitLeft.visible = true;
+			portraitRight.visible = true;
+			portraitLeft.scale.x *= (if(isPlayer) 0.9 else 1.1);
+			portraitLeft.scale.y *= (if(isPlayer) 0.9 else 1.1);
+			portraitRight.scale.x *= (if(isPlayer) 1.1 else 0.9);
+			portraitRight.scale.y *= (if(isPlayer) 1.1 else 0.9);
+			portraitRight.alpha = (0.6);
+			portraitLeft.alpha = (0.6);
+			FlxTween.tween(box.scale,{x:1.2,y:0.8},0.1,{ease:FlxEase.cubeIn,onComplete:function(t){
+				FlxTween.tween(box.scale,{x:1,y:1},0.1,{ease:FlxEase.cubeIn});
+			}});
+			FlxTween.tween(swagDialogue.scale,{x:1.2,y:0.8},0.1,{ease:FlxEase.cubeIn,onComplete:function(t){
+
+				FlxTween.tween(swagDialogue.scale,{x:1,y:1},0.1,{ease:FlxEase.cubeIn});
+			}});
+			FlxTween.tween(dropText.scale,{x:1.2,y:0.8},0.1,{ease:FlxEase.cubeIn,onComplete:function(t){
+
+				FlxTween.tween(dropText.scale,{x:1,y:1},0.1,{ease:FlxEase.cubeIn});
+			}});
+			return;
+		}
+		if(playerTalk != isPlayer || isNotChar){
 			playerTalk = isPlayer;
+			isNotChar = false;
 			portraitLeft.visible = true;
 			portraitRight.visible = true;
 			portraitLeft.scale.x *= (if(isPlayer) 0.9 else 1.1);

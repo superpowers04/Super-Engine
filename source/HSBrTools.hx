@@ -135,12 +135,13 @@ class HSBrTools {
 
 
 
-	public function loadSound(soundPath:String,?volume:Float = 1):Sound{
+	public function loadSound(soundPath:String):Sound{
 		if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
 		return soundArray[soundPath];
 	}
 
-	public function playSound(soundPath:String,?volume:Float = 1):FlxSound{
+	public function playSound(soundPath:String,?volume:Float = 0.662121):FlxSound{
+		if(volume == 0.662121) volume = FlxG.save.data.otherVol;
 		if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
 		return FlxG.sound.play(soundArray[soundPath],volume);
 	}

@@ -66,25 +66,21 @@ class OptionsMenu extends MusicBeatState
 		]),
 
 		new OptionCategory("Appearance", [
-			new GUIGapOption("Change the distance between the end of the screen and text"),
+			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			new CamMovementOption("Toggle the camera moving"),
 			new NPSDisplayOption("Shows your current Notes Per Second."),
 			new AccuracyOption("Display accuracy information."),
-			new SongPositionOption("Show the songs current position (as a bar)"),
+			new SongPositionOption("Show the songs current position, name and length"),
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
 			new SongInfoOption("Change how your performance is displayed"),
+			new GUIGapOption("Change the distance between the end of the screen and text(Not used everywhere)"),
 		]),
 		new OptionCategory("Misc", [
 			new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
 			new FPSOption("Toggle the FPS Counter"),
-			new MissSoundsOption("Play a sound when you miss"),
-			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
-
-			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF. Also shows extra information"),
-			new PlayVoicesOption("Plays your character's voices when you press a note."),
 			new LogGameplayOption("Logs your game to a text file")
 		]),
 		new OptionCategory("Performance", [
@@ -96,13 +92,23 @@ class OptionsMenu extends MusicBeatState
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
 		]),
 		new OptionCategory("Visibility", [
-            new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),
+            new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),new BackTransOption("Change underlay opacity"),new BackgroundSizeOption("Change underlay size"),
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new OpponentStrumlineOption("Whether to show the opponent's notes or not"),
 			new ShowP2Option("Show Opponent"),
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
+		]),
+		new OptionCategory("Auditory", [
+			new VolumeOption("Adjust the volume of the entire game","master"),
+			new VolumeOption("Adjust the volume of the background music","inst"),
+			new VolumeOption("Adjust the volume of the vocals","voices"),
+			new VolumeOption("Adjust the volume of the hit sounds","hit"),    
+			new VolumeOption("Adjust the volume of other sounds and default script sound volume","other"),       
+			new MissSoundsOption("Play a sound when you miss"),
+			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
+			new PlayVoicesOption("Plays the voices a character has when you press a note."),
 		]),
 	];
 

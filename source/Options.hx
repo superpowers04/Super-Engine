@@ -1509,3 +1509,135 @@ class LogGameplayOption extends Option
 		return ("Log Gameplay " + (FlxG.save.data.logGameplay ? "on" : "off"));
 	}
 }
+
+class BackTransOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+	}
+
+	public override function press():Bool
+	{
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Underlay opacity";
+	}
+
+	override function right():Bool {
+		FlxG.save.data.undlaTrans += 0.1;
+
+		if (FlxG.save.data.undlaTrans > 1)
+			FlxG.save.data.undlaTrans = 1;
+		return true;
+	}
+
+	override function getValue():String {
+		return "Underlay opacity: " + HelperFunctions.truncateFloat(FlxG.save.data.undlaTrans,1);
+	}
+
+	override function left():Bool {
+		FlxG.save.data.undlaTrans -= 0.1;
+
+		if (FlxG.save.data.undlaTrans < 0)
+			FlxG.save.data.undlaTrans = 0;
+
+		if (FlxG.save.data.undlaTrans > 1)
+			FlxG.save.data.undlaTrans = 1;
+
+		return true;
+	}
+}
+class BackgroundSizeOption extends Option
+{
+	var ies:Array<String> = ["Strumline Only","Fill screen"];
+	var iesDesc:Array<String> = ["Only show underlay below strumline","Fill underlay to entire screen",];
+	public function new(desc:String)
+	{
+		if (FlxG.save.data.undlaSize >= ies.length) FlxG.save.data.undlaSize = 0;
+		super();
+		description = desc;
+
+		acceptValues = true;
+	}
+
+	override function getValue():String {
+		return iesDesc[FlxG.save.data.undlaSize];
+	}
+
+	override function right():Bool {
+		FlxG.save.data.undlaSize += 1;
+		if (FlxG.save.data.undlaSize >= ies.length) FlxG.save.data.undlaSize = 0;
+		display = updateDisplay();
+		return true;
+	}
+	override function left():Bool {
+		FlxG.save.data.undlaSize -= 1;
+		if (FlxG.save.data.undlaSize < 0) FlxG.save.data.undlaSize = ies.length - 1;
+		display = updateDisplay();
+		return true;
+	}
+	public override function press():Bool{return right();}
+
+	private override function updateDisplay():String
+	{
+		return 'Underlay style';
+	}
+}
+class VolumeOption extends Option
+{
+	var opt = "";
+	public function new(desc:String,option:String = "")
+	{
+		opt = option;
+		super();
+		description = desc;
+		acceptValues = true;
+	}
+
+	public override function press():Bool
+	{
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return  opt + " Volume";}
+
+	override function right():Bool {
+		Reflect.setField(FlxG.save.data,opt+"Vol", Reflect.field(FlxG.save.data,opt+"Vol") + (if(FlxG.keys.pressed.SHIFT) 0.01 else 0.1));
+
+		if (Reflect.field(FlxG.save.data,opt+"Vol") > 1)
+			Reflect.setField(FlxG.save.data,opt+"Vol", 1);
+		// display = updateDisplay();
+		return true;
+	}
+
+	override function getValue():String {
+
+		switch(opt){
+			case "master":{
+				FlxG.sound.volume = FlxG.save.data.masterVol;
+			}
+			case "inst":{
+				FlxG.sound.music.volume = FlxG.save.data.instVol;
+			}
+		}
+		return opt + " Volume: " + (HelperFunctions.truncateFloat(Reflect.field(FlxG.save.data,opt+"Vol"),2) * 100) + "%"; // Multiplied by 100 to appear as 0-100 instead of 0-1
+
+	}
+
+	override function left():Bool {
+		Reflect.setField(FlxG.save.data,opt+"Vol", Reflect.field(FlxG.save.data,opt+"Vol") - (if(FlxG.keys.pressed.SHIFT) 0.01 else 0.1));
+		if (Reflect.field(FlxG.save.data,opt+"Vol") < 0)
+			Reflect.setField(FlxG.save.data,opt+"Vol", 0);
+		// display = updateDisplay();
+
+		return true;
+	}
+}

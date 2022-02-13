@@ -2,17 +2,19 @@ package multi;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
-import flash.media.Sound;
+import openfl.media.Sound;
 import Song;
 import sys.io.File;
 import sys.FileSystem;
 import tjson.Json;
+import flixel.system.FlxSound;
 
 
 using StringTools;
@@ -22,16 +24,33 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var modes:Map<Int,Array<String>> = [];
 	var diffText:FlxText;
 	var selMode:Int = 0;
-	var blockedFiles:Array<String> = ['picospeaker.json','_meta.json','meta.json','config.json'];
+	var blockedFiles:Array<String> = ['picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','config.json'];
 	static var lastSel:Int = 0;
 	static var lastSearch:String = "";
 	var beetHit:Bool = false;
 
 	var songNames:Array<String> = [];
 	var nameSpaces:Array<String> = [];
+	override function beatHit(){
+		if (voices != null && voices.playing && (voices.time > FlxG.sound.music.time + 20 || voices.time < FlxG.sound.music.time - 20))
+		{
+			voices.time = FlxG.sound.music.time;
+			voices.play();
+		}
+		super.beatHit();
+	}
 	override function findButton(){
 		super.findButton();
 		changeDiff();
+	}
+	override function switchTo(nextState:FlxState):Bool{
+		FlxG.autoPause = true;
+		if(voices != null){
+			voices.destroy();
+			voices = null;
+
+		}
+		return super.switchTo(nextState);
 	}
 	override function create()
 	{
@@ -49,7 +68,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		changeSelection(lastSel);
 		lastSel = 0;
 		changeDiff();
-		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental of song.');
+		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu');
 	}
 	override function reloadList(?reload=false,?search = ""){
 		curSelected = 0;
@@ -170,9 +189,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			}
 		}
 	}
-	function checkSong(dataDir:String,directory:String){
+	// function checkSong(dataDir:String,directory:String){
 
-	}
+	// }
 
 	// public static function grabSongInfo(songName:String):Array<String>{ // Returns empty array if song is not found or invalid
 	// 	var ret:Array<Dynamic> = [];
@@ -251,8 +270,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 			// PlayState.SONG = Song.parseJSONshit(File.getContent('${selSong}/${songJSON}'));
 
-	}
+	}	
+
 	var curPlaying = "";
+	var voices:FlxSound;
+
 	override function handleInput(){
 			if (controls.BACK)
 			{
@@ -265,10 +287,15 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if(controls.LEFT_P){changeDiff(-1);}
 			if(controls.RIGHT_P){changeDiff(1);}
 			if(FlxG.keys.justPressed.CONTROL){
+				FlxG.autoPause = false;
 				if(curPlaying != songs[curSelected]){
 					curPlaying = songs[curSelected];
+					if(voices != null){
+						voices.stop();
+					}
+					voices = null;
 					FlxG.sound.music.stop();
-					FlxG.sound.playMusic(Sound.fromFile('${songs[curSelected]}/Inst.ogg'),1,true);
+					FlxG.sound.playMusic(Sound.fromFile('${songs[curSelected]}/Inst.ogg'),FlxG.save.data.instVol,true);
 					if (FlxG.sound.music.playing){
 						if(modes[curSelected][selMode] != "No charts for this song!" && FileSystem.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
 							try{
@@ -278,12 +305,32 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 									Conductor.changeBPM(e.bpm);
 								}
 							}catch(e){
-								showTempmessage("Unable to get BPM from chart automatically. BPM will be out of sync");
+								showTempmessage("Unable to get BPM from chart automatically. BPM will be out of sync",0xee0011);
 							}
 						}
+
 					}else{
 						curPlaying = "";
 						SickMenuState.musicHandle();
+					}
+				}
+				if(curPlaying == songs[curSelected]){
+					try{
+
+						if(voices == null){
+							voices = new FlxSound();
+							voices.loadEmbedded(Sound.fromFile('${songs[curSelected]}/Voices.ogg'),true);
+							voices.volume = FlxG.save.data.voicesVol;
+							voices.play(FlxG.sound.music.time);
+
+						}else{
+							if(!voices.playing){
+								voices.play(FlxG.sound.music.time);
+							}else
+								voices.stop();
+						}
+					}catch(e){
+						showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
 					}
 				}
 			}

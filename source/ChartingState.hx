@@ -925,7 +925,7 @@ class ChartingState extends MusicBeatState
 			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
-			gotoPlaystate();
+			gotoPlaystate(FlxG.keys.justPressed.ENTER);
 		}
 
 		if (FlxG.keys.justPressed.E)
@@ -1833,8 +1833,11 @@ class ChartingState extends MusicBeatState
 		FlxG.log.error("Problem saving Level data");
 	}
 
-	function gotoPlaystate(){
+	function gotoPlaystate(?jumpTo:Bool = false){
 		charting = true;
+		if(jumpTo){
+			PlayState.jumpTo = Conductor.songPosition;
+		}
 		switch(PlayState.stateType){
 			case 2: LoadingState.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
 			case 4,6: LoadingState.loadAndSwitchState(new multi.MultiPlayState());
