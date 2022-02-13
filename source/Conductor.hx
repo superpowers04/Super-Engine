@@ -46,6 +46,7 @@ class Conductor
 		bpmChangeMap = [];
 
 		var curBPM:Float = song.bpm;
+		if(curBPM < 0) curBPM = -curBPM;
 		var totalSteps:Int = 0;
 		var totalPos:Float = 0;
 		for (i in 0...song.notes.length)
@@ -53,6 +54,7 @@ class Conductor
 			if(song.notes[i].changeBPM && song.notes[i].bpm != curBPM)
 			{
 				curBPM = song.notes[i].bpm;
+				if(curBPM < 0) curBPM = -curBPM;
 				var event:BPMChangeEvent = {
 					stepTime: totalSteps,
 					songTime: totalPos,
@@ -71,6 +73,7 @@ class Conductor
 	public static function changeBPM(newBpm:Float)
 	{
 		bpm = newBpm;
+		if(bpm < 0) bpm = -bpm;
 
 		crochet = ((60 / bpm) * 1000);
 		stepCrochet = crochet / 4;
