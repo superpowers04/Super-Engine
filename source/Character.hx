@@ -811,7 +811,7 @@ class Character extends FlxSprite
 	var baseColor = 0xffffff;
 	var tintColor = 0x330066;
 	public function setOffsets(?AnimName:String = "",?offsetX:Float = 0,?offsetY:Float = 0){
-		if (tintedAnims.contains(animation.curAnim.name)){baseColor = color;color = tintColor;}else if(this.color == tintColor){this.color = baseColor;}
+		if (tintedAnims.contains(animation.curAnim.name) && this.color != tintColor){baseColor = color;color = tintColor;}else if(this.color == tintColor){this.color = baseColor;}
 		
 		var daOffset = animOffsets.get(AnimName); // Get offsets
 		var offsets:Array<Float> = [offsetX,offsetY];
