@@ -89,7 +89,7 @@ class TitleState extends MusicBeatState
 
 		choosableCharacters = ["bf","gf"];
 		choosableCharactersLower = ["bf" => "bf","gf" => "gf"];
-		characterDescriptions = ["automatic" => "Automatically uses character from song json"];
+		characterDescriptions = ["automatic" => "Automatically uses character from song json", "bf" => "Boyfriend, the main protagonist. Provided by the base game.","gf" => "Girlfriend, boyfriend's partner. Provided by the base game."];
 		characterPaths = [];
 		weekChars = [];
 		invalidCharacters = [];
@@ -107,7 +107,7 @@ class TitleState extends MusicBeatState
 				if (FileSystem.exists(dir+"/"+char+"/config.json"))
 				{
 					customCharacters.push(char);
-					var desc = 'Built-in character';
+					var desc = 'Assets character';
 					if (FileSystem.exists('${dir}/${char}/description.txt'))
 						desc += ";" +File.getContent('${dir}/${char}/description.txt');
 					characterDescriptions[char] = desc;

@@ -1399,12 +1399,14 @@ class FloatOption extends Option{
 	override function right():Bool {
 
 		OptionsMenu.modOptions[script][name] += 0.1;
+		if(OptionsMenu.modOptions[script][name] < 0.1 && OptionsMenu.modOptions[script][name] > -0.1) OptionsMenu.modOptions[script][name] = 0;
 		if (OptionsMenu.modOptions[script][name] > max) OptionsMenu.modOptions[script][name] = min;
 		display = updateDisplay();
 		return true;
 	}
 	override function left():Bool {
 		OptionsMenu.modOptions[script][name] -= 0.1;
+		if(OptionsMenu.modOptions[script][name] < 0.1 && OptionsMenu.modOptions[script][name] > -0.1) OptionsMenu.modOptions[script][name] = 0;
 		if (OptionsMenu.modOptions[script][name] < min) OptionsMenu.modOptions[script][name] = max;
 		display = updateDisplay();
 		return true;
