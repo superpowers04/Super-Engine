@@ -141,7 +141,7 @@ class TitleState extends MusicBeatState
 
 		
 
-		for (_ => dataDir in ['mods/weeks/','mods/packs/','assets/characters/']) {
+		for (_ => dataDir in ['mods/weeks/','mods/packs/']) {
 			
 			if (FileSystem.exists(dataDir))
 			{
