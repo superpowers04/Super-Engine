@@ -11,6 +11,8 @@
 - Characters will automatically play "songStart" when the character is loaded
 - An option for an underlay to make note readability better
 - The ability to control inst, voices and miss volumes independantly
+- Animation priority, 0 is idle, 5 is hey and other misc default animations, all attack animations default to 6, and 10 is sing. You can set this to any integer
+
 
 Script related:
 - Add Paths to scripts for loading vanilla assets

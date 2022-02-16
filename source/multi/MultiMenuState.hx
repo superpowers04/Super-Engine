@@ -16,6 +16,7 @@ import sys.FileSystem;
 import tjson.Json;
 import flixel.system.FlxSound;
 
+import flixel.tweens.FlxTween;
 
 using StringTools;
 
@@ -31,6 +32,15 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 	var songNames:Array<String> = [];
 	var nameSpaces:Array<String> = [];
+	var shouldDraw:Bool = true;
+	var inTween:FlxTween;
+	override function draw(){
+		if(shouldDraw){
+			super.draw();
+		}else{
+			grpSongs.members[curSelected].draw();
+		}
+	}
 	override function beatHit(){
 		if (voices != null && voices.playing && (voices.time > FlxG.sound.music.time + 20 || voices.time < FlxG.sound.music.time - 20))
 		{
@@ -69,6 +79,20 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		lastSel = 0;
 		changeDiff();
 		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu');
+	}
+	override function onFocus() {
+		shouldDraw = true;
+		super.onFocus();
+		bg.alpha = 0;
+		inTween = FlxTween.tween(bg,{alpha:1},0.7);
+	}
+	override function onFocusLost(){
+		shouldDraw = false;
+		super.onFocusLost();
+		if(inTween != null){
+			inTween.cancel();
+			inTween.destroy();
+		}
 	}
 	override function reloadList(?reload=false,?search = ""){
 		curSelected = 0;

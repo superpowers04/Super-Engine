@@ -104,6 +104,7 @@ class TitleState extends MusicBeatState
 			trace('Checking ${dir} for characters');
 			for (char in FileSystem.readDirectory(dir))
 			{
+				if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
 				if (FileSystem.exists(dir+"/"+char+"/config.json"))
 				{
 					customCharacters.push(char);
@@ -126,6 +127,7 @@ class TitleState extends MusicBeatState
 		{
 		  for (directory in FileSystem.readDirectory(dataDir))
 		  {
+			if (!FileSystem.isDirectory(dataDir+"/"+directory)){continue;}
 			if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/config.json"))
 			{
 				customCharacters.push(directory);
@@ -147,6 +149,7 @@ class TitleState extends MusicBeatState
 			{
 			  for (_dir in FileSystem.readDirectory(dataDir))
 			  {
+				if (!FileSystem.isDirectory(dataDir + _dir)){continue;}
 				// trace(_dir);
 				if (FileSystem.exists(dataDir + _dir + "/characters/"))
 				{
@@ -154,6 +157,7 @@ class TitleState extends MusicBeatState
 					trace('Checking ${dir} for characters');
 					for (char in FileSystem.readDirectory(dir))
 					{
+						if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
 						if (FileSystem.exists(dir+"/"+char+"/config.json"))
 						{
 							var charPack = "";
@@ -273,11 +277,6 @@ class TitleState extends MusicBeatState
 	}
 	override public function create():Void
 	{
-		
-		#if sys
-		if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays"))
-			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");
-		#end
 		@:privateAccess
 		{
 			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");
