@@ -467,7 +467,7 @@ class PlayState extends MusicBeatState
 		try{
 		#end
 		if (instance != null) instance.destroy();
-		downscroll = FlxG.save.data.downScroll;
+		downscroll = FlxG.save.data.downscroll;
 		middlescroll = FlxG.save.data.middleScroll;
 		setInputHandlers(); // Sets all of the handlers for input
 		instance = this;
