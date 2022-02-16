@@ -53,6 +53,7 @@ typedef CharJsonAnimation ={
 	var ?song:Null<String>; // Set on specific songname
 	var ?char_side:Null<Int>; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
 	var ?oneshot:Null<Bool>; // Should animation overlap everything?
+	var ?priority:Null<Int>; // Animation priority, 0 is idle, 10 is sing, 5 is hey, and the rest is up to you. The engine will handle the rest
 }
 
 typedef CharacterAssetFiles ={

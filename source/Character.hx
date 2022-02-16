@@ -77,6 +77,27 @@ class Character extends FlxSprite
 	public var tintedAnims:Array<String> = [];
 	public var loopAnimFrames:Map<String,Int> = [];
 	public var loopAnimTo:Map<String,String> = [];
+	public var animationPriorities:Map<String,Int> = [
+		"singleft-alt" => 10,
+		"singdown-alt" => 10,
+		"singup-alt" => 10,
+		"singright-alt" => 10,
+		"singleft" => 10,
+		"singdown" => 10,
+		"singup" => 10,
+		"singright" => 10,
+		"idle" => 0,
+		"danceright" => 0,
+		"danceleft" => 0,
+		"hey" => 5,
+		"scared" => 5,
+		"hurt" => 6,
+		"hit" => 6,
+		"attack" => 6,
+		"shoot" => 6,
+		"dodge" => 6,
+		"songStart" => 7
+];
 	public var flip:Bool = true;
 	public var tex:FlxAtlasFrames = null;
 	public var holdTimer:Float = 0;
@@ -854,8 +875,13 @@ class Character extends FlxSprite
 
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
 			AnimName = AnimName + '-alt'; // Alt animations
-		if (animation.curAnim != null){lastAnim = animation.curAnim.name;}
-		if (animation.curAnim != null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
+		if (animation.curAnim != null){
+			lastAnim = animation.curAnim.name;
+			if(animation.curAnim.name != AnimName && !animation.curAnim.finished){
+				if (animationPriorities[animation.curAnim.name] != null && animationPriorities[animation.curAnim.name] > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
+				if (animationPriorities[animation.curAnim.name] == null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
+			}
+		}
 		callInterp("playAnim",[AnimName]);
 		if (skipNextAnim){
 			skipNextAnim = false;
