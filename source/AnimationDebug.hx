@@ -55,7 +55,7 @@ using StringTools;
 class AnimationDebug extends MusicBeatState
 {
 	static var INTERNALANIMATIONLIST:Array<String> = ["idle","danceLeft","danceRight","singLEFT","singDOWN","singUP","singRIGHT","singLEFTmiss","singDOWNmiss","singUPmiss","singRIGHTmiss","idle-alt","singLEFT-alt","singDOWN-alt","singUP-alt","singRIGHT-alt","songStart","hey",
-	"scared","win","cheer","lose","dodge","hurt"]; // Why is this yelling you ask? Because yes
+	"scared","win","cheer","lose","dodge","hurt","dodgeLeft","dodgeRight","dodgeUp","dodgeDown"]; // Why is this yelling you ask? Because yes
 	public static var instance:AnimationDebug;
 	var gf:Character;
 	public var dad:Character;
@@ -764,10 +764,23 @@ class AnimationDebug extends MusicBeatState
 		looped.checked = false;
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
-		var oneshot = new FlxUICheckBox(30, 40, null, null, "Oneshot/High priority");
-		oneshot.checked = false;
-		uiMap["oneshot"] = oneshot;
-		uiBox.add(oneshot);
+		// var oneshot = new FlxUICheckBox(30, 40, null, null, "Oneshot/High priority");
+		// oneshot.checked = false;
+		// uiMap["oneshot"] = oneshot;
+		// uiBox.add(oneshot);
+		var animTxt = new FlxText(30, 40,0,"Priority(-1 for def)");
+		uiMap["prtxt"] = animTxt;
+		uiBox.add(animTxt);
+		var e = new FlxUIInputText(120, 40, 20, '-1');
+		uiMap["priorityText"] = e;
+		uiMap["priorityText"].customFilterPattern = ~/(?!\-[0-9]*)/gi;
+
+		uiBox.add(e);
+
+		var animFPS = new FlxUIInputText(30, 120, null, "0");
+		animFPS.filterMode = 2;
+		uiMap["loopStart"] = animFPS;
+		uiBox.add(animFPS);
 		var animTxt = new FlxText(30, 60,0,"Animation FPS");
 		uiMap["FPStxt"] = animTxt;
 		var animFPS = new FlxUIInputText(30, 80, null, "24");
@@ -800,6 +813,7 @@ class AnimationDebug extends MusicBeatState
 					fps: Std.parseInt(uiMap["FPS"].text),
 					loopStart:Std.parseInt(uiMap["loopStart"].text),
 					indices: [],
+					priority: (if(uiMap["priorityText"].text == '-1(Engine Default)' || uiMap["priorityText"].text == "-1") null else Std.parseInt(uiMap["priorityText"].text)),
 					oneshot: (uiMap["oneshot"].checked || animUICurAnim == "hey" || animUICurAnim == "lose")
 				},false);
 			}

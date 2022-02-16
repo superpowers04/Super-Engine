@@ -78,6 +78,15 @@ class Character extends FlxSprite
 	public var loopAnimFrames:Map<String,Int> = [];
 	public var loopAnimTo:Map<String,String> = [];
 	public var animationPriorities:Map<String,Int> = [
+		"singLEFT-alt" => 10,
+		"singDOWN-alt" => 10,
+		"singUP-alt" => 10,
+		"singRIGHT-alt" => 10,
+		"singLEFT" => 10,
+		"singDOWN" => 10,
+		"singUP" => 10,
+		"singRIGHT" => 10,
+		// Copy of the above but lower case because it's funny and I'm dumb
 		"singleft-alt" => 10,
 		"singdown-alt" => 10,
 		"singup-alt" => 10,
@@ -86,16 +95,31 @@ class Character extends FlxSprite
 		"singdown" => 10,
 		"singup" => 10,
 		"singright" => 10,
+
 		"idle" => 0,
+		"Idle" => 0,// Can never remember if it's idle or Idle
+		"danceRight" => 0,
+		"danceLeft" => 0,
 		"danceright" => 0,
 		"danceleft" => 0,
 		"hey" => 5,
+		"cheer" => 5,
 		"scared" => 5,
-		"hurt" => 6,
-		"hit" => 6,
-		"attack" => 6,
-		"shoot" => 6,
-		"dodge" => 6,
+		"win" => 100,
+		"lose" => 100,
+		"hurt" => 10,
+		"hit" => 10,
+		"attack" => 10,
+		"shoot" => 10,
+		"dodge" => 10,
+		"dodgeLeft" => 10,
+		"dodgeRight" => 10,
+		"dodgeUp" => 10,
+		"dodgeDown" => 10,
+		"dodgeleft" =>10,
+		"dodgeright" => 10,
+		"dodgeup" => 10,
+		"dodgedown" => 10,
 		"songStart" => 7
 ];
 	public var flip:Bool = true;
@@ -359,6 +383,12 @@ class Character extends FlxSprite
 				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
 
 				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
+				if(anima.priority != null){
+					animationPriorities[anima.name] = anima.priority;
+				}else if(animationPriorities[anima.name] == null){
+					animationPriorities[anima.name] = 1;
+
+				}
 				animCount++;
 			}
 		}
