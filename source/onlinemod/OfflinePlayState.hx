@@ -25,6 +25,7 @@ class OfflinePlayState extends PlayState
   public static var instFile = "";
   public static var chartFile:String = "";
   public static var nameSpace:String = "";
+  public static var stateNames:Array<String> = ["","","-Offl","","-Multi","-OSU","-Story","","",""];
   function loadSongs(){
 
 		if(instFile == ""){
@@ -91,7 +92,7 @@ class OfflinePlayState extends PlayState
 
 
 	    // Add XieneDev watermark
-	    var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.1 - 50, FlxG.width, "XieneDev Battle Royale", 16);
+	    var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.1 - 50, FlxG.width, "SuperEngine" + stateNames[stateType] + " " + MainMenuState.ver, 16);
 			xieneDevWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 			xieneDevWatermark.scrollFactor.set();
 			add(xieneDevWatermark);

@@ -298,7 +298,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 	var curPlaying = "";
 	var voices:FlxSound;
-
+	var playCount:Int = 0;
 	override function handleInput(){
 			if (controls.BACK)
 			{
@@ -312,6 +312,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if(controls.RIGHT_P){changeDiff(1);}
 			if(FlxG.keys.justPressed.CONTROL){
 				FlxG.autoPause = false;
+				playCount++;
 				if(curPlaying != songs[curSelected]){
 					curPlaying = songs[curSelected];
 					if(voices != null){
@@ -357,6 +358,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
 					}
 				}
+				if(playCount > 2)
+					openfl.system.System.gc();
 			}
 			extraKeys();
 			if (controls.ACCEPT && songs.length > 0)
