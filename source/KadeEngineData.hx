@@ -82,7 +82,7 @@ class KadeEngineData
 			FlxG.save.data.customStrumLine = 0;
 
 		if (FlxG.save.data.opponent == null)
-			FlxG.save.data.opponent = "dad";
+			FlxG.save.data.opponent = "bf";
 
 
 		if (FlxG.save.data.playerChar == null)
