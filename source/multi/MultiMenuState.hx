@@ -358,8 +358,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
 					}
 				}
-				if(playCount > 2)
+				if(playCount > 2){
+					playCount = 0;
 					openfl.system.System.gc();
+				}
 			}
 			extraKeys();
 			if (controls.ACCEPT && songs.length > 0)
