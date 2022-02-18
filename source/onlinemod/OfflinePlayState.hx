@@ -119,7 +119,7 @@ class OfflinePlayState extends PlayState
 
 		// curSong = songData.song;
 
-		if (PlayState.SONG.needsVoices)
+		if (PlayState.SONG.needsVoices && loadedVoices.length > Math.max(4000,loadedInst.length - 20000) && loadedVoices.length < loadedInst.length + 10000)
 			vocals = loadedVoices;
 		else
 			vocals = new FlxSound();

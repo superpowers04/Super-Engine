@@ -272,6 +272,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
 				onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
 				PlayState.stateType = 4;
+				FlxG.sound.music.fadeOut(0.4);
 				LoadingState.loadAndSwitchState(new MultiPlayState());
 			}catch(e){
 				MainMenuState.handleError('Error while loading chart ${e.message}');

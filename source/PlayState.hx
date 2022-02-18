@@ -2269,7 +2269,7 @@ class PlayState extends MusicBeatState
 			if (PlayState.SONG.notes[curSection] != null) followChar((PlayState.SONG.notes[curSection].mustHitSection ? 0 : 1),locked);
 		}
 		if(FlxG.save.data.animDebug){
-			Overlay.debugVar += '\nResync count:${resyncCount}\nCond/Music time:${Conductor.songPosition}/${FlxG.sound.music.time}\nAssumed Section:${curSection}\nHealth:${health}\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }\nScript Count:${interpCount}';
+			Overlay.debugVar += '\nResync count:${resyncCount}\nCond/Music time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}\nAssumed Section:${curSection}\nHealth:${health}\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }\nScript Count:${interpCount}';
 		}
 		if ((FlxG.save.data.camMovement || !camLocked) && camBeat){
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
