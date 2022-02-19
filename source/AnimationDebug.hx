@@ -813,7 +813,7 @@ class AnimationDebug extends MusicBeatState
 					fps: Std.parseInt(uiMap["FPS"].text),
 					loopStart:Std.parseInt(uiMap["loopStart"].text),
 					indices: [],
-					priority: (if(uiMap["priorityText"].text == '-1(Engine Default)' || uiMap["priorityText"].text == "-1") null else Std.parseInt(uiMap["priorityText"].text)),
+					priority: (if(uiMap["priorityText"] != null && uiMap["priorityText"].text != null && uiMap["priorityText"].text == '-1(Engine Default)' || uiMap["priorityText"].text == "-1") null else Std.parseInt(uiMap["priorityText"].text)),
 					oneshot: (uiMap["oneshot"].checked || animUICurAnim == "hey" || animUICurAnim == "lose")
 				},false);
 			}

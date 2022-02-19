@@ -393,31 +393,51 @@ class Character extends FlxSprite
 			}
 		}
 		trace('Registered ${animCount} animations');
-		if(!amPreview && !hasIdle){
-			
-			var hasBFAnims:Bool = false;
-			{
-				var regTP:EReg = (~/<SubTexture name="BF idle dance/g);
-				var input:String = charXml;
-				while (regTP.match(input)) {
-					hasBFAnims = true;
-					break;
+		if(!hasIdle){
+			if(amPreview){
+				var idleName:String = "";
+				{ // Load characters without a idle animation, hopefully
+					var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+[iI][dD][lL][eE][A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
+					var input:String = charXml;
+					while (regTP.match(input)) {
+						input=regTP.matchedRight();
+						idleName = regTP.matched(1);
+						break;
+					}
 				}
-			}
-			if (hasBFAnims){
-				addAnimation('idle', 'BF idle dance', 24, false);
-				addAnimation('singUP', 'BF NOTE UP0', 24, false);
-				// WHY DO THESE NEED TO BE FLIPPED?
-				addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
-				addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
-				addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
-				addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
+				charProperties.animations = Json.parse('[{
+						"anim":"idle",
+						"name":"${idleName}",
+						"loop":false,
+						"fps":24,
+						"indices":[],
+						"oneshot":false
+					}]');
+			}else{
+				var hasBFAnims:Bool = false;
+				{
+					var regTP:EReg = (~/<SubTexture name="BF idle dance/g);
+					var input:String = charXml;
+					while (regTP.match(input)) {
+						hasBFAnims = true;
+						break;
+					}
+				}
+				if (hasBFAnims){ // Legacy shit I guess
+					addAnimation('idle', 'BF idle dance', 24, false);
+					addAnimation('singUP', 'BF NOTE UP0', 24, false);
+					// WHY DO THESE NEED TO BE FLIPPED?
+					addAnimation('singLEFT', 'BF NOTE RIGHT0', 24, false); 
+					addAnimation('singRIGHT', 'BF NOTE LEFT0', 24, false);
+					addAnimation('singDOWN', 'BF NOTE DOWN0', 24, false);
+					addAnimation('singUPmiss', 'BF NOTE UP MISS', 24, false);
 
-				addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
-				addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
+					addAnimation('singRIGHTmiss', 'BF NOTE LEFT MISS', 24, false);
+					addAnimation('singLEFTmiss', 'BF NOTE RIGHT MISS', 24, false);
 
-				addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				addAnimation('hey', 'BF HEY', 24, false);
+					addAnimation('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+					addAnimation('hey', 'BF HEY', 24, false);
+				}
 			}
 		}
 		setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
@@ -633,10 +653,14 @@ class Character extends FlxSprite
 
 		trace('Finished loading character, Lets get funky!');
 		}
-	
+
+
 
 	public static function newChar(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true):Character{
 		var e = new Character(x,y,character,isPlayer,charType,exitex,charJson);
+		if(PlayState.instance.songStarted){
+			PlayState.instance.showTempmessage("Please load characters before song start to prevent lag during song!",FlxColor.RED);
+		}
 		e.hscriptGen = true;
 		return e;
 	}
@@ -924,6 +948,7 @@ class Character extends FlxSprite
 		// setSprite(animGraphics[AnimName.toLowerCase()]);
 
 		if (animation.getByName(AnimName) == null) return;
+		
 		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){Frame = loopAnimFrames[AnimName];}
 		animation.play(AnimName, Force, Reversed, Frame);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){

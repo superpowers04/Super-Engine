@@ -67,8 +67,8 @@ class FinishSubState extends MusicBeatSubstate
 			// PlayState.instance.paused = true;
 		}
 		FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
-		PlayState.instance.followChar(win ? 0 : 1);
-			var camPos = PlayState.instance.getDefaultCamPos();
+		PlayState.instance.followChar(if(won) 0 else 1);
+		var camPos = PlayState.instance.getDefaultCamPos();
 		PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
 
 		if(!isError){
@@ -155,8 +155,10 @@ class FinishSubState extends MusicBeatSubstate
 			Conductor.changeBPM(70);
 			FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
 			// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
+			PlayState.instance.followChar(if(win) 0 else 1);
 			var camPos = PlayState.instance.getDefaultCamPos();
 			PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
+			PlayState.instance.camGame.setPosition(camPos[0],camPos[1]);
 			cam = new FlxCamera();
 
 			FlxG.cameras.add(cam);

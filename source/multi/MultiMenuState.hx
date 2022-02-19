@@ -271,6 +271,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					
 				}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
 				onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
+				if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Inst.ogg")){
+					onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.chartFile + "-Inst.ogg";
+				}
+				if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Voices.ogg")){
+					onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
+				}
 				PlayState.stateType = 4;
 				FlxG.sound.music.fadeOut(0.4);
 				LoadingState.loadAndSwitchState(new MultiPlayState());

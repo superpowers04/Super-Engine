@@ -230,6 +230,7 @@ class PlayState extends MusicBeatState
 	public static var timeCurrently:Float = 0;
 	public static var timeCurrentlyR:Float = 0;
 	public static var jumpTo:Float = 0;
+	public var moveCamera:Bool = true;
 	
 	// Will fire once to prevent debug spam messages and broken animations
 	private var triggeredAlready:Bool = false;
@@ -2264,18 +2265,20 @@ class PlayState extends MusicBeatState
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
 			curSection = Std.int(curStep / 16);
+			if(moveCamera){
 
-			var locked = (!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null);
-			if (PlayState.SONG.notes[curSection] != null) followChar((PlayState.SONG.notes[curSection].mustHitSection ? 0 : 1),locked);
+				var locked = (!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null);
+				if (PlayState.SONG.notes[curSection] != null) followChar((PlayState.SONG.notes[curSection].mustHitSection ? 0 : 1),locked);
+			}
 		}
 		if(FlxG.save.data.animDebug){
 			Overlay.debugVar += '\nResync count:${resyncCount}\nCond/Music time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}\nAssumed Section:${curSection}\nHealth:${health}\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }\nScript Count:${interpCount}';
 		}
-		if ((FlxG.save.data.camMovement || !camLocked) && camBeat){
+		if ((FlxG.save.data.camMovement || !camLocked ) && moveCamera && camBeat){
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 			
-		}else if (camBeat){
+		}else if (camBeat && moveCamera){
 			FlxG.camera.zoom = defaultCamZoom;
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 			// FlxG.camera.zoom = 0.95;

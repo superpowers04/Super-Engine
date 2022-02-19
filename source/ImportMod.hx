@@ -78,6 +78,8 @@ class ImportModFromFolder extends MusicBeatState
 	var valid = false;
 	override function create()
 	{
+		try{
+
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('onlinemod/online_bg2'));
 		add(bg);
 
@@ -160,6 +162,7 @@ class ImportModFromFolder extends MusicBeatState
 			loadingText.text = '${folder} doesn\'t contain any songs!' + (if(!importExisting) "\nMaybe try allowing vanilla songs to be imported\n*(Press 1 to toggle importing vanilla songs in the list)" else "");
 
 		}
+		}catch(e){MainMenuState.handleError('Something went wrong when trying to scan for songs! ${e.message}');}
 	}
 	function doDraw(){update(0);draw();}
 	function scanSongs(?folder:String = "",assets:String=""){

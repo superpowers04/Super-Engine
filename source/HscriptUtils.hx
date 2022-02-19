@@ -21,6 +21,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxGame;
 import flixel.FlxCamera;
+import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import hscript.InterpEx;
 import hscript.Interp;
@@ -101,6 +102,9 @@ class HscriptUtils {
 		interp.variables.set("StringTools", SEStringTools); // This uses inlines, I hate my life
 		interp.variables.set("Json", SEJson);
 
+		// SE modifications of other libraries
+		interp.variables.set("FlxTimer", BRTimer);
+
 		// Flixel Libaries
 
 		interp.variables.set("FlxSprite", FlxSprite);
@@ -118,9 +122,8 @@ class HscriptUtils {
 		interp.variables.set("FlxPoint", FlxPoint);
 		interp.variables.set("FlxTrail", FlxTrail);
 		interp.variables.set("FlxEase", FlxEase);
-		interp.variables.set("FlxTimer", BRTimer);
-		interp.variables.set("FlxTween", flixel.tweens.FlxTween);
 		interp.variables.set("FlxCamera",FlxCamera);
+		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("FlxText",FlxText);
 		interp.variables.set("FlxSort",FlxSort);
 		interp.variables.set("FlxAxes",flixel.util.FlxAxes);
@@ -189,7 +192,7 @@ class BRTimer extends FlxTimer{ // Make sure errors are caught whenever a timer 
 			__onComplete = function(timer:FlxTimer):Void{
 				try{
 					OnComplete(timer);
-				}catch(e){MainMenuState.handleError('An error occurred in a Timer: ${e.message}');}
+				}catch(e){PlayState.instance.handleError('An error occurred in a Timer: ${e.message}');}
 			}
 		}
 		return super.start(Time,__onComplete,Loops);
