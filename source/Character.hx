@@ -677,6 +677,8 @@ class Character extends FlxSprite
 
 	function loadChar(?char:String = ""){
 			if(char != "")curCharacter = char;
+			if(TitleState.retChar(curCharacter) == "") char = "bf";
+			
 			switch (curCharacter) // Seperate statement for duplicated character paths
 			{
 				case 'gf':
