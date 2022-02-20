@@ -1,20 +1,69 @@
-Characters work like FNF Multi, Check BF-faceanim for an example. You can also make custom animations using IfStates
-Heres an example that adds Garcellos "tight bars, little man" animation into Release:
-{
-	"anim": "garTightBars",
-	"name": "garcello coolguy",
-	"fps": 15,
-	"loop": false,
-	"indices": [],
-	"oneshot":true,"":"Allows your animation to override all other animations, loop will be forced of if this is true",
-	"ifstate":{
-		"variable":"curStep","":"The variable to check in PlayState.hx, curStep and curBeat might be all you need though",
-		"type":"equals","":"valid types are 'equal', 'more','less' and 'contains', if you use contains then the value should be a list of values, like [480,838,521], etc. otherwise the value should always be the same type as the variable",
-		"value":838,"":"The value to check variable against, if type is contains, then this should be a list. Otherwise use the same type as the variable in the game",
-		"check":1,"":"1 = curStep, 0 = curBeat. this has to be the same as variable if you use curStep or curBeat, otherwise you should use the one that plays your animation at the most accurate time"
-	},
-	"":"If the below requirements aren't met, the animation won't be processed. Useful for animations that are locked to a specific stage or song, These are not required",
-	"song":"release","":"The song to play the animation on",
-	"char_side":1,"":"Only play on a specific side, 0 = BF, 1 = Dad, 2 = GF"
-}
-You can find this example on the mod repo under GARCELLO DEAD
+This was last updated as of 0.11.0.
+
+FOLDERS AND WHAT THEY MEAN:
+ - charts | Where charts will go, you can just put the json files, inst and voices in a folder and Super Engine will automatically read them
+ - characters | Where custom characters go
+ - noteassets | You can put a png and xml from note skins here
+ - weeks | Where weeks go, eventually there should be documentation on how to make them at https://github.com/superpowers04/Super-Engine/wiki
+ - packs | You can make folders and then put charts and characters inside of them to organise your charts and characters. While this isn't required, it might make your mods folder less of a mess
+ - scripts | Global scripts that you can use to do things like adding new features and such, scripts can contain options and such. 
+    Look at https://cdn.discordapp.com/attachments/908215636352716831/916629405147742228/Arrow_Options.zip for an example
+    You can find a wiki here: https://github.com/superpowers04/Super-Engine/wiki/Character-and-Chart-scripts
+ 
+EXTRA FILES:
+ You can use custom title music by adding oggs:
+  Morning theme is from 6(6 AM) to 11(11 AM) - breakfast or mods/title-morning.ogg
+  Regular theme is from 11(11 AM) to 18(6 PM) - Gettin' Freaky or mods/title-day.ogg
+  Evening theme is from 18(6 PM) to 22(10 PM) - Give a Lil Bit Back or mods/title-evening.ogg
+  Night theme is active from 22(10 PM) to 6(6 AM) - Fresh Chill Mix or mods/title-night.ogg
+ 
+ A custom background can be used by placing a bg.png in the mods folder. 
+ The game's resolution is about 1280px Horizontally and 720px vertically
+ 
+ Custom fonts can be used by putting a font.ttf in your mods folder. 
+ This can be enforced with Visibility > Force Generic Font, note that not all menus will work with all fonts and some things might appear off.
+
+
+MAKING CHARACTERS:
+ Making characters is as simple as making a new folder inside of mods/characters,
+ then dropping the png and xml into the folder, and renaming them to "character.png" and "character.xml". (If you don't see .png or .xml on the original file names then they aren't needed)
+ Ingame, go to Options > Misc > Animation Debug and turn it on. 
+ Go to Options > Modifications > X Character > find your character(All invalid characters appear at the top) and then Press 2. 
+  You can press H for help with using animation debug.
+  Pressing M twice will allow you to open the animation binder and config editor. Saving after adding the animations is recommended.
+  
+  If you want to edit a BF character, add the animations the character as an opponent. 
+  Upon exiting the animation binder, press 3 to save, then 7 to switch over to offsetting for BF
+ 
+ *BF uses inverted animations so BF NOTE RIGHT will be singLEFT and BF NOTE LEFT will be singRIGHT.
+ 
+ 
+ If there are things you'd like to do that aren't possible with the animation editor, editing the json manually might be a good idea.
+ You can find the wiki page for character jsons here: https://github.com/superpowers04/Super-Engine/wiki/Character-JSON
+ You can also provide a script.hscript to add custom scripting to your characters
+ 
+ 
+ 
+ 
+ 
+OLDER README:
+ Characters work like FNF Multi, Check BF-faceanim for an example. You can also make custom animations using IfStates
+ Heres an example that adds Garcellos "tight bars, little man" animation into Release:
+ {
+ 	"anim": "garTightBars",
+ 	"name": "garcello coolguy",
+ 	"fps": 15,
+ 	"loop": false,
+ 	"indices": [],
+ 	"oneshot":true,"":"Allows your animation to override all other animations, loop will be forced of if this is true",
+ 	"ifstate":{
+ 		"variable":"curStep","":"The variable to check in PlayState.hx, curStep and curBeat might be all you need though",
+ 		"type":"equals","":"valid types are 'equal', 'more','less' and 'contains', if you use contains then the value should be a list of values, like [480,838,521], etc. otherwise the value should always be the same type as the variable",
+ 		"value":838,"":"The value to check variable against, if type is contains, then this should be a list. Otherwise use the same type as the variable in the game",
+ 		"check":1,"":"1 = curStep, 0 = curBeat. this has to be the same as variable if you use curStep or curBeat, otherwise you should use the one that plays your animation at the most accurate time"
+ 	},
+ 	"":"If the below requirements aren't met, the animation won't be processed. Useful for animations that are locked to a specific stage or song, These are not required",
+ 	"song":"release","":"The song to play the animation on",
+ 	"char_side":1,"":"Only play on a specific side, 0 = BF, 1 = Dad, 2 = GF"
+ }
+ You can find this example on the mod repo under GARCELLO DEAD 
