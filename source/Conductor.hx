@@ -9,7 +9,7 @@ import flixel.FlxG;
  */
 
 typedef BPMChangeEvent =
-{
+{ 
 	var stepTime:Int;
 	var songTime:Float;
 	var bpm:Float;

@@ -52,7 +52,9 @@ import tjson.Json;
 
 import haxe.iterators.StringIterator;
 import haxe.iterators.StringKeyValueIterator;
+#if cpp
 using cpp.NativeString;
+#end
 class HscriptUtils {
    public static var interp = new InterpEx();
 	public static var hscriptClasses:Array<String> = [];

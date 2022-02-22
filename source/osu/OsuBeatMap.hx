@@ -77,7 +77,7 @@ class OsuBeatMap{
 						input=regTP.matchedRight();
 						var inher:Bool = (regTP.matched(7) == "0");
 						if (inher) {trace('${regTP.matched(0)} is inherited, Unsupported at the moment');continue;} // Unsupported atm
-						var bpm:Float = 1 / Std.parseFloat(regTP.matched(1)) * 1000 * 60; // Did not google this, dunno what you mean. *I'm not bad at math, I swear*
+						var bpm:Float = 1 / Std.parseFloat(regTP.matched(1)) * 60000; // Did not google this, dunno what you mean. *I'm not bad at math, I swear*
 						if (bpm < 0) bpm = -bpm;
 						timingPoints.push({
 							ms : Std.parseInt(regTP.matched(1)),

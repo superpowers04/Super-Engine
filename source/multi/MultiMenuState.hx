@@ -78,7 +78,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		changeSelection(lastSel);
 		lastSel = 0;
 		changeDiff();
-		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu');
+		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu');
 	}
 	override function onFocus() {
 		shouldDraw = true;
@@ -306,6 +306,15 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var curPlaying = "";
 	var voices:FlxSound;
 	var playCount:Int = 0;
+	var curVol:Float = 1;
+	override function update(e){
+		super.update(e);
+		// Fucking flixel
+		if(voices != null && curVol != FlxG.sound.volume){ // Don't change volume unless volume changes
+			curVol = FlxG.sound.volume;
+			voices.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
+		}
+	}
 	override function handleInput(){
 			if (controls.BACK)
 			{

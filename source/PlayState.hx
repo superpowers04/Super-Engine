@@ -451,14 +451,14 @@ class PlayState extends MusicBeatState
 			parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'${nameSpace}-${v}');
 		// }else if (FileSystem.exists('mods/dependancies/${v}/script.hscript')){
 		// 	parseHScript(File.getContent('mods/dependancies/${v}/script.hscript'),new HSBrTools('mods/dependancies/${v}',v),'${nameSpace}-${v}');
-		}else{trace('Script \'${v}\' doesn\'t exist!');}
+		}else{showTempmessage('Script \'${v}\'' + (if(script == "") "" else ' required by \'${script}\'') + ' doesn\'t exist!');}
 		if(important && interps['${nameSpace}-${v}'] == null){handleError('$script is missing a script: $v!');}
 		return ((interps['${nameSpace}-${v}'] == null));
 	}
 	public function loadScript(v:String){
 		if (FileSystem.exists('mods/scripts/${v}/script.hscript')){
 			parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'global-${v}');
-		}else{trace('Global script \'${v}\' doesn\'t exist!');}
+		}else{showTempmessage('Global script \'${v}\' doesn\'t exist!');}
 	}
 	public var oldBF:String = "";
 	public var oldOPP:String = "";

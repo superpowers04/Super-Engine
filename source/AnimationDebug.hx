@@ -699,6 +699,8 @@ class AnimationDebug extends MusicBeatState
 		dad.playAnim("ANIMATIONDEBUG_tempAnim");
 	}
 	function setupUI(dest:Bool = false){
+		try{
+
 		if (dest){
 			uiBox.destroy();
 			uiBox = null;
@@ -771,7 +773,7 @@ class AnimationDebug extends MusicBeatState
 		var animTxt = new FlxText(30, 40,0,"Priority(-1 for def)");
 		uiMap["prtxt"] = animTxt;
 		uiBox.add(animTxt);
-		var e = new FlxUIInputText(120, 40, 20, '-1');
+		var e = new FlxUIInputText(150, 40, 20, '-1');
 		uiMap["priorityText"] = e;
 		uiMap["priorityText"].customFilterPattern = ~/(?!\-[0-9]*)/gi;
 
@@ -801,23 +803,27 @@ class AnimationDebug extends MusicBeatState
 		uiMap["loopStart"] = animFPS;
 		uiBox.add(animFPS);
 		var commitButton = new FlxUIButton(20,160,"Add animation",function(){
-			var Anim = uiMap["animSel"].text;
-			if((animUICurName == "**Unbind")) {
-				editAnimation(Anim,null,true);
-			}else{
+			try{
 
-				editAnimation(Anim,{
-					anim: Anim,
-					name: animUICurName,
-					loop: uiMap["loop"].checked,
-					fps: Std.parseInt(uiMap["FPS"].text),
-					loopStart:Std.parseInt(uiMap["loopStart"].text),
-					indices: [],
-					priority: (if(uiMap["priorityText"] != null && uiMap["priorityText"].text != null && uiMap["priorityText"].text == '-1(Engine Default)' || uiMap["priorityText"].text == "-1") null else Std.parseInt(uiMap["priorityText"].text)),
-					oneshot: (uiMap["oneshot"].checked || animUICurAnim == "hey" || animUICurAnim == "lose")
-				},false);
+				var Anim = uiMap["animSel"].text;
+				if((animUICurName == "**Unbind")) {
+					editAnimation(Anim,null,true);
+				}else{
+
+					editAnimation(Anim,{
+						anim: Anim,
+						name: animUICurName,
+						loop: uiMap["loop"].checked,
+						fps: Std.parseInt(uiMap["FPS"].text),
+						loopStart:Std.parseInt(uiMap["loopStart"].text),
+						indices: [],
+						priority: (if(uiMap["priorityText"] != null || uiMap["priorityText"].text == null) -1 else Std.parseInt(uiMap["priorityText"].text))
+					},false);
+				}
+				spawnChar(true,false,charJson);
+			}catch(e){
+				showTempmessage('Error while adding animation: ${e.message}',FlxColor.RED);
 			}
-			spawnChar(true,false,charJson);
 		});
 		uiBox.add(commitButton);
 
@@ -967,6 +973,7 @@ class AnimationDebug extends MusicBeatState
 		commitButton.resize(120,20);
 		uiBox2.add(commitButton);
 
+		}catch(e){MainMenuState.handleError('Error while loading GUI: ${e.message}');}
 	}
 	// static function textBox(x:Float,y:Float,defText:String,name:String,internalName:String):FlxInputTextUpdatable{
 	// 	var ret = new FlxUIInputText(30, 100, null, "24");
