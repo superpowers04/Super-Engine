@@ -110,6 +110,14 @@ class Note extends FlxSprite
 
 		PlayState.charAnim(charID,noteAnims[noteData],true); // Play animation
 	}
+	dynamic public function susHit(?charID:Int = 0,note:Note){ // Played every update instead of every time the strumnote is hit
+		switch (charID) {
+			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
+			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
+		}; // Strums
+
+		PlayState.charAnim(charID,noteAnims[noteData],true); // Play animation
+	}
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		switch (charID) {

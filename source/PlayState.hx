@@ -3428,6 +3428,7 @@ class PlayState extends MusicBeatState
 										swagRect.y = daNote.frameHeight - swagRect.height;
 
 										daNote.clipRect = swagRect;
+										daNote.susHit(1,daNote);
 									}
 								}
 						
@@ -3448,6 +3449,7 @@ class PlayState extends MusicBeatState
 										swagRect.height -= swagRect.y;
 
 										daNote.clipRect = swagRect;
+										daNote.susHit(1,daNote);
 									}
 								}
 							}
@@ -3603,6 +3605,7 @@ class PlayState extends MusicBeatState
 									swagRect.height -= swagRect.y;
 									daNote.clipRect = swagRect;
 							}
+							daNote.susHit(0,daNote);
 
 
 
