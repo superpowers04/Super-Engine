@@ -1235,7 +1235,7 @@ class AnimHelpScreen extends FlxUISubState{
 		exitText.setFormat(CoolUtil.font, 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		exitText.scrollFactor.set();
 		helpObjs.push(exitText);
-		var controlsText:FlxText = new FlxText(10,145,0,'Controls:'
+		var controlsText:FlxText = new FlxText(10,100,0,'Controls:'
 		+(switch(editMode) {
 			case 0:
 				'\n\nWASD - Note anims'

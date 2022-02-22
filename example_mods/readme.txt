@@ -17,11 +17,12 @@ EXTRA FILES:
   Evening theme is from 18(6 PM) to 22(10 PM) - Give a Lil Bit Back or mods/title-evening.ogg
   Night theme is active from 22(10 PM) to 6(6 AM) - Fresh Chill Mix or mods/title-night.ogg
  
- A custom background can be used by placing a bg.png in the mods folder. 
- The game's resolution is about 1280px Horizontally and 720px vertically
+ A custom background can be used by placing a png named bg.png in the mods folder. 
+  The game's resolution is about 1280px Horizontally and 720px vertically
  
- Custom fonts can be used by putting a font.ttf in your mods folder. 
- This can be enforced with Visibility > Force Generic Font, note that not all menus will work with all fonts and some things might appear off.
+ Custom fonts can be used by putting a ttf file named font.ttf in your mods folder. 
+  This can be enforced with Visibility > Force Generic Font, note that not all menus will work with all fonts and some things might appear off.
+  A good font that could be used is https://gamebanana.com/tools/8509, it keeps the funkin style in places that a normal font is used
 
 
 MAKING CHARACTERS:

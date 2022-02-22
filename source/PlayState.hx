@@ -2956,6 +2956,8 @@ class PlayState extends MusicBeatState
 					}
 					// if (!daNote.modifiedByLua) Modcharts don't work, this check is useless
 					// 	{
+					
+					if(daNote.updateY){
 							if (downscroll)
 							{
 								if (daNote.mustPress)
@@ -3001,7 +3003,7 @@ class PlayState extends MusicBeatState
 									}
 								}
 							}
-						// }
+						}
 		
 					if (daNote.skipNote) return;
 					if (dadShow && !daNote.mustPress && daNote.wasGoodHit)
@@ -3401,6 +3403,8 @@ class PlayState extends MusicBeatState
 						daNote.visible = true;
 						daNote.active = true;
 					}
+					if(daNote.updateY){
+
 							if (downscroll)
 							{
 								if (daNote.mustPress)
@@ -3448,6 +3452,7 @@ class PlayState extends MusicBeatState
 								}
 							}
 						// }
+					}
 					if (daNote.skipNote) return;
 		
 	

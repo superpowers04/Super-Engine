@@ -17,6 +17,7 @@ class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 	public var skipXAdjust:Bool = false;
+	public var updateY:Bool = true;
 
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;

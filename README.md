@@ -12,7 +12,7 @@ Last Build:[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/act
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide
 
-
+# Read mods/readme.txt for info about custom characters, charts, stages and more. Custom characters and charts beyond vanilla charts, bf and gf SHOULD NOT be hardcoded into this engine
 
 
 # Information
