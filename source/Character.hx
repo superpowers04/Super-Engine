@@ -791,11 +791,11 @@ class Character extends FlxSprite
 
 		callInterp("new",[]);
 		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
-		animation.finishCallback = function(){
+		animation.finishCallback = function(name:String){
 			callInterp("animFinish",[animation.curAnim]);
 		};
-		animation.callback = function(){
-			callInterp("animFrame",[animation.curAnim,animation.curAnim.curFrame]);
+		animation.callback = function(name:String,frameNumber:Int,frameIndex:Int){
+			callInterp("animFrame",[animation.curAnim,frameNumber,frameIndex]);
 		};
 		if(animation.curAnim == null && !lonely && !amPreview){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
 		if(animation.getByName('songStart') != null && !lonely && !amPreview){
