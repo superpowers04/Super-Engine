@@ -20,6 +20,7 @@ class StrumArrow extends FlxSprite{
 		id = nid;
 		ID = nid;
 	}
+
 	public function changeSprite(?name:String = "default"){
 		try{
 

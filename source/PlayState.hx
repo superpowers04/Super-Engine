@@ -2361,6 +2361,7 @@ class PlayState extends MusicBeatState
 				}
 			});
 		}
+		callInterp("updateAfter",[elapsed]);
 
 		if (!inCutscene)
 			keyShit();
@@ -2956,7 +2957,7 @@ class PlayState extends MusicBeatState
 					}
 					// if (!daNote.modifiedByLua) Modcharts don't work, this check is useless
 					// 	{
-					
+
 					if(daNote.updateY){
 							if (downscroll)
 							{
@@ -3429,6 +3430,7 @@ class PlayState extends MusicBeatState
 
 										daNote.clipRect = swagRect;
 										daNote.susHit(1,daNote);
+										callInterp("susHitDad",[daNote]);
 									}
 								}
 						
@@ -3450,6 +3452,7 @@ class PlayState extends MusicBeatState
 
 										daNote.clipRect = swagRect;
 										daNote.susHit(1,daNote);
+										callInterp("susHitDad",[daNote]);
 									}
 								}
 							}
@@ -3606,6 +3609,7 @@ class PlayState extends MusicBeatState
 									daNote.clipRect = swagRect;
 							}
 							daNote.susHit(0,daNote);
+							callInterp("susHit",[daNote]);
 
 
 

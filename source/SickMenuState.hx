@@ -123,6 +123,7 @@ class SickMenuState extends MusicBeatState
 					return;}
 				SickMenuState.fading = false;
 				SickMenuState.musicFileLoc = mt.file;
+				
 				SickMenuState.menuMusic = Sound.fromFile(SickMenuState.musicFileLoc);
 				SickMenuState.musicTime = curMusicTime;
 				Conductor.changeBPM(mt.bpm);
