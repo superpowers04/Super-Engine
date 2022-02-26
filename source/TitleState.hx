@@ -86,7 +86,6 @@ class TitleState extends MusicBeatState
 		}
 	}
 	public static function checkCharacters(){
-
 		choosableCharacters = ["bf","gf"];
 		choosableCharactersLower = ["bf" => "bf","gf" => "gf"];
 		characterDescriptions = ["automatic" => "Automatically uses character from song json", "bf" => "Boyfriend, the main protagonist. Provided by the base game.","gf" => "Girlfriend, boyfriend's partner. Provided by the base game."];
@@ -201,7 +200,9 @@ class TitleState extends MusicBeatState
 		   else return 0;
 		});
 		for (char in customCharacters){
-			choosableCharacters.push(char);
+			if(char.length > 0){
+				choosableCharacters.push(char);
+			}
 			// choosableCharactersLower[char.toLowerCase()] = char;
 		}
 		// try{
@@ -517,7 +518,7 @@ class TitleState extends MusicBeatState
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
-			MainMenuState.ver += MainMenuState.nightly;
+			if(MainMenuState.nightly != "") MainMenuState.ver += "-" MainMenuState.nightly;
 			
 			#if !debug
 			if (FlxG.keys.pressed.SHIFT || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
@@ -539,9 +540,9 @@ class TitleState extends MusicBeatState
 						updatedVer = returnedData[0];
 						OutdatedSubState.needVer = updatedVer;
 						OutdatedSubState.currChanges = returnedData[1];
-						if (!MainMenuState.ver.contains(updatedVer.trim()))
+						if (!MainMenuState.ver.contains(updatedVer.trim()) || (MainMenuState.nightly != ""))
 						{
-							trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
+							// trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
 							outdated = true;
 							
 						}
