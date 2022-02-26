@@ -9,11 +9,21 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import sys.FileSystem;
+import sys.io.File;
+import tjson.Json;
+import multi.MultiPlayState;
 
 
 
 
 using StringTools;
+
+typedef JustThePlayer = {
+	var player1:String;
+	var player2:String;
+}
+
 
 class FreeplayState extends MusicBeatState
 {
@@ -36,13 +46,37 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-
-		for (i in 0...initSonglist.length)
+		// var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
+		
+		if (FileSystem.exists("mods/packs"))
 		{
-			var data:Array<String> = initSonglist[i].split(':');
-			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+			for (dir in FileSystem.readDirectory("assets/data"))
+			{
+				if(FileSystem.exists('assets/data/${dir}/${dir}.json') && FileSystem.exists('assets/songs/${dir}/Inst.ogg')){
+					try{
+
+						var song:JustThePlayer = cast Json.parse(File.getContent('assets/data/${dir}/${dir}.json')).song;
+						songs.push(new SongMetadata(dir, 0, song.player2));
+						song = null;
+					}catch(e){trace('Failed to load ${dir}: ${e.message}');}
+				}
+			}
 		}
+		if(songs.length < 1){
+			MainMenuState.handleError("No songs found!");
+		}
+		haxe.ds.ArraySort.sort(songs, function(a, b) {
+		   if(a.songName < b.songName) return -1;
+		   else if(b.songName > a.songName) return 1;
+		   else return 0;
+		});
+		// for (i in 0...initSonglist.length)
+		// {
+		// 	var data:Array<String> = initSonglist[i].split(':');
+		// 	songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+		// }
+
+
 
 		/* 
 			if (FlxG.sound.music != null)
@@ -117,22 +151,6 @@ class FreeplayState extends MusicBeatState
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
-		// JUST DOIN THIS SHIT FOR TESTING!!!
-		/* 
-			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
-
-			var texFel:TextField = new TextField();
-			texFel.width = FlxG.width;
-			texFel.height = FlxG.height;
-			// texFel.
-			texFel.htmlText = md;
-
-			FlxG.stage.addChild(texFel);
-
-			// scoreText.textField.htmlText = md;
-
-			trace(md);
-		 */
 
 		super.create();
 	}
@@ -198,17 +216,38 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+			try{
+				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 
-			trace(poop);
+				trace(poop);
 
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-			PlayState.isStoryMode = false;
-			PlayState.storyDifficulty = curDifficulty;
-			PlayState.storyWeek = songs[curSelected].week;
-			PlayState.stateType = 0;
-			trace('CUR WEEK' + PlayState.storyWeek);
-			LoadingState.loadAndSwitchState(new PlayState());
+				PlayState.isStoryMode = false;
+				PlayState.storyDifficulty = curDifficulty;
+				// PlayState.storyWeek = songs[curSelected].week;
+				// PlayState.stateType = 0;
+				trace('CUR WEEK' + PlayState.storyWeek);
+			// LoadingState.loadAndSwitchState(new MultiPlayState());
+				// onlinemod.OfflinePlayState.chartFile = '';
+				onlinemod.OfflinePlayState.chartFile = 'assets/data/${songs[curSelected].songName}/${poop}.json';
+				PlayState.isStoryMode = false;
+				// Set difficulty
+				PlayState.actualSongName = ${songs[curSelected].songName};
+				onlinemod.OfflinePlayState.voicesFile = '';
+
+				if (FileSystem.exists('assets/songs/${songs[curSelected].songName}/Voices.ogg')) onlinemod.OfflinePlayState.voicesFile = 'assets/songs/${songs[curSelected].songName}/Voices.ogg';
+				PlayState.hsBrTools = new HSBrTools('assets/data/${songs[curSelected].songName}/');
+				if (FileSystem.exists('assets/data/${songs[curSelected].songName}/script.hscript')) {
+					trace("Song has script!");
+					MultiPlayState.scriptLoc = 'assets/data/${songs[curSelected].songName}/script.hscript';
+					
+				}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
+				onlinemod.OfflinePlayState.instFile = 'assets/songs/${songs[curSelected].songName}/Inst.ogg';
+				PlayState.stateType = 0;
+				FlxG.sound.music.fadeOut(0.4);
+				LoadingState.loadAndSwitchState(new MultiPlayState());
+			}catch(e){
+				MainMenuState.handleError('Error while loading chart ${e.message}');
+			}
 		}
 	}
 
@@ -298,7 +337,6 @@ class SongMetadata
 	public function new(song:String, week:Int, songCharacter:String)
 	{
 		this.songName = song;
-		this.week = week;
 		this.songCharacter = songCharacter;
 	}
 }
