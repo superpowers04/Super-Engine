@@ -26,7 +26,10 @@ class HealthIcon extends FlxSprite
 	}
 
 	public dynamic function updateAnim(health:Float){
-		animation.curAnim.curFrame = Math.round(flixel.math.FlxMath.remapToRange(health,0,150,0,animation.curAnim.numFrames));
+		if (health < 20)
+			animation.curAnim.curFrame = 1;
+		else
+			animation.curAnim.curFrame = 0;
 	}
 
 	public function changeSprite(?char:String = 'bf',?clone:String = "face",?useClone:Bool = true,?pathh:String = "mods/characters")
@@ -54,7 +57,7 @@ class HealthIcon extends FlxSprite
 						animation.curAnim.curFrame = 0;
 
 				};
-				// if(frameCount > 1) updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(flixel.math.FlxMath.remapToRange(health,0,100,0,frameCount));};
+				if(frameCount > 1) updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(flixel.math.FlxMath.remapToRange(health,0,150,0,animation.curAnim.numFrames));};
 			}
 			trace(frameCount);
 			loadGraphic(FlxGraphic.fromBitmapData(bitmapData), true, bitmapData.height, bitmapData.height);
