@@ -14,6 +14,7 @@ class HealthIcon extends FlxSprite
 	var vanIcon:Bool = false;
 	var isPlayer:Bool = false;
 	var isMenuIcon:Bool = false;
+	var frameCount:Int = 2;
 	// public var pathh = "mods/characters";
 
 	public function new(?char:String = 'bf', ?isPlayer:Bool = false,?clone:String = "",?isMenuIcon:Bool = false,?path:String = "mods/characters")
@@ -24,11 +25,8 @@ class HealthIcon extends FlxSprite
 		changeSprite(char,"",path);
 	}
 
-	public function updateAnim(health:Float){
-		if (health < 20)
-			animation.curAnim.curFrame = 1;
-		else
-			animation.curAnim.curFrame = 0;
+	public dynamic function updateAnim(health:Float){
+		animation.curAnim.curFrame = Math.round(flixel.math.FlxMath.remapToRange(health,0,150,0,animation.curAnim.numFrames));
 	}
 
 	public function changeSprite(?char:String = 'bf',?clone:String = "face",?useClone:Bool = true,?pathh:String = "mods/characters")
@@ -38,22 +36,48 @@ class HealthIcon extends FlxSprite
 		var relAnims:Bool = true;
 		if (!chars.contains(char) &&FileSystem.exists(path+char+"/healthicon.png")){
 			// trace('Custom character with custom icon! Loading custom icon.');
-			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}$char/healthicon.png')), true, 150, 150);
+			var bitmapData = BitmapData.fromFile('${path}$char/healthicon.png');
+			var height:Int = 150;
+			var width:Int = 150;
+			frameCount = 1; // Has to be 1 instead of 2 due to how compooters handle numbers
+			if(bitmapData.width % 150 != 0 || bitmapData.height % 150 != 0){ // Invalid sized health icon! Split in half rather than error
+				height = bitmapData.height;
+				width = Std.int(bitmapData.width * 0.5);
+			}else{
+				
+				frameCount = Std.int(bitmapData.width / 150) - 1; // If this isn't an integer, fucking run
+				if(frameCount == 0) updateAnim = function(health:Float){return;};
+				if(frameCount == 1) updateAnim = function(health:Float){
+					if (health < 20)
+						animation.curAnim.curFrame = 1;
+					else
+						animation.curAnim.curFrame = 0;
+
+				};
+				// if(frameCount > 1) updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(flixel.math.FlxMath.remapToRange(health,0,100,0,frameCount));};
+			}
+			trace(frameCount);
+			loadGraphic(FlxGraphic.fromBitmapData(bitmapData), true, bitmapData.height, bitmapData.height);
 			char = "bf";
 			vanIcon = false;
+			frameCount = frameCount + 1;
+			animation.add('bf', if(frameCount > 1)[for (i in 0 ... frameCount) i] else [0,1], 0, false, isPlayer);
 		}else if ((chars.contains(char) || chars.contains(clone)) && FileSystem.exists(path+char+"/icongrid.png")){
 			// trace('Custom character with custom icongrid! Loading custom icon.');
 			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}$char/icongrid.png')), true, 150, 150);
 			if (clone != "") char = clone;
 			vanIcon = false;
+			animation.add('bf', [0, 1], 0, false, isPlayer);
 		}else{
 			if (clone != "" && (useClone || !chars.contains(char))) char = clone;
 			if (!vanIcon) loadGraphic(Paths.image('iconGrid'), true, 150, 150); else relAnims = false;
 			vanIcon = true;
+			animation.add('bf', [0, 1], 0, false, isPlayer);
 		}
 		
 		antialiasing = true;
-		animation.add('bf', [0, 1], 0, false, isPlayer);
+		
+		
 		if(chars.contains(char.toLowerCase())){ // For vanilla characters
 			if (relAnims){
 				animation.add('bf-car', [0, 1], 0, false, isPlayer);
@@ -87,6 +111,7 @@ class HealthIcon extends FlxSprite
 
 		scrollFactor.set();
 		if(isMenuIcon) offset.set(75,75);
+		updateAnim(50);
 	}
 
 	override function update(elapsed:Float)

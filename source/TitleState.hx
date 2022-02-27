@@ -518,7 +518,7 @@ class TitleState extends MusicBeatState
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
-			if(MainMenuState.nightly != "") MainMenuState.ver += "-" MainMenuState.nightly;
+			if(MainMenuState.nightly != "") MainMenuState.ver += "-" + MainMenuState.nightly;
 			
 			#if !debug
 			if (FlxG.keys.pressed.SHIFT || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
