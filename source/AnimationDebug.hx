@@ -158,6 +158,8 @@ class AnimationDebug extends MusicBeatState
 	var health:Int = 2;
 	override function create()
 	{
+		var phase:Int = 0;
+		var phases:Array<String> = ["Adding cams","Adding Stage","Adding First UI","Adding char","Adding more UI","Adding healthbar"];
 		try{
 			camGame = new FlxCamera();
 			camHUD = new FlxCamera();
@@ -176,6 +178,7 @@ class AnimationDebug extends MusicBeatState
 			FlxG.sound.music.play(); // Music go brrr
 			// }
 
+			phase++;
 			var gridBG:FlxSprite = FlxGridOverlay.create(50, 20);
 			gridBG.scrollFactor.set();
 			gridBG.cameras = [camGame];
@@ -193,27 +196,22 @@ class AnimationDebug extends MusicBeatState
 				add(stageFront);
 
 				if (charType != 2){
-					gf = new Character(400, 100, "gf",false,2,true,
-					FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/characters/GF_assets.png')), File.getContent('assets/shared/images/characters/GF_assets.xml'))
-					);
-					gf.scrollFactor.set(0.95, 0.95);
+					gf = new Character(400, 100, "gf",false,2,true);
+					gf.scrollFactor.set(0.90, 0.90);
 					gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
-					gf.cameras = [camGame];
-					add(gf);
 				}
 				if (charType == 2){
-					gf = new Character(790, 100, "bf",true,2,true,
-					FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/characters/BOYFRIEND.png')), File.getContent('assets/shared/images/characters/BOYFRIEND.xml'))
-					);
+					gf = new Character(790, 100, "bf",true,2,true);
 					gf.scrollFactor.set(0.95, 0.95);
-					gf.dance();
 					// gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
-					gf.cameras = [camGame];
-					add(gf);
 				}
+				gf.dance();
+				gf.cameras = [camGame];
+				add(gf);
 			}catch(e){
 				trace("Hey look, an error:" + e.stack + ";\n\\Message:" + e.message);
 			}
+			phase++;
 			offsetTopText = new FlxText(30,20,0,'');
 			offsetTopText.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			offsetTopText.scrollFactor.set();
@@ -242,8 +240,10 @@ class AnimationDebug extends MusicBeatState
 
 
 			camGame.follow(camFollow);
+			phase++;
 			super.create();
 			spawnChar();
+			phase++;
 			if(dad == null)throw("Player object is null!");
 			updateCharPos(0,0,false,false);
 
@@ -271,30 +271,33 @@ class AnimationDebug extends MusicBeatState
 			quitHeldBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			quitHeldBar.cameras = quitHeldBG.cameras = [camHUD];
 			add(quitHeldBar);
+			phase++;
+			try{
 
-			var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
-			if (FlxG.save.data.downscroll)
-				healthBarBG.y = 50 + FlxG.save.data.guiGap;
-			healthBarBG.screenCenter(X);
-			healthBarBG.scrollFactor.set();
-			add(healthBarBG);
-			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,'health', 0, 2);
-			
-			healthBar.scrollFactor.set();
-			healthBar.createColoredFilledBar(0x000000, dad.definingColor);
-			iconP1 = new HealthIcon(dad.curCharacter, true,dad.clonedChar);
-			iconP1.y = healthBar.y - (iconP1.height / 2);
-			switch(charType){
-				case 0: iconP1.x = healthBar.x + healthBar.width;
-				case 1: iconP1.x = healthBar.x;
-				case 2: iconP1.x = healthBar.x + (healthBar.width * 0.5);
+				var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
+				if (FlxG.save.data.downscroll)
+					healthBarBG.y = 50 + FlxG.save.data.guiGap;
+				healthBarBG.screenCenter(X);
+				healthBarBG.scrollFactor.set();
+				add(healthBarBG);
+				healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,'health', 0, 2);
+				
+				healthBar.scrollFactor.set();
+				healthBar.createColoredFilledBar(0x000000, dad.definingColor);
+				iconP1 = new HealthIcon(dad.curCharacter, true,dad.clonedChar);
+				iconP1.y = healthBar.y - (iconP1.height / 2);
+				switch(charType){
+					case 0: iconP1.x = healthBar.x + healthBar.width;
+					case 1: iconP1.x = healthBar.x;
+					case 2: iconP1.x = healthBar.x + (healthBar.width * 0.5);
 
-			} 
-			iconP1.centerOffsets();
-			iconP1.updateHitbox();
-			iconP1.cameras = healthBar.cameras = [camHUD];
-			add(iconP1);
-		}catch(e) {if(PlayState.SONG == null) MainMenuState.handleError('Error occurred, Try loading a song and then opening this again. ${e.details()}'); else MainMenuState.handleError('Error occurred, while loading Animation Debug. ${e.stack} ${e.message}');}
+				} 
+				iconP1.centerOffsets();
+				iconP1.updateHitbox();
+				iconP1.cameras = healthBar.cameras = [camHUD];
+				add(iconP1);
+			}catch(e){trace('oh no, the healthbar had an error, what ever will we do ${e.message}');}
+		}catch(e) {MainMenuState.handleError('Error occurred, while loading Animation Debug. Current phase:${phases[phase]}; ${e.message}');}
 	}
 	function spawnChar(?reload:Bool = false,?resetOffsets = true,?charProp:CharacterJson = null){
 		try{
@@ -327,6 +330,7 @@ class AnimationDebug extends MusicBeatState
 				default:characterX=100;
 			};
 			dad = new Character(characterX, characterY, daAnim,flipX,charType,true,null,charProp);
+			if(dad == null)throw("Player object is null!");
 			// dad.screenCenter();
 			dad.debugMode = true;
 			dad.cameras = [camGame];
@@ -538,11 +542,13 @@ class AnimationDebug extends MusicBeatState
 			trace('${dad.x},${dad.y}');
 
 			dad.x -= characterX;
-			if(charType != 3){
+			if(charType == 2){
+				dad.y -= 300;
 				
+			}else{
 				dad.y -= characterY;
-			dad.y = -dad.y;
 			}
+			dad.y = -dad.y;
 
 			trace('${dad.x},${dad.y}');
 			errorStage = 5; // Position
