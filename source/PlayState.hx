@@ -982,7 +982,7 @@ class PlayState extends MusicBeatState
 		if (noGf) gf.visible = false;
 		if (!ChartingState.charting && SONG.defplayer1 != null && SONG.defplayer1.startsWith("gf") && FlxG.save.data.charAuto) SONG.player1 = FlxG.save.data.gfChar;
 		if (!ChartingState.charting && SONG.defplayer2 != null && SONG.defplayer2.startsWith("gf") && FlxG.save.data.charAuto) SONG.player2 = FlxG.save.data.gfChar;
-		if (dadShow && FlxG.save.data.dadShow) dad = new Character(100, 100, SONG.player2,false,1); else dad = new EmptyCharacter(100, 100);
+		if (dadShow && FlxG.save.data.dadShow && !(gfVersion == SONG.player2 && SONG.player1 != SONG.player2)) dad = new Character(100, 100, SONG.player2,false,1); else dad = new EmptyCharacter(100, 100);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
@@ -1017,22 +1017,21 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		if (gfVersion == SONG.player2){
-			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
-				dad.setPosition(gf.x, gf.y);
-				gf.visible = false;
+		if (gfVersion == SONG.player2 && SONG.player1 != SONG.player2){// Don't hide GF if player 1 is GF
+				// dad.setPosition(gf.x, gf.y);
+				dad.destroy();
+				dad = gf;
 				if (isStoryMode)
 				{
 					camPos.x += 600;
 					tweenCamIn();
 				}
-			}
 		}
 
 		if (gfVersion == SONG.player1){
 			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
-				boyfriend.setPosition(gf.x, gf.y);
-				gf.visible = false;
+				boyfriend.destroy();
+				boyfriend = gf;
 				if (isStoryMode)
 				{
 					camPos.x += 600;
@@ -1582,7 +1581,7 @@ class PlayState extends MusicBeatState
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			dad.dance();
-			gf.dance();
+			if(gf != boyfriend && gf != dad) gf.dance();
 			boyfriend.dance();
 
 
@@ -2426,7 +2425,7 @@ class PlayState extends MusicBeatState
 				offsetX = dad.getMidpoint().x - 100;
 		}
 		cameraPositions.push([offsetX,offsetY]);
-		cameraPositions.push([gf.getMidpoint().x,gf.getMidpoint().y - 100]);
+		cameraPositions.push([gf.getMidpoint().x + gf.camX,gf.getMidpoint().y - 100 + gf.camY]);
 		lockedCamPos = defLockedCamPos;
 	}
 
@@ -3381,7 +3380,11 @@ class PlayState extends MusicBeatState
 
 
 // "improved" kade
+	override function draw(){
 
+		callInterp("draw",[]);
+		super.draw();
+	}
 	function kadeBRInput(){
 		if (generatedMusic)
 			{

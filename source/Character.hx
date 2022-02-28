@@ -341,7 +341,7 @@ class Character extends FlxSprite
 		flipX=charProperties.flip_x; // Flip for BF clones
 		spiritTrail=charProperties.spirit_trail; // Spirit TraiL
 		antialiasing = !charProperties.no_antialiasing; 
-		dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
+		// dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
 
 		if (charProperties.flip_notes) flipNotes = charProperties.flip_notes;
 
@@ -440,6 +440,7 @@ class Character extends FlxSprite
 				}
 			}
 		}
+		dance_idle = animation.getByName("danceLeft") != null;
 		setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
 		updateHitbox();
 
@@ -919,15 +920,10 @@ class Character extends FlxSprite
 	// 		trace('Changing sprite to $id');
 	// 	}
 	// }
-	// override function draw(){
-	// 	// if(curSprite != 0){
-	// 	// 	dirty = false;
-	// 	// 	pixels = spriteArr[curSprite].pixels;
-	// 	// }else{
-	// 	// 	dirty = true;
-	// 	// }
-	// 	super.draw();
-	// } 
+	override function draw(){
+		callInterp("draw",[]);
+		super.draw();
+	} 
 
 	public dynamic function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0)
 	{

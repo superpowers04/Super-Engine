@@ -15,7 +15,7 @@ typedef CharacterJson =
 	var sing_duration:Float;
 	var scale:Float;
 	var no_antialiasing:Bool;
-	var dance_idle:Bool;
+	// var dance_idle:Bool;
 	var common_stage_offset:Array<Float>;
 	var cam_pos:Array<Float>;
 	var char_pos:Array<Float>;
