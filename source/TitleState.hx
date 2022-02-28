@@ -78,6 +78,16 @@ class TitleState extends MusicBeatState
 			return "";
 		}
 	}
+	public static function retCharPath(char:String):String{
+		if (characterPaths[retChar(char)] != null){
+			if(characterPaths[retChar(char)].substring(-1) == "/"){
+				return characterPaths[retChar(char)].substring(0,-1);
+			}
+			return characterPaths[retChar(char)];
+		}else{
+			return "mods/characters";
+		}
+	}
 	public static function retStage(char:String):String{
 		if (choosableStagesLower[char.toLowerCase()] != null){
 			return choosableStagesLower[char.toLowerCase()];
