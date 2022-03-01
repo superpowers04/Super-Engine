@@ -1790,9 +1790,15 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(songData.bpm);
 
 		curSong = songData.song;
-		if (vocals == null){
+		if (vocals == null ){
 			if (SONG.needsVoices)
-				vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+				try{
+					vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+				}catch(e){
+					showTempmessage("Song needs voices but none found!");
+					vocals = new FlxSound();
+
+				}
 			else
 				vocals = new FlxSound();
 		}

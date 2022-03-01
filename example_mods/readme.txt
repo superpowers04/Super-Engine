@@ -1,7 +1,7 @@
 This was last updated as of 0.11.0.
 
 FOLDERS AND WHAT THEY MEAN:
- - charts | Where charts will go, you can just put the json files, inst and voices in a folder and Super Engine will automatically read them
+ - charts | Where charts will go. You can just put the json files, inst and voices in a folder and Super Engine will automatically read them
  - characters | Where custom characters go
  - noteassets | You can put a png and xml from note skins here
  - weeks | Where weeks go, eventually there should be documentation on how to make them at https://github.com/superpowers04/Super-Engine/wiki
