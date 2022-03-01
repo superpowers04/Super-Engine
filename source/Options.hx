@@ -938,7 +938,7 @@ class InputHandlerOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return '${ies[FlxG.save.data.inputHandler]} Input Engine';
+		return 'Input Engine';
 	}
 }
 class NoteSelOption extends Option
