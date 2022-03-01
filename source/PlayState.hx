@@ -2348,7 +2348,7 @@ class PlayState extends MusicBeatState
 		// }
 
 
-		try{handleInput();}catch(e){handleError('Error during handleInput: ${e.message}');}
+		
 		if (FlxG.save.data.cpuStrums)
 		{
 			cpuStrums.forEach(function(spr:FlxSprite)
@@ -2369,6 +2369,11 @@ class PlayState extends MusicBeatState
 	#end
 }
 
+	override function draw(){
+		try{handleInput();}catch(e){handleError('Error during handleInput: ${e.message}');}
+		callInterp("draw",[]);
+		super.draw();
+	}
 	public function followChar(?char:Int = 0,?locked:Bool = true){
 		if(swappedChars) char = (char == 1 ? 0 : 1);
 		focusedCharacter = char;
@@ -3380,11 +3385,7 @@ class PlayState extends MusicBeatState
 
 
 // "improved" kade
-	override function draw(){
 
-		callInterp("draw",[]);
-		super.draw();
-	}
 	function kadeBRInput(){
 		if (generatedMusic)
 			{
@@ -3668,7 +3669,6 @@ class PlayState extends MusicBeatState
 					});
 					for (note in dumbNotes)
 					{
-						FlxG.log.add("killing dumb ass note at " + note.strumTime);
 						note.kill();
 						notes.remove(note, true);
 						note.destroy();
@@ -3762,8 +3762,8 @@ class PlayState extends MusicBeatState
 					isSustain:note.isSustainNote,
 					time:Conductor.songPosition
 				});
-				if (!note.wasGoodHit)
-				{
+				// if (!note.wasGoodHit)
+				// {
 					if (!note.isSustainNote)
 					{
 						popUpScore(note);
@@ -3774,26 +3774,8 @@ class PlayState extends MusicBeatState
 					
 
 					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,FlxG.save.data.hitVol).x = (FlxG.camera.x) + (FlxG.width * (0.25 * note.noteData + 1));
-
-					// switch (note.noteData)
-					// {
-					// 	case 2:
-					// 		boyfriend.playAnim('singUP', true);
-					// 	case 3:
-					// 		boyfriend.playAnim('singRIGHT', true);
-					// 	case 1:
-					// 		boyfriend.playAnim('singDOWN', true);
-					// 	case 0:
-					// 		boyfriend.playAnim('singLEFT', true);
-					// }
 					note.hit(0,note);
 					callInterp("noteHit",[boyfriend,note]);
-
-
-					// if(!loadRep && note.mustPress)
-					// 	saveNotes.push(HelperFunctions.truncateFloat(note.strumTime, 2));
-					
-					// BFStrumPlayAnim(note.noteData);
 					
 					note.wasGoodHit = true;
 					if (boyfriend.useVoices){boyfriend.voiceSounds[note.noteData].play(1);boyfriend.voiceSounds[note.noteData].time = 0;vocals.volume = 0;}else vocals.volume = FlxG.save.data.voicesVol;
@@ -3803,7 +3785,7 @@ class PlayState extends MusicBeatState
 					note.destroy();
 					
 					updateAccuracy();
-				}
+				// }
 			}
 		
 

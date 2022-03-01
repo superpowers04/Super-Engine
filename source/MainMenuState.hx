@@ -33,7 +33,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N7";
+	public static var nightly:String = "N8";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
