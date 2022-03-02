@@ -81,7 +81,10 @@ class OptionsMenu extends MusicBeatState
 			new FPSOption("Toggle the FPS Counter"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF. Also shows extra information"),
-			new LogGameplayOption("Logs your game to a text file")
+			new LogGameplayOption("Logs your game to a text file"),
+			new EraseOption("Backs up your options to SEOPTIONS-BACKUP.json and then resets them"),
+			new ImportOption("Import your options from SEOPTIONS.json"),
+			new ExportOption("Export your options to SEOPTIONS.json to backup or to share with a bug report"),
 		]),
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your FPS"),

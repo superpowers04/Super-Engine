@@ -783,6 +783,7 @@ class Character extends FlxSprite
 		callInterp("new",[]);
 		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
 		animation.finishCallback = function(name:String){
+			animHasFinished = true;
 			callInterp("animFinish",[animation.curAnim]);
 		};
 		animation.callback = function(name:String,frameNumber:Int,frameIndex:Int){

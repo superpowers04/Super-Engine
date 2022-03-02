@@ -10,6 +10,7 @@ class KadeEngineData
     	// if(FileSystem.exists('SEOPTIONS.json')){ // JSON file
     	// 	FlxG.save.data = haxe.Json.parse('SEOPTIONS.json');
     	// }
+    	FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		if (FlxG.save.data.downscroll == null)
 			FlxG.save.data.downscroll = false;

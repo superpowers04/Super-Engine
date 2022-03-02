@@ -4061,6 +4061,8 @@ class PlayState extends MusicBeatState
 				dad.playAnim('danceLeft');
 			if (curBeat % 2 == 0 && dad.animOffsets.exists('danceRight'))
 				dad.playAnim('danceRight');
+		}else{
+			dad.dance();
 		}
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null)

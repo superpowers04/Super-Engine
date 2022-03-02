@@ -7,6 +7,7 @@ import Controls.KeyboardScheme;
 import flixel.FlxG;
 import openfl.display.FPS;
 import openfl.Lib;
+import tjson.Json;
 
 class OptionCategory
 {
@@ -1640,5 +1641,123 @@ class VolumeOption extends Option
 		// display = updateDisplay();
 
 		return true;
+	}
+class ImportOption extends Option
+{
+	var opt = "";
+	public function new(desc:String,option:String = "")
+	{
+		opt = option;
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		try{
+			var optionsFile = Json.parse(sys.io.File.getContent('SEOPTIONS.json'));
+			for (_ => v in Reflect.fields(optionsFile)) {
+				if(v.toLowerCase() == "songScores"){continue;} // Importing scores is probably not the best of ideas
+				Reflect.setProperty(FlxG.save.data,v,Reflect.getProperty(optionsFile,v));
+			}
+			OptionsMenu.instance.showTempmessage('Imported options successfully! Exit from the Options Menu to the Main Menu to save them',FlxColor.GREEN,10);
+		}catch(e){
+			FlxG.save.destroy();
+			KadeEngineData.initSave();
+			OptionsMenu.instance.showTempmessage('Unable to import options! Reset back to before this menu was opened! ${e.message}',FlxColor.RED,10);
+		}
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Import Options";
+	}
+
+	override function right():Bool {
+		
+		return false;
+	}
+
+
+	override function left():Bool {
+		return false;
+	}
+}
+class EraseOption extends Option
+{
+	var opt = "";
+	public function new(desc:String,option:String = "")
+	{
+		opt = option;
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		try{
+			var e:String = Json.stringify(FlxG.save.data,"fancy");
+			sys.io.File.saveContent('SEOPTIONS-BACKUP.json',e);
+			FlxG.save.erase();
+			KadeEngineData.initSave();
+			OptionsMenu.instance.showTempmessage('Reset options back to defaults and backed them up to SEOPTIONS-BACKUP.json',FlxColor.GREEN,10);
+		}catch(e){
+			OptionsMenu.instance.showTempmessage('Unable to export options! ${e.message}',FlxColor.RED,10);
+		}
+		
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "reset Options to defaults";
+	}
+
+	override function right():Bool {
+		
+		return false;
+	}
+
+
+	override function left():Bool {
+		return false;
+	}
+}
+class ExportOption extends Option
+{
+	var opt = "";
+	public function new(desc:String,option:String = "")
+	{
+		opt = option;
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		try{
+			var e:String = Json.stringify(FlxG.save.data,"fancy");
+			sys.io.File.saveContent('SEOPTIONS.json',e);
+			OptionsMenu.instance.showTempmessage('Exported options successfully!',FlxColor.GREEN,10);
+		}catch(e){
+			OptionsMenu.instance.showTempmessage('Unable to export options! ${e.message}',FlxColor.RED,10);
+		}
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Export Options";
+	}
+
+	override function right():Bool {
+		
+		return false;
+	}
+
+
+	override function left():Bool {
+		return false;
 	}
 }
