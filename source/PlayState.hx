@@ -257,6 +257,7 @@ class PlayState extends MusicBeatState
 	public static var gfShow:Bool = true;
 	public var eventLog:Array<OutNote> = [];
 	public var camBeat:Bool = true;
+	public var forceChartChars:Bool = false;
 
 	var practiceMode = false;
 	var errorMsg:String = "";
@@ -949,7 +950,7 @@ class PlayState extends MusicBeatState
 
 		callInterp("afterStage",[]);
 
-		if ((stateType == 0 || stateType == 1) && !ChartingState.charting){
+		if ((stateType == 0 || stateType == 1) && !ChartingState.charting && !forceChartChars){
 		    PlayState.SONG.player1 = FlxG.save.data.playerChar;
 		    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
 		    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
