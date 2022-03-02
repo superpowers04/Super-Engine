@@ -46,6 +46,7 @@ class Note extends FlxSprite
 	public var parentNote:Note = null;
 	public var showNote = true;
 	public var info:Array<Dynamic> = [];
+	public var rawNote:Array<Dynamic> = [];
 	
 	// public var kill:Bool = false;
 	public var rating:String = "shit";
@@ -146,6 +147,13 @@ class Note extends FlxSprite
 		mustPress = playerNote; 
 		type = _type;
 		this.inCharter = inCharter;
+		if(rawNote == null){
+			this.rawNote = [strumTime,_noteData,0];
+		}else{
+			this.rawNote = rawNote;
+
+		}
+
 
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
 

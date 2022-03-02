@@ -125,7 +125,7 @@ class MainMenuState extends SickMenuState
 			hasWarnedInvalid = true;
 		} 
 		if (!hasWarnedNightly) {
-			errorMessage = "This is a nightly build for " + ver.substring(0,ver.length - nightly.length) +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
+			errorMessage = "This is a nightly build for " + ver.substring(0,ver.length - (1 + nightly.length) ) +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
 			// ver+=nightly;
 			hasWarnedNightly = true;
 		} 

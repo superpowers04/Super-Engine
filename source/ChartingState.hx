@@ -874,6 +874,19 @@ class ChartingState extends MusicBeatState
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
 
+
+
+		if (FlxG.mouse.x > gridBG.x
+			&& FlxG.mouse.x < gridBG.x + gridBG.width
+			&& FlxG.mouse.y > gridBG.y
+			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+		{
+			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+			if (FlxG.keys.pressed.SHIFT)
+				dummyArrow.y = FlxG.mouse.y;
+			else
+				dummyArrow.y = Math.floor(FlxG.mouse.y / (GRID_SIZE / (notesnap / 16))) * (GRID_SIZE / (notesnap / 16));
+		}
 		if (FlxG.mouse.justPressed)
 		{
 			if (FlxG.mouse.overlaps(curRenderedNotes))
@@ -904,18 +917,14 @@ class ChartingState extends MusicBeatState
 					addNote();
 				}
 			}
-		}
-
-		if (FlxG.mouse.x > gridBG.x
-			&& FlxG.mouse.x < gridBG.x + gridBG.width
-			&& FlxG.mouse.y > gridBG.y
-			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+		}else if (FlxG.mouse.pressed)
 		{
-			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
-			if (FlxG.keys.pressed.SHIFT)
-				dummyArrow.y = FlxG.mouse.y;
-			else
-				dummyArrow.y = Math.floor(FlxG.mouse.y / (GRID_SIZE / (notesnap / 16))) * (GRID_SIZE / (notesnap / 16));
+			if (FlxG.mouse.x > gridBG.x && FlxG.mouse.x < gridBG.x + gridBG.width
+				&& FlxG.mouse.y > gridBG.y && FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+				{
+					FlxG.log.add('added note');
+					replaceNoteSustain(getStrumTime(dummyArrow.y) + sectionStartTime(curSection));
+				}
 		}
 
 		if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.ESCAPE)
@@ -1142,7 +1151,7 @@ class ChartingState extends MusicBeatState
 			+ notesnap
 			+ "\n"
 			+ (doSnapShit ? "Snap enabled" : "Snap disabled")
-			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right :\n\\Change playback speed\nCTRL-Left/Right :\n\\Change Snap\nHold Shift :\n\\Disable Snap\nEnter/Escape : Preview chart\n F1 : hide/show this' : "");
+			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right : Change playback speed\nCTRL-Left/Right : Change Snap\nHold Shift : Disable Snap\nEnter/Escape : Preview chart\n F1 : hide/show this' : "");
 		super.update(elapsed);
 	}
 
@@ -1222,6 +1231,18 @@ class ChartingState extends MusicBeatState
 		waveformPrinted = true;
 	}
 
+	function replaceNoteSustain(value:Float):Void
+	{
+		if (curSelectedNote != null && curSelectedNote[2] != null)
+		{
+			value = value - curSelectedNote[0]; 
+			curSelectedNote[2] = Math.max(value, 0);
+
+
+			updateNoteUI();
+			updateGrid();
+		}
+	}
 	function changeNoteSustain(value:Float):Void
 	{
 		if (curSelectedNote != null)
@@ -1520,10 +1541,10 @@ class ChartingState extends MusicBeatState
 	function selectNote(note:Note):Void
 	{
 		var swagNum:Int = 0;
-
+		// Holy shit this is more complicated than it needs to be
 		for (i in _song.notes[curSection].sectionNotes)
 		{
-			if (i.strumTime == note.strumTime && i.noteData == note.noteData)
+			if (i[0] == note.strumTime && i[1] == note.rawNote[1])
 			{
 				curSelectedNote = _song.notes[curSection].sectionNotes[swagNum];
 			}
@@ -1534,14 +1555,14 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 		updateNoteUI();
 	}
-
-
 	function deleteNote(note:Note):Void
 		{
 			lastNote = note;
+			// Holy shit this is more complicated than it needs to be
+
 			for (i in _song.notes[curSection].sectionNotes)
 			{
-				if (i[0] == note.strumTime && i[1] % 4 == note.strumTime)
+				if (i[0] == note.strumTime && i[1] == note.rawNote[1])
 				{
 					_song.notes[curSection].sectionNotes.remove(i);
 				}
