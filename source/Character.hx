@@ -55,7 +55,6 @@ class Character extends FlxSprite
 	public var animOffsets:Map<String, Array<Float>>;
 	public var animLoopStart:Map<String,Int>;
 	public var debugMode:Bool = false;
-	public var spiritTrail:Bool = false;
 	public var camPos:Array<Int> = [0,0];
 	public var charX:Float = 0;
 	public var charY:Float = 0;
@@ -287,7 +286,6 @@ class Character extends FlxSprite
 		
 		if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
 		if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
-		trace('Loaded ${offsetCount} offsets!');
 	}
 	function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
 	function getDefColor(e:CharacterJson){
@@ -330,7 +328,6 @@ class Character extends FlxSprite
 	}
 	function loadJSONChar(charProperties:CharacterJson){
 		
-		trace('Loading Json animations!');
 		// Check if the XML has BF's animations, if so, add them
 
 
@@ -339,7 +336,6 @@ class Character extends FlxSprite
 
 		dadVar = charProperties.sing_duration; // As the varname implies
 		flipX=charProperties.flip_x; // Flip for BF clones
-		spiritTrail=charProperties.spirit_trail; // Spirit TraiL
 		antialiasing = !charProperties.no_antialiasing; 
 		// dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
 
@@ -351,7 +347,6 @@ class Character extends FlxSprite
 		// }
 		getDefColor(charProperties);
 		
-		trace('Loading Animations!');
 		var animCount = 0;
 		var hasIdle = false;
 		if(charProperties.animations.length > 0){
@@ -362,7 +357,6 @@ class Character extends FlxSprite
 				if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
 				if (anima.char_side != null && anima.char_side != 3 && anima.char_side == charType){continue;} // This if statement hurts my brain
 				if (anima.ifstate != null){
-					trace("Loading a animation with ifstatement...");
 					if (anima.ifstate.check == 1 ){ // Do on step or beat
 						if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.stepAnimEvents[charType][anima.anim] = anima.ifstate;
 					} else {
@@ -392,7 +386,6 @@ class Character extends FlxSprite
 				animCount++;
 			}
 		}
-		trace('Registered ${animCount} animations');
 		if(!hasIdle){
 			if(amPreview){
 				var idleName:String = "";
@@ -440,7 +433,7 @@ class Character extends FlxSprite
 				}
 			}
 		}
-		dance_idle = animation.getByName("danceLeft") != null;
+		dance_idle = (animation.getByName("danceLeft") != null);
 		setGraphicSize(Std.int(width * charProperties.scale)); // Setting size
 		updateHitbox();
 
@@ -448,11 +441,9 @@ class Character extends FlxSprite
 		if(charProperties.flip != null) flip = charProperties.flip;
 		clonedChar = charProperties.clone;
 		if (clonedChar != null && clonedChar != "") {
-			trace('Character clones $clonedChar copying their offsets!');
 			addOffsets(clonedChar);
 		}
 		if (charProperties.like != null && charProperties.like != "") clonedChar = charProperties.like;
-		trace('Adding custom offsets');
 		loadOffsetsFromJSON(charProperties);
 	}
 	public function isSelectedChar():Bool{
@@ -570,7 +561,6 @@ class Character extends FlxSprite
 				}
 				if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 			}
-			trace('Loaded "${charLoc}/$curCharacter/${pngName}"');
 		}
 		frames = tex;
 
@@ -741,7 +731,6 @@ class Character extends FlxSprite
 		antialiasing = true;
 		if (Reflect.field(TitleState.defCharJson.aliases,curCharacter) != null) curCharacter = Reflect.field(TitleState.defCharJson.aliases,curCharacter); // Due to some haxe weirdness, need to use reflect
 		else {
-			// trace("Not a JSON built-in char");
 
 			loadChar();
 		}
@@ -844,7 +833,7 @@ class Character extends FlxSprite
 		super.update(elapsed);
 	}catch(e:Dynamic){MainMenuState.handleError('Caught character "update" crash: ${e}');}}
 
-
+	
 	/**
 	 * FOR GF DANCING SHIT
 	 */
@@ -917,7 +906,6 @@ class Character extends FlxSprite
 	// 		// animation.stop();
 	// 		// animation = animArr[id];
 	// 		// frames = graphicsArr[id];
-	// 		trace('Changing sprite to $id');
 	// 	}
 	// }
 	override function draw(){
@@ -1034,7 +1022,6 @@ class Character extends FlxSprite
 			"scale": 1, 
 
 			"flip_x": true, 
-			"spirit_trail": false, 
 			"color":[49,176,209],
 
 			"animations":
@@ -1258,7 +1245,6 @@ class Character extends FlxSprite
 	"flip_x": false,
 	"genBy": "FNFBR; Animation Editor",
 	"like": null,
-	"spirit_trail": false,
 	"common_stage_offset": [],
 	"char_pos3": [0, 30],
 	"offset_flip": 1,

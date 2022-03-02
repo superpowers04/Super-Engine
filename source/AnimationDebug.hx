@@ -471,8 +471,7 @@ class AnimationDebug extends MusicBeatState
 								"no_antialiasing" : ${!dad.antialiasing},
 								"dance_idle" : ${dad.dance_idle},
 								"animations_offsets" : [],
-								"sing_duration" : ${dad.dadVar},
-								"spirit_trail" : ${dad.spiritTrail}
+								"sing_duration" : ${dad.dadVar}
 				
 							}';
 				trace(e);
@@ -854,8 +853,8 @@ class AnimationDebug extends MusicBeatState
 		uiBox2.add(looped);
 		var looped = checkBox(30, 60,"Flip X","flip_x");
 		uiBox2.add(looped);
-		var looped = checkBox(30, 80,"Spirit Trail","spirit_trail");
-		uiBox2.add(looped);
+		// var looped = checkBox(30, 80,"Spirit Trail","spirit_trail");
+		// uiBox2.add(looped);
 		// var animTxt = new FlxText(30, 100,0,"Color, R/G/B");
 
 		var animTxt = new FlxText(30, 100,0,"Scale:");
@@ -1394,8 +1393,6 @@ class AnimDebugOptions extends MusicBeatSubstate
 			"scale" => {type:2,value:getValue("scale",1),description:"Scale for the character",min:0.1,max:10},
 			"no_antialiasing" => {type:0,value:getValue("no_antialiasing",false),
 				description:"Disables smoothing out pixels, Enabled for pixel characters"},
-			"spirit_trail" => {type:0,value:getValue("spirit_trail",false),
-				description:"Enables the trail used for the Spirit character"},
 			"flip_notes" => {type:0,value:getValue("flip_notes",true),
 				description:"Whether to flip left/right when on the right, true by default"},
 			"sing_duration" => {type:2,value:getValue("sing_duration",4),

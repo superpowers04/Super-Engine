@@ -1039,14 +1039,14 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		if (dad.spiritTrail && FlxG.save.data.distractions){
-			var dadTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-			add(dadTrail);
-		}
-		if (boyfriend.spiritTrail && FlxG.save.data.distractions){
-			var bfTrail = new FlxTrail(boyfriend, null, 4, 24, 0.3, 0.069);
-			add(bfTrail);
-		}
+		// if (dad.spiritTrail && FlxG.save.data.distractions){
+		// 	var dadTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+		// 	add(dadTrail);
+		// }
+		// if (boyfriend.spiritTrail && FlxG.save.data.distractions){
+		// 	var bfTrail = new FlxTrail(boyfriend, null, 4, 24, 0.3, 0.069);
+		// 	add(bfTrail);
+		// }
 		parseHScript(songScript,null,"song");
 		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null && FlxG.save.data.scripts != null){
 			for (i in 0 ... FlxG.save.data.scripts.length) {
@@ -1795,11 +1795,13 @@ class PlayState extends MusicBeatState
 				try{
 					vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 				}catch(e){
-					showTempmessage("Song needs voices but none found!");
+					SONG.needsVoices = false;
+					showTempmessage("Song needs voices but none found! Automatically disabled");
 					vocals = new FlxSound();
 
 				}
 			else
+				SONG.needsVoices = false;
 				vocals = new FlxSound();
 		}
 
@@ -2367,6 +2369,72 @@ class PlayState extends MusicBeatState
 			});
 		}
 		callInterp("updateAfter",[elapsed]);
+		if (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim) PlayState.canUseAlts = true;
+		notes.forEachAlive(function(daNote:Note){
+					if (daNote.skipNote) return;
+					if (dadShow && !daNote.mustPress && daNote.wasGoodHit )
+					{
+						if (SONG.song != 'Tutorial')
+							camZooming = true;
+						if (!p2canplay){
+							// switch (Math.abs(daNote.noteData))
+							// {
+							// 	case 2:
+							// 		dad.playAnim('singUP', true);
+							// 	case 3:
+							// 		dad.playAnim('singRIGHT', true);
+							// 	case 1:
+							// 		dad.playAnim('singDOWN', true);
+							// 	case 0:
+							// 		dad.playAnim('singLEFT', true);
+							// }
+							
+							// if (FlxG.save.data.cpuStrums)
+							// {
+							// 	DadStrumPlayAnim(daNote.noteData);
+							// }
+							daNote.hit(1,daNote);
+							callInterp("noteHitDad",[dad,daNote]);
+
+							dad.holdTimer = 0;
+		
+							if (dad.useVoices){dad.voiceSounds[daNote.noteData].play(1);dad.voiceSounds[daNote.noteData].time = 0;vocals.volume = 0;}else if (SONG.needsVoices) vocals.volume = FlxG.save.data.voicesVol;
+
+		
+							daNote.active = false;
+
+
+							daNote.kill();
+							notes.remove(daNote, true);
+							daNote.destroy();
+						}
+					} else if (!daNote.mustPress && daNote.wasGoodHit && !dadShow && SONG.needsVoices){
+						daNote.active = false;
+						vocals.volume = 0;
+						daNote.kill();
+						notes.remove(daNote, true);
+					}
+	
+					if (daNote.mustPress && daNote.tooLate)
+					{
+							if (daNote.isSustainNote && daNote.wasGoodHit)
+							{
+								daNote.kill();
+								notes.remove(daNote, true);
+							}
+							else if (!daNote.shouldntBeHit)
+							{
+								health += SONG.noteMetadata.tooLateHealth;
+								vocals.volume = 0;
+								noteMiss(daNote.noteData, daNote);
+							}
+		
+							daNote.visible = false;
+							daNote.kill();
+							notes.remove(daNote, true);
+						}
+		});
+
 
 		if (!inCutscene)
 			keyShit();
@@ -3017,48 +3085,6 @@ class PlayState extends MusicBeatState
 						}
 		
 					if (daNote.skipNote) return;
-					if (dadShow && !daNote.mustPress && daNote.wasGoodHit)
-					{
-						if (SONG.song != 'Tutorial')
-							camZooming = true;
-						if (!p2canplay){
-							PlayState.canUseAlts = (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim);
-							// switch (Math.abs(daNote.noteData))
-							// {
-							// 	case 2:
-							// 		dad.playAnim('singUP', true);
-							// 	case 3:
-							// 		dad.playAnim('singRIGHT', true);
-							// 	case 1:
-							// 		dad.playAnim('singDOWN', true);
-							// 	case 0:
-							// 		dad.playAnim('singLEFT', true);
-							// }
-							
-							// if (FlxG.save.data.cpuStrums)
-							// {
-							// 	DadStrumPlayAnim(daNote.noteData);
-							// }
-							daNote.hit(1,daNote);
-							callInterp("noteHitDad",[dad,daNote]);
-						}
-
-						dad.holdTimer = 0;
-						if (dad.useVoices){dad.voiceSounds[daNote.noteData].play(1);dad.voiceSounds[daNote.noteData].time = 0;vocals.volume = 0;}else if (SONG.needsVoices) vocals.volume = FlxG.save.data.voicesVol;
-
-	
-						daNote.active = false;
-
-
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
-					} else if (!daNote.mustPress && daNote.wasGoodHit && !dadShow && SONG.needsVoices){
-						daNote.active = false;
-						vocals.volume = 0;
-						daNote.kill();
-						notes.remove(daNote, true);
-					}
 
 					if (daNote.mustPress)
 					{
@@ -3472,49 +3498,7 @@ class PlayState extends MusicBeatState
 		
 	
 
-					if (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim) PlayState.canUseAlts = true;
-					if (dadShow && !daNote.mustPress && daNote.wasGoodHit )
-					{
-						if (SONG.song != 'Tutorial')
-							camZooming = true;
-						if (!p2canplay){
-							// switch (Math.abs(daNote.noteData))
-							// {
-							// 	case 2:
-							// 		dad.playAnim('singUP', true);
-							// 	case 3:
-							// 		dad.playAnim('singRIGHT', true);
-							// 	case 1:
-							// 		dad.playAnim('singDOWN', true);
-							// 	case 0:
-							// 		dad.playAnim('singLEFT', true);
-							// }
-							
-							// if (FlxG.save.data.cpuStrums)
-							// {
-							// 	DadStrumPlayAnim(daNote.noteData);
-							// }
-							daNote.hit(1,daNote);
-							callInterp("noteHitDad",[dad,daNote]);
 
-							dad.holdTimer = 0;
-		
-							if (dad.useVoices){dad.voiceSounds[daNote.noteData].play(1);dad.voiceSounds[daNote.noteData].time = 0;vocals.volume = 0;}else if (SONG.needsVoices) vocals.volume = FlxG.save.data.voicesVol;
-
-		
-							daNote.active = false;
-
-
-							daNote.kill();
-							notes.remove(daNote, true);
-							daNote.destroy();
-						}
-					} else if (!daNote.mustPress && daNote.wasGoodHit && !dadShow && SONG.needsVoices){
-						daNote.active = false;
-						vocals.volume = 0;
-						daNote.kill();
-						notes.remove(daNote, true);
-					}
 
 					if (daNote.mustPress)
 					{
@@ -3550,25 +3534,7 @@ class PlayState extends MusicBeatState
 					//trace(daNote.y);
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
-	
-					if (daNote.mustPress && daNote.tooLate)
-					{
-							if (daNote.isSustainNote && daNote.wasGoodHit)
-							{
-								daNote.kill();
-								notes.remove(daNote, true);
-							}
-							else if (!daNote.shouldntBeHit)
-							{
-								health += SONG.noteMetadata.tooLateHealth;
-								vocals.volume = 0;
-								noteMiss(daNote.noteData, daNote);
-							}
-		
-							daNote.visible = false;
-							daNote.kill();
-							notes.remove(daNote, true);
-						}
+
 					
 				});
 			}
