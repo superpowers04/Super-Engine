@@ -924,8 +924,7 @@ class ChartingState extends MusicBeatState
 		}
 		if(FlxG.mouse.pressed )
 		{
-			if (!modifyingNote && !justAdded && Math.floor(FlxG.mouse.x / GRID_SIZE) == curSelectedNote[1]
-				&& FlxG.mouse.y > gridBG.y && FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+			if (!modifyingNote && !justAdded && Math.floor(FlxG.mouse.x / GRID_SIZE) == curSelectedNote[1])
 				{
 					FlxG.log.add('added note');
 					replaceNoteSustain(getStrumTime(dummyArrow.y) + sectionStartTime(curSection));
