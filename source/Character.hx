@@ -139,6 +139,7 @@ class Character extends FlxSprite
 	var danced:Bool = false;
 	var lonely:Bool = false;
 	var altAnims:Array<String> = []; 
+	var animHasFinished:Bool = false;
 	public var skipNextAnim:Bool = false;
 	public var nextAnimation:String = "";
 	public var charLoc:String = "mods/characters";
@@ -804,8 +805,10 @@ class Character extends FlxSprite
 	{	try{
 
 		if(!amPreview){
-			if(animation.curAnim.finished && loopAnimTo[animation.curAnim.name] != null) playAnim(loopAnimTo[animation.curAnim.name]);
-			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
+
+			if(animation.curAnim.finished) animHasFinished = true;
+			if(animHasFinished && loopAnimTo[animation.curAnim.name] != null) playAnim(loopAnimTo[animation.curAnim.name]);
+			if (animation.curAnim.name.endsWith('miss') && animHasFinished && !debugMode)
 			{
 				playAnim('idle', true, false, 10);
 			}
@@ -824,7 +827,7 @@ class Character extends FlxSprite
 				}
 			}
 			if(dance_idle || charType == 2){
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+				if (animation.curAnim.name == 'hairFall' && animHasFinished)
 					playAnim('danceRight');
 			}
 			callInterp("update",[elapsed]);
@@ -848,7 +851,7 @@ class Character extends FlxSprite
 		{
 
 			if(dance_idle || charType == 2 || curCharacter == "spooky"){
-				if (animation.curAnim == null || (!animation.curAnim.name.startsWith('hair') && animation.curAnim.finished))
+				if (animation.curAnim == null || (!animation.curAnim.name.startsWith('hair') && animHasFinished))
 				{
 					// danced = !danced;
 
@@ -922,9 +925,9 @@ class Character extends FlxSprite
 			AnimName = AnimName + '-alt'; // Alt animations
 		if (animation.curAnim != null){
 			lastAnim = animation.curAnim.name;
-			if(animation.curAnim.name != AnimName && !animation.curAnim.finished){
+			if(animation.curAnim.name != AnimName && !animHasFinished){
 				if (animationPriorities[animation.curAnim.name] != null && animationPriorities[animation.curAnim.name] > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
-				if (animationPriorities[animation.curAnim.name] == null && !animation.curAnim.finished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
+				if (animationPriorities[animation.curAnim.name] == null && !animHasFinished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
 			}
 		}
 		callInterp("playAnim",[AnimName]);
@@ -941,6 +944,7 @@ class Character extends FlxSprite
 		if (animation.getByName(AnimName) == null) return;
 		
 		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){Frame = loopAnimFrames[AnimName];}
+		animHasFinished = false;
 		animation.play(AnimName, Force, Reversed, Frame);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
 		
