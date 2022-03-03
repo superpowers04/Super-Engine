@@ -69,6 +69,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		super.create();
 		diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
 		diffText.font = CoolUtil.font;
+		diffText.x = (FlxG.width) - 20;
+		// diffText.autoSize = false;
+		// diffText.width = 200;
+		diffText.alignment = RIGHT;
 		add(diffText);
 
 		searchField.text = lastSearch;
@@ -78,7 +82,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		changeSelection(lastSel);
 		lastSel = 0;
 		changeDiff();
-		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu');
+		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
+
 	}
 	override function onFocus() {
 		shouldDraw = true;
@@ -212,6 +217,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}
 			}
 		}
+		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
 	}
 	// function checkSong(dataDir:String,directory:String){
 
@@ -263,7 +269,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.actualSongName = songJSON;
 				onlinemod.OfflinePlayState.voicesFile = '';
 
-				if (FileSystem.exists('${selSong}/Voices.ogg')) onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';
+				if (FileSystem.exists('${selSong}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';}
 				PlayState.hsBrTools = new HSBrTools('${selSong}');
 				if (FileSystem.exists('${selSong}/script.hscript')) {
 					trace("Song has script!");
@@ -278,8 +284,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
 				}
 				PlayState.stateType = 4;
-				FlxG.sound.music.fadeOut(0.4);
-				LoadingState.loadAndSwitchState(new MultiPlayState());
+				FlxG.sound.music.fadeOut(0.4);				LoadingState.loadAndSwitchState(new MultiPlayState());
 			}catch(e){
 				MainMenuState.handleError('Error while loading chart ${e.message}');
 			}
@@ -394,7 +399,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if (selMode >= modes[curSelected].length) selMode = 0;
 		if (selMode < 0) selMode = modes[curSelected].length - 1;
 		diffText.text = modes[curSelected][selMode];
-		diffText.x = (FlxG.width) - (diffText.text.length * 14) - 10;
+		// diffText.centerOffsets();
+		diffText.x = (FlxG.width) - 20 - diffText.width;
+
 	}
 
 	override function changeSelection(change:Int = 0)

@@ -73,8 +73,11 @@ class SearchMenuState extends MusicBeatState
 		return list;
 	}
 	function updateInfoText(str:String = ""){
-		infotext.text = str;
-		infotext.scrollFactor.set();
+		if(infotext != null){
+
+			infotext.text = str;
+			infotext.scrollFactor.set();
+		}
 	}
 	// var bgColor:FlxColor = 0xFFFF6E6E;
 	static public inline function resetVars(){
