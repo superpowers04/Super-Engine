@@ -1144,7 +1144,7 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.DOWN)
 				Conductor.changeBPM(Conductor.bpm - 1); */
 
-		bpmTxt.text = 'UNFINISH AS FUCK\n'+ Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
+		bpmTxt.text = 'Buggy chart editor\n'+ Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
 			+ ' / '
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
 			+ '\nSection: '

@@ -219,7 +219,7 @@ class FinishSubState extends MusicBeatSubstate
 				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				finishedText.color = FlxColor.WHITE;
 				finishedText.scrollFactor.set();
-				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState.isStoryMode ? 'Song/Chart' : "Week") + ':\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
+				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState.isStoryMode ? 'Song/Chart' : "Week") + ':\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${(Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score)}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');
 				comboText.size = 28;
 				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				comboText.color = FlxColor.WHITE;
