@@ -64,6 +64,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 	override function create()
 	{
+		retAfter = false;
 		dataDir = "mods/charts/";
 		bgColor = 0x00661E;
 		super.create();
@@ -326,12 +327,20 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				ret();
 			}
 			if(songs.length == 0) return;
+			super.handleInput();
+			// if(controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
+			// if(controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
+			// if(controls.LEFT_P){changeDiff(-1);}
+			// if(controls.RIGHT_P){changeDiff(1);}
 			
-			if(controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
-			if(controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
-			if(controls.LEFT_P){changeDiff(-1);}
-			if(controls.RIGHT_P){changeDiff(1);}
-			if(FlxG.keys.justPressed.CONTROL){
+			// extraKeys();
+			// if (controls.ACCEPT && songs.length > 0)
+			// {
+			// 		select();
+			// }
+	}
+	override function extraKeys(){
+		if(FlxG.keys.justPressed.CONTROL){
 				FlxG.autoPause = false;
 				playCount++;
 				if(curPlaying != songs[curSelected]){
@@ -384,11 +393,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					openfl.system.System.gc();
 				}
 			}
-			extraKeys();
-			if (controls.ACCEPT && songs.length > 0)
-			{
-					select();
-			}
+		super.extraKeys();
 	}
 	function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
 		if (songs.length == 0 || songs[curSelected] == null || songs[curSelected] == "") {
