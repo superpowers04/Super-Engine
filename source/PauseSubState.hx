@@ -21,7 +21,7 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', "Options Menu",'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -56,14 +56,14 @@ class PauseSubState extends MusicBeatSubstate
 		add(bg);
 
 		levelInfo = new FlxText(20, 15, 0, "", 32);
-		levelInfo.text += PlayState.SONG.song;
+		levelInfo.text = PlayState.SONG.song;
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(CoolUtil.font, 32);
 		levelInfo.updateHitbox();
 		add(levelInfo);
 
 		levelDifficulty = new FlxText(20, 15 + 32, 0, "", 32);
-		levelDifficulty.text += CoolUtil.difficultyString();
+		levelDifficulty.text = CoolUtil.difficultyString();
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
 		levelDifficulty.updateHitbox();
@@ -98,7 +98,7 @@ class PauseSubState extends MusicBeatSubstate
 			songText.screenCenter(X);
 			var sX = songText.x;
 			songText.x = 100 - songText.width * 0.5;
-			FlxTween.tween(songText,{x : sX},1,{ease:FlxEase.bounceOut});
+			FlxTween.tween(songText,{x : sX},0.9,{ease:FlxEase.bounceOut});
 		}
 
 		changeSelection();
@@ -169,19 +169,36 @@ class PauseSubState extends MusicBeatSubstate
 					countdown();
 				case "Restart Song":
 					disappearMenu();
-					FlxG.resetState();
+					new FlxTimer().start(0.3,function(tmr:FlxTimer){
+						FlxG.resetState();
+					},1);
+				case "Options Menu":
+					disappearMenu();
+					new FlxTimer().start(0.3,function(tmr:FlxTimer){
+						SearchMenuState.doReset = false;
+						OptionsMenu.lastState = PlayState.stateType + 10;
+						FlxG.switchState(new OptionsMenu());
+					},1);
+
 				case "Exit to menu":
 					disappearMenu();
-					quit();
+					new FlxTimer().start(0.3,function(tmr:FlxTimer){
+						quit();
+					},1);
 			}
 		}
 
+	}else{
+		if (controls.ACCEPT && menuItems[curSelected] == "Exit to menu")
+		{
+			quit();
+		}
 	}}
-	function disappearMenu(){
+	function disappearMenu(?time:Float = 0.3){
 		for (_ => v in grpMenuShit.members)
 		{
-
-			FlxTween.tween(v,{x : -(100 + v.width)},0.4,{ease:FlxEase.cubeIn});
+			ready = false;
+			FlxTween.tween(v,{x : -(100 + v.width),alpha : 0},time,{ease:FlxEase.cubeIn});
 		}
 	}
 	function quit(){
@@ -215,7 +232,7 @@ class PauseSubState extends MusicBeatSubstate
 		pauseMusic.stop();
 		pauseMusic.destroy();
 		// grpMenuShit.destroy();
-		disappearMenu();
+		disappearMenu(0.4);
 		levelDifficulty.destroy();
 		levelInfo.destroy();
 		perSongOffset.destroy();

@@ -185,15 +185,20 @@ class OptionsMenu extends MusicBeatState
 	}
 
 	var isCat:Bool = false;
-	
+	public static var lastClass:Class<Dynamic>;
 	function goBack(){
 		if (lastState != 0){
 			var ls = lastState;
 			lastState = 0;
+			SearchMenuState.doReset = true;
 			switch(ls){
 				case 3:FlxG.switchState(new onlinemod.OfflineMenuState());
 				case 4:FlxG.switchState(new multi.MultiMenuState());
 				case 5:FlxG.switchState(new osu.OsuMenuState());
+				case 12:FlxG.switchState(new onlinemod.OfflinePlayState());
+				case 14:FlxG.switchState(new multi.MultiPlayState());
+				case 15:FlxG.switchState(new osu.OsuPlayState());
+				default:FlxG.switchState((if(ls > 10) new PlayState() else new MainMenuState()));
 			}
 		}else
 			FlxG.switchState(new MainMenuState());
@@ -541,4 +546,45 @@ class OptionsMenu extends MusicBeatState
 		}
 		modOptions = new Map<String,Map<String,Dynamic>>();
 	}
+
+
+	// public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song",option:ScriptableOption){
+	// 	if ((!QuickOptionsSubState.getSetting("Song hscripts") || onlinemod.OnlinePlayMenuState.socket != null) && !isStoryMode) {resetInterps();return;}
+	// 	var songScript = songScript;
+	// 	// var hsBrTools = hsBrTools;
+	// 	if (script != "") songScript = script;
+	// 	if (brTools == null && hsBrTools != null) brTools = hsBrTools;
+	// 	if (songScript == "") {return;}
+	// 	var interp = HscriptUtils.createSimpleInterp();
+	// 	var parser = new hscript.Parser();
+	// 	try{
+	// 		parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
+
+	// 		var program;
+	// 		// parser.parseModule(songScript);
+	// 		program = parser.parseString(songScript);
+
+	// 		if (brTools != null) {
+	// 			trace('Using hsBrTools');
+	// 			interp.variables.set("BRtools",brTools); 
+	// 			brTools.reset();
+	// 		}else {
+	// 			trace('Using assets folder');
+	// 			interp.variables.set("BRtools",new HSBrTools("assets/"));
+	// 		}
+	// 		interp.variables.set("charGet",charGet); 
+	// 		interp.execute(program);
+	// 		interps[id] = interp;
+	// 		if(brTools != null)brTools.reset();
+	// 		callInterp("initScript",[],id);
+	// 		interpCount++;
+	// 	}catch(e){
+	// 		handleError('Error parsing ${id} hscript, Line:${parser.line};\n Error:${e.message}');
+	// 		// interp = null;
+	// 	}
+	// 	trace('Loaded ${id} script!');
+	// }
+
+
+
 }

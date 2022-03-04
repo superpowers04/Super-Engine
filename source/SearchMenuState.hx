@@ -87,9 +87,10 @@ class SearchMenuState extends MusicBeatState
 		SickMenuState.chgTime = true;
 		onlinemod.OfflinePlayState.nameSpace = "";
 	}
+	public static var doReset:Bool = true;
 	override function create()
 	{try{
-		resetVars();
+		if(!doReset)resetVars();
 		if(bg == null){
 			// if(FileSystem.exists("mods/bg.png")){
 			// 	bg = new FlxSprite().loadGraphic(Paths.getImageDirect("mods/bg.png"));

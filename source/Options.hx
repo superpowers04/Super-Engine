@@ -909,7 +909,7 @@ class ReloadCharlist extends Option
 class InputHandlerOption extends Option
 {
 	var ies:Array<String> = ["Kade","Tweaked Kade"];
-	var iesDesc:Array<String> = ["Good old kade","Kade engine without antimash, and some improvements"];
+	var iesDesc:Array<String> = ["Kade 1.5/1.4 Input","Kade engine without antimash, and some improvements"];
 	public function new(desc:String)
 	{
 		super();
