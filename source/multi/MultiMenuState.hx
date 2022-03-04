@@ -340,6 +340,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			// }
 	}
 	override function extraKeys(){
+		if(controls.LEFT_P){changeDiff(-1);}
+		if(controls.RIGHT_P){changeDiff(1);}
 		if(FlxG.keys.justPressed.CONTROL){
 				FlxG.autoPause = false;
 				playCount++;
