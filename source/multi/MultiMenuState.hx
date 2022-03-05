@@ -28,6 +28,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var blockedFiles:Array<String> = ['picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','config.json'];
 	static var lastSel:Int = 0;
 	static var lastSearch:String = "";
+	public static var lastSong:String = ""; 
 	var beetHit:Bool = false;
 
 	var songNames:Array<String> = [];
@@ -65,6 +66,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function create()
 	{
 		retAfter = false;
+		SearchMenuState.doReset = true;
 		dataDir = "mods/charts/";
 		bgColor = 0x00661E;
 		super.create();
@@ -303,6 +305,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			// var songJSON = modes[curSelected][selMode]; // Just for easy access
 			// var songName = songNames[curSelected]; // Easy access to var
 			// var selSong = songs[curSelected]; // Easy access to var
+			lastSong = songs[curSelected] + modes[curSelected][selMode] + songNames[curSelected];
 			gotoSong(songs[curSelected],modes[curSelected][selMode],songNames[curSelected]);
 
 			// PlayState.SONG = Song.parseJSONshit(File.getContent('${selSong}/${songJSON}'));
@@ -402,10 +405,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			diffText.text = 'No song selected';
 			return;
 		}
+		lastSong = modes[curSelected][selMode] + songNames[curSelected];
+
 		if (forcedInt == -100) selMode += change; else selMode = forcedInt;
 		if (selMode >= modes[curSelected].length) selMode = 0;
 		if (selMode < 0) selMode = modes[curSelected].length - 1;
-		diffText.text = modes[curSelected][selMode];
+		var e:Dynamic = TitleState.getScore(4);
+		if(e != null && e != 0) diffText.text = '< ' + e + '%(' + Ratings.getLetterRankFromAcc(e) + ') - ' + modes[curSelected][selMode] + ' >';
+		else diffText.text = modes[curSelected][selMode];
 		// diffText.centerOffsets();
 		diffText.x = (FlxG.width) - 20 - diffText.width;
 

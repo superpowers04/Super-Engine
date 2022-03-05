@@ -25,6 +25,7 @@ import openfl.Assets;
 import sys.io.File;
 import sys.FileSystem;
 import flixel.math.FlxMath;
+import tjson.Json;
 
 
 using StringTools;
@@ -49,7 +50,6 @@ class TitleState extends MusicBeatState
 	public static var characterDescriptions:Map<String,String> = [];
 	public static var characterPaths:Map<String,String> = [];
 	public static var invalidCharacters:Array<String> = [];
-	public static var defCharJson:CharacterMetadataJSON = {characters:[], aliases:[]};
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;
 	public static var supported:Bool = false;
@@ -58,6 +58,9 @@ class TitleState extends MusicBeatState
 	public static var updatedVer:String = "";
 	public static var errorMessage:String = "";
 	public static var osuBeatmapLoc:String = "";
+	public static var songScores:Map<String,Float> = [];
+
+
 
 	var curWacky:Array<String> = [];
 
@@ -286,6 +289,93 @@ class TitleState extends MusicBeatState
 
 		osuBeatmapLoc = loc;
 	}
+	static inline function GETSCOREPATH():String{
+		#if windows 
+			if (Sys.getEnv("LOCALAPPDATA") != null) return '${Sys.getEnv("LOCALAPPDATA")}/hahafunnisuperengine/'; // Windows path
+		#else
+			if (Sys.getEnv("HOME") != null ) return '${Sys.getEnv("HOME")}/.local/share/hahfunnysuperengine/'; // Unix path
+		#end
+		else return "./hahfunnysuperengine/"; // If this gets returned, fucking run
+	}
+	static function getfunninumber(?scores:Map<String,Float> = null){ // Really simple, but if you're gonna get past this one, then you'll probably just get past any smarter checksums I'd make
+		if(scores == null){
+			scores = songScores;
+		}
+		var funniNumber:Float = 0; // Would make this an int but I don't trust rounding
+		var count:Int = 0;
+		for (i => v in scores) {
+			funniNumber += v;
+			count++;
+		}
+		funniNumber += count * funniNumber; // If this doesn't return the same then what
+		return funniNumber;
+	}
+	public static function getScore(type:Int = -1):Float{
+		try{
+
+			if(type == -1) type = PlayState.stateType;
+			var songName = "";
+			switch(type){
+				case 4:songName = multi.MultiMenuState.lastSong;
+				default:return 0.0;
+			}
+			return if(songName != null && songScores[songName] != null) songScores[songName] else 0.0;
+		}catch(e){
+			trace("Fucking haxe");
+			return 0.0;
+		}
+	}
+	public static function saveScore(accuracy:Float,?type:Int = -1){
+		var songName = "";
+		if(type == -1) type = PlayState.stateType;
+		switch(type){
+			case 4:songName = multi.MultiMenuState.lastSong;
+			default:return;
+		}
+		songScores[songName] = accuracy;
+		
+		File.saveContent(GETSCOREPATH() + "songs.json",Json.stringify({
+			scores:songScores,
+			funniNumber:getfunninumber()
+		}));
+
+	}
+	static function handlError(err:String){
+		if(!MainMenuState.firstStart){
+			MainMenuState.handleError(err);
+		}else{
+			MainMenuState.errorMessage += '\n' + err;
+		}
+	}
+	static function loadScores(){
+		var path = GETSCOREPATH();
+		if (!FileSystem.exists(path)) {
+			FileSystem.createDirectory(path);
+		}
+		if (!FileSystem.exists(path + "songs.json")) {
+			File.saveContent(path + "songs.json",Json.stringify({
+				scores:songScores,
+				funniNumber:getfunninumber()
+			}));
+		}else{
+			try{
+				var e = cast Json.parse(File.getContent(path+"songs.json"));
+				if(getfunninumber(e.scores) != e.funniNumber){
+					handlError("Something isn't adding up with your scores, you get bopeebo'd");
+					e.scores = ["bopeebo" => 0.0];
+				}
+				songScores = e.scores;
+			}catch(err){
+				handlError("Something went wrong when loading song scores, RESETTING!" + err.message);
+				try{File.saveContent(path + "songs.json-bak",File.getContent(path+"songs.json"));}catch(err){trace("rip scores, file is bein cring");}
+				songScores = ["bopeebo" => 0.0];
+				File.saveContent(path + "songs.json",Json.stringify({
+					scores:songScores,
+					funniNumber:getfunninumber()
+				}));
+			}
+		}
+	}
 	override public function create():Void
 	{
 		@:privateAccess
@@ -302,7 +392,7 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-
+		loadScores();
 		
 
 		KadeEngineData.initSave();

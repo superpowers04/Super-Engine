@@ -90,7 +90,7 @@ class SearchMenuState extends MusicBeatState
 	public static var doReset:Bool = true;
 	override function create()
 	{try{
-		if(!doReset)resetVars();
+		if(doReset)resetVars();
 		if(bg == null){
 			// if(FileSystem.exists("mods/bg.png")){
 			// 	bg = new FlxSprite().loadGraphic(Paths.getImageDirect("mods/bg.png"));
