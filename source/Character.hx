@@ -193,47 +193,47 @@ class Character extends FlxSprite
 		}
 	}
 
-	function addOffsets(?character:String = "") // Handles offsets for characters with support for clones
-	{
-		if(character == null || character == "" ) return;
-		if (Reflect.field(TitleState.defCharJson.characters,curCharacter) == null){
+	// function addOffsets(?character:String = "") // Handles offsets for characters with support for clones
+	// {
+	// 	if(character == null || character == "" ) return;
+	// 	if (Reflect.field(TitleState.defCharJson.characters,curCharacter) == null){
 
-			switch(character){
-				case 'bf','bf-christmas','bf-car':
-					charY+=330;
-					needsInverted = 0;
-					if (isPlayer){
-						addOffset('idle', 0);
-						addOffset("singUP", -34, 27);
-						addOffset("singRIGHT", -48, -7);
-						addOffset("singLEFT", 22, -6);
-						addOffset("singDOWN", -10, -50);
-						addOffset("singUPmiss", -29, 27);
-						addOffset("singRIGHTmiss", -30, 21);
-						addOffset("singLEFTmiss", 12, 24);
-						addOffset("singDOWNmiss", -11, -19);
-						addOffset("hey", 7, 4);
-						addOffset('scared', -4);
-					}else{
-						addOffset("singUP", 5, 30);
-						addOffset("singRIGHT", -30, -5);
-						addOffset("singLEFT", 38, -5);
-						addOffset("singDOWN", -15, -50);
-						addOffset("singUPmiss", 1, 30);
-						addOffset("singRIGHTmiss", -31, 21);
-						addOffset("singLEFTmiss", 2, 23);
-						addOffset("singDOWNmiss", -15, -20);
-						addOffset("hey", 7, 4);
-						addOffset('scared', -4);
-					}
-			}
-		}else{
-			var e:Dynamic = Reflect.field(TitleState.defCharJson.characters,curCharacter);
-			loadOffsetsFromJSON(e);
-			getDefColor(e);
+	// 		switch(character){
+	// 			case 'bf','bf-christmas','bf-car':
+	// 				charY+=330;
+	// 				needsInverted = 0;
+	// 				if (isPlayer){
+	// 					addOffset('idle', 0);
+	// 					addOffset("singUP", -34, 27);
+	// 					addOffset("singRIGHT", -48, -7);
+	// 					addOffset("singLEFT", 22, -6);
+	// 					addOffset("singDOWN", -10, -50);
+	// 					addOffset("singUPmiss", -29, 27);
+	// 					addOffset("singRIGHTmiss", -30, 21);
+	// 					addOffset("singLEFTmiss", 12, 24);
+	// 					addOffset("singDOWNmiss", -11, -19);
+	// 					addOffset("hey", 7, 4);
+	// 					addOffset('scared', -4);
+	// 				}else{
+	// 					addOffset("singUP", 5, 30);
+	// 					addOffset("singRIGHT", -30, -5);
+	// 					addOffset("singLEFT", 38, -5);
+	// 					addOffset("singDOWN", -15, -50);
+	// 					addOffset("singUPmiss", 1, 30);
+	// 					addOffset("singRIGHTmiss", -31, 21);
+	// 					addOffset("singLEFTmiss", 2, 23);
+	// 					addOffset("singDOWNmiss", -15, -20);
+	// 					addOffset("hey", 7, 4);
+	// 					addOffset('scared', -4);
+	// 				}
+	// 		}
+	// 	}else{
+	// 		var e:Dynamic = Reflect.field(TitleState.defCharJson.characters,curCharacter);
+	// 		loadOffsetsFromJSON(e);
+	// 		getDefColor(e);
 
-		}
-	}
+	// 	}
+	// }
 
 	function loadOffsetsFromJSON(?charProperties:CharacterJson){
 		if (charProperties == null) return;
@@ -441,9 +441,9 @@ class Character extends FlxSprite
 
 		if(charProperties.flip != null) flip = charProperties.flip;
 		clonedChar = charProperties.clone;
-		if (clonedChar != null && clonedChar != "") {
-			addOffsets(clonedChar);
-		}
+		// if (clonedChar != null && clonedChar != "") {
+		// 	addOffsets(clonedChar);
+		// }
 		if (charProperties.like != null && charProperties.like != "") clonedChar = charProperties.like;
 		loadOffsetsFromJSON(charProperties);
 	}
@@ -730,11 +730,8 @@ class Character extends FlxSprite
 		
 		if (exitex != null) tex = exitex;
 		antialiasing = true;
-		if (Reflect.field(TitleState.defCharJson.aliases,curCharacter) != null) curCharacter = Reflect.field(TitleState.defCharJson.aliases,curCharacter); // Due to some haxe weirdness, need to use reflect
-		else {
-
-			loadChar();
-		}
+		loadChar();
+		
 
 		dance();
 		// var alloffset = animOffsets.get("all");
