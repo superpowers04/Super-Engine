@@ -115,8 +115,6 @@ class ChartingState extends MusicBeatState
 	var gridBlackLine:FlxSprite;
 	var vocals:FlxSound = null;
 
-	var player2:Character = new Character(0,0, "dad");
-	var player1:Character = new Character(0,0, "bf");
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
@@ -130,7 +128,9 @@ class ChartingState extends MusicBeatState
 	}
 
 	override function create()
-	{
+	{try{
+
+
 		curSection = lastSection;
 		charting = true;
 		if (PlayState.SONG != null)
@@ -256,6 +256,9 @@ class ChartingState extends MusicBeatState
 		gridBGBelow.alpha = 0.7;
 
 		super.create();
+		}catch(e){
+			MainMenuState.handleError("chart editor did a fucky: " + e.message);
+		}
 	}
 
 	function addSongUI():Void
@@ -547,16 +550,7 @@ class ChartingState extends MusicBeatState
 
 		UI_box.addGroup(tab_group_note);
 
-		/*player2 = new Character(0,gridBG.y, _song.player2);
-		player1 = new Boyfriend(player2.width * 0.2,gridBG.y + player2.height, _song.player1);
 
-		player1.y = player1.y - player1.height;
-
-		player2.setGraphicSize(Std.int(player2.width * 0.2));
-		player1.setGraphicSize(Std.int(player1.width * 0.2));
-
-		UI_box.add(player1);
-		UI_box.add(player2);*/
 
 	}
 
@@ -566,7 +560,7 @@ class ChartingState extends MusicBeatState
 		audioBuffers[1] = AudioBuffer.fromFile(if(onlinemod.OfflinePlayState.voicesFile != "") onlinemod.OfflinePlayState.voicesFile else ('assets/songs/' + _song.song.toLowerCase() + "/Voices.ogg"));
 		
 	}
-
+	var noVocals:Bool = false;
 	function loadSong():Void
 	{
 		if (FlxG.sound.music != null)
@@ -585,6 +579,10 @@ class ChartingState extends MusicBeatState
 			vocals = new FlxSound().loadEmbedded(Sound.fromFile(if(onlinemod.OfflinePlayState.voicesFile != "")  onlinemod.OfflinePlayState.voicesFile else ('assets/songs/' + _song.song.toLowerCase() + "/Voices.ogg")));
 
 		} 
+		if(vocals == null){
+			vocals = new FlxSound();
+			noVocals = true;
+		}
 
 		FlxG.sound.list.add(vocals);
 		FlxG.sound.music.pause();
@@ -732,7 +730,7 @@ class ChartingState extends MusicBeatState
 	var selectedNote:Note = null;
 	var modifyingNote:Bool = false;
 	override function update(elapsed:Float)
-	{
+	{try{
 		updateHeads();
 
 		curStep = recalculateSteps();
@@ -924,7 +922,7 @@ class ChartingState extends MusicBeatState
 		}
 		if(FlxG.mouse.pressed )
 		{
-			if (!modifyingNote && !justAdded && Math.floor(FlxG.mouse.x / GRID_SIZE) == curSelectedNote[1])
+			if (curSelectedNote != null && !modifyingNote && !justAdded && Math.floor(FlxG.mouse.x / GRID_SIZE) == curSelectedNote[1])
 				{
 					FlxG.log.add('added note');
 					replaceNoteSustain(getStrumTime(dummyArrow.y) + sectionStartTime(curSection));
@@ -1159,6 +1157,9 @@ class ChartingState extends MusicBeatState
 			+ (doSnapShit ? "Snap enabled" : "Snap disabled")
 			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right : Change playback speed\nCTRL-Left/Right : Change Snap\nHold Shift : Disable Snap\nEnter/Escape : Preview chart\n F1 : hide/show this' : "");
 		super.update(elapsed);
+	}catch(e){
+			MainMenuState.handleError("chart editor did a fucky: " + e.message);
+		}
 	}
 
 
@@ -1269,11 +1270,6 @@ class ChartingState extends MusicBeatState
 		trace('beat');
 
 		super.beatHit();
-		if (!player2.animation.curAnim.name.startsWith("sing"))
-		{
-			player2.playAnim('idle');
-		}
-		player1.dance();
 	}
 
 	function recalculateSteps():Int
