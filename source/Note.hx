@@ -54,6 +54,8 @@ class Note extends FlxSprite
 	public var aiShouldPress:Bool = true;
 	var ntText:FlxText;
 	public var vanillaFrames:Bool = false;
+	public var noteAnimation:Null<String> = "";
+	public var noteAnimationMiss:Null<String> = "";
 
 
 	public function loadFrames(){
@@ -108,8 +110,9 @@ class Note extends FlxSprite
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
-
-		PlayState.charAnim(charID,noteAnims[noteData],true); // Play animation
+		if(noteAnimation != null){
+			PlayState.charAnim(charID,(if(noteAnimation == "")noteAnims[noteData] else noteAnimation),true); // Play animation
+		}
 	}
 	dynamic public function susHit(?charID:Int = 0,note:Note){ // Played every update instead of every time the strumnote is hit
 		switch (charID) {
@@ -117,7 +120,9 @@ class Note extends FlxSprite
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
 
-		PlayState.charAnim(charID,noteAnims[noteData],true); // Play animation
+		if(noteAnimation != null){
+			PlayState.charAnim(charID,(if(noteAnimation == "")noteAnims[noteData] else noteAnimation),true); // Play animation
+		}
 	}
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
@@ -125,8 +130,9 @@ class Note extends FlxSprite
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
-
-		PlayState.charAnim(charID,noteAnims[noteData] + "miss",true);// Play animation
+		if(noteAnimationMiss != null){
+			PlayState.charAnim(charID,(if(noteAnimationMiss == "")noteAnims[noteData] + miss else noteAnimation),true); // Play animation
+		}
 	}
 	// Array of animations, to be used above
 	public static var noteAnims:Array<String> = ['singLEFT','singDOWN','singUP','singRIGHT']; 

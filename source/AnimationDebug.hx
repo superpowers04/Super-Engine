@@ -857,9 +857,9 @@ class AnimationDebug extends MusicBeatState
 		// uiBox2.add(looped);
 		// var animTxt = new FlxText(30, 100,0,"Color, R/G/B");
 
-		var animTxt = new FlxText(30, 100,0,"Scale:");
+		var animTxt = new FlxText(30, 120,0,"Scale:");
 		uiBox2.add(animTxt);
-		var e = new FlxUIInputText(80, 100, 20, '${charJson.scale}');
+		var e = new FlxUIInputText(80, 120, 20, '${charJson.scale}');
 		uiMap["scale"] = e;
 		uiMap["scale"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
 		uiMap["scale"].callback = function(text,_){
@@ -874,9 +874,9 @@ class AnimationDebug extends MusicBeatState
 		}
 		uiBox2.add(e);
 
-		var animTxt = new FlxText(30, 130,0,"Sing Duration:");
+		var animTxt = new FlxText(30, 140,0,"Sing Duration:");
 		uiBox2.add(animTxt);
-		e = new FlxUIInputText(90, 130, 20, '${charJson.sing_duration}');
+		e = new FlxUIInputText(90, 140, 20, '${charJson.sing_duration}');
 		uiMap["Sing Duration"] = e;
 		uiMap["Sing Duration"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
 		uiMap["Sing Duration"].callback = function(text,_){
