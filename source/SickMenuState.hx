@@ -206,11 +206,10 @@ class SickMenuState extends MusicBeatState
 		if (controls.ACCEPT && grpControls.members[curSelected] != null)
 		{
 			if(doResize){
-				// FlxTween.tween(grpControls.members[curSelected],{x:FlxG.width},(120 / Conductor.bpm),{ease:FlxEase.quadIn});
+				FlxTween.tween(grpControls.members[curSelected],{x:FlxG.width},2,{ease:FlxEase.quadIn});
 				if(curTween != null)curTween.cancel();
-				FlxTween.tween(grpControls.members[curSelected].scale,{x:1.5,y:1.5},(60 / Conductor.bpm),{ease:FlxEase.quadIn});
-				// grpControls.members[curSelected].scale.set(1.2,1.2);
-				// isEpicTween = true;
+				grpControls.members[curSelected].scale.set(1.3,1.3);
+
 			}
 			select(curSelected);
 		}
