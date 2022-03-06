@@ -7,6 +7,7 @@ import Controls.KeyboardScheme;
 import flixel.FlxG;
 import openfl.display.FPS;
 import openfl.Lib;
+import hscript.Interp;
 import tjson.Json;
 
 class OptionCategory
@@ -1591,6 +1592,8 @@ class BackgroundSizeOption extends Option
 		return 'Underlay style';
 	}
 }
+
+
 class VolumeOption extends Option
 {
 	var opt = "";
@@ -1642,6 +1645,30 @@ class VolumeOption extends Option
 
 		return true;
 	}
+}
+
+// class ScriptableOption extends Option
+// {
+// 	var default:Dynamic;
+// 	var interp:Interp;
+// 	public function new(?int)
+// 	{
+// 		// display = updateDisplay();
+// 		super();
+// 	}
+// 	// private var description:String = "";
+// 	// private var display:String;
+// 	// private var acceptValues:Bool = false;
+
+
+// 	public function getValue():String { return throw "stub!"; };
+	
+// 	// Returns whether the label is to be updated.
+// 	public function press():Bool { return throw "stub!"; }
+// 	private function updateDisplay():String { return throw "stub!"; }
+// 	public function left():Bool { return throw "stub!"; }
+// 	public function right():Bool { return throw "stub!"; }
+// }
 class ImportOption extends Option
 {
 	var opt = "";
