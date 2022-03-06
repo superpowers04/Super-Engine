@@ -189,7 +189,7 @@ class SickMenuState extends MusicBeatState
 
 		super.create();
 	}
-
+	var doResize:Bool = true;
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -203,16 +203,23 @@ class SickMenuState extends MusicBeatState
 		if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
 		if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
 
-		if (controls.ACCEPT)
+		if (controls.ACCEPT && grpControls.members[curSelected] != null)
 		{
-
+			if(doResize){
+				// FlxTween.tween(grpControls.members[curSelected],{x:FlxG.width},(120 / Conductor.bpm),{ease:FlxEase.quadIn});
+				if(curTween != null)curTween.cancel();
+				FlxTween.tween(grpControls.members[curSelected].scale,{x:1.5,y:1.5},(60 / Conductor.bpm),{ease:FlxEase.quadIn});
+				// grpControls.members[curSelected].scale.set(1.2,1.2);
+				// isEpicTween = true;
+			}
 			select(curSelected);
 		}
 	}
+	var isEpicTween:Bool = false;
 	var curTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
-		if(grpControls.members[curSelected] != null && grpControls.members[curSelected].useAlphabet){
+		if(grpControls.members[curSelected] != null && grpControls.members[curSelected].useAlphabet && !isEpicTween){
 			
 			grpControls.members[curSelected].scale.set(1.2,1.2);
 			if(curTween != null)curTween.cancel();

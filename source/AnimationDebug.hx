@@ -855,6 +855,8 @@ class AnimationDebug extends MusicBeatState
 		uiBox2.add(looped);
 		// var looped = checkBox(30, 80,"Spirit Trail","spirit_trail");
 		// uiBox2.add(looped);
+		var looped = checkBox(30, 80,"Invert left/right singing for BF Clone","flip_notes");
+		uiBox2.add(looped);
 		// var animTxt = new FlxText(30, 100,0,"Color, R/G/B");
 
 		var animTxt = new FlxText(30, 120,0,"Scale:");

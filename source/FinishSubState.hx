@@ -320,10 +320,7 @@ var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState
 						File.saveContent('songLogs/${songName}/${curDate.getTime()}.json',eventsjson);
 					}catch(e){trace("Something went wrong when trying to output event log! " + e.message);}
 				}
-				try{
-
-				TitleState.saveScore(PlayState.accuracy);
-				}catch(e){trace("e");}
+				// try{TitleState.saveScore(PlayState.accuracy);}catch(e){trace("e");}
 			}
 
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 

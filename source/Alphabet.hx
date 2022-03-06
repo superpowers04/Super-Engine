@@ -34,6 +34,7 @@ class Alphabet extends FlxSpriteGroup
 
 	var yMulti:Float = 1;
 
+
 	// custom shit
 	// amp, backslash, question mark, apostrophy, comma, angry faic, period
 	var lastSprite:AlphaCharacter;
@@ -47,6 +48,7 @@ class Alphabet extends FlxSpriteGroup
 
 	var isBold:Bool = false;
 	public var xOffset:Float = 70;
+	public var yOffset:Float = 0;
 	public var useAlphabet:Bool = true;
 	public var selected:Bool = false;
 	public var moveX:Bool = true;
@@ -244,7 +246,7 @@ class Alphabet extends FlxSpriteGroup
 		{
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48),10 * elapsed);
+			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48) + yOffset,10 * elapsed);
 			if(moveX)x = FlxMath.lerp(x, xOffset, 10 * elapsed);
 		}
 

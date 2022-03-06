@@ -72,6 +72,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		super.create();
 		diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
 		diffText.font = CoolUtil.font;
+		diffText.borderSize = 2;
 		diffText.x = (FlxG.width) - 20;
 		// diffText.autoSize = false;
 		// diffText.width = 200;
@@ -101,6 +102,15 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			inTween.cancel();
 			inTween.destroy();
 		}
+	}
+	function addListing(name:String,i:Int){
+		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false);
+		controlLabel.yOffset = 20;
+		controlLabel.isMenuItem = true;
+		controlLabel.targetY = i;
+		if (i != 0)
+			controlLabel.alpha = 0.6;
+		grpSongs.add(controlLabel);
 	}
 	override function reloadList(?reload=false,?search = ""){
 		curSelected = 0;
@@ -133,12 +143,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						songs[i] = dataDir + directory;
 						songNames[i] =directory;
 
-						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
-						controlLabel.isMenuItem = true;
-						controlLabel.targetY = i;
-						if (i != 0)
-							controlLabel.alpha = 0.6;
-						grpSongs.add(controlLabel);
+						addListing(directory,i);
 						i++;
 					}
 				}
@@ -169,12 +174,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							songs[i] = dataDir + directory;
 							songNames[i] = directory;
 
-							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
-							controlLabel.isMenuItem = true;
-							controlLabel.targetY = i;
-							if (i != 0)
-								controlLabel.alpha = 0.6;
-							grpSongs.add(controlLabel);
+							
+							addListing(directory,i);
 							nameSpaces[i] = dataDir;
 							i++;
 						}
@@ -207,12 +208,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							songs[i] = dataDir + directory;
 							songNames[i] =directory;
 
-							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, directory, true, false);
-							controlLabel.isMenuItem = true;
-							controlLabel.targetY = i;
-							if (i != 0)
-								controlLabel.alpha = 0.6;
-							grpSongs.add(controlLabel);
+							
+							addListing(directory,i);
 							nameSpaces[i] = dataDir;
 							i++;
 						}
@@ -400,21 +397,27 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			}
 		super.extraKeys();
 	}
+	var twee:FlxTween;
 	function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
 		if (songs.length == 0 || songs[curSelected] == null || songs[curSelected] == "") {
 			diffText.text = 'No song selected';
 			return;
 		}
+		if(twee != null)twee.cancel();
+		diffText.scale.set(1.2,1.2);
+		twee = FlxTween.tween(diffText.scale,{x:1,y:1},(30 / Conductor.bpm));
 		lastSong = modes[curSelected][selMode] + songNames[curSelected];
 
 		if (forcedInt == -100) selMode += change; else selMode = forcedInt;
 		if (selMode >= modes[curSelected].length) selMode = 0;
 		if (selMode < 0) selMode = modes[curSelected].length - 1;
-		var e:Dynamic = TitleState.getScore(4);
-		if(e != null && e != 0) diffText.text = '< ' + e + '%(' + Ratings.getLetterRankFromAcc(e) + ') - ' + modes[curSelected][selMode] + ' >';
-		else diffText.text = modes[curSelected][selMode];
+		// var e:Dynamic = TitleState.getScore(4);
+		// if(e != null && e != 0) diffText.text = '< ' + e + '%(' + Ratings.getLetterRankFromAcc(e) + ') - ' + modes[curSelected][selMode] + ' >';
+		// else 
+			diffText.text = '< ' + modes[curSelected][selMode] + " >";
 		// diffText.centerOffsets();
-		diffText.x = (FlxG.width) - 20 - diffText.width;
+		diffText.screenCenter(X);
+		// diffText.x = (FlxG.width) - 20 - diffText.width;
 
 	}
 

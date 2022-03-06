@@ -23,6 +23,7 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+	public static var instance:MusicBeatState;
 
 	var tempMessage:FlxText;
 	var tempMessTimer:FlxTimer;
@@ -36,7 +37,7 @@ class MusicBeatState extends FlxUIState
 
 		if (transIn != null)
 			trace('reg ' + transIn.region);
-
+		instance = this;
 		super.create();
 		tranIn();
 	}

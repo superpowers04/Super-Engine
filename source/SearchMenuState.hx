@@ -112,6 +112,9 @@ class SearchMenuState extends MusicBeatState
 		reloadList();
 		add(grpSongs);
 		if (toggleables['search']){
+				var blackBorder = new FlxSprite(-30,0).makeGraphic((Std.int(FlxG.width + 40)),140,FlxColor.BLACK);
+				blackBorder.alpha = 0.5;
+				add(blackBorder);
 				FlxG.mouse.visible = true;
 				//Searching
 				searchField = new FlxInputText(10, 100, 1152, 20);
@@ -125,11 +128,11 @@ class SearchMenuState extends MusicBeatState
 			}
 
 		var infotexttxt:String = "Hold shift to scroll faster";
-		infotext = new FlxText(5, FlxG.height - (18 * infoTextBoxSize ), FlxG.width - 100, infotexttxt, 16);
+		infotext = new FlxText(5, FlxG.height - (20 * infoTextBoxSize ), FlxG.width - 5, infotexttxt, 16);
 		infotext.wordWrap = true;
 		infotext.scrollFactor.set();
 		infotext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		var blackBorder = new FlxSprite(-30,FlxG.height - (18 * infoTextBoxSize )).makeGraphic((Std.int(FlxG.width)),(18 * infoTextBoxSize),FlxColor.BLACK);
+		var blackBorder = new FlxSprite(-30,FlxG.height - (20 * infoTextBoxSize )).makeGraphic((Std.int(FlxG.width + 40)),(20 * infoTextBoxSize),FlxColor.BLACK);
 		blackBorder.alpha = 0.5;
 		overLay.add(blackBorder);
 		overLay.add(infotext);
