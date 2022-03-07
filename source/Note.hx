@@ -127,7 +127,7 @@ class Note extends FlxSprite
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		if(noteAnimationMiss != null){
-			PlayState.charAnim(charID,(if(noteAnimationMiss == "")noteAnims[noteData] + miss else noteAnimation),true); // Play animation
+			PlayState.charAnim(charID,(if(noteAnimationMiss == "")noteAnims[noteData] + "miss" else noteAnimationMiss),true); // Play animation
 		}
 	}
 	// Array of animations, to be used above

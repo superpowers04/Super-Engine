@@ -85,6 +85,10 @@ class Character extends FlxSprite
 		"singDOWN" => 10,
 		"singUP" => 10,
 		"singRIGHT" => 10,
+		"singLEFTmiss" => 10,
+		"singDOWNmiss" => 10,
+		"singUPmiss" => 10,
+		"singRIGHTmiss" => 10,
 		// Copy of the above but lower case because it's funny and I'm dumb
 		"singleft-alt" => 10,
 		"singdown-alt" => 10,
@@ -94,6 +98,10 @@ class Character extends FlxSprite
 		"singdown" => 10,
 		"singup" => 10,
 		"singright" => 10,
+		"singleftmiss" => 10,
+		"singdownmiss" => 10,
+		"singupmiss" => 10,
+		"singrightmiss" => 10,
 
 		"idle" => 0,
 		"Idle" => 0,// Can never remember if it's idle or Idle
@@ -1065,28 +1073,28 @@ class Character extends FlxSprite
 				},
 				{
 					"anim": "singUPmiss",
-					"name": "BF NOTE UP0",
+					"name": "BF NOTE UP MISS0",
 					"fps": 24,
 					"loop": false,
 					"indices": []
 				},
 				{
 					"anim": "singDOWNmiss",
-					"name": "BF NOTE DOWN0",
+					"name": "BF NOTE DOWN MISS0",
 					"fps": 24,
 					"loop": false,
 					"indices": []
 				},
 				{
 					"anim": "singLEFTmiss",
-					"name": "BF NOTE LEFT0",
+					"name": "BF NOTE LEFT MISS0",
 					"fps": 24,
 					"loop": false,
 					"indices": []
 				},
 				{
 					"anim": "singRIGHTmiss",
-					"name": "BF NOTE RIGHT0",
+					"name": "BF NOTE RIGHT MISS0",
 					"fps": 24,
 					"loop": false,
 					"indices": []
