@@ -2509,7 +2509,7 @@ class PlayState extends MusicBeatState
 		lockedCamPos = defLockedCamPos;
 	}
 
-
+	var shouldEndSong:Bool = true;
 	function endSong():Void
 	{
 		// if (!loadRep)
@@ -2551,9 +2551,9 @@ class PlayState extends MusicBeatState
 		// 	Highscore.saveScore(SONG.song, Math.round(songScore), storyDifficulty);
 		// }
 		// #end
-
 		charCall("endSong",[]);
 		callInterp("endSong",[]);
+		if(!shouldEndSong){shouldEndSong = true;return;}
 		if (offsetTesting)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));

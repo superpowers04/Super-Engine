@@ -26,6 +26,9 @@ import sys.io.File;
 import sys.FileSystem;
 import flixel.math.FlxMath;
 import tjson.Json;
+import flash.display.Graphics;
+import flash.display.Sprite;
+import flash.Lib;
 
 
 using StringTools;
@@ -43,7 +46,7 @@ class TitleState extends MusicBeatState
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
-	var textGroup:FlxGroup;
+	var textGroup:FlxTypedGroup<FlxSprite>;
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
 	public static var choosableCharacters:Array<String> = [];
@@ -433,7 +436,8 @@ class TitleState extends MusicBeatState
 		KadeEngineData.initSave();
 
 		Highscore.load();
-		checkCharacters();
+		checkCharacters();			
+
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
@@ -455,7 +459,7 @@ class TitleState extends MusicBeatState
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
 		#else
-		new FlxTimer().start(1, function(tmr:FlxTimer)
+		new FlxTimer().start(0.5, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
@@ -493,8 +497,8 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.list.add(music);
 			// music.play();
 			FlxG.sound.playMusic(Paths.music('StartItchBuild'), 0.1);
-
-			FlxG.sound.music.fadeIn(4, 0, FlxG.save.data.instVol);
+			FlxG.sound.music.pause();
+			
 			findosuBeatmaps();
 			MainMenuState.firstStart = true;
 			Conductor.changeBPM(70);
@@ -550,7 +554,7 @@ class TitleState extends MusicBeatState
 
 		credGroup = new FlxGroup();
 		add(credGroup);
-		textGroup = new FlxGroup();
+		textGroup = new FlxTypedGroup<FlxSprite>();
 
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		credGroup.add(blackScreen);
@@ -575,18 +579,21 @@ class TitleState extends MusicBeatState
 		FlxG.mouse.visible = false;
 
 
-		var shiftSkip:FlxText = new FlxText(0,0,0,"Hold shift to go to the options menu after title screen",16);
-		shiftSkip.y = FlxG.height - shiftSkip.height + 4;
+		shiftSkip = new FlxText(0,0,0,"Hold shift to go to the options menu after title screen",16);
+		shiftSkip.y = FlxG.height - shiftSkip.height - 12;
+		shiftSkip.x = 6;
 		add(shiftSkip);
 
 		if (initialized)
 			skipIntro();
 		else
 			initialized = true;
-		FlxG.sound.volume = FlxG.save.data.masterVol;
-
+		createCoolText(['Powered by',"haxeflixel"]);
+		showHaxe();
 		// credGroup.add(credTextShit);
 	}
+	var shiftSkip:FlxText;
+	var isShift = false;
 
 	function getIntroTextShit():Array<Array<String>>
 	{
@@ -640,7 +647,10 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			#end
 		}
-
+		if(shiftSkip != null && isShift != FlxG.keys.pressed.SHIFT){
+			isShift = FlxG.keys.pressed.SHIFT;
+			shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else 0xFFFFFF);
+		}
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
 
@@ -661,6 +671,9 @@ class TitleState extends MusicBeatState
 				FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
 			else
 			{
+
+				showTempmessage("Checking for updates..",FlxColor.WHITE);
+				tempMessage.screenCenter(X);
 				new FlxTimer().start(2, function(tmr:FlxTimer)
 				{
 					// Get current version of FNFBR, Uses kade's update checker 
@@ -749,10 +762,20 @@ class TitleState extends MusicBeatState
 
 		switch (curBeat)
 		{
+
+			// case 1:
+			// 	// if (Main.watermarks)  You're not more important than fucking newgrounds
+			// 	// 	createCoolText(['Kade Engine', 'by']);
+			// 	// else
+			// 	createCoolText(['Powered by',"haxeflixel"]);
+			// 	showHaxe();
+			case 0:
+				deleteCoolText();
+			// 	destHaxe();
 			case 1:
 				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
 			// credTextShit.visible = true;
-			case 3:
+			case 2:
 				addMoreText('present');
 			// credTextShit.text += '\npresent...';
 			// credTextShit.addText();
@@ -782,6 +805,9 @@ class TitleState extends MusicBeatState
 
 			// credTextShit.text = 'Shoutouts Tom Fulp';
 			// credTextShit.screenCenter();
+
+
+
 			case 9:
 				createCoolText([curWacky[0]]);
 			// credTextShit.visible = true;
@@ -813,8 +839,12 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
+			if(!FlxG.sound.music.playing){
+				FlxG.sound.music.play();
+				FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
+			}
 			remove(ngSpr);
-
+			destHaxe();
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);
 			skippedIntro = true;
@@ -827,4 +857,135 @@ class TitleState extends MusicBeatState
 			FlxTween.tween(titleText,{y: _y},0.5);
 		}
 	}
+
+	// HaxeFlixel thing
+
+	var _sprite:Sprite;
+	var _gfx:Graphics;
+
+	var _times:Array<Float>;
+	var _colors:Array<Int>;
+	var _functions:Array<Void->Void>;
+	var _curPart:Int = 0;
+	var _cachedBgColor:FlxColor;
+	var _cachedTimestep:Bool;
+	var _cachedAutoPause:Bool;
+	var _timers:Array<FlxTimer>;
+	var _sound:FlxSound;
+	function showHaxe(){
+		_times = [0.041, 0.184, 0.334, 0.495, 0.636,1];
+		_colors = [0x00b922, 0xffc132, 0xf5274e, 0x3641ff, 0x04cdfb,0xFFFFFF,0xFFFFFF];
+		_functions = [drawGreen, drawYellow, drawRed, drawBlue, drawLightBlue,function(){return;}];
+		_sprite = new Sprite();
+		FlxG.stage.addChild(_sprite);
+		_gfx = _sprite.graphics;
+
+
+		_sprite.x = (FlxG.width / 2);
+		_sprite.y = (FlxG.height * 0.60) - 20 * FlxG.game.scaleY;
+		_sprite.scaleX = FlxG.game.scaleX;
+		_sprite.scaleY = FlxG.game.scaleY;
+		_sound = FlxG.sound.load(flixel.system.FlxAssets.getSound("flixel/sounds/flixel"),FlxG.save.data.instVol - 0.2); // Put the volume down by 0.2 for safety of eardrums
+		_sound.play();
+		for (time in _times)
+		{
+			new FlxTimer().start(time, _timerCallback);
+		}
+	}
+	function destHaxe(){
+		if(_sprite == null) return;
+		// remove(_sprite);
+		FlxG.stage.removeChild(_sprite);
+		_sprite = null;
+		_gfx = null;
+		_times = null;
+		_colors = null;
+		_functions = null;
+	}
+	function _timerCallback(Timer:FlxTimer):Void
+	{
+		_functions[_curPart]();
+		_curPart++;
+		textGroup.members[1].color = _colors[_curPart];
+		if (_curPart == 6)
+		{
+			// Make the logo a tad bit longer, so our users fully appreciate our hard work :D
+			FlxTween.tween(_sprite, {alpha: 0}, 3.0, {ease: FlxEase.quadOut, onComplete: __onComplete});
+			FlxTween.tween(textGroup.members[0], {alpha: 0}, 3.0, {ease: FlxEase.quadOut});
+			FlxTween.tween(textGroup.members[1], {alpha: 0}, 3.0, {ease: FlxEase.quadOut});
+		}
+	}
+	function  __onComplete(tmr:FlxTween){
+		if(_sound != null){
+			_sound.pause();
+			_sound.destroy();
+		} 
+		destHaxe();
+		FlxG.sound.music.play();
+		FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
+	}
+	function drawGreen():Void
+	{
+		_gfx.beginFill(0x00b922);
+		_gfx.moveTo(0, -37);
+		_gfx.lineTo(1, -37);
+		_gfx.lineTo(37, 0);
+		_gfx.lineTo(37, 1);
+		_gfx.lineTo(1, 37);
+		_gfx.lineTo(0, 37);
+		_gfx.lineTo(-37, 1);
+		_gfx.lineTo(-37, 0);
+		_gfx.lineTo(0, -37);
+		_gfx.endFill();
+	}
+
+	function drawYellow():Void
+	{
+		_gfx.beginFill(0xffc132);
+		_gfx.moveTo(-50, -50);
+		_gfx.lineTo(-25, -50);
+		_gfx.lineTo(0, -37);
+		_gfx.lineTo(-37, 0);
+		_gfx.lineTo(-50, -25);
+		_gfx.lineTo(-50, -50);
+		_gfx.endFill();
+	}
+
+	function drawRed():Void
+	{
+		_gfx.beginFill(0xf5274e);
+		_gfx.moveTo(50, -50);
+		_gfx.lineTo(25, -50);
+		_gfx.lineTo(1, -37);
+		_gfx.lineTo(37, 0);
+		_gfx.lineTo(50, -25);
+		_gfx.lineTo(50, -50);
+		_gfx.endFill();
+	}
+
+	function drawBlue():Void
+	{
+		_gfx.beginFill(0x3641ff);
+		_gfx.moveTo(-50, 50);
+		_gfx.lineTo(-25, 50);
+		_gfx.lineTo(0, 37);
+		_gfx.lineTo(-37, 1);
+		_gfx.lineTo(-50, 25);
+		_gfx.lineTo(-50, 50);
+		_gfx.endFill();
+	}
+
+	function drawLightBlue():Void
+	{
+		_gfx.beginFill(0x04cdfb);
+		_gfx.moveTo(50, 50);
+		_gfx.lineTo(25, 50);
+		_gfx.lineTo(1, 37);
+		_gfx.lineTo(37, 1);
+		_gfx.lineTo(50, 25);
+		_gfx.lineTo(50, 50);
+		_gfx.endFill();
+	}
+
+
 }
