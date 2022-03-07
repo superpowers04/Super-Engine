@@ -126,10 +126,6 @@ class Note extends FlxSprite
 	}
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
-		switch (charID) {
-			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
-			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
-		}; // Strums
 		if(noteAnimationMiss != null){
 			PlayState.charAnim(charID,(if(noteAnimationMiss == "")noteAnims[noteData] + miss else noteAnimation),true); // Play animation
 		}

@@ -2418,22 +2418,22 @@ class PlayState extends MusicBeatState
 	
 					if (daNote.mustPress && daNote.tooLate)
 					{
-							if (daNote.isSustainNote && daNote.wasGoodHit)
-							{
-								daNote.kill();
-								notes.remove(daNote, true);
-							}
-							else if (!daNote.shouldntBeHit)
-							{
-								health += SONG.noteMetadata.tooLateHealth;
-								vocals.volume = 0;
-								noteMiss(daNote.noteData, daNote);
-							}
-		
-							daNote.visible = false;
+						if (daNote.isSustainNote && daNote.wasGoodHit)
+						{
 							daNote.kill();
 							notes.remove(daNote, true);
 						}
+						else if (!daNote.shouldntBeHit)
+						{
+							health += SONG.noteMetadata.tooLateHealth;
+							vocals.volume = 0;
+							noteMiss(daNote.noteData, daNote);
+						}
+	
+						daNote.visible = false;
+						daNote.kill();
+						notes.remove(daNote, true);
+					}
 		});
 
 
@@ -2980,10 +2980,10 @@ class PlayState extends MusicBeatState
 				spr.centerOffsets();
 		}
 	}
-	public function BFStrumPlayAnim(id:Int) {
+	public function BFStrumPlayAnim(id:Int,anim:String = 'confirm') {
 		var spr:FlxSprite= playerStrums.members[id];
 		if(spr != null) {
-			spr.animation.play('confirm', true);
+			spr.animation.play(anim, true);
 			if (spr.animation.curAnim.name == 'confirm')
 			{
 				spr.centerOffsets();
@@ -3138,8 +3138,7 @@ class PlayState extends MusicBeatState
 							daNote.visible = false;
 							daNote.kill();
 							notes.remove(daNote, true);
-						}
-					
+					}
 				});
 			}
 	}
@@ -3512,6 +3511,25 @@ class PlayState extends MusicBeatState
 						if (!daNote.isSustainNote)
 							daNote.angle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
 						daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+
+						if(daNote.tooLate){
+							if (daNote.isSustainNote && daNote.wasGoodHit)
+							{
+								daNote.kill();
+								notes.remove(daNote, true);
+							}
+							else if (!daNote.shouldntBeHit)
+							{
+								health += SONG.noteMetadata.tooLateHealth;
+								vocals.volume = 0;
+								noteMiss(daNote.noteData, daNote);
+							}
+		
+							daNote.visible = false;
+							daNote.kill();
+							notes.remove(daNote, true);
+						}
+
 					}
 					else if (!daNote.wasGoodHit)
 					{
@@ -3526,8 +3544,7 @@ class PlayState extends MusicBeatState
 							daNote.angle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
 						daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
 					}
-					
-					
+
 
 
 					
@@ -3784,51 +3801,48 @@ class PlayState extends MusicBeatState
 			daNote.destroy();
 
 		}
-		if (!boyfriend.stunned)
+		if(FlxG.save.data.playMisses) if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], FlxG.save.data.missVol);}else{FlxG.sound.play(vanillaHurtSounds[Math.round(Math.random() * 2)], FlxG.save.data.missVol);}
+		// FlxG.sound.play(hurtSoundEff, 1);
+		health += SONG.noteMetadata.missHealth;
+		// switch (direction)
+		// {
+		// 	case 0:
+		// 		boyfriend.playAnim('singLEFTmiss', true);
+		// 	case 1:
+		// 		boyfriend.playAnim('singDOWNmiss', true);
+		// 	case 2:
+		// 		boyfriend.playAnim('singUPmiss', true);
+		// 	case 3:
+		// 		boyfriend.playAnim('singRIGHTmiss', true);
+		// }
+		if (combo > 5 && gf.animOffsets.exists('sad'))
 		{
-			if(FlxG.save.data.playMisses) if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], FlxG.save.data.missVol);}else{FlxG.sound.play(vanillaHurtSounds[Math.round(Math.random() * 2)], FlxG.save.data.missVol);}
-			// FlxG.sound.play(hurtSoundEff, 1);
-			health += SONG.noteMetadata.missHealth;
-			// switch (direction)
-			// {
-			// 	case 0:
-			// 		boyfriend.playAnim('singLEFTmiss', true);
-			// 	case 1:
-			// 		boyfriend.playAnim('singDOWNmiss', true);
-			// 	case 2:
-			// 		boyfriend.playAnim('singUPmiss', true);
-			// 	case 3:
-			// 		boyfriend.playAnim('singRIGHTmiss', true);
-			// }
-			if (combo > 5 && gf.animOffsets.exists('sad'))
-			{
-				gf.playAnim('sad');
-			}
-			combo = 0;
-			misses++;
-			if(daNote != null) daNote.miss(0,daNote); else charAnim(0,"singDOWNmiss");
-			if(logGameplay) {eventLog.push ({
-					rating:if(daNote == null) "Missed without note" else "Missed a note",
-					direction:direction,
-					strumTime:(if(daNote != null) daNote.strumTime else 0 ),
-					isSustain:if(daNote != null) daNote.isSustainNote else false,
-					time:Conductor.songPosition
-				});
-			}
-
-
-			if (FlxG.save.data.accuracyMod == 1)
-				totalNotesHit -= 1;
-
-			songScore -= 10;
-			if (daNote != null && daNote.shouldntBeHit) {songScore += SONG.noteMetadata.badnoteScore; health += SONG.noteMetadata.badnoteHealth;} // Having it insta kill, not a good idea 
-			if(daNote != null) callInterp("noteMiss",[boyfriend,daNote]); else callInterp("miss",[boyfriend,direction]);
-
-
-
-
-			updateAccuracy();
+			gf.playAnim('sad');
 		}
+		combo = 0;
+		misses++;
+		if(daNote != null) daNote.miss(0,daNote); else charAnim(0,"singDOWNmiss");
+		if(logGameplay) {eventLog.push ({
+				rating:if(daNote == null) "Missed without note" else "Missed a note",
+				direction:direction,
+				strumTime:(if(daNote != null) daNote.strumTime else 0 ),
+				isSustain:if(daNote != null) daNote.isSustainNote else false,
+				time:Conductor.songPosition
+			});
+		}
+
+
+		if (FlxG.save.data.accuracyMod == 1)
+			totalNotesHit -= 1;
+
+		songScore -= 10;
+		if (daNote != null && daNote.shouldntBeHit) {songScore += SONG.noteMetadata.badnoteScore; health += SONG.noteMetadata.badnoteHealth;} // Having it insta kill, not a good idea 
+		if(daNote != null) callInterp("noteMiss",[boyfriend,daNote]); else callInterp("miss",[boyfriend,direction]);
+
+
+
+
+		updateAccuracy();
 	}
 
 

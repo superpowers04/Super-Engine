@@ -895,6 +895,7 @@ class TitleState extends MusicBeatState
 	function destHaxe(){
 		if(_sprite == null) return;
 		// remove(_sprite);
+		flixel.util.FlxTimer.globalManager.clear();
 		FlxG.stage.removeChild(_sprite);
 		_sprite = null;
 		_gfx = null;
