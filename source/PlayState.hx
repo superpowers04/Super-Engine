@@ -1861,6 +1861,7 @@ class PlayState extends MusicBeatState
 				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
 				var lastSusNote = false; // If the last note is a sus note
+				var _susNote = -1;
 				for (susNote in 0...Math.floor(susLength))
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -1871,12 +1872,27 @@ class PlayState extends MusicBeatState
 					unspawnNotes.push(sustainNote);
 					lastSusNote = true;
 
-					// sustainNote.mustPress = gottaHitNote;
 
 					if (sustainNote.mustPress)
 					{
 						sustainNote.x += FlxG.width / 2; // general offset
 					}
+					_susNote = susNote;
+				}
+				if(Math.floor(susLength) - susLength > 0.1){ // Allow for float note lengths, hopefully
+					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * _susNote) + (Conductor.stepCrochet * Math.floor(susLength) - susLength), daNoteData, oldNote, true,null,songNotes[3],songNotes,gottaHitNote);
+					sustainNote.scrollFactor.set();
+					sustainNote.sustainLength = susLength;
+					unspawnNotes.push(sustainNote);
+					lastSusNote = true;
+
+
+					if (sustainNote.mustPress)
+					{
+						sustainNote.x += FlxG.width / 2; // general offset
+					}
+
 				}
 
 				if (onlinemod.OnlinePlayMenuState.socket == null && lastSusNote){ // Moves last sustain note so it looks right, hopefully
@@ -3442,12 +3458,11 @@ class PlayState extends MusicBeatState
 					}
 					if(daNote.updateY){
 
-							if (downscroll)
-							{
+						switch (downscroll){
+
+							case true:{
 								if (daNote.mustPress)
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
-								else
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
+									daNote.y = ((if (daNote.mustPress)playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))]).y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
 									// Remember = minus makes notes go up, plus makes them go down
@@ -3457,7 +3472,7 @@ class PlayState extends MusicBeatState
 										daNote.y += daNote.height * 0.5;
 	
 									// Only clip sustain notes when properly hit
-									if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
+									if((daNote.wasGoodHit || !daNote.mustPress) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
@@ -3470,10 +3485,8 @@ class PlayState extends MusicBeatState
 									}
 								}
 						
-							}else
-							{
-								
-								
+							}
+							case false:{
 								daNote.y = ((if (daNote.mustPress)playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))]).y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
@@ -3492,7 +3505,7 @@ class PlayState extends MusicBeatState
 									}
 								}
 							}
-						// }
+						}
 					}
 					if (daNote.skipNote) return;
 		

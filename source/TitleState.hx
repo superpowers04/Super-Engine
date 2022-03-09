@@ -586,10 +586,12 @@ class TitleState extends MusicBeatState
 
 		if (initialized)
 			skipIntro();
-		else
-			initialized = true;
-		createCoolText(['Powered by',"haxeflixel"]);
-		showHaxe();
+		else{
+
+			createCoolText(['Powered by',"haxeflixel"]);
+			showHaxe();
+		}
+			// initialized = true;
 		// credGroup.add(credTextShit);
 	}
 	var shiftSkip:FlxText;
@@ -623,7 +625,7 @@ class TitleState extends MusicBeatState
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
 
-		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || skipBoth;
 
 		#if mobile
 		for (touch in FlxG.touches.list)
@@ -894,6 +896,10 @@ class TitleState extends MusicBeatState
 	}
 	function destHaxe(){
 		if(_sprite == null) return;
+		if(_sound != null){
+			_sound.pause();
+			_sound.destroy();
+		} 
 		// remove(_sprite);
 		flixel.util.FlxTimer.globalManager.clear();
 		FlxG.stage.removeChild(_sprite);
@@ -916,14 +922,19 @@ class TitleState extends MusicBeatState
 			FlxTween.tween(textGroup.members[1], {alpha: 0}, 3.0, {ease: FlxEase.quadOut});
 		}
 	}
+	var skipBoth:Bool = false;
 	function  __onComplete(tmr:FlxTween){
 		if(_sound != null){
 			_sound.pause();
 			_sound.destroy();
 		} 
+		initialized = true;
 		destHaxe();
 		FlxG.sound.music.play();
 		FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
+		if(isShift){
+			skipBoth = true;
+		}
 	}
 	function drawGreen():Void
 	{

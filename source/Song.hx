@@ -206,7 +206,7 @@ class Song
 					if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");sN.push(nid);continue;}
 					
 					if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-						if(Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > 7)) {note[3] = 1;modified = true;} // Support for Andromeda and tricky notes
+						if(Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > 7)) {note[1] = note[1] % 8;note[3] = 1;modified = true;} // Support for Andromeda and tricky notes
 					}else{
 						note[3] = null;modified = true;
 					}
@@ -217,13 +217,6 @@ class Song
 					section.sectionNotes[v] = null;
 				}
 
-				// swagShit.notes[sid].sectionNotes = sN;
-				
-				// haxe.ds.ArraySort.sort(swagShit.notes[sid].sectionNotes, function(a, b) {
-				//    if(a[0] < b[0]) return -1;
-				//    else if(b[0] > a[0]) return 1;
-				//    else return 0;
-				// });
 			}
 
 		// }
