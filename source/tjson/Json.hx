@@ -3,7 +3,7 @@
 package tjson;
 using StringTools;
 
-class Json {    
+class Json {	
 	public static var OBJECT_REFERENCE_PREFIX = "@~obRef#";
 	/**
 	 * Parses a JSON string into a haxe dynamic object or array.
@@ -11,7 +11,7 @@ class Json {
 	 * @param String the file name to whic the JSON code belongs. Used for generating nice error messages.
 	 */
 	public static function parse(json:String, ?fileName:String="JSON Data", ?stringProcessor:String->Dynamic = null):Dynamic{
-        var t = new TJSONParser(json, fileName, stringProcessor);
+		var t = new TJSONParser(json, fileName, stringProcessor);
 		return t.doParse();
 	}
 
@@ -25,8 +25,8 @@ class Json {
 		return t.doEncode(obj,style);
 	}
 
-// Just a copy of the above but with stringify aswell as encode
-	public static function stringify(obj:Dynamic, ?style:Dynamic=null, useCache:Bool=false):String{
+// Just a copy of the above but with stringify aswell as encode and fancy as the default style
+	public static function stringify(obj:Dynamic, ?style:Dynamic="fancy", useCache:Bool=false):String{
 		var t = new TJSONEncoder(useCache);
 		return t.doEncode(obj,style);
 
@@ -35,7 +35,7 @@ class Json {
 
 }
 
-class TJSON {    
+class TJSON {	
 	public static var OBJECT_REFERENCE_PREFIX = "@~obRef#";
 	/**
 	 * Parses a JSON string into a haxe dynamic object or array.
@@ -43,7 +43,7 @@ class TJSON {
 	 * @param String the file name to whic the JSON code belongs. Used for generating nice error messages.
 	 */
 	public static function parse(json:String, ?fileName:String="JSON Data", ?stringProcessor:String->Dynamic = null):Dynamic{
-        var t = new TJSONParser(json, fileName, stringProcessor);
+		var t = new TJSONParser(json, fileName, stringProcessor);
 		return t.doParse();
 	}
 
@@ -57,7 +57,7 @@ class TJSON {
 		return t.doEncode(obj,style);
 	}
 
-// Just a copy of the above but with stringify aswell as encode
+// Just a copy of the above but with stringify aswell as encode 
 	public static function stringify(obj:Dynamic, ?style:Dynamic=null, useCache:Bool=true):String{
 		var t = new TJSONEncoder(useCache);
 		return t.doEncode(obj,style);
@@ -73,7 +73,7 @@ class TJSONParser{
 	var pos:Int;
 	var json:String;
 	var lastSymbolQuoted:Bool; //true if the last symbol was in quotes.
-    var fileName:String;
+	var fileName:String;
 	var currentLine:Int;
 	var cache:Array<Dynamic>;
 	var floatRegex:EReg;
@@ -81,20 +81,20 @@ class TJSONParser{
 	var strProcessor:String->Dynamic;
 
 	public function new(vjson:String, ?vfileName:String="JSON Data", ?stringProcessor:String->Dynamic = null)
-    {
+	{
 		json = vjson;
 		fileName = vfileName;
 		currentLine = 1;
-        lastSymbolQuoted = false;
+		lastSymbolQuoted = false;
 		pos = 0;
 		floatRegex = ~/^-?[0-9]*\.[0-9]+$/;
 		intRegex = ~/^-?[0-9]+$/;	
 		strProcessor = (stringProcessor==null? defaultStringProcessor : stringProcessor);
 		cache = new Array();
-    }
+	}
 
-    public function doParse():Dynamic{
-    	try{
+	public function doParse():Dynamic{
+		try{
 			//determine if objector array
 			return switch (getNextSymbol()) {
 				case '{': doObject();
@@ -295,26 +295,26 @@ class TJSONParser{
 					}
 
 					if(c=="u"){
-                        var hexValue = 0;
+						var hexValue = 0;
 
-                        for (i in 0...4){
-                            if (pos >= json.length)
-                              throw "Unfinished UTF8 character";
-			                var nc = json.charCodeAt(pos++);
-                            hexValue = hexValue << 4;
-                            if (nc >= 48 && nc <= 57) // 0..9
-                              hexValue += nc - 48;
-                            else if (nc >= 65 && nc <= 70) // A..F
-                              hexValue += 10 + nc - 65;
-                            else if (nc >= 97 && nc <= 102) // a..f
-                              hexValue += 10 + nc - 95;
-                            else throw "Not a hex digit";
-                        }
-                        
+						for (i in 0...4){
+							if (pos >= json.length)
+							  throw "Unfinished UTF8 character";
+							var nc = json.charCodeAt(pos++);
+							hexValue = hexValue << 4;
+							if (nc >= 48 && nc <= 57) // 0..9
+							  hexValue += nc - 48;
+							else if (nc >= 65 && nc <= 70) // A..F
+							  hexValue += 10 + nc - 65;
+							else if (nc >= 97 && nc <= 102) // a..f
+							  hexValue += 10 + nc - 95;
+							else throw "Not a hex digit";
+						}
+						
 						var utf = new haxe.Utf8();
 						utf.addChar(hexValue);
 						symbol += utf.toString();
-                        
+						
 						continue;
 					}
 
@@ -421,7 +421,7 @@ class TJSONEncoder{
 		if(Std.isOfType(style, EncodeStyle)){
 			st = style;
 		}
-		else if(style == 'fancy'){
+		else if(style.toLowerCase() == 'fancy'){
 			st = new FancyStyle();
 		}
 		else st = new SimpleStyle();
@@ -607,13 +607,12 @@ class SimpleStyle implements EncodeStyle{
 	public function keyValueSeperator(depth:Int):String{
 		return ":";
 	}
-	
 }
 
 
 class FancyStyle implements EncodeStyle{
 	public var tab(default, null):String;
-	public function new(tab:String = "    "){
+	public function new(tab:String = "\t"){
 		this.tab = tab;
 		charTimesNCache = [""];
 	}

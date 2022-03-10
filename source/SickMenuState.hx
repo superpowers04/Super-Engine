@@ -15,11 +15,12 @@ import sys.FileSystem;
 import flixel.util.FlxColor;
 import flixel.system.FlxSound;
 
+using StringTools;
 typedef MusicTime ={
 	var file:String;
 	var begin:Int;
 	var end:Int;
-	var color:Int;
+	var color:String;
 	var wrapAround:Bool;
 	var bpm:Float;
 }
@@ -44,20 +45,20 @@ class SickMenuState extends MusicBeatState
 	public static var chgTime:Bool = false;
 	public static var musicList:Array<MusicTime> = [
 		{
-			file: if(FileSystem.exists("mods/title-morning.ogg")) "mods/title-morning.ogg" else Paths.music("breakfast"),
-			begin:6,end:10,wrapAround:false,color:0xdd9911,bpm:160
+			file: "mods/title-morning.ogg or assets/music/breakfast.ogg",
+			begin:6,end:10,wrapAround:false,color:"0xdd9911",bpm:160
 		},
 		{
-			file: if(FileSystem.exists("mods/title-day.ogg")) "mods/title-day.ogg" else Paths.music('freakyMenu'),
-			wrapAround:false,end:100,begin:101,color:0xECD77F,bpm:204 // Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
+			file: "mods/title-day.ogg or assets/music/freakyMenu.ogg",
+			wrapAround:false,end:100,begin:101,color:"0xECD77F",bpm:204 // Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
 		},
 		{
-			file: if(FileSystem.exists("mods/title-evening.ogg")) "mods/title-evening.ogg" else Paths.music("GiveaLilBitBack"),
-			begin:17,end:19,wrapAround:false,color:0xdd9911,bpm:125
+			file: "mods/title-evening.ogg or assets/music/GiveaLilBitBack.ogg",
+			begin:17,end:19,wrapAround:false,color:"0xdd9911",bpm:125
 		},
 		{
-			file: if(FileSystem.exists("mods/title-night.ogg")) "mods/title-night.ogg" else Paths.music("freshChillMix"),
-			begin:20,end:5,wrapAround:true,color:0x113355,bpm:117
+			file: "mods/title-night.ogg or assets/music/freshChillMix.ogg",
+			begin:20,end:5,wrapAround:true,color:"0x113355",bpm:117
 		},
 	];
 	var isMainMenu:Bool = false;
@@ -101,7 +102,7 @@ class SickMenuState extends MusicBeatState
 			if (SickMenuState.menuMusic == null || musicTime != curMusicTime){
 				
 				if(FlxG.sound.music.playing){if(!SickMenuState.fading){SickMenuState.fading = true;
-					var switchToColor = mt.color;
+					var switchToColor = FlxColor.fromString(mt.color);
 					if(isMainMenu && _bg != null){
 						MainMenuState.bgcolor = switchToColor;
 					}
@@ -121,8 +122,17 @@ class SickMenuState extends MusicBeatState
 					},10);
 					}
 					return;}
-				SickMenuState.fading = false;
 				SickMenuState.musicFileLoc = mt.file;
+				if(mt.file.contains(" or ")){
+					SickMenuState.musicFileLoc = "assets/music/freakyMenu.ogg"; // Safety net to prevent a null song or something
+					for (file in mt.file.split(" or ")) {
+						if(FileSystem.exists(file)){
+							SickMenuState.musicFileLoc = file;
+							break;
+						}
+					}
+				}
+				SickMenuState.fading = false;
 				
 				SickMenuState.menuMusic = Sound.fromFile(SickMenuState.musicFileLoc);
 				SickMenuState.musicTime = curMusicTime;
@@ -131,12 +141,12 @@ class SickMenuState extends MusicBeatState
 			// if (_bg != null){ }
 
 			FlxG.sound.playMusic(SickMenuState.menuMusic,FlxG.save.data.instVol);
-			if (!MainMenuState.firstStart) FlxG.sound.music.time = FlxMath.wrap(Math.floor(SickMenuState.curSongTime),0,Math.floor(FlxG.sound.music.length));
+			// if (!MainMenuState.firstStart) FlxG.sound.music.time = FlxMath.wrap(Math.floor(SickMenuState.curSongTime),0,Math.floor(FlxG.sound.music.length));
 			}else if (!FlxG.sound.music.playing) FlxG.sound.playMusic(SickMenuState.menuMusic);
 			if(!isMainMenu && !recolor && _bg != null){
-				_bg.color = FlxColor.interpolate(_bg.color,SickMenuState.musicList[musicTime].color,0.2);
+				_bg.color = FlxColor.interpolate(_bg.color,FlxColor.fromString(SickMenuState.musicList[musicTime].color),0.2);
 			}else if(recolor && _bg != null){
-				_bg.color = mt.color;
+				_bg.color = FlxColor.fromString(mt.color);
 			}
 	}
 

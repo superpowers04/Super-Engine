@@ -476,6 +476,7 @@ class ChartingState extends MusicBeatState
 				note[1] = (note[1] + 4) % 8;
 				_song.notes[curSection].sectionNotes[i] = note;
 				updateGrid();
+				updateSectionUI();
 			}
 		});
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Is player section", 100);
@@ -1314,31 +1315,40 @@ class ChartingState extends MusicBeatState
 		updateSectionUI();
 		updateWaveform();
 	}
-
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
 		trace('changing section' + sec);
 
-		if (_song.notes[sec] != null)
+		if (_song.notes[sec] == null)
 		{
-			trace('naw im not null');
-			curSection = sec;
-
-			updateGrid();
-
-			if (updateMusic)
-			{
-				FlxG.sound.music.time = sectionStartTime(curSection);
-				vocals.time = FlxG.sound.music.time;
-				updateCurStep();
-			}
-
-			updateGrid();
-			updateSectionUI();
-			updateWaveform();
+			_song.notes[sec] = {
+				sectionNotes:[],
+				lengthInSteps:16,
+				mustHitSection:false,
+				bpm:_song.notes[curSection].bpm,
+				typeOfSection:0,
+				changeBPM:false,
+				altAnim:false
+			};
+			// _song.notes[sec].sectionNotes = [];
 		}
-		else
-			trace('bro wtf I AM NULL');
+
+		// trace('naw im not null');
+		curSection = sec;
+
+		updateGrid();
+
+		if (updateMusic)
+		{
+			FlxG.sound.music.time = sectionStartTime(curSection);
+			vocals.time = FlxG.sound.music.time;
+			updateCurStep();
+		}
+
+		updateGrid();
+		updateSectionUI();
+		updateWaveform();
+		
 	}
 
 	function copySection(?sectionNum:Int = 1)
@@ -1791,6 +1801,7 @@ class ChartingState extends MusicBeatState
 			}
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 	}
+	var lastPath:String;
 	private function saveLevel()
 	{
 		// var json:Dynamic = {
@@ -1814,13 +1825,17 @@ class ChartingState extends MusicBeatState
 				// _file.save('{"song":' + data + "}", path);
 
 
+				#if windows
+				try{lastPath = path.substr(0,path.lastIndexOf("\\"));}catch(e){return;}
+				#end
+				try{lastPath = path.substr(0,path.lastIndexOf("/"));}catch(e){return;}
 				//Bodgey as hell but doesn't work otherwise
 				sys.io.File.saveContent(path,'{"song":' + data + "}");
 				showTempmessage('Saved chart to ${path}');
 				
 
 				});
-				fd.browse(FileDialogType.SAVE, 'json', null, "Save chart");
+				fd.browse(FileDialogType.SAVE, 'json', lastPath, "Save chart");
 			}
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 		_song.defplayer1 = pl1;

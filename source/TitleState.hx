@@ -29,7 +29,8 @@ import tjson.Json;
 import flash.display.Graphics;
 import flash.display.Sprite;
 import flash.Lib;
-
+import SickMenuState;
+import flash.media.Sound;
 
 using StringTools;
 
@@ -66,6 +67,7 @@ class TitleState extends MusicBeatState
 	public static var errorMessage:String = "";
 	public static var osuBeatmapLoc:String = "";
 	public static var songScores:Scorekillme;
+	public static var pauseMenuMusic:Sound;
 
 
 
@@ -244,6 +246,16 @@ class TitleState extends MusicBeatState
 		// }
 		#end
 		checkStages();
+		if(!FileSystem.exists("mods/menuTimes.json")){
+			File.saveContent("mods/menuTimes.json",Json.stringify(SickMenuState.musicList));
+		}else{
+			try{
+				var musicList:Array<MusicTime> = Json.parse(File.getContent("mods/menuTimes.json"));
+				SickMenuState.musicList = musicList;
+			}catch(e){
+				MusicBeatState.instance.showTempmessage("Unable to load Music Timing: " + e.message,FlxColor.RED);
+			}
+		}
 		if(FlxG.save.data.scripts != null){
 			trace('Currently enabled scripts: ${FlxG.save.data.scripts}');
 			for (i in 0 ... FlxG.save.data.scripts.length) {
@@ -432,7 +444,6 @@ class TitleState extends MusicBeatState
 
 		
 		
-
 		KadeEngineData.initSave();
 
 		Highscore.load();
@@ -453,6 +464,7 @@ class TitleState extends MusicBeatState
 				StoryMenuState.weekUnlocked[0] = true;
 		}
 		// loadScores();
+		pauseMenuMusic = Sound.fromFile((if (FileSystem.exists('mods/pauseMenu.ogg')) 'mods/pauseMenu.ogg' else if (FileSystem.exists('assets/music/breakfast.ogg')) 'assets/music/breakfast.ogg' else "assets/shared/music/breakfast.ogg"));
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());

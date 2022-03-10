@@ -3461,8 +3461,7 @@ class PlayState extends MusicBeatState
 						switch (downscroll){
 
 							case true:{
-								if (daNote.mustPress)
-									daNote.y = ((if (daNote.mustPress)playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))]).y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
+								daNote.y = ((if (daNote.mustPress)playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))]).y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
 								if(daNote.isSustainNote)
 								{
 									// Remember = minus makes notes go up, plus makes them go down

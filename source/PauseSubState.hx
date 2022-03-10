@@ -3,7 +3,7 @@ package;
 import openfl.Lib;
 
 import Controls.Control;
-import flixel.FlxG;
+import flixel.FlxG; 
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
@@ -44,9 +44,10 @@ class PauseSubState extends MusicBeatSubstate
 		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
 		PlayState.instance.callInterp("pauseCreate",[this]);
 
-		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+		pauseMusic = new FlxSound().loadEmbedded(TitleState.pauseMenuMusic, true, true);
 		pauseMusic.volume = 0;
-		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+		// FlxG.sound.playMusic(SickMenuState.menuMusic,FlxG.save.data.instVol);
+		pauseMusic.play(false, FlxG.save.data.instVol * 0.8);
 
 		FlxG.sound.list.add(pauseMusic);
 
