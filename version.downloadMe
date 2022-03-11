@@ -1,4 +1,4 @@
-0.11.0-N11;
+0.11.0-N12;
 **Ingame download link will not work due to Github repo changing name, You will have to download from the link in #info on the Discord**
 - Update downloads to use Super-Engine instead of older Battle-Royale
 - Fix one note sustains
@@ -16,6 +16,7 @@
 - Healthicons can be more than 2 frames, it goes from Left-0% to Right-100% relative to the character
 - Freeplay is now "softcoded"
 - dance_idle is no more, atleast in the config file, as the game now autodetects if it should use Idle or danceLeft/danceRight 
+- Modded Songs got a redesign
 
 
 Script related:

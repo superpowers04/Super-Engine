@@ -23,6 +23,7 @@ using StringTools;
 class MultiMenuState extends onlinemod.OfflineMenuState
 {
 	var modes:Map<Int,Array<String>> = [];
+	static var CATEGORYNAME:String = "-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-CATEGORY";
 	var diffText:FlxText;
 	var selMode:Int = 0;
 	var blockedFiles:Array<String> = ['picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','config.json'];
@@ -112,6 +113,22 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			controlLabel.alpha = 0.6;
 		grpSongs.add(controlLabel);
 	}
+	function addCategory(name:String,i:Int){
+		songs[i] = name;
+		modes[i] = [CATEGORYNAME];
+		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
+		controlLabel.adjustAlpha = false;
+		controlLabel.screenCenter(X);
+		var blackBorder = new FlxSprite(-500,-10).makeGraphic((Std.int(FlxG.width * 2)),Std.int(controlLabel.height) + 20,FlxColor.BLACK);
+		blackBorder.alpha = 0.35;
+		// blackBorder.screenCenter(X);
+		controlLabel.insert(0,blackBorder);
+		controlLabel.yOffset = 20;
+		controlLabel.isMenuItem = true;
+		controlLabel.targetY = i;
+		controlLabel.alpha = 1;
+		grpSongs.add(controlLabel);
+	}
 	override function reloadList(?reload=false,?search = ""){
 		curSelected = 0;
 		if(reload){grpSongs.clear();}
@@ -125,6 +142,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if (FileSystem.exists(dataDir))
 		{
 			var dirs = orderList(FileSystem.readDirectory(dataDir));
+			if(search == ""){
+				addCategory("mods/charts folder",i);
+				i++;
+			} 
 			for (directory in dirs)
 			{
 				if (search == "" || query.match(directory.toLowerCase())) // Handles searching
@@ -151,11 +172,16 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 		if (FileSystem.exists("mods/weeks"))
 		{
-			for (dataDir in FileSystem.readDirectory("mods/weeks"))
+			for (name in FileSystem.readDirectory("mods/weeks"))
 			{
-				dataDir = "mods/weeks/" + dataDir + "/charts/";
+
+				var dataDir = "mods/weeks/" + name + "/charts/";
 				if(!FileSystem.exists(dataDir)){continue;}
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
+				if(search == ""){
+					addCategory(name + "(Week)",i);
+					i++;
+				} 
 				for (directory in dirs)
 				{
 					if (search == "" || query.match(directory.toLowerCase()) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
@@ -185,10 +211,16 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 		if (FileSystem.exists("mods/packs"))
 		{
-			for (dataDir in FileSystem.readDirectory("mods/packs"))
+			for (name in FileSystem.readDirectory("mods/packs"))
 			{
-				dataDir = "mods/packs/" + dataDir + "/charts/";
+				// dataDir = "mods/packs/" + dataDir + "/charts/";
+				var dataDir = "mods/packs/" + name + "/charts/";
 				if(!FileSystem.exists(dataDir)){continue;}
+				if(search == ""){
+					addCategory(name,i);
+				
+					i++;
+				}
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
 				for (directory in dirs)
 				{
@@ -291,7 +323,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 
 	override function select(sel:Int = 0){
-			if (songs[curSelected] == "No Songs!" || modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
+			if (songs[curSelected] == "No Songs!" || modes[curSelected][selMode] == CATEGORYNAME || modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
 				FlxG.sound.play(Paths.sound("cancelMenu"));
 				return;
 			}
@@ -414,7 +446,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		// var e:Dynamic = TitleState.getScore(4);
 		// if(e != null && e != 0) diffText.text = '< ' + e + '%(' + Ratings.getLetterRankFromAcc(e) + ') - ' + modes[curSelected][selMode] + ' >';
 		// else 
-			diffText.text = '< ' + modes[curSelected][selMode] + " >";
+		diffText.text = (if(modes[curSelected][selMode - 1 ] != null ) '< ' else '|  ') + (if(modes[curSelected][selMode] == CATEGORYNAME) songs[curSelected] else modes[curSelected][selMode]) + (if(modes[curSelected][selMode + 1 ] != null) ' >' else '  |');
 		// diffText.centerOffsets();
 		diffText.screenCenter(X);
 		// diffText.x = (FlxG.width) - 20 - diffText.width;
@@ -423,6 +455,25 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 	override function changeSelection(change:Int = 0)
 	{
+		var looped = 0;
+		// while(modes[curSelected + change] != null && modes[curSelected + change][0] == CATEGORYNAME && looped < 200){ // If this loops more than 200 times, break to prevent crashes
+		// 	if(change > 0) change+=1;
+		// 	if(change < 0) change-=1;
+		// 	if(curSelected + change > songs.length){
+		// 		curSelected = 0;
+		// 		change = 0;
+		// 	}
+		// 	looped++;
+		// }
+		// if(looped > 199){
+		// 	grpSongs.clear();
+		// 	change = 0;
+		// 	curSelected = 0;
+		// 	songs = ["No Songs!"];
+		// 	songNames = ["Nothing"];
+		// 	modes = [0 => ["None"]];
+		// }
+
 		super.changeSelection(change);
 		if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
 

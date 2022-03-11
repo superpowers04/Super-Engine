@@ -52,6 +52,7 @@ class Alphabet extends FlxSpriteGroup
 	public var useAlphabet:Bool = true;
 	public var selected:Bool = false;
 	public var moveX:Bool = true;
+	public var adjustAlpha:Bool = true;
 
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, dontMoveX:Bool = false,?xOffset:Float = 70,?useAlphabet:Bool = true)
 	{
