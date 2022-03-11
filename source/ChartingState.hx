@@ -256,6 +256,7 @@ class ChartingState extends MusicBeatState
 		gridBGBelow.alpha = 0.7;
 
 		super.create();
+		saveRemind(true);
 		}catch(e){
 			MainMenuState.handleError("chart editor did a fucky: " + e.message);
 		}
@@ -1840,6 +1841,9 @@ class ChartingState extends MusicBeatState
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 		_song.defplayer1 = pl1;
 		_song.defplayer2 = pl2;
+	}
+	function saveRemind(show:Bool = true){ // Save reminder every 10 minutes
+		if(show)showTempmessage("Don't forget to save frequently!",FlxColor.RED);
 	}
 
 	function onSaveComplete(_):Void
