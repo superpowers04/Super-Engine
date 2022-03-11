@@ -944,7 +944,7 @@ class TitleState extends MusicBeatState
 		destHaxe();
 		FlxG.sound.music.play();
 		FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
-		if(isShift){
+		if(isShift || FlxG.keys.pressed.ENTER){
 			skipBoth = true;
 		}
 	}
