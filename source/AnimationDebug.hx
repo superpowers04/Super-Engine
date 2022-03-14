@@ -868,6 +868,13 @@ class AnimationDebug extends MusicBeatState
 			charJson.sing_duration = Std.parseFloat(text);
 		}
 		uiBox2.add(e);
+		// e = new FlxUIInputText(90, 140, 20, '${charJson.healthicon}');
+		// uiMap["Health Icon"] = e;
+		// uiMap["Sing Duration"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
+		// uiMap["Health Icon"].callback = function(text,_){
+		// 	charJson.healthicon = text;
+		// }
+		// uiBox2.add(e);
 		// var uiMap["Sing Duration"] = new FlxUIInputText(140, 130, 20, '${charJson.sing_duration}');
 
 		// uiMap["Sing Duration"].customFilterPattern = ~/(?!\[[0-9]+\])/gi;
@@ -966,7 +973,8 @@ class AnimationDebug extends MusicBeatState
 			var healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,'health', 0, 2);
 			
 			healthBar.scrollFactor.set();
-			healthBar.createColoredFilledBar(0x000000, dad.definingColor);
+			healthBar.createColoredFilledBar(dad.definingColor, dad.definingColor);
+			healthBar.updateBar();
 			var iconP1 = new HealthIcon(dad.curCharacter, true,dad.clonedChar);
 			iconP1.y = healthBar.y - (iconP1.height / 2);
 			switch(charType){
