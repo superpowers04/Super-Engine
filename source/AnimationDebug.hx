@@ -272,31 +272,7 @@ class AnimationDebug extends MusicBeatState
 			quitHeldBar.cameras = quitHeldBG.cameras = [camHUD];
 			add(quitHeldBar);
 			phase++;
-			try{
 
-				var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
-				if (FlxG.save.data.downscroll)
-					healthBarBG.y = 50 + FlxG.save.data.guiGap;
-				healthBarBG.screenCenter(X);
-				healthBarBG.scrollFactor.set();
-				add(healthBarBG);
-				healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,'health', 0, 2);
-				
-				healthBar.scrollFactor.set();
-				healthBar.createColoredFilledBar(0x000000, dad.definingColor);
-				iconP1 = new HealthIcon(dad.curCharacter, true,dad.clonedChar);
-				iconP1.y = healthBar.y - (iconP1.height / 2);
-				switch(charType){
-					case 0: iconP1.x = healthBar.x + healthBar.width;
-					case 1: iconP1.x = healthBar.x;
-					case 2: iconP1.x = healthBar.x + (healthBar.width * 0.5);
-
-				} 
-				iconP1.centerOffsets();
-				iconP1.updateHitbox();
-				iconP1.cameras = healthBar.cameras = [camHUD];
-				add(iconP1);
-			}catch(e){trace('oh no, the healthbar had an error, what ever will we do ${e.message}');}
 		}catch(e) {MainMenuState.handleError('Error occurred, while loading Animation Debug. Current phase:${phases[phase]}; ${e.message}');}
 	}
 	function spawnChar(?reload:Bool = false,?resetOffsets = true,?charProp:CharacterJson = null){
@@ -377,7 +353,7 @@ class AnimationDebug extends MusicBeatState
 				animDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animList, true));
 			}catch(e){showTempmessage("Unable to load animation list",FlxColor.RED);}
 
-			if(healthBar != null)healthBar.createColoredFilledBar(0x000000, dad.definingColor);
+			
 		}catch(e) {MainMenuState.handleError('Error occurred in spawnChar, animdebug ${e.message}');trace(e.message);}
 	}
 
@@ -979,7 +955,35 @@ class AnimationDebug extends MusicBeatState
 		});
 		commitButton.resize(120,20);
 		uiBox2.add(commitButton);
+		try{
 
+			var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
+			if (FlxG.save.data.downscroll)
+				healthBarBG.y = 50 + FlxG.save.data.guiGap;
+			healthBarBG.screenCenter(X);
+			healthBarBG.scrollFactor.set();
+			add(healthBarBG);
+			var healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,'health', 0, 2);
+			
+			healthBar.scrollFactor.set();
+			healthBar.createColoredFilledBar(0x000000, dad.definingColor);
+			var iconP1 = new HealthIcon(dad.curCharacter, true,dad.clonedChar);
+			iconP1.y = healthBar.y - (iconP1.height / 2);
+			switch(charType){
+				case 0: iconP1.x = healthBar.x + healthBar.width;
+				case 1: iconP1.x = healthBar.x;
+				case 2: iconP1.x = healthBar.x + (healthBar.width * 0.5);
+
+			} 
+			iconP1.x -= iconP1.width;
+			iconP1.centerOffsets();
+			iconP1.updateHitbox();
+			healthBarBG.cameras = iconP1.cameras = healthBar.cameras = [camHUD];
+			uiMap["healthBar"] = healthBar;
+			uiMap["healthBarBG"] = healthBarBG;
+			uiMap["hi1"] = iconP1;
+			add(iconP1);
+		}catch(e){trace('oh no, the healthbar had an error, what ever will we do ${e.message}');}
 		}catch(e){MainMenuState.handleError('Error while loading GUI: ${e.message}');}
 	}
 	// static function textBox(x:Float,y:Float,defText:String,name:String,internalName:String):FlxInputTextUpdatable{

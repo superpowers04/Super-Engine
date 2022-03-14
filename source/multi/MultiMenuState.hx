@@ -27,7 +27,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var diffText:FlxText;
 	var selMode:Int = 0;
 	var blockedFiles:Array<String> = ['picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','config.json'];
-	static var lastSel:Int = 0;
+	static var lastSel:Int = 1;
 	static var lastSearch:String = "";
 	public static var lastSong:String = ""; 
 	var beetHit:Bool = false;
@@ -85,7 +85,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 		lastSearch = "";
 		changeSelection(lastSel);
-		lastSel = 0;
+		lastSel = 1;
 		changeDiff();
 		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
 
@@ -131,6 +131,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 	override function reloadList(?reload=false,?search = ""){
 		curSelected = 0;
+		var _goToSong = 0;
 		if(reload){grpSongs.clear();}
 
 		songs = ["No Songs!"];
@@ -142,10 +143,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if (FileSystem.exists(dataDir))
 		{
 			var dirs = orderList(FileSystem.readDirectory(dataDir));
-			if(search == ""){
-				addCategory("mods/charts folder",i);
-				i++;
-			} 
+			addCategory("charts folder",i);
+			i++;
 			for (directory in dirs)
 			{
 				if (search == "" || query.match(directory.toLowerCase())) // Handles searching
@@ -165,7 +164,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						songNames[i] =directory;
 
 						addListing(directory,i);
+						if(_goToSong == 0)_goToSong = i;
 						i++;
+
 					}
 				}
 			}
@@ -178,10 +179,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				var dataDir = "mods/weeks/" + name + "/charts/";
 				if(!FileSystem.exists(dataDir)){continue;}
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
-				if(search == ""){
-					addCategory(name + "(Week)",i);
-					i++;
-				} 
+				addCategory(name + "(Week)",i);
+				i++;
+				var containsSong = false;
 				for (directory in dirs)
 				{
 					if (search == "" || query.match(directory.toLowerCase()) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
@@ -203,9 +203,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							
 							addListing(directory,i);
 							nameSpaces[i] = dataDir;
+							if(_goToSong == 0)_goToSong = i;
+							containsSong = true;
 							i++;
 						}
 					}
+				}
+				if(!containsSong){
+					grpSongs.members[i - 1].color = FlxColor.RED;
 				}
 			}
 		}
@@ -216,11 +221,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				// dataDir = "mods/packs/" + dataDir + "/charts/";
 				var dataDir = "mods/packs/" + name + "/charts/";
 				if(!FileSystem.exists(dataDir)){continue;}
-				if(search == ""){
-					addCategory(name,i);
 				
-					i++;
-				}
+				addCategory(name,i);
+				
+				i++;
+				var containsSong = false;
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
 				for (directory in dirs)
 				{
@@ -237,18 +242,25 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							if (modes[i][0] == null){ // No charts to load!
 								modes[i][0] = "No charts for this song!";
 							}
+
 							songs[i] = dataDir + directory;
 							songNames[i] =directory;
 
 							
 							addListing(directory,i);
+							containsSong = true;
+							if(_goToSong == 0)_goToSong = i;
 							nameSpaces[i] = dataDir;
 							i++;
 						}
 					}
 				}
+				if(!containsSong){
+					grpSongs.members[i - 1].color = FlxColor.RED;
+				}
 			}
 		}
+		if(reload && lastSel == 1)changeSelection(_goToSong);
 		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
 	}
 	// function checkSong(dataDir:String,directory:String){
