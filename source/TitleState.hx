@@ -246,16 +246,8 @@ class TitleState extends MusicBeatState
 		// }
 		#end
 		checkStages();
-		if(!FileSystem.exists("mods/menuTimes.json")){
-			File.saveContent("mods/menuTimes.json",Json.stringify(SickMenuState.musicList));
-		}else{
-			try{
-				var musicList:Array<MusicTime> = Json.parse(File.getContent("mods/menuTimes.json"));
-				SickMenuState.musicList = musicList;
-			}catch(e){
-				MusicBeatState.instance.showTempmessage("Unable to load Music Timing: " + e.message,FlxColor.RED);
-			}
-		}
+
+
 		if(FlxG.save.data.scripts != null){
 			trace('Currently enabled scripts: ${FlxG.save.data.scripts}');
 			for (i in 0 ... FlxG.save.data.scripts.length) {
@@ -517,7 +509,16 @@ class TitleState extends MusicBeatState
 			persistentUpdate = true;
 			FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
 			FlxG.mouse.useSystemCursor = true; // Uses system cursor, did not know this was a thing until Forever Engine
-
+			if(!FileSystem.exists("mods/menuTimes.json")){ // Causes crashes if done while game is running, unknown why
+				File.saveContent("mods/menuTimes.json",Json.stringify(SickMenuState.musicList));
+			}else{
+				try{
+					var musicList:Array<MusicTime> = Json.parse(File.getContent("mods/menuTimes.json"));
+					SickMenuState.musicList = musicList;
+				}catch(e){
+					MusicBeatState.instance.showTempmessage("Unable to load Music Timing: " + e.message,FlxColor.RED);
+				}
+			}
 
 
 		}

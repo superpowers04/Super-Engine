@@ -52,6 +52,7 @@ class MainMenuState extends SickMenuState
 			try{
 				onlinemod.OnlinePlayMenuState.socket.close();
 				onlinemod.OnlinePlayMenuState.socket=null;
+				QuickOptionsSubState.setSetting("Song hscripts",true);
 			}catch(e){trace('You just got an exception in yo exception ${e.message}');}
 		}
 
@@ -82,7 +83,13 @@ class MainMenuState extends SickMenuState
 
 		bg.scrollFactor.set(0.1,0.1);
 		bg.color = MainMenuState.bgcolor;
-
+		if (onlinemod.OnlinePlayMenuState.socket != null){
+			try{
+				QuickOptionsSubState.setSetting("Song hscripts",true);
+				onlinemod.OnlinePlayMenuState.socket.close();
+				onlinemod.OnlinePlayMenuState.socket=null;
+			}catch(e){trace('Error closing socket? ${e.message}');}
+		}
 
 		if (TitleState.outdated){
 

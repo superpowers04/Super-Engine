@@ -46,7 +46,8 @@ class OptionsMenu extends MusicBeatState
 			new SelStageOption("Select the stage to use, Default will use song default"),
 			new SelScriptOption("Enable/Disable scripts that run withsongs"),
 			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
-			new ReloadCharlist("Refreshes list of stages, characters and scripts")
+			new ReloadCharlist("Refreshes list of stages, characters and scripts"),
+			new AllowServerScriptsOption("Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS"),
 		]),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),

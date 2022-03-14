@@ -31,9 +31,9 @@ class ScriptSel extends SearchMenuState
 		grpSongs.add(controlLabel);
 	}
 
-	override function ret(){
-		FlxG.switchState(new OptionsMenu());
-	}
+	// override function ret(){
+	// 	FlxG.switchState(new OptionsMenu());
+	// }
 	override function create()
 	{try{
 		searchList = [];

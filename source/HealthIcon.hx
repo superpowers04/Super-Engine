@@ -15,6 +15,7 @@ class HealthIcon extends FlxSprite
 	var isPlayer:Bool = false;
 	var isMenuIcon:Bool = false;
 	var frameCount:Int = 2;
+	var hichar:String = "";
 	// public var pathh = "mods/characters";
 
 	public function new(?char:String = 'bf', ?isPlayer:Bool = false,?clone:String = "",?isMenuIcon:Bool = false,?path:String = "mods/characters")
@@ -34,6 +35,7 @@ class HealthIcon extends FlxSprite
 
 	public function changeSprite(?char:String = 'bf',?clone:String = "face",?useClone:Bool = true,?pathh:String = "mods/characters")
 	{
+		if(char == hichar) return;
 		var path = pathh + "/";
 		var chars:Array<String> = ["bf","spooky","pico","mom","mom-car",'parents-christmas',"senpai","senpai-angry","spirit","spooky","bf-pixel","gf","dad","monster","monster-christmas","parents-christmas","bf-old","gf-pixel","gf-christmas","face","tankman"];
 		var relAnims:Bool = true;
@@ -57,7 +59,7 @@ class HealthIcon extends FlxSprite
 						animation.curAnim.curFrame = 0;
 
 				};
-				if(frameCount > 1) updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(flixel.math.FlxMath.remapToRange(health,0,150,0,animation.curAnim.numFrames));};
+				if(frameCount > 1) updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(animation.curAnim.numFrames * (health / 100));};
 			}
 			trace(frameCount);
 			loadGraphic(FlxGraphic.fromBitmapData(bitmapData), true, bitmapData.height, bitmapData.height);
@@ -115,6 +117,7 @@ class HealthIcon extends FlxSprite
 		scrollFactor.set();
 		if(isMenuIcon) offset.set(75,75);
 		updateAnim(50);
+		hichar = char;
 	}
 
 	override function update(elapsed:Float)

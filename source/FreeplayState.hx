@@ -47,8 +47,9 @@ class FreeplayState extends MusicBeatState
 	override function create()
 	{
 		// var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
+		super.create();
 		
-		if (FileSystem.exists("mods/packs"))
+		if (FileSystem.exists("assets/data"))
 		{
 			for (dir in FileSystem.readDirectory("assets/data"))
 			{
@@ -152,7 +153,6 @@ class FreeplayState extends MusicBeatState
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
 
-		super.create();
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
@@ -298,9 +298,9 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
-		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
-		#end
+		// #if PRELOAD_ALL
+		// FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		// #end
 
 		var bullShit:Int = 0;
 

@@ -176,7 +176,7 @@ class Character extends FlxSprite
 			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}'); return;}
 		}
 	function parseHScript(scriptContents:String){
-		if (amPreview || !useHscript){
+		if (amPreview || !useHscript || QuickOptionsSubState.getSetting("Song hscripts") != true){
 			interp = null;
 			trace("Skipping HScript for " + curCharacter);
 			return; // Don't load in editor
@@ -195,6 +195,7 @@ class Character extends FlxSprite
 			interp.variables.set("BRtools",new HSBrTools('${charLoc}/$curCharacter/'));
 			interp.execute(program);
 			this.interp = interp;
+			callInterp("initScript",[],true);
 		}catch(e){
 			handleError('Error parsing char ${curCharacter} hscript, Line:${parser.line}; Error:${e.message}');
 			
@@ -342,7 +343,7 @@ class Character extends FlxSprite
 
 
 
-
+		// healthIcon = charProperties.healthicon;
 		dadVar = charProperties.sing_duration; // As the varname implies
 		flipX=charProperties.flip_x; // Flip for BF clones
 		antialiasing = !charProperties.no_antialiasing; 
@@ -647,7 +648,7 @@ class Character extends FlxSprite
 		if (!amPreview && FileSystem.exists('${charLoc}/$curCharacter/script.hscript')){
 			parseHScript(File.getContent('${charLoc}/$curCharacter/script.hscript'));
 			trace("Loaded HScript");
-			callInterp("initScript",[],true);
+			
 		}
 		 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 

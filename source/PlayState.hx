@@ -375,7 +375,7 @@ class PlayState extends MusicBeatState
 	
 	public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song"){
 		// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled or during online play
-		if ((!QuickOptionsSubState.getSetting("Song hscripts") || onlinemod.OnlinePlayMenuState.socket != null) && !isStoryMode) {resetInterps();return;}
+		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return;}
 		var songScript = songScript;
 		// var hsBrTools = hsBrTools;
 		if (script != "") songScript = script;
@@ -1049,10 +1049,19 @@ class PlayState extends MusicBeatState
 		// 	add(bfTrail);
 		// }
 		parseHScript(songScript,null,"song");
-		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null && FlxG.save.data.scripts != null){
+		if(QuickOptionsSubState.getSetting("Song hscripts") && FlxG.save.data.scripts != null){
 			for (i in 0 ... FlxG.save.data.scripts.length) {
 				
 				var v = FlxG.save.data.scripts[i];
+				trace('Checking for ${v}');
+				loadScript(v);
+			}
+		}
+		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket != null){
+
+			for (i in 0 ... onlinemod.OnlinePlayMenuState.scripts.length) {
+				
+				var v = onlinemod.OnlinePlayMenuState.scripts[i];
 				trace('Checking for ${v}');
 				loadScript(v);
 			}
@@ -1515,7 +1524,7 @@ class PlayState extends MusicBeatState
 	var generatedArrows = false;
 	public var swappedChars = false;
 	public function swapChars(settings:Bool = false){
-		if(!(invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Swap characters")))) return;
+		if(!settings && !(invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Swap characters")))) return;
 		var bf:Character = boyfriend;
 		var opp:Character = dad;
 		boyfriend = opp;
@@ -1524,6 +1533,7 @@ class PlayState extends MusicBeatState
 		dad.isPlayer = false;
 		swappedChars = !swappedChars;
 		healthBar.fillDirection = (swappedChars ? LEFT_TO_RIGHT : RIGHT_TO_LEFT);
+		updateCharacterCamPos();
 		if(!middlescroll){ // This is dumb but whatever
 			var plStrumX = [];
 			var oppStrumX = [];
@@ -4038,7 +4048,7 @@ class PlayState extends MusicBeatState
 		try{
 			callInterp("stepHit",[]);
 			charCall("stepHit",[curStep]);
-		}catch(e){handleError('An uncaught error from a stephit for a script caused an error: ${e.message}');}
+		}catch(e){handleError('An uncaught error from a stephit call: ${e.message}');}
 		try{
 			for (i => v in stepAnimEvents) {
 				for (anim => ifState in v) {

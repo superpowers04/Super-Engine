@@ -83,6 +83,7 @@ class SickMenuState extends MusicBeatState
 			grpControls.add(controlLabel);
 		}
 	}
+	public static var reloadMusic = true;
 	public static function musicHandle(?isMainMenu:Bool = false,?_bg:FlxSprite = null,?recolor:Bool = false){
 
 
@@ -99,8 +100,8 @@ class SickMenuState extends MusicBeatState
 			var musicTime = SickMenuState.musicTime;
 			var mt:MusicTime = SickMenuState.musicList[curMusicTime];
 				
-			if (SickMenuState.menuMusic == null || musicTime != curMusicTime){
-				
+			if (SickMenuState.menuMusic == null || musicTime != curMusicTime || reloadMusic){
+				reloadMusic = false;
 				if(FlxG.sound.music.playing){if(!SickMenuState.fading){SickMenuState.fading = true;
 					var switchToColor = FlxColor.fromString(mt.color);
 					if(isMainMenu && _bg != null){

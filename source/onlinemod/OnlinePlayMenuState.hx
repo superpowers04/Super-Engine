@@ -33,6 +33,8 @@ class OnlinePlayMenuState extends MusicBeatState
 	public static var muteKeys:Array<Int>;
 	public static var volumeUpKeys:Array<Int>;
 	public static var volumeDownKeys:Array<Int>;
+	public static var scripts:Array<String> = [];
+
 
 	public function new(?message:String="", ?color:FlxColor=FlxColor.RED)
 	{
@@ -43,6 +45,8 @@ class OnlinePlayMenuState extends MusicBeatState
 		OnlinePlayState.useSongChar = ["","",""];
 		errorMessage = message;
 		errorColor = color;
+		QuickOptionsSubState.setSetting("Song hscripts",false);
+		scripts = [];
 	}
 
 	override function create()

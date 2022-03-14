@@ -66,6 +66,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 	override function create()
 	{
+		
 		retAfter = false;
 		SearchMenuState.doReset = true;
 		dataDir = "mods/charts/";
@@ -87,7 +88,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		changeSelection(lastSel);
 		lastSel = 1;
 		changeDiff();
-		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
+		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songs.length} songs');
 
 	}
 	override function onFocus() {
@@ -366,23 +367,22 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 	}
 	override function handleInput(){
-			if (controls.BACK)
+			if (controls.BACK || FlxG.keys.justPressed.ESCAPE)
 			{
 				ret();
 			}
 			if(songs.length == 0) return;
-			super.handleInput();
-			// if(controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
-			// if(controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
-			// if(controls.LEFT_P){changeDiff(-1);}
-			// if(controls.RIGHT_P){changeDiff(1);}
-			
-			// extraKeys();
-			// if (controls.ACCEPT && songs.length > 0)
-			// {
-			// 		select();
-			// }
+			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
+			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
+			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
+			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.50 && grpSongs.members[curSelected].y < FlxG.height * 0.56) ){changeSelection(1);}
+			extraKeys();
+			if (controls.ACCEPT && songs.length > 0)
+			{
+				select(curSelected);
+			}
 	}
+
 	override function extraKeys(){
 		if(controls.LEFT_P){changeDiff(-1);}
 		if(controls.RIGHT_P){changeDiff(1);}

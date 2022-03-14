@@ -821,7 +821,8 @@ class GUIGapOption extends Option
 
 	public override function press():Bool
 	{
-		return false;
+		FlxG.save.data.guiGap = 0;
+		return true;
 	}
 
 	private override function updateDisplay():String
@@ -894,6 +895,7 @@ class ReloadCharlist extends Option
 	public override function press():Bool
 	{
 		TitleState.checkCharacters();
+		// SickMenuState.reloadMusic = true;
 		return true;
 	}
 
@@ -1491,6 +1493,27 @@ class AccurateNoteHoldOption extends Option
 		return (FlxG.save.data.inputHandler == 0 ? "Kade Note Sustain" : "Accurate Note Sustain " + (FlxG.save.data.accurateNoteSustain ? "on" : "off"));
 	}
 }
+class AllowServerScriptsOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+
+		FlxG.save.data.allowServerScripts = !FlxG.save.data.allowServerScripts;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return ("Allow Server Scripts " + (FlxG.save.data.allowServerScripts ? "on" : "off"));
+	}
+}
 class LogGameplayOption extends Option
 {
 	public function new(desc:String)
@@ -1711,6 +1734,7 @@ class ImportOption extends Option
 		return false;
 	}
 }
+
 class EraseOption extends Option
 {
 	var opt = "";

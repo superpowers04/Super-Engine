@@ -46,6 +46,9 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	public static function getSetting(setting:String):Dynamic{
 		return normalSettings[setting].value;
 	}
+	public static function setSetting(setting:String,value:Dynamic){
+		normalSettings[setting].value = value;
+	}
 	function setValue(str:String,value:Dynamic){
 		settings[str].value = value;
 	}

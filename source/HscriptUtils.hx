@@ -56,7 +56,8 @@ import haxe.iterators.StringKeyValueIterator;
 using cpp.NativeString;
 #end
 class HscriptUtils {
-   public static var interp = new InterpEx();
+	
+	public static var interp = new InterpEx();
 	public static var hscriptClasses:Array<String> = [];
 	@:access(hscript.InterpEx)
 	public static function init() {
@@ -136,7 +137,7 @@ class HscriptUtils {
 		interp.variables.set("Global",HSBrTools.shared);
 		interp.variables.set("Std", Std);
 		interp.variables.set("Reflect", Reflect);
-		interp.variables.set("Type", Type);
+		interp.variables.set("Type", SEType);
 
 
 		
@@ -150,6 +151,33 @@ class HscriptUtils {
 		return interp;
 	}
 }
+
+
+class SEType {
+
+	static public function getClass(o:Dynamic):Dynamic{
+		return Type.getClass(o);
+	}
+	static public function resolveClass(name:String):Dynamic{
+		switch (name) {
+			case "FileSystem" | "File":
+				return FReplica;
+			case "sys":
+				return Class; // trol
+			case "Type":
+				return SEType;
+		}
+
+		return Type.resolveClass(name);
+	}
+}
+
+// class SEType extends Type{
+// 	static var classes:Map<String,Class<>> = ["FileSystem" => FReplica,];
+// 	static public function getClass(o:T):Class<T>{
+// 		return super.getClass(o);
+// 	}
+// }
 class SEJson {
 	public static function parse(txt:String):Dynamic{
 		return Json.parse(CoolUtil.cleanJSON(txt));
@@ -185,6 +213,30 @@ class FReplica{
 		return File.getBytes(P);
 	}
 }
+// class BRTween extends FlxTween{ // Make sure errors are caught whenever a timer is used
+// 	public static function tween(Object:Dynamic, Values:Dynamic, Duration:Float = 1, ?Options:TweenOptions):VarTween
+// 	{
+// 		if(Options != null){
+// 			if(Options.onStart != null){
+// 				var func = Options.onStart;
+// 				Options.onStart = function(tween:flixel.tweens.FlxTween){
+// 					try{
+// 						func(tween);
+// 					}catch(e){PlayState.handleError('An error occurred in a tween\'s onStart: ${e.message}');}
+// 				}
+// 			}
+// 			if(Options.onComplete != null){
+// 				var func = Options.onComplete;
+// 				Options.onComplete = function(tween:flixel.tweens.FlxTween){
+// 					try{
+// 						func(tween);
+// 					}catch(e){PlayState.handleError('An error occurred in a tween\'s onComplete: ${e.message}');}
+// 				}
+// 			}
+// 		}
+// 		return FlxTween.tween(Object, Values, Duration, Options);
+// 	}
+// }
 class BRTimer extends FlxTimer{ // Make sure errors are caught whenever a timer is used
 	override public function start(Time:Float = 1, ?OnComplete:FlxTimer->Void, Loops:Int = 1):FlxTimer
 	{
