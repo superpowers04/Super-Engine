@@ -435,7 +435,7 @@ class TitleState extends MusicBeatState
 		super.create();
 
 		
-		
+		flixel.system.FlxAssets.FONT_DEFAULT = CoolUtil.font;
 		KadeEngineData.initSave();
 
 		Highscore.load();

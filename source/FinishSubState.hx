@@ -152,6 +152,7 @@ class FinishSubState extends MusicBeatSubstate
 
 	public static var endingMusic:Sound;
 	var cam:FlxCamera;
+	var optionsisyes:Bool = false;
 	public function finishNew(?name:String){
 			Conductor.changeBPM(70);
 			FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
@@ -200,7 +201,8 @@ class FinishSubState extends MusicBeatSubstate
 				comboText.color = FlxColor.WHITE;
 				comboText.scrollFactor.set();
 				comboText.fieldWidth = FlxG.width - comboText.x;
-				var contText:FlxText = new FlxText(FlxG.width - 475,FlxG.height + 100,0,'Press ENTER to exit\nor R to reload.');
+				var contText:FlxText = new FlxText(FlxG.width * 0.5,FlxG.height + 100,0,'Press ENTER to exit, R to reload or O to open options.');
+				contText.alignment = CENTER;
 				contText.size = 28;
 				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				contText.color = FlxColor.WHITE;
@@ -213,6 +215,7 @@ class FinishSubState extends MusicBeatSubstate
 				add(finishedText);
 				add(comboText);
 				add(contText);
+				optionsisyes = true;
 			}else{
 
 				var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0, (if(PlayState.isStoryMode) "Week" else "Song") + " " + (if(win) "Won!" else "Failed...") );
@@ -352,17 +355,19 @@ var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState
 	{
 		super.update(elapsed);
 		if (ready){
-			var accepted = controls.ACCEPT;
-			var oldOffset:Float = 0;
 
 
-			if (accepted)
+			if (controls.ACCEPT)
 			{
 				retMenu();
 			}
 
-			if (FlxG.keys.justPressed.R)
-			{if(win){FlxG.resetState();}else{restart();}}
+			if (FlxG.keys.justPressed.R){if(win){FlxG.resetState();}else{restart();}}
+			if (FlxG.keys.justPressed.O && optionsisyes){
+				SearchMenuState.doReset = false;
+				OptionsMenu.lastState = PlayState.stateType + 10;
+				FlxG.switchState(new OptionsMenu());
+			}
 		}else{
 			if(FlxG.keys.justPressed.ANY){
 				PlayState.boyfriend.animation.finishCallback = null;

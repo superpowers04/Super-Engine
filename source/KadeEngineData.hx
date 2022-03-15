@@ -153,6 +153,7 @@ class KadeEngineData
 		if (FlxG.save.data.missVol == null) FlxG.save.data.missVol = 0.1;
 		if (FlxG.save.data.hitVol == null) FlxG.save.data.hitVol = 0.6;
 		if (FlxG.save.data.otherVol == null) FlxG.save.data.otherVol = 0.6;
+		if(FlxG.save.data.allowServerScripts == null) FlxG.save.data.allowServerScripts = false;
 
 	 
 

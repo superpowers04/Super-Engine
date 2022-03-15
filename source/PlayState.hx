@@ -1523,8 +1523,8 @@ class PlayState extends MusicBeatState
 	var playCountdown = true;
 	var generatedArrows = false;
 	public var swappedChars = false;
-	public function swapChars(settings:Bool = false){
-		if(!settings && !(invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Swap characters")))) return;
+	public function swapChars(?what:Bool = false){
+		// if(settings && !) return;
 		var bf:Character = boyfriend;
 		var opp:Character = dad;
 		boyfriend = opp;
@@ -1533,6 +1533,12 @@ class PlayState extends MusicBeatState
 		dad.isPlayer = false;
 		swappedChars = !swappedChars;
 		healthBar.fillDirection = (swappedChars ? LEFT_TO_RIGHT : RIGHT_TO_LEFT);
+		var icop1 = iconP1;
+		var icop2 = iconP2;
+		iconP1 = icop2;
+		iconP2 = icop1;
+		iconP1.flipX = !iconP1.flipX;
+		iconP2.flipX = !iconP2.flipX;
 		updateCharacterCamPos();
 		if(!middlescroll){ // This is dumb but whatever
 			var plStrumX = [];
@@ -1558,8 +1564,8 @@ class PlayState extends MusicBeatState
 		inCutscene = false;
 
 		if(!songStarted){
-			
-			swapChars(true);
+			if(invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Swap characters")))
+				swapChars();
 			if (!generatedArrows){
 				generatedArrows = true;
 				generateStaticArrows(0);
