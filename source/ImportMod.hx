@@ -91,20 +91,20 @@ class ImportModFromFolder extends MusicBeatState
 
 		super.create();
 		var assets = '${folder}assets/'; // For easy access
-		if (!FileSystem.exists(assets)) {
+		if (!FileSystem.exists(assets)) { //This folder is not a mod!
 			done = selectedLength = true;
 			loadingText.text = '${folder} doesn\'t have a assets folder!';
 			loadingText.color = FlxColor.RED;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			return;
-		} //This folder is not a mod!
-		if (folder == Sys.getCwd()) {
+		} 
+		if (folder == Sys.getCwd()) {//This folder is the same folder that FNFBR is running in!
 			done = selectedLength = true;
 			loadingText.text = 'You\'re trying to import songs from me!';
 			loadingText.color = FlxColor.RED;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			return;
-		} //This folder is the same folder that FNFBR is running in!
+		} 
 		if(FileSystem.exists('${assets}songs/')){
 			for (directory in FileSystem.readDirectory('${assets}songs/')) {
 				if(!FileSystem.isDirectory('${assets}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
@@ -124,7 +124,8 @@ class ImportModFromFolder extends MusicBeatState
 			}
 		}
 		if(FileSystem.exists('${folder}mods/')){
-			if(FileSystem.exists('${folder}mods/songs')){
+
+			if(FileSystem.exists('${folder}mods/songs') && FileSystem.isDirectory('${folder}mods/songs')){
 				// folderList.push('${folder}mods/');
 				var dir:String = '${folder}mods/';
 				trace(dir);
@@ -139,6 +140,7 @@ class ImportModFromFolder extends MusicBeatState
 			}else{
 
 				for (directory in FileSystem.readDirectory('${folder}mods/')) {
+					if(!FileSystem.isDirectory('${folder}mods/$directory')){continue;}
 					// if(!importExisting && existingSongs.contains(directory.toLowerCase())) {continue;} // Skip if it's on the existing songs list
 					var dir:String = '${folder}mods/${directory}/';
 					for (directory in FileSystem.readDirectory('${dir}songs/')) {
@@ -154,17 +156,22 @@ class ImportModFromFolder extends MusicBeatState
 			}
 		}
 		if(valid || folderList.length > 0){
-			updateLoadinText(false,true);
+			chartPrefix = name;
+			loadingText.alignment = CENTER;
+			loadingText.text = 'Songs will be placed under:'+
+				'\nmods/packs/${name}/charts'+
+				'\nPress Enter to continue'+
+				"\nPress Escape to go back";
 		}else{
 			done = selectedLength = true;
 			loadingText.color = FlxColor.RED;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			loadingText.text = '${folder} doesn\'t contain any songs!' + (if(!importExisting) "\nMaybe try allowing vanilla songs to be imported\n*(Press 1 to toggle importing vanilla songs in the list)" else "");
+			loadingText.text = '${folder} doesn\'t contain any songs!' + (if(!importExisting) "\nMaybe try allowing vanilla songs to be imported?\n*(Press 1 to toggle importing vanilla songs in the list)" else "");
 
 		}
 		}catch(e){MainMenuState.handleError('Something went wrong when trying to scan for songs! ${e.message}');}
 	}
-	function doDraw(){update(0);draw();}
+	function doDraw(){draw();}
 	function scanSongs(?folder:String = "",assets:String=""){
 		try{
 			if(FileSystem.exists('${assets}songs/')){ // Chad github style
@@ -176,7 +183,7 @@ class ImportModFromFolder extends MusicBeatState
 					var dir:String = '${assets}songs/${directory}/';
 					if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${inCharts}${directory}/') ) {trace('"${inCharts}${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 
-					var outDir:String = Sys.getCwd() + 'mods/charts/${chartPrefix}${directory}/';
+					var outDir:String = Sys.getCwd() + 'mods/packs/${chartPrefix}/charts/${directory}/';
 					try{FileSystem.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
 					
 					for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg','${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
@@ -205,7 +212,7 @@ class ImportModFromFolder extends MusicBeatState
 				var dir:String = '${folder}assets/music/${directory}-';
 				if(!FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" doesnt exist');continue;}
 
-				var outDir:String = Sys.getCwd() + 'mods/charts/${chartPrefix}${directory}/';
+				var outDir:String = Sys.getCwd() + 'mods/packs/${chartPrefix}/charts/${directory}/';
 				try{FileSystem.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
 				
 				for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg',
@@ -235,32 +242,6 @@ class ImportModFromFolder extends MusicBeatState
 			scanSongs(v,v);
 		}
 	}
-
-
-	function updateLoadinText(shiftPress:Bool = false,sub:Bool = false,?skip:Bool = false){
-		if(!skip){
-			if(shiftPress){
-				var addition = nameoffset + if(sub) -1 else 1;
-				if(addition <= 0) addition = nameLength - 1; 
-				if(addition > nameLength) addition = 0;
-				nameoffset = addition;
-			}else{
-				var addition = nameLength + if(sub) -1 else 1;
-				if(addition <= 0) addition = name.length; 
-				if(addition > name.length) addition = 0;
-				nameLength = addition;
-			}
-		}
-		if (nameLength == 0 || name.substr(nameoffset,nameLength) == "") chartPrefix = ""; 
-		else{
-			chartPrefix = name.substr(nameoffset,nameLength) + '-';
-		}
-		loadingText.text = 'Please select a folder name length:'+
-		'\n[${chartPrefix}SONG.EXT]'+
-		'\n Left/Right can be used to change length'+
-		"\n  Holding shift will edit the offset";
-
-	}
 	override function update(elapsed:Float)
 	{
 		if ((done && FlxG.keys.justPressed.ANY) || FlxG.keys.justPressed.ESCAPE) {
@@ -272,14 +253,14 @@ class ImportModFromFolder extends MusicBeatState
 				loadingText.text = "Scanning for songs..\nThe game may "+ (if(Sys.systemName() == "Windows")"'not respond'" else "freeze") + " during this process";
 				new FlxTimer().start(0.6, function(tmr:FlxTimer){
 				scanSongFolders();
-				loadingText.text = 'Imported ${songsImported} songs. All song names are prefixed with "${chartPrefix}" \nPress any key to go to the main menu';
+				loadingText.text = 'Imported ${songsImported} songs.\n They should appear under "mods/packs/${name}/charts" \nPress any key to go to the main menu';
 				loadingText.x -= 70;
 				done = true;
 				}); // Make sure the text is actually printed onto the screen before doing anything
 			}
-			if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT){
-				updateLoadinText(FlxG.keys.pressed.SHIFT,FlxG.keys.justPressed.LEFT);
-			}
+			// if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT){
+			// 	updateLoadinText(FlxG.keys.pressed.SHIFT,FlxG.keys.justPressed.LEFT);
+			// }
 		}
 		super.update(elapsed);
 	}
