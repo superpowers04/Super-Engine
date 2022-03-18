@@ -2314,11 +2314,11 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.animDebug){
 			Overlay.debugVar += '\nResync count:${resyncCount}\nCond/Music time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}\nAssumed Section:${curSection}\nHealth:${health}\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }\nScript Count:${interpCount}';
 		}
-		if ((FlxG.save.data.camMovement || !camLocked ) && moveCamera && camBeat){
+		if ((FlxG.save.data.camMovement || !camLocked ) && camBeat){
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 			
-		}else if (camBeat && moveCamera){
+		}else if (camBeat){
 			FlxG.camera.zoom = defaultCamZoom;
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 			// FlxG.camera.zoom = 0.95;
@@ -4129,7 +4129,7 @@ class PlayState extends MusicBeatState
 		wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!
-		if (FlxG.save.data.camMovement){
+		if (FlxG.save.data.camMovement && camBeat){
 			if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
 			{
 				FlxG.camera.zoom += 0.015;

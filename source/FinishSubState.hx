@@ -202,8 +202,10 @@ class FinishSubState extends MusicBeatSubstate
 				comboText.scrollFactor.set();
 				comboText.fieldWidth = FlxG.width - comboText.x;
 				var contText:FlxText = new FlxText(FlxG.width * 0.5,FlxG.height + 100,0,'Press ENTER to exit, R to reload or O to open options.');
-				contText.alignment = CENTER;
 				contText.size = 28;
+				contText.x -= contText.width * 0.5;
+
+				// contText.alignment = CENTER;
 				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				contText.color = FlxColor.WHITE;
 				contText.scrollFactor.set();

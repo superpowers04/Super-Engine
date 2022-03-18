@@ -33,7 +33,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N13";
+	public static var nightly:String = "N14";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
@@ -158,7 +158,7 @@ class MainMenuState extends SickMenuState
 	}
 
 	override function goBack(){
-		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;}
+		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;} else{selected = false;}
 		// FlxG.switchState(new TitleState());
 		// do nothing
 	}
@@ -184,8 +184,8 @@ class MainMenuState extends SickMenuState
 	var otherMenu:Bool = false;
 
 	function otherSwitch(){
-		options = ["story mode","freeplay","Convert Charts from other mods","download charts","download characters"];
-		descriptions = ['Play through the story mode', 'Play any song from the game', 'Convert charts from other mods to work here. Will put them in Multi Songs, will not be converted to work with FNF Multiplayer though.',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
+		options = ["story mode","freeplay","download charts","download characters"];
+		descriptions = ['Play through the story mode', 'Play any song from the game',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
 		generateList();
@@ -195,8 +195,8 @@ class MainMenuState extends SickMenuState
 		changeSelection();
 	}
 	function mmSwitch(regen:Bool = false){
-		options = ['modded songs','online', 'online songs','other',"changelog", 'options'];
-		descriptions = ["Play songs from your mods/charts folder","Play online with other people.","Play songs that have been downloaded during online games.",'Story mode, Freeplay, Osu beatmaps, and download characters or songs',"Check the latest update and it's changes",'Customise your experience to fit you'];
+		options = ['modded songs','join BR compatible server', 'online songs','other',"import charts from mods","changelog", 'options'];
+		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Play songs that have been downloaded during online games.",'Story mode, Freeplay, Osu beatmaps, and download characters or songs','Convert charts from other mods to work here. Will put them in Modded Songs',"Check the latest update and it's changes",'Customise your experience to fit you'];
 		if(regen)generateList();
 		curSelected = 0;
 		if(regen)changeSelection();
@@ -218,8 +218,10 @@ class MainMenuState extends SickMenuState
 			case 'other':
 				// FlxG.switchState(new OtherMenuState());
 				otherSwitch();
-			case 'online':
+			case 'join BR compatible server':
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
+			// case 'host br server':
+			// 	FlxG.switchState(new onlinemod.OnlineHostMenu());
 			case 'modded songs':
 				FlxG.switchState(new multi.MultiMenuState());
 			case 'online songs':
@@ -239,7 +241,7 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new FreeplayState());
 			case 'osu beatmaps':
 				FlxG.switchState(new osu.OsuMenuState());
-			case "Convert Charts from other mods":
+			case "import charts from mods":
 				FlxG.switchState(new ImportMod());
 			case 'download characters':
 				FlxG.switchState(new RepoState());
