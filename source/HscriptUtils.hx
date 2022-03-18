@@ -56,7 +56,7 @@ import haxe.iterators.StringKeyValueIterator;
 using cpp.NativeString;
 #end
 class HscriptUtils {
-	
+
 	public static var interp = new InterpEx();
 	public static var hscriptClasses:Array<String> = [];
 	@:access(hscript.InterpEx)

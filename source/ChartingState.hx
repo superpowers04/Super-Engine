@@ -46,6 +46,7 @@ import lime.app.Future;
 import lime.app.Promise;
 import lime.ui.FileDialog;
 import lime.ui.FileDialogType;
+import flixel.util.FlxTimer;
 
 using StringTools;
 
@@ -123,6 +124,7 @@ class ChartingState extends MusicBeatState
 	var claps:Array<Note> = [];
 	var inst:FlxSound;
 	var voices:FlxSound;
+	var saveReminder:FlxTimer;
 	override public function new(){
 		super();
 	}
@@ -443,6 +445,7 @@ class ChartingState extends MusicBeatState
 	var check_changeBPM:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
 	var check_altAnim:FlxUICheckBox;
+
 
 	function addSectionUI():Void
 	{
@@ -1824,8 +1827,6 @@ class ChartingState extends MusicBeatState
 				// _file.addEventListener(Event.CANCEL, onSaveCancel);
 				// _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 				// _file.save('{"song":' + data + "}", path);
-
-
 				#if windows
 				try{lastPath = path.substr(0,path.lastIndexOf("\\"));}catch(e){return;}
 				#end
@@ -1841,9 +1842,12 @@ class ChartingState extends MusicBeatState
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 		_song.defplayer1 = pl1;
 		_song.defplayer2 = pl2;
+		saveReminder.reset();
 	}
 	function saveRemind(show:Bool = true){ // Save reminder every 10 minutes
 		if(show)showTempmessage("Don't forget to save frequently!",FlxColor.RED);
+		if(saveReminder != null)saveReminder.cancel();
+		saveReminder = new FlxTimer().start(600,function(tmr:FlxTimer){saveRemind();});
 	}
 
 	function onSaveComplete(_):Void
@@ -1881,6 +1885,7 @@ class ChartingState extends MusicBeatState
 
 	function gotoPlaystate(?jumpTo:Bool = false){
 		charting = true;
+		saveReminder.cancel();
 		if(jumpTo){
 			PlayState.jumpTo = Conductor.songPosition;
 		}
