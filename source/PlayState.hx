@@ -3530,15 +3530,15 @@ class PlayState extends MusicBeatState
 
 					if (daNote.mustPress)
 					{
-						daNote.visible = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].visible;
+						daNote.visible = playerStrums.members[Std.int(daNote.noteData)].visible;
 						if(!daNote.skipXAdjust){
-							daNote.x = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].x;
+							daNote.x = playerStrums.members[Std.int(daNote.noteData)].x;
 							if (daNote.isSustainNote)
 								daNote.x += daNote.width / 2 + 17;
 						}
 						if (!daNote.isSustainNote)
-							daNote.angle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
-						daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+							daNote.angle = playerStrums.members[Std.int(daNote.noteData)].angle;
+						daNote.alpha = playerStrums.members[Std.int(daNote.noteData)].alpha;
 
 						if(daNote.tooLate){
 							if (daNote.isSustainNote && daNote.wasGoodHit)
@@ -3561,16 +3561,16 @@ class PlayState extends MusicBeatState
 					}
 					else if (!daNote.wasGoodHit)
 					{
-						daNote.visible = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].visible;
+						daNote.visible = strumLineNotes.members[Std.int(daNote.noteData)].visible;
 						if(!daNote.skipXAdjust){
-							daNote.x = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].x;
+							daNote.x = strumLineNotes.members[Std.int(daNote.noteData)].x;
 							if (daNote.isSustainNote)
 								daNote.x += daNote.width / 2 + 17;
 						}
 						
 						if (!daNote.isSustainNote)
-							daNote.angle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
-						daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+							daNote.angle = strumLineNotes.members[Std.int(daNote.noteData)].angle;
+						daNote.alpha = strumLineNotes.members[Std.int(daNote.noteData)].alpha;
 					}
 
 
@@ -3620,13 +3620,13 @@ class PlayState extends MusicBeatState
 							switch (downscroll) {
 								case true:
 									var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
-									swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+									swagRect.height = (strumLineNotes.members[Std.int(daNote.noteData)].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
 									swagRect.y = daNote.frameHeight - swagRect.height;
 									daNote.clipRect = swagRect;
 
 								default:
 									var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-									swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+									swagRect.y = (strumLineNotes.members[Std.int(daNote.noteData)].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
 									swagRect.height -= swagRect.y;
 									daNote.clipRect = swagRect;
 							}

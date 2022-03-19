@@ -247,10 +247,12 @@ var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState
 				settingsText.color = FlxColor.WHITE;
 				settingsText.scrollFactor.set();
 
-				var contText:FlxText = new FlxText(FlxG.width - 475 - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue\nor R to restart.');
+				var contText:FlxText = new FlxText(FlxG.width - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue or R to restart.');
+				
 				contText.size = 28;
 				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				contText.color = FlxColor.WHITE;
+				contText.x -= contText.width;
 				contText.scrollFactor.set();
 				// var chartInfoText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
 				// chartInfoText.size = 16;
