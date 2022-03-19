@@ -330,7 +330,7 @@ class AnimationDebug extends MusicBeatState
 			animList = [];
 			charAnims = ["**Unbind"];
 			if (dad.charXml != null){
-				var regTP:EReg = (~/<SubTexture name="([A-z0-9\-_ .,\\\|]+)[0-9][0-9][0-9][0-9]"/gm);
+				var regTP:EReg = (~/<SubTexture name="([A-z0-9\-_ !?:;\(\)\[\]'\/\{\}+@#$%^&*~`.,\\\|]+)[0-9][0-9][0-9][0-9]"/gm);
 				var input:String = dad.charXml;
 				while (regTP.match(input)) {
 					input=regTP.matchedRight();
