@@ -40,8 +40,7 @@ class ScriptSel extends SearchMenuState
 		retAfter = false;
 		if(FileSystem.exists('mods/scripts'))
 			{
-
-				for (directory in FileSystem.readDirectory('mods/scripts/'))
+				for (directory in orderList(FileSystem.readDirectory('mods/scripts/')))
 				{
 					if (FileSystem.exists("mods/scripts/"+directory+"/script.hscript"))
 					{
