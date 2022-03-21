@@ -59,7 +59,7 @@ class HealthIcon extends FlxSprite
 						animation.curAnim.curFrame = 0;
 
 				};
-				if(frameCount > 1) updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(animation.curAnim.numFrames * (health / 100));};
+				if(frameCount > 1) updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(animation.curAnim.numFrames * (health / 150));};
 			}
 			trace(frameCount);
 			loadGraphic(FlxGraphic.fromBitmapData(bitmapData), true, bitmapData.height, bitmapData.height);
