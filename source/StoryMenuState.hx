@@ -128,6 +128,7 @@ class StoryMenuState extends MusicBeatState
 	public static var weekBads:Int = 0;
 	public static var weekShits:Int = 0;
 	public static var weekMaxCombo:Int = 0;
+	public static var weekAccuracy:Float = 0.00;
 	public static var loadDialog:Bool = true;
 
 	function resetWeeks(){

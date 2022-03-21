@@ -797,7 +797,7 @@ class Character extends FlxSprite
 		};
 		if(animation.curAnim == null && !lonely && !amPreview){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
 		if(animation.getByName('songStart') != null && !lonely && !amPreview){
-			playAnim('songStart');
+			playAnim('songStart',true);
 		}
 		#if !debug
 		}catch(e){

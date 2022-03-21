@@ -278,6 +278,8 @@ class PlayState extends MusicBeatState
 		misses = 0;
 		maxCombo = 0;
 		combo = 0;
+		accuracy = 0.00;
+		// totalNotesHit = 0;
 		// noteCount = 0;
 
 		// repPresses = 0;
@@ -291,6 +293,7 @@ class PlayState extends MusicBeatState
 			misses = StoryMenuState.weekMisses;
 			maxCombo = StoryMenuState.weekMaxCombo;
 			songScore = StoryMenuState.weekScore;
+			accuracy = StoryMenuState.weekAccuracy;
 		}
 
 
@@ -1225,6 +1228,7 @@ class PlayState extends MusicBeatState
 			// scoreTxt.width += 300;
 			scoreTxt.wordWrap = false;
 			scoreTxt.alignment = "center";
+			scoreTxt.screenCenter(X);
 		}
 
 		
@@ -1591,7 +1595,6 @@ class PlayState extends MusicBeatState
 		var swagCounter:Int = 0;
 		
 		callInterp("startCountdown",[]);
-		
 		
 
 
@@ -2608,7 +2611,7 @@ class PlayState extends MusicBeatState
 				StoryMenuState.weekMisses = misses;
 				StoryMenuState.weekMaxCombo = maxCombo;
 				StoryMenuState.weekScore = songScore;
-
+				StoryMenuState.weekAccuracy = accuracy;
 				if (storyPlaylist.length <= 0)
 				{
 					// FlxG.sound.playMusic(Paths.music('freakyMenu'));
