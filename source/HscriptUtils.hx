@@ -93,6 +93,7 @@ class HscriptUtils {
 		interp.variables.set("SEVersion",MainMenuState.ver);
 		interp.variables.set("FinishSubState",FinishSubState);
 		interp.variables.set("Paths",Paths);
+		interp.variables.set("HSBrTools",HSBrTools);
 
 
 		// SE clones of other libaries
