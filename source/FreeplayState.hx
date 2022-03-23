@@ -46,6 +46,9 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		try{
+
+
 		// var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 		super.create();
 		
@@ -152,7 +155,7 @@ class FreeplayState extends MusicBeatState
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
-
+	}catch(e){MainMenuState.handleError('Something went wrong when creating freeplaystate: ${e.message}');}
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)

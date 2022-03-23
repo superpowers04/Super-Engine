@@ -45,11 +45,11 @@ class HSBrTools {
 		trace('HSBrTools initialised in ${path}');
 	}
 
-	public function getSetting(setting:String):Dynamic{
+	public function getSetting(setting:String,?defValue:Dynamic = false):Dynamic{
 		if (optionsMap[setting] != null){
 			return optionsMap[setting];
 		}
-		return false;
+		return defValue;
 	}
 	function get_global(){
 		return shared;

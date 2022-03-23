@@ -94,6 +94,8 @@ class HscriptUtils {
 		interp.variables.set("FinishSubState",FinishSubState);
 		interp.variables.set("Paths",Paths);
 		interp.variables.set("HSBrTools",HSBrTools);
+		interp.variables.set("SETools",SETools);
+		// interp.variables.set("SEKeys", SEKeys);
 
 
 		// SE clones of other libaries
@@ -106,6 +108,9 @@ class HscriptUtils {
 		interp.variables.set("StringTools", SEStringTools); // This uses inlines, I hate my life
 		interp.variables.set("Json", SEJson);
 
+		interp.variables.set("Type", SEType);
+		interp.variables.set("getClass", SEType.getClass);
+		interp.variables.set("resolveClass", SEType.resolveClass);
 		// SE modifications of other libraries
 		interp.variables.set("FlxTimer", BRTimer);
 
@@ -138,7 +143,8 @@ class HscriptUtils {
 		interp.variables.set("Global",HSBrTools.shared);
 		interp.variables.set("Std", Std);
 		interp.variables.set("Reflect", Reflect);
-		interp.variables.set("Type", SEType);
+
+
 
 
 		
@@ -153,11 +159,34 @@ class HscriptUtils {
 	}
 }
 
+class SETools{
+
+	static public function areSameType(o:Dynamic,c:Dynamic):Bool{
+		return Type.typeof(o) == Type.typeof(c);
+	}
+
+}
+
 
 class SEType {
 
+	static public function typeof(o:Dynamic):Dynamic{
+		return Type.typeof(o);
+	}
 	static public function getClass(o:Dynamic):Dynamic{
 		return Type.getClass(o);
+	}
+	static public function getClassFields(o:Class<Dynamic>):Array<String>{
+		return Type.getClassFields(o);
+	}
+	static public function getClassName(o:Class<Dynamic>):Dynamic{
+		return Type.getClassName(o);
+	}
+	static public function createInstance(cl:Class<Dynamic>, args:Array<Dynamic>):Dynamic{
+		return Type.createInstance(cl,args);
+	}
+	static public function createEmptyInstance(cl:Class<Dynamic>):Dynamic{
+		return Type.createEmptyInstance(cl);
 	}
 	static public function resolveClass(name:String):Dynamic{
 		switch (name) {
@@ -171,7 +200,11 @@ class SEType {
 
 		return Type.resolveClass(name);
 	}
+	static public function resolveEnum(name:String):Enum<Dynamic>{
+		return Type.resolveEnum(name);
+	}
 }
+
 
 // class SEType extends Type{
 // 	static var classes:Map<String,Class<>> = ["FileSystem" => FReplica,];
