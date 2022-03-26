@@ -54,7 +54,14 @@ class CoolUtil
 	// 	if (songNames[song.toLowerCase()] != null) return if (convLower) songNames[song.toLowerCase()].toLowerCase() else songNames[song.toLowerCase()];
 	// 	return if (convLower) song.toLowerCase() else song;
 	// }
-	
+	public static function orderList(list:Array<String>):Array<String>{
+		haxe.ds.ArraySort.sort(list, function(a, b) {
+		   if(a < b) return -1;
+		   else if(b > a) return 1;
+		   else return 0;
+		});
+		return list;
+	}
 	public static function coolStringFile(path:String):Array<String>
 		{
 			var daList:Array<String> = path.trim().split('\n');

@@ -154,7 +154,7 @@ class PlayState extends MusicBeatState
 	public static var maxCombo:Int = 0;
 	public static var misses:Int = 0;
 	public static var accuracy:Float = 0.00;
-	private var accuracyDefault:Float = 0.00;
+	public static var accuracyDefault:Float = 0.00;
 	private var totalNotesHit:Float = 0;
 	private var totalNotesHitDefault:Float = 0;
 	private var totalPlayed:Int = 0;
@@ -460,8 +460,14 @@ class PlayState extends MusicBeatState
 		return ((interps['${nameSpace}-${v}'] == null));
 	}
 	public function loadScript(v:String){
-		if (FileSystem.exists('mods/scripts/${v}/script.hscript')){
-			parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'global-${v}');
+		if (FileSystem.exists('mods/scripts/${v}')){
+			var brtool = new HSBrTools('mods/scripts/${v}',v);
+			for (i in CoolUtil.orderList(FileSystem.readDirectory('mods/scripts/${v}/'))) {
+				if(i.endsWith(".hscript")){
+					parseHScript(File.getContent('mods/scripts/${v}/$i'),brtool,'global-${v}-${i}');
+				}
+			}
+			// parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'global-${v}');
 		}else{showTempmessage('Global script \'${v}\' doesn\'t exist!');}
 	}
 	public var oldBF:String = "";
@@ -873,7 +879,7 @@ class PlayState extends MusicBeatState
 					default:
 					{	
 						var stage:String = TitleState.retStage(SONG.stage);
-						if(stage == ""){
+						if(stage == "" || !FileSystem.exists('mods/stages/$stage')){
 								trace('"${SONG.stage}" not found, using "Stage"!');
 								stageTags = ["inside"];
 								defaultCamZoom = 0.9;
@@ -942,9 +948,13 @@ class PlayState extends MusicBeatState
 								gfPos = stageProperties.gf_pos;
 								stageTags = stageProperties.tags;
 							}
-							if (FileSystem.exists('$stagePath/script.hscript')){
-								parseHScript(File.getContent('$stagePath/script.hscript'),new HSBrTools(stagePath),"stage");
+							var brTool = new HSBrTools(stagePath);
+							for (i in CoolUtil.orderList(FileSystem.readDirectory(stagePath))) {
+								if(i.endsWith(".hscript")){
+									parseHScript(File.getContent('$stagePath/$i'),brTool,"STAGE-" + i);
+								}
 							}
+							
 						}
 					}
 				}

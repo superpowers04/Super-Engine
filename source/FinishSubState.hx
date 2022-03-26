@@ -39,26 +39,25 @@ typedef ActionsFile = {
 
 class FinishSubState extends MusicBeatSubstate
 {
-	var curSelected:Int = 0;
-
-	var music:FlxSound;
-	var perSongOffset:FlxText;
-	
-	var offsetChanged:Bool = false;
-	var win:Bool = true;
-	var ready = false;
-	// static var week:Bool = false;
-	var errorMsg:String = "";
-	var isError:Bool = false; 
-	var healthBarBG:FlxSprite;
-	var healthBar:FlxBar;
-	var iconP1:HealthIcon; 
-	var iconP2:HealthIcon;
+	public var curSelected:Int = 0;
+	public var music:FlxSound;
+	public var perSongOffset:FlxText;
+	public var offsetChanged:Bool = false;
+	public var win:Bool = true;
+	public var ready = false;
+	public var errorMsg:String = "";
+	public var isError:Bool = false; 
+	public var healthBarBG:FlxSprite;
+	public var healthBar:FlxBar;
+	public var iconP1:HealthIcon; 
+	public var iconP2:HealthIcon;
 	public static var pauseGame:Bool = true;
 	public static var autoEnd:Bool = true;
 	public static var forceBFAnim:Bool = false;
+	public static var instance:FinishSubState;
 	public function new(x:Float, y:Float,?won = true,?error:String = "")
 	{
+		instance = this;
 		endingMusic = null;
 		if (error != ""){
 			isError = true;
@@ -151,12 +150,13 @@ class FinishSubState extends MusicBeatSubstate
 	}
 
 	public static var endingMusic:Sound;
-	var cam:FlxCamera;
+	public var cam:FlxCamera;
 	var optionsisyes:Bool = false;
 	public function finishNew(?name:String){
 			Conductor.changeBPM(70);
 			FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
 			// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
+			PlayState.instance.generatedMusic = false;
 			PlayState.instance.followChar(if(win) 0 else 1);
 			var camPos = PlayState.instance.getDefaultCamPos();
 			PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
@@ -189,6 +189,7 @@ class FinishSubState extends MusicBeatSubstate
 			bg.alpha = 0;
 			bg.scrollFactor.set();
 			if(isError){
+				ready = false;
 				var finishedText:FlxText = new FlxText(20,-55,0, "Error caught!" );
 				finishedText.size = 34;
 				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
@@ -218,6 +219,7 @@ class FinishSubState extends MusicBeatSubstate
 				add(comboText);
 				add(contText);
 				optionsisyes = true;
+				new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;});
 			}else{
 
 				var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0, (if(PlayState.isStoryMode) "Week" else "Song") + " " + (if(win) "Won!" else "Failed...") );
@@ -225,7 +227,8 @@ class FinishSubState extends MusicBeatSubstate
 				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				finishedText.color = FlxColor.WHITE;
 				finishedText.scrollFactor.set();
-var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState.isStoryMode ? 'Song/Chart' : "Week") + ':\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}');				comboText.size = 28;
+				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState.isStoryMode ? 'Song/Chart' : "Week") + ':\n\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\nShits - ${PlayState.shits}\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})\nMisses: ${PlayState.misses}\n\nScore: ${PlayState.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}\n');
+				comboText.size = 28;
 				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				comboText.color = FlxColor.WHITE;
 				comboText.scrollFactor.set();
@@ -241,6 +244,7 @@ var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState
 				+'\n Safe Frames: ${FlxG.save.data.frames}'
 				+'\n Input Engine: ${PlayState.inputEngineName}, V${MainMenuState.ver}'
 				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'
+				+'\n'
 				);
 				settingsText.size = 28;
 				settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
