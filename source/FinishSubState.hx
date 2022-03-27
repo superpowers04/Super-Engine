@@ -166,7 +166,7 @@ class FinishSubState extends MusicBeatSubstate
 			FlxG.cameras.add(cam);
 			FlxCamera.defaultCameras = [cam];
 			if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
-			ready = true;
+			// ready = true;
 			FlxG.state.persistentUpdate = !isError && !pauseGame;
 			pauseGame = true;
 			autoEnd = true;
@@ -188,8 +188,9 @@ class FinishSubState extends MusicBeatSubstate
 			var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 			bg.alpha = 0;
 			bg.scrollFactor.set();
+			new FlxTimer().start(0.6,function(e:FlxTimer){FinishSubState.instance.ready=true;});
 			if(isError){
-				ready = false;
+				// ready = false;
 				var finishedText:FlxText = new FlxText(20,-55,0, "Error caught!" );
 				finishedText.size = 34;
 				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
@@ -219,7 +220,7 @@ class FinishSubState extends MusicBeatSubstate
 				add(comboText);
 				add(contText);
 				optionsisyes = true;
-				new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;});
+				
 			}else{
 
 				var finishedText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-55,0, (if(PlayState.isStoryMode) "Week" else "Song") + " " + (if(win) "Won!" else "Failed...") );
