@@ -143,7 +143,7 @@ class SickMenuState extends MusicBeatState
 
 			FlxG.sound.playMusic(SickMenuState.menuMusic,FlxG.save.data.instVol);
 			// if (!MainMenuState.firstStart) FlxG.sound.music.time = FlxMath.wrap(Math.floor(SickMenuState.curSongTime),0,Math.floor(FlxG.sound.music.length));
-			}else if (!FlxG.sound.music.playing) FlxG.sound.playMusic(SickMenuState.menuMusic);
+			}else if (!FlxG.sound.music.playing) {FlxG.sound.playMusic(SickMenuState.menuMusic,FlxG.save.data.instVol);Conductor.changeBPM(mt.bpm);}
 			if(!isMainMenu && !recolor && _bg != null){
 				_bg.color = FlxColor.interpolate(_bg.color,FlxColor.fromString(SickMenuState.musicList[musicTime].color),0.2);
 			}else if(recolor && _bg != null){

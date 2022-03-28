@@ -173,6 +173,9 @@ class SEType {
 	static public function typeof(o:Dynamic):Dynamic{
 		return Type.typeof(o);
 	}
+	static public function getSuperClass(o:Dynamic):Dynamic{
+		return Type.getSuperClass(o);
+	}
 	static public function getClass(o:Dynamic):Dynamic{
 		return Type.getClass(o);
 	}
@@ -201,6 +204,9 @@ class SEType {
 		return Type.resolveClass(name);
 	}
 	static public function resolveEnum(name:String):Enum<Dynamic>{
+		return Type.resolveEnum(name);
+	}
+	static public function createEnum(name:String):Enum<Dynamic>{
 		return Type.resolveEnum(name);
 	}
 }

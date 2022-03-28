@@ -109,6 +109,11 @@ class AnimationDebug extends MusicBeatState
 	'Animation Editing Mode'
 	];
 
+	var lastMouseY = 0;
+	var lastMouseX = 0;
+	var lastRMouseY = 0;
+	var lastRMouseX = 0;
+
 	var quitHeld:Int = 0;
 	var quitHeldBar:FlxBar;
 	var quitHeldBG:FlxSprite;
@@ -153,6 +158,7 @@ class AnimationDebug extends MusicBeatState
 	}
 	override function beatHit(){
 		super.beatHit();
+		if(FlxG.keys.pressed.V && editMode != 2){dad.dance();}
 		if(gf != null) gf.dance();
 	}
 	var health:Int = 2;
@@ -1028,9 +1034,13 @@ class AnimationDebug extends MusicBeatState
 	// inline function canSwitch():Bool {return uiMap["FPS"] == null || (!uiMap["FPS"].focused && !uiMap["animSel"].focused );} // This is disgusting but whatever
 
 
+
+
 	override function update(elapsed:Float)
 	{
 		// textAnim.text = dad.animation.curAnim.name;
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
 		if (quitHeldBar.visible && quitHeld <= 0){
 			quitHeldBar.visible = false;
 			quitHeldBG.visible = false;
@@ -1041,19 +1051,50 @@ class AnimationDebug extends MusicBeatState
 			quitHeldBar.visible = true;
 			quitHeldBG.visible = true;
 			if (quitHeld > 1000) exit(); 
-			}else if (quitHeld > 0){
+		}else if (quitHeld > 0){
 			quitHeld -= 10;
-
 		}
 		var shiftPress = FlxG.keys.pressed.SHIFT;
 		var ctrlPress = FlxG.keys.pressed.CONTROL;
 		var rPress = FlxG.keys.justPressed.R;
 		var hPress = FlxG.keys.justPressed.H;
 		dadBG.y = dad.y;
+
 		if (hPress && editMode != 2) openSubState(new AnimHelpScreen(canEditJson,editMode));
 		switch(editMode){
 			case 0:{
 				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
+				if(FlxG.mouse.justPressedRight){
+					lastRMouseX = Std.int(FlxG.mouse.screenX);
+					lastRMouseY = Std.int(FlxG.mouse.screenY);
+				}
+				if(FlxG.mouse.justPressed){
+					lastMouseX = Std.int(FlxG.mouse.x);
+					lastMouseY = Std.int(FlxG.mouse.y);
+				}
+
+				if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
+
+					var mx = Std.int(FlxG.mouse.screenX);
+					var my = Std.int(FlxG.mouse.screenY);
+
+					camFollow.x+=lastRMouseX - mx;
+					camFollow.y+=lastRMouseY - my;
+					lastRMouseX = mx;
+					lastRMouseY = my;
+				}
+				if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
+					var mx = Std.int(FlxG.mouse.x);
+					var my = Std.int(FlxG.mouse.y);
+					if(shiftPress){
+						updateCharPos(-(lastMouseX - mx),(lastMouseY - my),false,false);
+					}else{
+						moveOffset(lastMouseX - mx,lastMouseY - my,false,false);
+					}
+					lastMouseX = mx;
+					lastMouseY = my;
+
+				}
 
 				pressArray = [
 					 (FlxG.keys.pressed.A), // Play note animation
@@ -1101,8 +1142,8 @@ class AnimationDebug extends MusicBeatState
 								animToPlay = 'singUP' + modifier;
 							case 3:
 								animToPlay = 'singRIGHT' + modifier;
-							case 4:
-								dad.dance();
+
+								
 								
 							case 5: // Offset adjusting
 								moveOffset(0,1,false,ctrlPress);
@@ -1124,6 +1165,7 @@ class AnimationDebug extends MusicBeatState
 
 							case 13: // Unload character offsets
 								resetOffsets();
+								updateCameraPos(false,720, 500);
 							case 14: // Write to file
 								outputCharOffsets();
 							case 15: // Save Char JSON
@@ -1172,6 +1214,10 @@ class AnimationDebug extends MusicBeatState
 			}
 			case 1:{
 
+				if(FlxG.mouse.justPressed){
+					lastRMouseX = Std.int(FlxG.mouse.screenX);
+					lastRMouseY = Std.int(FlxG.mouse.screenY);
+				}
 				pressArray = [
 					 (FlxG.keys.justPressed.M),
 					 (FlxG.keys.justPressed.UP), // Adjust camera position
@@ -1183,6 +1229,15 @@ class AnimationDebug extends MusicBeatState
 					 (FlxG.keys.pressed.DOWN),
 					 (FlxG.keys.pressed.RIGHT),
 				];
+				if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
+					var mx = Std.int(FlxG.mouse.screenX);
+					var my = Std.int(FlxG.mouse.screenY);
+
+					updateCameraPos(true,lastRMouseX - mx,lastRMouseY - my,false,false);
+					lastRMouseX = mx;
+					lastRMouseY = my;
+					// offsetTopText.text = "X: " + lastMouseX + ",Y: " + lastMouseY;
+				}
 				for (i => v in pressArray) {
 					if (v){
 						switch(i){
@@ -1254,13 +1309,16 @@ class AnimHelpScreen extends FlxUISubState{
 		exitText.setFormat(CoolUtil.font, 28, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		exitText.scrollFactor.set();
 		helpObjs.push(exitText);
-		var controlsText:FlxText = new FlxText(10,100,0,'Controls:'
+		var controlsText:FlxText = new FlxText(10,70,0,'Controls:'
 		+(switch(editMode) {
 			case 0:
 				'\n\nWASD - Note anims'
 				+'\nV - Idle'
 				+'\n *Shift - Miss variant'
 				+'\n *Ctrl - Alt Variant'
+				+'\nRightClick - Move Camera(Doesn\'t save)'
+				+'\nClick - Move Offset'
+				+'\n *Shift - Moves character position'
 				+'\nIJKL - Move char, Moves per press for accuracy'
 				+'\nArrows - Move Offset, Moves per press for accuracy'
 				+'\n *Shift - Hold to move'
@@ -1269,7 +1327,7 @@ class AnimHelpScreen extends FlxUISubState{
 				+'\n1 - Unloads all offsets from the game or json file, including character position.\n'
 				+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
 				+(if(canEditJson)'\n3 - Write character info to characters JSON' else '\n3 - Write character info to output.json in FNFBR folder')
-				+'\n4 - Unloads character position from json file.(Useful if the game refuses to save the character\'s position)\n'	
+				+'\n4 - Unloads character position from json file.(Useful if the game refuses to save the character\'s pos)\n'	
 				+'\n7 - Reloads Animation debug with the character\'s side swapped\n'
 				+"\nB - Hide/Show offset text";
 			case 1:
