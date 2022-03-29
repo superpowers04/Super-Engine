@@ -25,6 +25,7 @@ typedef SwagSong =
 	var ?noteStyle:String;
 	var stage:String;
 	var validScore:Bool;
+	var ?events:Array<Dynamic>; // Events
 	var ?noteMetadata:NoteMetadata;
 	var ?difficultyString:String;
 	var ?inverthurtnotes:Bool;
