@@ -117,6 +117,7 @@ class AnimationDebug extends MusicBeatState
 	var quitHeld:Int = 0;
 	var quitHeldBar:FlxBar;
 	var quitHeldBG:FlxSprite;
+	var bf:Character;
 
 
 	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false)
@@ -201,19 +202,26 @@ class AnimationDebug extends MusicBeatState
 				stageFront.cameras = [camGame];
 				add(stageFront);
 
-				if (charType != 2){
-					gf = new Character(400, 100, "gf",false,2,true);
-					gf.scrollFactor.set(0.90, 0.90);
-					gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
-				}
-				if (charType == 2){
-					gf = new Character(790, 100, "bf",true,2,true);
-					gf.scrollFactor.set(0.95, 0.95);
-					// gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
-				}
+				gf = new Character(400, 100, "gf",false,2,true);
+				gf.scrollFactor.set(0.90, 0.90);
+				gf.animation.finishCallback = function(name:String) gf.idleEnd(true);
 				gf.dance();
 				gf.cameras = [camGame];
 				add(gf);
+
+				if (charType == 2){
+					gf.alpha = 0.5;
+					gf.color = 0xA5004D;
+				}else{
+					bf = new Character((if(charType == 1) 100 else 790), 100, "bf",(charType == 0),charType,true);
+					bf.scrollFactor.set(0.95, 0.95);
+					bf.dance();
+					bf.cameras = [camGame];
+					bf.alpha = 0.5;
+					bf.color = if(charType == 1) 0xaf66ce else 0x31b0d1;
+					add(bf);
+
+				}
 			}catch(e){
 				trace("Hey look, an error:" + e.stack + ";\n\\Message:" + e.message);
 			}
@@ -1064,13 +1072,13 @@ class AnimationDebug extends MusicBeatState
 		switch(editMode){
 			case 0:{
 				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
-				if(FlxG.mouse.justPressedRight){
-					lastRMouseX = Std.int(FlxG.mouse.screenX);
-					lastRMouseY = Std.int(FlxG.mouse.screenY);
-				}
 				if(FlxG.mouse.justPressed){
 					lastMouseX = Std.int(FlxG.mouse.x);
 					lastMouseY = Std.int(FlxG.mouse.y);
+				}
+				if(FlxG.mouse.justPressedRight){
+					lastRMouseX = Std.int(FlxG.mouse.screenX);
+					lastRMouseY = Std.int(FlxG.mouse.screenY);
 				}
 
 				if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
@@ -1270,6 +1278,21 @@ class AnimationDebug extends MusicBeatState
 				}
 			}
 			case 2:{
+				if(FlxG.mouse.justPressedRight){
+					lastRMouseX = Std.int(FlxG.mouse.screenX);
+					lastRMouseY = Std.int(FlxG.mouse.screenY);
+				}
+
+				if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
+
+					var mx = Std.int(FlxG.mouse.screenX);
+					var my = Std.int(FlxG.mouse.screenY);
+
+					camFollow.x+=lastRMouseX - mx;
+					camFollow.y+=lastRMouseY - my;
+					lastRMouseX = mx;
+					lastRMouseY = my;
+				}
 				// if (FlxG.keys.justPressed.M && canSwitch()){
 				// 	editMode = 0;
 				// 	setupUI(true);
