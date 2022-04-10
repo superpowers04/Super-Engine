@@ -53,15 +53,23 @@ class NoteAssets{
 		}
 	}
 	public function new(?name_:String = 'default'):Void{
-		name = name_;
-		doThing();
+		doThing(name_);
 		perm(); // Prevents Flixel from being flixel and unloading things
 
 	}
-	static function doThing(){
+	static function doThing(name_:String){
 		try{
+			if(name == name_){return;}
 			trace('Loading noteAssets');
 			splashType = "se";
+			if(image != null){
+				for (i in [badImage,image,splashImage]){
+					i.destroyOnNoUse = false;
+					i.persist = false;
+					i.destroy(); // These notes aren't needed anymore, dump em
+				}
+			}
+			name = name_;
 			if (name == 'default'){
 				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets_bad.png'));
 				badXml = File.getContent("assets/shared/images/NOTE_assets_bad.xml");
