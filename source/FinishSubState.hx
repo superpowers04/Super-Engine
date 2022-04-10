@@ -152,6 +152,7 @@ class FinishSubState extends MusicBeatSubstate
 	public static var endingMusic:Sound;
 	public var cam:FlxCamera;
 	var optionsisyes:Bool = false;
+	var shownResults:Bool = false;
 	public function finishNew(?name:String){
 			Conductor.changeBPM(70);
 			FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
@@ -181,6 +182,7 @@ class FinishSubState extends MusicBeatSubstate
 
 			}
 			endingMusic = null;
+			shownResults = true;
 			// FlxG.camera.zoom = PlayState.instance.camHUD.zoom = 1;
 
 			FlxG.sound.list.add(music);
@@ -377,7 +379,7 @@ class FinishSubState extends MusicBeatSubstate
 				OptionsMenu.lastState = PlayState.stateType + 10;
 				FlxG.switchState(new OptionsMenu());
 			}
-		}else{
+		}else if (!shownResults){
 			if(FlxG.keys.justPressed.ANY){
 				PlayState.boyfriend.animation.finishCallback = null;
 				finishNew();
