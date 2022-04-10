@@ -124,11 +124,20 @@ class PlayState extends MusicBeatState
 
 	public var vocals:FlxSound;
 
+	public var gfChar:String = "gf";
 	public static var dad:Character;
 	public static var gf:Character;
-	public var gfChar:String = "gf";
 	public static var boyfriend:Character;
 
+	public static var girlfriend(get,set):Character;
+	public static function get_girlfriend(){return gf;};
+	public static function set_girlfriend(vari){return gf = vari;};
+	public static var bf(get,set):Character;
+	public static function get_bf(){return boyfriend;};
+	public static function set_bf(vari){return boyfriend = vari;};
+	public static var opponent(get,set):Character;
+	public static function get_opponent(){return dad;};
+	public static function set_opponent(vari){return dad = vari;};
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
 
