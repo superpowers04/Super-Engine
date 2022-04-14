@@ -39,8 +39,10 @@ import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
+import flixel.system.macros.FlxMacroUtil;
 
 import flixel.math.FlxMath;
+import OptionsFileDef;
 
 #if FLX_TOUCH
 import flixel.input.touch.FlxTouch;
@@ -57,6 +59,8 @@ using cpp.NativeString;
 #end
 class HscriptUtils {
 
+
+	
 	public static var interp = new InterpEx();
 	public static var hscriptClasses:Array<String> = [];
 	@:access(hscript.InterpEx)
@@ -160,11 +164,121 @@ class HscriptUtils {
 }
 
 class SETools{
-
+	public static var persistantVars:Map<String,Dynamic> = new Map<String,Dynamic>();
 	static public function areSameType(o:Dynamic,c:Dynamic):Bool{
 		return Type.typeof(o) == Type.typeof(c);
 	}
+	static public function loadSave(scope:String,save:String):SESave{
+		return new SESave(scope,save);
+	}
+	static public function getFromPersistant(obj:String):Dynamic{
+		return persistantVars.get(obj);
+	}
+	static public function addToPersistant(name,obj:Dynamic){
+		return persistantVars.set(name,obj);
+	}
 
+
+	// Safely tweens an object while making sure the values actually exist
+	// static public function tweenObject(o:Dynamic,values:Dynamic,duration:Float,?options:Null<TweenOptions>){ 
+	// 	if(o == null){PlayState.instance.handleError('Cannot tween variables of an object that is null.');return;}
+	// 	if(values == null){PlayState.instance.handleError('Cannot tween null properties.');return;}
+	// 	for (i => v in values) {
+	// 		if(Reflect.field(o,v.name) == null) {
+	// 			PlayState.instance.handleError('Object does not have value ${v.name}');
+	// 			return;
+	// 		}
+	// 		if(Type.typeof(Reflect.field(o,v.name)) != v.type ) {
+	// 			PlayState.instance.handleError('Tweened value ${v.name} has type of ${v.type} but is trying to tween ${Type.typeof(Reflect.field(o,v.name))}');
+	// 			return;
+	// 		}
+	// 	}
+	// 	if(options != null){
+
+	// 		if(options.onComplete != null){
+	// 			var oldComplete = options.onComplete;
+	// 			options.onComplete = function(t:FlxTween){
+	// 				try{
+	// 					oldComplete(t);
+	// 				}catch(e){
+	// 					PlayState.instance.handleError('An error occurred in tween complete: ${e.message}');
+	// 				}
+	// 			}
+	// 		}
+	// 		if(options.onStart != null){
+	// 			var oldComplete = options.onStart;
+	// 			options.onStart = function(t:FlxTween){
+	// 				try{
+	// 					oldComplete(t);
+	// 				}catch(e){
+	// 					PlayState.instance.handleError('An error occurred in tween start: ${e.message}');
+	// 				}
+	// 			}
+	// 		}
+	// 		if(options.onUpdate != null){
+	// 			var oldComplete = options.onUpdate;
+	// 			options.onUpdate = function(t:FlxTween){
+	// 				try{
+	// 					oldComplete(t);
+	// 				}catch(e){
+	// 					PlayState.instance.handleError('An error occurred in tween complete: ${e.message}');
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	FlxTween.tween(o,values,duration,options);
+	// }
+
+
+}
+class SESave{
+	var _map:Map<String,Dynamic> = new Map<String,Dynamic>();
+	var _path = "";
+	var _fileName = "";
+	public var isNew:Bool = true;
+	static function saveOptions(path:String,obj:Map<String,Dynamic>){
+		var _obj:Array<OptionF> = [];
+		for (i => v in obj) {
+			_obj.push({name:i,value:v});
+		}
+		File.saveContent(path,Json.stringify(_obj));
+	}
+	static function loadOptions(str:String):Null<Map<String,Dynamic>>{ // Holy shit this is terrible but whatever
+		
+		var ret:Map<String,Dynamic> = new Map<String,Dynamic>();
+		var obj:Array<OptionF> = Json.parse(CoolUtil.cleanJSON(str));
+		if(obj == null) return null;
+		for (i in obj) {
+			ret[i.name] = i.value;
+		}
+		return ret;
+	}
+	public function flush(){
+		sys.FileSystem.createDirectory(_path);
+		saveOptions(_path + _fileName,_map);
+	}
+	public function wipe(){
+		_map = new Map<String,Dynamic>();
+	}
+	public function new(scope:String,save:String){
+		_path = 'mods/scriptOptions/saves/$scope/';
+		_fileName = '$save.json';
+		if(FileSystem.exists(_path + _fileName)){
+			_map = loadOptions(File.getContent(_path + _fileName));
+			isNew = false;
+		}else{
+			_map = new Map<String,Dynamic>();
+
+		}
+	}
+	public function get(id:String,?def:Dynamic = null):Dynamic{
+		return (if(_map[id] != null) _map[id] else def );
+	}
+	public function set(id:String,value:Dynamic){
+		isNew = false;
+		_map[id] = value;
+		return;
+	}
 }
 
 
@@ -293,6 +407,7 @@ class BRTimer extends FlxTimer{ // Make sure errors are caught whenever a timer 
 	}
 }
 
+
 class SESettings{
 	public static function get(id:String):Dynamic{
 		return Reflect.field(FlxG.save.data,id);
@@ -300,6 +415,7 @@ class SESettings{
 }
 
 class HscriptColor{
+	// Copy-pasted
 	public static var TRANSPARENT:FlxColor = 0x00000000;
 	public static var WHITE:FlxColor = 0xFFFFFFFF;
 	public static var GRAY:FlxColor = 0xFF808080;
@@ -320,6 +436,195 @@ class HscriptColor{
 	{
 		return new FlxColor(Value);
 	}
+	static var COLOR_REGEX = ~/^(0x|#)(([A-F0-9]{2}){3,4})$/i;
+	static var colorLookup = FlxColor.colorLookup;
+	public static function fromRGB(Red:Int, Green:Int, Blue:Int, Alpha:Int = 255):FlxColor
+	{
+		var color = new FlxColor();
+		return color.setRGB(Red, Green, Blue, Alpha);
+	}
+	public static function fromRGBFloat(Red:Float, Green:Float, Blue:Float, Alpha:Float = 1):FlxColor
+	{
+		var color = new FlxColor();
+		return color.setRGBFloat(Red, Green, Blue, Alpha);
+	}
+	public static function fromCMYK(Cyan:Float, Magenta:Float, Yellow:Float, Black:Float, Alpha:Float = 1):FlxColor
+	{
+		var color = new FlxColor();
+		return color.setCMYK(Cyan, Magenta, Yellow, Black, Alpha);
+	}
+	public static function fromHSB(Hue:Float, Saturation:Float, Brightness:Float, Alpha:Float = 1):FlxColor
+	{
+		var color = new FlxColor();
+		return color.setHSB(Hue, Saturation, Brightness, Alpha);
+	}
+	public static function fromHSL(Hue:Float, Saturation:Float, Lightness:Float, Alpha:Float = 1):FlxColor
+	{
+		var color = new FlxColor();
+		return color.setHSL(Hue, Saturation, Lightness, Alpha);
+	}
+	public static function fromString(str:String):Null<FlxColor>
+	{
+		var result:Null<FlxColor> = null;
+		str = StringTools.trim(str);
+
+		if (COLOR_REGEX.match(str))
+		{
+			var hexColor:String = "0x" + COLOR_REGEX.matched(2);
+			result = new FlxColor(Std.parseInt(hexColor));
+			if (hexColor.length == 8)
+			{
+				result.alphaFloat = 1;
+			}
+		}
+		else
+		{
+			str = str.toUpperCase();
+			for (key in colorLookup.keys())
+			{
+				if (key.toUpperCase() == str)
+				{
+					result = new FlxColor(FlxColor.colorLookup.get(key));
+					break;
+				}
+			}
+		}
+
+		return result;
+	}
+	public static function getHSBColorWheel(Alpha:Int = 255):Array<FlxColor>
+	{
+		return [for (c in 0...360) fromHSB(c, 1.0, 1.0, Alpha)];
+	}
+	public static function interpolate(Color1:FlxColor, Color2:FlxColor, Factor:Float = 0.5):FlxColor
+	{
+		var r:Int = Std.int((Color2.red - Color1.red) * Factor + Color1.red);
+		var g:Int = Std.int((Color2.green - Color1.green) * Factor + Color1.green);
+		var b:Int = Std.int((Color2.blue - Color1.blue) * Factor + Color1.blue);
+		var a:Int = Std.int((Color2.alpha - Color1.alpha) * Factor + Color1.alpha);
+
+		return fromRGB(r, g, b, a);
+	}
+	public static function gradient(Color1:FlxColor, Color2:FlxColor, Steps:Int, ?Ease:Float->Float):Array<FlxColor>
+	{
+		var output = new Array<FlxColor>();
+
+		if (Ease == null)
+		{
+			Ease = function(t:Float):Float
+			{
+				return t;
+			}
+		}
+
+		for (step in 0...Steps)
+		{
+			output[step] = interpolate(Color1, Color2, Ease(step / (Steps - 1)));
+		}
+
+		return output;
+	}
+
+	public static function multiply(lhs:FlxColor, rhs:FlxColor):FlxColor
+	{
+		return FlxColor.fromRGBFloat(lhs.redFloat * rhs.redFloat, lhs.greenFloat * rhs.greenFloat, lhs.blueFloat * rhs.blueFloat);
+	}
+	public static function add(lhs:FlxColor, rhs:FlxColor):FlxColor
+	{
+		return FlxColor.fromRGB(lhs.red + rhs.red, lhs.green + rhs.green, lhs.blue + rhs.blue);
+	}
+	public static function subtract(lhs:FlxColor, rhs:FlxColor):FlxColor
+	{
+		return FlxColor.fromRGB(lhs.red - rhs.red, lhs.green - rhs.green, lhs.blue - rhs.blue);
+	}
+
+
+	// Custom shit
+	public static function getRed(color:FlxColor):Int{
+		return color.red;
+	}
+	public static function getBlue(color:FlxColor):Int{
+		return color.blue;
+	}
+	public static function getGreen(color:FlxColor):Int{
+		return color.green;
+	}
+	public static function getAlpha(color:FlxColor):Int{
+		return color.alpha;
+	}
+	public static function getRedFloat(color:FlxColor):Float{
+		return color.redFloat;
+	}
+	public static function getBlueFloat(color:FlxColor):Float{
+		return color.blueFloat;
+	}
+	public static function getGreenFloat(color:FlxColor):Float{
+		return color.greenFloat;
+	}
+	public static function getAlphaFloat(color:FlxColor):Float{
+		return color.alphaFloat;
+	}
+	public static function getSaturation(color:FlxColor):Float{
+		return color.saturation;
+	}
+	public static function getHue(color:FlxColor):Float{
+		return color.hue;
+	}
+	public static function getBrightness(color:FlxColor):Float{
+		return color.brightness;
+	}
+	public static function getLightness(color:FlxColor):Float{
+		return color.lightness;
+	}
+	public static function setRed(color:FlxColor,value:Int):FlxColor{
+		color.red = value;
+		return color;
+	}
+	public static function setBlue(color:FlxColor,value:Int):FlxColor{
+		color.blue = value;
+		return color;
+	}
+	public static function setGreen(color:FlxColor,value:Int):FlxColor{
+		color.green = value;
+		return color;
+	}
+	public static function setAlpha(color:FlxColor,value:Int):FlxColor{
+		color.alpha = value;
+		return color;
+	}
+	public static function setRedFloat(color:FlxColor,value:Float):FlxColor{
+		color.redFloat = value;
+		return color;
+	}
+	public static function setBlueFloat(color:FlxColor,value:Float):FlxColor{
+		color.blueFloat = value;
+		return color;
+	}
+	public static function setGreenFloat(color:FlxColor,value:Float):FlxColor{
+		color.greenFloat = value;
+		return color;
+	}
+	public static function setAlphaFloat(color:FlxColor,value:Float):FlxColor{
+		color.alphaFloat = value;
+		return color;
+	}
+	public static function setSaturation(color:FlxColor,value:Float):FlxColor{
+		color.saturation = value;
+		return color;
+	}
+	public static function setHue(color:FlxColor,value:Float):FlxColor{
+		color.hue = value;
+		return color;
+	}
+	public static function setBrightness(color:FlxColor,value:Float):FlxColor{
+		color.brightness = value;
+		return color;
+	}
+	public static function setLightness(color:FlxColor,value:Float):FlxColor{
+		color.lightness = value;
+		return color;
+	}
+
 }
 
 
