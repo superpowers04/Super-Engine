@@ -21,13 +21,24 @@ class StrumArrow extends FlxSprite{
 		ID = nid;
 	}
 
-	public function changeSprite(?name:String = "default"){
+	public function changeSprite(?name:String = "default",?_frames:FlxAtlasFrames,?anim:String = ""){
 		try{
 
-		var curAnim = animation.curAnim.name;
 		trace('Changing skin!');
 		if (name == 'default' || (!FileSystem.exists('${path_}/${name}.png') || !FileSystem.exists('${path_}/${name}.xml'))){
 			frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png')),File.getContent("assets/shared/images/NOTE_assets.xml"));
+		var curAnim = if(anim == "" && animation.curAnim != null) animation.curAnim.name else anim;
+			if(_frames == null){
+				if(name == "skin"){
+					frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+				}else if (name == 'default' || (!FileSystem.exists('${path_}/${name}.png') || !FileSystem.exists('${path_}/${name}.xml'))){
+					frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png')),File.getContent("assets/shared/images/NOTE_assets.xml"));
+				}else{
+					frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path_}/${name}.png')),File.getContent('${path_}/${name}.xml'));
+				}
+			}else{
+				frames = _frames;
+			}
 		}else{
 			frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path_}/${name}.png')),File.getContent('${path_}/${name}.xml'));
 		}

@@ -93,6 +93,15 @@ class ArrowSelection extends SearchMenuState
 		changeSelection();
 
 	}catch(e) MainMenuState.handleError('Error with notesel "create" ${e.message}');}
+	override function beatHit(){
+		super.beatHit();
+		if(playerStrums.members[curBeat % 4] != null) {
+			playerStrums.members[curBeat % 4].confirm();
+			playerStrums.members[(curBeat - 2) % 4].playStatic();
+			playerStrums.members[(curBeat - 1) % 4].press();
+		}
+
+	}
 	override function changeSelection(change:Int = 0){
 		super.changeSelection(change);
 		playerStrums.forEach(
