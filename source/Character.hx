@@ -39,7 +39,8 @@ using StringTools;
 class CharAnimController extends FlxAnimationController{
 	override function findByPrefix(AnimFrames:Array<FlxFrame>, Prefix:String):Void
 	{
-		var regTP:EReg = new EReg('${Prefix}[- ]*[0-9][0-9]?[0-9]?[0-9]?','ig'); // Fixes the game improperly registering frames from other animations
+		Prefix = EReg.escape(Prefix);
+		var regTP:EReg = new EReg('^${Prefix}[- ]*[0-9][0-9]?[0-9]?[0-9]?','ig'); // Fixes the game improperly registering frames from other animations
 		for (frame in _sprite.frames.frames)
 		{
 			if (frame.name != null && regTP.match(frame.name))
