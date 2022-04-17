@@ -56,6 +56,10 @@ class NoteSplash extends FlxSprite
 			alpha = 0.6;
 			animation.play("note" + note + "-" + FlxG.random.int(0, 1), true);
 			animation.finishCallback = finished;
+			if(animation.curAnim == null){
+				animation.play("note" + note + "-0", true);
+
+			}
 			animation.curAnim.frameRate = 24;
 			data = note;
 			updateHitbox();

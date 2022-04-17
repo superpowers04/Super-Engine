@@ -381,19 +381,31 @@ class ChartingState extends MusicBeatState
 		var player1DropDown = new FlxUIInputText(10, 50, 120, _song.player1, 8);
 		typingcharactershit = player1DropDown;
 
-		var player1Label = new FlxText(10,30,64,'Player 1');
+		var player1Label = new FlxText(10,30,64,'Player');
 
 		var player2DropDown = new FlxUIInputText(140, 50, 120, _song.player2, 8);
 		typingcharactershit = player2DropDown;
 
-		var player2Label = new FlxText(140,30,64,'Player 2');
+		var player2Label = new FlxText(140,30,64,'Opponent');
 
 		var acceptplayer1 = new FlxButton(10,70,'apply', function(){
-		_song.defplayer1 = _song.player1 = player1DropDown.text;
+			_song.defplayer1 = _song.player1 = player1DropDown.text;
 		});
 		var acceptplayer2 = new FlxButton(140,70,'apply', function(){
-		_song.defplayer2 = _song.player2 = player2DropDown.text;
+			_song.defplayer2 = _song.player2 = player2DropDown.text;
 		});
+
+
+
+		var hurtnotescoretxt = new FlxUIText(150, hitsounds.y, 'Hurtnote Score');
+		var hurtnotescore = new FlxUINumericStepper(hurtnotescoretxt.x , hurtnotescoretxt.y + 20 , 100, _song.noteMetadata.badnoteScore, -1000000, 1000000);
+		var hurtnotescoreapply = new FlxButton(hurtnotescore.x + 60 , hurtnotescore.y , 'apply', function(){_song.noteMetadata.badnoteScore = Std.int(hurtnotescore.value) - 10;});
+
+		var hurtnotehealthtxt = new FlxUIText(hurtnotescore.x , hurtnotescore.y + 40 , 'Hurtnote Health');
+		var hurtnotehealth = new FlxUINumericStepper(hurtnotehealthtxt.x , hurtnotehealthtxt.y + 20 , 0.01 , _song.noteMetadata.badnoteHealth, -2, 2, 2);
+		var hurtnotehealthapply = new FlxButton(hurtnotehealth.x + 60 , hurtnotehealth.y , 'apply', function(){_song.noteMetadata.badnoteHealth = hurtnotehealth.value;});
+
+
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -420,6 +432,13 @@ class ChartingState extends MusicBeatState
         tab_group_song.add(stepperShiftNoteDialms);
         tab_group_song.add(shiftNoteButton);
 		tab_group_song.add(hitsounds);
+
+		tab_group_song.add(hurtnotescoretxt);
+		tab_group_song.add(hurtnotescore);
+		tab_group_song.add(hurtnotescoreapply);
+		tab_group_song.add(hurtnotehealthtxt);
+		tab_group_song.add(hurtnotehealth);
+		tab_group_song.add(hurtnotehealthapply);
 
 		var tab_group_assets = new FlxUI(null, UI_box);
 		tab_group_assets.name = "ZAssets";
@@ -487,7 +506,7 @@ class ChartingState extends MusicBeatState
 		check_mustHitSection.checked = true;
 		// _song.needsVoices = check_mustHit.checked;
 
-		check_altAnim = new FlxUICheckBox(10, 400, null, null, "Alternate Animation", 100);
+		check_altAnim = new FlxUICheckBox(10, 400, null, null, "Alt animations", 100);
 		check_altAnim.name = 'check_altAnim';
 
 		check_changeBPM = new FlxUICheckBox(10, 60, null, null, 'Change BPM', 100);
@@ -531,26 +550,11 @@ class ChartingState extends MusicBeatState
 
 		forcehurtnote = new FlxUICheckBox(notetypeinput.x , notetypeinput.y + 20 ,null,null, 'Is hurt note, Will overwrite Note Type!');
 
-		var hurtnotescoretxt = new FlxUIText(150, 100, 'Hurtnote Score');
-		var hurtnotescore = new FlxUINumericStepper(hurtnotescoretxt.x , hurtnotescoretxt.y + 20 , 100, _song.noteMetadata.badnoteScore, -1000000, 1000000);
-		var hurtnotescoreapply = new FlxButton(hurtnotescore.x + 60 , hurtnotescore.y , 'apply', function(){_song.noteMetadata.badnoteScore = Std.int(hurtnotescore.value);});
-		var hurtnotescorenote = new FlxUIText(hurtnotescore.x , hurtnotescore.y + 20 , 'note: add -10 on top of that');
-
-		var hurtnotehealthtxt = new FlxUIText(hurtnotescorenote.x , hurtnotescorenote.y + 20 , 'Hurtnote Health');
-		var hurtnotehealth = new FlxUINumericStepper(hurtnotehealthtxt.x , hurtnotehealthtxt.y + 20 , 0.01 , _song.noteMetadata.badnoteHealth, -2, 2, 2);
-		var hurtnotehealthapply = new FlxButton(hurtnotehealth.x + 60 , hurtnotehealth.y , 'apply', function(){_song.noteMetadata.badnoteHealth = hurtnotehealth.value;});
-
 		//tab_group_note.add(m_checkhell);
 		tab_group_note.add(notetypeinput);
 		tab_group_note.add(notetypetxt);
 		tab_group_note.add(forcehurtnote);
-		tab_group_note.add(hurtnotescoretxt);
-		tab_group_note.add(hurtnotescore);
-		tab_group_note.add(hurtnotescoreapply);
-		tab_group_note.add(hurtnotescorenote);
-		tab_group_note.add(hurtnotehealthtxt);
-		tab_group_note.add(hurtnotehealth);
-		tab_group_note.add(hurtnotehealthapply);
+
 
 		UI_box.addGroup(tab_group_note);
 
@@ -862,13 +866,7 @@ class ChartingState extends MusicBeatState
 
 		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
-
-			if (_song.notes[curSection + 1] == null || _song.notes[curSection + 2] == null)
-			{
-				addSection();
-			}
-
-			changeSection(curSection + 1, false);
+			while(curBeat % 4 == 0 && curStep >= 16 * (curSection + 1)) increaseSection();
 		}
 		if (curStep <= (16 * curSection) - 1 && _song.notes[curSection - 1] != null)
 		{
@@ -1040,7 +1038,7 @@ class ChartingState extends MusicBeatState
 				}else if(!FlxG.keys.pressed.CONTROL)
 			{
 				if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
-					changeSection(curSection + 1);
+					increaseSection(true);
 				if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
 					changeSection(curSection - 1);
 			}	
@@ -1146,24 +1144,32 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.DOWN)
 				Conductor.changeBPM(Conductor.bpm - 1); */
 
-		bpmTxt.text = 'Buggy chart editor\n'+ Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
-			+ ' / '
-			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
-			+ '\nSection: '
-			+ curSection 
-			+ '\nCurStep: '
-			+ curStep
-			+ "\nSpeed: "
-			+ HelperFunctions.truncateFloat(speed, 1)
-			+ "\n\nSnap: "
-			+ notesnap
+		bpmTxt.text = 'Buggy chart editor\n'
+			+ '${FlxMath.roundDecimal(Conductor.songPosition / 1000, 2)} / ${FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2)}'
+			+ '\nSection: $curSection'
+			+ '\nCurStep: $curStep'
+			+ '\nSpeed: ${HelperFunctions.truncateFloat(speed, 1)}'
+			+ '\n\nSnap: ${notesnap}'
 			+ "\n"
 			+ (doSnapShit ? "Snap enabled" : "Snap disabled")
 			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right : Change playback speed\nCTRL-Left/Right : Change Snap\nHold Shift : Disable Snap\nEnter/Escape : Preview chart\n F1 : hide/show this' : "");
 		super.update(elapsed);
+		if(requestMusicPlay){
+			vocals.play();
+			FlxG.sound.music.play();
+			requestMusicPlay = false;
+		}
 	}catch(e){
 			MainMenuState.handleError("chart editor did a fucky: " + e.message);
 		}
+	}
+	inline function increaseSection(?updateMusic:Bool = false){
+			if (_song.notes[curSection + 1] == null || _song.notes[curSection + 2] == null)
+			{
+				addSection();
+			}
+
+			changeSection(curSection + 1, updateMusic);
 	}
 
 
@@ -1318,12 +1324,29 @@ class ChartingState extends MusicBeatState
 		updateSectionUI();
 		updateWaveform();
 	}
+	var requestMusicPlay = false;
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
+		if(sec < 0){
+			sec = 0;
+			if(FlxG.sound.music.playing){
+				FlxG.sound.music.pause();
+				vocals.pause();
+				claps.splice(0, claps.length);
+				requestMusicPlay = true;
+			}
+			Conductor.songPosition = 0;
+			FlxG.sound.music.time = Conductor.songPosition;
+			vocals.time = FlxG.sound.music.time;
+			updateCurStep();
+			curSection = 0;
+			return;
+		}
 		trace('changing section' + sec);
 
 		if (_song.notes[sec] == null)
 		{
+			trace('Making new section ' + sec);
 			_song.notes[sec] = {
 				sectionNotes:[],
 				lengthInSteps:16,
@@ -1339,14 +1362,23 @@ class ChartingState extends MusicBeatState
 		// trace('naw im not null');
 		curSection = sec;
 
-		updateGrid();
+		// updateGrid();
 
-		if (updateMusic)
-		{
-			FlxG.sound.music.time = sectionStartTime(curSection);
+		// if (updateMusic)
+		// {
+		if(updateMusic){
+			if(FlxG.sound.music.playing){
+				FlxG.sound.music.pause();
+				vocals.pause();
+				claps.splice(0, claps.length);
+				requestMusicPlay = true;
+			}
+			Conductor.songPosition = sectionStartTime(curSection);
+			FlxG.sound.music.time = Conductor.songPosition;
 			vocals.time = FlxG.sound.music.time;
 			updateCurStep();
 		}
+		// }
 
 		updateGrid();
 		updateSectionUI();

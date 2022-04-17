@@ -54,6 +54,7 @@ import tjson.Json;
 
 import haxe.iterators.StringIterator;
 import haxe.iterators.StringKeyValueIterator;
+
 #if cpp
 using cpp.NativeString;
 #end
@@ -228,8 +229,6 @@ class SETools{
 	// 	}
 	// 	FlxTween.tween(o,values,duration,options);
 	// }
-
-
 }
 class SESave{
 	var _map:Map<String,Dynamic> = new Map<String,Dynamic>();

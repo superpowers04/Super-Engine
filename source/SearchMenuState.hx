@@ -104,7 +104,8 @@ class SearchMenuState extends MusicBeatState
 			bg.color = bgColor;
 		}
 		bg.scrollFactor.set(0.01,0.01);
-		SickMenuState.musicHandle();
+		SickMenuState.musicHandle(bg);
+
 		add(bg);
 		var bgOver = new FlxSprite().loadGraphic(SearchMenuState.backgroundOver);
 		bgOver.scrollFactor.set(0.01,0.01);

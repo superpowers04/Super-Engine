@@ -25,7 +25,12 @@ class OfflinePlayState extends PlayState
   public static var instFile = "";
   public static var chartFile:String = "";
   public static var nameSpace:String = "";
-  public static var stateNames:Array<String> = ["","","-Offl","","-Multi","-OSU","-Story","","",""];
+  public static var stateNames:Array<String> = ["-freep","-Offl","","-Multi","-OSU","-Story","","",""];
+  var willChart:Bool = false;
+  override public function new(?charting:Bool = false){
+  	willChart = charting;
+  	super();
+  }
   function loadSongs(){
 
 		if(instFile == ""){
@@ -87,7 +92,11 @@ class OfflinePlayState extends PlayState
 	    // }
 	    if (shouldLoadSongs) loadSongs();
 
-
+	    var oldScripts:Bool = false;
+	    if(willChart){ // Loading scripts is redundant when we're just going to go into charting state
+	    	oldScripts = QuickOptionsSubState.getSetting("Song hscripts");
+	    	QuickOptionsSubState.setSetting("Song hscripts",false);
+	    }
 	    super.create();
 
 
@@ -101,6 +110,12 @@ class OfflinePlayState extends PlayState
 
 	    FlxG.mouse.visible = false;
 	    FlxG.autoPause = true;
+	    if(willChart){
+	    	QuickOptionsSubState.setSetting("Song hscripts",oldScripts);
+	    	PlayState.SONG.player1 = oldBF;
+			PlayState.SONG.player2 = oldOPP;
+			FlxG.switchState(new ChartingState());
+	    }
 	  }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}
 	}
 

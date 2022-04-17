@@ -738,7 +738,13 @@ class AnimationDebug extends MusicBeatState
 		{
 			// trace('Drop3: ${Std.parseInt(anim)}');
 			animUICurName = charAnims[Std.parseInt(anim)];
-			playTempAnim(animUICurName);
+			if(animUICurName == "**Unbind"){
+				if(charAnims[1] != null) animUICurName = charAnims[1];
+				dad.alpha = 0.5;
+			}else{
+				dad.alpha = 1;
+			}
+			if(animUICurName != "**Unbind") playTempAnim(animUICurName);
 			// uiMap["animSel"].text = charAnims[Std.parseInt(anim)];
 		});
 		animDropDown3.selectedLabel = '';animDropDown3.cameras = [camHUD];

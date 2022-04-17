@@ -149,7 +149,7 @@ class SickMenuState extends MusicBeatState
 			}else if(recolor && _bg != null){
 				_bg.color = FlxColor.fromString(mt.color);
 			}
-	}
+	} 
 
 	override function create()
 	{

@@ -179,13 +179,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 				var dataDir = "mods/weeks/" + name + "/charts/";
 				if(!FileSystem.exists(dataDir)){continue;}
+				var catMatch = query.match(name.toLowerCase());
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
 				addCategory(name + "(Week)",i);
 				i++;
 				var containsSong = false;
 				for (directory in dirs)
 				{
-					if (search == "" || query.match(directory.toLowerCase()) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
+					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
 					{
 						if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
 							modes[i] = [];
@@ -220,6 +221,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			for (name in FileSystem.readDirectory("mods/packs"))
 			{
 				// dataDir = "mods/packs/" + dataDir + "/charts/";
+				var catMatch = query.match(name.toLowerCase());
 				var dataDir = "mods/packs/" + name + "/charts/";
 				if(!FileSystem.exists(dataDir)){continue;}
 				
@@ -230,7 +232,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
 				for (directory in dirs)
 				{
-					if (search == "" || query.match(directory.toLowerCase()) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
+					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
 					{
 						if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
 							modes[i] = [];
@@ -301,7 +303,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	// 	return ret;
 	// }
 
-	public static function gotoSong(?selSong:String = "",?songJSON:String = "",?songName:String = ""){
+	public static function gotoSong(?selSong:String = "",?songJSON:String = "",?songName:String = "",charting:Bool = false){
 			try{
 				if(selSong == "" || songJSON == "" || songName == ""){
 					throw("No song name provided!");
@@ -329,28 +331,28 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
 				}
 				PlayState.stateType = 4;
-				FlxG.sound.music.fadeOut(0.4);				LoadingState.loadAndSwitchState(new MultiPlayState());
+				FlxG.sound.music.fadeOut(0.4);
+				LoadingState.loadAndSwitchState(new MultiPlayState(charting));
 			}catch(e){
 				MainMenuState.handleError('Error while loading chart ${e.message}');
 			}
 	}
 
-	override function select(sel:Int = 0){
-			if (songs[curSelected] == "No Songs!" || modes[curSelected][selMode] == CATEGORYNAME || modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
+	function selSong(sel:Int = 0,charting:Bool = false){
+		if (songs[curSelected] == "No Songs!" || modes[curSelected][selMode] == CATEGORYNAME || modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
 				FlxG.sound.play(Paths.sound("cancelMenu"));
+				showTempmessage("Invalid song!",FlxColor.RED);
 				return;
 			}
 			
 			lastSel = curSelected;
 			lastSearch = searchField.text;
-
-			// var songJSON = modes[curSelected][selMode]; // Just for easy access
-			// var songName = songNames[curSelected]; // Easy access to var
-			// var selSong = songs[curSelected]; // Easy access to var
 			lastSong = songs[curSelected] + modes[curSelected][selMode] + songNames[curSelected];
-			gotoSong(songs[curSelected],modes[curSelected][selMode],songNames[curSelected]);
+			gotoSong(songs[curSelected],modes[curSelected][selMode],songNames[curSelected],charting);
+	}
 
-			// PlayState.SONG = Song.parseJSONshit(File.getContent('${selSong}/${songJSON}'));
+	override function select(sel:Int = 0){
+			selSong(sel,false);
 
 	}	
 
@@ -377,6 +379,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
 			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.50 && grpSongs.members[curSelected].y < FlxG.height * 0.56) ){changeSelection(1);}
 			extraKeys();
+			if (FlxG.keys.justPressed.SEVEN && songs.length > 0 && FlxG.save.data.animDebug)
+			{
+				selSong(curSelected,true);
+			}
 			if (controls.ACCEPT && songs.length > 0)
 			{
 				select(curSelected);
