@@ -181,6 +181,7 @@ class PlayState extends MusicBeatState
 	public var iconP1:HealthIcon; //making these public again because i may be stupid
 	public var iconP2:HealthIcon; //what could go wrong?
 	public var camHUD:FlxCamera;
+	public var camTOP:FlxCamera;
 	public var camGame:FlxCamera;
 
 	public static var offsetTesting:Bool = false;
@@ -519,15 +520,20 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
+		camTOP = new FlxCamera();
+		camTOP.bgColor.alpha = 0;
 
 		// Note splashes
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 		var noteSplash0:NoteSplash = new NoteSplash();
-		noteSplash0.setupNoteSplash(100, 100, 0);
+		noteSplash0.setupNoteSplash(FlxG.height * 0.85, FlxG.width * 0.9, 0);
+		noteSplash0.cameras = [camHUD];
+
 		grpNoteSplashes.add(noteSplash0);
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
+		FlxG.cameras.add(camTOP);
 
 		FlxCamera.defaultCameras = [camGame];
 
@@ -3025,28 +3031,24 @@ class PlayState extends MusicBeatState
 		var spr:FlxSprite= strumLineNotes.members[id];
 		if(spr != null) {
 			spr.animation.play('confirm', true);
+			spr.centerOffsets();
 			if (spr.animation.curAnim.name == 'confirm')
 			{
-				spr.centerOffsets();
 				spr.offset.x -= 13;
 				spr.offset.y -= 13;
 			}
-			else
-				spr.centerOffsets();
 		}
 	}
 	public function BFStrumPlayAnim(id:Int,anim:String = 'confirm') {
 		var spr:FlxSprite= playerStrums.members[id];
 		if(spr != null) {
 			spr.animation.play(anim, true);
+			spr.centerOffsets();
 			if (spr.animation.curAnim.name == 'confirm')
 			{
-				spr.centerOffsets();
 				spr.offset.x -= 13;
 				spr.offset.y -= 13;
 			}
-			else
-				spr.centerOffsets();
 		}
 	}
 
