@@ -39,6 +39,7 @@ class MusicBeatState extends FlxUIState
 			trace('reg ' + transIn.region);
 		instance = this;
 		super.create();
+
 		tranIn();
 	}
 
@@ -136,9 +137,23 @@ class MusicBeatState extends FlxUIState
 		var oldZoom = FlxG.camera.zoom;
 		FlxG.camera.zoom += 1;
 		FlxTween.tween(FlxG.camera, {zoom:oldZoom},0.7,{ease: FlxEase.expoOut});
+		if(TitleState.loadingText != null){
+			add(TitleState.loadingText);
+			trace('FUNNI LOADING');
+			FlxG.cameras.remove(TitleState.funniCamera,false);
 
+			FlxTween.tween(TitleState.loadingText, {alpha:0},0.5,{onComplete:function(_){TitleState.loadingText.visible = false;},ease: FlxEase.expoOut});
+		}
 	}
 	function tranOut(){
+		// active = false;
+		
+		if(TitleState.loadingText != null){
+			FlxG.cameras.add(TitleState.funniCamera,false);
+			TitleState.loadingText.visible = true;
+			TitleState.loadingText.alpha = 1;
+		}
+		
 		FlxTween.tween(FlxG.camera, {x:FlxG.width},0.9,{ease: FlxEase.expoIn});
 		FlxTween.tween(FlxG.camera, {zoom:2},1,{ease: FlxEase.expoIn});
 

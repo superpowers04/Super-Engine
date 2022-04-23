@@ -53,6 +53,11 @@ class Alphabet extends FlxSpriteGroup
 	public var selected:Bool = false;
 	public var moveX:Bool = true;
 	public var adjustAlpha:Bool = true;
+	public var persist:Bool = false;
+
+	public override function destroy(){
+		if(persist){super.destroy();}else{visible = false;}
+	}
 
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, dontMoveX:Bool = false,?xOffset:Float = 70,?useAlphabet:Bool = true)
 	{

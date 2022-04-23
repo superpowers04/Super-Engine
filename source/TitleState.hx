@@ -31,6 +31,7 @@ import flash.display.Sprite;
 import flash.Lib;
 import SickMenuState;
 import flash.media.Sound;
+import flixel.FlxCamera;
 
 using StringTools;
 
@@ -68,6 +69,7 @@ class TitleState extends MusicBeatState
 	public static var osuBeatmapLoc:String = "";
 	public static var songScores:Scorekillme;
 	public static var pauseMenuMusic:Sound;
+	static public var loadingText:Alphabet;
 
 
 
@@ -474,6 +476,7 @@ class TitleState extends MusicBeatState
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
+	public static var funniCamera:FlxCamera = new FuckinNoDestCam();
 	override function tranOut(){return;}
 	function startIntro()
 	{
@@ -502,7 +505,15 @@ class TitleState extends MusicBeatState
 			// music.play();
 			FlxG.sound.playMusic(Paths.music('StartItchBuild'), 0.1);
 			FlxG.sound.music.pause();
+			loadingText = new Alphabet(FlxG.width * 0.8,FlxG.height * 0.8,"Loading..",true);
+			loadingText.isMenuItem = false;
+			loadingText.visible = false;
+			loadingText.persist = true;
+			loadingText.cameras = [funniCamera];
 			
+			funniCamera.bgColor.alpha = 0;
+			// LoadingState.loadingText = new FlxText(FlxG.width * 0.8,FlxG.height * 0.8,"Loading...");
+			// LoadingState.loadingText.setFormat();
 			findosuBeatmaps();
 			MainMenuState.firstStart = true;
 			Conductor.changeBPM(70);
@@ -1013,4 +1024,12 @@ class TitleState extends MusicBeatState
 	}
 
 
+}
+
+
+
+class FuckinNoDestCam extends FlxCamera{
+	public override function destroy(){
+		return;
+	}
 }
