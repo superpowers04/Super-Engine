@@ -78,6 +78,7 @@ class MainMenuState extends SickMenuState
 			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
 		else
 			controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
+		loading = false;
 		isMainMenu = true;
 		super.create();
 
@@ -128,11 +129,11 @@ class MainMenuState extends SickMenuState
 
 
 		if (MainMenuState.errorMessage == "" && TitleState.invalidCharacters.length > 0 && !hasWarnedInvalid) {
-			errorMessage = "You have some characters missing config.json files.";
+			errorMessage += "You have some characters missing config.json files.";
 			hasWarnedInvalid = true;
 		} 
 		if (!hasWarnedNightly) {
-			errorMessage = "This is a nightly build for " + ver.substring(0,ver.length - (1 + nightly.length) ) +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
+			errorMessage += "This is a nightly build for " + ver.substring(0,ver.length - (1 + nightly.length) ) +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
 			// ver+=nightly;
 			hasWarnedNightly = true;
 		} 

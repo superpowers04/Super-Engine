@@ -34,6 +34,7 @@ class NoteAssets{
 	public static var name:String;
 	static var path:String = "mods/noteassets"; // The slash not being here is just for ease of reading
 	public static var image:FlxGraphic;
+	public static var originalImage:FlxGraphic;
 	public static var xml:String;
 	public static var splashImage:FlxGraphic; // Is this getting cleared or something?
 	public static var splashXml:String;
@@ -62,6 +63,7 @@ class NoteAssets{
 			if(name == name_){return;}
 			trace('Loading noteAssets');
 			splashType = "se";
+			modified = false;
 			if(image != null){
 				for (i in [badImage,image,splashImage]){
 					i.destroyOnNoUse = false;

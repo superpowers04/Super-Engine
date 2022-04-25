@@ -57,6 +57,7 @@ class OnlinePlayState extends PlayState
 
 	override function create()
 	{try{
+		handleNextPacket = true;
 		OnlinePlayMenuState.SetVolumeControls(true); // Make sure volume is enabled
 		if (customSong){
 			for (i => v in useSongChar) {
@@ -368,9 +369,16 @@ class OnlinePlayState extends PlayState
 	
 	function getPresses():Int {return this.fromBool(controls.LEFT_P) | this.fromBool(controls.DOWN_P) << 1 | this.fromBool(controls.UP_P) << 2 | this.fromBool(controls.RIGHT_P) << 3 | this.fromBool(controls.LEFT) | this.fromBool(controls.DOWN) << 1 | this.fromBool(controls.UP) << 2 | this.fromBool(controls.RIGHT) << 3;}
 
+	public static var handleNextPacket = true;
 	function HandleData(packetId:Int, data:Array<Dynamic>)
 	{try{
+
 		OnlinePlayMenuState.RespondKeepAlive(packetId);
+		callInterp("packetRecieve",[packetId,data]);
+		if(!handleNextPacket){
+			handleNextPacket = true;
+			return;
+		}
 		switch (packetId)
 		{
 			case Packets.PLAYERS_READY:

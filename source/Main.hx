@@ -24,6 +24,7 @@ import sys.io.File;
 class Main extends Sprite
 {
 	public static var errorMessage = "";
+	public static var instance:Main;
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
@@ -70,6 +71,7 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
+		instance = this;
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
 
@@ -89,11 +91,11 @@ class Main extends Sprite
 		// Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 
 		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
-
 		addChild(game);
-
+		LoadingScreen.show();
 		fpsCounter = new Overlay(0, 0);
 		addChild(fpsCounter);
+
 		// fpsCounter.visible = false;
 		// fpsOverlay = new Overlay(0, 0);
 		// addChild(fpsCounter);

@@ -69,7 +69,6 @@ class TitleState extends MusicBeatState
 	public static var osuBeatmapLoc:String = "";
 	public static var songScores:Scorekillme;
 	public static var pauseMenuMusic:Sound;
-	static public var loadingText:Alphabet;
 
 
 
@@ -476,7 +475,6 @@ class TitleState extends MusicBeatState
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
-	public static var funniCamera:FlxCamera = new FuckinNoDestCam();
 	override function tranOut(){return;}
 	function startIntro()
 	{
@@ -493,6 +491,7 @@ class TitleState extends MusicBeatState
 
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
+			// FlxTween.tween(Main.fpsCounter,{alpha:1},0.2);
 
 
 			// HAD TO MODIFY SOME BACKEND SHIT
@@ -505,13 +504,6 @@ class TitleState extends MusicBeatState
 			// music.play();
 			FlxG.sound.playMusic(Paths.music('StartItchBuild'), 0.1);
 			FlxG.sound.music.pause();
-			loadingText = new Alphabet(FlxG.width * 0.8,FlxG.height * 0.8,"Loading..",true);
-			loadingText.isMenuItem = false;
-			loadingText.visible = false;
-			loadingText.persist = true;
-			loadingText.cameras = [funniCamera];
-			
-			funniCamera.bgColor.alpha = 0;
 			// LoadingState.loadingText = new FlxText(FlxG.width * 0.8,FlxG.height * 0.8,"Loading...");
 			// LoadingState.loadingText.setFormat();
 			findosuBeatmaps();
@@ -614,6 +606,7 @@ class TitleState extends MusicBeatState
 
 			createCoolText(['Powered by',"haxeflixel"]);
 			showHaxe();
+			LoadingScreen.hide();
 		}
 			// initialized = true;
 		// credGroup.add(credTextShit);

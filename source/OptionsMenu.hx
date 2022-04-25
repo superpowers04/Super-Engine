@@ -138,7 +138,7 @@ class OptionsMenu extends MusicBeatState
 	}
 	override function create()
 	{
-
+		loading = false;
 		instance = this;
 		if(onlinemod.OnlinePlayMenuState.socket == null){
 			initOptions();
@@ -192,6 +192,7 @@ class OptionsMenu extends MusicBeatState
 			var ls = lastState;
 			lastState = 0;
 			SearchMenuState.doReset = true;
+			LoadingScreen.show();
 			switch(ls){
 				case 3:FlxG.switchState(new onlinemod.OfflineMenuState());
 				case 4:FlxG.switchState(new multi.MultiMenuState());
