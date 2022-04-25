@@ -3371,9 +3371,9 @@ class PlayState extends MusicBeatState
 					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true); // Idle
 					cpuStrums.forEach(function(spr:FlxSprite)
 					{
-						if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
-						// if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm')
-						// 	spr.animation.play('pressed');
+						// if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
+						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm')
+							spr.animation.play('pressed');
 
 						else if (!p2holds[spr.ID])
 							spr.animation.play('static');
@@ -3781,6 +3781,37 @@ class PlayState extends MusicBeatState
 					else
 						spr.centerOffsets();
 				});
+				if (p2canplay){ // The above but for P2
+					p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+					var p2holds:Array<Bool> = [p2presses[4],p2presses[5],p2presses[6],p2presses[7]];
+					// Shitty animation handling
+
+					if (p2presses[0] || p2holds[0]) dad.playAnim('singLEFT', true); // Left
+					else if (p2presses[1] || p2holds[1]) dad.playAnim('singDOWN', true); // Down
+					else if (p2presses[2] || p2holds[2]) dad.playAnim('singUP', true); // Up
+					else if (p2presses[3] || p2holds[3]) dad.playAnim('singRIGHT', true); // Right 
+					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true); // Idle
+					cpuStrums.forEach(function(spr:FlxSprite)
+					{
+						// if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
+						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm')
+							spr.animation.play('pressed');
+
+						else if (!p2holds[spr.ID])
+							spr.animation.play('static');
+			 
+						if (spr.animation.curAnim.name == 'confirm')
+						{
+							spr.centerOffsets();
+							spr.offset.x -= 13;
+							spr.offset.y -= 13;
+						}
+						else
+							spr.centerOffsets();
+					});
+
+
+				}
 			}
 
 	function kadeBRGoodNote(note:Note, ?resetMashViolation = true):Void
