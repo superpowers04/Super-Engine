@@ -41,6 +41,7 @@ class NoteAssets{
 	public static var badImage:FlxGraphic;
 	public static var badXml:String;
 	public static var splashType:String = "se";
+	public static var modified:Bool = false;
 	static var splTypes:Array<String> = [
 		"se",
 		"psych",
