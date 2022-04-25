@@ -24,6 +24,7 @@ class MultiPlayState extends onlinemod.OfflinePlayState
   //   loadedInst = Sound.fromFile(instFile);
   // }catch(e){MainMenuState.handleError('Caught "loadSongs" crash: ${e.message}');}}
   // }
+
   override function create()
     {try{
     if (scriptLoc != "" ) PlayState.songScript = File.getContent(scriptLoc); else PlayState.songScript = "";

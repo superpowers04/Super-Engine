@@ -75,12 +75,12 @@ class OfflinePlayState extends PlayState
   	try{
   		instanc = this;
 	  	if (shouldLoadJson) loadJSON();
-	    PlayState.SONG.player1 = FlxG.save.data.playerChar;
-	    if ((FlxG.save.data.charAuto) && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
-	    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
-	    }else{
-	    	PlayState.SONG.player2 = FlxG.save.data.opponent;
-	    }
+	    // PlayState.player1 = FlxG.save.data.playerChar;
+	    // if ((FlxG.save.data.charAuto) && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
+	    // 	PlayState.player2 = TitleState.retChar(PlayState.player2);
+	    // }else{
+	    // 	PlayState.player2 = FlxG.save.data.opponent;
+	    // }
 	    PlayState.stateType=stateType;
 	    // var voicesFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'
 	    // if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg')){

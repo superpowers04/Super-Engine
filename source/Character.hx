@@ -466,14 +466,19 @@ class Character extends FlxSprite
 	}
 
 	function loadCustomChar(){
-		if(TitleState.retChar(curCharacter) != "" && !amPreview) curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
+		if(!amPreview){
+			if(TitleState.retChar(curCharacter) == "") curCharacter = "bf"; else curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character, or reset to BF if invalid
+		}
 		trace('Loading a custom character "$curCharacter"! ');				
-		if(charLoc == "mods/characters" && TitleState.weekChars[curCharacter] != null && TitleState.weekChars[curCharacter].contains(onlinemod.OfflinePlayState.nameSpace) && TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter] != null){
-			charLoc = TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter];
-			trace('$curCharacter is loading from $charLoc');
-		}else if(charLoc == "mods/characters" && TitleState.characterPaths[curCharacter] != null){
-			charLoc = TitleState.characterPaths[curCharacter];
-			trace('$curCharacter is loading from $charLoc');
+		if(charLoc == "mods/characters"){
+
+			if(TitleState.weekChars[curCharacter] != null && TitleState.weekChars[curCharacter].contains(onlinemod.OfflinePlayState.nameSpace) && TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter] != null){
+				charLoc = TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter];
+				trace('$curCharacter is loading from $charLoc');
+			}else if(TitleState.characterPaths[curCharacter] != null){
+				charLoc = TitleState.characterPaths[curCharacter];
+				trace('$curCharacter is loading from $charLoc');
+			}
 		}
 		isCustom = true;
 		var charPropJson:String = "";
@@ -508,8 +513,11 @@ class Character extends FlxSprite
 					}]
 				}');
 			}else{
-				MainMenuState.handleError('Character ${curCharacter} is missing a config.json! You need to set them up in character selection');
+				MusicBeatState.instance.showTempmessage('Character ${curCharacter} is missing a config.json! You need to set them up in character selection. Using BF',FlxColor.RED);
 				// loadChar('bfHC');
+				curCharacter = "bf";
+				loadCustomChar();
+				return;
 			}
 		}else{
 

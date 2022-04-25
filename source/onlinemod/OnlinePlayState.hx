@@ -42,10 +42,15 @@ class OnlinePlayState extends PlayState
 	var inPause:Bool = false;
 
 	var originalSafeFrames:Int = FlxG.save.data.frames;
+	var p2Int:Int = 0;
+	var p1Int:Int = 0;
+	var p2presses:Array<Bool> = [false,false,false,false,false,false,false,false]; // 0 = not pressed, 1 = pressed, 2 = hold, 3 = miss
+	var p1presses:Array<Bool> = [false, false, false, false];
 
 	public function new(customSong:Bool, voices:FlxSound, inst:Sound)
 	{
 		PlayState.stateType =3;
+		updateOverlay = false;
 		super();
 
 
@@ -78,16 +83,24 @@ class OnlinePlayState extends PlayState
 			}
 		}
 
-		super.create();
-
-
 		clients = OnlineLobbyState.clients.copy();
+		if (autoDetPlayer2){
+				var count = 0;
+				for (i in clients.keys())
+				{
+					count++;
+					if(count > 1){break;}
+				}
+				PlayState.dadShow = (count == 1);
+		}
+
+		super.create();
 		clientScores = [];
 		clientText = [];
 		clientsGroup = new FlxTypedGroup<FlxText>();
 
 		// Add the score UI for other players
-		for (i in OnlineLobbyState.clients.keys())
+		for (i in clients.keys())
 		{
 			clientScores[i] = 0;
 			clientCount++;
@@ -106,18 +119,8 @@ class OnlinePlayState extends PlayState
 			text.cameras = [camHUD];
 		}
 		add(clientsGroup);
-		if (autoDetPlayer2){
-				if (clientCount == 2 && TitleState.supported) {
-					PlayState.p2canplay = true;
-				}else{
-					PlayState.p2canplay = false;
-				}
-				if (clientCount == 1){
-					PlayState.dadShow = false;
-					PlayState.dad.destroy();
-					PlayState.dad = new EmptyCharacter(100, 100);
-				}
-		}
+
+
 		// Add XieneDev watermark
 		var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.9 + 50, FlxG.width, "SuperEngine-BattleRoyale " + MainMenuState.ver, 16);
 		xieneDevWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -285,6 +288,9 @@ class OnlinePlayState extends PlayState
 	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
 	{
 		super.noteMiss(direction, daNote,forced);
+		if (PlayState.p2canplay){
+			Sender.SendPacket(Packets.KEYPRESS, [0,1 + direction], OnlinePlayMenuState.socket);
+		}
 		SendScore();
 	}
 
@@ -296,6 +302,8 @@ class OnlinePlayState extends PlayState
 
 		super.resyncVocals();
 	}
+
+
 
 	override function endSong():Void
 	{
@@ -323,12 +331,38 @@ class OnlinePlayState extends PlayState
 
 		super.keyShit();
 		if (PlayState.p2canplay){ // This ifstatement is weird, but tries to help with bandwidth
-			if (lastPressed[0] != PlayState.p1presses[0] || lastPressed[1] != PlayState.p1presses[1] || lastPressed[2] != PlayState.p1presses[2] || lastPressed[3] != PlayState.p1presses[3]){
+			if (lastPressed[0] != p1presses[0] || lastPressed[1] != p1presses[1] || lastPressed[2] != p1presses[2] || lastPressed[3] != p1presses[3]){
 				// Sender.SendPacket(Packets.KEYPRESS, [this.fromBool(controls.LEFT), this.fromBool(controls.DOWN), this.fromBool(controls.UP), this.fromBool(controls.RIGHT)], OnlinePlayMenuState.socket);
-				Sender.SendPacket(Packets.KEYPRESS, [getPresses()], OnlinePlayMenuState.socket);
-				lastPressed = PlayState.p1presses;
+				p1Int = getPresses();
+				Sender.SendPacket(Packets.KEYPRESS, [p1Int], OnlinePlayMenuState.socket);
+				lastPressed = p1presses;
 			}
+			p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+			// Shitty animation handling
 
+			if (p2presses[0]) PlayState.dad.playAnim('singLEFT', true); // Left
+			else if (p2presses[1]) PlayState.dad.playAnim('singDOWN', true); // Down
+			else if (p2presses[2]) PlayState.dad.playAnim('singUP', true); // Up
+			else if (p2presses[3]) PlayState.dad.playAnim('singRIGHT', true); // Right 
+			else if (PlayState.dad.animation.curAnim.name != "Idle" && PlayState.dad.animation.curAnim.finished) PlayState.dad.playAnim('Idle',true); // Idle
+			cpuStrums.forEach(function(spr:FlxSprite)
+			{
+				// if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
+				if (p2presses[spr.ID])
+					spr.animation.play('pressed');
+				else
+					spr.animation.play('static');
+				
+				spr.centerOffsets();
+	 
+				// if (spr.animation.curAnim.name == 'confirm')
+				// {
+				// 	spr.centerOffsets();
+				// 	spr.offset.x -= 13;
+				// 	spr.offset.y -= 13;
+				// }
+				// else
+			});
 		}
 	}
 // this.fromBool([controls.LEFT_P, controls.LEFT]),
@@ -367,7 +401,7 @@ class OnlinePlayState extends PlayState
 		super.closeSubState();
 	}
 	
-	function getPresses():Int {return this.fromBool(controls.LEFT_P) | this.fromBool(controls.DOWN_P) << 1 | this.fromBool(controls.UP_P) << 2 | this.fromBool(controls.RIGHT_P) << 3 | this.fromBool(controls.LEFT) | this.fromBool(controls.DOWN) << 1 | this.fromBool(controls.UP) << 2 | this.fromBool(controls.RIGHT) << 3;}
+	function getPresses():Int {return this.fromBool(controls.LEFT) | this.fromBool(controls.DOWN) << 1 | this.fromBool(controls.UP) << 2 | this.fromBool(controls.RIGHT) << 3;}
 
 	public static var handleNextPacket = true;
 	function HandleData(packetId:Int, data:Array<Dynamic>)
@@ -426,18 +460,22 @@ class OnlinePlayState extends PlayState
 			case Packets.REJECT_CHAT_MESSAGE:
 				Chat.SPEED_LIMIT();
 			case Packets.SERVER_CHAT_MESSAGE:
-				Chat.SERVER_MESSAGE(data[0]);
+				if(StringTools.startsWith(data[0],"'32d5d167'")) OnlineLobbyState.handleServerCommand(data[0].toLowerCase(),0); else Chat.SERVER_MESSAGE(data[0]);
 
 			case Packets.FORCE_GAME_END:
 				FlxG.switchState(new OnlineLobbyState(true));
 			case Packets.KEYPRESS:
 				if (PlayState.p2canplay){
+					if(data[1] != null && data[1] != 0 ){
+						PlayState.charAnim(1,Note.noteAnims[Std.int(data[1] - 1)],true);
+					}else{
+
 					// PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
+						p2Int = data[0];
+						p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1) // Holds
+						];
 
-					PlayState.p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1), // Presses
-					((data[0] >> 4) & 1 == 1),((data[0] >> 5) & 1 == 1),((data[0] >> 6) & 1 == 1),((data[0] >> 7) & 1 == 1) // Holds
-					];
-
+					}
 				}
 			case Packets.BROADCAST_NEW_PLAYER:
 				var id:Int = data[0];
@@ -463,6 +501,7 @@ class OnlinePlayState extends PlayState
 				text.cameras = [camHUD];
 			case Packets.DISCONNECT:
 				FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
+
 		}}catch(e){
 			Chat.OutputChatMessage("[Client] You had an error when receiving packet '" + '$packetId' + "':");
 			Chat.OutputChatMessage(e.message);
@@ -490,6 +529,19 @@ class OnlinePlayState extends PlayState
 			Conductor.songPosition = -5000;
 			Conductor.lastSongPos = -5000;
 			songTime = 0;
+		}
+				if(FlxG.save.data.animDebug){
+			Overlay.debugVar += '\nResync count:${resyncCount}'
+				+'\nCond/Music time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}'
+				+'\nAssumed Section:${curSection}'
+				+'\nHealth:${health}'
+				+'\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }'
+				+'\nScript Count:${interpCount}' +
+				(if(PlayState.p2canplay)
+				 '\nPlayer2 input:${p2Int}/' + StringTools.replace(StringTools.replace(('${p2presses}').toLowerCase(),"true","1"),"false","0")
+				+'\nPlayer1 input:${p1Int}/' + StringTools.replace(StringTools.replace(('${p1presses}').toLowerCase(),"true","1"),"false","0")
+				else "\nInputsync is disabled"
+				);
 		}
 	}
 

@@ -25,8 +25,9 @@ class Overlay extends TextField
 
 		this.x = x;
 		this.y = y;
-		width = 200;
-		height = 150;
+		width = 1280;
+		height = 720;
+		// alpha = 0;
 
 		currentFPS = 0;
 		selectable = false;

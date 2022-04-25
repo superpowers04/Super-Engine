@@ -23,6 +23,7 @@ class OnlineLobbyState extends MusicBeatState
 {
   var clientTexts:Map<Int, Int> = []; // Maps a player ID to the corresponding index in clientsGroup
   var clientsGroup:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
+  var clientsGroupLeaderboard:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
   var clientCount:Int = 0; // Amount of clients in the lobby
   public static var optionsButton:FlxUIButton;
 
@@ -39,27 +40,44 @@ class OnlineLobbyState extends MusicBeatState
 
 
   var keepClients:Bool;
+  var showingLeaderBoard:Bool = true;
+  var hasLeaderboard:Bool = false;
 
-  public function new(keepClients:Bool=false)
-  {
-	super();
-
-	if (!keepClients)
+	public function new(keepClients:Bool=false,?_hasLeaderboard:Bool = false)
 	{
-	  clients = [];
-	  clientsOrder = [];
-	  receivedPrevPlayers = false;
+		super();
+		if(_hasLeaderboard){
+			showingLeaderBoard = false;
+			hasLeaderboard = true;
+		}
+		if (!keepClients)
+		{
+		  clients = [];
+		  clientsOrder = [];
+		  receivedPrevPlayers = false;
 
-	  Chat.chatMessages = [];
+		  Chat.chatMessages = [];
+		}
+
+		this.keepClients = keepClients;
 	}
 
-	this.keepClients = keepClients;
-  }
+	function toggleLeaderboard(){
+		showingLeaderBoard = !showingLeaderBoard;
+		if(showingLeaderBoard){
+			backButton.getLabel().name = "Show Player List";
+			replace(clientsGroup,clientsGroupLeaderboard);
+		}else{
+			backButton.getLabel().name = "Show Leaderboard";
+			replace(clientsGroupLeaderboard,clientsGroup);
 
+		}
+	}
+	var backButton:FlxUIButton;
   override function create()
   {
 	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('onlinemod/online_bg0'));
-		add(bg);
+	add(bg);
 
 
 	var topText:FlxText = new FlxText(0, FlxG.height * 0.05, "Lobby");
@@ -69,7 +87,42 @@ class OnlineLobbyState extends MusicBeatState
 
 
 	clientsGroup = new FlxTypedGroup<FlxText>();
+	clientsGroupLeaderboard = new FlxTypedGroup<FlxText>();
 	add(clientsGroup);
+	if(hasLeaderboard){
+
+		var orderedKeys:Array<Int> = [for(k in OnlinePlayState.clientScores.keys()) k];
+		orderedKeys.sort((a, b) -> OnlinePlayState.clientScores[b] - OnlinePlayState.clientScores[a]);
+
+		var x:Int = 0;
+		for (i in orderedKeys)
+		{
+		  var name:String = clients[i];
+		  var score = OnlinePlayState.clientText[i];
+		  if (score == null) score = "N/A";
+		  if (name == null) name = "N/A";
+		  var text:FlxText = new FlxText(0, FlxG.height*0.2 + 30*x, '${x+1}. $name: $score');
+
+		  if (i == -1)
+		    text.text += " (YOU)";
+
+		  var color:FlxColor = FlxColor.WHITE;
+		  if (!OnlineLobbyState.clients.exists(i) && i != -1)
+		    color = FlxColor.RED;
+
+		  text.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		  text.screenCenter(FlxAxes.X);
+		  clientsGroupLeaderboard.add(text);
+		  x++;
+		}
+		backButton = new FlxUIButton(10, 10, "Show Player List", () -> {
+			toggleLeaderboard();
+		});
+		backButton.setLabelFormat(28, FlxColor.BLACK, CENTER);
+		backButton.resize(300, FlxG.height * 0.1);
+		add(backButton);
+		toggleLeaderboard();
+	}
 
 
 	createNamesUI();
@@ -197,11 +250,13 @@ class OnlineLobbyState extends MusicBeatState
 	  switch (args[1]){
 		case "set":{
 
-		  	if (args[3] == "true" || args[3] == "on" || args[3] == "false" || args[3] == "off"){ 
+			if (args[3] == "true" || args[3] == "on" || args[3] == "false" || args[3] == "off"){ 
 				var bool = (args[3] == "true" || args[3] == "on");
 				switch(args[2]){
 					case "invertnotes":
 						PlayState.invertedChart = bool;
+					case "invertchars":
+						QuickOptionsSubState.setSetting("Swap characters",bool);
 					case "inputsync":
 						OnlinePlayState.autoDetPlayer2 = false;
 						PlayState.p2canplay = bool;
@@ -286,10 +341,13 @@ class OnlineLobbyState extends MusicBeatState
 					var clientInfo = {
 						version: MainMenuState.ver,
 						versionSplit: MainMenuState.ver.split("."),
-						supported: ["inputsync","invertnotes","p2show","clientscript","setchar","sendscript","enablescript"]
+						supported: ["inputsync","invertnotes","p2show","clientscript","setchar","sendscript","enablescript"],
 					};
 
-					sendResponse(Json.stringify(clientInfo));
+					sendResponse("info:" + Json.stringify(clientInfo));
+				}
+				case "character" | "char":{
+					sendResponse("character:" + FlxG.save.data.playerChar);
 				}
 			}
 		}
@@ -298,8 +356,8 @@ class OnlineLobbyState extends MusicBeatState
 	}catch(e){Chat.SERVER_MESSAGE('Server sent an invalid command ${e.message}, ${command}');} // I don't expect servers to always handle this properly, always better to have error catching
   }
   public static function sendResponse(text:String,?sendToPlayer:Bool = false){
-  	if(sendToPlayer)Chat.CLIENT_MESSAGE(text);
-  	Sender.SendPacket(Packets.SEND_CHAT_MESSAGE, [Chat.chatId,"'32d5d168' " + text], OnlinePlayMenuState.socket);
+	if(sendToPlayer)Chat.CLIENT_MESSAGE(text);
+	Sender.SendPacket(Packets.SEND_CHAT_MESSAGE, [Chat.chatId,"'32d5d168' " + text], OnlinePlayMenuState.socket);
   }
 
   public static function StartGame(jsonInput:String, folder:String)

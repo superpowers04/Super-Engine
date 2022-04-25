@@ -112,8 +112,7 @@ class PlayState extends MusicBeatState
 	public static inline var daPixelZoom:Int = 6;
 
 	public static var noteBools:Array<Bool> = [false, false, false, false];
-	public static var p2presses:Array<Bool> = [false,false,false,false,false,false,false,false]; // 0 = not pressed, 1 = pressed, 2 = hold, 3 = miss
-	public static var p1presses:Array<Bool> = [false, false, false, false];
+
 	public static var p2canplay = false;//TitleState.p2canplay
 
 	var halloweenLevel:Bool = false;
@@ -138,6 +137,10 @@ class PlayState extends MusicBeatState
 	public static var opponent(get,set):Character;
 	public static function get_opponent(){return dad;};
 	public static function set_opponent(vari){return dad = vari;};
+	public static var player1:String = "bf";
+	public static var player2:String = "bf";
+	public static var player3:String = "gf";
+
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
 
@@ -268,7 +271,7 @@ class PlayState extends MusicBeatState
 	public var eventLog:Array<OutNote> = [];
 	public var camBeat:Bool = true;
 	public var forceChartChars:Bool = false;
-
+	var updateOverlay = true;
 	var practiceMode = false;
 	var errorMsg:String = "";
 
@@ -437,9 +440,16 @@ class PlayState extends MusicBeatState
 	static public function charSet(charId:Int,field:String,value:Dynamic){
 		Reflect.setField(switch(charId){case 1: dad; case 2: gf; default: boyfriend;},field,value);
 	}
-	static public function charAnim(charId:Int,animation:String,?forced:Bool = false){
-		var e = switch(charId){case 1: dad; case 2: gf; default: boyfriend;};
-		e.playAnim(animation,forced);
+	static public function charAnim(charId:Dynamic = 0,animation:String = "",?forced:Bool = false){
+		if(charId.playAnim == null){
+			try{
+				charId = Std.string(charId);
+			}catch(e){
+				return boyfriend.playAnim(animation,forced);
+			}
+			charId = switch(charId){case "1" | "dad" | "opponent" | "p2": dad; case "2" | "gf" | "girlfriend" | "p3": gf; default: boyfriend;};
+		}
+		charId.playAnim(animation,forced);
 	}
 	public function clearVariables(){
 		stepAnimEvents = [];
@@ -482,6 +492,12 @@ class PlayState extends MusicBeatState
 	}
 	public var oldBF:String = "";
 	public var oldOPP:String = "";
+	override public function new(){
+		super();
+		PlayState.player1 = "";
+		PlayState.player2 = "";
+		PlayState.player3 = "";
+	}
 	override public function create()
 	{
 		#if !debug
@@ -506,14 +522,14 @@ class PlayState extends MusicBeatState
 		resetScore();
 
 		if(!ChartingState.charting){
-			oldBF = PlayState.SONG.player1;
-			oldOPP = PlayState.SONG.player2;
+			oldBF = PlayState.player1;
+			oldOPP = PlayState.player2;
 
 
 			if (FlxG.save.data.playerChar == "automatic"){
-				if (TitleState.retChar(PlayState.SONG.player1) != "") SONG.player1 = TitleState.retChar(PlayState.SONG.player1);
-				else SONG.player1 = "bf";
-			}else SONG.player1 = FlxG.save.data.playerChar;
+				if (TitleState.retChar(PlayState.player1) != "") player1 = TitleState.retChar(PlayState.player1);
+				else player1 = "bf";
+			}else player1 = FlxG.save.data.playerChar;
 		}
 		TitleState.loadNoteAssets(); // Make sure note assets are actually loaded
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -975,48 +991,49 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-
+		if(PlayState.player1 == "")PlayState.player1 = SONG.player1;
+		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
+		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
 		callInterp("afterStage",[]);
 
-		if ((stateType == 0 || stateType == 1) && !ChartingState.charting && !forceChartChars){
-		    PlayState.SONG.player1 = FlxG.save.data.playerChar;
-		    if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
-		    	PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
-		    }else{
-		    	PlayState.SONG.player2 = FlxG.save.data.opponent;
+		if (!ChartingState.charting && !forceChartChars){
+			PlayState.player1 = FlxG.save.data.playerChar;
+			if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
+				PlayState.player2 = TitleState.retChar(PlayState.player2);
+			}else{
+				PlayState.player2 = FlxG.save.data.opponent;
 	    	}
 		}
 		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
-		// 	var pl:Array<String> = [SONG.player1,SONG.player2];
-		// 	SONG.player1 = pl[1];
-		// 	SONG.player2 = pl[0];
+		// 	var pl:Array<String> = [player1,player2];
+		// 	player1 = pl[1];
+		// 	player2 = pl[0];
 		// }
-		var gfVersion:String = 'gf';
 
 		switch (SONG.gfVersion)
 		{
 			case 'gf-car':
-				gfVersion = 'gf-car';
+				player3 = 'gf-car';
 			case 'gf-christmas':
-				gfVersion = 'gf-christmas';
+				player3 = 'gf-christmas';
 			case 'gf-pixel':
-				gfVersion = 'gf-pixel';
+				player3 = 'gf-pixel';
 			default:
-				gfVersion = 'gf';
+				player3 = 'gf';
 		}
-		if (FlxG.save.data.gfChar != "gf"){gfVersion=FlxG.save.data.gfChar;}
-		gfChar = gfVersion;
-		if (FlxG.save.data.gfShow && gfShow) gf = new Character(400, 100, gfVersion,false,2); else gf = new EmptyCharacter(400, 100);
+		if (FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
+		gfChar = player3;
+		if (FlxG.save.data.gfShow && gfShow) gf = new Character(400, 100, player3,false,2); else gf = new EmptyCharacter(400, 100);
 		gf.scrollFactor.set(0.95, 0.95);
 		if (noGf) gf.visible = false;
-		if (!ChartingState.charting && SONG.defplayer1 != null && SONG.defplayer1.startsWith("gf") && FlxG.save.data.charAuto) SONG.player1 = FlxG.save.data.gfChar;
-		if (!ChartingState.charting && SONG.defplayer2 != null && SONG.defplayer2.startsWith("gf") && FlxG.save.data.charAuto) SONG.player2 = FlxG.save.data.gfChar;
-		if (dadShow && FlxG.save.data.dadShow && !(gfVersion == SONG.player2 && SONG.player1 != SONG.player2)) dad = new Character(100, 100, SONG.player2,false,1); else dad = new EmptyCharacter(100, 100);
+		if (!ChartingState.charting && SONG.defplayer1 != null && SONG.defplayer1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
+		if (!ChartingState.charting && SONG.defplayer2 != null && SONG.defplayer2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
+		if (dadShow && FlxG.save.data.dadShow && !(player3 == player2 && player1 != player2)) dad = new Character(100, 100, player2,false,1); else dad = new EmptyCharacter(100, 100);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
 		camPos.set(camPos.x + dad.camX, camPos.y + dad.camY);
-		if (FlxG.save.data.bfShow) boyfriend = new Character(770, 100, SONG.player1,true,0); else boyfriend = new EmptyCharacter(400,100);
+		if (FlxG.save.data.bfShow) boyfriend = new Character(770, 100, player1,true,0); else boyfriend = new EmptyCharacter(400,100);
 		
 
 		// REPOSITIONING PER STAGE
@@ -1046,7 +1063,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		if (gfVersion == SONG.player2 && SONG.player1 != SONG.player2){// Don't hide GF if player 1 is GF
+		if (player3 == player2 && player1 != player2){// Don't hide GF if player 1 is GF
 				// dad.setPosition(gf.x, gf.y);
 				dad.destroy();
 				dad = gf;
@@ -1057,8 +1074,8 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (gfVersion == SONG.player1){
-			if (SONG.player1 != SONG.player2){	// Don't hide GF if player 1 is GF
+		if (player3 == player1){
+			if (player1 != player2){	// Don't hide GF if player 1 is GF
 				boyfriend.destroy();
 				boyfriend = gf;
 				if (isStoryMode)
@@ -1273,11 +1290,11 @@ class PlayState extends MusicBeatState
 
 		
 
-		iconP1 = new HealthIcon(SONG.player1, true,boyfriend.clonedChar,boyfriend.charLoc);
+		iconP1 = new HealthIcon(player1, true,boyfriend.clonedChar,boyfriend.charLoc);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
-		iconP2 = new HealthIcon(SONG.player2, false,dad.clonedChar,dad.charLoc);
+		iconP2 = new HealthIcon(player2, false,dad.clonedChar,dad.charLoc);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		// iconP2.offset.set(0,iconP2.width);
 
@@ -2340,8 +2357,13 @@ class PlayState extends MusicBeatState
 				if (PlayState.SONG.notes[curSection] != null) followChar((PlayState.SONG.notes[curSection].mustHitSection ? 0 : 1),locked);
 			}
 		}
-		if(FlxG.save.data.animDebug){
-			Overlay.debugVar += '\nResync count:${resyncCount}\nCond/Music time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}\nAssumed Section:${curSection}\nHealth:${health}\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }\nScript Count:${interpCount}';
+		if(FlxG.save.data.animDebug && updateOverlay){
+			Overlay.debugVar += '\nResync count:${resyncCount}'
+				+'\nCond/Music time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}'
+				+'\nAssumed Section:${curSection}'
+				+'\nHealth:${health}'
+				+'\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }'
+				+'\nScript Count:${interpCount}';
 		}
 		if ((FlxG.save.data.camMovement || !camLocked ) && camBeat){
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
@@ -3359,37 +3381,7 @@ class PlayState extends MusicBeatState
 						spr.centerOffsets();
 				});
 									
-				if (p2canplay){ // The above but for P2
-					p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-					var p2holds:Array<Bool> = [p2presses[4],p2presses[5],p2presses[6],p2presses[7]];
-					// Shitty animation handling
 
-					if (p2presses[0] || p2holds[0]) dad.playAnim('singLEFT', true); // Left
-					else if (p2presses[1] || p2holds[1]) dad.playAnim('singDOWN', true); // Down
-					else if (p2presses[2] || p2holds[2]) dad.playAnim('singUP', true); // Up
-					else if (p2presses[3] || p2holds[3]) dad.playAnim('singRIGHT', true); // Right 
-					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true); // Idle
-					cpuStrums.forEach(function(spr:FlxSprite)
-					{
-						// if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
-						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm')
-							spr.animation.play('pressed');
-
-						else if (!p2holds[spr.ID])
-							spr.animation.play('static');
-			 
-						if (spr.animation.curAnim.name == 'confirm')
-						{
-							spr.centerOffsets();
-							spr.offset.x -= 13;
-							spr.offset.y -= 13;
-						}
-						else
-							spr.centerOffsets();
-					});
-
-
-				}
 			}
 
 	function kadeGoodNote(note:Note, ?resetMashViolation = true):Void
@@ -3614,7 +3606,6 @@ class PlayState extends MusicBeatState
 			{
 				// control arrays, order L D R U
 				var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-				p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 				var pressArray:Array<Bool> = [
 					controls.LEFT_P,
 					controls.DOWN_P,
@@ -3781,37 +3772,7 @@ class PlayState extends MusicBeatState
 					else
 						spr.centerOffsets();
 				});
-				if (p2canplay){ // The above but for P2
-					p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-					var p2holds:Array<Bool> = [p2presses[4],p2presses[5],p2presses[6],p2presses[7]];
-					// Shitty animation handling
 
-					if (p2presses[0] || p2holds[0]) dad.playAnim('singLEFT', true); // Left
-					else if (p2presses[1] || p2holds[1]) dad.playAnim('singDOWN', true); // Down
-					else if (p2presses[2] || p2holds[2]) dad.playAnim('singUP', true); // Up
-					else if (p2presses[3] || p2holds[3]) dad.playAnim('singRIGHT', true); // Right 
-					else if (dad.animation.curAnim.name != "Idle" && dad.animation.curAnim.finished) dad.playAnim('Idle',true); // Idle
-					cpuStrums.forEach(function(spr:FlxSprite)
-					{
-						// if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
-						if (p2presses[spr.ID] && spr.animation.curAnim.name != 'confirm')
-							spr.animation.play('pressed');
-
-						else if (!p2holds[spr.ID])
-							spr.animation.play('static');
-			 
-						if (spr.animation.curAnim.name == 'confirm')
-						{
-							spr.centerOffsets();
-							spr.offset.x -= 13;
-							spr.offset.y -= 13;
-						}
-						else
-							spr.centerOffsets();
-					});
-
-
-				}
 			}
 
 	function kadeBRGoodNote(note:Note, ?resetMashViolation = true):Void
@@ -4340,8 +4301,6 @@ class PlayState extends MusicBeatState
 			}
 			if (FlxG.keys.justPressed.SEVEN )
 			{
-				PlayState.SONG.player1 = oldBF;
-				PlayState.SONG.player2 = oldOPP;
 				FlxG.switchState(new ChartingState());
 			}
 		}

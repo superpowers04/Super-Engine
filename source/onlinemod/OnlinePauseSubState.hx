@@ -21,16 +21,13 @@ class OnlinePauseSubState extends MusicBeatSubstate
 
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Exit to lobby', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var offline:Bool;
 
-	public function new(?offline:Bool=false)
+	public function new()
 	{
-		this.offline = offline;
-		if (offline)
-			menuItems = ['Resume', 'Restart', 'Exit to menu'];
 
 		super();
 
@@ -108,10 +105,19 @@ class OnlinePauseSubState extends MusicBeatSubstate
 					close();
 				case "Restart":
 					FlxG.resetState();
+				case "Exit to lobby":
+					PlayState.loadRep = false;
+					if (TitleState.supported){
+						Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy)], OnlinePlayMenuState.socket);
+					}else{Sender.SendPacket(Packets.SEND_SCORE, [PlayState.songScore], OnlinePlayMenuState.socket);}
+
+					Sender.SendPacket(Packets.GAME_END, [], OnlinePlayMenuState.socket);
+					
+					FlxG.switchState(new OnlineLobbyState(true,false));
 				case "Exit to menu":
 					PlayState.loadRep = false;
-					
-					FlxG.switchState(new OnlineLobbyState());
+					OnlinePlayMenuState.socket.close();
+					FlxG.switchState(new OnlinePlayMenuState("Disconnected"));
 			}
 		}
 	}

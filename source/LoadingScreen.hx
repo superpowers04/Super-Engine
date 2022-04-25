@@ -80,6 +80,8 @@ class LoadingScreen extends Sprite{
 		object.alpha = 1;
 		if(tween != null){tween.cancel();}
 		object.funni = true;
+		object.scaleX = FlxG.game.scaleX;
+		object.scaleY = FlxG.game.scaleY;
 		FlxG.stage.addChild(object);
 		// object.visible = true;
 	}
@@ -92,6 +94,8 @@ class LoadingScreen extends Sprite{
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 1;
+		object.scaleX = FlxG.game.scaleX;
+		object.scaleY = FlxG.game.scaleY;
 		tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){FlxG.stage.removeChild(object);}});
 		
 	}

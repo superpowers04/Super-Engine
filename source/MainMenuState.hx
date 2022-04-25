@@ -33,7 +33,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N17";
+	public static var nightly:String = "N18";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
@@ -55,7 +55,17 @@ class MainMenuState extends SickMenuState
 				QuickOptionsSubState.setSetting("Song hscripts",true);
 			}catch(e){trace('You just got an exception in yo exception ${e.message}');}
 		}
-
+		try{
+			LoadingScreen.hide();
+		}catch(e){
+			trace("Unable to hide loading screen, forcing it hidden");
+		}
+		try{
+			LoadingScreen.object.alpha = 0;
+			
+		}catch(e){
+			trace("bruhh");
+		}
 		if(forced)
 			Main.game.forceStateSwitch(new MainMenuState());
 		else
