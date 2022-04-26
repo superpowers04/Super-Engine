@@ -421,6 +421,7 @@ class TitleState extends MusicBeatState
 	// }
 	override public function create():Void
 	{
+		Assets.loadLibrary("shared");
 		@:privateAccess
 		{
 			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");
@@ -491,6 +492,7 @@ class TitleState extends MusicBeatState
 
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
+			lime.app.Application.current.window.onDropFile.add(AnimationDebug.fileDrop);
 			// FlxTween.tween(Main.fpsCounter,{alpha:1},0.2);
 
 

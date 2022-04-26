@@ -288,9 +288,7 @@ class OnlinePlayState extends PlayState
 	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
 	{
 		super.noteMiss(direction, daNote,forced);
-		if (PlayState.p2canplay){
-			Sender.SendPacket(Packets.KEYPRESS, [0,1 + direction], OnlinePlayMenuState.socket);
-		}
+
 		SendScore();
 	}
 
@@ -330,40 +328,35 @@ class OnlinePlayState extends PlayState
 			return;
 
 		super.keyShit();
-		if (PlayState.p2canplay){ // This ifstatement is weird, but tries to help with bandwidth
-			if (lastPressed[0] != p1presses[0] || lastPressed[1] != p1presses[1] || lastPressed[2] != p1presses[2] || lastPressed[3] != p1presses[3]){
-				// Sender.SendPacket(Packets.KEYPRESS, [this.fromBool(controls.LEFT), this.fromBool(controls.DOWN), this.fromBool(controls.UP), this.fromBool(controls.RIGHT)], OnlinePlayMenuState.socket);
-				p1Int = getPresses();
-				Sender.SendPacket(Packets.KEYPRESS, [p1Int], OnlinePlayMenuState.socket);
-				lastPressed = p1presses;
-			}
-			p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-			// Shitty animation handling
+		// if (PlayState.p2canplay){ // This ifstatement is weird, but tries to help with bandwidth
+		// 	if (lastPressed[0] != p1presses[0] || lastPressed[1] != p1presses[1] || lastPressed[2] != p1presses[2] || lastPressed[3] != p1presses[3]){
+		// 		// Sender.SendPacket(Packets.KEYPRESS, [this.fromBool(controls.LEFT), this.fromBool(controls.DOWN), this.fromBool(controls.UP), this.fromBool(controls.RIGHT)], OnlinePlayMenuState.socket);
+		// 		p1Int = getPresses();
+		// 		Sender.SendPacket(Packets.KEYPRESS, [p1Int], OnlinePlayMenuState.socket);
+		// 		lastPressed = p1presses;
+		// 	}
+		// 	p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+		// 	// Shitty animation handling
 
-			if (p2presses[0]) PlayState.dad.playAnim('singLEFT', true); // Left
-			else if (p2presses[1]) PlayState.dad.playAnim('singDOWN', true); // Down
-			else if (p2presses[2]) PlayState.dad.playAnim('singUP', true); // Up
-			else if (p2presses[3]) PlayState.dad.playAnim('singRIGHT', true); // Right 
-			else if (PlayState.dad.animation.curAnim.name != "Idle" && PlayState.dad.animation.curAnim.finished) PlayState.dad.playAnim('Idle',true); // Idle
-			cpuStrums.forEach(function(spr:FlxSprite)
-			{
-				// if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
-				if (p2presses[spr.ID])
-					spr.animation.play('pressed');
-				else
-					spr.animation.play('static');
+		// 	cpuStrums.forEach(function(spr:FlxSprite)
+		// 	{
+		// 		// if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
+		// 		if (p2presses[spr.ID])
+		// 			spr.animation.play('pressed');
+		// 		else
+		// 			spr.animation.play('static');
 				
-				spr.centerOffsets();
+		// 		spr.centerOffsets();
 	 
-				// if (spr.animation.curAnim.name == 'confirm')
-				// {
-				// 	spr.centerOffsets();
-				// 	spr.offset.x -= 13;
-				// 	spr.offset.y -= 13;
-				// }
-				// else
-			});
-		}
+		// 		// if (spr.animation.curAnim.name == 'confirm')
+		// 		// {
+		// 		// 	spr.centerOffsets();
+		// 		// 	spr.offset.x -= 13;
+		// 		// 	spr.offset.y -= 13;
+		// 		// }
+		// 		// else
+		// 	});
+		// }
 	}
 // this.fromBool([controls.LEFT_P, controls.LEFT]),
 //           this.fromBool([controls.DOWN_P, controls.DOWN]),
@@ -466,16 +459,52 @@ class OnlinePlayState extends PlayState
 				FlxG.switchState(new OnlineLobbyState(true));
 			case Packets.KEYPRESS:
 				if (PlayState.p2canplay){
-					if(data[1] != null && data[1] != 0 ){
+					var charID = 1;
+					if(data[2] != null && data[2] != 0) charID = data[2];
+
+					if(data[0] == -1 && data[1] != null && data[1] != 0 ){
 						PlayState.charAnim(1,Note.noteAnims[Std.int(data[1] - 1)],true);
 					}else{
-
-					// PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
-						p2Int = data[0];
-						p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1) // Holds
-						];
-
+						var killedNote = false;
+						for (i => note in notes.members){
+							if(note.noteID == data[0]){
+								killedNote = true;
+								if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
+									note.miss(charID,note);
+								}else{
+									note.hit(charID,note);
+								}
+								note.kill();
+								notes.remove(note, true);
+								note.destroy();
+								break;
+							}
+						}
+						if(!killedNote){
+							for (_ => note in unspawnNotes) {
+								if(note.noteID == data[0]){
+									killedNote = true;
+									if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
+										note.miss(charID,note);
+									}else{
+										note.hit(charID,note);
+									}
+									note.kill();
+									unspawnNotes.remove(note);
+									note.destroy();
+									break;
+								}
+								
+							}
+						}
 					}
+
+					// // PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
+					// 	p2Int = data[0];
+					// 	p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1) // Holds
+					// 	];
+
+					// }
 				}
 			case Packets.BROADCAST_NEW_PLAYER:
 				var id:Int = data[0];
@@ -530,18 +559,13 @@ class OnlinePlayState extends PlayState
 			Conductor.lastSongPos = -5000;
 			songTime = 0;
 		}
-				if(FlxG.save.data.animDebug){
+		if(FlxG.save.data.animDebug){
 			Overlay.debugVar += '\nResync count:${resyncCount}'
 				+'\nCond/Music time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}'
 				+'\nAssumed Section:${curSection}'
 				+'\nHealth:${health}'
 				+'\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }'
-				+'\nScript Count:${interpCount}' +
-				(if(PlayState.p2canplay)
-				 '\nPlayer2 input:${p2Int}/' + StringTools.replace(StringTools.replace(('${p2presses}').toLowerCase(),"true","1"),"false","0")
-				+'\nPlayer1 input:${p1Int}/' + StringTools.replace(StringTools.replace(('${p1presses}').toLowerCase(),"true","1"),"false","0")
-				else "\nInputsync is disabled"
-				);
+				+'\nScript Count:${interpCount}';
 		}
 	}
 

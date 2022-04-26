@@ -16,6 +16,8 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
+	public var noteID:Int = 0;
+	public static var lastNoteID:Int = 0;
 	public var skipXAdjust:Bool = false;
 	public var updateY:Bool = true;
 
@@ -243,7 +245,8 @@ class Note extends FlxSprite
 		if(killNote){return;}
 
 		if(!eventNote){
-
+			lastNoteID++;
+			noteID = lastNoteID;
 			//defaults if no noteStyle was found in chart
 			loadFrames();
 
@@ -294,6 +297,8 @@ class Note extends FlxSprite
 					// prevNote.setGraphicSize();
 				}
 			}
+		}else{
+			noteID = -40;
 		}
 		visible = false;
 		callInterp("noteAdd",[this,rawNote]);
@@ -351,7 +356,7 @@ class Note extends FlxSprite
 						this.destroy();
 					}
 				}
-				else if (aiShouldPress && strumTime <= Conductor.songPosition)
+				else if (aiShouldPress && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
 				{
 					wasGoodHit = true;
 				}

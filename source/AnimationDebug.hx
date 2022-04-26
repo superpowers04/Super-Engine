@@ -118,9 +118,33 @@ class AnimationDebug extends MusicBeatState
 	var quitHeldBar:FlxBar;
 	var quitHeldBG:FlxSprite;
 	var bf:Character;
+	public static function fileDrop(file:String){
+		file = file.replace("\\","/");
+		var validFile:String = "";
+		var ending1 = "";
+		var ending2 = "";
+		if(file.endsWith(".png") && FileSystem.exists(file.replace(".png",".xml"))){
+			validFile = file.replace(".png",".xml");
+			ending1 = "png";
+			ending2 = "xml";
+		}else if(file.endsWith(".xml") && FileSystem.exists(file.replace(".xml",".png"))){
+			validFile = file.replace(".xml",".png");
+			ending1 = "xml";
+			ending2 = "png";
+		}
+		if(validFile == "")return;
+		var _file = file.substr(file.lastIndexOf("/") + 1);
+		var _validFile = validFile.substr(file.lastIndexOf("/") + 1);
+		var name = file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
+		if(FileSystem.exists('mods/characters/$name/')){name = '${name}DRAGDROP-${FlxG.random.int(0,999999)}';}
+		FileSystem.createDirectory('mods/characters/$name');
+		File.copy(file,'mods/characters/$name/character.$ending1');
+		File.copy(validFile,'mods/characters/$name/character.$ending2');
+		LoadingState.loadAndSwitchState(new AnimationDebug(name,false,1,false,true));
+	} 
 
 
-	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false)
+	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false,?dragDrop:Bool = false)
 	{
 		// if (!PlayState.hasStarted){
 		// 	// try{
@@ -147,7 +171,7 @@ class AnimationDebug extends MusicBeatState
 		// } 
 			// MainMenuState.handleError("A song needs to be loaded first due to a crashing bug!");
 		super();
-		
+		dragdrop = dragDrop;
 		this.daAnim = daAnim;
 		this.isPlayer = isPlayer;
 		charType = charType_;
@@ -157,6 +181,7 @@ class AnimationDebug extends MusicBeatState
 		trace('Animation debug with ${daAnim},${if(isPlayer) "true" else "false"},${charType}');
 
 	}
+	var dragdrop = false;
 	override function beatHit(){
 		super.beatHit();
 		if(FlxG.keys.pressed.V && editMode != 2){dad.dance();}
@@ -166,7 +191,7 @@ class AnimationDebug extends MusicBeatState
 	override function create()
 	{
 		var phase:Int = 0;
-		var phases:Array<String> = ["Adding cams","Adding Stage","Adding First UI","Adding char","Adding more UI","Adding healthbar"];
+		var phases:Array<String> = ["Adding cams","Adding Stage","Adding First UI","super.create","Adding char","Moving character","Adding more UI","Adding healthbar"];
 		try{
 			camGame = new FlxCamera();
 			camHUD = new FlxCamera();
@@ -256,13 +281,15 @@ class AnimationDebug extends MusicBeatState
 			camGame.follow(camFollow);
 			phase++;
 			super.create();
-			spawnChar();
 			phase++;
+			spawnChar();
 			if(dad == null)throw("Player object is null!");
+			phase++;
 			updateCharPos(0,0,false,false);
 
 
 
+			phase++;
 			var contText:FlxText = new FlxText(FlxG.width * 0.81,FlxG.height * 0.94,0,'Press H for help');
 			contText.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			contText.color = FlxColor.BLACK;
@@ -286,7 +313,7 @@ class AnimationDebug extends MusicBeatState
 			quitHeldBar.cameras = quitHeldBG.cameras = [camHUD];
 			add(quitHeldBar);
 			phase++;
-
+			if(dragdrop)showTempmessage('Imported character $daAnim');
 		}catch(e) {MainMenuState.handleError('Error occurred, while loading Animation Debug. Current phase:${phases[phase]}; ${e.message}');}
 	}
 	function spawnChar(?reload:Bool = false,?resetOffsets = true,?charProp:CharacterJson = null){
@@ -583,10 +610,12 @@ class AnimationDebug extends MusicBeatState
 		// dad.y -= y;
 		// dadBG.x += x;
 		// dadBG.y -= y;
+		if(dad.animOffsets['all'] == null) dad.animOffsets['all'] = [0.0,0.0];
 		dad.animOffsets['all'][0] -= x;
 		dad.animOffsets['all'][1] += y;
 
 		dad.setOffsets(dad.animation.curAnim.name);
+		if(dadBG.animOffsets['all'] == null) dadBG.animOffsets['all'] = [0.0,0.0];
 		dadBG.animOffsets['all'][0] -= x;
 		dadBG.animOffsets['all'][1] += y;
 		dadBG.setOffsets(dad.animation.curAnim.name);

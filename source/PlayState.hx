@@ -1585,7 +1585,6 @@ class PlayState extends MusicBeatState
 		iconP2 = icop1;
 		iconP1.flipX = !iconP1.flipX;
 		iconP2.flipX = !iconP2.flipX;
-		updateCharacterCamPos();
 		if(!middlescroll){ // This is dumb but whatever
 			var plStrumX = [];
 			var oppStrumX = [];
@@ -1602,6 +1601,7 @@ class PlayState extends MusicBeatState
 				cpuStrums.members[i].x = plStrumX[i];
 			}
 		}
+		updateCharacterCamPos();
 	}
 	public function startCountdown():Void
 	{
@@ -1873,6 +1873,7 @@ class PlayState extends MusicBeatState
 		
 		notes.clear();
 		add(notes);
+		Note.lastNoteID = -1;
 
 		var noteData:Array<SwagSection>;
 
@@ -2588,6 +2589,7 @@ class PlayState extends MusicBeatState
 				offsetX = dad.getMidpoint().x - 100;
 		}
 		cameraPositions.push([offsetX,offsetY]);
+		if(swappedChars) cameraPositions = [cameraPositions[0],cameraPositions[1]];
 		cameraPositions.push([gf.getMidpoint().x + gf.camX,gf.getMidpoint().y - 100 + gf.camY]);
 		lockedCamPos = defLockedCamPos;
 	}
@@ -3448,6 +3450,7 @@ class PlayState extends MusicBeatState
 					
 					note.hit(0,note);
 					callInterp("noteHit",[boyfriend,note]);
+					onlineNoteHit(note.noteID,0);
 					
 					note.wasGoodHit = true;
 					if (boyfriend.useVoices){boyfriend.voiceSounds[note.noteData].play(1);boyfriend.voiceSounds[note.noteData].time = 0;vocals.volume = 0;}else vocals.volume = FlxG.save.data.voicesVol;
@@ -3461,7 +3464,11 @@ class PlayState extends MusicBeatState
 				}
 			}
 		
-
+	inline function onlineNoteHit(noteID:Int = -1,miss:Int = 0){
+		if(p2canplay){
+			onlinemod.Sender.SendPacket(onlinemod.Packets.KEYPRESS, [noteID,miss], onlinemod.OnlinePlayMenuState.socket);
+		}
+	}
 
 
 
@@ -3811,6 +3818,7 @@ class PlayState extends MusicBeatState
 					if(hitSound && !note.isSustainNote) FlxG.sound.play(hitSoundEff,FlxG.save.data.hitVol).x = (FlxG.camera.x) + (FlxG.width * (0.25 * note.noteData + 1));
 					note.hit(0,note);
 					callInterp("noteHit",[boyfriend,note]);
+					onlineNoteHit(note.noteID,0);
 					
 					note.wasGoodHit = true;
 					if (boyfriend.useVoices){boyfriend.voiceSounds[note.noteData].play(1);boyfriend.voiceSounds[note.noteData].time = 0;vocals.volume = 0;}else vocals.volume = FlxG.save.data.voicesVol;
@@ -3883,7 +3891,7 @@ class PlayState extends MusicBeatState
 		songScore -= 10;
 		if (daNote != null && daNote.shouldntBeHit) {songScore += SONG.noteMetadata.badnoteScore; health += SONG.noteMetadata.badnoteHealth;} // Having it insta kill, not a good idea 
 		if(daNote != null) callInterp("noteMiss",[boyfriend,daNote]); else callInterp("miss",[boyfriend,direction]);
-
+		onlineNoteHit(if(daNote == null) -1 else daNote.noteID,direction + 1);
 
 
 

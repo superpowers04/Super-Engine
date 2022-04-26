@@ -14,7 +14,7 @@ class LoadingScreen extends Sprite{
 	@:access(flixel.FlxCamera)
 
 
-	public override function new(){
+	public override function new(?txt = "loading"){
 		super();
 
 		width = 1280;
@@ -25,7 +25,7 @@ class LoadingScreen extends Sprite{
 		// graphics.beginFill(0x110011);
 		// graphics.drawRect(0,0, 1280, 720);
 		// graphics.endFill();
-		var loadingText = new Alphabet(0,0,"Loading",true);
+		var loadingText = new Alphabet(0,0,txt,true);
 		loadingText.isMenuItem = false;
 		loadingText.visible = true;
 		var funniBitmap = new BitmapData(1290,730,false,0x100010);
@@ -35,7 +35,6 @@ class LoadingScreen extends Sprite{
 			var v = loadingText.members[i];
 			v.useFramePixels = true;
 			v.draw();
-			trace('Plotting letter $i at $x,$y from ${v.width}x${v.height}');
 			funniBitmap.copyPixels(v.framePixels,new flash.geom.Rectangle(0,0,v.width,v.height),new flash.geom.Point(x,y));
 			// graphics.beginBitmapFill(v.framePixels,false,true);
 			// graphics.moveTo(x,y);
@@ -65,16 +64,14 @@ class LoadingScreen extends Sprite{
 		
 		
 		// super.addChild(loadingText);
-		trace('Generated loading screen');
 	}
 
 	public static function initScreen(?text:String = "Loading"){
-		object = new LoadingScreen();
+		object = new LoadingScreen(text);
 	}
 	public static var tween:FlxTween;
 	public static function show(){
 		if(object == null){
-			trace('WHAT');
 			initScreen();
 		}
 		object.alpha = 1;

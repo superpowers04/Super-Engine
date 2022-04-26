@@ -55,6 +55,7 @@ class FinishSubState extends MusicBeatSubstate
 	public static var autoEnd:Bool = true;
 	public static var forceBFAnim:Bool = false;
 	public static var instance:FinishSubState;
+	public static var fadeOut:Bool = true;
 	public function new(x:Float, y:Float,?won = true,?error:String = "")
 	{
 		instance = this;
@@ -65,7 +66,7 @@ class FinishSubState extends MusicBeatSubstate
 			won = false;
 			// PlayState.instance.paused = true;
 		}
-		FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
+		PlayState.instance.camHUD.alpha = PlayState.instance.camTOP.alpha = 1;
 		PlayState.instance.followChar(if(won) 0 else 1);
 		var camPos = PlayState.instance.getDefaultCamPos();
 		PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
@@ -80,10 +81,12 @@ class FinishSubState extends MusicBeatSubstate
 		if(!isError) FlxG.state.persistentUpdate = true; else FlxG.state.persistentUpdate = false;
 		win = won;
 		FlxG.sound.pause();
-		PlayState.instance.generatedMusic = false;
+		PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
 		var dad = PlayState.dad;
 		var boyfriend = PlayState.boyfriend;
 		Conductor.changeBPM(70);
+		FlxG.cameras.setDefaultDrawTarget(PlayState.instance.camTOP,true);
+
 
 		// For healthbar shit
 		healthBar = PlayState.instance.healthBar;
@@ -136,14 +139,20 @@ class FinishSubState extends MusicBeatSubstate
 		}
 
 		super();
+		if(fadeOut){
+			FlxTween.tween(PlayState.instance.camGame,{alpha:0},0.5);
+			// FlxTween.tween(FlxG.boyfriend,{x:FlxG.width - (boyfriend.width * 0.5),y:FlxG.height - (boyfriend.height * 0.5)},0.5);
+			PlayState.instance.camTOP.target = boyfriend;
+			boyfriend.cameras = [PlayState.instance.camTOP];
+		}
 		if(autoEnd){
 
 			// FlxG.camera.zoom = 1;
 			// PlayState.instance.camHUD.zoom = 1;
 
-			if (win || forceBFAnim) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+			if((["win","lose","singup"]).contains(boyfriend.animation.curAnim.name.toLowerCase())) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 			// if (FlxG.save.data.camMovement){
-				PlayState.instance.followChar(if(win || forceBFAnim) 0 else 1);
+			PlayState.instance.followChar(0);
 			// }
 			forceBFAnim = false;
 		}
@@ -155,7 +164,7 @@ class FinishSubState extends MusicBeatSubstate
 	var shownResults:Bool = false;
 	public function finishNew(?name:String){
 			Conductor.changeBPM(70);
-			FlxG.camera.alpha = PlayState.instance.camGame.alpha = PlayState.instance.camHUD.alpha = 1;
+			FlxG.camera.alpha = PlayState.instance.camHUD.alpha = 1;
 			// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
 			PlayState.instance.generatedMusic = false;
 			PlayState.instance.followChar(if(win) 0 else 1);

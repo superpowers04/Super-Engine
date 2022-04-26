@@ -38,6 +38,12 @@ class OptionsMenu extends MusicBeatState
 	public static var ScriptOptions:Map<String,OptionsFileDef> = new Map<String,OptionsFileDef>();
 
 	var options:Array<OptionCategory> = [
+		new OptionCategory("Quick Options", [
+			for (name => setting in QuickOptionsSubState.normalSettings)
+			{
+				new QuickOption(name);
+			}
+		],"Chart options. THESE ARE TEMPORARY AND RESET WHEN GAME IS CLOSED"),
 		new OptionCategory("Modifications", [
 			new OpponentOption("Change the opponent character"),
 			new PlayerOption("Change the player character"),
@@ -48,7 +54,7 @@ class OptionsMenu extends MusicBeatState
 			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
 			new ReloadCharlist("Refreshes list of stages, characters and scripts"),
 			new AllowServerScriptsOption("Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS"),
-		]),
+		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
 			new DownscrollOption("Change the layout of the strumline."),
@@ -57,14 +63,14 @@ class OptionsMenu extends MusicBeatState
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
 			new InputHandlerOption("Change the input engine used, only works locally. Kade is considered legacy and will not be improved")
-		]),
+		],"Edit things like Keybinds, scroll direction, etc"),
 		new OptionCategory("Modifiers", [
 		    new PracticeModeOption("Disables the ability to get a gameover."),
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccurateNoteHoldOption("Adjust accuracy of note sustains"),
-		]),
+		],"Toggle Practice mode, Ghost Tapping, etc"),
 
 		new OptionCategory("Appearance", [
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
@@ -76,7 +82,7 @@ class OptionsMenu extends MusicBeatState
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
 			new SongInfoOption("Change how your performance is displayed"),
 			new GUIGapOption("Change the distance between the end of the screen and text(Not used everywhere)"),
-		]),
+		],"Toggle flashing lights, camera movement, song info, etc "),
 		new OptionCategory("Misc", [
 			new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
 			new FPSOption("Toggle the FPS Counter"),
@@ -86,7 +92,7 @@ class OptionsMenu extends MusicBeatState
 			new EraseOption("Backs up your options to SEOPTIONS-BACKUP.json and then resets them"),
 			new ImportOption("Import your options from SEOPTIONS.json"),
 			new ExportOption("Export your options to SEOPTIONS.json to backup or to share with a bug report"),
-		]),
+		],"Misc things"),
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your FPS"),
 			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
@@ -94,7 +100,7 @@ class OptionsMenu extends MusicBeatState
 			new NoteRatingOption("Toggles the rating that appears when you press a note"),
 			// new UnloadSongOption("Unload the song when exiting the game"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
-		]),
+		],"Disable some features for better performance"),
 		new OptionCategory("Visibility", [
             new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),new BackTransOption("Change underlay opacity"),new BackgroundSizeOption("Change underlay size"),
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
@@ -103,7 +109,7 @@ class OptionsMenu extends MusicBeatState
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
-		]),
+		],"Toggle visibility of certain gameplay aspects"),
 		new OptionCategory("Auditory", [
 			new VolumeOption("Adjust the volume of the entire game","master"),
 			new VolumeOption("Adjust the volume of the background music","inst"),
@@ -114,7 +120,7 @@ class OptionsMenu extends MusicBeatState
 			new MissSoundsOption("Play a sound when you miss"),
 			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
 			new PlayVoicesOption("Plays the voices a character has when you press a note."),
-		]),
+		],"Toggle some sounds and change the volume of things"),
 	];
 
 	public var acceptInput:Bool = true;
@@ -409,8 +415,11 @@ class OptionsMenu extends MusicBeatState
 
 		if (isCat)
 			currentDescription = currentSelectedCat.getOptions()[curSelected].getDescription();
+		// else if (currentSelectedCat.description != null)
+		// 	currentDescription = currentSelectedCat.description;
 		else
-			currentDescription = "Please select a category";
+			currentDescription = "Select a category";
+
 		updateOffsetText();
 		if (upCat) updateCat();
 		// selector.y = (70 * curSelected) + 30;

@@ -9,11 +9,13 @@ import openfl.display.FPS;
 import openfl.Lib;
 import hscript.Interp;
 import tjson.Json;
+import QuickOptionsSubState;
 
 class OptionCategory
 {
 	private var _options:Array<Option> = new Array<Option>();
 	public var modded:Bool = false;
+	public var description:String = "";
 	public final function getOptions():Array<Option>
 	{
 		return _options;
@@ -35,8 +37,9 @@ class OptionCategory
 		return _name;
 	}
 
-	public function new (catName:String, options:Array<Option>,?mod:Bool = false)
+	public function new (catName:String, options:Array<Option>,?desc:String = "",?mod:Bool = false)
 	{
+		description = desc;
 		_name = catName;
 		_options = options;
 		this.modded = mod;
@@ -1810,5 +1813,58 @@ class ExportOption extends Option
 
 	override function left():Bool {
 		return false;
+	}
+}
+
+class QuickOption extends Option{
+	var name:String;
+	var setting:QOSetting;
+	inline function setValue(name:String,value:Dynamic){
+		setting.value = value;
+	}
+	public function new(name:String)
+	{
+		this.name = name;
+		setting = QuickOptionsSubState.normalSettings[name];
+
+		super();
+		acceptValues = true;
+		description = "Chart options. THESE ARE TEMPORARY AND RESET WHEN GAME IS CLOSED";
+
+	}
+	override function getValue():String {
+		var val = setting.value;
+		if (setting.lang != null && setting.lang[setting.value] != null) val = setting.lang[setting.value];
+		return val;
+	}
+	function changeThing(?right:Bool = false){
+		if (setting.type == 0) setValue(name,setting.value = !setting.value );
+		if (setting.type == 1 || setting.type == 2) {
+			var val = setting.value;
+			var inc:Float = 1;
+			if(setting.type == 2 && FlxG.keys.pressed.SHIFT) inc=0.1;
+			val += if(right) inc else -inc;
+			if (val > setting.max) val = setting.min; 
+			if (val < setting.min) val = setting.max - 1; 
+			setValue(name,val);
+		}
+		updateDisplay();
+	}
+			
+	override function right():Bool {
+
+		changeThing(true);
+		return true;
+	}
+	override function left():Bool {
+		changeThing();
+		return true;
+	}
+	public override function press():Bool{changeThing(true); return true;}
+	private override function updateDisplay():String
+	{
+		var val = setting.value;
+		if (setting.lang != null && setting.lang[setting.value] != null) val = setting.lang[setting.value];
+		return '${name}: ${val}';
 	}
 }

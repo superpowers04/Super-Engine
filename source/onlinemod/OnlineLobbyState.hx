@@ -76,6 +76,9 @@ class OnlineLobbyState extends MusicBeatState
 	var backButton:FlxUIButton;
   override function create()
   {
+	FlxG.sound.music.looped = true;
+	FlxG.sound.music.onComplete = null;
+  	if(!FlxG.sound.music.playing) FlxG.sound.music.play();
 	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('onlinemod/online_bg0'));
 	add(bg);
 

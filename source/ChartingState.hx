@@ -153,8 +153,6 @@ class ChartingState extends MusicBeatState
 				validScore: false
 			};
 		}
-		_song.player1 = _song.defplayer1;
-		_song.player2 = _song.defplayer1;
 		deezNuts.set(4, 1);
 		deezNuts.set(8, 2);
 		deezNuts.set(12, 3);
@@ -362,6 +360,7 @@ class ChartingState extends MusicBeatState
 			shiftNotes(Std.int(stepperShiftNoteDial.value),Std.int(stepperShiftNoteDialstep.value),Std.int(stepperShiftNoteDialms.value));
 		});
 
+
 		waveformEnabled = new FlxUICheckBox(10, 10, null, null, "Visible Waveform", 100);
 		if (FlxG.save.data.chart_waveform == null) FlxG.save.data.chart_waveform = true;
 		waveformEnabled.checked = FlxG.save.data.chart_waveform;
@@ -431,6 +430,21 @@ class ChartingState extends MusicBeatState
         tab_group_song.add(shiftNoteDialLabel3);
         tab_group_song.add(stepperShiftNoteDialms);
         tab_group_song.add(shiftNoteButton);
+
+  //       var invertChartButton:FlxButton = new FlxButton(100, 335, "Invert chart", function()
+		// {
+		// 	for (i => section in _song.notes){
+		// 		for (ni => note in _song.notes[i].sectionNotes){
+		// 			var note = section.sectionNotes[i];
+		// 			note[1] = (note[1] + 4) % 8;
+		// 			_song.notes[i].sectionNotes[i][1] = note;
+		// 		}
+		// 	}
+		// 		updateGrid();
+		// 		updateSectionUI();
+			
+		// });
+  //       tab_group_song.add(invertChartButton);
 		tab_group_song.add(hitsounds);
 
 		tab_group_song.add(hurtnotescoretxt);

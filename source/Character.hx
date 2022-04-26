@@ -39,6 +39,9 @@ using StringTools;
 class CharAnimController extends FlxAnimationController{
 	override function findByPrefix(AnimFrames:Array<FlxFrame>, Prefix:String):Void
 	{
+		if(Prefix == "FORCEALLLMAOTHISISSHIT"){
+			fuckinAddAll(AnimFrames);
+		}
 		Prefix = EReg.escape(Prefix);
 		var regTP:EReg = new EReg('^${Prefix}[- ]*[0-9][0-9]?[0-9]?[0-9]?','ig'); // Fixes the game improperly registering frames from other animations
 		for (frame in _sprite.frames.frames)
@@ -49,12 +52,22 @@ class CharAnimController extends FlxAnimationController{
 			}
 		}
 	}
+	function fuckinAddAll(AnimFrames:Array<FlxFrame>):Void
+	{
+		for (frame in _sprite.frames.frames)
+		{
+			if (frame.name != null)
+			{
+				AnimFrames.push(frame);
+			}
+		}
+	}
 }
 
 class Character extends FlxSprite
 {
-	public var animOffsets:Map<String, Array<Float>>;
-	public var animLoopStart:Map<String,Int>;
+	public var animOffsets:Map<String, Array<Float>> = ["all" => [0.0,0.0]];
+	public var animLoopStart:Map<String,Int> = [];
 	public var debugMode:Bool = false;
 	public var camPos:Array<Int> = [0,0];
 	public var charX:Float = 0;
@@ -409,14 +422,15 @@ class Character extends FlxSprite
 						break;
 					}
 				}
-				charProperties.animations = Json.parse('[{
-						"anim":"idle",
-						"name":"${idleName}",
-						"loop":false,
-						"fps":24,
-						"indices":[],
-						"oneshot":false
-					}]');
+				charProperties.animations = [{
+						anim:"idle",
+						name:"FORCEALLLMAOTHISISSHIT",
+						loop:false,
+						fps:24,
+						indices:[],
+						oneshot:false
+					}];
+				addAnimation("idle","FORCEALLLMAOTHISISSHIT");
 			}else{
 				var hasBFAnims:Bool = false;
 				{
@@ -482,19 +496,20 @@ class Character extends FlxSprite
 		}
 		isCustom = true;
 		var charPropJson:String = "";
-		if(!FileSystem.exists('${charLoc}/$curCharacter/config.json') && charProperties == null){
+		if(!FileSystem.exists('${charLoc}/$curCharacter/config.json')  && charProperties == null || (amPreview && FlxG.keys.pressed.SHIFT)){
 			if(amPreview){
+				// if(FlxG.keys.pressed.SHIFT) MusicBeatState.instance.showTempmessage("Forcing new JSON due to shift being held");
 				var idleName:String = "";
-				{ // Load characters without an idle animation, hopefully
-					var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+[iI][dD][lL][eE][A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
-					var input:String = charXml;
-					while (regTP.match(input)) {
-						input=regTP.matchedRight();
-						// addAnimation("Idle", regTP.matched(1));
-						idleName = regTP.matched(1);
-						break;
-					}
-				}
+				// { // Load characters without an idle animation, hopefully
+				// 	var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+[iI][dD][lL][eE][A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
+				// 	var input:String = charXml;
+				// 	while (regTP.match(input)) {
+				// 		input=regTP.matchedRight();
+				// 		// addAnimation("Idle", regTP.matched(1));
+				// 		idleName = regTP.matched(1);
+				// 		break;
+				// 	}
+				// }
 				charProperties = Json.parse('{
 					"clone":"",
 					"flip_x":false,
@@ -503,15 +518,10 @@ class Character extends FlxSprite
 					"dance_idle":false,
 					"voices":"",
 					"no_antialiasing":false,
-					"animations": [{
-						"anim":"idle",
-						"name":"${idleName}",
-						"loop":false,
-						"fps":24,
-						"indices":[],
-						"oneshot":false
-					}]
+					"animations": [],
+					"animations_offsets": [{"anim":"all","player1":[0,0],"player2":[0,0],"player3":[0,0]}]
 				}');
+				animOffsets['all'] = [0.0,0.0];
 			}else{
 				MusicBeatState.instance.showTempmessage('Character ${curCharacter} is missing a config.json! You need to set them up in character selection. Using BF',FlxColor.RED);
 				// loadChar('bfHC');
@@ -906,7 +916,7 @@ class Character extends FlxSprite
 		
 		var daOffset = animOffsets.get(AnimName); // Get offsets
 		var offsets:Array<Float> = [offsetX,offsetY];
-		if (animOffsets.exists(AnimName)) // Set offsets if animation has any
+		if (daOffset != null) // Set offsets if animation has any
 		{
 			offsets[0]+=daOffset[0];
 			offsets[1]+=daOffset[1];
