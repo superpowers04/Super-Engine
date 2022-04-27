@@ -521,9 +521,11 @@ class PlayState extends MusicBeatState
 
 		resetScore();
 
-		if(!ChartingState.charting){
-
-
+		if(ChartingState.charting){
+			if (TitleState.retChar(PlayState.SONG.player1) != "") player1 = TitleState.retChar(PlayState.SONG.player1);
+			else if(FlxG.save.data.playerChar == "automatic") player1 = "bf";
+			else player1 = FlxG.save.data.playerChar;
+		}else{
 			if (FlxG.save.data.playerChar == "automatic"){
 				if (TitleState.retChar(PlayState.SONG.player1) != "") player1 = TitleState.retChar(PlayState.SONG.player1);
 				else player1 = "bf";
@@ -993,13 +995,12 @@ class PlayState extends MusicBeatState
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
 		callInterp("afterStage",[]);
 
-		if (!ChartingState.charting && !forceChartChars){
-			if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
-				PlayState.player2 = TitleState.retChar(PlayState.player2);
-			}else{
-				PlayState.player2 = FlxG.save.data.opponent;
-	    	}
-		}
+		
+		if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
+			PlayState.player2 = TitleState.retChar(PlayState.player2);
+		}else{
+			PlayState.player2 = FlxG.save.data.opponent;
+    	}
 		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
 		// 	var pl:Array<String> = [player1,player2];
 		// 	player1 = pl[1];
