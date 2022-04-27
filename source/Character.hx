@@ -434,6 +434,26 @@ class Character extends FlxSprite
 						oneshot:false
 					}];
 				addAnimation("idle","FORCEALLLMAOTHISISSHIT");
+				if(charType == 2){
+					addAnimation("danceLeft","FORCEALLLMAOTHISISSHIT");
+					addAnimation("danceRight","FORCEALLLMAOTHISISSHIT");
+					charProperties.animations.push({
+						anim:"danceLeft",
+						name:"FORCEALLLMAOTHISISSHIT",
+						loop:false,
+						fps:24,
+						indices:[],
+						oneshot:false
+					});
+					charProperties.animations.push({
+						anim:"danceRight",
+						name:"FORCEALLLMAOTHISISSHIT",
+						loop:false,
+						fps:24,
+						indices:[],
+						oneshot:false
+					});
+				}
 			}else{
 				var hasBFAnims:Bool = false;
 				{

@@ -119,7 +119,9 @@ class AnimationDebug extends MusicBeatState
 	var quitHeldBG:FlxSprite;
 	var bf:Character;
 	public static function fileDrop(file:String){
-		file = file.replace("\\","/");
+		#if windows
+		file = file.replace("\\","/"); // Windows uses \ at times but we use / around here
+		#end
 		var validFile:String = "";
 		var ending1 = "";
 		var ending2 = "";

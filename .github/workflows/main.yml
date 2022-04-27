@@ -69,7 +69,7 @@ jobs:
         with:
           name: windowsBuild-Minimal
           path: |
-                C:/fnfbrbin/windows/bin/FNF Battle Royale.exe
+                C:/fnfbrbin/windows/bin/FNF Super Engine.exe
                 C:/fnfbrbin/windows/bin/manifest
                 C:/fnfbrbin/windows/bin/mods
                 C:/fnfbrbin/windows/bin/assets/shared/images/NOTE_assets.xml
@@ -82,6 +82,5 @@ jobs:
                 C:/fnfbrbin/windows/bin/assets/music
                 C:/fnfbrbin/windows/bin/assets/images/onlinemod
                 C:/fnfbrbin/windows/bin/assets/data/introText.txt
-                C:/fnfbrbin/windows/bin/assets/data/characterMetadata.json
                 C:/fnfbrbin/windows/bin/assets/sounds/Hit_Sound.ogg
 
