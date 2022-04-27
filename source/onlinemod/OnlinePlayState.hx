@@ -68,18 +68,18 @@ class OnlinePlayState extends PlayState
 			for (i => v in useSongChar) {
 				if (v != ""){
 					switch(i){
-						case 0: PlayState.SONG.player1 = v;
-						case 1: PlayState.SONG.player2 = v;
-						case 2: PlayState.SONG.gfVersion = v;
+						case 0: PlayState.player1 = v;
+						case 1: PlayState.player2 = v;
+						case 2: PlayState.player3 = v;
 					}
 				}
 			}
 			if (useSongChar[0] != "") PlayState.SONG.player1 = FlxG.save.data.playerChar;
 			
-			if ((FlxG.save.data.charAuto || useSongChar[1] != "") && TitleState.retChar(PlayState.SONG.player2) != ""){ // Check is second player is a valid character
-				PlayState.SONG.player2 = TitleState.retChar(PlayState.SONG.player2);
+			if ((FlxG.save.data.charAuto || useSongChar[1] != "") && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
+				PlayState.player2 = TitleState.retChar(PlayState.player2);
 			}else{
-				PlayState.SONG.player2 = FlxG.save.data.opponent;
+				PlayState.player2 = FlxG.save.data.opponent;
 			}
 		}
 

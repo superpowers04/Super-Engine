@@ -123,7 +123,7 @@ class FinishSubState extends MusicBeatSubstate
 			if(win){
 				boyfriend.playAnimAvailable(['win','hey','singUP']);
 				
-				if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnimAvailable(['lose','singDOWNmiss']);}
+				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnimAvailable(['lose','singDOWNmiss']);}
 				PlayState.gf.playAnim('cheer',true);
 			}else{
 				// boyfriend.playAnim('singDOWNmiss');
@@ -133,7 +133,7 @@ class FinishSubState extends MusicBeatSubstate
 				// dad.playAnim("win",true);
 				boyfriend.playAnimAvailable(['lose']);
 				dad.playAnimAvailable(['win','hey']);
-				if (PlayState.SONG.player2 == FlxG.save.data.gfChar) dad.playAnim('sad'); else dad.playAnim("hey");
+				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('sad'); else dad.playAnim("hey");
 				PlayState.gf.playAnim('sad',true);
 			}
 		}

@@ -484,7 +484,7 @@ class Character extends FlxSprite
 
 	function loadCustomChar(){
 		if(!amPreview){
-			if(TitleState.retChar(curCharacter) == "") curCharacter = "bf"; else curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character, or reset to BF if invalid
+			curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
 		}
 		trace('Loading a custom character "$curCharacter"! ');				
 		if(charLoc == "mods/characters"){
@@ -700,7 +700,6 @@ class Character extends FlxSprite
 
 	function loadChar(?char:String = ""){
 			if(char != "")curCharacter = char;
-			if(TitleState.retChar(curCharacter) == "") char = "bf";
 			
 			switch (curCharacter) // Seperate statement for duplicated character paths
 			{
@@ -750,7 +749,7 @@ class Character extends FlxSprite
 		if(charPath != "") charLoc = charPath;
 
 
-		if(TitleState.retChar(curCharacter) == null && charProperties == null && !amPreview && exitex == null){
+		if(TitleState.retChar(curCharacter) == "" && charProperties == null && !amPreview && exitex == null){
 			curCharacter = "bf";
 		}
 

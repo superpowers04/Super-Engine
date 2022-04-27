@@ -39,6 +39,13 @@ class HealthIcon extends FlxSprite
 		var path = pathh + "/";
 		var chars:Array<String> = ["bf","spooky","pico","mom","mom-car",'parents-christmas',"senpai","senpai-angry","spirit","spooky","bf-pixel","gf","dad","monster","monster-christmas","parents-christmas","bf-old","gf-pixel","gf-christmas","face","tankman"];
 		var relAnims:Bool = true;
+		
+		if(path == "mods/characters/" && !FileSystem.exists(path+char+"/healthicon.png")){
+			var _path = "";
+			if(TitleState.characterPaths[char] != null){
+				path = TitleState.characterPaths[char] + "/";
+			}
+		}
 		if (!chars.contains(char) &&FileSystem.exists(path+char+"/healthicon.png")){
 			// trace('Custom character with custom icon! Loading custom icon.');
 			var bitmapData = BitmapData.fromFile('${path}$char/healthicon.png');

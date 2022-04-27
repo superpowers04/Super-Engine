@@ -18,9 +18,6 @@ typedef SwagSong =
 
 	var player1:String;
 	var player2:String;
-	var ?defplayer1:String;
-	var ?defplayer2:String;
-	var ?defgf:String;
 	var gfVersion:String;
 	var ?noteStyle:String;
 	var stage:String;
@@ -273,8 +270,6 @@ class Song
 			var swagShit:SwagSong = cast rawJson.song;
 			swagShit.rawJSON = rawJson;
 			swagShit.validScore = true;
-			swagShit.defplayer1 = swagShit.player1;
-			swagShit.defplayer2 = swagShit.player2;
 			if (PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) swagShit = invertChart(swagShit);
 			swagShit = modifyChart(swagShit);
 			// if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null) swagShit = convHurtArrows(swagShit);
@@ -284,7 +279,6 @@ class Song
 			// }
 			if(QuickOptionsSubState.getSetting("Scroll speed") > 0) swagShit.speed = QuickOptionsSubState.getSetting("Scroll speed");
 			if (swagShit.noteMetadata == null) swagShit.noteMetadata = Song.defNoteMetadata;
-			swagShit.defgf = swagShit.gfVersion;
 			return swagShit;
 		#if !debug
 		}catch(e){

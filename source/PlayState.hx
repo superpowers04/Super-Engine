@@ -522,12 +522,10 @@ class PlayState extends MusicBeatState
 		resetScore();
 
 		if(!ChartingState.charting){
-			oldBF = PlayState.player1;
-			oldOPP = PlayState.player2;
 
 
 			if (FlxG.save.data.playerChar == "automatic"){
-				if (TitleState.retChar(PlayState.player1) != "") player1 = TitleState.retChar(PlayState.player1);
+				if (TitleState.retChar(PlayState.SONG.player1) != "") player1 = TitleState.retChar(PlayState.SONG.player1);
 				else player1 = "bf";
 			}else player1 = FlxG.save.data.playerChar;
 		}
@@ -991,13 +989,11 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if(PlayState.player1 == "")PlayState.player1 = SONG.player1;
 		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
 		callInterp("afterStage",[]);
 
 		if (!ChartingState.charting && !forceChartChars){
-			PlayState.player1 = FlxG.save.data.playerChar;
 			if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
 				PlayState.player2 = TitleState.retChar(PlayState.player2);
 			}else{
@@ -1026,8 +1022,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.gfShow && gfShow) gf = new Character(400, 100, player3,false,2); else gf = new EmptyCharacter(400, 100);
 		gf.scrollFactor.set(0.95, 0.95);
 		if (noGf) gf.visible = false;
-		if (!ChartingState.charting && SONG.defplayer1 != null && SONG.defplayer1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
-		if (!ChartingState.charting && SONG.defplayer2 != null && SONG.defplayer2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
+		if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
+		if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
 		if (dadShow && FlxG.save.data.dadShow && !(player3 == player2 && player1 != player2)) dad = new Character(100, 100, player2,false,1); else dad = new EmptyCharacter(100, 100);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);

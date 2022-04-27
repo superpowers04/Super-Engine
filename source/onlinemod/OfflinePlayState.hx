@@ -59,11 +59,11 @@ class OfflinePlayState extends PlayState
 
   		if (!ChartingState.charting) {PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
   				if(nameSpace != ""){
-  					if(TitleState.retChar(nameSpace + "|" + PlayState.SONG.player2) != null){
-  						PlayState.SONG.player2 = nameSpace + "|" + PlayState.SONG.player2;
+  					if(TitleState.retChar(nameSpace + "|" + PlayState.player2) != null){
+  						PlayState.player2 = nameSpace + "|" + PlayState.player2;
   					}
   					if(TitleState.retChar(nameSpace + "|" + PlayState.SONG.player1) != null){
-  						PlayState.SONG.player1 = nameSpace + "|" + PlayState.SONG.player1;
+  						PlayState.player1 = nameSpace + "|" + PlayState.player1;
   					}
   				
   				}
@@ -112,8 +112,6 @@ class OfflinePlayState extends PlayState
 	    FlxG.autoPause = true;
 	    if(willChart){
 	    	QuickOptionsSubState.setSetting("Song hscripts",oldScripts);
-	    	PlayState.SONG.player1 = oldBF;
-			PlayState.SONG.player2 = oldOPP;
 			FlxG.switchState(new ChartingState());
 	    }
 	  }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}
