@@ -441,6 +441,9 @@ class AnimationDebug extends MusicBeatState
 		FlxG.mouse.visible = false;
 		if (charSel){
 			FlxG.switchState(new CharSelection()); 
+		}else if(dragdrop){
+			FlxG.switchState(new MainMenuState()); 
+
 		}
 		else switch(PlayState.stateType){
 			case 2: LoadingState.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
