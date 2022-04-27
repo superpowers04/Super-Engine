@@ -64,10 +64,13 @@ class CharAnimController extends FlxAnimationController{
 	}
 }
 
+
+
 class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Float>> = ["all" => [0.0,0.0]];
 	public var animLoopStart:Map<String,Int> = [];
+	public var animLoops:Map<String,Bool> = [];
 	public var debugMode:Bool = false;
 	public var camPos:Array<Int> = [0,0];
 	public var charX:Float = 0;
@@ -830,10 +833,11 @@ class Character extends FlxSprite
 	override function update(elapsed:Float)
 	{	try{
 
-		if(!amPreview){
+		if(!amPreview && animation.curAnim != null){
 
 			if(animation.curAnim.finished) animHasFinished = true;
 			if(animHasFinished && loopAnimTo[animation.curAnim.name] != null) playAnim(loopAnimTo[animation.curAnim.name]);
+			else if(animHasFinished && animLoops[animation.curAnim.name] != null && animLoops[animation.curAnim.name]) {playAnim(animation.curAnim.name);currentAnimationPriority = 0;}
 			if (animation.curAnim.name.endsWith('miss') && animHasFinished && !debugMode)
 			{
 				playAnim('idle', true, false, 10);
@@ -941,7 +945,7 @@ class Character extends FlxSprite
 		callInterp("draw",[]);
 		super.draw();
 	} 
-
+	var currentAnimationPriority:Int = -100;
 	public dynamic function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0)
 	{
 		var lastAnim = "";
@@ -952,7 +956,7 @@ class Character extends FlxSprite
 		if (animation.curAnim != null){
 			lastAnim = animation.curAnim.name;
 			if(animation.curAnim.name != AnimName && !animHasFinished){
-				if (animationPriorities[animation.curAnim.name] != null && animationPriorities[animation.curAnim.name] > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
+				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
 				if (animationPriorities[animation.curAnim.name] == null && !animHasFinished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
 			}
 		}
@@ -968,8 +972,8 @@ class Character extends FlxSprite
 		// setSprite(animGraphics[AnimName.toLowerCase()]);
 
 		if (animation.getByName(AnimName) == null) return;
-		
 		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){Frame = loopAnimFrames[AnimName];}
+		if (animationPriorities[AnimName] != null) currentAnimationPriority = animationPriorities[AnimName];
 		animHasFinished = false;
 		animation.play(AnimName, Force, Reversed, Frame);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
@@ -1035,10 +1039,11 @@ class Character extends FlxSprite
 				loop : loop
 			});
 		}
+		animLoops[anim] = true;
 		if (indices != null && indices.length > 0) { // Add using indices if specified
-			animation.addByIndices(anim, prefix,indices,postFix, fps, loop);
+			animation.addByIndices(anim, prefix,indices,postFix, fps,false);
 		}else{
-			animation.addByPrefix(anim, prefix, fps, loop);
+			animation.addByPrefix(anim, prefix, fps, false);
 		}
 	}
 
