@@ -139,12 +139,12 @@ class FinishSubState extends MusicBeatSubstate
 		}
 
 		super();
-		if(fadeOut){
-			FlxTween.tween(PlayState.instance.camGame,{alpha:0},0.5);
-			// FlxTween.tween(FlxG.boyfriend,{x:FlxG.width - (boyfriend.width * 0.5),y:FlxG.height - (boyfriend.height * 0.5)},0.5);
-			PlayState.instance.camTOP.target = boyfriend;
-			boyfriend.cameras = [PlayState.instance.camTOP];
-		}
+		// if(fadeOut){
+		// 	FlxTween.tween(PlayState.instance.camGame,{alpha:0},0.5);
+		// 	// FlxTween.tween(FlxG.boyfriend,{x:FlxG.width - (boyfriend.width * 0.5),y:FlxG.height - (boyfriend.height * 0.5)},0.5);
+		// 	PlayState.instance.camTOP.target = boyfriend;
+		// 	boyfriend.cameras = [PlayState.instance.camTOP];
+		// }
 		if(autoEnd){
 
 			// FlxG.camera.zoom = 1;

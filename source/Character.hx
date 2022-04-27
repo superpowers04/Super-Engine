@@ -1039,7 +1039,7 @@ class Character extends FlxSprite
 				loop : loop
 			});
 		}
-		animLoops[anim] = true;
+		animLoops[anim] = loop;
 		if (indices != null && indices.length > 0) { // Add using indices if specified
 			animation.addByIndices(anim, prefix,indices,postFix, fps,false);
 		}else{
