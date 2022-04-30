@@ -125,6 +125,8 @@ class ChartingState extends MusicBeatState
 	var inst:FlxSound;
 	var voices:FlxSound;
 	var saveReminder:FlxTimer;
+	var chartPath = "";
+	static var globalChartPath = "";
 	override public function new(){
 		super();
 	}
@@ -132,8 +134,11 @@ class ChartingState extends MusicBeatState
 	override function create()
 	{try{
 
-
+		TitleState.loadNoteAssets();
 		curSection = lastSection;
+		if(onlinemod.OfflinePlayState.chartFile != ""){
+			lastPath = onlinemod.OfflinePlayState.chartFile;
+		}
 		charting = true;
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
@@ -192,6 +197,13 @@ class ChartingState extends MusicBeatState
 		FlxG.mouse.visible = true;
 
 		tempBpm = _song.bpm;
+		if (_song.notes[curSection] == null)
+		{
+			addSection();
+		}
+		if(_song.notes[curSection + 1] == null){
+			addSection();
+		}
 
 		addSection();
 
@@ -1867,7 +1879,7 @@ class ChartingState extends MusicBeatState
 			}
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 	}
-	var lastPath:String;
+	public static var lastPath:String;
 	private function saveLevel()
 	{
 		// var json:Dynamic = {
@@ -1886,17 +1898,15 @@ class ChartingState extends MusicBeatState
 				// _file.addEventListener(Event.CANCEL, onSaveCancel);
 				// _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 				// _file.save('{"song":' + data + "}", path);
-				#if windows
-				try{lastPath = path.substr(0,path.lastIndexOf("\\"));}catch(e){return;}
-				#end
-				try{lastPath = path.substr(0,path.lastIndexOf("/"));}catch(e){return;}
+				try{lastPath = path;
+					onlinemod.OfflinePlayState.chartFile = path;}catch(e){return;}
 				//Bodgey as hell but doesn't work otherwise
 				sys.io.File.saveContent(path,'{"song":' + data + "}");
 				showTempmessage('Saved chart to ${path}');
 				
 
 				});
-				fd.browse(FileDialogType.SAVE, 'json', lastPath, "Save chart");
+				fd.browse(FileDialogType.SAVE, 'json', sys.FileSystem.absolutePath(lastPath), "Save chart");
 			}
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 		saveReminder.reset();

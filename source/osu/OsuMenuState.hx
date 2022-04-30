@@ -105,6 +105,9 @@ class OsuMenuState extends onlinemod.OfflineMenuState
       var selSong = songs[curSelected]; // Easy access to var
       songPath = songs[curSelected];
       PlayState.SONG = OsuBeatMap.loadFromText(sys.io.File.getContent('${selSong}/${songJSON}'));
+      if(PlayState.SONG == null){
+      	return;
+      } 
       PlayState.isStoryMode = false;
       PlayState.songDiff = songJSON;
       PlayState.storyDifficulty = 1;

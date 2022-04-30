@@ -303,7 +303,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	// 	return ret;
 	// }
 
-	public static function gotoSong(?selSong:String = "",?songJSON:String = "",?songName:String = "",charting:Bool = false){
+	public static function gotoSong(?selSong:String = "",?songJSON:String = "",?songName:String = "",charting:Bool = false,blankFile:Bool = false){
 			try{
 				if(selSong == "" || songJSON == "" || songName == ""){
 					throw("No song name provided!");
@@ -339,16 +339,59 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 
 	function selSong(sel:Int = 0,charting:Bool = false){
-		if (songs[curSelected] == "No Songs!" || modes[curSelected][selMode] == CATEGORYNAME || modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
-				FlxG.sound.play(Paths.sound("cancelMenu"));
-				showTempmessage("Invalid song!",FlxColor.RED);
-				return;
+		if(charting && (songs[curSelected] != "No Songs!" && modes[curSelected][selMode] != CATEGORYNAME)){
+			var songLoc = songs[curSelected];
+			var chart = modes[curSelected][selMode];
+			var songName = songNames[curSelected];
+			if(modes[curSelected][selMode] == "No charts for this song!"){
+				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
+				PlayState.SONG = {
+					song: songName,
+					notes: [],
+					bpm: 150,
+					needsVoices: true,
+					player1: 'bf',
+					player2: 'dad',
+					gfVersion: 'gf',
+					noteStyle: 'normal',
+					stage: 'stage',
+					speed: 1,
+					validScore: false
+				};
+
+
+			}else{
+				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${chart}';
+				PlayState.SONG = Song.parseJSONshit(File.getContent(onlinemod.OfflinePlayState.chartFile));
 			}
+			if (FileSystem.exists('${songLoc}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${songLoc}/Voices.ogg';}
+			PlayState.hsBrTools = new HSBrTools('${selSong}');
+			if (FileSystem.exists('${songLoc}/script.hscript')) {
+				trace("Song has script!");
+				MultiPlayState.scriptLoc = '${songLoc}/script.hscript';
+				
+			}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
+			onlinemod.OfflinePlayState.instFile = '${songLoc}/Inst.ogg';
+			if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Inst.ogg")){
+				onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.chartFile + "-Inst.ogg";
+			}
+			if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Voices.ogg")){
+				onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
+			}
+			PlayState.stateType = 4;
+			LoadingState.loadAndSwitchState(new ChartingState());
+			return;
+		}
+		if (songs[curSelected] == "No Songs!" || modes[curSelected][selMode] == CATEGORYNAME || modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
+			FlxG.sound.play(Paths.sound("cancelMenu"));
+			showTempmessage("Invalid song!",FlxColor.RED);
+			return;
+		}
 			
-			lastSel = curSelected;
-			lastSearch = searchField.text;
-			lastSong = songs[curSelected] + modes[curSelected][selMode] + songNames[curSelected];
-			gotoSong(songs[curSelected],modes[curSelected][selMode],songNames[curSelected],charting);
+		lastSel = curSelected;
+		lastSearch = searchField.text;
+		lastSong = songs[curSelected] + modes[curSelected][selMode] + songNames[curSelected];
+		gotoSong(songs[curSelected],modes[curSelected][selMode],songNames[curSelected]);
 	}
 
 	override function select(sel:Int = 0){

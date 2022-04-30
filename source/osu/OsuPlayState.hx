@@ -39,7 +39,7 @@ class OsuPlayState extends onlinemod.OfflinePlayState
     shouldLoadJson = false;
   	super.create();
 
-  }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
+  }catch(e){MainMenuState.handleError('Caught OSU "create" crash: ${e.message}');}}
   override function openSubState(SubState:FlxSubState)
   {
     if (Type.getClass(SubState) == PauseSubState)

@@ -415,16 +415,16 @@ class Character extends FlxSprite
 		}
 		if(!hasIdle){
 			if(amPreview){
-				var idleName:String = "";
-				{ // Load characters without a idle animation, hopefully
-					var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+[iI][dD][lL][eE][A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
-					var input:String = charXml;
-					while (regTP.match(input)) {
-						input=regTP.matchedRight();
-						idleName = regTP.matched(1);
-						break;
-					}
-				}
+				// var idleName:String = "";
+				// { // Load characters without a idle animation, hopefully
+				// 	var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+[iI][dD][lL][eE][A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
+				// 	var input:String = charXml;
+				// 	while (regTP.match(input)) {
+				// 		input=regTP.matchedRight();
+				// 		idleName = regTP.matched(1);
+				// 		break;
+				// 	}
+				// }
 				charProperties.animations = [{
 						anim:"idle",
 						name:"FORCEALLLMAOTHISISSHIT",

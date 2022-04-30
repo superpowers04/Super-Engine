@@ -16,6 +16,7 @@ typedef OsuTimingPoint = {
 	// var meter:Int;
 	// var uninher:Bool;
 }
+// this func
 
 class OsuBeatMap{
 	static var beatmap:String = "";
@@ -30,14 +31,14 @@ class OsuBeatMap{
 		return e.matched(1).trim();
 	}
 
-	public static function loadFromText(bm:String):SwagSong{
+	public static function loadFromText(bm:String):Null<SwagSong>{
 			var song:SwagSong = {
 				song: "OsuBeatMap_Not_loaded",
 				notes: [],
 				bpm: 120,
 				needsVoices: false,
 				player1: 'bf',
-				player2: 'bf',
+				player2: '',
 				gfVersion: 'gf',
 				noteStyle: 'normal',
 				stage: 'stage',
@@ -57,7 +58,7 @@ class OsuBeatMap{
 					bpm: 120,
 					needsVoices: false,
 					player1: 'bf',
-					player2: 'bf',
+					player2: '',
 					gfVersion: 'gf',
 					noteStyle: 'normal',
 					stage: 'stage',
@@ -68,6 +69,7 @@ class OsuBeatMap{
 				};
 				var hitobjsre:EReg = (~/\[HitObjects\]/gi);
 				hitobjsre.match(bm);
+
 				var timingPoints:Array<OsuTimingPoint> = [];
 				{ // Timing points   0,0.0,0,0,0,0,0,0 |  -28,461.538461538462,4,1,0,100,1,0
 
@@ -79,6 +81,7 @@ class OsuBeatMap{
 						if (inher) {trace('${regTP.matched(0)} is inherited, Unsupported at the moment');continue;} // Unsupported atm
 						var bpm:Float = 1 / Std.parseFloat(regTP.matched(1)) * 60000; // Did not google this, dunno what you mean. *I'm not bad at math, I swear*
 						if (bpm < 0) bpm = -bpm;
+						song.bpm = bpm;
 						timingPoints.push({
 							ms : Std.parseInt(regTP.matched(1)),
 							bpm : bpm,
@@ -86,13 +89,21 @@ class OsuBeatMap{
 							sliderMult : 0
 
 						});
+						break;
 
 					}
 					if(timingPoints.length == 0) MainMenuState.handleError("Unable to load timingPoints!");
 					trace('Loaded ${timingPoints.length} timingPoints');
 				}
+				var stepCrochet = 0.0;
+				{
+					if(song.bpm < 0) song.bpm = -song.bpm;
 
+					var crochet = ((60 / song.bpm) * 1000);
+					stepCrochet = crochet / 4;
+				}
 				var isTimedReg:EReg = (~/([a-z]|)/gi);
+
 				{ // hitobjs
 					var hitobjs:Array<SwagSection> = [];
 					var hitobjval:EReg = (~/(^[-0-9]*),([-0-9]*),([-0-9]*),([-0-9]*),([-0-9]*),([-0-9A-z|:]*)/gm);
@@ -103,6 +114,17 @@ class OsuBeatMap{
 					var curSection = 0;
 					var noteCount = 0;
 					var input =bm;
+					hitobjs.push(
+						{
+							typeOfSection : 0,
+							lengthInSteps : 16,
+							mustHitSection : true,
+							altAnim : false,
+							sectionNotes : [],
+							changeBPM : false,
+							bpm : song.bpm
+						}
+					);
 					while (hitobjval.match(input)) {
 						input = hitobjval.matchedRight();
 						// var curObj:String = regHitObj.matched(1);
@@ -121,25 +143,54 @@ class OsuBeatMap{
 
 						
 
-						if (timingPoints[curSection + 1] != null && timingPoints[curSection + 1].ms <= time) curSection++;
-						if (i >= 72) {curSection++;timingPoints.insert(curSection,timingPoints[curSection - 1]);}
-						if (hitobjs[curSection] == null) {
-							i=0;
-							hitobjs[curSection] = {
-								typeOfSection : 0,
-								lengthInSteps : 16,
-								mustHitSection : true,
-								altAnim : false,
-								sectionNotes : [],
-								changeBPM : true,
-								bpm : timingPoints[curSection].bpm
-							};
-							trace('New section: ${curSection}');
+						// if (timingPoints[curSection + 1] != null && timingPoints[curSection + 1].ms <= time) curSection++;
+						// if (i >= 72) {curSection++;timingPoints.insert(curSection,timingPoints[curSection - 1]);}
+						while(time < ((Conductor.stepCrochet * 16) * (curSection - 1))){
+							curSection--;
+							if (hitobjs[curSection] == null) {
+								hitobjs[curSection] = {
+									typeOfSection : 0,
+									lengthInSteps : 16,
+									mustHitSection : true,
+									altAnim : false,
+									sectionNotes : [],
+									changeBPM : false,
+									bpm : song.bpm
+								};
+								trace('New section: ${curSection}');
+							}
 						}
+						while(time > ((Conductor.stepCrochet * 16) * curSection)){
+							curSection++;
+							if (hitobjs[curSection] == null) {
+								hitobjs[curSection] = {
+									typeOfSection : 0,
+									lengthInSteps : 16,
+									mustHitSection : true,
+									altAnim : false,
+									sectionNotes : [],
+									changeBPM : false,
+									bpm : song.bpm
+								};
+								trace('New section: ${curSection}');
+							}
+						}
+						// if (hitobjs[curSection] == null) {
+						// 	i=0;
+						// 	hitobjs[curSection] = {
+						// 		typeOfSection : 0,
+						// 		lengthInSteps : 16,
+						// 		mustHitSection : true,
+						// 		altAnim : false,
+						// 		sectionNotes : [],
+						// 		changeBPM : false,
+						// 		bpm : song.bpm
+						// 	};
+						// 	trace('New section: ${curSection}');
+						// }
 						// var hold = normalizeInt(Math.round(Std.parseInt(hitobjval.matched(6)) - time * 0.01));
 						var nid = Math.floor(int(hitobjval.matched(1)) * 4 / 512);
 						hitobjs[curSection].sectionNotes.push([time,nid,hold,0]); 
-						i++;
 						noteCount++;
 						
 
@@ -163,7 +214,7 @@ class OsuBeatMap{
 				OsuPlayState.instFile = oggPath;
 				beatmap = "";
 				sys.io.File.saveContent("test.json",haxe.Json.stringify(song,' '));
-			}catch(e){MainMenuState.handleError('Error loading beatmap ${e.message}');}
+			}catch(e){MainMenuState.handleError('Error loading beatmap ${e.message}');return null;}
 			return song;
 		
 	}

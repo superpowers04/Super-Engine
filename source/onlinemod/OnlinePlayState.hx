@@ -474,9 +474,11 @@ class OnlinePlayState extends PlayState
 								}else{
 									note.hit(charID,note);
 								}
-								note.kill();
-								notes.remove(note, true);
-								note.destroy();
+								if(!note.mustPress){ // Oi, dumbass, don't delete notes from the player
+									note.kill();
+									notes.remove(note, true);
+									note.destroy();
+								}
 								break;
 							}
 						}
@@ -489,9 +491,11 @@ class OnlinePlayState extends PlayState
 									}else{
 										note.hit(charID,note);
 									}
-									note.kill();
-									unspawnNotes.remove(note);
-									note.destroy();
+									if(!note.mustPress){
+										note.kill();
+										notes.remove(note, true);
+										note.destroy();
+									}
 									break;
 								}
 								

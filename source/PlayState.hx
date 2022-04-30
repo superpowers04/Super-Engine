@@ -2308,7 +2308,8 @@ class PlayState extends MusicBeatState
 			FlxG.switchState(new Charting()); */
 		testanimdebug();
 
-		if (startingSong)
+
+		if (startingSong && handletimes)
 		{
 			if (startedCountdown)
 			{
