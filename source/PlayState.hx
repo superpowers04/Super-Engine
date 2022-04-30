@@ -2309,7 +2309,7 @@ class PlayState extends MusicBeatState
 		testanimdebug();
 
 
-		if (startingSong && handletimes)
+		if (startingSong && handleTimes)
 		{
 			if (startedCountdown)
 			{
