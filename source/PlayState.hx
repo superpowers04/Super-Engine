@@ -107,7 +107,6 @@ class PlayState extends MusicBeatState
 	public static var songPosBar:FlxBar;
 	public static var underlay:FlxSprite;
 
-	public static var rep:Replay;
 	public static var loadRep:Bool = false;
 	public static inline var daPixelZoom:Int = 6;
 
@@ -194,7 +193,7 @@ class PlayState extends MusicBeatState
 	// Note Splash group
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 
-	var notesHitArray:Array<Date> = [];
+	var notesHitArray:Array<Float> = [];
 	var currentFrames:Int = 0;
 
 	public static var dialogue:Array<String> = [];
@@ -2216,15 +2215,16 @@ class PlayState extends MusicBeatState
 		// stop iteration as soon as a note is not removed
 		// all notes should be kept in the correct order and this is optimal, safe to do every frame/update
 		{
-			var balls = notesHitArray.length-1;
-			while (balls >= 0)
+			var leg = notesHitArray.length-1;
+			var curTime = Date.now().getTime()
+			while (leg >= 0)
 			{
-				var cock:Date = notesHitArray[balls];
-				if (cock != null && cock.getTime() + 1000 < Date.now().getTime())
-					notesHitArray.remove(cock);
+				var funni:Float = notesHitArray[leg];
+				if (funni != null && funni + 1000 < curTime)
+					notesHitArray.pop(funni);
 				else
-					balls = 0;
-				balls--;
+					leg = 0;
+				leg--;
 			}
 			nps = notesHitArray.length;
 			if (nps > maxNPS)
@@ -3407,7 +3407,7 @@ class PlayState extends MusicBeatState
 				// add newest note to front of notesHitArray
 				// the oldest notes are at the end and are removed first
 				if (!note.isSustainNote)
-					notesHitArray.unshift(Date.now());
+					notesHitArray.unshift(Date.now().getTime());
 
 				if (!resetMashViolation && mashViolations >= 1)
 					mashViolations--;
@@ -3791,7 +3791,7 @@ class PlayState extends MusicBeatState
 				if(note.shouldntBeHit){noteMiss(note.noteData,note,true);return;}
 
 				if (!note.isSustainNote)
-					notesHitArray.unshift(Date.now());
+					notesHitArray.unshift(Date.now().getTime());
 
 
 
@@ -4316,8 +4316,8 @@ class PlayState extends MusicBeatState
 		if(!paused)resetInterps();
 		return super.switchTo(nextState);
 	}
-	public override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
-		super.showTempmessage(str,color,time);
+	public override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?cent = false){
+		super.showTempmessage(str,color,time,cent);
 		tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		
 	}

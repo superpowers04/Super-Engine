@@ -44,14 +44,22 @@ class MusicBeatState extends FlxUIState
 		tranIn();
 	}
 
-	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
+	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true){
 		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}
 		trace(str);
-		tempMessage = new FlxText(40,60,24,str);
+		tempMessage = new FlxText(40,60,1000,str,24);
 		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		tempMessage.scrollFactor.set();
-		tempMessage.autoSize = true;
-		tempMessage.wordWrap = false;
+		tempMessage.autoSize = false;
+		tempMessage.width = 1280;
+		tempMessage.height = 720;
+		tempMessage.textField.width = 1280;
+		tempMessage.textField.height = 720;
+		if(center){
+			tempMessage.alignment = CENTER;
+			tempMessage.screenCenter(X);
+		}
+		// tempMessage.wordWrap = false;
 		add(tempMessage);
 		tempMessTimer = new FlxTimer().start(time, function(tmr:FlxTimer)
 		{
