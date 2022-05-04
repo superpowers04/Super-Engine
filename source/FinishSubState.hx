@@ -81,7 +81,7 @@ class FinishSubState extends MusicBeatSubstate
 		if(!isError) FlxG.state.persistentUpdate = true; else FlxG.state.persistentUpdate = false;
 		win = won;
 		FlxG.sound.pause();
-		PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
+		if(!isError) PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
 		var dad = PlayState.dad;
 		var boyfriend = PlayState.boyfriend;
 		Conductor.changeBPM(70);
