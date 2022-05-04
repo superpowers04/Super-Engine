@@ -453,7 +453,7 @@ class AnimationDebug extends MusicBeatState
 			default: LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
-	override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5){
+	override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center = false){
 		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}
 		trace(str);
 		tempMessage = new FlxText(40,60,24,str);
@@ -922,6 +922,25 @@ class AnimationDebug extends MusicBeatState
 			charJson.sing_duration = Std.parseFloat(text);
 		}
 		uiBox2.add(e);
+		var animTxt = new FlxText(30, 140,0,":");
+		uiBox2.add(animTxt);
+		uiMap["charColor"] = new FlxUIInputText(90, 140, 20, '${if(charJson.color != null) dad.definingColor.toWebString() else '#000000'}');
+		uiMap["charColor"].customFilterPattern = ~/(?![#xXa-f0-9A-F])/gi;
+		uiMap["charColor"].callback = function(text,_){
+			text = text.toUpperCase();
+
+			var col = FlxColor.fromString(text);
+			if(col == null){
+				return showTempmessage("Invalid color, valid syntax: #RRGGBB, #AARRGGBB, 0xAARRGGBB.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
+			}
+			charJson.color = col;
+			uiMap["charColor"].text = col.toWebString();
+			if(uiMap["healthBar"] != null){
+				uiMap["healthBar"].createFilledBar(dad.definingColor,dad.definingColor);
+			}
+		}
+		uiBox2.add(e);
+
 		// e = new FlxUIInputText(90, 140, 20, '${charJson.healthicon}');
 		// uiMap["Health Icon"] = e;
 		// uiMap["Sing Duration"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
