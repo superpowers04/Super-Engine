@@ -720,24 +720,25 @@ class Character extends FlxSprite
 
 	function loadChar(?char:String = ""){
 			if(char != "")curCharacter = char;
-			
-			switch (curCharacter) // Seperate statement for duplicated character paths
-			{
-				case 'gf':
-					// GIRLFRIEND CODE
-					frames = tex = Paths.getSparrowAtlas('characters/GF_assets');
-				case 'bf','bfHC':
-					frames = tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
+			if(frames == null){
+
+				switch (curCharacter) // Seperate statement for duplicated character paths
+				{
+					case 'gf':
+						// GIRLFRIEND CODE
+						frames = tex = Paths.getSparrowAtlas('characters/GF_assets');
+					case 'bf','bfHC':
+						frames = tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
+				}
 			}
-
-			switch (curCharacter)
-			{
-
-				case 'bf':// Hardcoded to atleast have a single character
-					charProperties = Json.parse(BFJSON);
-				case 'gf':// The game crashes if she doesn't exist, BF and GF must not be seperated
-					charProperties = Json.parse(GFJSON);
-
+			if(charProperties == null){
+				switch (curCharacter)
+				{
+					case 'bf':// Hardcoded to atleast have a single character
+						charProperties = Json.parse(BFJSON);
+					case 'gf':// The game crashes if she doesn't exist, BF and GF must not be seperated
+						charProperties = Json.parse(GFJSON);
+				}
 			}
 			loadCustomChar();
 	}
