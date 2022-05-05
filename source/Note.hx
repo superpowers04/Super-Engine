@@ -30,9 +30,11 @@ class Note extends FlxSprite
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 	public var shouldntBeHit:Bool = false;
+	public var isPressed:Bool = false;
 	// public var playerNote:Bool = false;
 	public var type:Dynamic = 0; // Used for scriptable arrows 
 	public var isSustainNoteEnd:Bool = false;
+	public var parentNoteWidth:Float = 0;
 
 	public var noteScore:Float = 1;
 	public var inCharter:Bool = false;
@@ -205,7 +207,7 @@ class Note extends FlxSprite
 						hit = function(?charID:Int = 0,note){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);}; 
 						trace('Animation note processed');
 					}
-					case "changebpm": {
+					case "changebpm", "bgm change": {
 						try{
 							// Info can be set to anything, it's being used for storing the BPM
 							info = [Std.parseFloat(rawNote[4])]; 
@@ -280,9 +282,11 @@ class Note extends FlxSprite
 				updateHitbox();
 
 				x -= width / 2;
+				parentNoteWidth = prevNote.width;
 
 				if (prevNote.isSustainNote)
 				{
+					parentNoteWidth = prevNote.parentNoteWidth;
 					prevNote.animation.play(noteName + "hold");
 					if (prevNote.parentNote != null){
 						prevNote.parentNote.childNotes.push(this);

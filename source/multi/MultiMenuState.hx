@@ -130,6 +130,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		controlLabel.alpha = 1;
 		grpSongs.add(controlLabel);
 	}
+	inline function isValidFile(file) {return (!blockedFiles.contains(file.toLowerCase()) && (StringTools.endsWith(file, '.json') || StringTools.endsWith(file, '.sm')));}
 	override function reloadList(?reload=false,?search = ""){
 		curSelected = 0;
 		var _goToSong = 0;
@@ -154,7 +155,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						modes[i] = [];
 						for (file in FileSystem.readDirectory(dataDir + directory))
 						{
-								if (!blockedFiles.contains(file.toLowerCase()) && StringTools.endsWith(file, '.json')){
+								if (isValidFile(file)){
 									modes[i].push(file);
 								}
 						}
@@ -192,7 +193,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							modes[i] = [];
 							for (file in FileSystem.readDirectory(dataDir + directory))
 							{
-									if (!blockedFiles.contains(file.toLowerCase()) && StringTools.endsWith(file, '.json')){
+									if (isValidFile(file)){
 										modes[i].push(file);
 									}
 							}
@@ -238,7 +239,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							modes[i] = [];
 							for (file in FileSystem.readDirectory(dataDir + directory))
 							{
-									if (!blockedFiles.contains(file.toLowerCase()) && StringTools.endsWith(file, '.json')){
+									if (isValidFile(file)){
 										modes[i].push(file);
 									}
 							}

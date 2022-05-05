@@ -111,7 +111,7 @@ class ImportModFromFolder extends MusicBeatState
 				for (directory in FileSystem.readDirectory('${assets}songs/')) {
 					if(!FileSystem.isDirectory('${assets}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
 					var dir:String = '${folder}assets/songs/${directory}/';
-					if(!FileSystem.exists('${dir}Inst.ogg') || (!FileSystem.isDirectory('${assets}data/${directory}/') && !FileSystem.isDirectory('${assets}data/songs/${directory}/')) ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
+					if(!(FileSystem.exists('${dir}Inst.ogg') || FileSystem.exists('${dir}${directory}-Inst.ogg')) || (!FileSystem.isDirectory('${assets}data/${directory}/') && !FileSystem.isDirectory('${assets}data/songs/${directory}/')) ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 					valid = true;
 					break;
 				}

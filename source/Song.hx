@@ -14,6 +14,8 @@ typedef SwagSong =
 	var notes:Array<SwagSection>;
 	var bpm:Float;
 	var needsVoices:Bool;
+	var ?eventObjects:Array<Event>;
+
 	var speed:Float;
 
 	var player1:String;
@@ -37,6 +39,21 @@ typedef NoteMetadata={
 	var missHealth:Float;
 	// var tooLateScore:Float;
 	var tooLateHealth:Float;
+}
+class Event
+{
+	public var name:String;
+	public var position:Float;
+	public var value:Float;
+	public var type:String;
+
+	public function new(name:String, pos:Float, value:Float, type:String)
+	{
+		this.name = name;
+		this.position = pos;
+		this.value = value;
+		this.type = type;
+	}
 }
 class Song
 {
@@ -66,6 +83,9 @@ class Song
 		this.song = song;
 		this.notes = notes;
 		this.bpm = bpm;
+	}
+	public static inline function getEmptySong(){
+		
 	}
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong

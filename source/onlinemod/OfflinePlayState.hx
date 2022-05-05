@@ -12,6 +12,8 @@ import sys.io.File;
 
 import Section.SwagSection;
 
+using StringTools;
+
 class OfflinePlayState extends PlayState
 {
 	public static var instanc:OfflinePlayState;
@@ -57,7 +59,13 @@ class OfflinePlayState extends PlayState
   function loadJSON(){
   	try{
 
-  		if (!ChartingState.charting) {PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+  		if (!ChartingState.charting) {
+  				if(chartFile.endsWith(".sm")){
+  					PlayState.SONG = smTools.SMFile.loadFile(chartFile).convertToFNF();
+  				}else{
+  					PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+
+  				}
   				if(nameSpace != ""){
   					if(TitleState.retChar(nameSpace + "|" + PlayState.player2) != null){
   						PlayState.player2 = nameSpace + "|" + PlayState.player2;
