@@ -853,12 +853,12 @@ class Character extends FlxSprite
 	override function update(elapsed:Float)
 	{	try{
 
-		if(!amPreview && animation.curAnim != null){
+		if(!amPreview && !debugMode && animation.curAnim != null){
 
-			if(animation.curAnim.finished) animHasFinished = true;
+			if(animation.curAnim.finished || animation.curAnim.curFrame >= animation.curAnim.numFrames) animHasFinished = true;
 			if(animHasFinished && loopAnimTo[animation.curAnim.name] != null) playAnim(loopAnimTo[animation.curAnim.name]);
-			else if(animHasFinished && animLoops[animation.curAnim.name] != null && animLoops[animation.curAnim.name]) {playAnim(animation.curAnim.name);currentAnimationPriority = 0;}
-			if (animation.curAnim.name.endsWith('miss') && animHasFinished && !debugMode)
+			else if(animHasFinished && animLoops[animation.curAnim.name] != null && animLoops[animation.curAnim.name]) {playAnim(animation.curAnim.name);currentAnimationPriority = -1;}
+			if (animation.curAnim.name.endsWith('miss') && animHasFinished)
 			{
 				playAnim('idle', true, false, 10);
 			}
@@ -992,7 +992,12 @@ class Character extends FlxSprite
 		// setSprite(animGraphics[AnimName.toLowerCase()]);
 
 		if (animation.getByName(AnimName) == null) return;
-		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){Frame = loopAnimFrames[AnimName];}
+		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){
+			if(animation.curAnim != null && animation.curAnim.curFrame < loopAnimFrames[AnimName]){
+				return; // Don't loop to frame position unless we've actually gotten past that frame
+			}
+			Frame = loopAnimFrames[AnimName];
+		}
 		if (animationPriorities[AnimName] != null) currentAnimationPriority = animationPriorities[AnimName];
 		animHasFinished = false;
 		animation.play(AnimName, Force, Reversed, Frame);

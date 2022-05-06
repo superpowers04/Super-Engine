@@ -276,6 +276,7 @@ class PlayState extends MusicBeatState
 	var errorMsg:String = "";
 
 	var hitSound:Bool = false;
+	var flippy:Bool = false;
 
 
 	// API stuff
@@ -552,6 +553,8 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camTOP);
 
 		FlxCamera.defaultCameras = [camGame];
+
+
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1244,6 +1247,11 @@ class PlayState extends MusicBeatState
 		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50 - FlxG.save.data.guiGap,0,actualSongName + " - " + inputEngineName, 16);
 		kadeEngineWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
+		if(QuickOptionsSubState.getSetting("Flippy mode")){
+			practiceMode = true;
+			flippy = true;
+			kadeEngineWatermark.text = actualSongName + " - fucking flippy mode lmao";
+		}
 		add(kadeEngineWatermark);
 
 		if (downscroll)
@@ -1972,7 +1980,8 @@ class PlayState extends MusicBeatState
 			}
 
 			daBeats += 1;
-		}
+		}try{
+
 		if(SONG.eventObjects != null && SONG.eventObjects[0] != null){
 			for (i in SONG.eventObjects)
 			{
@@ -1983,6 +1992,7 @@ class PlayState extends MusicBeatState
 			}
 
 		}
+		}catch(e){trace('Unable to load Kade event: ${e.message}');}
 		// trace(unspawnNotes.length);
 		// playerCounter += 1;
 
@@ -2539,11 +2549,13 @@ class PlayState extends MusicBeatState
 	override function draw(){
 		try{handleInput();}catch(e){handleError('Error during handleInput: ${e.message}');}
 		callInterp("draw",[]);
-		if(downscroll){
-			notes.sort(FlxSort.byY,FlxSort.DESCENDING);
-		}else{
-			notes.sort(FlxSort.byY,FlxSort.ASCENDING);
+		if(!FlxG.save.data.preformance){
+			if(downscroll){
+				notes.sort(FlxSort.byY,FlxSort.DESCENDING);
+			}else{
+				notes.sort(FlxSort.byY,FlxSort.ASCENDING);
 
+			}
 		}
 		super.draw();
 	}
@@ -2792,6 +2804,7 @@ class PlayState extends MusicBeatState
 					health -= 0.2;
 					ss = false;
 					shits++;
+					if(FlxG.save.data.shittyMiss){misses++;combo = 0;}
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 0.25;
 				case 'bad':
@@ -2800,6 +2813,7 @@ class PlayState extends MusicBeatState
 					health -= 0.06;
 					ss = false;
 					bads++;
+					if(FlxG.save.data.badMiss){misses++;combo = 0;}
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 0.50;
 				case 'good':
@@ -2807,6 +2821,7 @@ class PlayState extends MusicBeatState
 					score = 200;
 					ss = false;
 					goods++;
+					if(FlxG.save.data.goodMiss){misses++;combo = 0;}
 					if (health < 2)
 						health += 0.04;
 					if (FlxG.save.data.accuracyMod == 0)
@@ -2823,6 +2838,10 @@ class PlayState extends MusicBeatState
 						lastNoteSplash = a;
 						grpNoteSplashes.add(a);
 					}
+			}
+			if(flippy && daRating != "sick"){
+				practiceMode = false;
+				health = 0;
 			}
 			// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
 
@@ -3572,7 +3591,7 @@ class PlayState extends MusicBeatState
 						if(!daNote.skipXAdjust){
 							daNote.x = playerStrums.members[Std.int(daNote.noteData)].x;
 							if (daNote.isSustainNote)
-								daNote.x += (daNote.parentNoteWidth * 0.5) - (daNote.width * 0.555);
+								daNote.x += daNote.width / 2 + 17;
 						}
 						if (!daNote.isSustainNote)
 							daNote.angle = playerStrums.members[Std.int(daNote.noteData)].angle;
@@ -3603,7 +3622,7 @@ class PlayState extends MusicBeatState
 						if(!daNote.skipXAdjust){
 							daNote.x = strumLineNotes.members[Std.int(daNote.noteData)].x;
 							if (daNote.isSustainNote)
-								daNote.x += (daNote.parentNoteWidth * 0.5) - (daNote.width * 0.555);
+								daNote.x += daNote.width / 2 + 17;
 						}
 						
 						if (!daNote.isSustainNote)

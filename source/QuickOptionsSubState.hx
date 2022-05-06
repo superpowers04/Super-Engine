@@ -34,7 +34,8 @@ class QuickOptionsSubState extends MusicBeatSubstate
 			"Opponent arrows" => {type:0,value:true},
 			"Song hscripts" => {type:0,value:true},
 			"Custom Arrows" => {type:0,value:true},
-			"Scroll speed" => {type:2,value:0,min:0,max:10,lang:[0 => "Chart"]}
+			"Scroll speed" => {type:2,value:0,min:0,max:10,lang:[0 => "Chart"]},
+			"Flippy mode" => {type:0,value:false,lang:[false => "off",true => "I love pain"]}
 		];
 	public static var osuSettings:Map<String,QOSetting> = [
 			"Scroll speed" => {type:2,value:0,min:0,max:10}

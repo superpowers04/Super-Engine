@@ -70,6 +70,9 @@ class OptionsMenu extends MusicBeatState
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccurateNoteHoldOption("Adjust accuracy of note sustains"),
+			new ShittyMissesOption("Whether you'll get a miss/combobreak when getting a shit"),
+			new BadMissesOption("Whether you'll get a miss/combobreak when getting a bad"),
+			new GoodMissesOption("Whether you'll get a miss/combobreak when getting a good"),
 		],"Toggle Practice mode, Ghost Tapping, etc"),
 
 		new OptionCategory("Appearance", [

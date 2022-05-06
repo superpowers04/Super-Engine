@@ -354,6 +354,63 @@ class FPSOption extends Option
 		return "FPS Counter " + (!FlxG.save.data.fps ? "off" : "on");
 	}
 }
+class ShittyMissesOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.shittyMiss = !FlxG.save.data.shittyMiss;
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Shitty misses " + (!FlxG.save.data.shittyMiss ? "off" : "on");
+	}
+}
+class BadMissesOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.badMiss = !FlxG.save.data.badMiss;
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Bad misses " + (!FlxG.save.data.badMiss ? "off" : "on");
+	}
+}
+class GoodMissesOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.goodMiss = !FlxG.save.data.goodMiss;
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Good misses " + (!FlxG.save.data.goodMiss ? "off" : "on");
+	}
+}
 
 
 
