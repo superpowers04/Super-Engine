@@ -27,7 +27,7 @@ class OfflinePlayState extends PlayState
   public static var instFile = "";
   public static var chartFile:String = "";
   public static var nameSpace:String = "";
-  public static var stateNames:Array<String> = ["-freep","-Offl","","-Multi","-OSU","-Story","","",""];
+  public static var stateNames:Array<String> = ["","-freep","-Offl","","-Multi","-OSU","-Story","","",""];
   var willChart:Bool = false;
   override public function new(?charting:Bool = false){
   	willChart = charting;

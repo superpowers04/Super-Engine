@@ -837,7 +837,7 @@ class AnimationDebug extends MusicBeatState
 		var animTxt = new FlxText(30, 100,0,"Loop Start Frame");
 		uiMap["lstxt"] = animTxt;
 		uiBox.add(animTxt);
-		var uiMap["loopStart"] = new FlxUIInputText(30, 120, null, "0");
+		uiMap["loopStart"] = new FlxUIInputText(30, 120, null, "0");
 		uiMap["loopStart"].filterMode = 2;
 		uiBox.add(animFPS);
 		uiMap["commitButton"] = new FlxUIButton(20,160,"Add animation",function(){

@@ -271,12 +271,14 @@ class PlayState extends MusicBeatState
 	public var eventLog:Array<OutNote> = [];
 	public var camBeat:Bool = true;
 	public var forceChartChars:Bool = false;
+	public var loadChars:Bool = true;
 	var updateOverlay = true;
 	var practiceMode = false;
 	var errorMsg:String = "";
 
 	var hitSound:Bool = false;
 	var flippy:Bool = false;
+
 
 
 	// API stuff
@@ -998,7 +1000,24 @@ class PlayState extends MusicBeatState
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
 		callInterp("afterStage",[]);
 
-		
+		parseHScript(songScript,null,"song");
+		if(QuickOptionsSubState.getSetting("Song hscripts") && FlxG.save.data.scripts != null){
+			for (i in 0 ... FlxG.save.data.scripts.length) {
+				
+				var v = FlxG.save.data.scripts[i];
+				trace('Checking for ${v}');
+				loadScript(v);
+			}
+		}
+		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket != null){
+
+			for (i in 0 ... onlinemod.OnlinePlayMenuState.scripts.length) {
+				
+				var v = onlinemod.OnlinePlayMenuState.scripts[i];
+				trace('Checking for ${v}');
+				loadScript(v);
+			}
+		}
 		if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
 			PlayState.player2 = TitleState.retChar(PlayState.player2);
 		}else{
@@ -1023,17 +1042,17 @@ class PlayState extends MusicBeatState
 		}
 		if (FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
 		gfChar = player3;
-		if (FlxG.save.data.gfShow && gfShow) gf = new Character(400, 100, player3,false,2); else gf = new EmptyCharacter(400, 100);
+		if (FlxG.save.data.gfShow && loadChars && gfShow) gf = new Character(400, 100, player3,false,2); else gf = new EmptyCharacter(400, 100);
 		gf.scrollFactor.set(0.95, 0.95);
 		if (noGf) gf.visible = false;
 		if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
 		if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
-		if (dadShow && FlxG.save.data.dadShow && !(player3 == player2 && player1 != player2)) dad = new Character(100, 100, player2,false,1); else dad = new EmptyCharacter(100, 100);
+		if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2)) dad = new Character(100, 100, player2,false,1); else dad = new EmptyCharacter(100, 100);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
 		camPos.set(camPos.x + dad.camX, camPos.y + dad.camY);
-		if (FlxG.save.data.bfShow) boyfriend = new Character(770, 100, player1,true,0); else boyfriend = new EmptyCharacter(400,100);
+		if (FlxG.save.data.bfShow && loadChars) boyfriend = new Character(770, 100, player1,true,0); else boyfriend = new EmptyCharacter(400,100);
 		
 
 		// REPOSITIONING PER STAGE
@@ -1093,24 +1112,7 @@ class PlayState extends MusicBeatState
 		// 	var bfTrail = new FlxTrail(boyfriend, null, 4, 24, 0.3, 0.069);
 		// 	add(bfTrail);
 		// }
-		parseHScript(songScript,null,"song");
-		if(QuickOptionsSubState.getSetting("Song hscripts") && FlxG.save.data.scripts != null){
-			for (i in 0 ... FlxG.save.data.scripts.length) {
-				
-				var v = FlxG.save.data.scripts[i];
-				trace('Checking for ${v}');
-				loadScript(v);
-			}
-		}
-		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket != null){
 
-			for (i in 0 ... onlinemod.OnlinePlayMenuState.scripts.length) {
-				
-				var v = onlinemod.OnlinePlayMenuState.scripts[i];
-				trace('Checking for ${v}');
-				loadScript(v);
-			}
-		}
 
 		add(gf);
 
