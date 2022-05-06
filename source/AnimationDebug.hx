@@ -801,6 +801,10 @@ class AnimationDebug extends MusicBeatState
 		looped.checked = false;
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
+		var flipanim = new FlxUICheckBox(120, 20, null, null, "FlipX");
+		flipanim.checked = false;
+		uiMap["flipanim"] = flipanim;
+		uiBox.add(flipanim);
 		// var oneshot = new FlxUICheckBox(30, 40, null, null, "Oneshot/High priority");
 		// oneshot.checked = false;
 		// uiMap["oneshot"] = oneshot;
@@ -833,11 +837,10 @@ class AnimationDebug extends MusicBeatState
 		var animTxt = new FlxText(30, 100,0,"Loop Start Frame");
 		uiMap["lstxt"] = animTxt;
 		uiBox.add(animTxt);
-		var animFPS = new FlxUIInputText(30, 120, null, "0");
-		animFPS.filterMode = 2;
-		uiMap["loopStart"] = animFPS;
+		var uiMap["loopStart"] = new FlxUIInputText(30, 120, null, "0");
+		uiMap["loopStart"].filterMode = 2;
 		uiBox.add(animFPS);
-		var commitButton = new FlxUIButton(20,160,"Add animation",function(){
+		uiMap["commitButton"] = new FlxUIButton(20,160,"Add animation",function(){
 			try{
 
 				var Anim = uiMap["animSel"].text;
@@ -849,6 +852,7 @@ class AnimationDebug extends MusicBeatState
 						anim: Anim,
 						name: animUICurName,
 						loop: uiMap["loop"].checked,
+						flipx:uiMap["flipanim"].checked,
 						fps: Std.parseInt(uiMap["FPS"].text),
 						loopStart:Std.parseInt(uiMap["loopStart"].text),
 						indices: [],
@@ -860,7 +864,7 @@ class AnimationDebug extends MusicBeatState
 				showTempmessage('Error while adding animation: ${e.message}',FlxColor.RED);
 			}
 		});
-		uiBox.add(commitButton);
+		uiBox.add(uiMap["commitButton"]);
 
 
 
@@ -889,10 +893,8 @@ class AnimationDebug extends MusicBeatState
 		uiBox2.add(looped);
 		// var animTxt = new FlxText(30, 100,0,"Color, R/G/B");
 
-		var animTxt = new FlxText(30, 120,0,"Scale:");
-		uiBox2.add(animTxt);
-		var e = new FlxUIInputText(80, 120, 20, '${charJson.scale}');
-		uiMap["scale"] = e;
+		uiBox2.add(new FlxText(30, 120,0,"Scale:"));
+		uiMap["scale"] = new FlxUIInputText(80, 120, 20, '${charJson.scale}');
 		uiMap["scale"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
 		uiMap["scale"].callback = function(text,_){
 			var int = Std.parseFloat(text);
@@ -904,12 +906,10 @@ class AnimationDebug extends MusicBeatState
 			uiMap["scale"].text = text;
 			charJson.scale = Std.parseFloat(text);
 		}
-		uiBox2.add(e);
+		uiBox2.add(uiMap["scale"]);
 
-		var animTxt = new FlxText(30, 140,0,"Sing Duration:");
-		uiBox2.add(animTxt);
-		e = new FlxUIInputText(90, 140, 20, '${charJson.sing_duration}');
-		uiMap["Sing Duration"] = e;
+		uiBox2.add(new FlxText(30, 140,0,"Sing Duration:"));
+		uiMap["Sing Duration"] = new FlxUIInputText(90, 140, 20, '${charJson.sing_duration}');
 		uiMap["Sing Duration"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
 		uiMap["Sing Duration"].callback = function(text,_){
 			var int = Std.parseFloat(text);
@@ -921,10 +921,9 @@ class AnimationDebug extends MusicBeatState
 			uiMap["Sing Duration"].text = text;
 			charJson.sing_duration = Std.parseFloat(text);
 		}
-		uiBox2.add(e);
-		var animTxt = new FlxText(30, 140,0,":");
-		uiBox2.add(animTxt);
-		uiMap["charColor"] = new FlxUIInputText(90, 140, 20, '${if(charJson.color != null) dad.definingColor.toWebString() else '#000000'}');
+		uiBox2.add(uiMap["Sing Duration"]);
+		uiBox2.add(new FlxText(30, 160,0,"Color:"));
+		uiMap["charColor"] = new FlxUIInputText(90, 160, 100, '${if(charJson.color != null) dad.definingColor.toWebString() else '#000000'}');
 		uiMap["charColor"].customFilterPattern = ~/(?![#xXa-f0-9A-F])/gi;
 		uiMap["charColor"].callback = function(text,_){
 			text = text.toUpperCase();
@@ -939,7 +938,7 @@ class AnimationDebug extends MusicBeatState
 				uiMap["healthBar"].createFilledBar(dad.definingColor,dad.definingColor);
 			}
 		}
-		uiBox2.add(e);
+		uiBox2.add(uiMap["charColor"]);
 
 		// e = new FlxUIInputText(90, 140, 20, '${charJson.healthicon}');
 		// uiMap["Health Icon"] = e;

@@ -45,6 +45,7 @@ typedef CharJsonAnimation ={
 	var name:String;
 	var fps:Int;
 	var loop:Bool;
+	var ?flipx:Null<Bool>;
 	var indices:Array<Int>;
 	var ?loopStart:Null<Int>; // Tells the game where to restart the animation if looped
 	var ?playAfter:Null<String>; // Tells the game to swap animations, useful for a start animation and then a loop animation
