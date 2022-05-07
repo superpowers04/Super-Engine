@@ -492,7 +492,7 @@ class TitleState extends MusicBeatState
 
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
-			lime.app.Application.current.window.onDropFile.add(AnimationDebug.fileDrop);
+			
 			// FlxTween.tween(Main.fpsCounter,{alpha:1},0.2);
 
 
@@ -514,6 +514,7 @@ class TitleState extends MusicBeatState
 			persistentUpdate = true;
 			FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
 			FlxG.mouse.useSystemCursor = true; // Uses system cursor, did not know this was a thing until Forever Engine
+			CoolUtil.volKeys = [FlxG.sound.muteKeys,FlxG.sound.volumeUpKeys,FlxG.sound.volumeDownKeys];
 			if(!FileSystem.exists("mods/menuTimes.json")){ // Causes crashes if done while game is running, unknown why
 				File.saveContent("mods/menuTimes.json",Json.stringify(SickMenuState.musicList));
 			}else{
@@ -686,7 +687,10 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 			if(MainMenuState.nightly != "") MainMenuState.ver += "-" + MainMenuState.nightly;
-			
+			lime.app.Application.current.window.onDropFile.add(AnimationDebug.fileDrop);
+			if(Sys.args()[0] != null && FileSystem.exists(Sys.args()[0])){
+				AnimationDebug.fileDrop(Sys.args()[0]);
+			}
 			#if !debug
 			if (FlxG.keys.pressed.SHIFT || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
 				FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
@@ -951,7 +955,7 @@ class TitleState extends MusicBeatState
 		destHaxe();
 		FlxG.sound.music.play();
 		FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
-		if(isShift || FlxG.keys.pressed.ENTER){
+		if(isShift || FlxG.keys.pressed.ENTER || (Sys.args()[0] != null && FileSystem.exists(Sys.args()[0]))){
 			skipBoth = true;
 		}
 	}

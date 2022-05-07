@@ -1,6 +1,6 @@
 package;
 
-import flixel.addons.ui.FlxInputText;
+import SEInputText as FlxInputText;
 import flixel.text.FlxText;
 
 // Why do I need this?
