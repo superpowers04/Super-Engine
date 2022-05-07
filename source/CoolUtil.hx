@@ -2,6 +2,7 @@ package;
 
 import lime.utils.Assets;
 import sys.FileSystem;
+import flixel.FlxG;
 
 using StringTools;
 
@@ -10,11 +11,27 @@ class CoolUtil
 	public static var fontName:String = "vcr.ttf";
 	public static var font:String = if(FileSystem.exists('mods/font.ttf')) 'mods/font.ttf' else Paths.font(fontName);
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
+	public static var volKeys:Array<Array<Int>> = [];
+	public static var volKeysEnabled = true;
 
 	public static function difficultyString():String
 	{
 
 		return if (PlayState.stateType == 4) PlayState.actualSongName else difficultyArray[PlayState.storyDifficulty];
+	}
+	public static function toggleVolKeys(?toggle:Bool = true){
+		if (toggle)
+		{
+			FlxG.sound.muteKeys = volKeys[0];
+			FlxG.sound.volumeUpKeys = volKeys[1];
+			FlxG.sound.volumeDownKeys = volKeys[2];
+		}
+		else
+		{
+			FlxG.sound.muteKeys = null;
+			FlxG.sound.volumeUpKeys = null;
+			FlxG.sound.volumeDownKeys = null;
+		}
 	}
 	public static function coolTextFile(path:String):Array<String>
 	{

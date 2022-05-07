@@ -134,6 +134,9 @@ class AnimationDebug extends MusicBeatState
 			ending1 = "xml";
 			ending2 = "png";
 		}
+		if(file.endsWith(".json")){
+			return multi.MultiMenuState.fileDrop(file);
+		}
 		if(validFile == "")return;
 		var _file = file.substr(file.lastIndexOf("/") + 1);
 		var _validFile = validFile.substr(file.lastIndexOf("/") + 1);

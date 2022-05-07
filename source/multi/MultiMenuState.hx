@@ -8,7 +8,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
-import flixel.addons.ui.FlxInputText;
 import openfl.media.Sound;
 import Song;
 import sys.io.File;
@@ -539,8 +538,18 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		super.changeSelection(change);
 		if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
 
-	}
+	}	
+	public static function fileDrop(file:String){
+		try{
 
+			gotoSong(file.substr(0,file.lastIndexOf("/")),
+					file.substr(file.lastIndexOf("/")),
+					file.substr(file.lastIndexOf("/") + 1,file.lastIndexOf(".") - 1)
+			);
+		}catch(e){
+			MainMenuState.handleError('Unable to load dragdrop/argument song: ${e.message}');
+		}
+	}
 	override function goOptions(){
 			lastSel = curSelected;
 			lastSearch = searchField.text;
