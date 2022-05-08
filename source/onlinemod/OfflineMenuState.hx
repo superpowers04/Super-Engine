@@ -7,7 +7,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
-import flixel.addons.ui.FlxInputText;
+import SEInputText as FlxInputText;
 import flixel.addons.ui.FlxUIText;
 import flixel.math.FlxRandom;
 

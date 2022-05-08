@@ -2,7 +2,7 @@ package onlinemod;
 
 import flixel.FlxG;
 import flixel.addons.ui.FlxUIButton;
-import flixel.addons.ui.FlxInputText;
+import SEInputText as FlxInputText;
 import flixel.addons.ui.FlxUIList;
 import flixel.addons.ui.FlxUIState;
 import flixel.text.FlxText;

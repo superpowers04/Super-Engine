@@ -65,7 +65,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 	override function create()
 	{
-		
+		try{
+
 		retAfter = false;
 		SearchMenuState.doReset = true;
 		dataDir = "mods/charts/";
@@ -88,6 +89,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		lastSel = 1;
 		changeDiff();
 		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songs.length} songs');
+		}catch(e){
+			MainMenuState.handleError('Something went wrong in create; ${e.message}');
+		}
 
 	}
 	override function onFocus() {
@@ -303,7 +307,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	// 	return ret;
 	// }
 
-	public static function gotoSong(?selSong:String = "",?songJSON:String = "",?songName:String = "",charting:Bool = false,blankFile:Bool = false){
+	public static function gotoSong(?selSong:String = "",?songJSON:String = "",?songName:String = "",?charting:Bool = false,?blankFile:Bool = false,?voicesFile:String="",?instFile:String=""){
 			try{
 				if(selSong == "" || songJSON == "" || songName == ""){
 					throw("No song name provided!");
@@ -315,21 +319,28 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.storyDifficulty = switch(songJSON){case '${songName}-easy.json': 0; case '${songName}-hard.json': 2; default: 1;};
 				PlayState.actualSongName = songJSON;
 				onlinemod.OfflinePlayState.voicesFile = '';
-
-				if (FileSystem.exists('${selSong}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';}
 				PlayState.hsBrTools = new HSBrTools('${selSong}');
+
+
+				if(instFile == "" ){
+					if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Inst.ogg")){
+						onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.chartFile + "-Inst.ogg";
+					}else{
+						onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
+					}
+				} else onlinemod.OfflinePlayState.instFile = instFile;
+				if(voicesFile == ""){
+					if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Voices.ogg")){
+						onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
+					}else if(FileSystem.exists('${selSong}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';}
+				}else{
+					onlinemod.OfflinePlayState.voicesFile = voicesFile;
+				}
 				if (FileSystem.exists('${selSong}/script.hscript')) {
 					trace("Song has script!");
 					MultiPlayState.scriptLoc = '${selSong}/script.hscript';
 					
 				}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
-				onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
-				if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Inst.ogg")){
-					onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.chartFile + "-Inst.ogg";
-				}
-				if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Voices.ogg")){
-					onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
-				}
 				PlayState.stateType = 4;
 				FlxG.sound.music.fadeOut(0.4);
 				LoadingState.loadAndSwitchState(new MultiPlayState(charting));
@@ -365,7 +376,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.SONG = Song.parseJSONshit(File.getContent(onlinemod.OfflinePlayState.chartFile));
 			}
 			if (FileSystem.exists('${songLoc}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${songLoc}/Voices.ogg';}
-			PlayState.hsBrTools = new HSBrTools('${selSong}');
+			PlayState.hsBrTools = new HSBrTools('${songLoc}');
 			if (FileSystem.exists('${songLoc}/script.hscript')) {
 				trace("Song has script!");
 				MultiPlayState.scriptLoc = '${songLoc}/script.hscript';
@@ -541,11 +552,50 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}	
 	public static function fileDrop(file:String){
 		try{
+			var voices = "";
+			var inst = "";
+			var dir = file.substr(0,file.lastIndexOf("/"));
+			var json = file.substr(file.lastIndexOf("/"));
+			var name = file.substr(file.lastIndexOf("/") + 1,file.lastIndexOf(".") - 1);
+			if(file.contains("assets/")){
+				var assets = file.substr(0,file.lastIndexOf("assets/"));
+				
+				if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
+					inst = '${assets}assets/songs/${name}/Inst.ogg';
+				}
+				if(FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
+					inst = '${assets}assets/songs/${name}-Inst.ogg';
+				}
+				if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
+					voices = '${assets}assets/songs/${name}/Voices.ogg';
+				}
+				if(FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+					voices = '${assets}assets/songs/${name}-Voices.ogg';
+				}
+				if(inst == ""){
+					var name = cast Json.parse(file).song.song;
+					if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
+						inst = '${assets}assets/songs/${name}/Inst.ogg';
+					}
+					if(FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
+						inst = '${assets}assets/songs/${name}-Inst.ogg';
+					}
+					if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
+						voices = '${assets}assets/songs/${name}/Voices.ogg';
+					}
+					if(FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+						voices = '${assets}assets/songs/${name}-Voices.ogg';
+					}
 
-			gotoSong(file.substr(0,file.lastIndexOf("/")),
-					file.substr(file.lastIndexOf("/")),
-					file.substr(file.lastIndexOf("/") + 1,file.lastIndexOf(".") - 1)
+				}
+			}
+			gotoSong(dir,
+					json,
+					name,
+					voices,
+					inst
 			);
+
 		}catch(e){
 			MainMenuState.handleError('Unable to load dragdrop/argument song: ${e.message}');
 		}

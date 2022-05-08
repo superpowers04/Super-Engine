@@ -52,6 +52,9 @@ class OfflinePlayState extends PlayState
 		}else{
 			if (voicesFile != ""){loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));}
 		}
+	if(voicesFile == "" && PlayState.SONG != null){
+		PlayState.SONG.needsVoices = true;
+	}
     trace('Loading $voicesFile, $instFile');
     
     loadedInst = Sound.fromFile(instFile);

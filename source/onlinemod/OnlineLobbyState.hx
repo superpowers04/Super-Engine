@@ -293,20 +293,58 @@ class OnlineLobbyState extends MusicBeatState
 				sendResponse("Client has scripts disabled",false);
 				return;
 			}
+			if(args[2].startsWith("temp-")){
+				var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
+				args.splice(0,3);
+				var script = args.join(" ");
+				OnlinePlayMenuState.rawScripts.push([scriptName,script]);
+				Chat.CLIENT_MESSAGE('Server has temporarily enabled ${scriptName} with ${script.length} characters, This script will be unloaded when you leave');
+
+				sendResponse('Script "${scriptName}" enabled!',true);
+			}else{
+
+				var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
+				scriptName = "serv-" + scriptName;
+				Chat.CLIENT_MESSAGE('Server is attempting to install hscript ${scriptName}');
+				
+				if(FileSystem.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script Already exists!",true);return;}
+				args.splice(0,3);
+				var script = args.join(" ");
+				Chat.CLIENT_MESSAGE('Installing hscript of ${script.length} characters');
+				FileSystem.createDirectory('mods/scripts/${scriptName}/');
+				File.saveContent('mods/scripts/${scriptName}/script.hscript',script);
+				if(!FileSystem.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script couldn't be downloaded!",true);return;}
+
+				OnlinePlayMenuState.scripts.push(scriptName);
+				sendResponse('Script "${scriptName}" installed and enabled!',true);
+			}
+		}
+		case "disablescript":{ // Allows disabling of hscripts
+			if(!FlxG.save.data.allowServerScripts){
+				Chat.CLIENT_MESSAGE("Server tried to disable a script but you're blocking server scripts. You can change this in your options if you trust the server.");
+				sendResponse("Client has scripts disabled",false);
+				return;
+			}
 			var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
 			scriptName = "serv-" + scriptName;
-			Chat.CLIENT_MESSAGE('Server is attempting to install hscript ${scriptName}');
-			
-			if(FileSystem.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script Already exists!",true);return;}
-			args.splice(0,3);
-			var script = args.join(" ");
-			Chat.CLIENT_MESSAGE('Installing hscript of ${script.length} characters');
-			FileSystem.createDirectory('mods/scripts/${scriptName}/');
-			File.saveContent('mods/scripts/${scriptName}/script.hscript',script);
-			if(!FileSystem.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script couldn't be downloaded!",true);return;}
+			if(OnlinePlayMenuState.scripts.contains(scriptName)){
+				OnlinePlayMenuState.scripts.remove(scriptName);
+				sendResponse("Script removed!");return;
+			}else{
+				for (_ => v in OnlinePlayMenuState.rawScripts) {
+					if(v[0] != scriptName){continue;}
+					OnlinePlayMenuState.rawScripts.remove(v);
+					Chat.CLIENT_MESSAGE('Server unloaded script "${scriptName}"');
+					return;
+				}
 
-			OnlinePlayMenuState.scripts.push(scriptName);
-			sendResponse('Script "${scriptName}" installed and enabled!',true);
+				sendResponse("Script isn't enabled!");
+				return;
+			}
+			
+			Chat.CLIENT_MESSAGE('Server Disabled script "${scriptName}"');
+
+			sendResponse("Script enabled!");
 		}
 		case "enablescript":{ // Allows enabling of hscripts
 			QuickOptionsSubState.setSetting("Song hscripts",true);
@@ -344,7 +382,7 @@ class OnlineLobbyState extends MusicBeatState
 					var clientInfo = {
 						version: MainMenuState.ver,
 						versionSplit: MainMenuState.ver.split("."),
-						supported: ["inputsync","invertnotes","p2show","clientscript","setchar","sendscript","enablescript"],
+						supported: ["inputsync","invertnotes","p2show","clientscript","setchar","sendscript","enablescript","removescript","tempscript"],
 					};
 
 					sendResponse("info:" + Json.stringify(clientInfo));

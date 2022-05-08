@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="EVENTNOTE.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="arrowDOWN0000" x="0" y="0" width="160" height="160"/>
+	<SubTexture name="arrowLEFT0000" x="0" y="0" width="160" height="160"/>
+	<SubTexture name="arrowRIGHT0000" x="0" y="0" width="160" height="160"/>
+	<SubTexture name="arrowUP0000" x="0" y="0" width="160" height="160"/>
+	<SubTexture name="blue0000" x="0" y="0" width="160" height="160"/>
+	<SubTexture name="green0000" x="0" y="0" width="160" height="160"/>
+	<SubTexture name="purple0000" x="0" y="0" width="160" height="160"/>
+	<SubTexture name="red0000" x="0" y="0" width="160" height="160"/>
+
+</TextureAtlas>

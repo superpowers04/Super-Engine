@@ -25,10 +25,9 @@ import flash.display.BitmapData;
 import tjson.Json;
 
 import flixel.graphics.FlxGraphic;
-import flixel.addons.ui.FlxInputText;
+import SEInputText as FlxInputText;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUIButton;
-import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIState;
 import flixel.addons.ui.FlxUISubState;
 import flixel.addons.ui.FlxUIInputText;
@@ -456,19 +455,6 @@ class AnimationDebug extends MusicBeatState
 			default: LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
-	override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center = false){
-		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}
-		trace(str);
-		tempMessage = new FlxText(40,60,24,str);
-		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		tempMessage.scrollFactor.set();
-		tempMessage.autoSize = true;
-		tempMessage.wordWrap = false;tempMessage.cameras = [camHUD];
-		add(tempMessage);
-		tempMessTimer = new FlxTimer().start(time, function(tmr:FlxTimer)
-		{
-			if (tempMessage != null) tempMessage.destroy();
-		},1);}
 
 	function outputCharOffsets(){
 		var text = (if(isAbsoluteOffsets) "These are absolute, these should replace the offsets in the config.json." else 'These are not absolute, these should be added to the existing offsets in your config.json.') + (if (dad.clonedChar != dad.curCharacter) ' This character is cloning ${dad.clonedChar}' else '') +
@@ -927,19 +913,22 @@ class AnimationDebug extends MusicBeatState
 		uiBox2.add(uiMap["Sing Duration"]);
 		uiBox2.add(new FlxText(30, 160,0,"Color:"));
 		uiMap["charColor"] = new FlxUIInputText(90, 160, 100, '${if(charJson.color != null) dad.definingColor.toWebString() else '#000000'}');
-		uiMap["charColor"].customFilterPattern = ~/(?![#xXa-f0-9A-F])/gi;
-		uiMap["charColor"].callback = function(text,_){
-			text = text.toUpperCase();
-
+		// uiMap["charColor"].customFilterPattern = ~/(?![#xXa-f0-9A-F])/gi;
+		uiMap["charColor"].callback = function(text,a){
+			// text = text.toUpperCase();
 			var col = FlxColor.fromString(text);
-			if(col == null){
-				return showTempmessage("Invalid color, valid syntax: #RRGGBB, #AARRGGBB, 0xAARRGGBB.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
+			if('$col' == "null"){ // Weird way of doing it but still returns null even if valid for some reason
+				if(a == "enter" || a == "focuslost") showTempmessage("Invalid color, valid syntax: #RRGGBB, #AARRGGBB, 0xAARRGGBB.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
+				return;
 			}
 			charJson.color = col;
-			uiMap["charColor"].text = col.toWebString();
+			// uiMap["charColor"].text = col.toWebString();
 			if(uiMap["healthBar"] != null){
 				uiMap["healthBar"].createFilledBar(dad.definingColor,dad.definingColor);
 			}
+		}
+		uiMap["charColor"].focusLost = function(){
+			uiMap["charColor"].callback(uiMap["charColor"].text,"focuslost");
 		}
 		uiBox2.add(uiMap["charColor"]);
 
