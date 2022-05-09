@@ -63,7 +63,7 @@ class Overlay extends TextField
 
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
-		var mem:Float = Math.round(System.totalMemory / 1024 / 1024 * 100) / 100;
+		var mem:Float = Math.round((System.totalMemory / 1024) / 1000);
 		if (mem > memPeak)
 			memPeak = mem;
 

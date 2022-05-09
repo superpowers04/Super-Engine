@@ -282,7 +282,11 @@ class ChartingState extends MusicBeatState
 		gridBGBelow.alpha = 0.7;
 
 		super.create();
-		saveRemind(true);
+		if(FlxG.save.data.autosave != null){
+			showTempmessage("Autosave detected! Use the song tab to load it!");
+		}
+		lastSav = Json.stringify({"song": _song});
+
 		updateHeads();
 		}catch(e){
 			MainMenuState.handleError("chart editor did a fucky: " + e.message);
@@ -1861,14 +1865,29 @@ class ChartingState extends MusicBeatState
 		FlxG.resetState();
 	}
 
-	inline function autosaveSong():Void
+	function autosaveSong():Void
 	{
-		// FlxG.save.data.autosave = Json.stringify({
-		// 	"song": _song
-		// });
-		// FlxG.save.flush();
+		try{
+			if(saveReminder != null)saveReminder.cancel();
+			var sav = Json.stringify({
+				"song": _song
+			});
+			if(sav == lastSav){
+				return;
+			}		
+
+				FlxG.save.data.autosave = sav;
+				FlxG.save.flush();
+				showTempmessage("Autosaved successfully!");
+				lastSav = sav;
+
+		}catch(e){
+			showTempmessage("Autosave failed!",FlxColor.RED);
+		}
+		saveReminder = new FlxTimer().start(600,function(tmr:FlxTimer){autosaveSong();});
 	}
 	var fd:FileDialog;
+	var lastSav = "";
 	private function loadLevel_()
 	{
 		// var json:Dynamic = {
@@ -1888,7 +1907,7 @@ class ChartingState extends MusicBeatState
 				// _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 				// // Bodgey as hell but doesn't work otherwise
 				// _file.save('{"song":' + data + "}", path);
-
+				FlxG.save.data.autosave = null;
 
 					_song = Json.parse(sys.io.File.getContent(path));
 					updateGrid();
@@ -1927,16 +1946,13 @@ class ChartingState extends MusicBeatState
 				
 
 				});
+				FlxG.save.data.autosave = null;
 				fd.browse(FileDialogType.SAVE, 'json', sys.FileSystem.absolutePath(lastPath), "Save chart");
 			}
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 		saveReminder.reset();
 	}
-	function saveRemind(show:Bool = true){ // Save reminder every 10 minutes
-		if(show)showTempmessage("Don't forget to save frequently!",FlxColor.RED);
-		if(saveReminder != null)saveReminder.cancel();
-		saveReminder = new FlxTimer().start(600,function(tmr:FlxTimer){saveRemind();});
-	}
+
 
 	function onSaveComplete(_):Void
 	{
@@ -1974,6 +1990,7 @@ class ChartingState extends MusicBeatState
 	function gotoPlaystate(?jumpTo:Bool = false){
 		charting = true;
 		saveReminder.cancel();
+		autosaveSong();
 		if(jumpTo){
 			PlayState.jumpTo = Conductor.songPosition;
 		}

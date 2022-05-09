@@ -210,7 +210,8 @@ class Note extends FlxSprite
 					case "changebpm", "bgm change": {
 						try{
 							// Info can be set to anything, it's being used for storing the BPM
-							info = [Std.parseFloat(rawNote[4])]; 
+
+							info = [(if(!Math.isNaN(rawNote[4]))Std.parseFloat(rawNote[4]) else Std.parseFloat(rawNote[3]))]; 
 						}catch(e){info = [120,0];}
 						// Replaces hit func
 						hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
@@ -256,7 +257,7 @@ class Note extends FlxSprite
 			updateHitbox();
 			antialiasing = true;
 			var noteName = noteNames[noteData];
-			if(eventNote) noteName = noteNames[0];
+			if(eventNote || noteName == null || noteName == "") noteName = noteNames[0];
 
 
 			x+= swagWidth * noteData;
