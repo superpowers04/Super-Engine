@@ -995,7 +995,30 @@ class PlayState extends MusicBeatState
 					}
 				}
 		}
+		parseHScript(songScript,null,"song");
+		if(QuickOptionsSubState.getSetting("Song hscripts") && FlxG.save.data.scripts != null){
+			for (i in 0 ... FlxG.save.data.scripts.length) {
+				
+				var v = FlxG.save.data.scripts[i];
+				trace('Checking for ${v}');
+				loadScript(v);
+			}
+		}
+		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket != null){
 
+			for (i in 0 ... onlinemod.OnlinePlayMenuState.scripts.length) {
+				
+				var v = onlinemod.OnlinePlayMenuState.scripts[i];
+				trace('Checking for ${v}');
+				loadScript(v);
+			}
+		}
+		if(onlinemod.OnlinePlayMenuState.socket != null){
+
+			for (i in 0 ... onlinemod.OnlinePlayMenuState.rawScripts.length) {
+				parseHScript(onlinemod.OnlinePlayMenuState.rawScripts[i][1],hsBrTools,onlinemod.OnlinePlayMenuState.rawScripts[i][0]);
+			}
+		}
 		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
 		callInterp("afterStage",[]);
@@ -1115,30 +1138,7 @@ class PlayState extends MusicBeatState
 		callInterp("addChars",[]);
 		charCall("addChars",[],-1);
 
-		parseHScript(songScript,null,"song");
-		if(QuickOptionsSubState.getSetting("Song hscripts") && FlxG.save.data.scripts != null){
-			for (i in 0 ... FlxG.save.data.scripts.length) {
-				
-				var v = FlxG.save.data.scripts[i];
-				trace('Checking for ${v}');
-				loadScript(v);
-			}
-		}
-		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket != null){
 
-			for (i in 0 ... onlinemod.OnlinePlayMenuState.scripts.length) {
-				
-				var v = onlinemod.OnlinePlayMenuState.scripts[i];
-				trace('Checking for ${v}');
-				loadScript(v);
-			}
-		}
-		if(onlinemod.OnlinePlayMenuState.socket != null){
-
-			for (i in 0 ... onlinemod.OnlinePlayMenuState.rawScripts.length) {
-				parseHScript(onlinemod.OnlinePlayMenuState.rawScripts[i][1],hsBrTools,onlinemod.OnlinePlayMenuState.rawScripts[i][0]);
-			}
-		}
 		// if (loadRep)
 		// {
 		// 	FlxG.watch.addQuick('rep rpesses',repPresses);
