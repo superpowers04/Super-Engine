@@ -358,7 +358,15 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
 				PlayState.SONG = {
 					song: songName,
-					notes: [],
+					notes: [{
+						lengthInSteps: 16,
+						bpm: 150,
+						changeBPM: false,
+						mustHitSection: true,
+						sectionNotes: [],
+						typeOfSection: 0,
+						altAnim: false
+					}],
 					bpm: 150,
 					needsVoices: true,
 					player1: 'bf',
@@ -369,6 +377,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					speed: 1,
 					validScore: false
 				};
+				File.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:PlayState.SONG}));
 
 
 			}else{

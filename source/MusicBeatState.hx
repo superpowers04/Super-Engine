@@ -43,6 +43,7 @@ class MusicBeatState extends FlxUIState
 
 		tranIn();
 	}
+	
 
 	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true){
 		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}

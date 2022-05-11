@@ -110,6 +110,10 @@ class Note extends FlxSprite
 				}
 			}
 		}
+		if((eventNote || rawNote[1] == -1 || rawNote[2] == "eventNote") && inCharter){
+			color = 0xFFFFFF;
+			frames = Paths.getSparrowAtlas("EVENTNOTE");
+		}
 		addAnimations();
 
 	}

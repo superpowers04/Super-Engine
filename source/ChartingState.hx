@@ -282,11 +282,7 @@ class ChartingState extends MusicBeatState
 		gridBGBelow.alpha = 0.7;
 
 		super.create();
-		if(FlxG.save.data.autosave != null){
-			showTempmessage("Autosave detected! Use the song tab to load it!");
-		}
-		lastSav = Json.stringify({"song": _song});
-
+		saveRemind(true);
 		updateHeads();
 		}catch(e){
 			MainMenuState.handleError("chart editor did a fucky: " + e.message);
@@ -1647,6 +1643,7 @@ class ChartingState extends MusicBeatState
 
 		_song.notes.push(sec);
 	}
+	var currentNoteObj:Note;
 
 	function selectNote(note:Note):Void
 	{
@@ -1655,7 +1652,16 @@ class ChartingState extends MusicBeatState
 		{
 			if (i[0] == note.strumTime && i[1] == note.rawNote[1])
 			{
+				if(currentNoteObj != null){
+					currentNoteObj.color = 0xFFFFFF;
+				}
 				curSelectedNote = _song.notes[curSection].sectionNotes[swagNum];
+				var arr = curSelectedNote.slice(if(Std.isOfType(curSelectedNote[2],Int) || Std.isOfType(curSelectedNote[2],Float)) 2 else 3);
+				noteTypeInput.text = if(arr[0] == null) '' else if (arr[0] == 1) "hurt note" else '${arr.pop()}';
+
+				noteTypeInputcopy.text = arr.join(', ');
+				currentNoteObj = note;
+				note.color = 0xaaFFaa;
 			}
 
 			swagNum += 1;
@@ -1787,7 +1793,6 @@ class ChartingState extends MusicBeatState
 			updateGrid();
 			updateNoteUI();
 
-			autosaveSong();
 		}catch(e){
 			MainMenuState.handleError('Error while placing note! ${e.message}');
 		}
@@ -1865,29 +1870,14 @@ class ChartingState extends MusicBeatState
 		FlxG.resetState();
 	}
 
-	function autosaveSong():Void
+	inline function autosaveSong():Void
 	{
-		try{
-			if(saveReminder != null)saveReminder.cancel();
-			var sav = Json.stringify({
-				"song": _song
-			});
-			if(sav == lastSav){
-				return;
-			}		
-
-				FlxG.save.data.autosave = sav;
-				FlxG.save.flush();
-				showTempmessage("Autosaved successfully!");
-				lastSav = sav;
-
-		}catch(e){
-			showTempmessage("Autosave failed!",FlxColor.RED);
-		}
-		saveReminder = new FlxTimer().start(600,function(tmr:FlxTimer){autosaveSong();});
+		// FlxG.save.data.autosave = Json.stringify({
+		// 	"song": _song
+		// });
+		// FlxG.save.flush();
 	}
 	var fd:FileDialog;
-	var lastSav = "";
 	private function loadLevel_()
 	{
 		// var json:Dynamic = {
@@ -1907,7 +1897,7 @@ class ChartingState extends MusicBeatState
 				// _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 				// // Bodgey as hell but doesn't work otherwise
 				// _file.save('{"song":' + data + "}", path);
-				FlxG.save.data.autosave = null;
+
 
 					_song = Json.parse(sys.io.File.getContent(path));
 					updateGrid();
@@ -1946,13 +1936,16 @@ class ChartingState extends MusicBeatState
 				
 
 				});
-				FlxG.save.data.autosave = null;
 				fd.browse(FileDialogType.SAVE, 'json', sys.FileSystem.absolutePath(lastPath), "Save chart");
 			}
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 		saveReminder.reset();
 	}
-
+	function saveRemind(show:Bool = true){ // Save reminder every 10 minutes
+		if(show)showTempmessage("Don't forget to save frequently!",FlxColor.RED);
+		if(saveReminder != null)saveReminder.cancel();
+		saveReminder = new FlxTimer().start(600,function(tmr:FlxTimer){saveRemind();});
+	}
 
 	function onSaveComplete(_):Void
 	{

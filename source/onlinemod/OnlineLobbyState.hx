@@ -4,7 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.ui.FlxUIButton;
-import flixel.addons.ui.FlxInputText;
+import SEInputText as FlxInputText;
 import flixel.addons.ui.FlxUIList;
 import flixel.addons.ui.FlxUIState;
 import flixel.text.FlxText;
@@ -463,13 +463,8 @@ class OnlineLobbyState extends MusicBeatState
 	  quitHeldBar.visible = false;
 	  quitHeldBG.visible = false;
 	}
-	if (!Chat.chatField.hasFocus)
+	if (Chat.chatField.hasFocus)
 	{
-	  OnlinePlayMenuState.SetVolumeControls(true);
-	}
-	else
-	{
-	  OnlinePlayMenuState.SetVolumeControls(false);
 	  if (FlxG.keys.justPressed.ENTER)
 	  {
 		Chat.SendChatMessage();

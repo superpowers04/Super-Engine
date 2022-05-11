@@ -2251,7 +2251,7 @@ class PlayState extends MusicBeatState
 		// reverse iterate to remove oldest notes first and not invalidate the iteration
 		// stop iteration as soon as a note is not removed
 		// all notes should be kept in the correct order and this is optimal, safe to do every frame/update
-		{
+		if(FlxG.save.data.npsDisplay){
 			var leg = notesHitArray.length-1;
 			var curTime = Date.now().getTime();
 			while (leg >= 0)
@@ -2266,9 +2266,9 @@ class PlayState extends MusicBeatState
 			nps = notesHitArray.length;
 			if (nps > maxNPS)
 				maxNPS = nps;
-			if (combo > maxCombo)
-				maxCombo = combo;
 		}
+		if (combo > maxCombo)
+			maxCombo = combo;
 		switch (curStage)
 		{
 			case 'philly':

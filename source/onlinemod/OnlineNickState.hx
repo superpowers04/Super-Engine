@@ -3,7 +3,7 @@ package onlinemod;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.ui.FlxUIButton;
-import flixel.addons.ui.FlxInputText;
+import SEInputText as FlxInputText;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxAxes;
@@ -95,7 +95,6 @@ class OnlineNickState extends MusicBeatState
   {
     if (!nickField.hasFocus)
     {
-      OnlinePlayMenuState.SetVolumeControls(true);
       if (controls.BACK)
       {
         FlxG.switchState(new OnlinePlayMenuState());
@@ -105,10 +104,6 @@ class OnlineNickState extends MusicBeatState
           OnlinePlayMenuState.socket.close();
         }
       }
-    }
-    else
-    {
-      OnlinePlayMenuState.SetVolumeControls(false);
     }
 
     super.update(elapsed);
