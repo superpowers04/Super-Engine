@@ -33,6 +33,9 @@ class MusicBeatSubstate extends FlxSubState
 			stepHit();
 
 
+		if(FlxG.keys.justPressed.F1){
+			MainMenuState.handleError("Manually triggered force exit");
+		}
 		super.update(elapsed);
 	}
 

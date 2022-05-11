@@ -77,6 +77,9 @@ class MusicBeatState extends FlxUIState
 
 		updateCurStep();
 		updateBeat();
+		if(FlxG.keys.justPressed.F1){
+			MainMenuState.handleError("Manually triggered force exit");
+		}
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
