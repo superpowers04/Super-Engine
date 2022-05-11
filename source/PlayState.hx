@@ -3917,6 +3917,10 @@ class PlayState extends MusicBeatState
 		}
 		combo = 0;
 		misses++;
+		if(flippy){
+			practiceMode = false;
+			health = 0;
+		}
 		if(daNote != null) daNote.miss(0,daNote); else charAnim(0,"singDOWNmiss");
 		if(logGameplay) {eventLog.push ({
 				rating:if(daNote == null) "Missed without note" else "Missed a note",
