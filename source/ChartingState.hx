@@ -1656,8 +1656,9 @@ class ChartingState extends MusicBeatState
 					currentNoteObj.color = 0xFFFFFF;
 				}
 				curSelectedNote = _song.notes[curSection].sectionNotes[swagNum];
-				var arr = curSelectedNote.slice(if(Std.isOfType(curSelectedNote[2],Int) || Std.isOfType(curSelectedNote[2],Float)) 2 else 3);
-				noteTypeInput.text = if(arr[0] == null) '' else if (arr[0] == 1) "hurt note" else '${arr.pop()}';
+				var arr = curSelectedNote.slice(if(Math.isNaN(curSelectedNote[2])) 2 else 3);
+				if (arr[0] == 1) arr[0] = "hurt note";
+				noteTypeInput.text = (if(arr[0] == null) '' else '${arr.shift()}');
 
 				noteTypeInputcopy.text = arr.join(', ');
 				currentNoteObj = note;

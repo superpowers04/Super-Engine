@@ -175,6 +175,7 @@ class PlayState extends MusicBeatState
 
 	public var healthBarBG:FlxSprite;
 	public var healthBar:FlxBar;
+	public var practiceText:FlxText;
 	private var songPositionBar:Float = 0;
 	public var handleTimes:Bool = true;
 	
@@ -1247,10 +1248,13 @@ class PlayState extends MusicBeatState
 		healthBar.createFilledBar(dad.definingColor, boyfriend.definingColor);
 		// healthBar
 		add(healthBar);
+
 		// Add Kade Engine watermark
 		if (stateType != 4 && stateType != 5 && stateType != 6 ) actualSongName = curSong + " " + songDiff;
 
-		
+		if(actualSongName == ""){
+			actualSongName = (if(ChartingState.charting) "Charting" else "Unknown Chart");
+		}
 		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50 - FlxG.save.data.guiGap,0,actualSongName + " - " + inputEngineName, 16);
 		kadeEngineWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
@@ -1321,6 +1325,15 @@ class PlayState extends MusicBeatState
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
 		if(practiceMode){
+			// if(practiceMode ){
+			practiceText = new FlxText(0,0,(if(flippy)"Flippy Mode" else if(ChartingState.charting) "Testing Chart" else "Practice mode"),16);
+			practiceText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			practiceText.y = healthBar.y;
+			practiceText.cameras = [camHUD];
+			practiceText.screenCenter(X);
+			insert(members.indexOf(healthBar),practiceText);
+			FlxTween.tween(practiceText,{alpha:0},1,{type:PINGPONG});
+			// }
 			healthBar.visible = healthBarBG.visible = false;
 			var iconOffset = 26;
 			if(middlescroll){
@@ -1993,19 +2006,20 @@ class PlayState extends MusicBeatState
 			}
 
 			daBeats += 1;
-		}try{
-
-		if(SONG.eventObjects != null && SONG.eventObjects[0] != null){
-			for (i in SONG.eventObjects)
-			{
-				var swagNote:Note = new Note(i.position, -1, null,null,null,i.type,[i.position,-1,i.type],false);
-				swagNote.eventNote = true;
-				unspawnNotes.push(swagNote);
-
-			}
-
 		}
-		}catch(e){trace('Unable to load Kade event: ${e.message}');}
+		// try{
+
+		// if(SONG.eventObjects != null && SONG.eventObjects[0] != null){
+		// 	for (i in SONG.eventObjects)
+		// 	{
+		// 		var swagNote:Note = new Note(i.position, -1, null,null,null,i.type,[i.position,-1,i.type],false);
+		// 		swagNote.eventNote = true;
+		// 		unspawnNotes.push(swagNote);
+
+		// 	}
+
+		// }
+		// }catch(e){trace('Unable to load Kade event: ${e.message}');}
 		// trace(unspawnNotes.length);
 		// playerCounter += 1;
 

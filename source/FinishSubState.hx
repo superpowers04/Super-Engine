@@ -56,6 +56,7 @@ class FinishSubState extends MusicBeatSubstate
 	public static var forceBFAnim:Bool = false;
 	public static var instance:FinishSubState;
 	public static var fadeOut:Bool = true;
+	public var updateBF = true;
 	public function new(x:Float, y:Float,?won = true,?error:String = "")
 	{
 		instance = this;
@@ -78,7 +79,7 @@ class FinishSubState extends MusicBeatSubstate
 			PlayState.boyfriend.callInterp(inName,[]);
 		}
 
-		if(!isError) FlxG.state.persistentUpdate = true; else FlxG.state.persistentUpdate = false;
+		FlxG.state.persistentUpdate = false;
 		win = won;
 		FlxG.sound.pause();
 		if(!isError) PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
@@ -122,7 +123,6 @@ class FinishSubState extends MusicBeatSubstate
 		if(!isError){
 			if(win){
 				boyfriend.playAnimAvailable(['win','hey','singUP']);
-				
 				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnimAvailable(['lose','singDOWNmiss']);}
 				PlayState.gf.playAnim('cheer',true);
 			}else{
@@ -156,6 +156,7 @@ class FinishSubState extends MusicBeatSubstate
 			// }
 			forceBFAnim = false;
 		}
+
 	}
 
 	public static var endingMusic:Sound;
@@ -163,6 +164,7 @@ class FinishSubState extends MusicBeatSubstate
 	var optionsisyes:Bool = false;
 	var shownResults:Bool = false;
 	public function finishNew(?name:String){
+			ready =true;
 			Conductor.changeBPM(70);
 			FlxG.camera.alpha = PlayState.instance.camHUD.alpha = 1;
 			// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
@@ -172,7 +174,7 @@ class FinishSubState extends MusicBeatSubstate
 			PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
 			PlayState.instance.camGame.setPosition(camPos[0],camPos[1]);
 			cam = new FlxCamera();
-
+			updateBF = false;
 			FlxG.cameras.add(cam);
 			FlxCamera.defaultCameras = [cam];
 			if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
@@ -383,6 +385,12 @@ class FinishSubState extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		if(FlxG.keys.pressed.ESCAPE){
+			retMenu();
+		}
+		if(updateBF && PlayState.boyfriend != null){
+			PlayState.boyfriend.update(elapsed);
+		}
 		if (ready){
 
 
@@ -403,6 +411,14 @@ class FinishSubState extends MusicBeatSubstate
 				finishNew();
 			}
 		}
+
+	}
+	override function draw(){
+
+		if(updateBF && PlayState.boyfriend != null){
+			PlayState.boyfriend.draw();
+		}
+		super.draw();
 
 	}
 	function restart()

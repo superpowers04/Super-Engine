@@ -421,6 +421,8 @@ class TitleState extends MusicBeatState
 	// }
 	override public function create():Void
 	{
+
+		forceQuit = false; // You can't force quit to something that hasn't been loaded
 		Assets.loadLibrary("shared");
 		@:privateAccess
 		{

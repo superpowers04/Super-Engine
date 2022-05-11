@@ -23,6 +23,7 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+	var forceQuit = true;
 	public static var instance:MusicBeatState;
 
 	var tempMessage:FlxText;
@@ -77,7 +78,7 @@ class MusicBeatState extends FlxUIState
 
 		updateCurStep();
 		updateBeat();
-		if(FlxG.keys.justPressed.F1){
+		if(FlxG.keys.justPressed.F1 && forceQuit){
 			MainMenuState.handleError("Manually triggered force exit");
 		}
 
