@@ -1326,9 +1326,8 @@ class PlayState extends MusicBeatState
 		healthBarBG.cameras = [camHUD];
 		if(practiceMode){
 			// if(practiceMode ){
-			practiceText = new FlxText(0,0,(if(flippy)"Flippy Mode" else if(ChartingState.charting) "Testing Chart" else "Practice mode"),16);
+			practiceText = new FlxText(0,healthBar.y - 64,(if(flippy)"Flippy Mode" else if(ChartingState.charting) "Testing Chart" else "Practice mode"),16);
 			practiceText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-			practiceText.y = healthBar.y;
 			practiceText.cameras = [camHUD];
 			practiceText.screenCenter(X);
 			insert(members.indexOf(healthBar),practiceText);
@@ -2528,7 +2527,11 @@ class PlayState extends MusicBeatState
 							// 	DadStrumPlayAnim(daNote.noteData);
 							// }
 							daNote.hit(1,daNote);
-							callInterp("noteHitDad",[dad,daNote]);
+							if(daNote.eventNote){
+								callInterp("eventNoteHit",[dad,daNote]);
+							}else{
+								callInterp("noteHitDad",[dad,daNote]);
+							}
 
 							dad.holdTimer = 0;
 		
@@ -2578,7 +2581,7 @@ class PlayState extends MusicBeatState
 }
 
 	override function draw(){
-		try{handleInput();}catch(e){handleError('Error during handleInput: ${e.message}');}
+		try{noteShit();}catch(e){handleError('Error during noteShit: ${e.message}');}
 		callInterp("draw",[]);
 		if(!FlxG.save.data.preformance){
 			if(downscroll){
@@ -3097,14 +3100,18 @@ class PlayState extends MusicBeatState
 		var inputEngines = ["KE" + MainMenuState.kadeEngineVer,"KE-SE 1.5.2" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")];
 		// if (onlinemod.OnlinePlayMenuState.socket != null && inputMode != 0) {inputMode = 0;trace("Loading with non-kade in online. Forcing kade!");} // This is to prevent input differences between clients
 		trace('Using ${inputMode}');
+		// noteShit handles moving notes around and opponent hitting them
+		// keyShit handles player input and hitting notes
+		// These can both be replaced by scripts :>
+
 		switch(inputMode){
 			case 0:
-				handleInput = kadeInput; // I believe this is for Dad
-				doKeyShit = kadeKeyShit; // I believe this is for Boyfriend
+				noteShit = kadeNoteShit;
+				doKeyShit = kadeKeyShit;
 				goodNoteHit = kadeGoodNote;
 			case 1:
-				handleInput = kadeBRInput; // I believe this is for Dad
-				doKeyShit = kadeBRKeyShit; // I believe this is for Boyfriend
+				noteShit = SENoteShit;
+				doKeyShit = kadeBRKeyShit;
 				goodNoteHit = kadeBRGoodNote;
 			default:
 				MainMenuState.handleError('${inputMode} is not a valid input! Please change your input mode!');
@@ -3114,7 +3121,7 @@ class PlayState extends MusicBeatState
 
 
 	}
-	dynamic function handleInput(){MainMenuState.handleError("I can't handle input for some reason, Please report this!");}
+	dynamic function noteShit(){MainMenuState.handleError("I can't handle input for some reason, Please report this!");}
 	public function DadStrumPlayAnim(id:Int) {
 		var spr:FlxSprite= strumLineNotes.members[id];
 		if(spr != null) {
@@ -3159,7 +3166,7 @@ class PlayState extends MusicBeatState
 // Vanilla Kade
 
 	public var acceptInput = true;
-	function kadeInput(){
+	function kadeNoteShit(){
 		if (generatedMusic)
 			{
 				var _scrollSpeed = FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2); // Probably better to calculate this beforehand
@@ -3287,7 +3294,7 @@ class PlayState extends MusicBeatState
 				});
 			}
 	}
- 	private function kadeKeyShit():Void // I've invested in emma stocks
+	private function kadeKeyShit():Void // I've invested in emma stocks
 			{
 				// control arrays, order L D R U
 				var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
@@ -3308,7 +3315,7 @@ class PlayState extends MusicBeatState
 		 		charCall("keyShit",[pressArray,holdArray]);
 		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
 				// HOLDS, check for sustain notes
-				if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
+				if (generatedMusic && holdArray.contains(true))
 				{
 					notes.forEachAlive(function(daNote:Note)
 					{
@@ -3318,7 +3325,7 @@ class PlayState extends MusicBeatState
 				}
 		 		var hitArray = [false,false,false,false];
 				// PRESSES, check for note hits
-				if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
+				if (generatedMusic && pressArray.contains(true) /* && !boyfriend.stunned && */ )
 				{
 					boyfriend.holdTimer = 0;
 		 
@@ -3472,7 +3479,7 @@ class PlayState extends MusicBeatState
 
 				// add newest note to front of notesHitArray
 				// the oldest notes are at the end and are removed first
-				if (!note.isSustainNote)
+				if (FlxG.save.data.npsDisplay && !note.isSustainNote)
 					notesHitArray.unshift(Date.now().getTime());
 
 				if (!resetMashViolation && mashViolations >= 1)
@@ -3538,7 +3545,7 @@ class PlayState extends MusicBeatState
 
 // "improved" kade
 
-	function kadeBRInput(){
+	function SENoteShit(){
 		if (generatedMusic)
 			{
 				var _scrollSpeed = FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2); // Probably better to calculate this beforehand
@@ -3702,7 +3709,7 @@ class PlayState extends MusicBeatState
 
 		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
 				// HOLDS, check for sustain notes
-				if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
+				if (generatedMusic && (holdArray.contains(true) || releaseArray.contains(true)))
 				{
 					notes.forEachAlive(function(daNote:Note)
 					{
@@ -3712,16 +3719,13 @@ class PlayState extends MusicBeatState
 							daNote.isPressed = true;
 							daNote.susHit(0,daNote);
 							callInterp("susHit",[daNote]);
-
-
-
 						}
 					});
 				}
 		 
 				// PRESSES, check for note hits
 				
-				if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
+				if (generatedMusic && pressArray.contains(true) /*!boyfriend.stunned && */ )
 				{
 					boyfriend.holdTimer = 0;
 		 
@@ -3729,13 +3733,15 @@ class PlayState extends MusicBeatState
 					var directionList:Array<Bool> = [false,false,false,false]; // directions that can be hit
 					var dumbNotes:Array<Note> = []; // notes to kill later
 		 			var onScreenNote:Bool = false;
-
-					notes.forEachAlive(function(daNote:Note)
+		 			var i = 0;
+		 			while (i < notes.members.length)
 					{
-						if (daNote.skipNote || !daNote.mustPress) return;
+						var daNote = notes.members[i];
+						i++;
+						if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) continue;
 
 						if (!onScreenNote) onScreenNote = true;
-						if (daNote.canBeHit && !daNote.tooLate && !daNote.wasGoodHit)
+						if (daNote.canBeHit && !daNote.tooLate && !daNote.wasGoodHit && pressArray[daNote.noteData])
 						{
 							if (directionList[daNote.noteData])
 							{
@@ -3744,14 +3750,21 @@ class PlayState extends MusicBeatState
 									if (coolNote.noteData == daNote.noteData){
 
 										if (Math.abs(daNote.strumTime - coolNote.strumTime) < 5)
-										{ // if it's the same note twice at < 10ms distance, just delete it
+										{ // if it's the same note twice at < 5ms distance, just delete it
 											// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
-											dumbNotes.push(daNote);
+											// weell now I'm using a while instead of a forEachAlive, so fuck you
+
+											daNote.kill();
+											notes.remove(daNote, true);
+											daNote.destroy();
+											i--;
 											break;
 										}
 										if (daNote.strumTime < coolNote.strumTime)
 										{ // if daNote is earlier than existing note (coolNote), replace
+											// This shouldn't happen due to all of the notes being arranged by strumtime, if it does, run
 											possibleNotes.remove(coolNote);
+											trace('${daNote.strumTime} < ${coolNote.strumTime} 💀');
 											possibleNotes.push(daNote);
 											break;
 										}
@@ -3764,49 +3777,27 @@ class PlayState extends MusicBeatState
 								directionList[daNote.noteData] = true;
 							}
 						}
-					});
-					for (note in dumbNotes)
-					{
-						note.kill();
-						notes.remove(note, true);
-						note.destroy();
-					}
-		 
-					// possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));  Should already be sorted
-					var dontCheck = false;
-					for (i in 0...pressArray.length)
-					{	
-						if (pressArray[i] && !directionList[i])
-							dontCheck = true;
-					}
-					
-					if (possibleNotes.length > 0 && !dontCheck)
-					{
-						if (!FlxG.save.data.ghost)
-						{
-							for (shit in 0...pressArray.length)
-								{ // if a direction is hit that shouldn't be
-									if (pressArray[shit] && !directionList[shit])
-										noteMiss(shit, null);
-								}
+						
+					};
+					// for (note in dumbNotes)
+					// {
+					// }
+		 			if(onScreenNote){
+
+						for (i in 0...possibleNotes.length) {
+							hitArray[possibleNotes[i].noteData] = true;
+							goodNoteHit(possibleNotes[i]);
 						}
-						for (coolNote in possibleNotes)
-						{
-							if (pressArray[coolNote.noteData])
-							{
-								hitArray[coolNote.noteData] = true;
-								// scoreTxt.color = FlxColor.WHITE;
-								goodNoteHit(coolNote);
+						if(!FlxG.save.data.ghost && onScreenNote){
+
+							for (i in 0 ... pressArray.length) {
+								if(pressArray[i] && !directionList[i]){
+									noteMiss(i, null);
+								}
 							}
 						}
-					}
-					else if (!FlxG.save.data.ghost && onScreenNote)
-						{
-							for (shit in 0...pressArray.length)
-								if (pressArray[shit])
-									noteMiss(shit, null);
-						}
 
+		 			}
 
 				}
 		 		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);
@@ -3849,7 +3840,7 @@ class PlayState extends MusicBeatState
 
 				if(note.shouldntBeHit){noteMiss(note.noteData,note,true);return;}
 
-				if (!note.isSustainNote)
+				if (FlxG.save.data.npsDisplay && !note.isSustainNote)
 					notesHitArray.unshift(Date.now().getTime());
 
 
