@@ -65,7 +65,7 @@ class ChartRepoState extends SearchMenuState
 		Sys.command(unarExe,['x','-y',from,'-o${to}']);
 	}
 	override function ret(){
-		if(installing<=0){FlxG.mouse.visible = false;FlxG.switchState(new MainMenuState());}else{installingText.color = FlxColor.RED;}
+		if(installing<=0){FlxG.mouse.enabled = false;FlxG.switchState(new MainMenuState());}else{installingText.color = FlxColor.RED;}
 	}
 	override function reloadList(?reload = false,?search=""){
 		curSelected = 0;

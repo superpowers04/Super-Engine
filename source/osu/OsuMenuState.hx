@@ -157,7 +157,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
 	}
 
   override function goOptions(){
-      FlxG.mouse.visible = false;
+      FlxG.mouse.enabled = false;
       OptionsMenu.lastState = 5;
       FlxG.switchState(new OptionsMenu());
   }

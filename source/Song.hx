@@ -84,8 +84,46 @@ class Song
 		this.notes = notes;
 		this.bpm = bpm;
 	}
-	public static inline function getEmptySong(){
-		
+	public static function getEmptySong():SwagSong{
+		return cast Json.parse(getEmptySongJSON);
+	}
+	public static function getEmptySongJSON():String{
+		return '{
+			"song": {
+				"player1": "bf",
+				"sectionLengths": [],
+				"events": [
+				],
+				"gfVersion": "gf",
+				"notes": [
+					{
+						"lengthInSteps": 16,
+						"sectionNotes": [],
+						"typeOfSection": 0,
+						"mustHitSection": true,
+						"changeBPM": false,
+						"bpm": 95
+					},
+					{
+						"lengthInSteps": 16,
+						"sectionNotes": [],
+						"typeOfSection": 0,
+						"mustHitSection": false,
+						"changeBPM": false,
+						"bpm": 165
+					}
+				],
+				"player2": "bf",
+				"player3": null,
+				"song": "Unset song name",
+				"stage": "stage",
+				"validScore": true,
+				"sections": 0,
+				"needsVoices": false,
+				"bpm": 150,
+				"speed": 2.0
+			}
+		}';
 	}
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
@@ -303,20 +341,7 @@ class Song
 		#if !debug
 		}catch(e){
 			MainMenuState.handleError('Error parsing chart: ${e.message}');
-			return {
-				song: "Unable to load chart",
-				notes: [],
-				bpm: 120,
-				needsVoices: false,
-				player1: 'bf',
-				player2: 'bf',
-				gfVersion: 'gf',
-				noteStyle: 'normal',
-				stage: 'stage',
-				speed: 2.0,
-				validScore: false,
-				difficultyString: "e"
-			};
+			return getEmptySong;
 		}
 		#end
 	}

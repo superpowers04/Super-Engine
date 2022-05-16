@@ -201,7 +201,7 @@ class AnimationDebug extends MusicBeatState
 			camHUD = new FlxCamera();
 			camHUD.bgColor.alpha = 0;
 
-			FlxG.mouse.visible = true;
+			FlxG.mouse.enabled = true;
 
 			FlxG.cameras.reset(camGame);
 			FlxG.cameras.add(camHUD);
@@ -442,7 +442,7 @@ class AnimationDebug extends MusicBeatState
 		FlxG.switchState(new AnimationDebug(daAnim,side == 0,side,charSel));
 	}
 	function exit(){
-		FlxG.mouse.visible = false;
+		FlxG.mouse.enabled = false;
 		if (charSel){
 			FlxG.switchState(new CharSelection()); 
 		}else if(dragdrop){
@@ -1436,7 +1436,7 @@ class AnimHelpScreen extends FlxUISubState{
 		}
 
 		// if(AnimationDebug.charJson != null){
-		// 	FlxG.mouse.visible = true;
+		// 	FlxG.mouse.enabled = true;
 		// 	var reloadCharacter:FlxUIButton = new FlxUIButton(FlxG.width - 200, 70, "Reload Char", function() {animDebug.spawnChar(true,true);});
 		// 	var charSettings:FlxUIButton = new FlxUIButton(FlxG.width - 200, 30, "Char Settings", function() {openSubState(new AnimDebugOptions());}); // Todo, make UI for character settings
 		// 	reloadCharacter.resize(100, 30);
@@ -1474,7 +1474,7 @@ class AnimHelpScreen extends FlxUISubState{
 		helpObjs = [];
 	}
 	function closeHelp(){
-		// FlxG.mouse.visible = false;
+		// FlxG.mouse.enabled = false;
 
 		AnimationDebug.inHelp = false;
 		close();

@@ -350,31 +350,42 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 
 	function selSong(sel:Int = 0,charting:Bool = false){
-		if(charting && (songs[curSelected] != "No Songs!" && modes[curSelected][selMode] != CATEGORYNAME)){
-			var songLoc = songs[curSelected];
-			var chart = modes[curSelected][selMode];
-			var songName = songNames[curSelected];
+		if(charting && (songs[sel] != "No Songs!" && modes[curSelected][selMode] != CATEGORYNAME)){
+			var songLoc = songs[sel];
+			var chart = modes[sel][selMode];
+			var songName = songNames[sel];
 			if(modes[curSelected][selMode] == "No charts for this song!"){
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
 				PlayState.SONG = {
 					song: songName,
-					notes: [{
-						lengthInSteps: 16,
-						bpm: 150,
-						changeBPM: false,
-						mustHitSection: true,
-						sectionNotes: [],
-						typeOfSection: 0,
-						altAnim: false
-					}],
+					notes: [
+						{
+							lengthInSteps : 16,
+							altAnim : false,
+							typeOfSection : 0,
+							sectionNotes : [],
+							bpm: 150,
+							changeBPM : false,
+							mustHitSection : true
+						},
+						{
+							lengthInSteps : 16,
+							altAnim : false,
+							typeOfSection : 0,
+							sectionNotes : [],
+							bpm: 150,
+							changeBPM : false,
+							mustHitSection : true
+						}
+					],
 					bpm: 150,
-					needsVoices: true,
+					needsVoices: false,
 					player1: 'bf',
 					player2: 'dad',
 					gfVersion: 'gf',
 					noteStyle: 'normal',
 					stage: 'stage',
-					speed: 1,
+					speed: 2,
 					validScore: false
 				};
 				File.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:PlayState.SONG}));
@@ -399,10 +410,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
 			}
 			PlayState.stateType = 4;
+			PlayState.SONG.needsVoices =  onlinemod.OfflinePlayState.voicesFile != "";
+
 			LoadingState.loadAndSwitchState(new ChartingState());
 			return;
 		}
-		if (songs[curSelected] == "No Songs!" || modes[curSelected][selMode] == CATEGORYNAME || modes[curSelected][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
+		if (songs[sel] == "No Songs!" || modes[sel][selMode] == CATEGORYNAME || modes[sel][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
 			FlxG.sound.play(Paths.sound("cancelMenu"));
 			showTempmessage("Invalid song!",FlxColor.RED);
 			return;
@@ -410,8 +423,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			
 		lastSel = curSelected;
 		lastSearch = searchField.text;
-		lastSong = songs[curSelected] + modes[curSelected][selMode] + songNames[curSelected];
-		gotoSong(songs[curSelected],modes[curSelected][selMode],songNames[curSelected]);
+		lastSong = songs[sel] + modes[sel][selMode] + songNames[sel];
+		gotoSong(songs[sel],modes[sel][selMode],songNames[sel]);
 	}
 
 	override function select(sel:Int = 0){
@@ -455,6 +468,17 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function extraKeys(){
 		if(controls.LEFT_P){changeDiff(-1);}
 		if(controls.RIGHT_P){changeDiff(1);}
+		if(!FlxG.mouse.overlaps(blackBorder) && FlxG.mouse.justPressed){
+			for (i in -2 ... 2) {
+				if(grpSongs.members[curSelected + i] != null && FlxG.mouse.overlaps(grpSongs.members[curSelected + i])){
+					select(curSelected + i);
+				}
+			}
+		}
+		if(FlxG.mouse.wheel != 0){
+			var move = -FlxG.mouse.wheel;
+			changeSelection(Std.int(move));
+		}
 		if(FlxG.keys.justPressed.CONTROL){
 				FlxG.autoPause = false;
 				playCount++;
@@ -612,7 +636,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function goOptions(){
 			lastSel = curSelected;
 			lastSearch = searchField.text;
-			FlxG.mouse.visible = false;
+			FlxG.mouse.enabled = false;
 			OptionsMenu.lastState = 4;
 			FlxG.switchState(new OptionsMenu());
 	}

@@ -597,7 +597,7 @@ class TitleState extends MusicBeatState
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
-		FlxG.mouse.visible = false;
+		FlxG.mouse.enabled = false;
 
 
 		shiftSkip = new FlxText(0,0,0,"Hold shift to go to the options menu after title screen",16);

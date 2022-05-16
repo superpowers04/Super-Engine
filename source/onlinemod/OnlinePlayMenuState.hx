@@ -149,7 +149,7 @@ class OnlinePlayMenuState extends MusicBeatState
 		AddXieneText(this);
 
 
-		FlxG.mouse.visible = true;
+		FlxG.mouse.enabled = true;
 		FlxG.autoPause = true;
 
 

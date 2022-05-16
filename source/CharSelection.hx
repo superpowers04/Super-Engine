@@ -20,9 +20,33 @@ class CharSelection extends SearchMenuState
 {
 	var defText:String = "Use shift to scroll faster";
 	var uiIcon:HealthIcon;
+	var curChar = "";
+	override function addToList(char:String,i:Int = 0){
+		songs.push(char);
+		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false);
+		controlLabel.isMenuItem = true;
+		controlLabel.targetY = i;
+		if (i != 0)
+			controlLabel.alpha = 0.6;
+		if(TitleState.invalidCharacters.contains(char)){
+			controlLabel.color = FlxColor.RED;
+		}
+		if(char == curChar){
+			controlLabel.color = FlxColor.GREEN;
+		}
+		grpSongs.add(controlLabel);
+	}
 	override function create()
 	{try{
 	// searchList = TitleState.choosableCharacters;
+	switch (Options.PlayerOption.playerEdit){
+		case 0:
+			curChar = FlxG.save.data.playerChar;
+		case 1:
+			curChar = FlxG.save.data.opponent;
+		case 2:
+			curChar = FlxG.save.data.gfChar;
+	}
 	searchList = [];
 	for (i in TitleState.choosableCharacters) {
 		searchList.push(i);
@@ -32,6 +56,7 @@ class CharSelection extends SearchMenuState
 			searchList.insert(0,TitleState.invalidCharacters[i]);
 		}
 	}
+
 	if (Options.PlayerOption.playerEdit == 0){
 		if(!searchList.contains("automatic")) searchList.insert(0,"automatic");
 	} else if (searchList.contains("automatic")) searchList.remove("automatic");
@@ -52,19 +77,10 @@ class CharSelection extends SearchMenuState
 	uiIcon.x = FlxG.width * 0.8;
 	uiIcon.y = FlxG.height * 0.2;
 	add(uiIcon);
-	FlxTween.angle(uiIcon, -40, 40, 1.12, {ease: FlxEase.quadInOut, type: FlxTween.PINGPONG});
-	FlxTween.tween(uiIcon, {"scale.x": 1.25,"scale.y": 1.25}, 1.50, {ease: FlxEase.quadInOut, type: FlxTween.PINGPONG});  
+	FlxTween.angle(uiIcon, -40, 40, 1.12, {ease: FlxEase.quadInOut, type: PINGPONG});
+	FlxTween.tween(uiIcon, {"scale.x": 1.25,"scale.y": 1.25}, 1.50, {ease: FlxEase.quadInOut, type: PINGPONG});  
 	// changeSelection();
 	{
-		var curChar = "";
-		switch (Options.PlayerOption.playerEdit){
-			case 0:
-				curChar = FlxG.save.data.playerChar;
-			case 1:
-				curChar = FlxG.save.data.opponent;
-			case 2:
-				curChar = FlxG.save.data.gfChar;
-		}
 		var charID = searchList.indexOf(curChar);
 		changeSelection(if (charID >= 0) charID else 0); 
 	}

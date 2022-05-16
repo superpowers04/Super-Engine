@@ -82,13 +82,13 @@ class PauseSubState extends MusicBeatSubstate
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
-		perSongOffset = new FlxText(5, FlxG.height - 18, 0, "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.', 12);
-		perSongOffset.scrollFactor.set();
-		perSongOffset.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		// perSongOffset = new FlxText(5, FlxG.height - 18, 0, "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.', 12);
+		// perSongOffset.scrollFactor.set();
+		// perSongOffset.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		
-		#if cpp
-			add(perSongOffset);
-		#end
+		// #if cpp
+		// 	add(perSongOffset);
+		// #end
 
 		for (i in 0...menuItems.length)
 		{
@@ -230,13 +230,15 @@ class PauseSubState extends MusicBeatSubstate
 	function countdown(){try{
 		ready = false;
 		var swagCounter:Int = 1;
-		pauseMusic.stop();
-		pauseMusic.destroy();
-		// grpMenuShit.destroy();
+		try{
+			pauseMusic.stop();
+		}catch(e){}
+		for (i in [pauseMusic,levelDifficulty,levelInfo,perSongOffset]) {
+			if(i != null){
+				i.destroy();
+			}
+		}
 		disappearMenu(0.4);
-		levelDifficulty.destroy();
-		levelInfo.destroy();
-		perSongOffset.destroy();
 		PlayState.instance.callInterp("pauseResume",[this]);
 
 

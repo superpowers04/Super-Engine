@@ -5,7 +5,7 @@ import flixel.FlxG;
 
 class OtherMenuState extends SickMenuState{
 	override function create(){
-		options = ["story mode","freeplay","Convert Charts from other mods","download charts","download characters"];
+		options = ["story mode","freeplay","Convert Charts from other mods"/*,"download charts","download characters"*/];
 		descriptions = ['Play through the story mode', 'Play any song from the game', 'Convert charts from other mods to work here. Will put them in Multi Songs, will not be converted to work with FNF Multiplayer though.',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		bgImage = 'menuBG';

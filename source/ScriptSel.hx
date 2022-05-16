@@ -51,7 +51,7 @@ class ScriptSel extends SearchMenuState
 					}
 				}
 		}
-		if (searchList[0] == null){searchList.push('No scripts found!');trace('No scripts found!');}
+		if (searchList[0] == null){searchList = ['No scripts found!'];trace('No scripts found!');}
 		// searchList = TitleState.choosableStages;
 		super.create();
 		bg.color = 0x444460;

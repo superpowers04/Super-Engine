@@ -609,7 +609,7 @@ class CustomizeGameplay extends Option
 	public override function press():Bool
 	{
 		trace("switch");
-		FlxG.switchState(new GameplayCustomizeState());
+		LoadingState.loadAndSwitchState(new GameplayCustomizeState());
 		return false;
 	}
 
@@ -1526,6 +1526,26 @@ class FontOption extends Option
 	private override function updateDisplay():String
 	{
 		return "Force generic font " + (FlxG.save.data.useFontEverywhere ? "on" : "off");
+	}
+}
+class BeatBouncingOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.beatBouncing = !FlxG.save.data.beatBouncing;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Beat Bouncing " + (FlxG.save.data.beatBouncing ? "on" : "off");
 	}
 }
 class AccurateNoteHoldOption extends Option

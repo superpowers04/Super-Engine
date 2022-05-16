@@ -35,6 +35,7 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
+
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 		if (transIn != null)
@@ -156,6 +157,7 @@ class MusicBeatState extends FlxUIState
 	}
 	function tranOut(){
 		// active = false;
+		FlxG.mouse.enabled = false;
 		if(loading) LoadingScreen.show();
 		
 		

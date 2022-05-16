@@ -141,7 +141,7 @@ class OnlineLobbyState extends MusicBeatState
 	OnlinePlayMenuState.AddXieneText(this);
 
 
-	FlxG.mouse.visible = true;
+	FlxG.mouse.enabled = true;
 	FlxG.autoPause = false;
 
 

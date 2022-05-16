@@ -9,7 +9,7 @@ typedef SwagSection =
 	var ?scrollSpeed:Float;
 	var bpm:Float;
 	var changeBPM:Bool;
-	var altAnim:Bool;
+	var ?altAnim:Bool;
 }
 
 class Section

@@ -12,238 +12,153 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import openfl.ui.Keyboard;
 import flixel.FlxSprite;
 import flixel.FlxG;
+import KadeEngineData;
+import flixel.system.FlxSound;
 
-class GameplayCustomizeState extends MusicBeatState
+class GameplayCustomizeState extends PlayState
 {
 
-    var defaultX:Float = FlxG.width * 0.55 - 135;
-    var defaultY:Float = FlxG.height / 2 - 50;
 
-    var background:FlxSprite;
-    var curt:FlxSprite;
-    var front:FlxSprite;
+	var background:FlxSprite;
+	var curt:FlxSprite;
+	var front:FlxSprite;
 
-    var sick:FlxSprite;
+	// var rating:FlxSprite;
+	var objs:Array<String> = [
+		"songPosBar",
+		"HealthBar",
+		"playerStrums",
+		"cpuStrums",
+		"kadeEngineWatermark",
 
-    var text:FlxText;
-    var blackBorder:FlxSprite;
-
-    var bf:Character;
-    var dad:Character;
-
-    var strumLine:FlxSprite;
-    var strumLineNotes:FlxTypedGroup<FlxSprite>;
-    var playerStrums:FlxTypedGroup<FlxSprite>;
-    private var camHUD:FlxCamera;
-    
-    public override function create() {
-        
-
-        sick = new FlxSprite().loadGraphic(Paths.image('sick','shared'));
-        sick.scrollFactor.set();
-        background = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback','shared'));
-        curt = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains','shared'));
-        front = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront','shared'));
-
-		Conductor.changeBPM(102);
-		persistentUpdate = true;
-
-        super.create();
-
-		camHUD = new FlxCamera();
-		camHUD.bgColor.alpha = 0;
-        FlxG.cameras.add(camHUD);
-
-        background.scrollFactor.set(0.9,0.9);
-        curt.scrollFactor.set(0.9,0.9);
-        front.scrollFactor.set(0.9,0.9);
-
-        add(background);
-        add(front);
-        add(curt);
-
-		var camFollow = new FlxObject(0, 0, 1, 1);
-
-		dad = new Character(100, 100, 'dad');
-
-        bf = new Character(770, 450, 'bf');
-
-		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x + 400, dad.getGraphicMidpoint().y);
-
-		camFollow.setPosition(camPos.x, camPos.y);
-
-        add(bf);
-        add(dad);
-
-        add(sick);
-
-		add(camFollow);
-
-		FlxG.camera.follow(camFollow, LOCKON, 0.01);
-		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
-		FlxG.camera.zoom = 0.9;
-		FlxG.camera.focusOn(camFollow.getPosition());
-
-		strumLine = new FlxSprite(0, FlxG.save.data.strumline).makeGraphic(FlxG.width, 14);
-		strumLine.scrollFactor.set();
-        strumLine.alpha = 0.4;
-
-        add(strumLine);
+	];
+	
+	public override function create() {
+		PlayState.SONG = {
+				song: "Gameplay thing",
+				notes: [{
+					sectionNotes:[],
+					typeOfSection:0,
+					changeBPM:false,
+					bpm:120,
+					lengthInSteps:1000,
+					mustHitSection:true,
+				},{
+					sectionNotes:[],
+					typeOfSection:0,
+					changeBPM:false,
+					bpm:120,
+					lengthInSteps:1000,
+					mustHitSection:true,
+				}],
+				bpm: 120,
+				needsVoices: false,
+				player1: 'bf',
+				player2: 'bf',
+				gfVersion: 'gf',
+				noteStyle: 'normal',
+				stage: 'stage',
+				speed: 2.0,
+				validScore: false,
+				difficultyString: "e"
+			};
 		
-		if (FlxG.save.data.downscroll)
-			strumLine.y = FlxG.height - 165;
-
-		strumLineNotes = new FlxTypedGroup<FlxSprite>();
-		add(strumLineNotes);
-
-		playerStrums = new FlxTypedGroup<FlxSprite>();
-
-        sick.cameras = [camHUD];
-        strumLine.cameras = [camHUD];
-        playerStrums.cameras = [camHUD];
-        
-		generateStaticArrows(0);
-		generateStaticArrows(1);
-
-        text = new FlxText(5, FlxG.height + 40, 0, "Drag around gameplay elements, R to reset, Escape to go back.", 12);
+		super.create();
+		FlxG.mouse.enabled = true;
+		var text = new FlxText(5, FlxG.height + 40, 0, "Drag around gameplay elements, R to reset, Escape to go back.", 12);
 		text.scrollFactor.set();
 		text.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        
-        blackBorder = new FlxSprite(-30,FlxG.height + 40).makeGraphic((Std.int(text.width + 900)),Std.int(text.height + 600),FlxColor.BLACK);
-		blackBorder.alpha = 0.5;
-
-		add(blackBorder);
-
 		add(text);
 
-		FlxTween.tween(text,{y: FlxG.height - 18},2,{ease: FlxEase.elasticInOut});
-		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
+		healthBar.visible = healthBarBG.visible = true;
+		practiceMode = false;
 
-        if (!FlxG.save.data.changedHit)
-        {
-            FlxG.save.data.changedHitX = defaultX;
-            FlxG.save.data.changedHitY = defaultY;
-        }
+	}
+	inline function resetValues(){
+		FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();
+	}
+	override function generateSong(?dataPath:String = ""){
+		PlayState.SONG.needsVoices = false;
+		vocals = new FlxSound();
+		FlxG.sound.list.add(vocals);
+		SickMenuState.musicHandle();
+		if (notes == null) 
+			notes = new FlxTypedGroup<Note>();
+		notes.clear();
+		// add(notes);
+		add(notes);
+		Note.lastNoteID = -1;
+	}
+	override function startSong(?alrLoaded:Bool = false){
+		super.startSong(true);
+		FlxG.sound.music.onComplete = null;
+	}
+	var isPressed:Bool = false;
+	var lastMouseX:Float = 0;
+	var lastMouseY:Float = 0;
+	var currentObjectName:String = "";
+	var currentObject:Dynamic;
 
-        sick.x = FlxG.save.data.changedHitX;
-        sick.y = FlxG.save.data.changedHitY;
+	override function update(elapsed:Float) {
+		canPause = false;
+		super.update(elapsed);
+		// if (FlxG.mouse.overlaps(sick) && FlxG.mouse.pressed)
+		// {
+		//     sick.x = FlxG.mouse.x - sick.width / 2;
+		//     sick.y = FlxG.mouse.y - sick.height;
+		// }
 
+		// for (i in playerStrums)
+		//     i.y = strumLine.y;
+		// for (i in strumLineNotes)
+		//     i.y = strumLine.y;
+		if(!isPressed && FlxG.mouse.pressed){
+			for (i in objs) {
+				var object = Reflect.getProperty(this,i);
+				if(object != null && FlxG.mouse.overlaps(object)){
+					isPressed = true;
+					currentObject = object;
+					currentObjectName = i;
+				}
+			}
+			lastMouseX = FlxG.mouse.x;
+			lastMouseX = FlxG.mouse.y;
+		}
+		if(isPressed && FlxG.mouse.pressed && currentObject != null){
+			currentObject.x += lastMouseX - FlxG.mouse.x;
+			currentObject.y += lastMouseY - FlxG.mouse.y;
+			lastMouseX = FlxG.mouse.x;
+			lastMouseX = FlxG.mouse.y;
+			// var map:Map<String,KadeEngineData.ObjectInfo> = cast FlxG.save.data.playStateObjectLocations;
+			// map[currentObjectName] = {
+			// 	x:currentObject.x,
+			// 	y:currentObject.y
+			// }
+		}
+		if(!FlxG.mouse.pressed){
+			isPressed = false;
+		}
+		// if (FlxG.mouse.overlaps(sick) && FlxG.mouse.justReleased)
+		// {
+		//     FlxG.save.data.changedHitX = sick.x;
+		//     FlxG.save.data.changedHitY = sick.y;
+		//     FlxG.save.data.changedHit = true;
+		// }
 
-        FlxG.mouse.visible = true;
+		if (FlxG.keys.justPressed.R)
+		{
+			resetValues();
+		}
 
-    }
-
-    override function update(elapsed:Float) {
-		if (FlxG.sound.music != null)
-			Conductor.songPosition = FlxG.sound.music.time;
-
-        super.update(elapsed);
-
-        FlxG.camera.zoom = FlxMath.lerp(0.9, FlxG.camera.zoom, 0.95);
-        camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
-
-        if (FlxG.mouse.overlaps(sick) && FlxG.mouse.pressed)
-        {
-            sick.x = FlxG.mouse.x - sick.width / 2;
-            sick.y = FlxG.mouse.y - sick.height;
-        }
-
-        for (i in playerStrums)
-            i.y = strumLine.y;
-        for (i in strumLineNotes)
-            i.y = strumLine.y;
-
-        if (FlxG.mouse.overlaps(sick) && FlxG.mouse.justReleased)
-        {
-            FlxG.save.data.changedHitX = sick.x;
-            FlxG.save.data.changedHitY = sick.y;
-            FlxG.save.data.changedHit = true;
-        }
-
-        if (FlxG.keys.justPressed.R)
-        {
-            sick.x = defaultX;
-            sick.y = defaultY;
-            FlxG.save.data.changedHitX = sick.x;
-            FlxG.save.data.changedHitY = sick.y;
-            FlxG.save.data.changedHit = false;
-        }
-
-        if (controls.BACK)
-        {
-            FlxG.mouse.visible = false;
-            FlxG.sound.play(Paths.sound('cancelMenu'));
+		if (controls.BACK)
+		{
+			FlxG.mouse.enabled = false;
+			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OptionsMenu());
-        }
+		}
 
-    }
-
-    override function beatHit() 
-    {
-        super.beatHit();
-
-        bf.playAnim('idle');
-        dad.dance();
-
-        FlxG.camera.zoom += 0.015;
-        camHUD.zoom += 0.010;
-
-        trace('beat');
-
-    }
+	}
 
 
-    // ripped from play state cuz im lazy
-    
-	private function generateStaticArrows(player:Int):Void
-        {
-            for (i in 0...4)
-            {
-                // FlxG.log.add(i);
-                var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
-                babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
-                babyArrow.animation.addByPrefix('green', 'arrowUP');
-                babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-                babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-                babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-                babyArrow.antialiasing = true;
-                babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-                switch (Math.abs(i))
-                {
-                    case 0:
-                        babyArrow.x += Note.swagWidth * 0;
-                        babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-                        babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-                        babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-                    case 1:
-                        babyArrow.x += Note.swagWidth * 1;
-                        babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-                        babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-                        babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-                    case 2:
-                        babyArrow.x += Note.swagWidth * 2;
-                        babyArrow.animation.addByPrefix('static', 'arrowUP');
-                        babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-                        babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-                    case 3:
-                        babyArrow.x += Note.swagWidth * 3;
-                        babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-                        babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-                        babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-                }
-                babyArrow.updateHitbox();
-                babyArrow.scrollFactor.set();
-    
-                babyArrow.ID = i;
-    
-                if (player == 1)
-                    playerStrums.add(babyArrow);
-    
-                babyArrow.animation.play('static');
-                babyArrow.x += 50;
-                babyArrow.x += ((FlxG.width / 2) * player);
-    
-                strumLineNotes.add(babyArrow);
-            }
-        }
+	// ripped from play state cuz im lazy
 }

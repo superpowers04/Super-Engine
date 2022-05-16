@@ -162,6 +162,13 @@ class PlayState extends MusicBeatState
 
 	private var gfSpeed:Int = 1;
 	public var health:Float = 1; //making public because sethealth doesnt work without it
+	public var healthPercent(get,set):Int; //making public because sethealth doesnt work without it
+	public function get_healthPercent(){
+		return Std.int(health * 50);
+	}
+	public function set_healthPercent(vari:Int){
+		health = vari * 50; return get_healthPercent();
+	}
 	public static var combo:Int = 0;
 	public static var maxCombo:Int = 0;
 	public static var misses:Int = 0;
@@ -1295,13 +1302,6 @@ class PlayState extends MusicBeatState
 		scoreTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 
-		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (downscroll ? 100 : -100), 0, "REPLAY", 20);
-		replayTxt.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		replayTxt.scrollFactor.set();
-		if (loadRep)
-		{
-			add(replayTxt);
-		}
 		// Literally copy-paste of the above, fu
 
 		
@@ -1779,7 +1779,16 @@ class PlayState extends MusicBeatState
 
 
 	public var songStarted(default, null):Bool = false;
-
+	function loadPositions(){
+		var map:Map<String,KadeEngineData.ObjectInfo> = cast FlxG.save.data.playStateObjectLocations;
+		for (i => v in map) {
+			var obj = Reflect.field(this,i);
+			if(obj != null){
+				obj.x = v.x;
+				obj.y = v.y;
+			}
+		}
+	}
 	function startSong(?alrLoaded:Bool = false):Void
 	{
 		startingSong = false;
@@ -2935,7 +2944,7 @@ class PlayState extends MusicBeatState
 			currentTimingShown.text = msTiming + "ms";
 			currentTimingShown.size = 20;
 
-			if (msTiming >= 0.03 && offsetTesting)
+			if (offsetTesting && msTiming >= 0.03)
 			{
 				//Remove Outliers
 				hits.shift();

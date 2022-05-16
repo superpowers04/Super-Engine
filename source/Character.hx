@@ -145,7 +145,7 @@ class Character extends FlxSprite
 		"dodgeup" => 10,
 		"dodgedown" => 10,
 		"songStart" => 7
-];
+	];
 	public var flip:Bool = true;
 	public var tex:FlxAtlasFrames = null;
 	public var holdTimer:Float = 0;
@@ -192,6 +192,7 @@ class Character extends FlxSprite
 			Reflect.callMethod(interp,method,args);
 			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}'); return;}
 		}
+
 	function parseHScript(scriptContents:String){
 		if (amPreview || !useHscript || QuickOptionsSubState.getSetting("Song hscripts") != true){
 			interp = null;

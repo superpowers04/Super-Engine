@@ -28,7 +28,7 @@ class OfflineMenuState extends SearchMenuState
   var invertedChart:Bool = false;
 
   function goOptions(){
-      FlxG.mouse.visible = false;
+      FlxG.mouse.enabled = false;
       OptionsMenu.lastState = 3;
       FlxG.switchState(new OptionsMenu());
   }
@@ -92,7 +92,7 @@ class OfflineMenuState extends SearchMenuState
   }
 
   override function ret(){
-    FlxG.mouse.visible = false;
+    FlxG.mouse.enabled = false;
     FlxG.switchState(new MainMenuState());
   }
   override function extraKeys(){

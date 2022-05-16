@@ -53,6 +53,7 @@ class OfflinePlayState extends PlayState
 			if (voicesFile != ""){loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));}
 		}
 	if(voicesFile == "" && PlayState.SONG != null){
+		loadedVoices =  new FlxSound();
 		PlayState.SONG.needsVoices = true;
 	}
     trace('Loading $voicesFile, $instFile');
@@ -119,7 +120,7 @@ class OfflinePlayState extends PlayState
 	    xieneDevWatermark.cameras = [camHUD];
 
 
-	    FlxG.mouse.visible = false;
+	    FlxG.mouse.enabled = false;
 	    FlxG.autoPause = true;
 	    if(willChart){
 	    	QuickOptionsSubState.setSetting("Song hscripts",oldScripts);

@@ -89,6 +89,7 @@ class SearchMenuState extends MusicBeatState
 		onlinemod.OfflinePlayState.nameSpace = "";
 	}
 	public static var doReset:Bool = true;
+	public var blackBorder:FlxSprite;
 	override function create()
 	{try{
 		if(doReset)resetVars();
@@ -113,11 +114,11 @@ class SearchMenuState extends MusicBeatState
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		reloadList();
 		add(grpSongs);
+		FlxG.mouse.enabled = true;
 		if (toggleables['search']){
-				var blackBorder = new FlxSprite(-30,0).makeGraphic((Std.int(FlxG.width + 40)),140,FlxColor.BLACK);
+				blackBorder = new FlxSprite(-30,0).makeGraphic((Std.int(FlxG.width + 40)),140,FlxColor.BLACK);
 				blackBorder.alpha = 0.5;
 				add(blackBorder);
-				FlxG.mouse.visible = true;
 				//Searching
 				searchField = new FlxInputText(10, 100, 1152, 20);
 				searchField.maxLength = 81;
@@ -184,25 +185,39 @@ class SearchMenuState extends MusicBeatState
 			SetVolumeControls(true);
 			handleInput();
 		}
+
 	}catch(e) MainMenuState.handleError('Error with searchmenu "update" ${e.message}');}
 	function select(sel:Int = 0){
 		trace("You forgot to replace the select function!");
 	}
-
+	var hoverColor = 0xffffff;
 	function handleInput(){
 			if (controls.BACK || FlxG.keys.justPressed.ESCAPE)
 			{
 				ret();
 			}
+			if(songs.length < 1){return;}
 			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
 			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
 			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
 			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(1);}
 			extraKeys();
-			if (controls.ACCEPT && songs.length > 0)
+
+			if (controls.ACCEPT)
 			{
 				select(curSelected);
 				if(retAfter) ret();
+			}
+			if(!FlxG.mouse.overlaps(blackBorder) && FlxG.mouse.justPressed){
+				for (i in -2 ... 2) {
+					if(grpSongs.members[curSelected + i] != null && FlxG.mouse.overlaps(grpSongs.members[curSelected + i])){
+						select(curSelected + i);
+					}
+				}
+			}
+			if(FlxG.mouse.wheel != 0){
+				var move = -FlxG.mouse.wheel;
+				changeSelection(Std.int(move));
 			}
 	}
 	function extraKeys(){
@@ -211,7 +226,7 @@ class SearchMenuState extends MusicBeatState
 	var curTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
-		if(grpSongs != null && grpSongs.members[curSelected] != null && grpSongs.members[curSelected].useAlphabet){
+		if(FlxG.save.data.beatBouncing && grpSongs != null && grpSongs.members[curSelected] != null && grpSongs.members[curSelected].useAlphabet){
 			
 			grpSongs.members[curSelected].scale.set(1.2,1.2);
 			if(curTween != null)curTween.cancel();
@@ -219,7 +234,7 @@ class SearchMenuState extends MusicBeatState
 		}
 	}
 	function ret(){
-		FlxG.mouse.visible = false;
+		FlxG.mouse.enabled = false;
 		if (onlinemod.OnlinePlayMenuState.socket != null){FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{FlxG.switchState(new OptionsMenu());}
 	}
 	function changeSelection(change:Int = 0)

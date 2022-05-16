@@ -106,6 +106,7 @@ class OptionsMenu extends MusicBeatState
 		],"Disable some features for better performance"),
 		new OptionCategory("Visibility", [
             new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),new BackTransOption("Change underlay opacity"),new BackgroundSizeOption("Change underlay size"),
+			new BeatBouncingOption("Toggle certain animations like text beating on the main menu. Useful if text is hard to read"),
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new OpponentStrumlineOption("Whether to show the opponent's notes or not"),
 			new ShowP2Option("Show Opponent"),

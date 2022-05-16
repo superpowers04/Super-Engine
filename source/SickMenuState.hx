@@ -194,11 +194,12 @@ class SickMenuState extends MusicBeatState
 		add(descriptionText);
 
 
-		FlxG.mouse.visible = false;
+
 		FlxG.autoPause = true;
 
 
 		super.create();
+		FlxG.mouse.enabled = true;
 	}
 	var doResize:Bool = true;
 	override function update(elapsed:Float)
@@ -211,7 +212,7 @@ class SickMenuState extends MusicBeatState
 			goBack();
 		}
 		
-		if (selected) return;
+		if (selected || grpControls.members.length == 0) return;
 		if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
 		if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
 
@@ -224,6 +225,18 @@ class SickMenuState extends MusicBeatState
 
 			}
 			select(curSelected);
+		}
+		if(FlxG.mouse.justPressed){
+
+			for (i in -2 ... 2) {
+				if(grpControls.members[curSelected + i] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + i])){
+					select(curSelected + i);
+				}
+			}
+		}
+		if(FlxG.mouse.wheel != 0){
+			var move = -FlxG.mouse.wheel;
+			changeSelection(Std.int(move));
 		}
 	}
 	var isEpicTween:Bool = false;
