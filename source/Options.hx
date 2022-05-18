@@ -527,7 +527,7 @@ class ScrollSpeedOSUOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Scroll Speed";
+		return "OSU beatmap Scroll Speed";
 	}
 
 	override function right():Bool {
