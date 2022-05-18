@@ -64,7 +64,7 @@ class OsuBeatMap{
 					gfVersion: 'gf',
 					noteStyle: 'normal',
 					stage: 'stage',
-					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else 2.0,
+					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else FlxG.save.data.scrollOSUSpeed,
 					validScore: false,
 					noteMetadata:Song.defNoteMetadata,
 					difficultyString: '[${getSetting("Version")}]'

@@ -69,6 +69,8 @@ class OptionsMenu extends MusicBeatState
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
+			new ScrollSpeedOSUOption("Change your scroll speed on OSU charts"),
+
 			new AccurateNoteHoldOption("Adjust accuracy of note sustains"),
 			new ShittyMissesOption("Whether you'll get a miss/combobreak when getting a shit"),
 			new BadMissesOption("Whether you'll get a miss/combobreak when getting a bad"),

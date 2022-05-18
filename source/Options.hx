@@ -511,6 +511,53 @@ class ScrollSpeedOption extends Option
 		return true;
 	}
 }
+class ScrollSpeedOSUOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+	}
+
+	public override function press():Bool
+	{
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Scroll Speed";
+	}
+
+	override function right():Bool {
+		FlxG.save.data.scrollOSUSpeed += 0.1 * (if(FlxG.keys.pressed.SHIFT) 5 else 1);
+
+		if (FlxG.save.data.scrollOSUSpeed < 0.1)
+			FlxG.save.data.scrollOSUSpeed = 0.1;
+
+		if (FlxG.save.data.scrollOSUSpeed > 100)
+			FlxG.save.data.scrollOSUSpeed = 100;
+		return true;
+	}
+
+	override function getValue():String {
+		return "OSU beatmap Scroll Speed: " + HelperFunctions.truncateFloat(FlxG.save.data.scrollOSUSpeed,1);
+	}
+
+	override function left():Bool {
+		FlxG.save.data.scrollOSUSpeed -= 0.1 * (if(FlxG.keys.pressed.SHIFT) 5 else 1);
+
+		if (FlxG.save.data.scrollOSUSpeed < 0.1)
+			FlxG.save.data.scrollOSUSpeed = 0.1;
+
+		if (FlxG.save.data.scrollOSUSpeed > 100)
+			FlxG.save.data.scrollOSUSpeed = 100;
+
+		return true;
+	}
+}
+
 
 
 class RainbowFPSOption extends Option
