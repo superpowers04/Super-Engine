@@ -1661,7 +1661,7 @@ class PlayState extends MusicBeatState
 			startedCountdown = true;
 				Conductor.songPosition = 0;
 	
-			Conductor.songPosition -= Conductor.crochet * 5;
+			Conductor.songPosition -= 2500;
 
 
 			if(errorMsg != "") {handleError(errorMsg,true);return;}
@@ -1672,7 +1672,7 @@ class PlayState extends MusicBeatState
 		
 
 
-		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
+		startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer)
 		{
 			dad.dance();
 			if(gf != boyfriend && gf != dad) gf.dance();
