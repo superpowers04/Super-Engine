@@ -33,6 +33,21 @@ class OsuBeatMap{
 
 	public static function loadFromText(bm:String):Null<SwagSong>{
 			var song:SwagSong = Song.getEmptySong();
+			// var song:SwagSong = {
+			// 	song: "OsuBeatMap_Not_loaded",
+			// 	notes: [],
+			// 	bpm: 120,
+			// 	needsVoices: false,
+			// 	player1: 'bf',
+			// 	player2: '',
+			// 	gfVersion: 'gf',
+			// 	noteStyle: 'normal',
+			// 	stage: 'stage',
+			// 	speed: 2.0,
+			// 	validScore: false,
+			// 	difficultyString: "Unknown"
+			// };
+
 			try{
 
 				inline function normalizeInt(int:Int){if (int < 0) return -int; else return int;}

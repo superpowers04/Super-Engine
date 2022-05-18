@@ -974,13 +974,6 @@ class Character extends FlxSprite
 
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
 			AnimName = AnimName + '-alt'; // Alt animations
-		if (animation.curAnim != null){
-			lastAnim = animation.curAnim.name;
-			if(animation.curAnim.name != AnimName && !animHasFinished){
-				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
-				if (animationPriorities[animation.curAnim.name] == null && !animHasFinished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
-			}
-		}
 		callInterp("playAnim",[AnimName]);
 		if (skipNextAnim){
 			skipNextAnim = false;
@@ -989,6 +982,13 @@ class Character extends FlxSprite
 		if(nextAnimation != ""){
 			AnimName = nextAnimation;
 			nextAnimation = "";
+		}
+		if (animation.curAnim != null){
+			lastAnim = animation.curAnim.name;
+			if(animation.curAnim.name != AnimName && !animHasFinished){
+				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
+				if (animationPriorities[animation.curAnim.name] == null && !animHasFinished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
+			}
 		}
 		// setSprite(animGraphics[AnimName.toLowerCase()]);
 
@@ -1020,10 +1020,10 @@ class Character extends FlxSprite
 		}
 		skipNextAnim = false;
 	}
-	public function playAnimAvailable(animList:Array<String>){
+	public function playAnimAvailable(animList:Array<String>,forced:Bool = false,reversed:Bool = false,frame:Int = 0){
 		for (i in animList) {
 			if(animation.getByName(i) != null){
-				playAnim(i);
+				playAnim(i,forced,reversed,frame);
 				return;
 			}
 		}

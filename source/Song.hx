@@ -85,7 +85,7 @@ class Song
 		this.bpm = bpm;
 	}
 	public static function getEmptySong():SwagSong{
-		return cast Json.parse(getEmptySongJSON);
+		return cast Json.parse(getEmptySongJSON());
 	}
 	public static function getEmptySongJSON():String{
 		return '{
@@ -341,7 +341,7 @@ class Song
 		#if !debug
 		}catch(e){
 			MainMenuState.handleError('Error parsing chart: ${e.message}');
-			return getEmptySong;
+			return getEmptySong();
 		}
 		#end
 	}

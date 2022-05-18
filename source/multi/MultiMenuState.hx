@@ -356,39 +356,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var songName = songNames[sel];
 			if(modes[curSelected][selMode] == "No charts for this song!"){
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
-				PlayState.SONG = {
-					song: songName,
-					notes: [
-						{
-							lengthInSteps : 16,
-							altAnim : false,
-							typeOfSection : 0,
-							sectionNotes : [],
-							bpm: 150,
-							changeBPM : false,
-							mustHitSection : true
-						},
-						{
-							lengthInSteps : 16,
-							altAnim : false,
-							typeOfSection : 0,
-							sectionNotes : [],
-							bpm: 150,
-							changeBPM : false,
-							mustHitSection : true
-						}
-					],
-					bpm: 150,
-					needsVoices: false,
-					player1: 'bf',
-					player2: 'dad',
-					gfVersion: 'gf',
-					noteStyle: 'normal',
-					stage: 'stage',
-					speed: 2,
-					validScore: false
-				};
-				File.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:PlayState.SONG}));
+				File.saveContent(onlinemod.OfflinePlayState.chartFile,Song.getEmptySongJSON());
+				PlayState.SONG = Song.getEmptySong();
 
 
 			}else{

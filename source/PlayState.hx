@@ -1042,31 +1042,34 @@ class PlayState extends MusicBeatState
 		// 	player1 = pl[1];
 		// 	player2 = pl[0];
 		// }
-
-		switch (SONG.gfVersion)
-		{
-			case 'gf-car':
-				player3 = 'gf-car';
-			case 'gf-christmas':
-				player3 = 'gf-christmas';
-			case 'gf-pixel':
-				player3 = 'gf-pixel';
-			default:
-				player3 = 'gf';
+		if(loadChars){
+			switch (SONG.gfVersion)
+			{
+				case 'gf-car':
+					player3 = 'gf-car';
+				case 'gf-christmas':
+					player3 = 'gf-christmas';
+				case 'gf-pixel':
+					player3 = 'gf-pixel';
+				default:
+					player3 = 'gf';
+			}
+			if (FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
+			gfChar = player3;
+			 gf = (if (FlxG.save.data.gfShow && loadChars && gfShow && !noGf) new Character(400, 100, player3,false,2) else new EmptyCharacter(400, 100));
+			gf.scrollFactor.set(0.95, 0.95);
+			if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
+			if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
+			 dad = (if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2)) new Character(100, 100, player2,false,1) else new EmptyCharacter(100, 100));
+			 boyfriend = (if (FlxG.save.data.bfShow && loadChars) new Character(770, 100, player1,true,0) else new EmptyCharacter(400,100));
+		}else{
+			dad = new EmptyCharacter(100, 100);
+			boyfriend = new EmptyCharacter(400,100);
+			gf = new EmptyCharacter(400, 100);
 		}
-		if (FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
-		gfChar = player3;
-		if (FlxG.save.data.gfShow && loadChars && gfShow) gf = new Character(400, 100, player3,false,2); else gf = new EmptyCharacter(400, 100);
-		gf.scrollFactor.set(0.95, 0.95);
-		if (noGf) gf.visible = false;
-		if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
-		if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
-		if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2)) dad = new Character(100, 100, player2,false,1); else dad = new EmptyCharacter(100, 100);
+		var camPos:FlxPoint = new FlxPoint(gf.getGraphicMidpoint().x, gf.getGraphicMidpoint().y);
 
-		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-
-		camPos.set(camPos.x + dad.camX, camPos.y + dad.camY);
-		if (FlxG.save.data.bfShow && loadChars) boyfriend = new Character(770, 100, player1,true,0); else boyfriend = new EmptyCharacter(400,100);
+		camPos.set(camPos.x + gf.camX, camPos.y + gf.camY);
 		
 
 		// REPOSITIONING PER STAGE

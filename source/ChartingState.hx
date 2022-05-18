@@ -144,19 +144,63 @@ class ChartingState extends MusicBeatState
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
-		{
+		{ 
+			/*{"song":{
+			     "rawJSON" : {
+			         "sections" : 158,
+			        "bpm" : 158,
+			        "song" : "@~obRef#0"
+			    },
+			    "sectionLengths" : [
+
+			    ],
+			    "player1" : "bf",
+			    "noteMetadata" : {
+			         "tooLateHealth" : -0.075,
+			        "badnoteHealth" : -0.24,
+			        "badnoteScore" : -7490,
+			        "missHealth" : -0.04,
+			        "missScore" : -10
+			    },
+			    "player2" : "bf",
+			    "song" : "SONG",
+			    "validScore" : true,
+			    "sections" : 0,
+			    "needsVoices" : false,
+			    "speed" : 2,
+			    "bpm" : 158
+			}}*/
 			_song = {
 				song: 'Test',
-				notes: [],
+				notes: [
+					{
+						lengthInSteps : 16,
+						altAnim : false,
+						typeOfSection : 0,
+						sectionNotes : [],
+						bpm: 150,
+						changeBPM : false,
+						mustHitSection : true
+					},
+					{
+						lengthInSteps : 16,
+						altAnim : false,
+						typeOfSection : 0,
+						sectionNotes : [],
+						bpm: 150,
+						changeBPM : false,
+						mustHitSection : true
+					}
+				],
 				bpm: 150,
-				needsVoices: true,
+				needsVoices: false,
 				player1: 'bf',
 				player2: 'dad',
 				gfVersion: 'gf',
 				noteStyle: 'normal',
 				stage: 'stage',
-				speed: 1,
-				validScore: false
+				speed: 2,
+				validScore: false,
 			};
 		}
 		if(_song.player1 == ""){
@@ -205,7 +249,7 @@ class ChartingState extends MusicBeatState
 		curRenderedNotes = new FlxTypedGroup<Note>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
-		FlxG.mouse.visible = true;
+		FlxG.mouse.enabled = true;
 
 		tempBpm = _song.bpm;
 
@@ -1656,7 +1700,7 @@ class ChartingState extends MusicBeatState
 					currentNoteObj.color = 0xFFFFFF;
 				}
 				curSelectedNote = _song.notes[curSection].sectionNotes[swagNum];
-				var arr = curSelectedNote.slice(if(Math.isNaN(curSelectedNote[2])) 2 else 3);
+				var arr = curSelectedNote.slice(if(curSelectedNote[1] == -1 || Math.isNaN(curSelectedNote[2]) ) 2 else 3);
 				if (arr[0] == 1) arr[0] = "hurt note";
 				noteTypeInput.text = (if(arr[0] == null) '' else '${arr.shift()}');
 
@@ -1776,12 +1820,19 @@ class ChartingState extends MusicBeatState
 			var type:Dynamic = 0;
 			if(forcehurtnote.checked){type = "hurt note";} else {type = noteTypeInput.text;}
 			var params:Array<String> = noteTypeInputcopy.text.split(",");
+			if(noteData == -1){
+				if (n != null)
+					_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.type]);
+				else
+					_song.notes[curSection].sectionNotes.push([noteStrum, noteData, type]);
 
+			}else{
 
 			if (n != null)
 				_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, n.type]);
 			else
 				_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, type]);
+			}
 
 			var thingy = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
@@ -1924,16 +1975,22 @@ class ChartingState extends MusicBeatState
 			{// Not copied from FunkinVortex, dunno what you mean
 				fd = new FileDialog();
 				fd.onSelect.add(function(path){
-				// _file = new FileReference();
-				// _file.addEventListener(Event.COMPLETE, onSaveComplete);
-				// _file.addEventListener(Event.CANCEL, onSaveCancel);
-				// _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-				// _file.save('{"song":' + data + "}", path);
-				try{lastPath = path;
+				// for (sid => section in swagShit.notes) { // Sort sections for the funni
+				// 	if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
+					
+				// 	haxe.ds.ArraySort.sort(section.sectionNotes, function(a, b) {
+				// 		if(a[0] < b[0]) return -1;
+				// 		else if(b[0] > a[0]) return 1;
+				// 		else return 0;
+				// 	});
+
+				// }
+				try{
+					lastPath = path;
 					onlinemod.OfflinePlayState.chartFile = path;}catch(e){return;}
-				//Bodgey as hell but doesn't work otherwise
-				sys.io.File.saveContent(path,'{"song":' + data + "}");
-				showTempmessage('Saved chart to ${path}');
+					//Bodgey as hell but doesn't work otherwise
+					sys.io.File.saveContent(path,'{"song":' + data + "}");
+					showTempmessage('Saved chart to ${path}');
 				
 
 				});

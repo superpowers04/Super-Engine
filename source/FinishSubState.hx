@@ -122,8 +122,8 @@ class FinishSubState extends MusicBeatSubstate
 		}
 		if(!isError){
 			if(win){
-				boyfriend.playAnimAvailable(['win','hey','singUP']);
-				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('cheer'); else {dad.playAnimAvailable(['lose','singDOWNmiss']);}
+				boyfriend.playAnimAvailable(['win','hey','singUP'],true);
+				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('cheer',true); else {dad.playAnimAvailable(['lose','singDOWNmiss'],true);}
 				PlayState.gf.playAnim('cheer',true);
 			}else{
 				// boyfriend.playAnim('singDOWNmiss');
@@ -131,9 +131,9 @@ class FinishSubState extends MusicBeatSubstate
 
 				// dad.playAnim("hey",true);
 				// dad.playAnim("win",true);
-				boyfriend.playAnimAvailable(['lose']);
-				dad.playAnimAvailable(['win','hey']);
-				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('sad'); else dad.playAnim("hey");
+				boyfriend.playAnimAvailable(['lose'],true);
+				dad.playAnimAvailable(['win','hey'],true);
+				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('sad',true); else dad.playAnim("hey",true);
 				PlayState.gf.playAnim('sad',true);
 			}
 		}
