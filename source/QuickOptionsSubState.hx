@@ -38,7 +38,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 			"Flippy mode" => {type:0,value:false,lang:[false => "off",true => "I love pain"]}
 		];
 	public static var osuSettings:Map<String,QOSetting> = [
-			"Scroll speed" => {type:2,value:0,min:0,max:10}
+			"Scroll speed" => {type:2,value:0,min:0,max:10,lang:[0 => "User Set"]}
 		];
 	var settings:Map<String,QOSetting> = [];
 	var menuItems:Array<String> = [];

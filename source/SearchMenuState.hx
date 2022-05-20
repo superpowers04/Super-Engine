@@ -114,7 +114,7 @@ class SearchMenuState extends MusicBeatState
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		reloadList();
 		add(grpSongs);
-		FlxG.mouse.enabled = true;
+		FlxG.mouse.visible = true;
 		if (toggleables['search']){
 				blackBorder = new FlxSprite(-30,0).makeGraphic((Std.int(FlxG.width + 40)),140,FlxColor.BLACK);
 				blackBorder.alpha = 0.5;
@@ -234,7 +234,7 @@ class SearchMenuState extends MusicBeatState
 		}
 	}
 	function ret(){
-		FlxG.mouse.enabled = false;
+		FlxG.mouse.visible = false;
 		if (onlinemod.OnlinePlayMenuState.socket != null){FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{FlxG.switchState(new OptionsMenu());}
 	}
 	function changeSelection(change:Int = 0)

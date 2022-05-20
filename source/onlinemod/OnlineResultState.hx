@@ -76,7 +76,7 @@ class OnlineResultState extends MusicBeatState
     OnlinePlayMenuState.receiver.HandleData = HandleData;
 
 
-    FlxG.mouse.enabled = true;
+    FlxG.mouse.visible = true;
     FlxG.autoPause = false;
 
 

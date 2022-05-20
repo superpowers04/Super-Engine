@@ -514,6 +514,7 @@ class TitleState extends MusicBeatState
 			MainMenuState.firstStart = true;
 			Conductor.changeBPM(70);
 			persistentUpdate = true;
+			FlxG.mouse.enabled = true;
 			FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
 			FlxG.mouse.useSystemCursor = true; // Uses system cursor, did not know this was a thing until Forever Engine
 			CoolUtil.volKeys = [FlxG.sound.muteKeys,FlxG.sound.volumeUpKeys,FlxG.sound.volumeDownKeys];
@@ -597,7 +598,7 @@ class TitleState extends MusicBeatState
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
-		FlxG.mouse.enabled = false;
+		FlxG.mouse.visible = false;
 
 
 		shiftSkip = new FlxText(0,0,0,"Hold shift to go to the options menu after title screen",16);

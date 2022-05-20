@@ -120,7 +120,7 @@ class OnlineHostMenu extends MusicBeatState
 		add(hostButton);
 
 
-		FlxG.mouse.enabled = true;
+		FlxG.mouse.visible = true;
 
 
 		super.create();

@@ -356,13 +356,22 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var songName = songNames[sel];
 			if(modes[curSelected][selMode] == "No charts for this song!"){
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
-				File.saveContent(onlinemod.OfflinePlayState.chartFile,Song.getEmptySongJSON());
-				PlayState.SONG = Song.getEmptySong();
+				var song = cast Song.getEmptySong();
+				song.song = songName;
+				// modes[sel][selMode] = chart = '${songName}.json';
+				File.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:song}));
+				
+				reloadList(true,searchField.text);
+				curSelected = sel;
+				changeSelection();
+				selSong(sel,true);
+				// showTempmessage('Generated blank chart for $songName');
+				return;
 
 
 			}else{
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${chart}';
-				PlayState.SONG = Song.parseJSONshit(File.getContent(onlinemod.OfflinePlayState.chartFile));
+				PlayState.SONG = Song.parseJSONshit(File.getContent(onlinemod.OfflinePlayState.chartFile),true);
 			}
 			if (FileSystem.exists('${songLoc}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${songLoc}/Voices.ogg';}
 			PlayState.hsBrTools = new HSBrTools('${songLoc}');
@@ -424,10 +433,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
 			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.50 && grpSongs.members[curSelected].y < FlxG.height * 0.56) ){changeSelection(1);}
 			extraKeys();
-			if (FlxG.keys.justPressed.SEVEN && songs.length > 0 && FlxG.save.data.animDebug)
-			{
-				selSong(curSelected,true);
-			}
 			if (controls.ACCEPT && songs.length > 0)
 			{
 				select(curSelected);
@@ -437,12 +442,19 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function extraKeys(){
 		if(controls.LEFT_P){changeDiff(-1);}
 		if(controls.RIGHT_P){changeDiff(1);}
-		if(!FlxG.mouse.overlaps(blackBorder) && FlxG.mouse.justPressed){
+		if (FlxG.keys.justPressed.SEVEN && songs.length > 0 && FlxG.save.data.animDebug)
+		{
+			selSong(curSelected,true);
+		}
+		if(!FlxG.mouse.overlaps(blackBorder) && (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)){
 			for (i in -2 ... 2) {
 				if(grpSongs.members[curSelected + i] != null && FlxG.mouse.overlaps(grpSongs.members[curSelected + i])){
-					select(curSelected + i);
+					selSong(curSelected + i,FlxG.mouse.justPressedRight);
 				}
 			}
+		}
+		if(FlxG.mouse.justPressedMiddle){
+			changeDiff(1);
 		}
 		if(FlxG.mouse.wheel != 0){
 			var move = -FlxG.mouse.wheel;
@@ -605,7 +617,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function goOptions(){
 			lastSel = curSelected;
 			lastSearch = searchField.text;
-			FlxG.mouse.enabled = false;
+			FlxG.mouse.visible = false;
 			OptionsMenu.lastState = 4;
 			FlxG.switchState(new OptionsMenu());
 	}

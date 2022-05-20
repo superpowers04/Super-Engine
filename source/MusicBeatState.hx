@@ -142,10 +142,12 @@ class MusicBeatState extends FlxUIState
 	}
 	override function switchTo(nextState:FlxState):Bool{
 		tranOut();
+		FlxG.mouse.visible = false;
 		return super.switchTo(nextState);
 	}
 
 	function tranIn(){ // Replace with empty functions to disable
+		
 		var oldY = FlxG.camera.x;
 		FlxG.camera.x -= 300;
 		FlxTween.tween(FlxG.camera, {x:oldY},0.7,{ease: FlxEase.expoOut});
@@ -157,7 +159,7 @@ class MusicBeatState extends FlxUIState
 	}
 	function tranOut(){
 		// active = false;
-		FlxG.mouse.enabled = false;
+		
 		if(loading) LoadingScreen.show();
 		
 		

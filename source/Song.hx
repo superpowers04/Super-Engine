@@ -85,13 +85,12 @@ class Song
 		this.bpm = bpm;
 	}
 	public static function getEmptySong():SwagSong{
-		return cast Json.parse(getEmptySongJSON());
+		return cast Json.parse(getEmptySongJSON()).song;
 	}
 	public static function getEmptySongJSON():String{
 		return '{
 			"song": {
 				"player1": "bf",
-				"sectionLengths": [],
 				"events": [
 				],
 				"gfVersion": "gf",
@@ -129,12 +128,12 @@ class Song
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
 		var rawJson = CoolUtil.cleanJSON(Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())));
-
-		while (!rawJson.endsWith("}"))
-		{
-			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-		}
+		rawJson = rawJson.substr(0, rawJson.lastIndexOf("}")); // Clean the funni json
+		// while (!rawJson.endsWith("}"))
+		// {
+		// 	rawJson = rawJson.substr(0, rawJson.length - 1);
+		// 	// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+		// }
 
 		return parseJSONshit(rawJson);
 	}
@@ -149,9 +148,9 @@ class Song
 	}
 
 
-	static function modifyChart(swagShit:SwagSong):SwagSong{
-		var hurtArrows = (QuickOptionsSubState.getSetting("Custom Arrows") || onlinemod.OnlinePlayMenuState.socket != null);
-		var opponentArrows = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows"));
+	static function modifyChart(swagShit:SwagSong,charting:Bool = false):SwagSong{
+		var hurtArrows = (QuickOptionsSubState.getSetting("Custom Arrows") || onlinemod.OnlinePlayMenuState.socket != null || charting);
+		var opponentArrows = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows") || charting);
 		var invertedNotes:Array<Int> = [4,5,6,7];
 		var oppNotes:Array<Int> = [0,1,2,3];
 		// if(FlxG.save.data.regenSong){
@@ -319,7 +318,7 @@ class Song
 	// 	return swagShit;
 	// }
 
-	public static function parseJSONshit(rawJson:String):SwagSong
+	public static function parseJSONshit(rawJson:String,charting:Bool = false):SwagSong
 	{
 		#if !debug
 		try{
@@ -328,8 +327,8 @@ class Song
 			var swagShit:SwagSong = cast rawJson.song;
 			swagShit.rawJSON = rawJson;
 			swagShit.validScore = true;
-			if (PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) swagShit = invertChart(swagShit);
-			swagShit = modifyChart(swagShit);
+			if ((PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) && !charting) swagShit = invertChart(swagShit);
+			swagShit = modifyChart(swagShit,charting);
 			// if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null) swagShit = convHurtArrows(swagShit);
 			// if (onlinemod.OnlinePlayMenuState.socket == null){
 			// 	if (!QuickOptionsSubState.getSetting("Opponent arrows")) swagShit = removeOpponentArrows(swagShit);

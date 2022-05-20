@@ -60,7 +60,7 @@ class OnlineNickState extends MusicBeatState
     OnlinePlayMenuState.AddXieneText(this);
 
 
-    FlxG.mouse.enabled = true;
+    FlxG.mouse.visible = true;
 
 
     OnlinePlayMenuState.receiver.HandleData = HandleData;

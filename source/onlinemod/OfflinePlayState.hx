@@ -120,7 +120,7 @@ class OfflinePlayState extends PlayState
 	    xieneDevWatermark.cameras = [camHUD];
 
 
-	    FlxG.mouse.enabled = false;
+	    FlxG.mouse.visible = false;
 	    FlxG.autoPause = true;
 	    if(willChart){
 	    	QuickOptionsSubState.setSetting("Song hscripts",oldScripts);

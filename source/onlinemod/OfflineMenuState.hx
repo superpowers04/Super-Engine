@@ -28,7 +28,7 @@ class OfflineMenuState extends SearchMenuState
   var invertedChart:Bool = false;
 
   function goOptions(){
-      FlxG.mouse.enabled = false;
+      FlxG.mouse.visible = false;
       OptionsMenu.lastState = 3;
       FlxG.switchState(new OptionsMenu());
   }
@@ -92,13 +92,14 @@ class OfflineMenuState extends SearchMenuState
   }
 
   override function ret(){
-    FlxG.mouse.enabled = false;
+    FlxG.mouse.visible = false;
     FlxG.switchState(new MainMenuState());
   }
   override function extraKeys(){
     if (FlxG.keys.justPressed.R){
       changeSelection(Math.floor(songs.length * Math.random()));
     }
+
   }
   override function select(sel:Int = 0){
       OfflinePlayState.chartFile = songs[curSelected];

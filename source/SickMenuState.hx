@@ -199,7 +199,7 @@ class SickMenuState extends MusicBeatState
 
 
 		super.create();
-		FlxG.mouse.enabled = true;
+		FlxG.mouse.visible = true;
 	}
 	var doResize:Bool = true;
 	override function update(elapsed:Float)

@@ -155,7 +155,7 @@ class OnlinePlayState extends PlayState
 
 
 
-		FlxG.mouse.enabled = false;
+		FlxG.mouse.visible = false;
 		FlxG.autoPause = false;
 	}catch(e){MainMenuState.handleError('Crash in "create" caught: ${e.message}');}}
 
