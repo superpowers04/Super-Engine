@@ -1782,16 +1782,16 @@ class PlayState extends MusicBeatState
 
 
 	public var songStarted(default, null):Bool = false;
-	function loadPositions(){
-		var map:Map<String,KadeEngineData.ObjectInfo> = cast FlxG.save.data.playStateObjectLocations;
-		for (i => v in map) {
-			var obj = Reflect.field(this,i);
-			if(obj != null){
-				obj.x = v.x;
-				obj.y = v.y;
-			}
-		}
-	}
+	// function loadPositions(){
+	// 	var map:Map<String,KadeEngineData.ObjectInfo> = cast FlxG.save.data.playStateObjectLocations;
+	// 	for (i => v in map) {
+	// 		var obj = Reflect.field(this,i);
+	// 		if(obj != null){
+	// 			obj.x = v.x;
+	// 			obj.y = v.y;
+	// 		}
+	// 	}
+	// }
 	function startSong(?alrLoaded:Bool = false):Void
 	{
 		startingSong = false;
