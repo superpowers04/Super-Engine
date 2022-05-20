@@ -2,6 +2,11 @@ import openfl.Lib;
 import flixel.FlxG;
 import sys.FileSystem;
 
+typedef ObjectInfo = {
+	var x:Float;
+	var y:Float;
+	var angle:Float;
+}
 class KadeEngineData
 {
     public static function initSave()
@@ -159,6 +164,7 @@ class KadeEngineData
 		if(FlxG.save.data.goodMiss == null) FlxG.save.data.goodMiss = false;
 		if(FlxG.save.data.beatBouncing == null) FlxG.save.data.beatBouncing = true;
 		
+		if(FlxG.save.data.scrollOSUSpeed == null) FlxG.save.data.scrollOSUSpeed = 2;
 
 		if(FlxG.save.data.playStateObjectLocations == null) FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();
 
