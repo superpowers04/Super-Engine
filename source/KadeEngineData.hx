@@ -84,8 +84,6 @@ class KadeEngineData
 		if (FlxG.save.data.strumline == null)
 			FlxG.save.data.strumline = false;
 		
-		if (FlxG.save.data.customStrumLine == null)
-			FlxG.save.data.customStrumLine = 0;
 
 		if (FlxG.save.data.opponent == null)
 			FlxG.save.data.opponent = "bf";
@@ -163,7 +161,6 @@ class KadeEngineData
 		if(FlxG.save.data.badMiss == null) FlxG.save.data.badMiss = false;
 		if(FlxG.save.data.goodMiss == null) FlxG.save.data.goodMiss = false;
 		if(FlxG.save.data.beatBouncing == null) FlxG.save.data.beatBouncing = true;
-		
 		if(FlxG.save.data.scrollOSUSpeed == null) FlxG.save.data.scrollOSUSpeed = 2;
 
 		if(FlxG.save.data.playStateObjectLocations == null) FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();
