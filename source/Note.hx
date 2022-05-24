@@ -215,7 +215,7 @@ class Note extends FlxSprite
 						try{
 							// Info can be set to anything, it's being used for storing the BPM
 
-							info = [(if(!Math.isNaN(rawNote[4]))Std.parseFloat(rawNote[4]) else Std.parseFloat(rawNote[3]))]; 
+							info = [(if(rawNote[4] != "" && !Math.isNaN(Std.parseFloat(rawNote[4])))Std.parseFloat(rawNote[4]) else Std.parseFloat(rawNote[3]))]; 
 						}catch(e){info = [120,0];}
 						// Replaces hit func
 						hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 

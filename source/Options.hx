@@ -1555,6 +1555,34 @@ class BoolOption extends Option{
 		return name + ":" + getValue();
 	}
 }
+class HCBoolOption extends Option{
+	var id:String;
+	var name:String;
+
+	public function new(desc:String,name:String,id:String)
+	{
+		// acceptValues = true;
+		this.name = name;
+		this.id = id;
+		// display = name;
+		super();
+		description = desc;
+
+	}
+	override function getValue():String {
+		return '${Reflect.getProperty(FlxG.save.data,id)}';
+	}
+	public override function press():Bool{
+		Reflect.setProperty(FlxG.save.data,id,!Reflect.getProperty(FlxG.save.data,id));
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return name + ": " + getValue();
+	}
+}
 class FontOption extends Option
 {
 	public function new(desc:String)
@@ -1992,3 +2020,4 @@ class QuickOption extends Option{
 		return '${name}: ${val}';
 	}
 }
+

@@ -71,6 +71,15 @@ class MusicBeatState extends FlxUIState
 	}
 
 	var skippedFrames = 0;
+	var hasTextInputFocus = false;
+	public var toggleVolKeys:Bool = true; 
+
+	public function onTextInputFocus(object:Dynamic){
+		if(toggleVolKeys) CoolUtil.toggleVolKeys(false);
+	}
+	public function onTextInputUnfocus(object:Dynamic){
+		if(toggleVolKeys) CoolUtil.toggleVolKeys(true);
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -89,6 +98,33 @@ class MusicBeatState extends FlxUIState
 
 		if ((cast (Lib.current.getChildAt(0), Main)).getFPSCap != FlxG.save.data.fpsCap && FlxG.save.data.fpsCap <= 290)
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		if(FlxG.mouse.justPressed){
+			var hasPressed = false;
+
+			var i:Int = 0;
+			var basic:Dynamic = null;
+			forEach(function(basic:Dynamic){
+				if(!Std.isOfType(basic,flixel.addons.ui.FlxUITabMenu) && !Std.isOfType(basic,flixel.addons.ui.FlxUI) && Reflect.field(basic,"HasFocus") != null && Reflect.field(basic,"HasFocus")){
+					hasPressed = true;
+				}
+			},true);
+
+			// while (i < length)
+			// {
+			// 	basic = members[i++];
+
+			// 	if (basic != null)
+			// 	{
+					
+			// 	}
+			// }
+			if(hasTextInputFocus != hasPressed){
+				hasTextInputFocus = hasPressed;
+				if(hasPressed) onTextInputFocus(basic);
+				else onTextInputUnfocus(basic);
+
+			}
+		}
 		if(FlxG.save.data.animDebug){
 			Overlay.debugVar = '\nBPM:${Conductor.bpm}/${HelperFunctions.truncateFloat(Conductor.crochet,2)}MS(S:${HelperFunctions.truncateFloat(Conductor.stepCrochet,2)}MS)\ncurBeat:${curBeat}\ncurStep:${curStep}';
 		}
@@ -143,6 +179,7 @@ class MusicBeatState extends FlxUIState
 	override function switchTo(nextState:FlxState):Bool{
 		tranOut();
 		FlxG.mouse.visible = false;
+		FlxG.mouse.enabled = true;
 		return super.switchTo(nextState);
 	}
 

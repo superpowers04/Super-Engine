@@ -275,7 +275,7 @@ class PlayState extends MusicBeatState
 	public static var inputEngineName:String = "Unspecified";
 	public static var songScript:String = "";
 	public static var hsBrTools:HSBrTools;
-	public static var gfShow:Bool = true;
+	public var gfShow:Bool = true;
 	public var eventLog:Array<OutNote> = [];
 	public var camBeat:Bool = true;
 	public var forceChartChars:Bool = false;
