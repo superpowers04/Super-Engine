@@ -592,7 +592,7 @@ class ChartingState extends MusicBeatState
 		// var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 132, 1, 1, -999, 999, 0);
 		// var stepperCopyLabel = new FlxText(174,132,'sections back');
 
-		var copyButton:FlxButton = new FlxButton(10, 150, "Copy section notes", function()
+		var copyButton:FlxButton = new FlxButton(10, 110, "Copy section notes", function()
 		{	
 			var note:Array<Dynamic>;
 			sectionBuffer = [];

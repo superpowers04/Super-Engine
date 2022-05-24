@@ -178,6 +178,9 @@ class SETools{
 	static public function addToPersistant(name,obj:Dynamic){
 		return persistantVars.set(name,obj);
 	}
+	static public function removeFromPersistant(name){
+		return persistantVars.set(name,null);
+	}
 
 
 	// Safely tweens an object while making sure the values actually exist
