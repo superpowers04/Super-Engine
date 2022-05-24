@@ -5,8 +5,11 @@ import sys.FileSystem;
 typedef ObjectInfo = {
 	var x:Float;
 	var y:Float;
-	var angle:Float;
+	// var isGroup:Bool;
+	var ?subObjects:Map<String,ObjectInfo>;
 }
+
+
 class KadeEngineData
 {
     public static function initSave()
