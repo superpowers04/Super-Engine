@@ -1018,8 +1018,8 @@ class ReloadCharlist extends Option
 }
 class InputHandlerOption extends Option
 {
-	var ies:Array<String> = ["Kade","Tweaked Kade"];
-	var iesDesc:Array<String> = ["Kade 1.5/1.4 Input","Kade engine without antimash, and some improvements"];
+	var ies:Array<String> = ["Kade","Super Engine"];
+	var iesDesc:Array<String> = ["Kade 1.5/1.4 Input","A custom input engine based off of Kade 1.4/1.5"];
 	public function new(desc:String)
 	{
 		super();

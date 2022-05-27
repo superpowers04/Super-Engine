@@ -202,6 +202,7 @@ class AnimationDebug extends MusicBeatState
 			camHUD.bgColor.alpha = 0;
 
 			FlxG.mouse.enabled = true;
+			FlxG.mouse.visible = true;
 
 			FlxG.cameras.reset(camGame);
 			FlxG.cameras.add(camHUD);

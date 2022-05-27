@@ -196,8 +196,10 @@ class MainMenuState extends SickMenuState
 	var otherMenu:Bool = false;
 
 	function otherSwitch(){
-		options = ["story mode","freeplay","download charts","download characters"];
-		descriptions = ['Play through the story mode', 'Play any song from the game',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
+		// ,"freeplay"
+		// , 'Play any song from the game'
+		options = ["story mode","download charts","download characters"];
+		descriptions = ['Play through the story mode',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
 		generateList();

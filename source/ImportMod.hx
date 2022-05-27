@@ -30,7 +30,7 @@ class ImportMod extends DirectoryListing
 	
 	}
 	override function ret(){
-			FlxG.switchState(new OtherMenuState());
+			FlxG.switchState(new MainMenuState());
 	}
 	override function handleInput(){
 		super.handleInput();

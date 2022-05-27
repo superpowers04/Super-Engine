@@ -598,7 +598,9 @@ class ChartingState extends MusicBeatState
 			sectionBuffer = [];
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
 			{
-				sectionBuffer.push(_song.notes[curSection].sectionNotes[i]);
+				var note:Array<Dynamic> = _song.notes[curSection].sectionNotes[i].copy();
+				note[0] -= getStrumTime(gridBG.y);
+				sectionBuffer.push(note);
 			}
 			if(sectionBuffer[0] == null){
 				pasteButton.alpha = 0.7;
@@ -613,7 +615,9 @@ class ChartingState extends MusicBeatState
 			}
 			for (i in 0...sectionBuffer.length)
 			{
-				_song.notes[curSection].sectionNotes.push(sectionBuffer[i]);
+				var note:Array<Dynamic> = sectionBuffer[i].copy();
+				note[0] += getStrumTime(gridBG.y);
+				_song.notes[curSection].sectionNotes.push(note);
 				updateGrid();
 				updateSectionUI();
 			}
@@ -876,6 +880,7 @@ class ChartingState extends MusicBeatState
 	var doSnapShit:Bool = true;
 	var selectedNote:Note = null;
 	var modifyingNote:Bool = false;
+	var noteSnaps:Array<FlxSound> = [];
 	override function update(elapsed:Float)
 	{try{
 		updateHeads();
@@ -985,31 +990,29 @@ class ChartingState extends MusicBeatState
 				}
 			}
 
-		if (playClaps)
+		if (playClaps && FlxG.sound.music.playing)
 		{
+
 			curRenderedNotes.forEach(function(note:Note)
 			{
-				if (FlxG.sound.music.playing)
-				{
-					FlxG.overlap(strumLine, note, function(_, _)
+				FlxG.overlap(strumLine, note, function(_, _)
 					{
 						if(!claps.contains(note))
 						{
 							claps.push(note);
-							FlxG.sound.play(Paths.sound('SNAP'));
+							noteSnaps.push(FlxG.sound.play(Paths.sound('SNAP'),FlxG.save.data.hitvol));
 						}
 					});
-				}
 			});
 		}
 
-		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
+		if (curStep >= 16 * (curSection + 1))
 		{
-			while(curBeat % 4 == 0 && curStep >= 16 * (curSection + 1)) increaseSection();
+			while(curStep >= 16 * (curSection + 1)) increaseSection();
 		}
 		if (curStep <= (16 * curSection) - 1 && _song.notes[curSection - 1] != null)
 		{
-			changeSection(curSection - 1, false);
+			while(curStep <= (16 * curSection) - 1 && _song.notes[curSection - 1] != null) changeSection(curSection - 1, false);
 		}
 
 		FlxG.watch.addQuick('daBeat', curBeat);
@@ -1056,7 +1059,6 @@ class ChartingState extends MusicBeatState
 					&& FlxG.mouse.y > gridBG.y
 					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
 				{
-					FlxG.log.add('added note');
 					addNote();
 				}
 			
@@ -1065,7 +1067,6 @@ class ChartingState extends MusicBeatState
 		{
 			if (curSelectedNote != null && !modifyingNote && !justAdded && Math.floor(FlxG.mouse.x / GRID_SIZE) == (curSelectedNote[1] + 1))
 				{
-					FlxG.log.add('added note');
 					replaceNoteSustain(getStrumTime(dummyArrow.y) + sectionStartTime(curSection));
 				}
 		}else{
@@ -1160,9 +1161,9 @@ class ChartingState extends MusicBeatState
 			}
 
 			if (FlxG.keys.justPressed.RBRACKET)
-				FlxG.camera.zoom += 0.25;
+				FlxG.camera.zoom += 0.05;
 			if (FlxG.keys.justPressed.LBRACKET)
-				FlxG.camera.zoom -= 0.25;
+				FlxG.camera.zoom -= 0.05;
 
 			if (FlxG.keys.pressed.SHIFT)
 				{
@@ -1188,6 +1189,7 @@ class ChartingState extends MusicBeatState
 					FlxG.sound.music.pause();
 					vocals.pause();
 					claps.splice(0, claps.length);
+					FlxG.sound.pause();
 				}
 				else
 				{
@@ -1213,7 +1215,7 @@ class ChartingState extends MusicBeatState
 				var wasPlaying:Bool = FlxG.sound.music.playing;
 				FlxG.sound.music.pause();
 				vocals.pause();
-				claps.splice(0, claps.length);
+				// claps.splice(0, claps.length);
 
 				var stepMs = curStep * Conductor.stepCrochet;
 
