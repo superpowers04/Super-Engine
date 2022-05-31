@@ -165,6 +165,8 @@ class KadeEngineData
 		if(FlxG.save.data.goodMiss == null) FlxG.save.data.goodMiss = false;
 		if(FlxG.save.data.beatBouncing == null) FlxG.save.data.beatBouncing = true;
 		if(FlxG.save.data.scrollOSUSpeed == null) FlxG.save.data.scrollOSUSpeed = 2;
+		if(FlxG.save.data.packScripts == null) FlxG.save.data.packScripts = true;
+		if(FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
 
 		if(FlxG.save.data.playStateObjectLocations == null) FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();
 

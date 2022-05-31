@@ -23,6 +23,7 @@ import sys.FileSystem;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import flixel.util.FlxAxes;
+import haxe.CallStack;
 
 
 using StringTools;
@@ -33,15 +34,16 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N21-1";
+	public static var nightly:String = "N22";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
-	var char:Character = null;
+	public static var char:Character = null;
 	static var hasWarnedInvalid:Bool = false;
 	static var hasWarnedNightly:Bool = (nightly == "");
+	public static var triedChar:Bool = false;
 	
 	public static function handleError(?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
 		// if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
@@ -60,6 +62,19 @@ class MainMenuState extends SickMenuState
 		}catch(e){
 			trace("Unable to hide loading screen, forcing it hidden");
 		}
+		try{
+			var callStack:Array<StackItem> = cast CallStack.exceptionStack(true);
+			for (stackItem in callStack)
+			{
+				switch (stackItem)
+				{
+					case FilePos(s, file, line, column):
+						Sys.println(file + ":" + line + "");
+					default:
+						Sys.println(stackItem);
+				}
+			}
+		}catch(e){trace('I fucking errored while tracing a stack: ${e.message}');}
 		try{
 			LoadingScreen.object.alpha = 0;
 			
@@ -124,12 +139,13 @@ class MainMenuState extends SickMenuState
 			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
 			FlxG.save.data.gfChar = "gf";
 		}
-		// if(FlxG.save.data.mainMenuChar && MainMenuState.errorMessage == "" && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
-		// 	try{
-		// 		char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0,true);
-		// 		if(char != null) add(char);
-		// 	}catch(e){trace(e);char = null;}
-		// }
+		if(MainMenuState.errorMessage == "" && !triedChar && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
+			triedChar = true;
+			try{
+				char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0,true);
+				if(char != null) add(char);
+			}catch(e){trace(e);char = null;}
+		}
 		if(firstStart){
 			// FlxG.sound.volumeHandler = function(volume:Float){
 			// 	FlxG.save.data.masterVol = volume;
@@ -185,10 +201,10 @@ class MainMenuState extends SickMenuState
 	}
 	override function beatHit(){
 		super.beatHit();
-		// if(char != null && char.animation.curAnim.finished) char.dance(true);
+		if(char != null && char.animation.curAnim.finished) char.dance(true);
 	}
 	override function changeSelection(change:Int = 0){
-		if(char != null && change != 0) char.playAnim(Note.noteAnims[FlxG.random.int(0,3)],true);
+		if(char != null && change != 0) char.playAnim(Note.noteAnims[if(change > 0)1 else 2],true);
 		
 		super.changeSelection(change);
 	}
@@ -222,10 +238,11 @@ class MainMenuState extends SickMenuState
   override function select(sel:Int){
 		MainMenuState.errorMessage="";
 		if (selected){return;}
-		// if(char != null) {char.playAnim("hey",true);char.playAnim("win",true);}
+		if(char != null) {char.playAnimAvailable(["win","singUP"],true);}
 		selected = true;
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));
+		triedChar = false;
 		
 		switch (daChoice)
 		{

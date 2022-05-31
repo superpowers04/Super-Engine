@@ -70,6 +70,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		retAfter = false;
 		SearchMenuState.doReset = true;
 		dataDir = "mods/charts/";
+		PlayState.scripts = [];
 		bgColor = 0x00661E;
 		super.create();
 		diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
@@ -312,6 +313,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				if(selSong == "" || songJSON == "" || songName == ""){
 					throw("No song name provided!");
 				}
+				#if windows
+				selSong = selSong.replace("\\","/"); // Who decided this was a good idea?
+				#end
 				onlinemod.OfflinePlayState.chartFile = '${selSong}/${songJSON}';
 				PlayState.isStoryMode = false;
 				// Set difficulty
@@ -336,11 +340,33 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}else{
 					onlinemod.OfflinePlayState.voicesFile = voicesFile;
 				}
-				if (FileSystem.exists('${selSong}/script.hscript')) {
-					trace("Song has script!");
-					MultiPlayState.scriptLoc = '${selSong}/script.hscript';
+				for (file in FileSystem.readDirectory(selSong)) {
+					if(file.endsWith(".hscript") && !FileSystem.isDirectory(file)){
+						PlayState.scripts.push('${selSong}/$file');
+					}
+				}
+				if(FlxG.save.data.packScripts && (selSong.contains("mods/packs") || selSong.contains("mods/weeks"))){
+					var packDirL = selSong.split("/"); // Holy shit this is shit but using substr won't work for some reason :<
+					if(packDirL[packDirL.length] == "")packDirL.pop(); // There might be an extra slash at the end, remove it
+					packDirL.pop();
+					if(packDirL.contains("packs")) packDirL.pop(); // Packs have a sub charts folder, weeks do not
+
+					var packDir = packDirL.join("/");
+					if(FileSystem.exists('${packDir}/scripts') && FileSystem.isDirectory('${packDir}/scripts')){
+
+						for (file in FileSystem.readDirectory('${packDir}/scripts')) {
+							if(file.endsWith(".hscript") && !FileSystem.isDirectory('${packDir}/scripts/$file')){
+								PlayState.scripts.push('${packDir}/scripts/$file');
+							}
+						}
+					}
+				}
+				
+				// if (FileSystem.exists('${selSong}/script.hscript')) {
+				// 	trace("Song has script!");
+				// 	MultiPlayState.scriptLoc = '${selSong}/script.hscript';
 					
-				}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
+				// }else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
 				PlayState.stateType = 4;
 				FlxG.sound.music.fadeOut(0.4);
 				LoadingState.loadAndSwitchState(new MultiPlayState(charting));
@@ -358,7 +384,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
 				var song = cast Song.getEmptySong();
 				song.song = songName;
-				// modes[sel][selMode] = chart = '${songName}.json';
 				File.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:song}));
 				
 				reloadList(true,searchField.text);
@@ -398,8 +423,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			showTempmessage("Invalid song!",FlxColor.RED);
 			return;
 		}
-			
-		lastSel = curSelected;
+		onlinemod.OfflinePlayState.nameSpace = "";
+		if(nameSpaces[sel] != null){
+			onlinemod.OfflinePlayState.nameSpace = nameSpaces[sel];
+		}
+		lastSel = sel;
 		lastSearch = searchField.text;
 		lastSong = songs[sel] + modes[sel][selMode] + songNames[sel];
 		gotoSong(songs[sel],modes[sel][selMode],songNames[sel]);

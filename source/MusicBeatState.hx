@@ -29,14 +29,23 @@ class MusicBeatState extends FlxUIState
 	var tempMessage:FlxText;
 	var tempMessTimer:FlxTimer;
 	var loading = true;
-
+	public function onFileDrop(file:String):Null<Bool>{
+		return true;
+	}
+	override function onFocus() {
+		super.onFocus();
+		CoolUtil.setFramerate(true);
+	}
+	override function onFocusLost(){
+		super.onFocusLost();
+		CoolUtil.setFramerate(24,false,true);
+	}
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
 	override function create()
 	{
-
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		CoolUtil.setFramerate(true);
 
 		if (transIn != null)
 			trace('reg ' + transIn.region);

@@ -435,7 +435,7 @@ class StoryMenuState extends MusicBeatState
 		sprDifficulty.animation.addByPrefix('normal', 'NORMAL');
 		sprDifficulty.animation.addByPrefix('hard', 'HARD');
 		sprDifficulty.animation.play('easy');
-		changeDifficulty();
+		
 
 		difficultySelectors.add(sprDifficulty);
 
@@ -461,11 +461,12 @@ class StoryMenuState extends MusicBeatState
 		add(txtWeekTitle);
 
 		// updateText();
-		changeWeek(0);
 
 		trace("Line 165");
 
+		changeWeek(0);
 		super.create();
+		changeDifficulty(0);
 	}
 
 	override function update(elapsed:Float)

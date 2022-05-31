@@ -384,15 +384,48 @@ class ChartingState extends MusicBeatState
             {
                 for (ii in 0..._song.notes.length)
                 {
+                    _song.notes[ii].sectionNotes = [];
                     for (i in 0..._song.notes[ii].sectionNotes.length)
                         {
-                            _song.notes[ii].sectionNotes = [];
                         }
                 }
                 resetSection(true);
             });
 
-		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSong.x, reloadSong.y + 30, 'load autosave', loadAutosave);
+		// var loadAutosaveBtn:FlxButton = new FlxButton(reloadSong.x, reloadSong.y + 30, 'load autosave', loadAutosave);
+		var fixchart:FlxButton = new FlxButton(saveButton.x, saveButton.y + 30, 'Reorder notes to sections', function(){
+			var notes:Array<Dynamic> = [];
+			var currentTime = Conductor.songPosition;
+			for (ii in 0..._song.notes.length)
+			{
+				for (i in 0..._song.notes[ii].sectionNotes.length)
+				{
+					notes.push(_song.notes[ii].sectionNotes[i]);
+				}
+				_song.notes[ii].sectionNotes = [];
+			}
+			Conductor.mapBPMChanges(_song);
+			for (index => note in notes) {
+				Conductor.songPosition = note[0];
+				updateCurStep();
+				var e:SwagSection = _song.notes[Std.int(curStep / 16)];
+				if(_song.notes[Std.int(curStep / 16)] == null){
+					var limit = 1000; // Prevent crash due to infinite recursion or some shit, 1000 should be reasonable
+					while(_song.notes[Std.int(curStep / 16)] == null && limit > 0){
+						addSection();limit--;
+					}
+					if(_song.notes[Std.int(curStep / 16)] == null){
+						e = _song.notes[_song.notes.length];
+
+					}else{
+						e = _song.notes[Std.int(curStep / 16)];
+					}
+				}
+				_song.notes[Std.int(curStep / 16)].sectionNotes.push(note);
+				
+			}
+			Conductor.songPosition =currentTime;
+		});
 		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 0.1, 1, 1.0, 5000.0, 1);
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
@@ -476,6 +509,10 @@ class ChartingState extends MusicBeatState
 			_song.player2 = player2DropDown.text;
 			rightIcon.changeSprite(_song.player2);
 		});
+		// I didn't copy this, dunno what you mean
+		var jumpsectiontext = new FlxText(10,335,128,'Jump Section');
+		var jumpsectionbox = new FlxUINumericStepper(jumpsectiontext.x,jumpsectiontext.y + 15, 1, 0, -1000, 1000,0);
+		var jumpsectionbutton = new FlxButton(jumpsectionbox.x + 60,jumpsectionbox.y,'Jump', function(){changeSection(Std.int(jumpsectionbox.value));});
 
 
 
@@ -497,7 +534,8 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(saveButton);
 		// tab_group_song.add(loadButton);
 		tab_group_song.add(reloadSong);
-		tab_group_song.add(loadAutosaveBtn);
+		// tab_group_song.add(loadAutosaveBtn);
+		tab_group_song.add(fixchart);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperBPMLabel);
 		tab_group_song.add(stepperSpeed);
@@ -556,6 +594,10 @@ class ChartingState extends MusicBeatState
 		tab_group_assets.add(acceptplayer2);
 		tab_group_assets.add(waveformEnabled);
 		tab_group_assets.add(waveformUseInstrumental);
+
+        tab_group_assets.add(jumpsectiontext);
+		tab_group_assets.add(jumpsectionbox);
+		tab_group_assets.add(jumpsectionbutton);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.addGroup(tab_group_assets);
@@ -631,10 +673,12 @@ class ChartingState extends MusicBeatState
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
 			{
 				var note = _song.notes[curSection].sectionNotes[i];
-				note[1] = (note[1] + 5) % 9 - 1;
-				_song.notes[curSection].sectionNotes[i] = note;
-				updateGrid();
-				updateSectionUI();
+				if(note[1] > 0){
+					note[1] = (note[1] + 3) % 8 + 1;
+					_song.notes[curSection].sectionNotes[i] = note;
+					updateGrid();
+					updateSectionUI();
+				}
 			}
 		});
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Is player section", 100);
@@ -675,7 +719,7 @@ class ChartingState extends MusicBeatState
 		tab_group_note.name = 'Note';
 
 		writingNotesText = new FlxUIText(20,100, 0, "");
-		writingNotesText.setFormat("Arial",20,FlxColor.WHITE,FlxTextAlign.LEFT,FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		writingNotesText.setFormat(CoolUtil.font,20,FlxColor.WHITE,FlxTextAlign.LEFT,FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 
 		stepperSusLength = new FlxUINumericStepper(10, 10, Conductor.stepCrochet / 2, 0, 0, Conductor.stepCrochet * _song.notes[curSection].lengthInSteps * 16);
 		stepperSusLength.value = 0;

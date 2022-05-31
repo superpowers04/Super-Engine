@@ -38,6 +38,7 @@ class SearchMenuState extends MusicBeatState
 	var infotext:FlxText;
 	var overLay:FlxGroup = new FlxTypedGroup();
 	var infoTextBoxSize:Int = 2;
+	var supportMouse:Bool = true;
 
 	public static var background:FlxGraphic;
 	public static var backgroundOver:FlxGraphic;
@@ -84,7 +85,7 @@ class SearchMenuState extends MusicBeatState
 	static public inline function resetVars(){
 		if (ChartingState.charting) ChartingState.charting = false;
 		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
-		PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
+		PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
 		SickMenuState.chgTime = true;
 		onlinemod.OfflinePlayState.nameSpace = "";
 	}
@@ -208,16 +209,19 @@ class SearchMenuState extends MusicBeatState
 				select(curSelected);
 				if(retAfter) ret();
 			}
-			if(!FlxG.mouse.overlaps(blackBorder) && FlxG.mouse.justPressed){
-				for (i in -2 ... 2) {
-					if(grpSongs.members[curSelected + i] != null && FlxG.mouse.overlaps(grpSongs.members[curSelected + i])){
-						select(curSelected + i);
+			if(supportMouse){
+				
+				if(!FlxG.mouse.overlaps(blackBorder) && FlxG.mouse.justPressed){
+					for (i in -2 ... 2) {
+						if(grpSongs.members[curSelected + i] != null && FlxG.mouse.overlaps(grpSongs.members[curSelected + i])){
+							select(curSelected + i);
+						}
 					}
 				}
-			}
-			if(FlxG.mouse.wheel != 0){
-				var move = -FlxG.mouse.wheel;
-				changeSelection(Std.int(move));
+				if(FlxG.mouse.wheel != 0){
+					var move = -FlxG.mouse.wheel;
+					changeSelection(Std.int(move));
+				}
 			}
 	}
 	function extraKeys(){

@@ -1,5 +1,7 @@
 package;
 
+import lime.app.Application;
+import openfl.Lib;
 import lime.utils.Assets;
 import sys.FileSystem;
 import flixel.FlxG;
@@ -13,6 +15,29 @@ class CoolUtil
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 	public static var volKeys:Array<Array<Int>> = [];
 	public static var volKeysEnabled = true;
+	public static var Framerate:Int = 0;
+	public static function setFramerate(?fps:Int = 0,?update:Bool = false,?temp:Bool = false){
+		if(!temp){
+			if(fps != 0 && !update){
+				Framerate = FlxG.save.data.fpsCap = fps;
+			}
+			if(Framerate == 0 || update){
+				Framerate = FlxG.save.data.fpsCap;
+			}
+			if(Framerate < 30){
+				Framerate = FlxG.save.data.fpsCap = Application.current.window.displayMode.refreshRate;
+			}
+			if(Framerate < 30){
+				Framerate = FlxG.save.data.fpsCap = 30; // Probably on linux or something, where lime doesn't read the refreshrate for some reason
+			}
+			if(Framerate > 300){
+				Framerate = FlxG.save.data.fpsCap = 300;
+			}
+		}
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(Framerate);
+		FlxG.drawFramerate = Framerate;
+		FlxG.updateFramerate = Framerate * 2;
+	}
 
 	public static function difficultyString():String
 	{

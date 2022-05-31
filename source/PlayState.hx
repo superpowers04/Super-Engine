@@ -294,7 +294,8 @@ class PlayState extends MusicBeatState
 
 	var hitSound:Bool = false;
 	var flippy:Bool = false;
-
+	public static var scripts:Array<String> = [];
+	public static var stageObjects:Array<Dynamic<FlxObject>> = [];
 
 
 	// API stuff
@@ -498,6 +499,11 @@ class PlayState extends MusicBeatState
 		if(important && interps['${nameSpace}-${v}'] == null){handleError('$script is missing a script: $v!');}
 		return ((interps['${nameSpace}-${v}'] == null));
 	}
+	public function loadSingleScript(v:String){
+		var e = v.substr(0,v.lastIndexOf("/"));
+		e = e.substr(0,e.lastIndexOf("/"));
+		parseHScript(File.getContent('${v}'),hsBrTools,'${e}-${v.substr(v.lastIndexOf("/"))}');
+	}
 	public function loadScript(v:String){
 		if (FileSystem.exists('mods/scripts/${v}')){
 			var brtool = new HSBrTools('mods/scripts/${v}',v);
@@ -593,7 +599,6 @@ class PlayState extends MusicBeatState
 		var bfPos:Array<Float> = [0,0]; 
 		var gfPos:Array<Float> = [0,0]; 
 		var dadPos:Array<Float> = [0,0]; 
-		var noGf:Bool = false;
 		 // Oh my god this code hurts my soul, but I really don't want to recreate it
 		if (FlxG.save.data.preformance){
 			defaultCamZoom = 0.9;
@@ -932,7 +937,11 @@ class PlayState extends MusicBeatState
 					default:
 					{	
 						var stage:String = TitleState.retStage(SONG.stage);
-						if(stage == "" || !FileSystem.exists('mods/stages/$stage')){
+						if(stage == "nothing"){
+							stageTags = ["empty"];
+							defaultCamZoom = 0.9;
+							curStage = 'nothing';
+						}else if(stage == "" || !FileSystem.exists('mods/stages/$stage')){
 								trace('"${SONG.stage}" not found, using "Stage"!');
 								stageTags = ["inside"];
 								defaultCamZoom = 0.9;
@@ -964,42 +973,45 @@ class PlayState extends MusicBeatState
 							stageTags = [];
 							var stagePath:String = 'mods/stages/$stage';
 							if (FileSystem.exists('$stagePath/config.json')){
-								var stagePropJson:String = File.getContent('$stagePath/config.json');
-								var stageProperties:StageJSON = haxe.Json.parse(CoolUtil.cleanJSON(stagePropJson));
-								if (stageProperties == null || stageProperties.layers == null || stageProperties.layers[0] == null){MainMenuState.handleError('$stage\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
-								defaultCamZoom = stageProperties.camzoom;
-								for (layer in stageProperties.layers) {
-									if(layer.song != null && layer.song != "" && layer.song.toLowerCase() != SONG.song.toLowerCase()){continue;}
-									var curLayer:FlxSprite = new FlxSprite(0,0);
-									if(layer.animated){
-										var xml:String = File.getContent('$stagePath/${layer.name}.xml');
-										if (xml == null || xml == "")MainMenuState.handleError('$stage\'s XML is invalid!');
-										curLayer.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('$stagePath/${layer.name}.png')), xml);
-										curLayer.animation.addByPrefix(layer.animation_name,layer.animation_name,layer.fps,false);
-										curLayer.animation.play(layer.animation_name);
-									}else{
-										var png:BitmapData = BitmapData.fromFile('$stagePath/${layer.name}.png');
-										if (png == null) MainMenuState.handleError('$stage\'s PNG is invalid!');
-										curLayer.loadGraphic(png);
-									}
+								// var stagePropJson:String = File.getContent('$stagePath/config.json');
+								// var stageProperties:StageJSON = haxe.Json.parse(CoolUtil.cleanJSON(stagePropJson));
+								// if (stageProperties == null || stageProperties.layers == null || stageProperties.layers[0] == null){MainMenuState.handleError('$stage\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
+								// defaultCamZoom = stageProperties.camzoom;
+								// for (layer in stageProperties.layers) {
+								// 	if(layer.song != null && layer.song != "" && layer.song.toLowerCase() != SONG.song.toLowerCase()){continue;}
+								// 	var curLayer:FlxSprite = new FlxSprite(0,0);
+								// 	if(layer.animated){
+								// 		var xml:String = File.getContent('$stagePath/${layer.name}.xml');
+								// 		if (xml == null || xml == "")MainMenuState.handleError('$stage\'s XML is invalid!');
+								// 		curLayer.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('$stagePath/${layer.name}.png')), xml);
+								// 		curLayer.animation.addByPrefix(layer.animation_name,layer.animation_name,layer.fps,false);
+								// 		curLayer.animation.play(layer.animation_name);
+								// 	}else{
+								// 		var png:BitmapData = BitmapData.fromFile('$stagePath/${layer.name}.png');
+								// 		if (png == null) MainMenuState.handleError('$stage\'s PNG is invalid!');
+								// 		curLayer.loadGraphic(png);
+								// 	}
 
-									if (layer.centered) curLayer.screenCenter();
-									if (layer.flip_x) curLayer.flipX = true;
-									curLayer.setGraphicSize(Std.int(curLayer.width * layer.scale));
-									curLayer.updateHitbox();
-									curLayer.x += layer.pos[0];
-									curLayer.y += layer.pos[1];
-									curLayer.antialiasing = layer.antialiasing;
-									curLayer.alpha = layer.alpha;
-									curLayer.active = false;
-									curLayer.scrollFactor.set(layer.scroll_factor[0],layer.scroll_factor[1]);
-									add(curLayer);
-								}
-								if (stageProperties.no_gf) noGf = true; // This doesn't have to be provided, doing it this way
-								bfPos = stageProperties.bf_pos;
-								dadPos = stageProperties.dad_pos;
-								gfPos = stageProperties.gf_pos;
+								// 	if (layer.centered) curLayer.screenCenter();
+								// 	if (layer.flip_x) curLayer.flipX = true;
+								// 	curLayer.setGraphicSize(Std.int(curLayer.width * layer.scale));
+								// 	curLayer.updateHitbox();
+								// 	curLayer.x += layer.pos[0];
+								// 	curLayer.y += layer.pos[1];
+								// 	curLayer.antialiasing = layer.antialiasing;
+								// 	curLayer.alpha = layer.alpha;
+								// 	curLayer.active = false;
+								// 	curLayer.scrollFactor.set(layer.scroll_factor[0],layer.scroll_factor[1]);
+								// 	add(curLayer);
+								// }
+								var stageProperties = StageEditor.loadStage(this,'$stagePath/config.json');
+								
+								 // This doesn't have to be provided, doing it this way
+								bfPos = stageProperties.bfPos;
+								dadPos = stageProperties.dadPos;
+								gfPos = stageProperties.gfPos;
 								stageTags = stageProperties.tags;
+								if(gfShow) gfShow = stageProperties.showGF;
 							}
 							var brTool = new HSBrTools(stagePath);
 							for (i in CoolUtil.orderList(FileSystem.readDirectory(stagePath))) {
@@ -1021,6 +1033,14 @@ class PlayState extends MusicBeatState
 				loadScript(v);
 			}
 		}
+		if(QuickOptionsSubState.getSetting("Song hscripts")){
+			for (i in 0 ... scripts.length) {
+				
+				var v = scripts[i];
+				trace('Loading ${v}');
+				loadSingleScript(v);
+			}
+		}
 		if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket != null){
 			for (i in 0 ... onlinemod.OnlinePlayMenuState.scripts.length) {
 				
@@ -1029,6 +1049,7 @@ class PlayState extends MusicBeatState
 				loadScript(v);
 			}
 		}
+
 		if(onlinemod.OnlinePlayMenuState.socket != null){
 
 			for (i in 0 ... onlinemod.OnlinePlayMenuState.rawScripts.length) {
@@ -1064,12 +1085,12 @@ class PlayState extends MusicBeatState
 			}
 			if (FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
 			gfChar = player3;
-			 gf = (if (FlxG.save.data.gfShow && loadChars && gfShow && !noGf) new Character(400, 100, player3,false,2) else new EmptyCharacter(400, 100));
+			 gf = (if (FlxG.save.data.gfShow && loadChars && gfShow) new Character(400, 100, player3,false,2) else new EmptyCharacter(400, 100));
 			gf.scrollFactor.set(0.95, 0.95);
 			if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
 			if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
 			 dad = (if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2)) new Character(100, 100, player2,false,1) else new EmptyCharacter(100, 100));
-			 boyfriend = (if (FlxG.save.data.bfShow && loadChars) new Character(770, 100, player1,true,0) else new EmptyCharacter(400,100));
+			 boyfriend = (if (FlxG.save.data.bfShow && loadChars) new Character(770, 100, player1,true,0) else new EmptyCharacter(770,100));
 		}else{
 			dad = new EmptyCharacter(100, 100);
 			boyfriend = new EmptyCharacter(400,100);
@@ -1667,7 +1688,11 @@ class PlayState extends MusicBeatState
 			
 			talking = false;
 			startedCountdown = true;
-				Conductor.songPosition = 0;
+			Conductor.songPosition = 0;
+			if(jumpTo != 0){
+				Conductor.songPosition = FlxG.sound.music.time = vocals.time = jumpTo;
+				jumpTo = 0;
+			}
 	
 			Conductor.songPosition -= 2500;
 			loadPositions();
@@ -1846,10 +1871,7 @@ class PlayState extends MusicBeatState
 		if(errorMsg != "") {handleError(errorMsg,true);return;}
 		charCall("startSong",[]);
 		callInterp("startSong",[]);
-		if(jumpTo != 0){
-				Conductor.songPosition = FlxG.sound.music.time = vocals.time = jumpTo - 2000;
-				jumpTo = 0;
-			}
+
 
 		updateTime = FlxG.save.data.songPosition;
 		
@@ -2286,7 +2308,7 @@ class PlayState extends MusicBeatState
 	var songLengthTxt = "N/A";
 
 	public var interpCount:Int = 0;
-
+	public var lastFrameTime:Float = 0;
 	override public function update(elapsed:Float)
 	{
 		#if !debug
@@ -2405,15 +2427,20 @@ class PlayState extends MusicBeatState
 		else if (handleTimes)
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
-			Conductor.songPosition += elapsed * 1000;
-			/*@:privateAccess
-			{
-				FlxG.sound.music._channel.
-			}*/
-			songPositionBar = Conductor.songPosition;
+			// FlxG.sound.music.time = Conductor.songPosition
+			if(FlxG.sound.music != null){
+					if(FlxG.sound.music.time == lastFrameTime){
+						Conductor.songPosition += elapsed * 1000;
+					}else{
+						Conductor.songPosition = FlxG.sound.music.time;
+					}
+					lastFrameTime = FlxG.sound.music.time;
 
-			if (subState == null)
+			}
+
+			if (subState == null )
 			{
+				songPositionBar = Conductor.songPosition;
 				songTime = FlxG.sound.music.time;
 				previousFrameTime = FlxG.game.ticks;
 
@@ -2493,16 +2520,20 @@ class PlayState extends MusicBeatState
 				finishSong(false);
 		}
 
-		if (unspawnNotes[0] != null)
+		if (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
 		{
-			if (unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
-			{
-				var dunceNote:Note = unspawnNotes[0];
-				notes.add(dunceNote);
-
-				var index:Int = unspawnNotes.indexOf(dunceNote);
-				unspawnNotes.splice(index, 1);
+			var dunceNote:Note = unspawnNotes[0];
+			if(dunceNote.childNotes.length > 0){
+				while (dunceNote.childNotes.length > 0) {
+					var sussy = dunceNote.childNotes.shift();
+					notes.add(sussy);
+					unspawnNotes.remove(sussy);
+				}
 			}
+			notes.add(dunceNote);
+
+			var index:Int = unspawnNotes.indexOf(dunceNote);
+			unspawnNotes.splice(index, 1);
 		}
 
 		// if (addNotes && FlxG.random.int(0,1000) > 700){
@@ -2535,14 +2566,12 @@ class PlayState extends MusicBeatState
 				}
 			});
 		}
-		callInterp("updateAfter",[elapsed]);
 		if (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim) PlayState.canUseAlts = true;
+		callInterp("updateAfter",[elapsed]);
 		notes.forEachAlive(function(daNote:Note){
 					if (daNote.skipNote) return;
-					if ((dadShow || daNote.eventNote) && !daNote.mustPress && daNote.wasGoodHit )
+					if (dadShow && !daNote.mustPress && daNote.wasGoodHit )
 					{
-						if (SONG.song != 'Tutorial')
-							camZooming = true;
 						if (!p2canplay){
 							// switch (Math.abs(daNote.noteData))
 							// {
@@ -2560,24 +2589,7 @@ class PlayState extends MusicBeatState
 							// {
 							// 	DadStrumPlayAnim(daNote.noteData);
 							// }
-							daNote.hit(1,daNote);
-							if(daNote.eventNote){
-								callInterp("eventNoteHit",[dad,daNote]);
-							}else{
-								callInterp("noteHitDad",[dad,daNote]);
-							}
 
-							dad.holdTimer = 0;
-		
-							if (dad.useVoices){dad.voiceSounds[daNote.noteData].play(1);dad.voiceSounds[daNote.noteData].time = 0;vocals.volume = 0;}else if (SONG.needsVoices) vocals.volume = FlxG.save.data.voicesVol;
-
-		
-							daNote.active = false;
-
-
-							daNote.kill();
-							notes.remove(daNote, true);
-							daNote.destroy();
 						}
 					} else if (!daNote.mustPress && daNote.wasGoodHit && !dadShow && SONG.needsVoices){
 						daNote.active = false;
@@ -2586,24 +2598,19 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 					}
 	
-					if (daNote.mustPress && daNote.tooLate)
-					{
-						if (daNote.isSustainNote && daNote.wasGoodHit)
-						{
-							daNote.kill();
-							notes.remove(daNote, true);
-						}
-						else if (!daNote.shouldntBeHit)
-						{
-							health += SONG.noteMetadata.tooLateHealth;
-							vocals.volume = 0;
-							noteMiss(daNote.noteData, daNote);
-						}
+					// if (daNote.mustPress && daNote.tooLate)
+					// {
+					// 	if (!daNote.shouldntBeHit)
+					// 	{
+					// 		health += SONG.noteMetadata.tooLateHealth;
+					// 		vocals.volume = 0;
+					// 		noteMiss(daNote.noteData, daNote);
+					// 	}
 	
-						daNote.visible = false;
-						daNote.kill();
-						notes.remove(daNote, true);
-					}
+					// 	daNote.visible = false;
+					// 	daNote.kill();
+					// 	notes.remove(daNote, true);
+					// }
 		});
 
 
@@ -3743,7 +3750,13 @@ class PlayState extends MusicBeatState
 						if (daNote.mustPress && daNote.isSustainNote && daNote.canBeHit && holdArray[daNote.noteData]){ // Clip note to strumline
 							if(daNote.strumTime <= Conductor.songPosition || daNote.sustainLength < 2 || !FlxG.save.data.accurateNoteSustain) // Only destroy the note when properly hit
 								{goodNoteHit(daNote);return;}
-							daNote.isPressed = true;
+							// if(Std.isOfType(daNote,HoldNote)){
+							// 	var e:HoldNote = cast daNote;
+							// 	daNote.clip = true;
+							// }else{
+								daNote.isPressed = true;
+							// }
+							
 							daNote.susHit(0,daNote);
 							callInterp("susHit",[daNote]);
 						}
@@ -3915,7 +3928,7 @@ class PlayState extends MusicBeatState
 
 
 
-	function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
+	public function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
 	{
 		noteMissdyn(direction,daNote,forced);
 	}

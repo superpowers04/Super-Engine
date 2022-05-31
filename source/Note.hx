@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
 
 import PlayState;
 
@@ -235,6 +236,38 @@ class Note extends FlxSprite
 						hit = function(?charID:Int = 0,note){trace("hit a event note");return;};
 					}
 				}
+			}else if(rawNote[3] != null && Std.isOfType(rawNote[3],String)){
+				switch (Std.string(rawNote[3]).toLowerCase()) {
+					case "play animation" | "playanimation": {
+						try{
+							// Info can be set to anything, it's being used for storing the Animation and character
+							info = [rawNote[4]
+							]; 
+						}catch(e){info = [rawNote[4],0];}
+						// Replaces hit func
+						hit = function(?charID:Int = 0,note){PlayState.charAnim(charID,info[0],true);}; 
+						trace('Animation note processed');
+					}
+					case "changebpm", "bgm change": {
+						try{
+							// Info can be set to anything, it's being used for storing the BPM
+
+							info = [Std.parseFloat(rawNote[4])]; 
+						}catch(e){info = [120,0];}
+						// Replaces hit func
+						hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
+						trace('BPM note processed');
+					}
+					case "changescrollspeed": {
+						try{
+							// Info can be set to anything, it's being used for storing the BPM
+							info = [Std.parseFloat(rawNote[4])]; 
+						}catch(e){info = [2,0];}
+						// Replaces hit func
+						hit = function(?charID:Int = 0,note){PlayState.SONG.speed = info[0];}; 
+						trace('BPM note processed');
+					}
+				}
 			}
 		}
 			
@@ -331,7 +364,7 @@ class Note extends FlxSprite
 				visible = true;
 				skipNote = false;
 			}
-			case false: if ((!skipNote || isOnScreen())){ // doesn't calculate anything until they're on screen
+			case false: if (!skipNote || isOnScreen()){ // doesn't calculate anything until they're on screen
 				skipNote = false;
 				visible = (!eventNote && showNote);
 				callInterp("noteUpdate",[this]);
@@ -354,7 +387,17 @@ class Note extends FlxSprite
 						if (!wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale){
 							canBeHit = false;
 							tooLate = true;
-							alpha = 0.3;
+							skipNote = true;
+							if (!shouldntBeHit)
+							{
+								PlayState.instance.health += PlayState.SONG.noteMetadata.tooLateHealth;
+								PlayState.instance.vocals.volume = 0;
+								PlayState.instance.noteMiss(noteData, this);
+							}
+							// FlxTween.tween(this,{alpha:0},0.2,{onComplete:(_)->{
+							PlayState.instance.notes.remove(this, true);
+							destroy();
+							// }});
 						}
 					}
 				}
@@ -365,9 +408,18 @@ class Note extends FlxSprite
 						this.destroy();
 					}
 				}
-				else if (aiShouldPress && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
+				else if (aiShouldPress && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
 				{
-					wasGoodHit = true;
+					hit(1,this);
+					callInterp("noteHitDad",[PlayState.dad,this]);
+					
+
+					PlayState.dad.holdTimer = 0;
+
+					if (PlayState.dad.useVoices){PlayState.dad.voiceSounds[noteData].play(1);PlayState.dad.voiceSounds[noteData].time = 0;PlayState.instance.vocals.volume = 0;}else if (PlayState.SONG.needsVoices) PlayState.instance.vocals.volume = FlxG.save.data.voicesVol;
+
+					PlayState.instance.notes.remove(this, true);
+					destroy();
 				}
 				callInterp("noteUpdateAfter",[this]);
 

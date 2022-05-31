@@ -52,7 +52,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
 	public static var choosableCharacters:Array<String> = [];
-	public static var choosableStages:Array<String> = ["default","stage",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
+	public static var choosableStages:Array<String> = ["default","stage","nothing",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
 	public static var choosableStagesLower:Map<String,String> = [];
 	public static var choosableCharactersLower:Map<String,String> = [];
 	public static var weekChars:Map<String,Array<String>> = [];
@@ -261,8 +261,8 @@ class TitleState extends MusicBeatState
 		}
 	}
 	public static function checkStages(){
-		choosableStages = ["default","stage",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
-		choosableStagesLower = ["default" => "default","stage" => "stage",'halloween' => 'halloween',"philly" => "philly","limo" => "limo",'mall' => 'mall','mallevil' => 'mallevil','school' => 'school','schoolevil' => 'schoolevil'];
+		choosableStages = ["default","stage","nothing",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
+		choosableStagesLower = ["default" => "default","stage" => "stage",'nothing' => 'nothing','halloween' => 'halloween',"philly" => "philly","limo" => "limo",'mall' => 'mall','mallevil' => 'mallevil','school' => 'school','schoolevil' => 'schoolevil'];
 		#if sys
 		// Loading like this is probably not a good idea
 		var dataDir:String = "mods/stages/";
@@ -528,6 +528,7 @@ class TitleState extends MusicBeatState
 					MusicBeatState.instance.showTempmessage("Unable to load Music Timing: " + e.message,FlxColor.RED);
 				}
 			}
+			CoolUtil.setFramerate(true);
 
 
 		}

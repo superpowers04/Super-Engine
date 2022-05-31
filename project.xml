@@ -121,7 +121,6 @@
 		<assets path="assets/shared/images/characters" embed='true'/>
 	</section>
 	<!-- _______________________________ Libraries ______________________________ -->
-	<haxedef name="hscriptPos" />
 
 	<haxelib name="flixel" />
 	<haxedev set='webgl' if="web"/>
@@ -132,6 +131,7 @@
 	<haxelib name="flixel-addons" />
 	<haxelib name="hscript" />
 	<haxelib name="hscript-ex"/>
+	<haxedef name="hscriptPos" />
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />

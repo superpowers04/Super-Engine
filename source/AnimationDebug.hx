@@ -118,6 +118,9 @@ class AnimationDebug extends MusicBeatState
 	var quitHeldBG:FlxSprite;
 	var bf:Character;
 	public static function fileDrop(file:String){
+		if(MusicBeatState.instance.onFileDrop(file) == null){
+			return;
+		}
 		#if windows
 		file = file.replace("\\","/"); // Windows uses \ at times but we use / around here
 		#end
@@ -137,14 +140,17 @@ class AnimationDebug extends MusicBeatState
 			return multi.MultiMenuState.fileDrop(file);
 		}
 		if(validFile == "")return;
-		var _file = file.substr(file.lastIndexOf("/") + 1);
-		var _validFile = validFile.substr(file.lastIndexOf("/") + 1);
-		var name = file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
-		if(FileSystem.exists('mods/characters/$name/')){name = '${name}DRAGDROP-${FlxG.random.int(0,999999)}';}
-		FileSystem.createDirectory('mods/characters/$name');
-		File.copy(file,'mods/characters/$name/character.$ending1');
-		File.copy(validFile,'mods/characters/$name/character.$ending2');
-		LoadingState.loadAndSwitchState(new AnimationDebug(name,false,1,false,true));
+		FlxG.state.openSubState(new QuickNameSubState(function(name:String,file:String,validFile:String,ending1:String,ending2:String){
+			var _file = file.substr(file.lastIndexOf("/") + 1);
+			var _validFile = validFile.substr(file.lastIndexOf("/") + 1);
+			var name = file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
+			if(FileSystem.exists('mods/characters/$name/')){name = '${name}DRAGDROP-${FlxG.random.int(0,999999)}';}
+			FileSystem.createDirectory('mods/characters/$name');
+			File.copy(file,'mods/characters/$name/character.$ending1');
+			File.copy(validFile,'mods/characters/$name/character.$ending2');
+			LoadingState.loadAndSwitchState(new AnimationDebug(name,false,1,false,true));
+
+		},[file,validFile,ending1,ending2],"Type a name for the character\n",file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."))));
 	} 
 
 
@@ -925,7 +931,7 @@ class AnimationDebug extends MusicBeatState
 			charJson.color = col;
 			// uiMap["charColor"].text = col.toWebString();
 			if(uiMap["healthBar"] != null){
-				uiMap["healthBar"].createFilledBar(dad.definingColor,dad.definingColor);
+				uiMap["healthBar"].color = dad.definingColor;
 			}
 		}
 		uiMap["charColor"].focusLost = function(){
@@ -1038,8 +1044,9 @@ class AnimationDebug extends MusicBeatState
 			var healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,'health', 0, 2);
 			
 			healthBar.scrollFactor.set();
-			healthBar.createColoredFilledBar(dad.definingColor, dad.definingColor);
+			healthBar.createColoredFilledBar(0xFFFFFF, 0xFFFFFF);
 			healthBar.updateBar();
+			healthBar.color = dad.definingColor;
 			var iconP1 = new HealthIcon(dad.curCharacter, true,dad.clonedChar);
 			iconP1.y = healthBar.y - (iconP1.height / 2);
 			switch(charType){

@@ -3,6 +3,7 @@ package;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxSubState;
+import flixel.tweens.FlxTween;
 
 class MusicBeatSubstate extends FlxSubState
 {
@@ -20,7 +21,23 @@ class MusicBeatSubstate extends FlxSubState
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
+	var hasTextInputFocus = false;
+	public var toggleVolKeys:Bool = true; 
 
+	override function onFocus() {
+		super.onFocus();
+		CoolUtil.setFramerate(true);
+	}
+	override function onFocusLost(){
+		super.onFocusLost();
+		CoolUtil.setFramerate(24,false,true);
+	}
+	public function onTextInputFocus(object:Dynamic){
+		if(toggleVolKeys) CoolUtil.toggleVolKeys(false);
+	}
+	public function onTextInputUnfocus(object:Dynamic){
+		if(toggleVolKeys) CoolUtil.toggleVolKeys(true);
+	}
 	override function update(elapsed:Float)
 	{
 		//everyStep();
@@ -37,6 +54,33 @@ class MusicBeatSubstate extends FlxSubState
 			MainMenuState.handleError("Manually triggered force exit");
 		}
 		super.update(elapsed);
+		if(FlxG.mouse.justPressed){
+			var hasPressed = false;
+
+			var i:Int = 0;
+			var basic:Dynamic = null;
+			forEach(function(basic:Dynamic){
+				if(!Std.isOfType(basic,flixel.addons.ui.FlxUITabMenu) && !Std.isOfType(basic,flixel.addons.ui.FlxUI) && Reflect.field(basic,"HasFocus") != null && Reflect.field(basic,"HasFocus")){
+					hasPressed = true;
+				}
+			},true);
+
+			// while (i < length)
+			// {
+			// 	basic = members[i++];
+
+			// 	if (basic != null)
+			// 	{
+					
+			// 	}
+			// }
+			if(hasTextInputFocus != hasPressed){
+				hasTextInputFocus = hasPressed;
+				if(hasPressed) onTextInputFocus(basic);
+				else onTextInputUnfocus(basic);
+
+			}
+		}
 	}
 
 	private function updateCurStep():Void
