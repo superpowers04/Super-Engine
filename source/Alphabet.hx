@@ -56,7 +56,7 @@ class Alphabet extends FlxSpriteGroup
 	public var persist:Bool = false;
 
 	public override function destroy(){
-		if(persist){super.destroy();}else{visible = false;}
+		if(!persist){super.destroy();}else{visible = false;}
 	}
 
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, dontMoveX:Bool = false,?xOffset:Float = 70,?useAlphabet:Bool = true)
@@ -289,11 +289,7 @@ class AlphaCharacter extends FlxSprite
 
 	public function createLetter(letter:String):Void
 	{
-		var letterCase:String = "lowercase";
-		if (letter.toLowerCase() != letter)
-		{
-			letterCase = 'capital';
-		}
+		var letterCase:String = (if (letter.toLowerCase() == letter) "lowercase" else 'capital');
 		if (symbols.contains(letter)){
 			createSymbol(letter);
 		}else if (alphabet.contains(letter)){

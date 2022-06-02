@@ -22,13 +22,10 @@ class CoolUtil
 				Framerate = FlxG.save.data.fpsCap = fps;
 			}
 			if(Framerate == 0 || update){
-				Framerate = FlxG.save.data.fpsCap;
+				Framerate = cast FlxG.save.data.fpsCap;
 			}
 			if(Framerate < 30){
-				Framerate = FlxG.save.data.fpsCap = Application.current.window.displayMode.refreshRate;
-			}
-			if(Framerate < 30){
-				Framerate = FlxG.save.data.fpsCap = 30; // Probably on linux or something, where lime doesn't read the refreshrate for some reason
+				Framerate = FlxG.save.data.fpsCap = if(Application.current.window.displayMode.refreshRate > 30 ) Application.current.window.displayMode.refreshRate else if(Application.current.window.frameRate > 30) Application.current.window.frameRate else 30;
 			}
 			if(Framerate > 300){
 				Framerate = FlxG.save.data.fpsCap = 300;

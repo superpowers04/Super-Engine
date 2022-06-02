@@ -118,7 +118,7 @@ class AnimationDebug extends MusicBeatState
 	var quitHeldBG:FlxSprite;
 	var bf:Character;
 	public static function fileDrop(file:String){
-		if(MusicBeatState.instance.onFileDrop(file) == null){
+		if(MusicBeatState.instance.onFileDrop(file) == null || !FileSystem.exists(file)){
 			return;
 		}
 		#if windows
