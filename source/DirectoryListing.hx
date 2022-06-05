@@ -74,7 +74,7 @@ class DirectoryListing extends SearchMenuState{
 			}
 			#end
 		changeSelection(0);
-		}catch(e){MainMenuState.handleError('Error while checking directory. ${e.message}');}
+		}catch(e){MainMenuState.handleError(e,'Error while checking directory. ${e.message}');}
   }
 
   function upDir(){

@@ -9,6 +9,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import openfl.media.Sound;
+import flixel.math.FlxMath;
 import Song;
 import sys.io.File;
 import sys.FileSystem;
@@ -24,6 +25,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var modes:Map<Int,Array<String>> = [];
 	static var CATEGORYNAME:String = "-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-CATEGORY";
 	var diffText:FlxText;
+	var scoreText:FlxText;
 	var selMode:Int = 0;
 	var blockedFiles:Array<String> = ['picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','config.json'];
 	static var lastSel:Int = 1;
@@ -35,6 +37,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var nameSpaces:Array<String> = [];
 	var shouldDraw:Bool = true;
 	var inTween:FlxTween;
+	var score:Int = 0;
+	var interpScore:Int = 0;
 	override function draw(){
 		if(shouldDraw){
 			super.draw();
@@ -76,11 +80,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);
 		diffText.font = CoolUtil.font;
 		diffText.borderSize = 2;
-		diffText.x = (FlxG.width) - 20;
-		// diffText.autoSize = false;
-		// diffText.width = 200;
-		diffText.alignment = RIGHT;
 		add(diffText);
+		scoreText = new FlxText(FlxG.width * 0.7, 35, 0, "N/A", 24);
+		scoreText.font = CoolUtil.font;
+		scoreText.borderSize = 2;
+		scoreText.screenCenter(X);
+		add(scoreText);
 
 		searchField.text = lastSearch;
 		if(lastSearch != "") reloadList(true,lastSearch);
@@ -90,8 +95,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		lastSel = 1;
 		changeDiff();
 		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songs.length} songs');
-		}catch(e){
-			MainMenuState.handleError('Something went wrong in create; ${e.message}');
+		}catch(e){MainMenuState.handleError(e,'Something went wrong in create; ${e.message}\n${e.stack}');
 		}
 
 	}
@@ -177,6 +181,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}
 			}
 		}
+		var _packCount:Int = 0;
 		if (FileSystem.exists("mods/weeks"))
 		{
 			for (name in FileSystem.readDirectory("mods/weeks"))
@@ -188,6 +193,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
 				addCategory(name + "(Week)",i);
 				i++;
+				_packCount++;
 				var containsSong = false;
 				for (directory in dirs)
 				{
@@ -267,6 +273,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					grpSongs.members[i - 1].color = FlxColor.RED;
 				}
 			}
+		}
+		if(_packCount == 0){
+			addCategory("No packs or weeks to show",i);
+			grpSongs.members[i - 1].color = FlxColor.RED;
 		}
 		if(reload && lastSel == 1)changeSelection(_goToSong);
 		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
@@ -367,11 +377,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				// 	MultiPlayState.scriptLoc = '${selSong}/script.hscript';
 					
 				// }else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
+				PlayState.nameSpace = selSong;
 				PlayState.stateType = 4;
 				FlxG.sound.music.fadeOut(0.4);
 				LoadingState.loadAndSwitchState(new MultiPlayState(charting));
-			}catch(e){
-				MainMenuState.handleError('Error while loading chart ${e.message}');
+			}catch(e){MainMenuState.handleError(e,'Error while loading chart ${e.message}');
 			}
 	}
 
@@ -442,8 +452,26 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var voices:FlxSound;
 	var playCount:Int = 0;
 	var curVol:Float = 1;
+	var SCORETXT:String = "";
+
 	override function update(e){
 		super.update(e);
+		// if(interpScore != score){
+		// 	if(score == 0){
+		// 		scoreText.text = 'N/A';
+		// 		scoreText.screenCenter(X);
+
+		// 	}else{
+
+		// 		if((score - interpScore) < 10){
+		// 			interpScore = score;
+		// 		}else{
+		// 			interpScore = Std.int(FlxMath.lerp(interpScore,score,0.4));
+		// 		}
+		// 		scoreText.text = '${interpScore}${SCORETXT}';
+		// 		scoreText.screenCenter(X);
+		// 	}
+		// }
 		// Fucking flixel
 		if(voices != null && curVol != FlxG.sound.volume){ // Don't change volume unless volume changes
 			curVol = FlxG.sound.volume;
@@ -547,6 +575,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
 		if (songs.length == 0 || songs[curSelected] == null || songs[curSelected] == "") {
 			diffText.text = 'No song selected';
+
 			return;
 		}
 		if(twee != null)twee.cancel();
@@ -563,6 +592,24 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		diffText.text = (if(modes[curSelected][selMode - 1 ] != null ) '< ' else '|  ') + (if(modes[curSelected][selMode] == CATEGORYNAME) songs[curSelected] else modes[curSelected][selMode]) + (if(modes[curSelected][selMode + 1 ] != null) ' >' else '  |');
 		// diffText.centerOffsets();
 		diffText.screenCenter(X);
+		var name = '${songs[curSelected]}-${modes[curSelected][selMode]}';
+		if(modes[curSelected][selMode] == null || modes[curSelected][selMode] == CATEGORYNAME || !Highscore.songScores.exists(name)){
+			// score = 0;
+			scoreText.text = "N/A";
+			SCORETXT = "N/A";
+			scoreText.screenCenter(X);
+		}else{
+			// var _Arr:Array<Dynamic> = Highscore.songScores.getArr(name);
+			// if(Std.isOfType(_Arr[0],Int)){
+			// 	score = _Arr.shift();
+			// }else{
+			// 	score = -1;
+			// }
+			// SCORETXT = ', ${_Arr.join(", ")}';
+			scoreText.text = (Highscore.songScores.getArr(name)).join(", ");
+			scoreText.screenCenter(X);
+			// score = Highscore.getScoreUnformatted();
+		}
 		// diffText.x = (FlxG.width) - 20 - diffText.width;
 
 	}
@@ -606,30 +653,37 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					inst = '${assets}assets/songs/${name}/Inst.ogg';
 				}
 				if(FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
-					inst = '${assets}assets/songs/${name}-Inst.ogg';
+					inst = '${assets}assets/music/${name}-Inst.ogg';
 				}
 				if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
 					voices = '${assets}assets/songs/${name}/Voices.ogg';
 				}
 				if(FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
-					voices = '${assets}assets/songs/${name}-Voices.ogg';
+					voices = '${assets}assets/music/${name}-Voices.ogg';
 				}
 				if(inst == ""){
-					var name = cast Json.parse(file).song.song;
-					if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
-						inst = '${assets}assets/songs/${name}/Inst.ogg';
-					}
-					if(FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
-						inst = '${assets}assets/songs/${name}-Inst.ogg';
-					}
-					if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
-						voices = '${assets}assets/songs/${name}/Voices.ogg';
-					}
-					if(FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
-						voices = '${assets}assets/songs/${name}-Voices.ogg';
+					var name:FuckingSong = cast Json.parse(file);
+					if(name.song != null && name.song.song != null){
+						var name:String = cast name.song.song;
+						if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
+							inst = '${assets}assets/songs/${name}/Inst.ogg';
+						}
+						if(FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
+							inst = '${assets}assets/songs/${name}-Inst.ogg';
+						}
+						if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
+							voices = '${assets}assets/songs/${name}/Voices.ogg';
+						}
+						if(FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+							voices = '${assets}assets/songs/${name}-Voices.ogg';
+						}
 					}
 
 				}
+			}
+			if(inst == ""){
+				MusicBeatState.instance.showTempmessage("Unable to load chart as there is no Inst!",FlxColor.RED);
+				return;
 			}
 			gotoSong(dir,
 					json,
@@ -638,8 +692,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					inst
 			);
 
-		}catch(e){
-			MainMenuState.handleError('Unable to load dragdrop/argument song: ${e.message}');
+		}catch(e){MainMenuState.handleError(e,'Unable to load dragdrop/argument song: ${e.message}');
 		}
 	}
 	override function goOptions(){
@@ -649,4 +702,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			OptionsMenu.lastState = 4;
 			FlxG.switchState(new OptionsMenu());
 	}
+}
+typedef FuckingSong = {
+	var song:Song;
 }

@@ -75,13 +75,13 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
-	public static function loadNoteAssets(?forced:Bool = false){
+	public static function loadNoteAssets(?forced:Bool = false,?forced2:Bool = false){
 		if (NoteAssets == null || NoteAssets.name != FlxG.save.data.noteAsset || forced){
 			if (!FileSystem.exists('mods/noteassets/${FlxG.save.data.noteAsset}.png') || !FileSystem.exists('mods/noteassets/${FlxG.save.data.noteAsset}.xml')){
 				FlxG.save.data.noteAsset = "default";
 
 			} // Hey, requiring an entire reset of the game's settings when noteasset goes missing is not a good idea
-			new NoteAssets(FlxG.save.data.noteAsset);
+			new NoteAssets(FlxG.save.data.noteAsset,forced2);
 		}
 	}
 	public static function retChar(char:String):String{
@@ -301,124 +301,8 @@ class TitleState extends MusicBeatState
 
 		osuBeatmapLoc = loc;
 	}
-	// static inline function GETSCOREPATH():String{
-	// 	#if windows 
-	// 		if (Sys.getEnv("LOCALAPPDATA") != null) return '${Sys.getEnv("LOCALAPPDATA")}/hahafunnisuperengine/'; // Windows path
-	// 	#else
-	// 		if (Sys.getEnv("HOME") != null ) return '${Sys.getEnv("HOME")}/.local/share/hahfunnysuperengine/'; // Unix path
-	// 	#end
-	// 	else return "./hahfunnysuperengine/"; // If this gets returned, fucking run
-	// }
-	// static function getfunninumber(?scores:Scorekillme = null){ // Really simple, but if you're gonna get past this one, then you'll probably just get past any smarter checksums I'd make
-	// 	if(scores == null){
-	// 		scores = songScores;
-	// 	}
-	// 	var funniNumber:Float = 0; // Would make this an int but I don't trust rounding
-	// 	for (i => v in scores.scores) {
-	// 		funniNumber += v;
-	// 	}
-	// 	// funniNumber += scores.scores.length * funniNumber; // If this doesn't return the same then cheat :<
-	// 	return funniNumber;
-	// }
-	// public static function getScore(type:Int = -1):Float{
-	// 	var stag = 0;
-	// 	try{
 
-	// 		if(type == -1) type = PlayState.stateType;
-	// 		stag++;
-	// 		var songName = "";
-	// 		stag++;
-	// 		switch(type){
-	// 			case 4:songName = multi.MultiMenuState.lastSong;
-	// 			default:return 0.0;
-	// 		}
-	// 		stag++;
-	// 		return if(songName != null && songScores.songs.contains(songName)) songScores.scores[songScores.songs.indexOf(songName)] else 0.0;
-	// 		stag++;
-	// 	}catch(e){
-	// 		trace("Fucking haxe:" + stag +" " + e.message);
-	// 		return 0.0;
-	// 	}
-	// }
-	// public static function saveScore(accuracy:Float,?type:Int = -1){
-	// 	try{
-	// 		var songName = "";
-	// 		if(type == -1) type = PlayState.stateType;
-	// 		switch(type){
-	// 			case 4:songName = multi.MultiMenuState.lastSong;
-	// 			default:return;
-	// 		}
-	// 		if(songScores.songs.contains(songName) && songScores.scores[songScores.songs.indexOf(songName)] > accuracy){return;} // Don't overwrite a better score!
-	// 		if(!songScores.songs.contains(songName)) songScores.songs.push(songName);
-	// 		songScores.scores[songScores.songs.indexOf(songName)] = accuracy;
-	// 		songScores.funniNumber = getfunninumber();
-	// 		File.saveContent(GETSCOREPATH() + "songs.json",Json.stringify(songScores));
-	// 	}catch(e){
-	// 		trace("Error saving:"  + e.message);
-	// 		MusicBeatState.instance.showTempmessage('Unable to save score! ${e.message}');
-	// 	}
-	// }
-	// static function handlError(err:String){
-	// 	if(!MainMenuState.firstStart){
-	// 		MainMenuState.handleError(err);
-	// 	}else{
-	// 		MusicBeatState.instance.showTempmessage(err);
-	// 	}
-	// }
-	// static function loadScores(){
-	// 	var path = GETSCOREPATH();
-	// 	if (!FileSystem.exists(path)) {
-	// 		FileSystem.createDirectory(path);
-	// 	}
-	// 	if (!FileSystem.exists(path + "songs.json")) {
-	// 		songScores = {
-	// 			scores : [0],
-	// 			songs : ["bopeebo"],
-	// 			funniNumber : 1
-	// 		};
-	// 		File.saveContent(path + "songs.json",Json.stringify(songScores));
-	// 	}else{
-	// 		try{
-	// 			var e:Scorekillme = cast Json.parse(File.getContent(path+"songs.json"));
-	// 			// File.saveContent(path + "_songs.json",Json.stringify(e));
-	// 			// File.saveContent(path + "_songs.json",Json.stringify(e));
-	// 			// songScores = cast e.scores;
-	// 			if(e == null){throw("songs.json is invalid!");}
-	// 			trace(e);
-	// 			// trace("e");
-	// 			if(getfunninumber(e) != e.funniNumber){
-	// 				handlError("Something isn't adding up with your scores, you get bopeebo'd");
-	// 				trace("bopeebo'd lmao");
-	// 				songScores = {
-	// 					scores : [0],
-	// 					songs : ["bopeebo"],
-	// 					funniNumber : 1
-	// 				};
-	// 			}
-	// 			songScores = e;
-	// 		}catch(err){
-	// 			handlError("Something went wrong when loading song scores, RESETTING! " + err.message);
-	// 			trace("Something went wrong when loading song scores, RESETTING! " + err.message);
-	// 			try{File.saveContent(path + "songs.json-bak",File.getContent(path+"songs.json"));}catch(err){trace("rip scores, file is bein cring");}
 
-	// 			songScores = {
-	// 				scores : [0],
-	// 				songs : ["bopeebo"],
-	// 				funniNumber : 1
-	// 			};
-	// 			File.saveContent(path + "songs.json",Json.stringify(songScores));
-	// 		}
-	// 	}
-	// 	if(songScores == null){
-	// 		trace("What the fuck, why are you null?!?!!?");
-	// 		songScores = {
-	// 				scores : [0],
-	// 				songs : ["bopeebo"],
-	// 				funniNumber : 1
-	// 			};
-
-	// 	}
-	// }
 	override public function create():Void
 	{
 
@@ -528,7 +412,7 @@ class TitleState extends MusicBeatState
 					MusicBeatState.instance.showTempmessage("Unable to load Music Timing: " + e.message,FlxColor.RED);
 				}
 			}
-			CoolUtil.setFramerate(true);
+			
 
 
 		}
@@ -606,7 +490,7 @@ class TitleState extends MusicBeatState
 		shiftSkip.y = FlxG.height - shiftSkip.height - 12;
 		shiftSkip.x = 6;
 		add(shiftSkip);
-
+		CoolUtil.setFramerate(true);
 		if (initialized)
 			skipIntro();
 		else{

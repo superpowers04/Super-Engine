@@ -161,7 +161,7 @@ class OfflinePlayState extends PlayState
 			QuickOptionsSubState.setSetting("Song hscripts",oldScripts);
 			FlxG.switchState(new ChartingState());
 		}
-	  }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}
+	  }catch(e){MainMenuState.handleError(e,'Caught "create" crash: ${e.message}');}
 	}
 
   override function startSong(?alrLoaded:Bool = false)

@@ -283,6 +283,7 @@ class PlayState extends MusicBeatState
 	public static var inputEngineName:String = "Unspecified";
 	public static var songScript:String = "";
 	public static var hsBrTools:HSBrTools;
+	public static var nameSpace:String = "";
 	public var gfShow:Bool = true;
 	public var eventLog:Array<OutNote> = [];
 	public var camBeat:Bool = true;
@@ -351,9 +352,7 @@ class PlayState extends MusicBeatState
 			generatedMusic = false;
 			persistentUpdate = false;
 			openSubState(new FinishSubState(0,0,error));
-		}catch(e){
-
-			MainMenuState.handleError(error);
+		}catch(e){MainMenuState.handleError(e,error);
 		}
 	}
 	public function revealToInterp(value:Dynamic,name:String,id:String){
@@ -1061,7 +1060,7 @@ class PlayState extends MusicBeatState
 		callInterp("afterStage",[]);
 
 
-		if (FlxG.save.data.charAuto && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
+		if ((FlxG.save.data.charAuto || PlayState.isStoryMode || ChartingState.charting) && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
 			PlayState.player2 = TitleState.retChar(PlayState.player2);
 		}else{
 			PlayState.player2 = FlxG.save.data.opponent;
@@ -1289,10 +1288,10 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		// Add Kade Engine watermark
-		if (stateType != 4 && stateType != 5 && stateType != 6 ) actualSongName = curSong + " " + songDiff;
+		
 
 		if(actualSongName == ""){
-			actualSongName = (if(ChartingState.charting) "Charting" else "Unknown Chart");
+			actualSongName = (if(ChartingState.charting) "Charting" else curSong + " " + songDiff);
 		}
 		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50 - FlxG.save.data.guiGap,0,actualSongName + " - " + inputEngineName, 16);
 		kadeEngineWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -1472,7 +1471,7 @@ class PlayState extends MusicBeatState
 
 		openfl.system.System.gc();
 	#if !debug 
-	}catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}
+	}catch(e){MainMenuState.handleError(e,'Caught "create" crash: ${e.message}');}
 	#end
 	}
 	function loadDialog(){		
@@ -2512,8 +2511,12 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (health <= 0 && !practiceMode)
-			finishSong(false);
+		if (health <= 0 && !hasDied && !ChartingState.charting){
+
+			if(practiceMode) {
+					hasDied = true;practiceText.text = "Practice Mode; Score won't be saved";practiceText.screenCenter(X);FlxG.sound.play(Paths.sound('fnf_loss_sfx'));
+				} else finishSong(false);
+		}
  		if (FlxG.save.data.resetButton)
 		{
 			if(FlxG.keys.justPressed.R)
@@ -2522,19 +2525,16 @@ class PlayState extends MusicBeatState
 
 		if (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
 		{
-			var dunceNote:Note = unspawnNotes[0];
-			if(dunceNote.childNotes.length > 0){
-				while (dunceNote.childNotes.length > 0) {
-					var sussy = dunceNote.childNotes.shift();
-					notes.add(sussy);
-					unspawnNotes.remove(sussy);
-				}
-			}
+			var dunceNote:Note = unspawnNotes.shift();
 			notes.add(dunceNote);
-
-			var index:Int = unspawnNotes.indexOf(dunceNote);
-			unspawnNotes.splice(index, 1);
 		}
+			// if(dunceNote.childNotes.length > 0){
+			// 	while (dunceNote.childNotes.length > 0) {
+			// 		var sussy = dunceNote.childNotes.shift();
+			// 		notes.add(sussy);
+			// 		unspawnNotes.remove(sussy);
+			// 	}
+			// }
 
 		// if (addNotes && FlxG.random.int(0,1000) > 700){
 		// 	var note:Array<Dynamic> = [Conductor.songPosition + FlxG.random.int(400,1000),FlxG.random.int(0,3),0];
@@ -2617,7 +2617,7 @@ class PlayState extends MusicBeatState
 		if (!inCutscene)
 			keyShit();
 	#if !debug
-	}catch(e){MainMenuState.handleError('Caught "update" crash: ${e.message}');}
+	}catch(e){MainMenuState.handleError(e,'Caught "update" crash: ${e.message}');}
 	#end
 }
 
@@ -3189,7 +3189,7 @@ class PlayState extends MusicBeatState
 
 
 
-	function badNoteHit():Void {
+	inline function badNoteHit():Void {
 		var controlArray:Array<Bool> = [controls.LEFT_P, controls.DOWN_P, controls.UP_P, controls.RIGHT_P];
 		for (i in 0...controlArray.length) {
 			if(controlArray[i]) noteMiss(i,null);
@@ -4411,11 +4411,11 @@ class PlayState extends MusicBeatState
 		if(!paused)resetInterps();
 		return super.switchTo(nextState);
 	}
-	public override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?cent = false){
-		super.showTempmessage(str,color,time,cent);
-		tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+	// public override function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?cent = false){
+	// 	super.showTempmessage(str,color,time,cent);
 		
-	}
+		
+	// }
 
 	var curLight:Int = 0;
 }

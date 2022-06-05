@@ -23,7 +23,7 @@ class OsuPlayState extends onlinemod.OfflinePlayState
 	if (!FileSystem.exists(instFile)) {MainMenuState.handleError('${instFile} doesn\'t exist!');}
 	loadedSong = Sound.fromFile(instFile);
 	if (loadedSong == null || loadedSong.length == 0) MainMenuState.handleError('${instFile} couldn\'t be loaded!');
-	}catch(e){MainMenuState.handleError('Caught "loadSongs" crash: ${e.message}');}}
+	}catch(e){MainMenuState.handleError(e,'Caught "loadSongs" crash: ${e.message}');}}
   }
   override function startSong(?alrLoaded:Bool = false)
   {
@@ -38,7 +38,7 @@ class OsuPlayState extends onlinemod.OfflinePlayState
 	shouldLoadJson = false;
 	super.create();
 
-  }catch(e){MainMenuState.handleError('Caught OSU "create" crash: ${e.message}');}}
+  }catch(e){MainMenuState.handleError(e,'Caught OSU "create" crash: ${e.message}');}}
   override function startCountdown(){
   	super.startCountdown();
   	cpuStrums.visible = false;

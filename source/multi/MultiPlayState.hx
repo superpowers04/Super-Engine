@@ -22,7 +22,7 @@ class MultiPlayState extends onlinemod.OfflinePlayState
 
   //   if (voicesFile != ""){loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));}else loadedVoices = new FlxSound();
   //   loadedInst = Sound.fromFile(instFile);
-  // }catch(e){MainMenuState.handleError('Caught "loadSongs" crash: ${e.message}');}}
+  // }catch(e){MainMenuState.handleError(e,'Caught "loadSongs" crash: ${e.message}');}}
   // }
 
   override function create()
@@ -31,5 +31,5 @@ class MultiPlayState extends onlinemod.OfflinePlayState
     if(!PlayState.isStoryMode) stateType=4;
   	super.create();
 
-  }catch(e){MainMenuState.handleError('Caught "create" crash: ${e.message}');}}
+  }catch(e){MainMenuState.handleError(e,'Caught "create" crash: ${e.message}');}}
 }

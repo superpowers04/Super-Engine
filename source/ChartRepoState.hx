@@ -191,8 +191,7 @@ class ChartRepoState extends SearchMenuState
 				http.request();
 			});
 
-		}catch(e){
-			MainMenuState.handleError('Something went wrong, ${e.message}');
+		}catch(e){MainMenuState.handleError(e,'Something went wrong, ${e.message}');
 			return;	
 		}
 	}

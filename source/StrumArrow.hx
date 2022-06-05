@@ -45,8 +45,7 @@ class StrumArrow extends FlxSprite{
 			animation.addByPrefix('confirm', arrowIDs[id].toLowerCase() + ' confirm', 24, false);
 			animation.play(curAnim);
 			centerOffsets();
-		}catch(e){
-			MainMenuState.handleError('Error while changing sprite for arrow:\n ${e.message}');
+		}catch(e){MainMenuState.handleError(e,'Error while changing sprite for arrow:\n ${e.message}');
 		}
 	}
 	static var arrowIDs:Array<String> = ['left','down','up',"right"];

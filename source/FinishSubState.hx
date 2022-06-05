@@ -197,6 +197,8 @@ class FinishSubState extends MusicBeatSubstate
 			// FlxG.camera.zoom = PlayState.instance.camHUD.zoom = 1;
 
 			FlxG.sound.list.add(music);
+			// PlayState.songScore
+			
 
 			var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 			bg.alpha = 0;
@@ -288,6 +290,7 @@ class FinishSubState extends MusicBeatSubstate
 				// chartInfoText.scrollFactor.set();
 				
 
+				if(win && !PlayState.instance.hasDied && !ChartingState.charting){Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)]);}
 				add(bg);
 				add(finishedText);
 				add(comboText);

@@ -338,8 +338,7 @@ class Song
 			if (swagShit.noteMetadata == null) swagShit.noteMetadata = Song.defNoteMetadata;
 			return swagShit;
 		#if !debug
-		}catch(e){
-			MainMenuState.handleError('Error parsing chart: ${e.message}');
+		}catch(e){MainMenuState.handleError(e,'Error parsing chart: ${e.message}');
 			return getEmptySong();
 		}
 		#end

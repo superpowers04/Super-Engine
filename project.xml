@@ -159,7 +159,10 @@
 	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
 	<!-- <haxedef name="FLX_NO_MOUSE" if="mobile" /> -->
 	<!-- <haxedef name="FLX_NO_KEYBOARD" if="mobile" /> -->
-	<haxedef name="FLX_NO_TOUCH" if="desktop" />
+
+	<!-- This engine is not optimised for mobile, so this is disabled. If you do make a mobile port, contact Superpowers04#3887 on Discord and I might help/merge it to main   -->
+	<haxedef name="FLX_NO_TOUCH" />
+	
 	<!--<haxedef name="FLX_NO_GAMEPAD" />-->
 
 	<!--Disable the Flixel core sound tray-->
@@ -177,7 +180,7 @@
 	<!-- This is to hopefully increase preformance on x64 systems, if it's not compiling to them already for some reason -->
 	<haxedef name="HXCPP_M64"/> 
 	<haxedef name="HXCPP_CHECK_POINTER"/>
-
+	<haxedef name="HXCPP_STACK_LINE" if="release" />
 
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->

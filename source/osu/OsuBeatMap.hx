@@ -217,7 +217,7 @@ class OsuBeatMap{
 				OsuPlayState.instFile = oggPath;
 				beatmap = "";
 				sys.io.File.saveContent("test.json",haxe.Json.stringify(song,' '));
-			}catch(e){MainMenuState.handleError('Error loading beatmap ${e.message}');return null;}
+			}catch(e){MainMenuState.handleError(e,'Error loading beatmap ${e.message}');return null;}
 			return song;
 		
 	}

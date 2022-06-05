@@ -157,7 +157,7 @@ class OnlinePlayState extends PlayState
 
 		FlxG.mouse.visible = false;
 		FlxG.autoPause = false;
-	}catch(e){MainMenuState.handleError('Crash in "create" caught: ${e.message}');}}
+	}catch(e){MainMenuState.handleError(e,'Crash in "create" caught: ${e.message}');}}
 
 	override function startCountdown()
 	{
@@ -175,7 +175,7 @@ class OnlinePlayState extends PlayState
 		// We be good and actually just use an argument to not load the song instead of "pausing" the game
 		super.startSong(true);
 		
-	}catch(e){MainMenuState.handleError('Crash in "startsong" caught: ${e.message}');}}
+	}catch(e){MainMenuState.handleError(e,'Crash in "startsong" caught: ${e.message}');}}
 
 	override function generateSong(?dataPath:String = "")
 	{

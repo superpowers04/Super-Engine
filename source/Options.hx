@@ -425,7 +425,8 @@ class FPSCapOption extends Option
 
 	public override function press():Bool
 	{
-		return false;
+		CoolUtil.setFramerate(Application.current.window.displayMode.refreshRate);
+		return true;
 	}
 
 	private override function updateDisplay():String
@@ -434,33 +435,18 @@ class FPSCapOption extends Option
 	}
 	
 	override function right():Bool {
-		if (FlxG.save.data.fpsCap >= 300)
-		{
-			FlxG.save.data.fpsCap = 300;
-		}
-		else
-			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap + 1;
-		if (FlxG.save.data.fpsCap < 20) FlxG.save.data.fpsCap = 20;
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
-
+		CoolUtil.setFramerate(CoolUtil.Framerate + 1);
 		return true;
 	}
 
 	override function left():Bool {
-		if (FlxG.save.data.fpsCap > 300)
-			FlxG.save.data.fpsCap = 300;
-		else if (FlxG.save.data.fpsCap < 20)
-			FlxG.save.data.fpsCap = 20;
-		else
-			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap - 1;
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		CoolUtil.setFramerate(CoolUtil.Framerate - 1);
 		return true;
 	}
 
 	override function getValue():String
 	{
-		return "Current FPS Cap: " + FlxG.save.data.fpsCap + 
-		(FlxG.save.data.fpsCap == Application.current.window.displayMode.refreshRate ? "Hz (Refresh Rate)" : "");
+		return "Current FPS Cap: " + CoolUtil.Framerate + (if(CoolUtil.Framerate == Application.current.window.displayMode.refreshRate) " (Refresh Rate)" else if(CoolUtil.Framerate == Application.current.window.frameRate) " (Frame Rate)" else " (Software)");
 	}
 }
 
@@ -1002,6 +988,7 @@ class ReloadCharlist extends Option
 	public override function press():Bool
 	{
 		TitleState.checkCharacters();
+		TitleState.loadNoteAssets(true,true);
 		// SickMenuState.reloadMusic = true;
 		return true;
 	}

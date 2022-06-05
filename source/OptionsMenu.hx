@@ -52,10 +52,10 @@ class OptionsMenu extends MusicBeatState
 			new SelStageOption("Select the stage to use, Default will use song default"),
 			new SelScriptOption("Enable/Disable scripts that run withsongs"),
 			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
-			new ReloadCharlist("Refreshes list of stages, characters and scripts"),
 			new HCBoolOption("Toggle the ability for packs to provide scripts","Pack scripts","packScripts"),
-			new HCBoolOption("Show your player character on the main menu, MAY CAUSE CRASHES!","Show player on main menu","mainMenuChar"),
+			// new HCBoolOption("Show your player character on the main menu, MAY CAUSE CRASHES!","Show player on main menu","mainMenuChar"),
 			new AllowServerScriptsOption("Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS"),
+			new ReloadCharlist("Refreshes list of stages, characters and scripts"),
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),

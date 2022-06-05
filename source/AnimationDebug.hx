@@ -1064,7 +1064,7 @@ class AnimationDebug extends MusicBeatState
 			uiMap["hi1"] = iconP1;
 			add(iconP1);
 		}catch(e){trace('oh no, the healthbar had an error, what ever will we do ${e.message}');}
-		}catch(e){MainMenuState.handleError('Error while loading GUI: ${e.message}');}
+		}catch(e){MainMenuState.handleError(e,'Error while loading GUI: ${e.message}');}
 	}
 	// static function textBox(x:Float,y:Float,defText:String,name:String,internalName:String):FlxInputTextUpdatable{
 	// 	var ret = new FlxUIInputText(30, 100, null, "24");

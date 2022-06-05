@@ -311,7 +311,7 @@ class PauseSubState extends MusicBeatSubstate
 			swagCounter += 1;
 			// generateSong('fresh');
 		}, 5);
-	}catch(e){MainMenuState.handleError('Something went wrong on countdown ${e.message}');}}
+	}catch(e){MainMenuState.handleError(e,'Something went wrong on countdown ${e.message}');}}
 	
 	override function destroy()
 	{

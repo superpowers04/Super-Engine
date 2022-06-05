@@ -131,7 +131,7 @@ class ChartingState extends MusicBeatState
 	override public function new(){
 		super();
 	}
-
+	var stageSel:FlxInputText;
 	override function create()
 	{try{
 
@@ -337,8 +337,7 @@ class ChartingState extends MusicBeatState
 		super.create();
 		saveRemind(true);
 		updateHeads();
-		}catch(e){
-			MainMenuState.handleError("chart editor did a fucky: " + e.message);
+		}catch(e){MainMenuState.handleError(e,"chart editor did a fucky: " + e.message);
 		}
 	}
 
@@ -475,40 +474,7 @@ class ChartingState extends MusicBeatState
 		});
 
 
-		waveformEnabled = new FlxUICheckBox(10, 10, null, null, "Visible Waveform", 100);
-		if (FlxG.save.data.chart_waveform == null) FlxG.save.data.chart_waveform = true;
-		waveformEnabled.checked = FlxG.save.data.chart_waveform;
-		waveformEnabled.callback = function()
-		{
-			FlxG.save.data.chart_waveform = waveformEnabled.checked;
-			updateWaveform();
-		};
 
-		waveformUseInstrumental = new FlxUICheckBox(waveformEnabled.x + 120, waveformEnabled.y, null, null, "Waveform for Instrumental", 100);
-		waveformUseInstrumental.checked = false;
-		waveformUseInstrumental.callback = function()
-		{
-			updateWaveform();
-		};
-
-		var player1DropDown = new FlxInputText(10, 50, 120, _song.player1, 8);
-		typingcharactershit = player1DropDown;
-
-		var player1Label = new FlxText(10,30,64,'Player');
-
-		var player2DropDown = new FlxInputText(140, 50, 120, _song.player2, 8);
-		typingcharactershit = player2DropDown;
-
-		var player2Label = new FlxText(140,30,64,'Opponent');
-
-		var acceptplayer1 = new FlxButton(10,70,'apply', function(){
-			_song.player1 = player1DropDown.text;
-			leftIcon.changeSprite(_song.player1);
-		});
-		var acceptplayer2 = new FlxButton(140,70,'apply', function(){
-			_song.player2 = player2DropDown.text;
-			rightIcon.changeSprite(_song.player2);
-		});
 		// I didn't copy this, dunno what you mean
 		var jumpsectiontext = new FlxText(10,335,128,'Jump Section');
 		var jumpsectionbox = new FlxUINumericStepper(jumpsectiontext.x,jumpsectiontext.y + 15, 1, 0, -1000, 1000,0);
@@ -585,6 +551,48 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(hurtnotehealthapply);
 
 		var tab_group_assets = new FlxUI(null, UI_box);
+		waveformEnabled = new FlxUICheckBox(10, 10, null, null, "Visible Waveform", 100);
+		if (FlxG.save.data.chart_waveform == null) FlxG.save.data.chart_waveform = true;
+		waveformEnabled.checked = FlxG.save.data.chart_waveform;
+		waveformEnabled.callback = function()
+		{
+			FlxG.save.data.chart_waveform = waveformEnabled.checked;
+			updateWaveform();
+		};
+
+		waveformUseInstrumental = new FlxUICheckBox(waveformEnabled.x + 120, waveformEnabled.y, null, null, "Waveform for Instrumental", 100);
+		waveformUseInstrumental.checked = false;
+		waveformUseInstrumental.callback = function()
+		{
+			updateWaveform();
+		};
+
+		var player1DropDown = new FlxInputText(10, 50, 120, _song.player1, 8);
+		typingcharactershit = player1DropDown;
+
+		var player1Label = new FlxText(10,30,64,'Player');
+
+		var player2DropDown = new FlxInputText(140, 50, 120, _song.player2, 8);
+		typingcharactershit = player2DropDown;
+
+		var player2Label = new FlxText(140,30,64,'Opponent');
+
+		var acceptplayer1 = new FlxButton(10,70,'apply', function(){
+			_song.player1 = player1DropDown.text;
+			leftIcon.changeSprite(_song.player1);
+		});
+		var acceptplayer2 = new FlxButton(140,70,'apply', function(){
+			_song.player2 = player2DropDown.text;
+			rightIcon.changeSprite(_song.player2);
+		});
+
+		stageSel = new FlxInputText(10, 120, 120, _song.stage, 8);
+		stageSel.callback = () -> {
+			_song.stage = stageSel.text
+		};
+
+		var stageLabel = new FlxText(10,100,64,'Stage');
+
 		tab_group_assets.name = "ZAssets";
 		tab_group_assets.add(player1DropDown);
 		tab_group_assets.add(player2DropDown);
@@ -592,6 +600,10 @@ class ChartingState extends MusicBeatState
 		tab_group_assets.add(player2Label);
 		tab_group_assets.add(acceptplayer1);
 		tab_group_assets.add(acceptplayer2);
+		tab_group_assets.add(stageSel);
+		tab_group_assets.add(stageLabel);
+
+
 		tab_group_assets.add(waveformEnabled);
 		tab_group_assets.add(waveformUseInstrumental);
 
@@ -712,7 +724,7 @@ class ChartingState extends MusicBeatState
 	var stepperSusLength:FlxUINumericStepper;
 
 	var tab_group_note:FlxUI;
-	inline function typingFocus() {return !disabledControls && !typingShit.hasFocus && !noteTypeInput.hasFocus && !typingcharactershit.hasFocus;} 
+	inline function typingFocus() {return !disabledControls && !typingShit.hasFocus && !stageSel.hasFocus && !noteTypeInput.hasFocus && !typingcharactershit.hasFocus;} 
 	function addNoteUI():Void
 	{
 		var tab_group_note = new FlxUI(null, UI_box);
@@ -1344,8 +1356,7 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.play();
 			requestMusicPlay = false;
 		}
-	}catch(e){
-			MainMenuState.handleError("chart editor did a fucky: " + e.message);
+	}catch(e){MainMenuState.handleError(e,"chart editor did a fucky: " + e.message);
 		}
 	}
 	inline function increaseSection(?updateMusic:Bool = false){
@@ -1937,8 +1948,7 @@ class ChartingState extends MusicBeatState
 			updateGrid();
 			updateNoteUI();
 
-		}catch(e){
-			MainMenuState.handleError('Error while placing note! ${e.message}');
+		}catch(e){MainMenuState.handleError(e,'Error while placing note! ${e.message}');
 		}
 	}
 

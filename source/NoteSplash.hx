@@ -41,8 +41,7 @@ class NoteSplash extends FlxSprite
 			animation.addByPrefix("note2-1", "note impact 2 green", 24, false);
 			animation.addByPrefix("note0-1", "note impact 2 purple", 24, false);
 			animation.addByPrefix("note3-1", "note impact 2 red", 24, false);
-		}catch(e){
-			MainMenuState.handleError('Error while loading NoteSplashes ${e.message}');
+		}catch(e){MainMenuState.handleError(e,'Error while loading NoteSplashes ${e.message}');
 		}
 		
 
@@ -75,8 +74,7 @@ class NoteSplash extends FlxSprite
 					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 					offset.set(-40, -40);
 			}
-		}catch(e){
-			MainMenuState.handleError('Error while setting up a NoteSplash ${e.message}');
+		}catch(e){MainMenuState.handleError(e,'Error while setting up a NoteSplash ${e.message}');
 		}
 		// offset.set(-0.5 * -width, 0.5 * -height);
 	}

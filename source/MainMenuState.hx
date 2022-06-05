@@ -45,7 +45,7 @@ class MainMenuState extends SickMenuState
 	static var hasWarnedNightly:Bool = (nightly == "");
 	public static var triedChar:Bool = false;
 	
-	public static function handleError(?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
+	public static function handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
 		// if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		if(MainMenuState.errorMessage.contains(error)) return; // Prevents the same error from showing twice
 		MainMenuState.errorMessage += "\n" + error;
@@ -62,19 +62,24 @@ class MainMenuState extends SickMenuState
 		}catch(e){
 			trace("Unable to hide loading screen, forcing it hidden");
 		}
-		try{
-			var callStack:Array<StackItem> = cast CallStack.exceptionStack(true);
-			for (stackItem in callStack)
-			{
-				switch (stackItem)
-				{
-					case FilePos(s, file, line, column):
-						Sys.println(file + ":" + line + "");
-					default:
-						Sys.println(stackItem);
-				}
-			}
-		}catch(e){trace('I fucking errored while tracing a stack: ${e.message}');}
+		if(exception != null){
+			try{
+				trace('${exception.message}\n${exception.stack}');
+			}catch(e){}
+		}
+		// try{
+		// 	var callStack:Array<StackItem> = cast CallStack.exceptionStack(true);
+		// 	for (stackItem in callStack)
+		// 	{
+		// 		switch (stackItem)
+		// 		{
+		// 			case FilePos(s, file, line, column):
+		// 				Sys.println(file + ":" + line + "");
+		// 			default:
+		// 				Sys.println(stackItem);
+		// 		}
+		// 	}
+		// }catch(e){trace('I fucking errored while tracing a stack: ${e.message}');}
 		try{
 			LoadingScreen.object.alpha = 0;
 			
@@ -139,13 +144,13 @@ class MainMenuState extends SickMenuState
 			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
 			FlxG.save.data.gfChar = "gf";
 		}
-		if(MainMenuState.errorMessage == "" && !triedChar && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
-			triedChar = true;
-			try{
-				char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0,true);
-				if(char != null) add(char);
-			}catch(e){trace(e);char = null;}
-		}
+		// if(MainMenuState.errorMessage == "" && !triedChar && FlxG.save.data.mainMenuChar && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
+		// 	triedChar = true;
+		// 	try{
+		// 		char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0,true);
+		// 		if(char != null) add(char);
+		// 	}catch(e){MainMenuState.lastStack = e.stack;trace(e);char = null;}
+		// }
 		if(firstStart){
 			// FlxG.sound.volumeHandler = function(volume:Float){
 			// 	FlxG.save.data.masterVol = volume;
@@ -197,14 +202,21 @@ class MainMenuState extends SickMenuState
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
+		// if(char != null){
+		// 	if(controls.LEFT){
+		// 		char.playAnim("singLEFT",true);
+		// 	}else if(controls.RIGHT){
+		// 		char.playAnim("singRIGHT",true);
+		// 	}
+		// }
 		super.update(elapsed);
 	}
 	override function beatHit(){
 		super.beatHit();
-		if(char != null && char.animation.curAnim.finished) char.dance(true);
+		// if(char != null && char.animation.curAnim.finished) char.dance(true);
 	}
 	override function changeSelection(change:Int = 0){
-		if(char != null && change != 0) char.playAnim(Note.noteAnims[if(change > 0)1 else 2],true);
+		// if(char != null && change != 0) char.playAnim(Note.noteAnims[if(change > 0)1 else 2],true);
 		
 		super.changeSelection(change);
 	}
@@ -212,10 +224,9 @@ class MainMenuState extends SickMenuState
 	var otherMenu:Bool = false;
 
 	function otherSwitch(){
-		// ,"freeplay"
-		// , 'Play any song from the game'
-		options = ["story mode","download charts","download characters"];
-		descriptions = ['Play through the story mode',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
+		options = ["story mode","freeplay","download charts","download characters"];
+		descriptions = ['Play through the story mode', 'Play any song from the game',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
+		
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
 		generateList();
@@ -238,7 +249,7 @@ class MainMenuState extends SickMenuState
   override function select(sel:Int){
 		MainMenuState.errorMessage="";
 		if (selected){return;}
-		if(char != null) {char.playAnimAvailable(["win","singUP"],true);}
+		// if(char != null) {char.playAnimAvailable(["win","singUP"],true);}
 		selected = true;
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));

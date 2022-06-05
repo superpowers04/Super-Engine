@@ -557,8 +557,7 @@ class Character extends FlxSprite
 
 			try{
 				if (charProperties == null) {charPropJson = File.getContent('${charLoc}/$curCharacter/config.json');charProperties = Json.parse(CoolUtil.cleanJSON(charPropJson));}
-			}catch(e){
-				MainMenuState.handleError('Character ${curCharacter} has a broken config.json! ${e.message}');
+			}catch(e){MainMenuState.handleError(e,'Character ${curCharacter} has a broken config.json! ${e.message}');
 				// loadChar('bfHC');
 
 				return;
@@ -843,9 +842,7 @@ class Character extends FlxSprite
 			playAnim('songStart',true);
 		}
 		#if !debug
-		}catch(e){
-
-			MainMenuState.handleError('Error with $curCharacter: ${e}');
+		}catch(e){MainMenuState.handleError(e,'Error with $curCharacter: ${e}');
 			return;
 		}
 		#end
@@ -885,7 +882,7 @@ class Character extends FlxSprite
 		}
 
 		super.update(elapsed);
-	}catch(e:Dynamic){MainMenuState.handleError('Caught character "update" crash: ${e}');}}
+	}catch(e:Dynamic){MainMenuState.handleError(e,'Caught character "update" crash: ${e}');}}
 
 	
 	/**

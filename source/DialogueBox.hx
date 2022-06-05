@@ -320,9 +320,9 @@ class DialogueBox extends FlxSpriteGroup
 		// 		box.flipX = false;
 		// }
 		if(curCharacter.contains("dad") || curCharacter.contains("opponent")){
-			updatePortrait(false);
+			updatePortrait(false,true);
 		}else if (curCharacter.contains("bf") || curCharacter.contains("player")){
-			updatePortrait(true);
+			updatePortrait(true,true);
 		}else if (curCharacter.contains("none") || curCharacter.contains("unknown")){
 			updatePortrait(false,false);
 		}

@@ -67,7 +67,7 @@ class FreeplayState extends MusicBeatState
 						}
 						songs.push(new SongMetadata(dir, 0, song.player2));
 						song = null;
-					}catch(e){MainMenuState.lastStack = e.stack;trace('Failed to load ${dir}: ${e.message}');}
+					}catch(e){trace('Failed to load ${dir}: ${e.message}');}
 				}
 			}
 		}
@@ -167,7 +167,7 @@ class FreeplayState extends MusicBeatState
 
 		// var swag:Alphabet = new Alphabet(1, 0, "swag");
 
-	}catch(e){MainMenuState.lastStack = e.stack;MainMenuState.handleError('Something went wrong when creating freeplaystate: ${e.message}');}
+	}catch(e){MainMenuState.handleError(e,'Something went wrong when creating freeplaystate: ${e.message}');}
 	}
 
 	public function addSong(songName:String, weekNum:Int,?songCharacter:String = "")
@@ -260,8 +260,7 @@ class FreeplayState extends MusicBeatState
 				PlayState.stateType = 0;
 				FlxG.sound.music.fadeOut(0.4);
 				LoadingState.loadAndSwitchState(new MultiPlayState());
-			}catch(e){MainMenuState.lastStack = e.stack;
-				MainMenuState.handleError('Error while loading chart ${e.message}');
+			}catch(e){MainMenuState.handleError(e,'Error while loading chart ${e.message}');
 			}
 		}
 	}

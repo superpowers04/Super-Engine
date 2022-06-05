@@ -84,7 +84,6 @@ class LoadingScreen extends Sprite{
 	}
 	public static function hide(){
 		if(object == null){
-			trace('WHAT');
 			return;
 		}
 		if(!object.funni){return;}

@@ -180,7 +180,7 @@ class ImportModFromFolder extends MusicBeatState
 			loadingText.text = '${folder.substr(-17)} doesn\'t contain any songs!' + (if(!importExisting) "\nMaybe try allowing vanilla songs to be imported?\n*(Press 1 to toggle importing vanilla songs in the list)" else "");
 
 		}
-		}catch(e){MainMenuState.handleError('Something went wrong when trying to scan for songs! ${e.message}');}
+		}catch(e){MainMenuState.handleError(e,'Something went wrong when trying to scan for songs! ${e.message}');}
 	}
 	function doDraw(){draw();}
 	function scanSongs(?folder:String = "",assets:String=""){

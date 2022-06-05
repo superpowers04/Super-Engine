@@ -114,8 +114,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
 
 	  PlayState.actualSongName = songJSON;
 	  LoadingState.loadAndSwitchState(new OsuPlayState());
-	  }catch(e){
-		MainMenuState.handleError('Error while loading chart ${e.message}');
+	  }catch(e){MainMenuState.handleError(e,'Error while loading chart ${e.message}');
 	  }
   }
 

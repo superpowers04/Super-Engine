@@ -54,14 +54,14 @@ class NoteAssets{
 			i.persist = true;
 		}
 	}
-	public function new(?name_:String = 'default'):Void{
+	public function new(?name_:String = 'default',?forced:Bool = false):Void{
 		doThing(name_);
 		perm(); // Prevents Flixel from being flixel and unloading things
 
 	}
-	static function doThing(name_:String){
+	static function doThing(name_:String,?forced:Bool = false){
 		try{
-			if(name == name_){return;}
+			if(name == name_ && !forced){return;}
 			trace('Loading noteAssets');
 			splashType = "se";
 			modified = false;
@@ -119,7 +119,7 @@ class NoteAssets{
 			}
 			return;
 
-		}catch(e){MainMenuState.handleError('Error occurred while loading notes ${e.message}');}
+		}catch(e){MainMenuState.handleError(e,'Error occurred while loading notes ${e.message}');}
 	}
 
 // class SplashNoteAsset{

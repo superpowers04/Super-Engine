@@ -85,7 +85,7 @@ class SearchMenuState extends MusicBeatState
 	static public inline function resetVars(){
 		if (ChartingState.charting) ChartingState.charting = false;
 		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
-		PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
+		PlayState.nameSpace = "";PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
 		SickMenuState.chgTime = true;
 		onlinemod.OfflinePlayState.nameSpace = "";
 	}
@@ -147,7 +147,7 @@ class SearchMenuState extends MusicBeatState
 		super.create();
 		openfl.system.System.gc();
 		
-	}catch(e) MainMenuState.handleError('Error with searchmenu "create" ${e.message}');}
+	}catch(e) MainMenuState.handleError(e,'Error with searchmenu "create" ${e.message}');}
 
 	function addToList(char:String,i:Int = 0){
 				songs.push(char);

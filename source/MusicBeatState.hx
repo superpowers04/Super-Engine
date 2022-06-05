@@ -14,6 +14,8 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.FlxState;
 import flixel.tweens.FlxEase;
+import flixel.FlxSprite;
+import flixel.graphics.FlxGraphic;
 
 class MusicBeatState extends FlxUIState
 {
@@ -55,7 +57,7 @@ class MusicBeatState extends FlxUIState
 		tranIn();
 	}
 	
-
+	var tempMessBacking:FlxSprite;
 	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true){
 		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}
 		trace(str);
@@ -72,10 +74,14 @@ class MusicBeatState extends FlxUIState
 			tempMessage.screenCenter(X);
 		}
 		// tempMessage.wordWrap = false;
+		tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
+		tempMessBacking.cameras = tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		add(tempMessBacking);
 		add(tempMessage);
 		tempMessTimer = new FlxTimer().start(time, function(tmr:FlxTimer)
 		{
 			if (tempMessage != null) tempMessage.destroy();
+			if (tempMessBacking != null) tempMessBacking.destroy();
 		},1);
 	}
 
@@ -103,10 +109,6 @@ class MusicBeatState extends FlxUIState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
-
-
-		if ((cast (Lib.current.getChildAt(0), Main)).getFPSCap != FlxG.save.data.fpsCap && FlxG.save.data.fpsCap <= 290)
-			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 		if(FlxG.mouse.justPressed){
 			var hasPressed = false;
 
