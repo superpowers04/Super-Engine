@@ -1,9 +1,10 @@
-package;
+// package;
 
 import flixel.addons.effects.FlxSkewedSprite;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
@@ -14,13 +15,20 @@ import PlayState;
 
 using StringTools; 
 
-class Note extends FlxSprite
+class Note extends FlxSkewedSprite
 {
 	public var strumTime:Float = 0;
 	public var noteID:Int = 0;
 	public static var lastNoteID:Int = 0;
-	public var skipXAdjust:Bool = false;
+	// public var skipXAdjust:Bool = false;
+	public var skipXAdjust(get,set):Bool;
+	public var updateX:Bool = true;
+	public function get_skipXAdjust(){return !updateX;}
+	public function set_skipXAdjust(vari){return updateX = !vari;}
 	public var updateY:Bool = true;
+	public var updateAlpha:Bool = true;
+	public var updateAngle:Bool = true;
+	public var lockToStrum:Bool = true;
 
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
@@ -61,6 +69,8 @@ class Note extends FlxSprite
 	public var vanillaFrames:Bool = false;
 	public var noteAnimation:Null<String> = "";
 	public var noteAnimationMiss:Null<String> = "";
+	// public var frames(set,get):FlxFramesCollection;
+	// public var _Frames:FlxFramesCollection;
 
 
 	public function addAnimations(){
@@ -94,21 +104,19 @@ class Note extends FlxSprite
 		if (frames == null){
 			try{
 				if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
-			}catch(e){trace("Couldn't load bad arrow sprites, recoloring arrows instead!");}
+			}catch(e){}
 			try{
 				if(frames == null && shouldntBeHit) {color = 0x220011;}
-				if (frames == null) frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+				if (frames == null) frames = NoteAssets.frames;
+				// frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 				vanillaFrames = true;
 			}catch(e) {
 				try{
 					TitleState.loadNoteAssets(true);
 					if(shouldntBeHit) {color = 0x220011;}
-					frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+					frames = NoteAssets.frames;
 					vanillaFrames = true;
-				}catch(e){
-					MainMenuState.handleError("Unable to load note assets, please restart your game!");
-					
-				}
+				}catch(e){MainMenuState.handleError(e,"Unable to load note assets, please restart your game!");}
 			}
 		}
 		if((eventNote || rawNote[1] == -1 || rawNote[2] == "eventNote") && inCharter){
@@ -273,9 +281,8 @@ class Note extends FlxSprite
 			
 			
 
-		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
-		y -= 2000;
+		y = 9000;
 
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
@@ -297,7 +304,7 @@ class Note extends FlxSprite
 			if(eventNote || noteName == null || noteName == "") noteName = noteNames[0];
 
 
-			x+= swagWidth * noteData;
+			// x+= swagWidth * noteData;
 			animation.play(noteName + "Scroll");
 
 			// trace(prevNote);
@@ -305,21 +312,25 @@ class Note extends FlxSprite
 			// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
 			// and flip it so it doesn't look weird.
 			// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS 
-			flipY = (FlxG.save.data.downscroll && sustainNote);
+			
 
 			if (isSustainNote && prevNote != null)
 			{
 				noteScore * 0.2;
 				alpha = 0.6;
+				// Funni downscroll flip when sussy note
+				flipY = (FlxG.save.data.downscroll);
 				
 
-				x += width / 2;
+				// x += width / 2;
 
 				animation.play(noteName + "holdend");
 				isSustainNoteEnd = true;
 				updateHitbox();
 
-				x -= width / 2;
+				// x -= width / 2;
+
+
 				parentNoteWidth = prevNote.width;
 
 				if (prevNote.isSustainNote)
@@ -336,6 +347,8 @@ class Note extends FlxSprite
 					prevNote.isSustainNoteEnd = false;
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (if(FlxG.save.data.scrollSpeed != 1) FlxG.save.data.scrollSpeed else PlayState.SONG.speed);
 					prevNote.updateHitbox();
+
+					prevNote.offset.x = prevNote.frameWidth * 0.5;
 					// prevNote.setGraphicSize();
 				}
 			}
@@ -344,8 +357,13 @@ class Note extends FlxSprite
 		}
 		visible = false;
 		callInterp("noteAdd",[this,rawNote]);
-	}catch(e){MainMenuState.handleError('Caught "Note create" crash: ${e.message}');}
-}
+		updateHitbox();
+		// centerOrigin();
+		// centerOffsets();
+		// offset.y = 0;
+		// origin.y=0;
+		offset.x = frameWidth * 0.5;
+	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}');}}
 
 	var missedNote:Bool = false;
 	override function draw(){

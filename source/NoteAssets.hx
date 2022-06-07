@@ -2,9 +2,12 @@ package;
 
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
+import flixel.FlxSprite;
 import sys.io.File;
 import sys.FileSystem;
 import flash.display.BitmapData;
+import flixel.graphics.frames.FlxFramesCollection;
+import flixel.graphics.frames.FlxAtlasFrames;
 
 
 // typedef NoteSplashType = {
@@ -30,6 +33,8 @@ import flash.display.BitmapData;
 	// 	red2:"note splash red 2"
 	// };
 
+// Todo, add automatic animation name detection
+
 class NoteAssets{
 	public static var name:String;
 	static var path:String = "mods/noteassets"; // The slash not being here is just for ease of reading
@@ -42,6 +47,15 @@ class NoteAssets{
 	public static var badXml:String;
 	public static var splashType:String = "se";
 	public static var modified:Bool = false;
+	public static var sprite:FlxSprite;
+	public static var frames(get,set):FlxFramesCollection;
+	public static function get_frames():FlxFramesCollection{
+		return sprite.frames;
+	}
+	public static function set_frames(vari:FlxFramesCollection):FlxFramesCollection{
+		return sprite.frames = vari;
+	}
+
 	static var splTypes:Array<String> = [
 		"se",
 		"psych",
@@ -55,9 +69,10 @@ class NoteAssets{
 		}
 	}
 	public function new(?name_:String = 'default',?forced:Bool = false):Void{
+		if(sprite == null) sprite = new FlxSprite();
 		doThing(name_);
+		frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 		perm(); // Prevents Flixel from being flixel and unloading things
-
 	}
 	static function doThing(name_:String,?forced:Bool = false){
 		try{

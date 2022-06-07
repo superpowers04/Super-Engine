@@ -482,7 +482,7 @@ class OptionsMenu extends MusicBeatState
 				trace('$script: Setting up user settings');
 				for (v in sOptions.options) {
 					var i = v.name;
-					trace('$script,$i: Registering. Info: ${v.type},${v.description},${v.def}');
+					// trace('$script,$i: Registering. Info: ${v.type},${v.description},${v.def}');
 					try{
 
 						if(modOptions[script][i] == null) {
@@ -551,7 +551,9 @@ class OptionsMenu extends MusicBeatState
 	}
 
 	function saveChanges(){
-		FlxG.save.flush();
+		try{
+			FlxG.save.flush();
+		}catch(e){MainMenuState.errorMessage += '\nUnable to save options! ${e.message}';}
 		// File.saveContent('SEOPTIONS.json',Json.stringify(FlxG.save.data));
 		for (i => v in modOptions) {
 			try{

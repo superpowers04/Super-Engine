@@ -65,6 +65,13 @@ class OnlinePlayState extends PlayState
 		handleNextPacket = true;
 		OnlinePlayMenuState.SetVolumeControls(true); // Make sure volume is enabled
 		if (customSong){
+			if (useSongChar[0] != "") PlayState.SONG.player1 = FlxG.save.data.playerChar;
+			
+			if ((FlxG.save.data.charAuto || useSongChar[1] != "") && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
+				PlayState.player2 = TitleState.retChar(PlayState.player2);
+			}else{
+				PlayState.player2 = FlxG.save.data.opponent;
+			}
 			for (i => v in useSongChar) {
 				if (v != ""){
 					switch(i){
@@ -73,13 +80,6 @@ class OnlinePlayState extends PlayState
 						case 2: PlayState.player3 = v;
 					}
 				}
-			}
-			if (useSongChar[0] != "") PlayState.SONG.player1 = FlxG.save.data.playerChar;
-			
-			if ((FlxG.save.data.charAuto || useSongChar[1] != "") && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
-				PlayState.player2 = TitleState.retChar(PlayState.player2);
-			}else{
-				PlayState.player2 = FlxG.save.data.opponent;
 			}
 		}
 
@@ -174,6 +174,15 @@ class OnlinePlayState extends PlayState
 
 		// We be good and actually just use an argument to not load the song instead of "pausing" the game
 		super.startSong(true);
+		if(PlayState.p2canplay){
+
+			var _note:Note;
+			for (i in 0 ... unspawnNotes.length) {
+				_note = unspawnNotes[i];
+				if(_note == null || _note.noteData == -1) continue;
+				noteData[_note.noteID] = [_note,_note.noteData % 4];
+			}
+		}
 		
 	}catch(e){MainMenuState.handleError(e,'Crash in "startsong" caught: ${e.message}');}}
 
@@ -190,6 +199,7 @@ class OnlinePlayState extends PlayState
 		else
 			vocals = new FlxSound();
 		super.generateSong(dataPath);
+
 
 	}
 
@@ -397,6 +407,7 @@ class OnlinePlayState extends PlayState
 	function getPresses():Int {return this.fromBool(controls.LEFT) | this.fromBool(controls.DOWN) << 1 | this.fromBool(controls.UP) << 2 | this.fromBool(controls.RIGHT) << 3;}
 
 	public static var handleNextPacket = true;
+	static var noteData:Array<Array<Dynamic>> = []; // Stores notes so they can be hit by other players
 	function HandleData(packetId:Int, data:Array<Dynamic>)
 	{try{
 
@@ -466,41 +477,58 @@ class OnlinePlayState extends PlayState
 						PlayState.charAnim(1,Note.noteAnims[Std.int(data[1] - 1)],true);
 					}else{
 						var killedNote = false;
-						for (i => note in notes.members){
-							if(note.noteID == data[0]){
-								killedNote = true;
+						var mustPress = false;
+
+						if(noteData[data[0]] != null){
+							
+							if(noteData[data[0]][0] != null){
+								var note = noteData[data[0]][0];
+								mustPress = note.mustPress;
 								if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
 									note.miss(charID,note);
 								}else{
 									note.hit(charID,note);
 								}
+								note.mustPress = mustPress;
 								if(!note.mustPress){ // Oi, dumbass, don't delete notes from the player
 									note.kill();
 									notes.remove(note, true);
 									note.destroy();
 								}
-								break;
+							}else{
+								var noteData:Int = noteData[data[0]][1];
+								switch (charID) {
+									case 0:PlayState.instance.BFStrumPlayAnim(noteData);
+									case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
+								}; // Strums
+								PlayState.charAnim(charID,Note.noteAnims[noteData] = (if(data[1] != null && data[1] != 0 ) "miss" else ""),true); // Play animation
 							}
 						}
-						if(!killedNote){
-							for (_ => note in unspawnNotes) {
-								if(note.noteID == data[0]){
-									killedNote = true;
-									if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
-										note.miss(charID,note);
-									}else{
-										note.hit(charID,note);
-									}
-									if(!note.mustPress){
-										note.kill();
-										notes.remove(note, true);
-										note.destroy();
-									}
-									break;
-								}
-								
+						for (i => note in notes.members){
+							mustPress = false;
+							if(note.noteID == data[0]){
+
 							}
 						}
+						// if(!killedNote){
+						// 	for (_ => note in unspawnNotes) {
+						// 		if(note.noteID == data[0]){
+						// 			killedNote = true;
+						// 			if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
+						// 				note.miss(charID,note);
+						// 			}else{
+						// 				note.hit(charID,note);
+						// 			}
+						// 			if(!note.mustPress){
+						// 				note.kill();
+						// 				// note.destroy();
+						// 			}
+						// 			break;
+						// 		}
+						// 	}
+						// }
+						// if(!killedNote){ // Note was deleted, cringe
+						// }
 					}
 
 					// // PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];

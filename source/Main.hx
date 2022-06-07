@@ -184,4 +184,32 @@ class FlxGameEnhanced extends FlxGame{
 		_requestedState = state;
 		switchState();
 	}
+	override function update(){
+		try{
+			super.update();
+		}catch(e){
+			FuckState.FUCK(e,"FlxGame.Update");
+		}
+	}
+	override function draw(){
+		try{
+			super.draw();
+		}catch(e){
+			FuckState.FUCK(e,"FlxGame.Draw");
+		}
+	}
+	override function onFocus(_){
+		try{
+			super.onFocus(_);
+		}catch(e){
+			FuckState.FUCK(e,"FlxGame.onFocus");
+		}
+	}
+	override function onFocusLost(_){
+		try{
+			super.onFocusLost(_);
+		}catch(e){
+			FuckState.FUCK(e,"FlxGame.onFocusLost");
+		}
+	}
 }

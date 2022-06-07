@@ -224,7 +224,7 @@ class MainMenuState extends SickMenuState
 	var otherMenu:Bool = false;
 
 	function otherSwitch(){
-		options = ["story mode","freeplay","download charts","download characters"];
+		options = ["freeplay","download charts","download characters"];
 		descriptions = ['Play through the story mode', 'Play any song from the game',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
 		
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
@@ -236,8 +236,8 @@ class MainMenuState extends SickMenuState
 		changeSelection();
 	}
 	function mmSwitch(regen:Bool = false){
-		options = ['modded songs','join BR compatible server', 'online songs','other',"import charts from mods","changelog", 'options'];
-		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Play songs that have been downloaded during online games.",'Story mode, Freeplay, Osu beatmaps, and download characters or songs','Convert charts from other mods to work here. Will put them in Modded Songs',"Check the latest update and it's changes",'Customise your experience to fit you'];
+		options = ['modded songs','join BR compatible server', 'online songs',"story mode",'other',"import charts from mods","changelog", 'options'];
+		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs','Convert charts from other mods to work here. Will put them in Modded Songs',"Check the latest update and it's changes",'Customise your experience to fit you'];
 		if(regen)generateList();
 		curSelected = 0;
 		if(regen)changeSelection();

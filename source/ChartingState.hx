@@ -384,9 +384,6 @@ class ChartingState extends MusicBeatState
                 for (ii in 0..._song.notes.length)
                 {
                     _song.notes[ii].sectionNotes = [];
-                    for (i in 0..._song.notes[ii].sectionNotes.length)
-                        {
-                        }
                 }
                 resetSection(true);
             });
@@ -421,7 +418,6 @@ class ChartingState extends MusicBeatState
 					}
 				}
 				_song.notes[Std.int(curStep / 16)].sectionNotes.push(note);
-				
 			}
 			Conductor.songPosition =currentTime;
 		});
@@ -587,8 +583,8 @@ class ChartingState extends MusicBeatState
 		});
 
 		stageSel = new FlxInputText(10, 120, 120, _song.stage, 8);
-		stageSel.callback = () -> {
-			_song.stage = stageSel.text
+		stageSel.callback = (_,_) -> {
+			_song.stage = stageSel.text;
 		};
 
 		var stageLabel = new FlxText(10,100,64,'Stage');
