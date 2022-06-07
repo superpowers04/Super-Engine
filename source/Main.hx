@@ -90,7 +90,7 @@ class Main extends Sprite
 
 		// Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		
-		addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
 
 		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
 		addChild(game);
@@ -109,7 +109,21 @@ class Main extends Sprite
 
 		#end
 	}
-
+	function uncaughtErrorHandler(event:UncaughtErrorEvent):Void { // Yes this is copied from the wiki, fuck you
+		var message:String;
+		if (Std.is(event.error, openfl.errors.Error)) {
+			var err = cast(event.error, openfl.errors.Error);
+			message = err.getStackTrace();
+			if(message == null){
+				message = err.message;
+			}
+		} else if (Std.is(event.error, openfl.events.ErrorEvent)) {
+			message = cast(event.error, openfl.events.ErrorEvent).text;
+		} else {
+			message = Std.string(event.error);
+		}
+		FuckState.FUCK(null,message);
+	}
 	public static var game:FlxGameEnhanced;
 
 	var fpsCounter:Overlay;

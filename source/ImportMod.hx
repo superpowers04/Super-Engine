@@ -90,6 +90,7 @@ class ImportModFromFolder extends MusicBeatState
 
 
 		super.create();
+		folder = FileSystem.absolutePath(folder);
 		var assets = '${folder}assets/'; // For easy access
 			// done = selectedLength = true;
 			// loadingText.text = '${folder} doesn\'t have a assets folder!';
@@ -177,6 +178,7 @@ class ImportModFromFolder extends MusicBeatState
 			done = selectedLength = true;
 			loadingText.color = FlxColor.RED;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+			trace(folder);
 			loadingText.text = '${folder.substr(-17)} doesn\'t contain any songs!' + (if(!importExisting) "\nMaybe try allowing vanilla songs to be imported?\n*(Press 1 to toggle importing vanilla songs in the list)" else "");
 
 		}

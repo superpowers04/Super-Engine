@@ -587,7 +587,7 @@ class TitleState extends MusicBeatState
 
 				showTempmessage("Checking for updates..",FlxColor.WHITE);
 				tempMessage.screenCenter(X);
-				new FlxTimer().start(2, function(tmr:FlxTimer)
+				new FlxTimer().start(0.2, function(tmr:FlxTimer)
 				{
 					// Get current version of FNFBR, Uses kade's update checker 
 	

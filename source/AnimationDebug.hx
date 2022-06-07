@@ -44,6 +44,7 @@ import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.addons.ui.FlxUIDropDownMenu;
+import ImportMod;
 
 import CharacterJson;
 
@@ -121,9 +122,20 @@ class AnimationDebug extends MusicBeatState
 		if(MusicBeatState.instance.onFileDrop(file) == null || !FileSystem.exists(file)){
 			return;
 		}
+
 		#if windows
 		file = file.replace("\\","/"); // Windows uses \ at times but we use / around here
 		#end
+		file = FileSystem.absolutePath(file);
+		if(FileSystem.isDirectory(file)){
+			if(file.substring(-1) != "/") file +="/";
+			var name = file.substring(0,file.lastIndexOf("/"));
+			FlxG.switchState(new ImportModFromFolder(file + '/',name.substring(name.lastIndexOf('/'))));
+			return;
+		}
+		if(file.endsWith(".json")){
+			return multi.MultiMenuState.fileDrop(file);
+		}
 		var validFile:String = "";
 		var ending1 = "";
 		var ending2 = "";
@@ -136,21 +148,18 @@ class AnimationDebug extends MusicBeatState
 			ending1 = "xml";
 			ending2 = "png";
 		}
-		if(file.endsWith(".json")){
-			return multi.MultiMenuState.fileDrop(file);
-		}
 		if(validFile == "")return;
+		var name = file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
 		FlxG.state.openSubState(new QuickNameSubState(function(name:String,file:String,validFile:String,ending1:String,ending2:String){
 			var _file = file.substr(file.lastIndexOf("/") + 1);
 			var _validFile = validFile.substr(file.lastIndexOf("/") + 1);
-			var name = file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
 			if(FileSystem.exists('mods/characters/$name/')){name = '${name}DRAGDROP-${FlxG.random.int(0,999999)}';}
 			FileSystem.createDirectory('mods/characters/$name');
 			File.copy(file,'mods/characters/$name/character.$ending1');
 			File.copy(validFile,'mods/characters/$name/character.$ending2');
 			LoadingState.loadAndSwitchState(new AnimationDebug(name,false,1,false,true));
 
-		},[file,validFile,ending1,ending2],"Type a name for the character\n",file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."))));
+		},[file,validFile,ending1,ending2],"Type a name for the character\n",name,function(name:String){return (if(TitleState.retChar(name) != "") "This character already exists! Please use a different name" else "");}));
 	} 
 
 
