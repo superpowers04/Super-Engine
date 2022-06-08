@@ -40,6 +40,7 @@ class PauseSubState extends MusicBeatSubstate
 	var shouldveLeft = false;
 	public function new(x:Float, y:Float)
 	{
+		openfl.system.System.gc();
 		super();
 		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
 		PlayState.instance.callInterp("pauseCreate",[this]);

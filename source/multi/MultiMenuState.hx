@@ -644,38 +644,64 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var voices = "";
 			var inst = "";
 			var dir = file.substr(0,file.lastIndexOf("/"));
+			var fileThing = file.substr(0,file.lastIndexOf("-")) + ".json"; // Difficulty detection
+			trace(fileThing);
+			if(FileSystem.exists(fileThing)){
+				file = fileThing;
+			}
 			var json = file.substr(file.lastIndexOf("/"));
-			var name = file.substr(file.lastIndexOf("/") + 1,file.lastIndexOf(".") - 1);
+			var name = json.substr(0,json.lastIndexOf("."));
 			if(file.contains("assets/")){
 				var assets = file.substr(0,file.lastIndexOf("assets/"));
-				
-				if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
+				trace('${assets}assets/songs/${name}/Inst.ogg');
+				// Attempt 1 at finding the song files
+				if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){ 
 					inst = '${assets}assets/songs/${name}/Inst.ogg';
 				}
-				if(FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
+				if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
 					inst = '${assets}assets/music/${name}-Inst.ogg';
 				}
 				if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
 					voices = '${assets}assets/songs/${name}/Voices.ogg';
 				}
-				if(FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+				if(voices = "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
 					voices = '${assets}assets/music/${name}-Voices.ogg';
 				}
-				if(inst == ""){
-					var name:FuckingSong = cast Json.parse(file);
-					if(name.song != null && name.song.song != null){
-						var name:String = cast name.song.song;
+				if(inst == ""){ // Check more places
+					var name:Dynamic = cast Json.parse(file);
+					var songName:String = "";
+					if(name.song != null && Std.isOfType(name.song,String)){
+						songName = cast name.song;
+					}else if(name.song != null && name.song.song != null && Std.isOfType(name.song.song,String)){
+						songName = cast name.song.song;
+					}
+					if(songName != null && songName != ""){ // Try using the chart name maybe?
 						if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
 							inst = '${assets}assets/songs/${name}/Inst.ogg';
 						}
-						if(FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
+						if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
 							inst = '${assets}assets/songs/${name}-Inst.ogg';
 						}
-						if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
+						if(voices = "" && FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
 							voices = '${assets}assets/songs/${name}/Voices.ogg';
 						}
-						if(FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+						if(voices = "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
 							voices = '${assets}assets/songs/${name}-Voices.ogg';
+						}
+					}
+					if(inst == ""){ // Try without the extra - part, some songs only have a hard variant
+						var name = fileThing.substr(fileThing.lastIndexOf("/"),fileThing.lastIndexOf("."));
+						if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
+							inst = '${assets}assets/songs/${name}/Inst.ogg';
+						}
+						if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
+							inst = '${assets}assets/music/${name}-Inst.ogg';
+						}
+						if(voices = "" && FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
+							voices = '${assets}assets/songs/${name}/Voices.ogg';
+						}
+						if(voices = "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+							voices = '${assets}assets/music/${name}-Voices.ogg';
 						}
 					}
 
