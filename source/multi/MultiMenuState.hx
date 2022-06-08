@@ -664,7 +664,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
 					voices = '${assets}assets/songs/${name}/Voices.ogg';
 				}
-				if(voices = "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+				if(voices == "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
 					voices = '${assets}assets/music/${name}-Voices.ogg';
 				}
 				if(inst == ""){ // Check more places
@@ -682,10 +682,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
 							inst = '${assets}assets/songs/${name}-Inst.ogg';
 						}
-						if(voices = "" && FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
+						if(voices == "" && FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
 							voices = '${assets}assets/songs/${name}/Voices.ogg';
 						}
-						if(voices = "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+						if(voices == "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
 							voices = '${assets}assets/songs/${name}-Voices.ogg';
 						}
 					}
@@ -697,10 +697,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
 							inst = '${assets}assets/music/${name}-Inst.ogg';
 						}
-						if(voices = "" && FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
+						if(voices == "" && FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
 							voices = '${assets}assets/songs/${name}/Voices.ogg';
 						}
-						if(voices = "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
+						if(voices == "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
 							voices = '${assets}assets/music/${name}-Voices.ogg';
 						}
 					}
