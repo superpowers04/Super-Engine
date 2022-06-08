@@ -274,10 +274,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}
 			}
 		}
-		if(_packCount == 0){
-			addCategory("No packs or weeks to show",i);
-			grpSongs.members[i - 1].color = FlxColor.RED;
-		}
+		// if(_packCount == 0){
+		// 	addCategory("No packs or weeks to show",i);
+		// 	grpSongs.members[i - 1].color = FlxColor.RED;
+		// }
 		if(reload && lastSel == 1)changeSelection(_goToSong);
 		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
 	}
