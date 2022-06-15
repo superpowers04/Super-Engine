@@ -5,11 +5,16 @@ import flixel.tweens.FlxTween;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
+import sys.io.File;
+import sys.FileSystem;
+import flixel.graphics.FlxGraphic;
+import flash.display.BitmapData;
 
 using StringTools; 
 
@@ -29,6 +34,14 @@ class Alphabet extends FlxSpriteGroup
 
 	var _finalText:String = "";
 	var _curText:String = "";
+	public static var sprite:FlxSprite;
+	public static var Frames(get,set):FlxFramesCollection;
+	public static function get_Frames():FlxFramesCollection{
+		return sprite.frames;
+	}
+	public static function set_Frames(vari:FlxFramesCollection):FlxFramesCollection{
+		return sprite.frames = vari;
+	}
 
 	public var widthOfWords:Float = FlxG.width;
 
@@ -70,6 +83,19 @@ class Alphabet extends FlxSpriteGroup
 		if(FlxG.save.data.useFontEverywhere) this.useAlphabet = useAlphabet = false;
 		this.moveX = !dontMoveX;
 		this.useAlphabet = useAlphabet;
+		if(sprite == null || Frames == null){
+			sprite = new FlxSprite();
+			if(FileSystem.exists("mods/alphabet.png") && FileSystem.exists("mods/alphabet.xml")){
+				try{
+					Frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/alphabet.png')),File.getContent('mods/alphabet.xml'));
+				}catch(e){
+					Frames = Paths.getSparrowAtlas('alphabet');
+				}
+			}else{
+				Frames = Paths.getSparrowAtlas('alphabet');
+
+			}
+		}
 		if (text != "" && useAlphabet)
 		{
 			listOAlphabets = new List<AlphaCharacter>();
@@ -274,7 +300,7 @@ class AlphaCharacter extends FlxSprite
 	public function new(x:Float, y:Float)
 	{
 		super(x, y);
-		var tex = Paths.getSparrowAtlas('alphabet');
+		var tex = Alphabet.Frames;
 		frames = tex;
 
 		antialiasing = true;

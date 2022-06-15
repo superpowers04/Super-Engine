@@ -10,6 +10,7 @@ import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import tjson.Json;
 
 import PlayState;
 
@@ -72,6 +73,19 @@ class Note extends FlxSkewedSprite
 	// public var frames(set,get):FlxFramesCollection;
 	// public var _Frames:FlxFramesCollection;
 
+
+	public function toJson(){
+		return Json.stringify({
+			type:"Note",
+			strumTime:strumTime,
+			noteData:noteData,
+			noteType:type,
+			mustPress:mustPress
+		});
+	}
+	public override function toString(){
+		return toJson();
+	}
 
 	public function addAnimations(){
 		animation.addByPrefix('greenScroll', 'green0');

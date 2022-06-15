@@ -74,7 +74,11 @@ class MusicBeatState extends FlxUIState
 			tempMessage.screenCenter(X);
 		}
 		// tempMessage.wordWrap = false;
+		if(tempMessBacking != null){
+			tempMessBacking.destroy();
+		}
 		tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
+		tempMessBacking.scrollFactor.set();
 		tempMessBacking.cameras = tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		add(tempMessBacking);
 		add(tempMessage);

@@ -609,7 +609,7 @@ class Character extends FlxSprite
 				} else {
 					charXml = File.getContent('${charLoc}/$curCharacter/${xmlName}'); // Loads the XML as a string
 					if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${charLoc}/$curCharacter/${pngName}')), charXml);
+					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${charLoc}/$curCharacter/${pngName}')), charXml.replace("UTF-16","utf-8")); // Makes sure the xml reports utf-8 to prevent a CS6 bug or whatever
 				}
 				if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 			}

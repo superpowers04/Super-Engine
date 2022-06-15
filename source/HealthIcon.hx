@@ -112,6 +112,7 @@ class HealthIcon extends FlxSprite
 				animation.add('parents-christmas', [17, 18], 0, false, isPlayer);
 				animation.add('monster', [19, 20], 0, false, isPlayer);
 				animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
+				animation.add('EVENTNOTE', [24, 24], 0, false, false);
 			}
 			animation.play(char.toLowerCase());
 		}else{trace('Invalid character icon $char, Using BF!');animation.play("bf");}

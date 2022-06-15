@@ -119,7 +119,7 @@ class ChartingState extends MusicBeatState
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
-	var evNote:Note;
+	var evNote:HealthIcon;
 
 	private var lastNote:Note;
 	var claps:Array<Note> = [];
@@ -265,14 +265,16 @@ class ChartingState extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		evNote = new Note(0,-1,null,false,true,"PLACEHOLDERICON",[0,-1,"PLACEHOLDERICON"]);
+		// evNote = new Note(0,-1,null,false,true,"PLACEHOLDERICON",[0,-1,"PLACEHOLDERICON"]);
+		evNote = new HealthIcon("EVENTNOTE");
 		leftIcon = new HealthIcon(_song.player1,true);
 		rightIcon = new HealthIcon(_song.player2);
 		leftIcon.scrollFactor.set(1, 1);
 		rightIcon.scrollFactor.set(1, 1);
 		evNote.scrollFactor.set(1, 1);
-		evNote.setGraphicSize(GRID_SIZE, GRID_SIZE);
+		// evNote.setGraphicSize(GRID_SIZE, GRID_SIZE);
 
+		evNote.setGraphicSize(0, 45);
 		leftIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);
 
@@ -454,14 +456,14 @@ class ChartingState extends MusicBeatState
 		var stepperSongVolLabel = new FlxText(74, 110, 'Instrumental Volume');
 
 		
-		var shiftNoteDialLabel = new FlxText(10, 245, 'Shift Note FWD by (Section)');
-		var stepperShiftNoteDial:FlxUINumericStepper = new FlxUINumericStepper(10, 260, 1, 0, -1000, 1000, 0);
+		var shiftNoteDialLabel = new FlxText(10, 275, 'Shift Note FWD by (Section)');
+		var stepperShiftNoteDial:FlxUINumericStepper = new FlxUINumericStepper(10, 290, 1, 0, -1000, 1000, 0);
 		stepperShiftNoteDial.name = 'song_shiftnote';
-		var shiftNoteDialLabel2 = new FlxText(10, 275, 'Shift Note FWD by (Step)');
-		var stepperShiftNoteDialstep:FlxUINumericStepper = new FlxUINumericStepper(10, 290, 1, 0, -1000, 1000, 0);
+		var shiftNoteDialLabel2 = new FlxText(10, 305, 'Shift Note FWD by (Step)');
+		var stepperShiftNoteDialstep:FlxUINumericStepper = new FlxUINumericStepper(10, 320, 1, 0, -1000, 1000, 0);
 		stepperShiftNoteDialstep.name = 'song_shiftnotems';
-		var shiftNoteDialLabel3 = new FlxText(10, 305, 'Shift Note FWD by (ms)');
-		var stepperShiftNoteDialms:FlxUINumericStepper = new FlxUINumericStepper(10, 320, 1, 0, -1000, 1000, 2);
+		var shiftNoteDialLabel3 = new FlxText(100, 305, 'Shift Note FWD by (ms)');
+		var stepperShiftNoteDialms:FlxUINumericStepper = new FlxUINumericStepper(100, 320, 1, 0, -1000, 1000, 2);
 		stepperShiftNoteDialms.name = 'song_shiftnotems';
 
 		var shiftNoteButton:FlxButton = new FlxButton(10, 335, "Shift", function()
@@ -518,7 +520,9 @@ class ChartingState extends MusicBeatState
 		{
 			for (i in 0 ... _song.notes.length){
 				for (ni in 0..._song.notes[i].sectionNotes.length){
-					_song.notes[i].sectionNotes[ni][1] = (_song.notes[i].sectionNotes[ni][1] + 5) % 9 - 1;
+					if(_song.notes[i].sectionNotes[ni][1] > -1){
+						_song.notes[i].sectionNotes[ni][1] = (_song.notes[i].sectionNotes[ni][1] + 4) % 8;
+					}
 				}
 			}
 			updateGrid();
@@ -681,9 +685,22 @@ class ChartingState extends MusicBeatState
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
 			{
 				var note = _song.notes[curSection].sectionNotes[i];
-				if(note[1] > 0){
-					note[1] = (note[1] + 3) % 8 + 1;
+				if(note[1] > -1){
+					note[1] = (note[1] + 4) % 8;
 					_song.notes[curSection].sectionNotes[i] = note;
+					updateGrid();
+					updateSectionUI();
+				}
+			}
+		});
+		var mirrorSection:FlxButton = new FlxButton(10, 190, "Mirror Section", function()
+		{
+			for (i in 0..._song.notes[curSection].sectionNotes.length)
+			{
+				var note = _song.notes[curSection].sectionNotes[i].copy();
+				if(note[1] > -1){
+					note[1] = 1 + (8 - note[1]) % 8;
+					_song.notes[curSection].sectionNotes.push(note);
 					updateGrid();
 					updateSectionUI();
 				}
@@ -707,6 +724,7 @@ class ChartingState extends MusicBeatState
 		// tab_group_section.add(stepperCopy);
 		// tab_group_section.add(stepperCopyLabel);
 		tab_group_section.add(check_mustHitSection);
+		tab_group_section.add(mirrorSection);
 		tab_group_section.add(check_altAnim);
 		tab_group_section.add(check_changeBPM);
 		tab_group_section.add(copyButton);

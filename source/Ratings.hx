@@ -6,6 +6,8 @@ class Ratings
 	{
 		var ranking = "N/A";
 		var wifeConditions:Array<Bool> = [
+			accuracy > 100, // SS
+			accuracy == 100, // fucking amazing
 			accuracy >= 99, // SS
 			accuracy >= 95, // S
 			accuracy >= 90, // A
@@ -18,8 +20,9 @@ class Ratings
 			accuracy >= 30, // FU
 			accuracy >= 20, // FUC
 			accuracy >= 10, // FUCK
-			accuracy >= 1, // how
-			accuracy < 1, // oh
+			accuracy > 0, // oh
+			accuracy == 0, // N/A
+			accuracy < 0, // bot moment
 
 
 		];
@@ -31,33 +34,39 @@ class Ratings
 				switch(i)
 				{
 					case 0:
-						ranking = "SS";
+						ranking = "Perfectly legit";
 					case 1:
-						ranking = "S";
+						ranking = "Perfect!";
 					case 2:
-						ranking = "A";
+						ranking = "SS";
 					case 3:
-						ranking = "B";
+						ranking = "S";
 					case 4:
-						ranking = "C";
+						ranking = "A";
 					case 5:
-						ranking = "Nice";
+						ranking = "B";
 					case 6:
 						ranking = "C";
 					case 7:
-						ranking = "D";
+						ranking = "Nice";
 					case 8:
-						ranking = "F";
+						ranking = "C";
 					case 9:
-						ranking = "FU";
+						ranking = "D";
 					case 10:
-						ranking = "FUC";
+						ranking = "F";
 					case 11:
-						ranking = "FUCK";
+						ranking = "FU";
 					case 12:
-						ranking = "what";
+						ranking = "FUC";
 					case 13:
+						ranking = "FUCK";
+					case 14:
+						ranking = "afk";
+					case 15:
 						ranking = "N/A";
+					case 16:
+						ranking = "botplay";
 				}
 				break;
 			}
@@ -84,6 +93,7 @@ class Ratings
 		// WIFE TIME :)))) (based on Wife3)
 
 		var wifeConditions:Array<Bool> = [
+			accuracy >= 100.1, // SS
 			accuracy >= 99, // SS
 			accuracy >= 95, // S
 			accuracy >= 90, // A
@@ -92,7 +102,9 @@ class Ratings
 			accuracy >= 69, // nice
 			accuracy >= 60, // C
 			accuracy >= 50, // D
-			accuracy < 50, // F
+			accuracy > 2, // F
+			accuracy > 0, // F
+			accuracy < 0, // F
 		];
 
 		for(i in 0...wifeConditions.length)
@@ -103,23 +115,29 @@ class Ratings
 				switch(i)
 				{
 					case 0:
-						ranking += " SS";
+						ranking += " Perfectly Legit";
 					case 1:
-						ranking += " S";
+						ranking += " SS";
 					case 2:
-						ranking += " A";
+						ranking += " S";
 					case 3:
-						ranking += " B";
+						ranking += " A";
 					case 4:
-						ranking += " C";
+						ranking += " B";
 					case 5:
-						ranking += " Nice";
-					case 6:
 						ranking += " C";
+					case 6:
+						ranking += " Nice";
 					case 7:
-						ranking += " D";
+						ranking += " C";
 					case 8:
+						ranking += " D";
+					case 9:
 						ranking += " F";
+					case 10:
+						ranking += " AFK";
+					case 11:
+						ranking += " BotPlay";
 				}
 				break;
 			}

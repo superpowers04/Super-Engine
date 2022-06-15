@@ -126,7 +126,7 @@ class Main extends Sprite
 	}
 	public static var game:FlxGameEnhanced;
 
-	var fpsCounter:Overlay;
+	public static var fpsCounter:Overlay;
 	// var fpsOverlay:Overlay;
 
 	public function toggleFPS(fpsEnabled:Bool):Void {

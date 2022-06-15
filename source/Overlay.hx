@@ -62,16 +62,16 @@ class Overlay extends TextField
 		}
 
 		var currentCount = times.length;
-		currentFPS = Math.round((currentCount + cacheCount) / 2);
+		currentFPS = Math.round((currentCount + cacheCount) * 0.5) ;
 		var mem:Float = Math.round((System.totalMemory / 1024) / 1000);
 		if (mem > memPeak)
 			memPeak = mem;
 
-		if (currentCount != cacheCount /*&& visible*/)
-		{
+		// if (currentCount != cacheCount /*&& visible*/)
+		// {
 			// text = "FPS: " + currentFPS;
-			text = "FPS: " + currentFPS + "\nMemory/Peak: " + mem + "/" + memPeak + " MB" +  debugVar;
-		}
+			text = "" + currentFPS + " FPS/" + deltaTime + " MS\nMemory/Peak: " + mem + "MB/" + memPeak + "MB" +  debugVar;
+		// }
 
 		cacheCount = currentCount;
 	}

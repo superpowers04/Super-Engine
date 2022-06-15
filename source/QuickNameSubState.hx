@@ -11,7 +11,7 @@ import flixel.FlxG;
 import flixel.util.FlxColor;
 import flash.display.BitmapData;
 import flixel.FlxCamera;
-class QuickNameSubState extends FlxSubState{
+class QuickNameSubState extends MusicBeatSubstate{
 	var funky:Dynamic;
 	var args:Array<Dynamic> = [];
 	var text:String;

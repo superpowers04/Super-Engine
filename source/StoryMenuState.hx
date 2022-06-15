@@ -18,6 +18,7 @@ import tjson.Json;
 import sys.io.File;
 import sys.FileSystem;
 import multi.MultiPlayState;
+import openfl.Assets;
 
 
 
@@ -42,38 +43,12 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Array<String>> = [
-		['Tutorial'],
-		['Bopeebo', 'Fresh', 'Dad Battle'],
-		['Spookeez', 'South', "Monster"],
-		['Pico', 'Philly Nice', "Blammed"],
-		['Satin Panties', "High", "Milf"],
-		['Cocoa', 'Eggnog', 'Winter Horrorland'],
-		['Senpai', 'Roses', 'Thorns']
-	];
-	var weekChartNames:Array<Array<String>> = [
-		['Tutorial'],
-		['Bopeebo', 'Fresh', 'Dad Battle'],
-		['Spookeez', 'South', "Monster"],
-		['Pico', 'Philly Nice', "Blammed"],
-		['Satin Panties', "High", "Milf"],
-		['Cocoa', 'Eggnog', 'Winter Horrorland'],
-		['Senpai', 'Roses', 'Thorns']
-	];
 	static var curDifficulty:Int = 1;
 	public static var isVanillaWeek:Bool = true;
 	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
 	var weekEmbedded:Array<Bool> = [true, true, true, true, true, true, true];
 
-	var weekCharacters:Array<Array<String>> = [
-		['', 'bf', 'gf'],
-		['dad', 'bf', 'gf'],
-		['spooky', 'bf', 'gf'],
-		['pico', 'bf', 'gf'],
-		['mom', 'bf', 'gf'],
-		['parents-christmas', 'bf', 'gf'],
-		['senpai', 'bf', 'gf']
-	];
+	var weekCharacters:Array<Array<String>> = [];
 	// var weekDifficulties:Array<String> = [
 	// 	[],
 	// 	[],
@@ -84,25 +59,11 @@ class StoryMenuState extends MusicBeatState
 	// 	[]
 	// ];
 
-	public static var weekNames:Array<String> = [
-		"",
-		"Daddy Dearest",
-		"Spooky Month",
-		"PICO",
-		"MOMMY MUST MURDER",
-		"RED SNOW",
-		"Hating Simulator ft. Moawling"
-	];
+	public static var weekNames:Array<String> = [];
 	static var weekDialogue:Array<Bool> = [true,true,true,true,true,true,true];
-	static var weekDirectories:Array<String> = [
-			"",
-			"Daddy Dearest",
-			"Spooky Month",
-			"PICO",
-			"MOMMY MUST MURDER",
-			"RED SNOW",
-			"Hating Simulator ft. Moawling"
-		];
+	static var weekDirectories:Array<String> = [];
+	var weekData:Array<Array<String>> = [];
+	var weekChartNames:Array<Array<String>> = [];
 
 	var txtWeekTitle:FlxText;
 
@@ -132,27 +93,55 @@ class StoryMenuState extends MusicBeatState
 	public static var loadDialog:Bool = true;
 
 	function resetWeeks(){
-		weekData = [
-			['Tutorial'],
-			['Bopeebo', 'Fresh', 'Dad Battle'],
-			['Spookeez', 'South', "Monster"],
-			['Pico', 'Philly Nice', "Blammed"],
-			['Satin Panties', "High", "Milf"],
-			['Cocoa', 'Eggnog', 'Winter Horrorland'],
-			['Senpai', 'Roses', 'Thorns']
-		];
-		weekDirectories = [
-			"Learning The Ropes",
-			"Daddy Dearest",
-			"Spooky Month",
-			"PICO",
-			"MOMMY MUST MURDER",
-			"RED SNOW",
-			"Hating Simulator ft. Moawling"
-		];
+
+		if(Assets.hasLibrary("week1")){
+			weekData = [
+				['Tutorial'],
+				['Bopeebo', 'Fresh', 'Dad Battle'],
+				['Spookeez', 'South', "Monster"],
+				['Pico', 'Philly Nice', "Blammed"],
+				['Satin Panties', "High", "Milf"],
+				['Cocoa', 'Eggnog', 'Winter Horrorland'],
+				['Senpai', 'Roses', 'Thorns']
+			];
+			weekDirectories = [
+				"Learning The Ropes",
+				"Daddy Dearest",
+				"Spooky Month",
+				"PICO",
+				"MOMMY MUST MURDER",
+				"RED SNOW",
+				"Hating Simulator ft. Moawling"
+			];
+			weekCharacters = [
+				['gf', 'bf',''],
+				['dad', 'bf', 'gf'],
+				['spooky', 'bf', 'gf'],
+				['pico', 'bf', 'gf'],
+				['mom', 'bf', 'gf'],
+				['parents-christmas', 'bf', 'gf'],
+				['senpai', 'bf', 'gf']
+			];
+
+			weekNames = [
+				"Learning The Ropes",
+				"Daddy Dearest",
+				"Spooky Month",
+				"PICO",
+				"MOMMY MUST MURDER",
+				"RED SNOW",
+				"Hating Simulator ft. Moawling"
+			];
+			weekEmbedded = [true, true, true, true, true, true, true];
+		}else{
+			weekEmbedded = [];
+			weekCharacters = [];
+			weekNames = [];
+			weekData = [];
+			weekDirectories = [];
+		}
 		curDifficulty = 1;
 
-		weekEmbedded = [true, true, true, true, true, true, true];
 		// weekDifficulties =  [
 		// 	[],
 		// 	[],
@@ -163,25 +152,7 @@ class StoryMenuState extends MusicBeatState
 		// 	[]
 		// ];
 
-		weekCharacters = [
-			['gf', 'bf',''],
-			['dad', 'bf', 'gf'],
-			['spooky', 'bf', 'gf'],
-			['pico', 'bf', 'gf'],
-			['mom', 'bf', 'gf'],
-			['parents-christmas', 'bf', 'gf'],
-			['senpai', 'bf', 'gf']
-		];
 
-		weekNames = [
-			"Learning The Ropes",
-			"Daddy Dearest",
-			"Spooky Month",
-			"PICO",
-			"MOMMY MUST MURDER",
-			"RED SNOW",
-			"Hating Simulator ft. Moawling"
-		];
 	}
 
 	function loadWeeks(){
@@ -387,6 +358,10 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 70");
 
+		if(weekData.length < 1){
+			MainMenuState.handleError("You have no weeks installed!");
+			return;
+		}
 		for (i in 0...weekData.length)
 		{
 			var weekThing:MenuItem = new MenuItem(0, 56 + yellowBG.height + 10,i,weekNames[i]);
@@ -463,7 +438,6 @@ class StoryMenuState extends MusicBeatState
 		// updateText();
 
 		trace("Line 165");
-
 		changeWeek(0);
 		super.create();
 		changeDifficulty(0);

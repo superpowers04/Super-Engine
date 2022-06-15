@@ -34,7 +34,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N22";
+	public static var nightly:String = "N23";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
@@ -217,7 +217,7 @@ class MainMenuState extends SickMenuState
 	}
 	override function changeSelection(change:Int = 0){
 		// if(char != null && change != 0) char.playAnim(Note.noteAnims[if(change > 0)1 else 2],true);
-		
+		if(MainMenuState.errorMessage != "")MainMenuState.errorMessage = "";
 		super.changeSelection(change);
 	}
 
