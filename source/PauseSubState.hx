@@ -38,6 +38,9 @@ class PauseSubState extends MusicBeatSubstate
 
 	var songPath = '';
 	var shouldveLeft = false;
+	var finishCallback:()->Void;
+	var time:Float = 0;
+	var volume:Float = 0;
 	public function new(x:Float, y:Float)
 	{
 		openfl.system.System.gc();
@@ -45,12 +48,17 @@ class PauseSubState extends MusicBeatSubstate
 		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
 		PlayState.instance.callInterp("pauseCreate",[this]);
 
-		pauseMusic = new FlxSound().loadEmbedded(TitleState.pauseMenuMusic, true, true);
-		pauseMusic.volume = 0;
+		// pauseMusic = ;
+		// pauseMusic.volume = 0;
 		// FlxG.sound.playMusic(SickMenuState.menuMusic,FlxG.save.data.instVol);
-		pauseMusic.play(false, FlxG.save.data.instVol * 0.8);
+		// FlxG.sound.music.play(false, FlxG.save.data.instVol * 0.8);
+		// FlxG.sound.music.time = Conductor.songPosition;
 
-		FlxG.sound.list.add(pauseMusic);
+		finishCallback = FlxG.sound.music.onComplete;
+		time = FlxG.sound.music.time;
+		FlxG.sound.music.onComplete = null;
+		FlxG.sound.music.looped = true;
+		// FlxG.sound.list.add(pauseMusic);
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
@@ -120,12 +128,17 @@ class PauseSubState extends MusicBeatSubstate
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		PlayState.instance.callInterp("pause",[this]);
+		volume = FlxG.sound.music.volume;
+		FlxTween.tween(FlxG.sound.music,{volume:0.2},0.5);
+		FlxG.sound.music.looped = true;
 	}
 
 	override function update(elapsed:Float)
 	{if (ready){
-		if (pauseMusic.volume < 0.5)
-			pauseMusic.volume += 0.01 * elapsed;
+		// if (FlxG.sound.music.volume < 0.5)
+		// 	FlxG.sound.music.volume += 0.01 * elapsed;
+		// if (FlxG.sound.music.volume > 0.25)
+		// 	FlxG.sound.music.volume -= 0.1 * elapsed;
 		PlayState.instance.callInterp("pauseUpdate",[this]);
 
 		super.update(elapsed);
@@ -232,9 +245,14 @@ class PauseSubState extends MusicBeatSubstate
 		ready = false;
 		var swagCounter:Int = 1;
 		try{
-			pauseMusic.stop();
+			FlxTween.tween(FlxG.sound.music,{volume:0},0.5,{onComplete:function(_){
+				FlxG.sound.music.time = time;
+				FlxTween.tween(FlxG.sound.music,{volume:volume},0.01);
+				FlxG.sound.music.onComplete = finishCallback;
+				FlxG.sound.music.pause();
+			}});
 		}catch(e){}
-		for (i in [pauseMusic,levelDifficulty,levelInfo,perSongOffset]) {
+		for (i in [levelDifficulty,levelInfo,perSongOffset]) {
 			if(i != null){
 				i.destroy();
 			}

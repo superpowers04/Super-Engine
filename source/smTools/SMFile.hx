@@ -131,7 +131,8 @@ class SMFile
 				stage: 'stage',
 				speed: 2.0,
 				validScore: false,
-				difficultyString: "Mania"
+				difficultyString: "Mania",
+				chartVersion:"SE-Stepmania"
 			}
 
 		// lets check if the sm loading was valid

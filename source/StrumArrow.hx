@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 // import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import sys.FileSystem;
+import flixel.math.FlxPoint;
 import flixel.graphics.FlxGraphic;
 import flash.display.BitmapData;
 import sys.io.File;
@@ -14,14 +15,13 @@ class StrumArrow extends FlxSprite{
 	public static var defColor:FlxColor = 0xFFFFFFFF;
 	var noteColor:FlxColor = 0xFFFFFFFF; 
 	public var id:Int = 0; 
-	static var path_:String = "mods/noteassets";
 	override public function new(nid:Int = 0,?x:Float = 0,?y:Float = 0){
 		super(x,y);
 		id = nid;
 		ID = nid;
 	}
 
-	public function changeSprite(?name:String = "default",?_frames:FlxAtlasFrames,?anim:String = "",?setFrames:Bool = true){
+	public function changeSprite(?name:String = "default",?_frames:FlxAtlasFrames,?anim:String = "",?setFrames:Bool = true,path_:String = "mods/noteassets"){
 		try{
 			var curAnim = if(anim == "" && animation.curAnim != null) animation.curAnim.name else anim;
 			if(setFrames && (_frames != null || name != "")){
@@ -37,6 +37,7 @@ class StrumArrow extends FlxSprite{
 					frames = _frames;
 				}
 			}
+			frames = frames.addBorder(new FlxPoint(1,1));
 			antialiasing = true;
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();

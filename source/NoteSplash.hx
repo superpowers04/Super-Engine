@@ -20,7 +20,12 @@ class NoteSplash extends FlxSprite
 
 			super();
 			// frames = Paths.getSparrowAtlas("noteSplashes");
-			frames = FlxAtlasFrames.fromSparrow(NoteAssets.splashImage,NoteAssets.splashXml);
+			if(PlayState.instance != null){
+				PlayState.instance.callInterp("newNoteSplash",[this]);
+			}
+			if(frames == null){
+				frames = FlxAtlasFrames.fromSparrow(NoteAssets.splashImage,NoteAssets.splashXml);
+			}
 			// Psych styled
 			animation.addByPrefix("note1-0", "note splash blue 1", 24, false);
 			animation.addByPrefix("note2-0", "note splash green 1", 24, false);
@@ -41,19 +46,36 @@ class NoteSplash extends FlxSprite
 			animation.addByPrefix("note2-1", "note impact 2 green", 24, false);
 			animation.addByPrefix("note0-1", "note impact 2 purple", 24, false);
 			animation.addByPrefix("note3-1", "note impact 2 red", 24, false);
+			if(PlayState.instance != null){
+				PlayState.instance.callInterp("newNoteSplashAfter",[this]);
+			}
 		}catch(e){MainMenuState.handleError(e,'Error while loading NoteSplashes ${e.message}');
 		}
 		
 
 	}
 
-	public function setupNoteSplash(xPos:Float, yPos:Float,?note:Int = 0)
+	public function setupNoteSplash(?obj:Dynamic = null,?note:Int = 0)
 	{
 		try{
-			x = xPos;
-			y = yPos;
+			if(PlayState.instance != null){
+				PlayState.instance.callInterp("setupNoteSplash",[this]);
+			}
+			// x = xPos;
+			// y = yPos;
 			alpha = 0.6;
-			animation.play("note" + note + "-" + FlxG.random.int(0, 1), true);
+			var anim = "note" + note + "-" + FlxG.random.int(0, 1);
+			if(animation.getByName(anim) == null){
+				note = note % 4;
+				anim = "note" + note + "-0";
+				if(animation.getByName(anim) == null){
+					anim = "note0-0";
+					if(animation.getByName(anim) == null){
+						throw("noteSplash has no valid animations?");
+					}
+				}
+			}
+			animation.play(anim, true);
 			animation.finishCallback = finished;
 			if(animation.curAnim == null){
 				animation.play("note" + note + "-0", true);
@@ -62,17 +84,25 @@ class NoteSplash extends FlxSprite
 			animation.curAnim.frameRate = 24;
 			data = note;
 			updateHitbox();
-			switch (NoteAssets.splashType) {
-				case "psych":
-					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-					offset.set(10, 10);
-				case "vanilla": // From DotEngine
-					offset.set(width * 0.3, height * 0.3);
-				case "custom":
-					// Do nothing
-				default:
-					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-					offset.set(-40, -40);
+
+			if(obj != null){
+				x = obj.x + (obj.width * 0.5) - (width * 0.5);
+				y = obj.y;
+			}
+			// switch (NoteAssets.splashType) {
+			// 	case "psych":
+			// 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+			// 		offset.set(10, 10);
+			// 	case "vanilla": // From DotEngine
+			// 		offset.set(width * 0.3, height * 0.3);
+			// 	case "custom":
+			// 		// Do nothing
+			// 	default:
+			// 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+			// 		offset.set(-40, -40);
+			// }
+			if(PlayState.instance != null){
+				PlayState.instance.callInterp("setupNoteSplashAfter",[this]);
 			}
 		}catch(e){MainMenuState.handleError(e,'Error while setting up a NoteSplash ${e.message}');
 		}

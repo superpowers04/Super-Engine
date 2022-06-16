@@ -178,6 +178,20 @@ class Character extends FlxSprite
 
 	// HScript related shit
 
+	public function toJson(){
+		return Json.stringify({
+			type:"Character",
+			charType:charType,
+			isPlayer:isPlayer,
+			name:curCharacter,
+			currentAnimation:animation.curAnim,
+			hasInterp:interp != null,
+			color:definingColor
+		});
+	}
+	public override function toString(){
+		return toJson();
+	}
 
 	var interp:Interp;
 	public static function hasCharacter(char:String):Bool{
@@ -385,6 +399,7 @@ class Character extends FlxSprite
 				if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
 				if (anima.char_side != null && anima.char_side != 3 && anima.char_side == charType){continue;} // This if statement hurts my brain
 				if (anima.ifstate != null){
+					anima.ifstate.isFunc = false; //Force because funni
 					if (anima.ifstate.check == 1 ){ // Do on step or beat
 						if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.stepAnimEvents[charType][anima.anim] = anima.ifstate;
 					} else {

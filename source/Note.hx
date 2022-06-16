@@ -49,7 +49,7 @@ class Note extends FlxSkewedSprite
 	public var noteScore:Float = 1;
 	public var inCharter:Bool = false;
 
-	public static var swagWidth:Float = 160 * 0.7;
+	public static var swagWidth:Float = 112;
 	public static var PURP_NOTE:Int = 0;
 	public static var BLUE_NOTE:Int = 1;
 	public static var GREEN_NOTE:Int = 2;
@@ -113,7 +113,37 @@ class Note extends FlxSkewedSprite
 		animation.addByPrefix('redhold', 'red hold piece');
 		animation.addByPrefix('bluehold', 'blue hold piece');
 	}
-
+	public function changeSprite(?name:String = "default",?_frames:FlxAtlasFrames,?_anim:String = "",?setFrames:Bool = true,path_:String = "mods/noteassets"){
+		try{
+			var curAnim = if(_anim == "" && animation.curAnim != null) animation.curAnim.name else if(_anim != "") _anim else "";
+			var _sx:Float = scale.x;
+			var _sy:Float = scale.y;
+			var _ox:Float = offset.x;
+			if(setFrames && (_frames != null || name != "")){
+				if(_frames == null){
+					if(name == "skin"){
+						frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+					}else if (name == 'default' || (!FileSystem.exists('${path_}/${name}.png') || !FileSystem.exists('${path_}/${name}.xml'))){
+						frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png')),File.getContent("assets/shared/images/NOTE_assets.xml"));
+					}else{
+						frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path_}/${name}.png')),File.getContent('${path_}/${name}.xml'));
+					}
+				}else{
+					frames = _frames;
+				}
+			}
+			frames = frames.addBorder(new FlxPoint(1,1));
+			setGraphicSize(Std.int(width * 0.7));
+			antialiasing = true;
+			updateHitbox();
+			addAnimations();
+			animation.play(curAnim);
+			centerOffsets();
+			scale.x = _sx;scale.y = _sy;
+			offset.x = frameWidth * 0.5;
+		}catch(e){MainMenuState.handleError(e,'Error while changing sprite for arrow:\n ${e.message}');
+		}
+	}
 	public function loadFrames(){
 		if (frames == null){
 			try{
@@ -377,11 +407,11 @@ class Note extends FlxSkewedSprite
 		// offset.y = 0;
 		// origin.y=0;
 		offset.x = frameWidth * 0.5;
-	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}');}}
+	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
 	var missedNote:Bool = false;
 	override function draw(){
-		if(!eventNote && showNote){
+		if(!(eventNote && !inCharter) && showNote){
 			super.draw();
 		}
 		// if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}

@@ -29,6 +29,8 @@ typedef SwagSong =
 	var ?difficultyString:String;
 	var ?inverthurtnotes:Bool;
 	var ?rawJSON:Dynamic;
+	var ?chartVersion:String;
+	var ?chartType:String;
 }
 
 typedef NoteMetadata={
@@ -120,7 +122,8 @@ class Song
 				"sections": 0,
 				"needsVoices": false,
 				"bpm": 150,
-				"speed": 2.0
+				"speed": 2.0,
+				"chartType":"SUPER ENGINE"
 			}
 		}';
 	}
@@ -261,7 +264,7 @@ class Song
 					if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");sN.push(nid);continue;}
 					
 					if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-						if(Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > 7)) {if(note[1] > 7){note[1] = note[1] % 8;}note[3] = 1;modified = true;} // Support for Andromeda and tricky notes
+						if(Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > 7)) {note[3] = 1;modified = true;} // Support for Andromeda and tricky notes
 					}else{
 						note[3] = null;modified = true;
 					}

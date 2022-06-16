@@ -28,28 +28,15 @@ class ArrowSelection extends SearchMenuState
 			var babyArrow:StrumArrow = new StrumArrow(i,0, if (FlxG.save.data.downscroll) FlxG.height - 165 else 50);
 
 			babyArrow.init();
-			babyArrow.x += Note.swagWidth * i + i;
+			// babyArrow.x += Note.swagWidth * i + i;
 
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
-
-
-			babyArrow.y -= 10;
 			babyArrow.alpha = 0;
 			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-
-			// babyArrow.ID = i;
-
-			
 			playerStrums.add(babyArrow);
+
 			
-
-			babyArrow.playStatic(); 
-			// Todo, clean this shitty code up
-			babyArrow.x += 50;
-
-			babyArrow.x += (FlxG.width / 4) * 1;
-			babyArrow.y += 200;
 			
 
 
@@ -87,12 +74,21 @@ class ArrowSelection extends SearchMenuState
 				searchList.push(char);
 			}
 		}
+
 		generateStaticArrows(1);
 		super.create();
+		infotext.text = "Hold shift to scroll faster, Press CTRL to toggle viewing the entire note asset";
 		add(playerStrums);
+
 		changeSelection();
 
 	}catch(e) MainMenuState.handleError('Error with notesel "create" ${e.message}');}
+
+	override function update(e){ // This is shit but I don't want these to update
+		// members.pop();
+		super.update(e);
+		// members.push(notes);
+	}
 	override function beatHit(){
 		super.beatHit();
 		if(playerStrums.members[curBeat % 4] != null) {
@@ -102,14 +98,61 @@ class ArrowSelection extends SearchMenuState
 		}
 
 	}
+	override function extraKeys(){
+		if(FlxG.keys.justPressed.CONTROL) {arrowDisplay = !arrowDisplay;updateArrowDisplay();}
+	}
+	var arrowDisplay:Bool = false;
+	public var notes:FlxTypedGroup<FakeNote> = new FlxTypedGroup<FakeNote>();
+	inline static var time = 100000000000;
+	public function updateArrowDisplay(){
+		if(playerStrums.members[0] == null) return;
+		if(arrowDisplay && notes.members[0] == null){
+
+			add(notes);
+			var note:FakeNote = null;
+			var noteSus:FakeNote = null;
+			var noteSusEnd:FakeNote = null;
+			var strumNote:StrumArrow = null;
+			for (i in 0 ... 4) {
+				strumNote = playerStrums.members[i];
+				note = new FakeNote(time,i,null,false);
+				noteSus = new FakeNote(time,i,note,true);
+				noteSusEnd = new FakeNote(time,i,noteSus,true);
+
+				note.x = strumNote.x + (strumNote.width * 0.5);
+				noteSus.x = strumNote.x + (strumNote.width * 0.5);
+				noteSusEnd.x = strumNote.x + (strumNote.width * 0.5);
+
+				note.y = strumNote.y + strumNote.height;
+				noteSus.y = note.y + note.height;
+				noteSusEnd.y = noteSus.y + noteSus.height * 2;
+
+				notes.add(note);
+				notes.add(noteSus);
+				notes.add(noteSusEnd);
+			}
+		}
+		for (i in notes.members) {
+			i.visible = arrowDisplay;
+		}
+		if(notes.members[0] != null && arrowDisplay){
+			var i:Int = 0;
+			var note:FakeNote = null;
+			while (i < notes.members.length) {
+				notes.members[i].changeSprite(songs[curSelected]);
+				i++;
+			}
+		}
+	}
 	override function changeSelection(change:Int = 0){
 		super.changeSelection(change);
-		playerStrums.forEach(
-			function(arrow:StrumArrow){
-				arrow.changeSprite(songs[curSelected]);
-				arrow.playStatic(); 
-			}
-		);
+		for (arrow in playerStrums.members){
+			arrow.changeSprite(songs[curSelected]);
+			arrow.playStatic();
+			arrow.screenCenter(X);
+			arrow.x += ((arrow.width + 20) * arrow.id - 2); 
+		}
+		updateArrowDisplay();
 	}
 	override function select(sel:Int = 0){
 		FlxG.save.data.noteAsset = songs[curSelected];

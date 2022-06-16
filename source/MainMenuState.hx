@@ -24,6 +24,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import flixel.util.FlxAxes;
 import haxe.CallStack;
+import ScriptableState;
 
 
 using StringTools;
@@ -95,7 +96,7 @@ class MainMenuState extends SickMenuState
 
 	override function create()
 	{
-		forceQuit = false;
+		// forceQuit = true;
 		if (Main.errorMessage != ""){
 			errorMessage = Main.errorMessage;
 			Main.errorMessage = "";
@@ -224,8 +225,12 @@ class MainMenuState extends SickMenuState
 	var otherMenu:Bool = false;
 
 	function otherSwitch(){
-		options = ["freeplay","download charts","download characters"];
-		descriptions = ['Play through the story mode', 'Play any song from the game',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
+		options = ["freeplay","download charts","download characters"
+		//, "scripted states"
+		];
+		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"
+		// ,"Run a script inside of a semi sandboxed environment"
+		];
 		
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
@@ -274,7 +279,9 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new OptionsMenu());
 			// case "Setup characters":
 			// 	FlxG.switchState(new SetupCharactersList());
-
+			
+			// case "scripted states":
+			// 	FlxG.switchState(new SelectScriptableState());
 			case "download charts":
 				FlxG.switchState(new ChartRepoState());
 			case 'story mode':

@@ -132,6 +132,23 @@ class ChartingState extends MusicBeatState
 		super();
 	}
 	var stageSel:FlxInputText;
+	public static function detectChartType(_song:SwagSong):String{
+		if(_song.chartType != null && _song.chartType != "" && _song.chartType != "KE1"){
+			return _song.chartType;
+		}
+		if(_song.eventObjects != null && _song.events != null){
+			return _song.chartType = "KE/PSYCH HYBRID";
+		}
+		if(_song.eventObjects != null){
+			return _song.chartType = "KADE";
+		}
+		if(_song.events != null){
+			return _song.chartType = "PSYCH";
+		}
+
+		return _song.chartType = "FNF/UNKNOWN";
+	}
+	var chartType = "FNF";
 	override function create()
 	{try{
 
@@ -201,6 +218,7 @@ class ChartingState extends MusicBeatState
 				stage: 'stage',
 				speed: 2,
 				validScore: false,
+				chartType:"SUPER ENGINE"
 			};
 		}
 		if(_song.player1 == ""){
@@ -227,7 +245,7 @@ class ChartingState extends MusicBeatState
 		deezNuts.set(32, 8);
 		deezNuts.set(48, 12);
 		deezNuts.set(64, 16);
-
+		chartType = detectChartType(_song);
 		if (FlxG.save.data.showHelp == null)
 			FlxG.save.data.showHelp = true;
 
@@ -1360,6 +1378,7 @@ class ChartingState extends MusicBeatState
 			+ '\nSection: $curSection'
 			+ '\nCurStep: $curStep'
 			+ '\nSpeed: ${HelperFunctions.truncateFloat(speed, 1)}'
+			+ '\nChartType: ${chartType}'
 			+ '\n\nSnap: ${notesnap}'
 			+ "\n"
 			+ (doSnapShit ? "Snap enabled" : "Snap disabled")

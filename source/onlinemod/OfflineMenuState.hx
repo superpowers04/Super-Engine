@@ -50,10 +50,6 @@ class OfflineMenuState extends SearchMenuState
     sideButton.resize(250, 30);
     add(sideButton);
   }
-  function sortDirListing(listing:Array<String>){
-    
-    return listing;
-  }
   override function reloadList(?reload=false,?search = ""){
     curSelected = 0;
     if(reload){grpSongs.destroy();}

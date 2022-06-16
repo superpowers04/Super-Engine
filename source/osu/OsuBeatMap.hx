@@ -66,6 +66,7 @@ class OsuBeatMap{
 					stage: 'stage',
 					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else FlxG.save.data.scrollOSUSpeed,
 					validScore: false,
+					chartVersion:"SE-OSU! Mania",
 					noteMetadata:Song.defNoteMetadata,
 					difficultyString: '[${getSetting("Version")}]'
 				};
