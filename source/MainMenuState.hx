@@ -24,7 +24,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import flixel.util.FlxAxes;
 import haxe.CallStack;
-import ScriptableState;
+// import ScriptableState;
 
 
 using StringTools;

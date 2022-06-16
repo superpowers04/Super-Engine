@@ -11,6 +11,8 @@ import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import tjson.Json;
+import flixel.math.FlxPoint;
+import sys.io.File;
 
 import PlayState;
 
