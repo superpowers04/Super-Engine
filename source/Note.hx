@@ -14,6 +14,7 @@ import tjson.Json;
 import flixel.math.FlxPoint;
 import sys.io.File;
 import sys.FileSystem;
+import flash.display.BitmapData;
 
 import PlayState;
 
