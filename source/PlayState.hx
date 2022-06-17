@@ -276,9 +276,26 @@ class PlayState extends MusicBeatState
 	public static var stageTags:Array<String> = [];
 	public static var beatAnimEvents:Map<Int,Map<String,IfStatement>>;
 	public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
-	// public static function addEvent(id:String,type:Int,value:Int,func:Dynamic->Void){
-		
-	// }
+
+	public static function addEvent(id:Int,name:String,check:Int,value:Int,func:Dynamic->Void,?variable:String = "def",?type:String="equals"):IfStatement{
+		var _events:Map<Int,Map<String,IfStatement>> = (switch(check){
+			case 0:
+				beatAnimEvents;
+			default:
+				stepAnimEvents;
+		});
+		if(_events[id] == null){
+			_events[id] = new Map<String,IfStatement>();
+		}
+		return _events[id][name] = cast {
+			isFunc:true,
+			value:value,
+			check:type,
+			variable:(if(variable == "def") (if(check == 0) "curBeat" else "curStep") else variable),
+			func:func,
+			type:type
+		};
+	}
 
 
 
@@ -593,13 +610,6 @@ class PlayState extends MusicBeatState
 		camTOP.bgColor.alpha = 0;
 
 
-		// Note splashes
-		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
-		var noteSplash0:NoteSplash = new NoteSplash();
-		noteSplash0.setupNoteSplash(new FlxPoint(FlxG.height * 0.85, FlxG.width * 0.9), 0);
-		noteSplash0.cameras = [camHUD];
-
-		grpNoteSplashes.add(noteSplash0);
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
@@ -1242,6 +1252,12 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes = new FlxTypedGroup<StrumArrow>();
 		add(strumLineNotes);
+		// Note splashes
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		var noteSplash0:NoteSplash = new NoteSplash();
+		noteSplash0.setupNoteSplash(boyfriend, 0);
+		noteSplash0.cameras = [camHUD];
+		grpNoteSplashes.add(noteSplash0);
 
 		add(grpNoteSplashes);
 		if (SONG.difficultyString != null && SONG.difficultyString != "") songDiff = SONG.difficultyString;
@@ -1268,6 +1284,8 @@ class PlayState extends MusicBeatState
 		}
 		followChar(0,true);
 		add(camFollow);
+
+
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast (Lib.current.getChildAt(0), Main)).getFPS()));
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
@@ -1782,6 +1800,7 @@ class PlayState extends MusicBeatState
 				}
 				if(introAudio[swagCounter] != null && introAudio[swagCounter] != "")FlxG.sound.play(introAudio[swagCounter],FlxG.save.data.otherVol);
 			}
+			callInterp("startTimerStepAfter",[swagCounter]);
 
 			swagCounter += 1;
 			// generateSong('fresh');
@@ -1941,7 +1960,7 @@ class PlayState extends MusicBeatState
 				SONG.needsVoices = false;
 				vocals = new FlxSound();
 		}
-
+		vocals.looped = false;
 		FlxG.sound.list.add(vocals);
 		if (notes == null) 
 			notes = new FlxTypedGroup<Note>();
@@ -1965,10 +1984,10 @@ class PlayState extends MusicBeatState
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
+			var daStrumTime:Float = 0;
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
-
+				daStrumTime = songNotes[0] + FlxG.save.data.offset;
 				if (daStrumTime < 0)
 					daStrumTime = 0;
 
@@ -1989,7 +2008,8 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 				if(jumpTo != 0 && daStrumTime < jumpTo){continue;} // Don't load notes if they aren't from this timezone
 				// if(songNotes[3] != null) trace('Note type: ${songNotes[3]}');
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,null,null,songNotes[3],songNotes,gottaHitNote);
+				//                       new(strumTime,  _noteData, prevNote, sustainNote,_inCharter,_type,_rawNote,playerNote)
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,songNotes[3],songNotes,gottaHitNote);
 				if(swagNote.killNote){swagNote.destroy();continue;}
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
@@ -2006,7 +2026,7 @@ class PlayState extends MusicBeatState
 					{
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,null,songNotes[3],songNotes,gottaHitNote);
+						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,false,songNotes[3],songNotes,gottaHitNote);
 						if(sustainNote.killNote){sustainNote.destroy();continue;}
 						sustainNote.scrollFactor.set();
 						sustainNote.sustainLength = susLength;
@@ -2022,7 +2042,7 @@ class PlayState extends MusicBeatState
 					}
 					if(Math.floor(susLength) - susLength > 0.1){ // Allow for float note lengths, hopefully
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * _susNote) + (Conductor.stepCrochet * Math.floor(susLength) - susLength), daNoteData, oldNote, true,null,songNotes[3],songNotes,gottaHitNote);
+						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * _susNote) + (Conductor.stepCrochet * Math.floor(susLength) - susLength), daNoteData, oldNote, true,false,songNotes[3],songNotes,gottaHitNote);
 						sustainNote.scrollFactor.set();
 						sustainNote.sustainLength = susLength;
 						unspawnNotes.push(sustainNote);
@@ -2193,6 +2213,7 @@ class PlayState extends MusicBeatState
 				startTimer.active = true;
 			canPause = true;
 			paused = false;
+			vocals.looped = FlxG.sound.music.looped = false;
 
 		}
 
@@ -2556,14 +2577,16 @@ class PlayState extends MusicBeatState
 	override function draw(){
 		try{noteShit();}catch(e){handleError('Error during noteShit: ${e.message}\n ${e.stack}}');}
 		callInterp("draw",[]);
-		if(!FlxG.save.data.preformance){
-			if(downscroll){
-				notes.sort(FlxSort.byY,FlxSort.DESCENDING);
-			}else{
-				notes.sort(FlxSort.byY,FlxSort.ASCENDING);
+		try{
 
+			if(!FlxG.save.data.preformance){
+				if(downscroll){
+					notes.sort(FlxSort.byY,FlxSort.DESCENDING);
+				}else{
+					notes.sort(FlxSort.byY,FlxSort.ASCENDING);
+				}
 			}
-		}
+		}catch(e){trace('Unable to sort notes? ${e.message},${e.stack}');}
 		super.draw();
 	}
 	public function followChar(?char:Int = 0,?locked:Bool = true){
@@ -3604,6 +3627,7 @@ class PlayState extends MusicBeatState
 						if(daNote.updateX) daNote.x = strumNote.x + (strumNote.width * 0.5);
 						if(!daNote.isSustainNote && daNote.updateAngle) daNote.angle = strumNote.angle;
 						if(daNote.updateAlpha) daNote.alpha = strumNote.alpha;
+						if(daNote.updateScrollFactor) daNote.scrollFactor.set(strumNote.scrollFactor.x,strumNote.scrollFactor.y);
 
 					}
 					if(daNote.mustPress && daNote.tooLate){
@@ -3694,29 +3718,24 @@ class PlayState extends MusicBeatState
 				{
 
 		 			var daNote:Note;
-		 			var i:Int = 0;
-					while (i < notes.members.length)
+		 			var i:Int = notes.members.length;
+					
+					notes.forEachAlive(function(daNote:Note)
 					{
-						daNote = notes.members[i];
-						i++;
-						if (daNote == null || !daNote.canBeHit || !holdArray[daNote.noteData] || !daNote.alive || daNote.skipNote || !daNote.mustPress || !daNote.isSustainNote) continue;
-						 // Clip note to strumline
-						if(daNote.strumTime <= Conductor.songPosition || daNote.sustainLength < 2 || !FlxG.save.data.accurateNoteSustain){ // Only destroy the note when properly hit
-							goodNoteHit(daNote);
-							i--;
-							return;
+						if (daNote.mustPress && daNote.isSustainNote && daNote.canBeHit && holdArray[daNote.noteData]){ // Clip note to strumline
+							if(daNote.strumTime <= Conductor.songPosition || daNote.sustainLength < 2 || !FlxG.save.data.accurateNoteSustain) // Only destroy the note when properly hit
+								{goodNoteHit(daNote);return;}
+							// if(Std.isOfType(daNote,HoldNote)){
+							// 	var e:HoldNote = cast daNote;
+							// 	daNote.clip = true;
+							// }else{
+								daNote.isPressed = true;
+							// }
+							
+							daNote.susHit(0,daNote);
+							callInterp("susHit",[daNote]);
 						}
-						// if(Std.isOfType(daNote,HoldNote)){
-						// 	var e:HoldNote = cast daNote;
-						// 	daNote.clip = true;
-						// }else{
-							daNote.isPressed = true;
-						// }
-						
-						daNote.susHit(0,daNote);
-						callInterp("susHit",[daNote]);
-						
-					};
+					});
 				}
 		 
 				// PRESSES, check for note hits
@@ -3729,12 +3748,12 @@ class PlayState extends MusicBeatState
 					var directionList:Array<Bool> = [false,false,false,false]; // directions that can be hit
 					var dumbNotes:Array<Note> = []; // notes to kill later
 		 			var onScreenNote:Bool = false;
-		 			var i = 0;
+		 			var i = notes.members.length;
 		 			var daNote:Note;
-		 			while (i < notes.members.length)
+		 			while (i >= 0)
 					{
 						daNote = notes.members[i];
-						i++;
+						i--;
 						if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) continue;
 
 						if (!onScreenNote) onScreenNote = true;
@@ -3749,12 +3768,7 @@ class PlayState extends MusicBeatState
 										if (Math.abs(daNote.strumTime - coolNote.strumTime) < 5)
 										{ // if it's the same note twice at < 5ms distance, just delete it
 											// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
-											// weell now I'm using a while instead of a forEachAlive, so fuck you
-
-											daNote.kill();
-											notes.remove(daNote, true);
-											daNote.destroy();
-											i--;
+											dumbNotes.push(daNote);
 											break;
 										}
 										if (daNote.strumTime < coolNote.strumTime)
@@ -3775,10 +3789,14 @@ class PlayState extends MusicBeatState
 						}
 						
 					};
+					while((daNote = dumbNotes.pop()) != null) {
+						notes.remove(daNote);
+						daNote.destroy();
+					}
 					// for (note in dumbNotes)
 					// {
 					// }
-		 			if(onScreenNote){
+		 			// if(onScreenNote){
 
 						for (i in 0...possibleNotes.length) {
 							hitArray[possibleNotes[i].noteData] = true;
@@ -3793,7 +3811,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 
-		 			}
+		 			// }
 
 				}
 		 		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);

@@ -1,11 +1,13 @@
 This was last updated as of 0.11.0.
 
+This file might look weird inside of Notepad, I highly recommend using Notepad++, SublimeText or VSCode for editing and reading text files
+
 FOLDERS AND WHAT THEY MEAN:
  - charts | Where charts will go. You can just put the json files, inst and voices in a folder and Super Engine will automatically read them
  - characters | Where custom characters go
  - noteassets | You can put a png and xml from note skins here
  - weeks | Where weeks go, eventually there should be documentation on how to make them at https://github.com/superpowers04/Super-Engine/wiki
- - packs | You can make folders and then put charts and characters inside of them to organise your charts and characters. While this isn't required, it might make your mods folder less of a mess
+ - packs | You can make folders and then put charts and characters inside of them to organise your charts, characters and add pack specific scripts without having 20 copies of the same script. While this isn't required, it might make your mods folder less of a mess
  - scripts | Global scripts that you can use to do things like adding new features and such, scripts can contain options and such. 
     Look at https://cdn.discordapp.com/attachments/908215636352716831/916629405147742228/Arrow_Options.zip for an example
     You can find a wiki here: https://github.com/superpowers04/Super-Engine/wiki/Character-and-Chart-scripts
@@ -25,24 +27,50 @@ EXTRA FILES:
   This can be enforced with Visibility > Force Generic Font, note that not all menus will work with all fonts and some things might appear off.
   A good font that could be used is https://gamebanana.com/tools/8509, it keeps the funkin style in places that a normal font is used
 
+ADDING EXISTING CHARTS:
+	There are multiple ways to do this:
+
+	The main way is to move the chart and it's respective Inst.ogg/Voices.ogg's to a new folder named the song inside of mods/charts
+	
+	You can make folders inside of mods/packs to organise your songs, make a new folder inside of Packs, named whatever. 
+		Make a charts folder inside of that, then put your songs from mods/charts into there
+
+	You can also use the Import Songs From Existing Mods option
+
+	If you don't want to add a song but would like to play it, just drag and drop the chart into your game. The game will try to detect the Inst and Voices from there.
+
+
+MAKING CHARTS:
+	Go to Options > Misc > Animation Debug and turn it on. 
+	Make a new folder inside of mods/charts named the song
+	Move your audio files(Inst.ogg and Voices.ogg, Make sure they're properly converted and not just renamed MP3's) into the folder
+	Open Modded Songs, hover over the song like you're about to play it and press 7(Or right click on the song)
+	Then you're free to chart, just don't forget to save
+
 
 MAKING CHARACTERS:
- Making characters is as simple as making a new folder inside of mods/characters,
- then dropping the png and xml into the folder, and renaming them to "character.png" and "character.xml". (If you don't see .png or .xml on the original file names then they aren't needed)
- Ingame, go to Options > Misc > Animation Debug and turn it on. 
- Go to Options > Modifications > X Character > find your character(All invalid characters appear at the top) and then Press 2. 
-  You can press H for help with using animation debug.
-  Pressing M twice will allow you to open the animation binder and config editor. Saving after adding the animations is recommended.
-  
-  If you want to edit a BF character, add the animations the character as an opponent. 
-  Upon exiting the animation binder, press 3 to save, then 7 to switch over to offsetting for BF
- 
- *BF uses inverted animations so BF NOTE RIGHT will be singLEFT and BF NOTE LEFT will be singRIGHT.
+ Importing the characters:
+	There are 2 ways to do this
+	1:
+		Make a new folder inside of mods/characters,
+		then drop the png and xml into the folder, and rename them to "character.png" and "character.xml". (If you don't see .png or .xml on the original file names then they aren't needed)
+ 	2:
+ 		Drag and drop the png onto the game, select the name you want and press continue
+ Ingame:
+	Go to Options > Misc > Animation Debug and make sure it's on. 
+	Go to Options > Modifications > X Character > find your character(All invalid characters appear at the top) and then Press 2. 
+	You can press H for help with using animation debug.
+	Pressing M twice will allow you to open the animation binder and config editor. Saving after adding the animations is recommended.
+
+	If you want to edit a BF character, add the animations the character as an opponent. 
+	Upon exiting the animation binder, press 3 to save, then 7 to switch over to offsetting for BF
+
+	*BF uses inverted animations so BF NOTE RIGHT will be singLEFT and BF NOTE LEFT will be singRIGHT.
  
  
  If there are things you'd like to do that aren't possible with the animation editor, editing the json manually might be a good idea.
  You can find the wiki page for character jsons here: https://github.com/superpowers04/Super-Engine/wiki/Character-JSON
- You can also provide a script.hscript to add custom scripting to your characters
+ You can also provide a script.hscript to add custom scripting to your characters for things like custom animations, character position manipulation and more
  
  
  

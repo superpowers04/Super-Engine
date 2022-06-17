@@ -33,6 +33,7 @@ class Note extends FlxSkewedSprite
 	public var updateY:Bool = true;
 	public var updateAlpha:Bool = true;
 	public var updateAngle:Bool = true;
+	public var updateScrollFactor:Bool = true;
 	public var lockToStrum:Bool = true;
 
 	public var mustPress:Bool = false;

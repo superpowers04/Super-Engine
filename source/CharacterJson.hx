@@ -34,7 +34,7 @@ typedef CharacterJson =
 	var genBy:String; // This should not be provided manually
 }
 typedef IfStatement = {
-	var func:Dynamic->Void;
+	var ?func:Dynamic->Void;
 	var ?isFunc:Bool;
 	var	variable:String;
 	var	type:String;

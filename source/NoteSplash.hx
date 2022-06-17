@@ -4,6 +4,7 @@ package;
 // Code from https://github.com/Tr1NgleBoss/Funkin-0.2.8.0-Port/
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxObject;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -55,7 +56,7 @@ class NoteSplash extends FlxSprite
 
 	}
 
-	public function setupNoteSplash(?obj:Dynamic = null,?note:Int = 0)
+	public function setupNoteSplash(?obj:FlxObject = null,?note:Int = 0)
 	{
 		try{
 			if(PlayState.instance != null){
@@ -84,10 +85,30 @@ class NoteSplash extends FlxSprite
 			animation.curAnim.frameRate = 24;
 			data = note;
 			updateHitbox();
+			centerOffsets();
+			centerOrigin();
 
 			if(obj != null){
-				x = obj.x + (obj.width * 0.5) - (width * 0.5);
-				y = obj.y;
+				@:privateAccess
+				{
+					cameras = obj.cameras;
+
+				}
+				scrollFactor.set(obj.scrollFactor.x,obj.scrollFactor.y);
+				
+				var objX:Float = obj.x;
+				var objY:Float = obj.y;
+				obj.screenCenter(XY);
+				screenCenter(XY);
+				var _x = obj.x;
+				var _y = obj.y;
+				obj.x = objX;
+				obj.y = objY;
+				x-=(_x - obj.x);
+				y-=(_y - obj.y);
+
+
+
 			}
 			// switch (NoteAssets.splashType) {
 			// 	case "psych":
