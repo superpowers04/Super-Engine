@@ -95,17 +95,8 @@ class NoteSplash extends FlxSprite
 
 				}
 				scrollFactor.set(obj.scrollFactor.x,obj.scrollFactor.y);
-				
-				var objX:Float = obj.x;
-				var objY:Float = obj.y;
-				obj.screenCenter(XY);
-				screenCenter(XY);
-				var _x = obj.x;
-				var _y = obj.y;
-				obj.x = objX;
-				obj.y = objY;
-				x-=(_x - obj.x);
-				y-=(_y - obj.y);
+				x=(obj.x);
+				y=(obj.y);
 
 
 
