@@ -90,6 +90,7 @@ class MusicBeatState extends FlxUIState
 	}
 
 	var skippedFrames = 0;
+	var checkInputFocus:Bool = true;
 	var hasTextInputFocus = false;
 	public var toggleVolKeys:Bool = true; 
 
@@ -116,15 +117,19 @@ class MusicBeatState extends FlxUIState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
-		if(FlxG.mouse.justPressed){
+		if(FlxG.mouse.justPressed && checkInputFocus){
 			var hasPressed = false;
 
 			var i:Int = 0;
-			var basic:Dynamic = null;
+			var obj:Dynamic = null;
 			forEach(function(basic:Dynamic){
-				if(!Std.isOfType(basic,flixel.addons.ui.FlxUITabMenu) && !Std.isOfType(basic,flixel.addons.ui.FlxUI) && Reflect.field(basic,"HasFocus") != null && Reflect.field(basic,"HasFocus")){
-					hasPressed = true;
-				}
+				try{
+
+					if(!Std.isOfType(basic,flixel.addons.ui.FlxUITabMenu) && !Std.isOfType(basic,flixel.addons.ui.FlxUI) && Reflect.field(basic,"HasFocus") != null && Reflect.field(basic,"HasFocus")){
+						obj = basic;
+						hasPressed = true;
+					}
+				}catch(e){trace('oh no i errored while checking for a item');}
 			},true);
 
 			// while (i < length)
@@ -138,8 +143,8 @@ class MusicBeatState extends FlxUIState
 			// }
 			if(hasTextInputFocus != hasPressed){
 				hasTextInputFocus = hasPressed;
-				if(hasPressed) onTextInputFocus(basic);
-				else onTextInputUnfocus(basic);
+				if(hasPressed) onTextInputFocus(obj);
+				else onTextInputUnfocus(obj);
 
 			}
 		}

@@ -16,6 +16,9 @@ using StringTools;
 class DirectoryListing extends SearchMenuState{
 	var curDirReg:EReg = ~/(.+\/)(.*?\/)/g;
 	var dataDir:String = "";
+
+	override public function onTextInputFocus(object:Dynamic){}
+	override public function onTextInputUnfocus(object:Dynamic){}
 	override function findButton(){
 		var nextDir:String = searchField.text;
 		if (!FileSystem.exists(nextDir) || !FileSystem.isDirectory(nextDir)){
@@ -32,6 +35,7 @@ class DirectoryListing extends SearchMenuState{
 	}
 	override function create()
 	{
+		checkInputFocus = false;
 		useAlphabet = false;
 		dataDir = Sys.getCwd();
 		buttonText["Find"] = "Go to/Search";

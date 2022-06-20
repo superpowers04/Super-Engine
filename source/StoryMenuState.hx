@@ -88,6 +88,7 @@ class StoryMenuState extends MusicBeatState
 	public static var weekGoods:Int = 0;
 	public static var weekBads:Int = 0;
 	public static var weekShits:Int = 0;
+	public static var weekGT:Int = 0;
 	public static var weekMaxCombo:Int = 0;
 	public static var weekAccuracy:Float = 0.00;
 	public static var loadDialog:Bool = true;
@@ -322,6 +323,7 @@ class StoryMenuState extends MusicBeatState
 		weekShits = 0;
 		weekGoods = 0;
 		weekMisses = 0;
+		weekGT = 0;
 		weekMaxCombo = 0;
 
 

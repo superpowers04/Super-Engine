@@ -248,8 +248,9 @@ class FinishSubState extends MusicBeatSubstate
 						+'\nGoods - ${PlayState.goods}'
 						+'\nBads - ${PlayState.bads}'
 						+'\nShits - ${PlayState.shits}'
+						+'\nGhost Taps - ${PlayState.ghostTaps}'
 						+'\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})'
-						+'\nMisses${if(FlxG.save.data.shittyMiss) ' + Shits' else ''}${if(FlxG.save.data.badMiss) ' + Bads' else ''}${if(FlxG.save.data.goodMiss) ' + Goods' else ''}: ${PlayState.misses}'
+						+'\nMisses${if(FlxG.save.data.ghost) "" else " + Ghost Taps"}${if(FlxG.save.data.shittyMiss) ' + Shits' else ''}${if(FlxG.save.data.badMiss) ' + Bads' else ''}${if(FlxG.save.data.goodMiss) ' + Goods' else ''}: ${PlayState.misses}'
 						+'\n\nScore: ${PlayState.songScore}'
 						+'\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%'
 						+'\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}\n');

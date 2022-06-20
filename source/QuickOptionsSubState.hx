@@ -53,7 +53,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	inline function setValue(str:String,value:Dynamic){
 		settings[str].value = value;
 	}
-
+	var _enabledMouse:Bool = false;
 	function reloadList():Void{
 		if(grpMenuShit != null) grpMenuShit.destroy();
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
@@ -78,6 +78,9 @@ class QuickOptionsSubState extends MusicBeatSubstate
 
 	public function new()
 	{
+		_enabledMouse = FlxG.mouse.visible;
+		FlxG.mouse.visible = false;
+		FlxG.mouse.enabled = false;
 		super();
 		loadSettings();
 
@@ -98,6 +101,11 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	}
 	function loadSettings(){
 		settings = normalSettings;
+	}
+	override function destroy(){
+		FlxG.mouse.visible = _enabledMouse;
+		FlxG.mouse.enabled = true;
+		super.destroy();
 	}
 
 	override function update(elapsed:Float)

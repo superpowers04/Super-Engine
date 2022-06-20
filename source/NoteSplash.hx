@@ -67,7 +67,7 @@ class NoteSplash extends FlxSprite
 			alpha = 0.6;
 			var anim = "note" + note + "-" + FlxG.random.int(0, 1);
 			if(animation.getByName(anim) == null){
-				note = note % 4;
+				note = note % Note.noteAnims.length;
 				anim = "note" + note + "-0";
 				if(animation.getByName(anim) == null){
 					anim = "note0-0";
@@ -101,18 +101,21 @@ class NoteSplash extends FlxSprite
 
 
 			}
-			// switch (NoteAssets.splashType) {
-			// 	case "psych":
-			// 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-			// 		offset.set(10, 10);
-			// 	case "vanilla": // From DotEngine
-			// 		offset.set(width * 0.3, height * 0.3);
-			// 	case "custom":
-			// 		// Do nothing
-			// 	default:
-			// 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-			// 		offset.set(-40, -40);
-			// }
+			// animation.play(anim, true);
+			switch (NoteAssets.splashType.toLowerCase()) {
+				case "psych":
+					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+					offset.set(10, 10);
+				case "vanilla": // From DotEngine
+					offset.set(width * 0.3, height * 0.3);
+				case "custom":
+					// Do nothing
+				case "se":
+					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+					offset.set(-40, -40);
+				default:
+			}
+
 			if(PlayState.instance != null){
 				PlayState.instance.callInterp("setupNoteSplashAfter",[this]);
 			}

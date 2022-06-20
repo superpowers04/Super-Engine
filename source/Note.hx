@@ -203,6 +203,7 @@ class Note extends FlxSkewedSprite
 	// Array of animations, to be used above
 	public static var noteAnims:Array<String> = ['singLEFT','singDOWN','singUP','singRIGHT']; 
 	public static var noteDirections:Array<String> = ['LEFT','DOWN','UP','RIGHT','NONE']; 
+
 	public var killNote = false;
 
 
@@ -232,7 +233,7 @@ class Note extends FlxSkewedSprite
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
 
 
-		this.noteData = _noteData % 4; 
+		this.noteData = _noteData % Note.noteAnims.length; 
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
 		if(inCharter){
 			this.strumTime = strumTime;

@@ -92,15 +92,17 @@ class PlayState extends MusicBeatState
 	public static var actualSongName:String = ''; // The actual song name, instead of the shit from the JSON
 	public static var songDir:String = ''; // The song's directory
 	public static var isStoryMode:Bool = false;
-	public static var storyWeek:Dynamic = 0;
+
+	public static var songDiff:String = "";
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
-	public static var songDiff:String = "";
+	public static var storyWeek:Dynamic = 0;
 	public static var weekSong:Int = 0;
 	public static var shits:Int = 0;
 	public static var bads:Int = 0;
 	public static var goods:Int = 0;
 	public static var sicks:Int = 0;
+	public static var ghostTaps:Int = 0;
 	public static var stateType=0;
 	public static var invertedChart:Bool = false;
 
@@ -336,6 +338,7 @@ class PlayState extends MusicBeatState
 		misses = 0;
 		maxCombo = 0;
 		combo = 0;
+		ghostTaps = 0;
 		accuracy = 0.00;
 		// totalNotesHit = 0;
 		// noteCount = 0;
@@ -348,6 +351,7 @@ class PlayState extends MusicBeatState
 			bads = StoryMenuState.weekBads;
 			shits = StoryMenuState.weekShits;
 			goods = StoryMenuState.weekGoods;
+			ghostTaps = StoryMenuState.weekGT;
 			misses = StoryMenuState.weekMisses;
 			maxCombo = StoryMenuState.weekMaxCombo;
 			songScore = StoryMenuState.weekScore;
@@ -1257,9 +1261,7 @@ class PlayState extends MusicBeatState
 		var noteSplash0:NoteSplash = new NoteSplash();
 		noteSplash0.setupNoteSplash(boyfriend, 0);
 		noteSplash0.cameras = [camHUD];
-		grpNoteSplashes.add(noteSplash0);
 
-		add(grpNoteSplashes);
 		if (SONG.difficultyString != null && SONG.difficultyString != "") songDiff = SONG.difficultyString;
 		else songDiff = if(customDiff != "") customDiff else if(stateType == 4) "mods/charts" else if (stateType == 5) "osu! beatmap" else (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
 		playerStrums = new FlxTypedGroup<StrumArrow>();
@@ -1510,6 +1512,7 @@ class PlayState extends MusicBeatState
 		// FlxG.sound.cache("missnote1");
 		// FlxG.sound.cache("missnote2");
 		// FlxG.sound.cache("missnote3");
+		
 
 		super.create();
 
@@ -1592,6 +1595,7 @@ class PlayState extends MusicBeatState
 		// FlxTween.tween(black,0.3)
 		playCountdown = false;
 		// startCountdownFirst();
+		
 		FlxTween.tween(black, {alpha: 0}, 1, {
 			onComplete: function(twn:FlxTween){
 				if (dialogueBox != null)
@@ -1713,6 +1717,7 @@ class PlayState extends MusicBeatState
 	public function startCountdown():Void
 	{
 		dialogue = [];
+
 
 		inCutscene = false;
 
@@ -2104,6 +2109,7 @@ class PlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Int):Void
 	{
+		if(player == 1){add(grpNoteSplashes);}
 		for (i in 0...4)
 		{
 			var babyArrow:StrumArrow = new StrumArrow(i,0, strumLine.y);
@@ -2120,7 +2126,8 @@ class PlayState extends MusicBeatState
 			// {
 			babyArrow.y -= 10;
 			babyArrow.alpha = 0;
-			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: if (player == 0) 0.7 else 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+			if(player == 1) babyArrow.color = 0xdddddd;
 			// }
 
 			babyArrow.ID = i;
@@ -3802,14 +3809,16 @@ class PlayState extends MusicBeatState
 							hitArray[possibleNotes[i].noteData] = true;
 							goodNoteHit(possibleNotes[i]);
 						}
-						if(!FlxG.save.data.ghost && onScreenNote){
+						
 
 							for (i in 0 ... pressArray.length) {
 								if(pressArray[i] && !directionList[i]){
-									noteMiss(i, null);
+									ghostTaps += 1;
+									if(!FlxG.save.data.ghost && onScreenNote){
+										noteMiss(i, null);
+									}
 								}
 							}
-						}
 
 		 			// }
 
@@ -4194,10 +4203,10 @@ class PlayState extends MusicBeatState
 		callInterp("beatHit",[]);
 		charCall("beatHit",[curBeat]);
 
-		if (generatedMusic)
-		{
-			notes.sort(FlxSort.byY, (downscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING));
-		}
+		// if (generatedMusic)
+		// {
+		// 	notes.sort(FlxSort.byY, (downscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING));
+		// }
 		if (FlxG.save.data.songInfo == 0 || FlxG.save.data.songInfo == 3) {
 			scoreTxt.screenCenter(X);
 		}

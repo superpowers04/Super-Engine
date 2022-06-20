@@ -94,7 +94,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		changeSelection(lastSel);
 		lastSel = 1;
 		changeDiff();
-		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songs.length} songs');
+		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songs.length} songs.');
 		}catch(e){MainMenuState.handleError(e,'Something went wrong in create; ${e.message}\n${e.stack}');
 		}
 
@@ -386,7 +386,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 
 	function selSong(sel:Int = 0,charting:Bool = false){
-		if(charting && (songs[sel] != "No Songs!" && modes[curSelected][selMode] != CATEGORYNAME)){
+		if (songs[sel] == "No Songs!" || modes[sel][selMode] == CATEGORYNAME){ // Actually check if the song is a song, if not then error
+			FlxG.sound.play(Paths.sound("cancelMenu"));
+			showTempmessage("Invalid song!",FlxColor.RED);
+			return;
+		}
+		if(charting){
 			var songLoc = songs[sel];
 			var chart = modes[sel][selMode];
 			var songName = songNames[sel];
@@ -428,7 +433,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			LoadingState.loadAndSwitchState(new ChartingState());
 			return;
 		}
-		if (songs[sel] == "No Songs!" || modes[sel][selMode] == CATEGORYNAME || modes[sel][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
+		if (modes[sel][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
 			FlxG.sound.play(Paths.sound("cancelMenu"));
 			showTempmessage("Invalid song!",FlxColor.RED);
 			return;
