@@ -267,7 +267,8 @@ class FinishSubState extends MusicBeatSubstate
 				+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
 				+'\n Practice: ${FlxG.save.data.practiceMode}'
 				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}' + (QuickOptionsSubState.getSetting("Song hscripts") ? '\n  Script Count:${PlayState.instance.interpCount}' : "")
-				+'\n Safe Frames: ${FlxG.save.data.frames}'
+				+(if(FlxG.save.data.inputHandler == 1) '\n Safe Frames: ${FlxG.save.data.frames}' else 
+				 '\n HitWindows: ${Ratings.ratingMS("sick")},${Ratings.ratingMS("good")},${Ratings.ratingMS("bad")},${Ratings.ratingMS("shit")} MS')
 				+'\n Input Engine: ${PlayState.inputEngineName}, V${MainMenuState.ver}'
 				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'
 				+'\n'

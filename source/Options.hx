@@ -278,6 +278,66 @@ class FlashingLightsOption extends Option
 	}
 }
 
+class SEJudgement extends Option
+{
+	var name = "";
+	var def:Float = 0.1;
+	var glob:Float = 0;
+	public function new(name:String)
+	{
+		this.name = name;
+		// this.def = def;
+		super();
+		description = 'Adjust your hit window for $name';
+		acceptValues = true;
+		glob = Reflect.getProperty(FlxG.save.data,"judge" + name);
+		trace('$name - $glob');
+	}
+	function setVal(val:Float){
+		if(val > 1){val = 0.01;}
+		if(val < 0.01){val = 0.99;}
+		trace('' + glob + ' -> ' + val);
+		glob = val;
+		Reflect.setField(FlxG.save.data,"judge" + name,val);
+	}
+	public override function press():Bool
+	{
+		var _def:Float = 0.0;
+
+		_def = Ratings.getDefRating(name);
+		setVal(_def);
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return name + " hit timing";
+	}
+
+	override function right():Bool {
+
+		if(FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.SHIFT){
+			setVal(glob - 0.01);
+		}else{
+			setVal(glob - 0.1);
+		}
+		return true;
+	}
+
+	override function left():Bool {
+
+		if(FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.SHIFT){
+			setVal(glob + 0.01);
+		}else{
+			setVal(glob + 0.1);
+		}
+		return true;
+	}
+
+	override function getValue():String {
+		return '${name} hit Window: ${Ratings.ratingMS("",glob)} MS, ${100 - Math.round(glob * 100)}% of ${Math.round((166 * Conductor.timeScale) * 100) * 0.01} MS';
+	}
+}
 class Judgement extends Option
 {
 	
@@ -313,11 +373,12 @@ class Judgement extends Option
 
 	override function getValue():String {
 		return "Safe Frames: " + Conductor.safeFrames +
-		" | SICK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
+		" TOTAL:" + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms" +
+		" | KADE RATINGS: SICK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
 		"ms, GOOD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
 		"ms, BAD: " + HelperFunctions.truncateFloat(125 * Conductor.timeScale, 0) + 
 		"ms, SHIT: " + HelperFunctions.truncateFloat(156 * Conductor.timeScale, 0) +
-		"ms, TOTAL: " + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
+		"ms";
 	}
 
 	override function right():Bool {
@@ -620,14 +681,15 @@ class AccuracyDOption extends Option
 	
 	public override function press():Bool
 	{
-		FlxG.save.data.accuracyMod = FlxG.save.data.accuracyMod == 1 ? 0 : 1;
+		FlxG.save.data.accuracyMod++;
+		if(FlxG.save.data.accuracyMod > 2) FlxG.save.data.accuracyMod = 0;
 		display = updateDisplay();
 		return true;
 	}
 
 	private override function updateDisplay():String
 	{
-		return "Accuracy Mode: " + (FlxG.save.data.accuracyMod == 0 ? "Simple" : "Complex");
+		return "Accuracy Mode: " + (if(FlxG.save.data.accuracyMod == 0) "Simple" else if(FlxG.save.data.accuracyMod == 2) "SE" else "Etterna");
 	}
 }
 
@@ -1966,8 +2028,8 @@ class QuickOption extends Option{
 		this.name = name;
 		setting = QuickOptionsSubState.normalSettings[name];
 
-		super();
 		acceptValues = true;
+		super();
 		description = "Chart options. THESE ARE TEMPORARY AND RESET WHEN GAME IS CLOSED";
 
 	}
@@ -1988,6 +2050,7 @@ class QuickOption extends Option{
 			setValue(name,val);
 		}
 		updateDisplay();
+
 	}
 			
 	override function right():Bool {

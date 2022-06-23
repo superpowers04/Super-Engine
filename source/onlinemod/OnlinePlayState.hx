@@ -295,7 +295,7 @@ class OnlinePlayState extends PlayState
 		SendScore();
 	}
 
-	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
+	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void
 	{
 		super.noteMiss(direction, daNote,forced);
 

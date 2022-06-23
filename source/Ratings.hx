@@ -178,6 +178,7 @@ class Ratings
 		return "sick";
 	}
 
+
 	public static function CalculateRanking(score:Int,scoreDef:Int,nps:Int,maxNPS:Int,accuracy:Float):String
 	{
 		return switch(FlxG.save.data.songInfo){
@@ -204,5 +205,45 @@ class Ratings
 			default:"";
 
 		}
+	}
+
+	public static function getDistanceFloat(time:Float):Float{
+		var _rating = Math.abs(time / (166 * Conductor.timeScale));
+	
+		return 1 - (Math.floor(_rating * 100) * 0.01);
+	}
+
+	
+	public static function getDefRating(rating:String):Float{
+		switch(rating.toLowerCase()){
+			case "sick": return 0.72;
+			case "good": return 0.45;
+			case "bad":  return 0.27;
+			case "shit": return 0.17;
+		}
+		return 0.0;
+	}
+	public static var ratings:Map<String,()->Float  > = [
+		"sick" => function():Float return FlxG.save.data.judgeSick,
+		"good" => function():Float return FlxG.save.data.judgeGood,
+		"bad" =>  function():Float return FlxG.save.data.judgeBad,
+		"shit" => function():Float return FlxG.save.data.judgeShit
+	];
+	public static function ratingMS(?rating:String = "",?amount:Float = 0.0):Float{
+		if(amount == 0.0){
+			amount = ratings[rating.toLowerCase()]();
+		}
+		return Math.round((1 - amount) * (166 * Conductor.timeScale));
+	}
+	public static function ratingFromDistance(dist:Float){
+		// var dist = getDistanceFloat(distance);
+		var rat:Float = 0;
+		for (rating in ['sick','good','bad','shit']){
+			rat = ratings[rating]();
+			if(dist > rat){
+				return rating;
+			}
+		}
+		return "miss";
 	}
 }

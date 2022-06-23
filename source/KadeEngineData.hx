@@ -61,7 +61,7 @@ class KadeEngineData
 			FlxG.save.data.frames = 10;
 
 		if (FlxG.save.data.accuracyMod == null)
-			FlxG.save.data.accuracyMod = 1;
+			FlxG.save.data.accuracyMod = 2;
 
 		if (FlxG.save.data.watermark == null)
 			FlxG.save.data.watermark = true;
@@ -166,6 +166,11 @@ class KadeEngineData
 		if(FlxG.save.data.beatBouncing == null) FlxG.save.data.beatBouncing = true;
 		if(FlxG.save.data.scrollOSUSpeed == null) FlxG.save.data.scrollOSUSpeed = 2;
 		if(FlxG.save.data.packScripts == null) FlxG.save.data.packScripts = true;
+		
+		if(FlxG.save.data.judgeSick == null) FlxG.save.data.judgeSick = Ratings.getDefRating("sick");
+		if(FlxG.save.data.judgeGood == null) FlxG.save.data.judgeGood = Ratings.getDefRating("good");
+		if(FlxG.save.data.judgeBad == null) FlxG.save.data.judgeBad = Ratings.getDefRating("bad");
+		if(FlxG.save.data.judgeShit== null) FlxG.save.data.judgeShit = Ratings.getDefRating("shit");
 		// if(FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
 
 		if(FlxG.save.data.playStateObjectLocations == null) FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();
