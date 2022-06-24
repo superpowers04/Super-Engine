@@ -60,21 +60,31 @@ class StrumArrow extends FlxSprite{
 		// animation.addByPrefix('pressed', arrowIDs[id].toLowerCase() + ' press', 24, false);
 		// animation.addByPrefix('confirm', arrowIDs[id].toLowerCase() + ' confirm', 24, false);
 	}
-	public function playStatic(){
+	public override function update(e:Float){
+		super.update(e);
+
+	}
+	public function playAnim(name:String,?forced:Bool = true, ?Reversed:Bool = false, ?Frame:Int = 0){
+		if(animation.getByName(name) == null) return;
+		animation.play(name,forced,Reversed,Frame);
+		centerOffsets();
+	}
+	public function playStatic(?forced:Bool = false){
 		// color = defColor;
-		animation.play("static");
+		animation.play("static",forced);
 		centerOffsets();
 	}
-	public function press(){
+	public function press(?forced:Bool = false){
 		// if (color != noteColor) color = noteColor;
-		animation.play("pressed");
+		animation.play("pressed",forced);
 		centerOffsets();
 	}
-	public function confirm(){
+	public function confirm(?forced:Bool = false){
 		// if (color != noteColor) color = noteColor;
-		animation.play("confirm");
+		animation.play("confirm",forced);
 
 		centerOffsets();
+		if(animation.curAnim.name != "confirm") return;
 		offset.x -= 13;
 		offset.y -= 13;
 

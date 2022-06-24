@@ -2536,14 +2536,25 @@ class PlayState extends MusicBeatState
 		
 		if (FlxG.save.data.cpuStrums)
 		{
-			cpuStrums.forEach(function(spr:FlxSprite)
+
+ 			var i = cpuStrums.members.length - 1;
+ 			var spr:StrumArrow;
+ 			while (i >= 0)
 			{
+				spr = cpuStrums.members[i];
+				i--;
 				if (spr.animation.finished)
 				{
-					spr.animation.play('static');
-					spr.centerOffsets();
+					spr.playStatic();
 				}
-			});
+			}
+			// cpuStrums.forEach(function(spr:FlxSprite)
+			// {
+			// 	if (spr.animation.finished)
+			// 	{
+			// 		spr.animation.play('static');
+			// 	}
+			// });
 		}
 		if (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].altAnim) PlayState.canUseAlts = true;
 		callInterp("updateAfter",[elapsed]);
@@ -3124,27 +3135,29 @@ class PlayState extends MusicBeatState
 
 	}
 	dynamic function noteShit(){MainMenuState.handleError("I can't handle input for some reason, Please report this!");}
-	public function DadStrumPlayAnim(id:Int) {
-		var spr:FlxSprite= strumLineNotes.members[id];
+	public function DadStrumPlayAnim(id:Int,?anim:String = "confirm") {
+		var spr:StrumArrow= cpuStrums.members[id];
 		if(spr != null) {
-			spr.animation.play('confirm', true);
-			spr.centerOffsets();
-			if (spr.animation.curAnim.name == 'confirm')
-			{
-				spr.offset.x -= 13;
-				spr.offset.y -= 13;
+			switch(anim.toLowerCase()){
+				case "confirm":
+					spr.confirm(true);
+				case "static":
+					spr.playStatic(true);
+				case "press":
+					spr.press(true);
 			}
 		}
 	}
 	public function BFStrumPlayAnim(id:Int,anim:String = 'confirm') {
-		var spr:FlxSprite= playerStrums.members[id];
+		var spr:StrumArrow= playerStrums.members[id];
 		if(spr != null) {
-			spr.animation.play(anim, true);
-			spr.centerOffsets();
-			if (spr.animation.curAnim.name == 'confirm')
-			{
-				spr.offset.x -= 13;
-				spr.offset.y -= 13;
+			switch(anim.toLowerCase()){
+				case "confirm":
+					spr.confirm(true);
+				case "static":
+					spr.playStatic(true);
+				case "press":
+					spr.press(true);
 			}
 		}
 	}
@@ -3276,27 +3289,27 @@ class PlayState extends MusicBeatState
 					
 
 					//trace(daNote.y);
-					// WIP interpolation shit? Need to fix the pause issue
+					// WIP interpolation shit? Need to fix the pause issue haha funni interpolation for entire song instead of just notes
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 	
-					if (daNote.mustPress && daNote.tooLate )
-					{
-							if (daNote.isSustainNote && daNote.wasGoodHit)
-							{
-								daNote.kill();
-								notes.remove(daNote, true);
-							}
-							else if (!daNote.shouldntBeHit)
-							{
-								health += SONG.noteMetadata.tooLateHealth;
-								vocals.volume = 0;
-								noteMiss(daNote.noteData, daNote);
-							}
+					// if (daNote.mustPress && daNote.tooLate )
+					// {
+					// 		if (daNote.isSustainNote && daNote.wasGoodHit)
+					// 		{
+					// 			daNote.kill();
+					// 			notes.remove(daNote, true);
+					// 		}
+					// 		else if (!daNote.shouldntBeHit)
+					// 		{
+					// 			health += SONG.noteMetadata.tooLateHealth;
+					// 			vocals.volume = 0;
+					// 			noteMiss(daNote.noteData, daNote);
+					// 		}
 		
-							daNote.visible = false;
-							daNote.kill();
-							notes.remove(daNote, true);
-					}
+					// 		daNote.visible = false;
+					// 		daNote.kill();
+					// 		notes.remove(daNote, true);
+					// }
 				});
 			}
 	}
@@ -3549,7 +3562,7 @@ class PlayState extends MusicBeatState
 
 
 
-// "improved" kade
+// Super Engine input and handling
 
 	function SENoteShit(){
 		if (generatedMusic)
@@ -3802,25 +3815,19 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote);
 						daNote.destroy();
 					}
-					// for (note in dumbNotes)
-					// {
-					// }
-		 			// if(onScreenNote){
 
-						for (i in 0...possibleNotes.length) {
-							hitArray[possibleNotes[i].noteData] = true;
-							goodNoteHit(possibleNotes[i]);
-						}
-						
-
-							for (i in 0 ... pressArray.length) {
-								if(pressArray[i] && !directionList[i]){
-									ghostTaps += 1;
-									if(!FlxG.save.data.ghost && onScreenNote){
-										noteMiss(i, null);
-									}
-								}
+					for (i in 0...possibleNotes.length) {
+						hitArray[possibleNotes[i].noteData] = true;
+						goodNoteHit(possibleNotes[i]);
+					}
+					for (i in 0 ... pressArray.length) {
+						if(pressArray[i] && !directionList[i]){
+							ghostTaps += 1;
+							if(!FlxG.save.data.ghost && onScreenNote){
+								noteMiss(i, null);
 							}
+						}
+					}
 
 		 			// }
 
@@ -3835,23 +3842,17 @@ class PlayState extends MusicBeatState
 				}
 
 		 
-				playerStrums.forEach(function(spr:FlxSprite)
+	 			var i = playerStrums.members.length - 1;
+	 			var spr:StrumArrow;
+	 			while (i >= 0)
 				{
+					spr = playerStrums.members[i];
+					i--;
 					if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
+						spr.press();
 					if (!holdArray[spr.ID])
-						spr.animation.play('static');
-		 			
-
-					if (spr.animation.curAnim.name == 'confirm')
-					{
-						spr.centerOffsets();
-						spr.offset.x -= 13;
-						spr.offset.y -= 13;
-					}
-					else
-						spr.centerOffsets();
-				});
+						spr.playStatic();
+				}
 
 			}
 
