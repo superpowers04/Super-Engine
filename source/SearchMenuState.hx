@@ -146,6 +146,10 @@ class SearchMenuState extends MusicBeatState
 
 		super.create();
 		openfl.system.System.gc();
+		try{
+			FlxG.sound.music.onComplete = null;
+
+		}catch(e){}
 		
 	}catch(e) MainMenuState.handleError(e,'Error with searchmenu "create" ${e.message}');}
 

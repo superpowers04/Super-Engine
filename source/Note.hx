@@ -15,6 +15,7 @@ import flixel.math.FlxPoint;
 import sys.io.File;
 import sys.FileSystem;
 import flash.display.BitmapData;
+import NoteAssets;
 
 import PlayState;
 
@@ -92,47 +93,74 @@ class Note extends FlxSkewedSprite
 	public override function toString(){
 		return toJson();
 	}
-
+	public var noteJSON:NoteAssetConfig;
 	public function addAnimations(){
-		animation.addByPrefix('greenScroll', 'green0');
-		animation.addByPrefix('redScroll', 'red0');
-		animation.addByPrefix('blueScroll', 'blue0');
-		animation.addByPrefix('purpleScroll', 'purple0');
-		// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]}0');
-		// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold piece');
-		// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} end hold');
-		// // Kade support, I guess
-		// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]} alone');
-		// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold');
-		// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} tail'); 
+		if(noteJSON != null){
+			animation.addByPrefix('scroll', noteJSON.animname);
+			animation.addByPrefix('hold', noteJSON.holdanimname);
+			animation.addByPrefix('holdend', noteJSON.endanimname);
+			if(noteData == 0){
+				animation.addByPrefix('holdend', 'pruple end hold'); // WHY
+			}
+		}else{
+			animation.addByPrefix('greenScroll', 'green0');
+			animation.addByPrefix('redScroll', 'red0');
+			animation.addByPrefix('blueScroll', 'blue0');
+			animation.addByPrefix('purpleScroll', 'purple0');
+			// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]}0');
+			// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold piece');
+			// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} end hold');
+			// // Kade support, I guess
+			// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]} alone');
+			// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold');
+			// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} tail'); 
 
 
 
-		animation.addByPrefix('purpleholdend', 'pruple end hold'); // Fucking default names
-		animation.addByPrefix('purpleholdend', 'purple end hold');
-		animation.addByPrefix('greenholdend', 'green hold end');
-		animation.addByPrefix('redholdend', 'red hold end');
-		animation.addByPrefix('blueholdend', 'blue hold end');
+			animation.addByPrefix('purpleholdend', 'pruple end hold'); // Fucking default names
+			animation.addByPrefix('purpleholdend', 'purple end hold');
+			animation.addByPrefix('greenholdend', 'green hold end');
+			animation.addByPrefix('redholdend', 'red hold end');
+			animation.addByPrefix('blueholdend', 'blue hold end');
 
-		animation.addByPrefix('purplehold', 'purple hold piece');
-		animation.addByPrefix('greenhold', 'green hold piece');
-		animation.addByPrefix('redhold', 'red hold piece');
-		animation.addByPrefix('bluehold', 'blue hold piece');
+			animation.addByPrefix('purplehold', 'purple hold piece');
+			animation.addByPrefix('greenhold', 'green hold piece');
+			animation.addByPrefix('redhold', 'red hold piece');
+			animation.addByPrefix('bluehold', 'blue hold piece');
+		}
 	}
-	public function changeSprite(?name:String = "default",?_frames:FlxAtlasFrames,?_anim:String = "",?setFrames:Bool = true,path_:String = "mods/noteassets"){
+	public function changeSprite(?name:String = "default",?_frames:FlxAtlasFrames,?_anim:String = "",?setFrames:Bool = true,path_:String = "mods/noteassets",?noteJSON:NoteAssetConfig){
 		try{
 			var curAnim = if(_anim == "" && animation.curAnim != null) animation.curAnim.name else if(_anim != "") _anim else "";
 			var _sx:Float = scale.x;
 			var _sy:Float = scale.y;
 			var _ox:Float = offset.x;
+			if(noteJSON != null){
+				this.noteJSON = noteJSON;
+			}else{
+				this.noteJSON = null;
+			}
 			if(setFrames && (_frames != null || name != "")){
 				if(_frames == null){
 					if(name == "skin"){
 						frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
+						try{
+							noteJSON = NoteAssets.noteJSON.notes[noteData];
+						}catch(e){
+							noteJSON = null;
+						}
 					}else if (name == 'default' || (!FileSystem.exists('${path_}/${name}.png') || !FileSystem.exists('${path_}/${name}.xml'))){
 						frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png')),File.getContent("assets/shared/images/NOTE_assets.xml"));
 					}else{
 						frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path_}/${name}.png')),File.getContent('${path_}/${name}.xml'));
+						
+						if(FileSystem.exists('${path}/${name}.json')){
+							try{
+								this.noteJSON = cast Json.parse('${path}/${name}.json').notes[noteData];
+							}catch(e){
+								this.noteJSON = null;
+							}
+						}
 					}
 				}else{
 					frames = _frames;
@@ -160,12 +188,23 @@ class Note extends FlxSkewedSprite
 				if (frames == null) frames = NoteAssets.frames;
 				// frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 				vanillaFrames = true;
+				try{
+					noteJSON = NoteAssets.noteJSON.notes[noteData];
+				}catch(e){
+					noteJSON = null;
+				}
+				
 			}catch(e) {
 				try{
 					TitleState.loadNoteAssets(true);
 					if(shouldntBeHit) {color = 0x220011;}
 					frames = NoteAssets.frames;
 					vanillaFrames = true;
+					try{
+						noteJSON = NoteAssets.noteJSON.notes[noteData];
+					}catch(e){
+						noteJSON = null;
+					}
 				}catch(e){MainMenuState.handleError(e,"Unable to load note assets, please restart your game!");}
 			}
 		}
@@ -356,7 +395,7 @@ class Note extends FlxSkewedSprite
 
 
 			// x+= swagWidth * noteData;
-			animation.play(noteName + "Scroll");
+			animation.play(if(noteJSON == null) noteName + "Scroll" else "scroll");
 
 			// trace(prevNote);
 
@@ -375,7 +414,7 @@ class Note extends FlxSkewedSprite
 
 				// x += width / 2;
 
-				animation.play(noteName + "holdend");
+				animation.play(if(noteJSON == null) noteName + "holdend" else "holdend");
 				isSustainNoteEnd = true;
 				updateHitbox();
 
@@ -387,7 +426,7 @@ class Note extends FlxSkewedSprite
 				if (prevNote.isSustainNote)
 				{
 					parentNoteWidth = prevNote.parentNoteWidth;
-					prevNote.animation.play(noteName + "hold");
+					prevNote.animation.play(if(prevNote.noteJSON == null) noteName + "hold" else "hold");
 					if (prevNote.parentNote != null){
 						prevNote.parentNote.childNotes.push(this);
 						this.parentNote = prevNote.parentNote;
@@ -414,6 +453,13 @@ class Note extends FlxSkewedSprite
 		// offset.y = 0;
 		// origin.y=0;
 		offset.x = frameWidth * 0.5;
+		if(noteJSON != null){
+			flipX=noteJSON.flipx;
+			flipY=noteJSON.flipy;
+			antialiasing=noteJSON.antialiasing;
+			scale.x*=noteJSON.scale[0];
+			scale.y*=noteJSON.scale[1];
+		}
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
 	var missedNote:Bool = false;

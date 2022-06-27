@@ -8,6 +8,7 @@ import sys.FileSystem;
 import flash.display.BitmapData;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxAtlasFrames;
+import tjson.Json;
 
 
 // typedef NoteSplashType = {
@@ -33,6 +34,29 @@ import flixel.graphics.frames.FlxAtlasFrames;
 	// 	red2:"note splash red 2"
 	// };
 
+typedef NoteAssetJSON = {
+	var notes:Array<NoteAssetConfig>;
+}
+typedef NoteAssetConfig = {
+	var flipx:Bool;
+	var flipy:Bool;
+	var antialiasing:Bool;
+	var scale:Array<Float>;
+
+
+	var staticanimname:String;
+	var confirmanimname:String;
+	var pressedanimname:String;
+
+	var animname:String;
+	var holdanimname:String;
+	var endanimname:String;
+	var ?offset:Array<Float>;
+
+}
+
+
+
 // Todo, add automatic animation name detection
 
 class NoteAssets{
@@ -49,6 +73,68 @@ class NoteAssets{
 	public static var modified:Bool = false;
 	public static var sprite:FlxSprite;
 	public static var frames(get,set):FlxFramesCollection;
+	public static var noteJSON:NoteAssetJSON;
+
+
+	public static var defNoteJSON(default,never):NoteAssetJSON = {
+		notes:[
+			{ // Left
+				flipx:false,
+				flipy:false,
+				antialiasing:true,
+				scale:[1,1],
+
+
+				staticanimname:"arrowLEFT",
+				confirmanimname:"left confirm",
+				pressedanimname:"left press",
+				animname:"purple0",
+				holdanimname:"purple hold piece",
+				endanimname:"purple end hold",
+			},
+			{ // Down
+				flipx:true, // Fixes the misaligned sustain
+				flipy:false,
+				antialiasing:true,
+				scale:[1,1],
+
+				staticanimname:"arrowDOWN",
+				confirmanimname:"down confirm",
+				pressedanimname:"down press",
+				animname:"blue0",
+				holdanimname:"blue hold piece",
+				endanimname:"blue hold end",
+			},
+			{ // Up
+				flipx:false,
+				flipy:false,
+				antialiasing:true,
+				scale:[1,1],
+
+				staticanimname:"arrowUP",
+				confirmanimname:"up confirm",
+				pressedanimname:"up press",
+				animname:"green0",
+				holdanimname:"green hold piece",
+				endanimname:"green hold end",
+			},
+			{ // Right
+				flipx:false,
+				flipy:false,
+				antialiasing:true,
+				scale:[1,1],
+
+				staticanimname:"arrowRIGHT",
+				confirmanimname:"right confirm",
+				pressedanimname:"right press",
+				animname:"red0",
+				holdanimname:"red hold piece",
+				endanimname:"red hold end",
+			}
+		]
+	};
+	
+
 	public static function get_frames():FlxFramesCollection{
 		return sprite.frames;
 	}
@@ -77,7 +163,6 @@ class NoteAssets{
 	static function doThing(name_:String,?forced:Bool = false){
 		try{
 			if(name == name_ && !forced){return;}
-			trace('Loading noteAssets');
 			splashType = "se";
 			modified = false;
 			if(image != null){
@@ -87,6 +172,7 @@ class NoteAssets{
 					i.destroy(); // These notes aren't needed anymore, dump em
 				}
 			}
+			noteJSON = defNoteJSON;
 			name = name_;
 			if (name == 'default'){
 				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets_bad.png'));
@@ -112,6 +198,13 @@ class NoteAssets{
 			}else{
 				splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/noteSplashes.png'));
 				splashXml = File.getContent("assets/shared/images/noteSplashes.xml");
+			}
+			if(FileSystem.exists('${path}/${name}.json')){
+				try{
+					noteJSON = cast Json.parse('${path}/${name}.json');
+				}catch(e){
+					noteJSON = defNoteJSON;
+				}
 			}
 
 			if (FileSystem.exists('${path}/${name}-bad.png') && FileSystem.exists('${path}/${name}-bad.xml')){ // Hurt notes

@@ -2956,7 +2956,7 @@ class PlayState extends MusicBeatState
 			currentTimingShown.borderStyle = OUTLINE;
 			currentTimingShown.borderSize = 1;
 			currentTimingShown.borderColor = FlxColor.BLACK;
-			currentTimingShown.text = msTiming + "ms";
+			currentTimingShown.text = msTiming + "ms " + (if((Conductor.songPosition - daNote.strumTime) > 0) "A" else "B");
 			currentTimingShown.size = 20;
 
 			if (offsetTesting && msTiming >= 0.03)
@@ -2991,7 +2991,7 @@ class PlayState extends MusicBeatState
 
 			currentTimingShown.screenCenter();
 			currentTimingShown.x = (playerStrums.members[daNote.noteData].x + (playerStrums.members[daNote.noteData].width * 0.5)) - (currentTimingShown.width * 0.5);
-			currentTimingShown.y = playerStrums.members[daNote.noteData].y - 10;
+			currentTimingShown.y = daNote.y + (daNote.height * 0.5);
 			currentTimingShown.acceleration.y = -200;
 			currentTimingShown.velocity.y = 140;
 	
@@ -3023,18 +3023,19 @@ class PlayState extends MusicBeatState
 			}
 	
 			var daLoop:Int = 0;
+			var comboSize = 1.20 - (seperatedScore.length * 0.1);
 
 			for (i in seperatedScore)
 			{
 				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image('num' + Std.int(i)));
 				// numScore.screenCenter();
-				numScore.x = playerStrums.members[playerStrums.members.length - 1].x + (playerStrums.members[playerStrums.members.length - 1].width) + (43 * daLoop);
+				numScore.x = playerStrums.members[playerStrums.members.length - 1].x + (playerStrums.members[playerStrums.members.length - 1].width) + ((43 * comboSize) * daLoop);
 
 				numScore.y = rating.y;
 				numScore.cameras = rating.cameras;
 
 				numScore.antialiasing = true;
-				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+				numScore.setGraphicSize(Std.int((numScore.width * comboSize) * 0.5));
 
 				numScore.updateHitbox();
 	

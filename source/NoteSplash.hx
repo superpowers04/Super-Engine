@@ -110,10 +110,9 @@ class NoteSplash extends FlxSprite
 					offset.set(width * 0.3, height * 0.3);
 				case "custom":
 					// Do nothing
-				case "se":
+				default:
 					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 					offset.set(-40, -40);
-				default:
 			}
 
 			if(PlayState.instance != null){

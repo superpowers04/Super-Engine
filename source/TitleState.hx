@@ -425,11 +425,12 @@ class TitleState extends MusicBeatState
 		add(bg);
 
 		logoBl = new FlxSprite(-150, -100);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+		logoBl.loadGraphic(Paths.image('logoBumpin'));
 		logoBl.antialiasing = true;
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
-		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
+		// logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+		// logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
+		// logoBl.animation.play('bump');
+		// logoBl.updateHitbox();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
@@ -451,9 +452,9 @@ class TitleState extends MusicBeatState
 		// titleText.screenCenter(X);
 		add(titleText);
 
-		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
-		logo.screenCenter();
-		logo.antialiasing = true;
+		// var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
+		// logo.screenCenter();
+		// logo.antialiasing = true;
 		// add(logo);
 
 		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
@@ -661,11 +662,19 @@ class TitleState extends MusicBeatState
 			textGroup.remove(textGroup.members[0], true);
 		}
 	}
+	var tweeny:FlxTween;
 	override function beatHit()
 	{
 		super.beatHit();
 
-		if (logoBl != null) logoBl.animation.play('bump');
+		if (logoBl != null){
+			
+			if(tweeny != null)tweeny.cancel();
+			logoBl.scale.set(1,1);
+			// FlxTween.tween(logoBl.scale,{x:1,y:1},0.1);
+			tweeny = FlxTween.tween(logoBl.scale,{x:0.9,y:0.9},(60 / Conductor.bpm),{ease:FlxEase.expoOut});
+		} 
+		// logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
 
 		if (danceLeft)

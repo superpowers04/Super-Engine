@@ -38,17 +38,21 @@ class OfflineMenuState extends SearchMenuState
   override function create()
   {
 
-
-
-    super.create();
     optionsButton = new FlxUIButton(1100, 40, "Options", goOptions);
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(150, 30);
-    add(optionsButton);
     sideButton = new FlxUIButton(820, 40, "Chart Options", chartOptions);
     sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     sideButton.resize(250, 30);
+
+
+    super.create();
+    try{
+    add(optionsButton);
     add(sideButton);
+    }catch(e){
+    	showTempmessage("Unable to show options button?",FlxColor.RED);
+    }
   }
   override function reloadList(?reload=false,?search = ""){
     curSelected = 0;

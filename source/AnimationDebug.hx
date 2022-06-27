@@ -802,11 +802,11 @@ class AnimationDebug extends MusicBeatState
 
 		// Togglables 
 
-		var looped = new FlxUICheckBox(30, 20, null, null, "Loop anim");
+		var looped = new FlxUICheckBox(10, 20, null, null, "Loop anim");
 		looped.checked = false;
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
-		var flipanim = new FlxUICheckBox(120, 20, null, null, "FlipX");
+		var flipanim = new FlxUICheckBox(100, 20, null, null, "FlipX");
 		flipanim.checked = false;
 		uiMap["flipanim"] = flipanim;
 		uiBox.add(flipanim);
@@ -823,10 +823,10 @@ class AnimationDebug extends MusicBeatState
 
 		uiBox.add(e);
 
-		var animFPS = new FlxUIInputText(30, 120, null, "0");
-		animFPS.filterMode = 2;
-		uiMap["loopStart"] = animFPS;
-		uiBox.add(animFPS);
+		var loopStart = new FlxUIInputText(30, 120, null, "0");
+		loopStart.filterMode = 2;
+		uiMap["loopStart"] = loopStart;
+		uiBox.add(loopStart);
 		var animTxt = new FlxText(30, 60,0,"Animation FPS");
 		uiMap["FPStxt"] = animTxt;
 		var animFPS = new FlxUIInputText(30, 80, null, "24");

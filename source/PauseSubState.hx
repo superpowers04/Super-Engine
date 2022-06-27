@@ -13,6 +13,7 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+// import flixel.tweens.FlxTweenManager;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.ui.FlxBar;
@@ -198,6 +199,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Exit to menu":
 					disappearMenu();
 					new FlxTimer().start(0.3,function(tmr:FlxTimer){
+						FlxTween.globalManager.clear();
 						quit();
 					},1);
 			}
