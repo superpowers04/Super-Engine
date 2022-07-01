@@ -505,10 +505,11 @@ class TitleState extends MusicBeatState
 	}
 	var shiftSkip:FlxText;
 	var isShift = false;
-	
+
 	public static var hardcodedDays(default,never):Map<Int,Map<Int,Array<Array<String>>>> = [
 		6 => [
-			1 => [["Technoblade","never dies"]]
+			1 => [["Technoblade","never dies"]],
+			30 => [["Technoblade","never dies"]]
 		],
 		7 => [
 			1 => [["Technoblade","never dies"]]
@@ -517,13 +518,17 @@ class TitleState extends MusicBeatState
 			28 => [["Technoblade","never dies"]]
 		],
 	];
-
+	var forcedText:Bool = false;
 	function getIntroTextShit():Array<Array<String>>
 	{
 		var now = Date.now();
+		// FlxG.save.data.seenText = true;
 		if(hardcodedDays[now.getMonth()] != null && hardcodedDays[now.getMonth()][now.getDate()] != null){
+			// FlxG.save.data.seenText = false;
+			forcedText = true;
 			return hardcodedDays[now.getMonth()][now.getDate()];
 		}
+		if(FlxG.save.data.seenForcedText) FlxG.save.data.seenForcedText = false;
 		var fullText:String = Assets.getText(Paths.txt('introText'));
 
 		var firstArray:Array<String> = fullText.split('\n');
@@ -641,7 +646,7 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
-		if (pressedEnter && !skippedIntro && initialized)
+		if (pressedEnter && !skippedIntro && initialized && (!forcedText || FlxG.save.data.seenForcedText))
 		{
 			skipIntro();
 		}
@@ -754,6 +759,7 @@ class TitleState extends MusicBeatState
 			// credTextShit.text += '\nlmao';
 			case 12:
 				deleteCoolText();
+				if(forcedText) FlxG.save.data.seenForcedText = true;
 			// credTextShit.visible = false;
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
