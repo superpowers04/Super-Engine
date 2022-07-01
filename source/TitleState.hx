@@ -505,9 +505,25 @@ class TitleState extends MusicBeatState
 	}
 	var shiftSkip:FlxText;
 	var isShift = false;
+	
+	public static var hardcodedDays(default,never):Map<Int,Map<Int,Array<Array<String>>>> = [
+		6 => [
+			1 => [["Technoblade","never dies"]]
+		],
+		7 => [
+			1 => [["Technoblade","never dies"]]
+		],
+		10 => [
+			28 => [["Technoblade","never dies"]]
+		],
+	];
 
 	function getIntroTextShit():Array<Array<String>>
 	{
+		var now = Date.now();
+		if(hardcodedDays[now.getMonth()] != null && hardcodedDays[now.getMonth()][now.getDate()] != null){
+			return hardcodedDays[now.getMonth()][now.getDate()];
+		}
 		var fullText:String = Assets.getText(Paths.txt('introText'));
 
 		var firstArray:Array<String> = fullText.split('\n');
