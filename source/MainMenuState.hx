@@ -35,7 +35,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N25";
+	public static var nightly:String = "N25-1";
 
 	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
@@ -188,7 +188,6 @@ class MainMenuState extends SickMenuState
 		    errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		    add(errorText);
 		}
-		
 	}
 
 	override function goBack(){
@@ -212,7 +211,8 @@ class MainMenuState extends SickMenuState
 		// }
 		super.update(elapsed);
 	}
-	override function beatHit(){
+	override function beatHit()
+	{
 		super.beatHit();
 		// if(char != null && char.animation.curAnim.finished) char.dance(true);
 	}
