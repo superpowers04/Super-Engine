@@ -56,6 +56,7 @@ class PauseSubState extends MusicBeatSubstate
 		// FlxG.sound.music.time = Conductor.songPosition;
 
 		finishCallback = FlxG.sound.music.onComplete;
+
 		time = FlxG.sound.music.time;
 		FlxG.sound.music.onComplete = null;
 		FlxG.sound.music.looped = true;
@@ -243,16 +244,12 @@ class PauseSubState extends MusicBeatSubstate
 		shouldveLeft = true;
 		return;
 	}
+	var _tween:FlxTween;
 	function countdown(){try{
 		ready = false;
 		var swagCounter:Int = 1;
 		try{
-			FlxTween.tween(FlxG.sound.music,{volume:0},0.5,{onComplete:function(_){
-				FlxG.sound.music.time = time;
-				FlxTween.tween(FlxG.sound.music,{volume:volume},0.01);
-				FlxG.sound.music.onComplete = finishCallback;
-				FlxG.sound.music.pause();
-			}});
+			_tween = FlxTween.tween(FlxG.sound.music,{volume:0},0.5);
 		}catch(e){}
 		for (i in [levelDifficulty,levelInfo,perSongOffset]) {
 			if(i != null){
@@ -326,7 +323,20 @@ class PauseSubState extends MusicBeatSubstate
 				case 4:
 
 					PlayState.instance.callInterp("pauseExit",[]);
+					FlxTimer.globalManager.forEach(function(tmr:FlxTimer){
+						tmr.active = false;
+					});
+					FlxTween.globalManager.forEach(function(t){
+						t.active = false;
+					});
+					if(_tween != null)_tween.cancel();
+					FlxG.sound.music.time = time;
+					FlxG.sound.music.volume = volume;
+					FlxTween.tween(FlxG.sound.music,{volume:volume},0.01);
+					FlxG.sound.music.onComplete = finishCallback;
+					FlxG.sound.music.pause();
 					close();
+
 			}
 
 			swagCounter += 1;

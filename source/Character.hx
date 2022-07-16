@@ -178,25 +178,7 @@ class Character extends FlxSprite
 
 	// HScript related shit
 
-	public function toJson(){
-		return Json.stringify({
-			type:"Character",
-			charType:charType,
-			isPlayer:isPlayer,
-			name:curCharacter,
-			currentAnimation:animation.curAnim,
-			hasInterp:interp != null,
-			color:definingColor
-		});
-	}
-	public override function toString(){
-		return toJson();
-	}
-
 	var interp:Interp;
-	public static function hasCharacter(char:String):Bool{
-		return (TitleState.retChar(char) != "");
-	}
 	@privateAccess
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
 			if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
@@ -329,45 +311,7 @@ class Character extends FlxSprite
 		if (charProperties.char_pos != null){addOffset('all',charProperties.char_pos[0],charProperties.char_pos[1]);}
 		if (charProperties.cam_pos != null){camX+=charProperties.cam_pos[0];camY+=charProperties.cam_pos[1];}
 	}
-	function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
-	function getDefColor(e:CharacterJson){
-		if(!customColor && e.color != null){
-			// switch(Type.typeof(e.color)){
-				if(Std.isOfType(e.color,String)){
 
-					definingColor = FlxColor.fromString(e.color);
-					customColor = true;
-				}else if (Std.isOfType(e.color,Int)){
-					definingColor = FlxColor.fromInt(e.color);
-					customColor = true;
-				}else{
-					if(e.color[0] != null){
-						definingColor = FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
-						customColor = true;
-					}
-					else
-						customColor = false;
-				}
-			// }
-		}/*else if(charType != 3){
-
-			var hi = new HealthIcon(curCharacter, false,clonedChar);
-			var colors:Map<Int,Int> = [];
-			var max:Int = 0;
-			var maxColor:Int = 0;
-			for(X in 0 ...hi.pixels.width){
-				for(Y in 0...hi.pixels.height){
-					var curColor:Int = hi.pixels.getPixel(X,Y);
-					if(curColor == 0) continue;
-					colors[curColor] = (colors.exists(curColor) ? 0 : colors[curColor] + 1);
-					if(colors[curColor] > max){maxColor = curColor;max=colors[curColor];}
-				}
-			}
-			trace(maxColor);
-			definingColor = maxColor;
-			hi.destroy();
-		}*/
-	}
 	function loadJSONChar(charProperties:CharacterJson){
 		
 		// Check if the XML has BF's animations, if so, add them
@@ -521,8 +465,7 @@ class Character extends FlxSprite
 	function loadCustomChar(){
 		if(!amPreview){
 			curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
-		}
-		trace('Loading a custom character "$curCharacter"! ');				
+		}			
 		if(charLoc == "mods/characters"){
 
 			if(TitleState.weekChars[curCharacter] != null && TitleState.weekChars[curCharacter].contains(onlinemod.OfflinePlayState.nameSpace) && TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter] != null){
@@ -709,7 +652,7 @@ class Character extends FlxSprite
 		}
 		 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
-		trace('Finished loading character, Lets get funky!');
+		trace('Finished loading $curCharacter, Lets get funky!');
 		}
 
 
@@ -844,7 +787,7 @@ class Character extends FlxSprite
 		dance();
 
 		callInterp("new",[]);
-		if (animation.curAnim != null) setOffsets(animation.curAnim.name); // Ensures that offsets are properly applied
+		if (animation.curAnim != null) setOffsets(animName); // Ensures that offsets are properly applied
 		animation.finishCallback = function(name:String){
 			animHasFinished = true;
 			callInterp("animFinish",[animation.curAnim]);
@@ -978,8 +921,8 @@ class Character extends FlxSprite
 		callInterp("draw",[]);
 		super.draw();
 	} 
-	var currentAnimationPriority:Int = -100;
-	public dynamic function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0)
+	public var currentAnimationPriority:Int = -100;
+	public dynamic function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0)
 	{
 		var lastAnim = "";
 		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
@@ -1031,6 +974,7 @@ class Character extends FlxSprite
 			}
 		}
 		skipNextAnim = false;
+		callInterp("playAnimAfter",[AnimName,animation.curAnim]);
 	}
 	public function playAnimAvailable(animList:Array<String>,forced:Bool = false,reversed:Bool = false,frame:Int = 0){
 		for (i in animList) {
@@ -1085,6 +1029,82 @@ class Character extends FlxSprite
 		}
 	}
 
+
+
+
+
+	// Shortcut functions
+	function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
+	function getDefColor(e:CharacterJson,?apply:Bool = true):FlxColor{
+		if(!customColor && e.color != null){
+			// switch(Type.typeof(e.color)){
+				if(Std.isOfType(e.color,String)){
+					if(apply) return FlxColor.fromString(e.color);
+					definingColor = FlxColor.fromString(e.color);
+					customColor = true;
+				}else if (Std.isOfType(e.color,Int)){
+					if(apply) return FlxColor.fromInt(e.color);
+					definingColor = FlxColor.fromInt(e.color);
+					customColor = true;
+				}else{
+					if(e.color[0] != null){
+						if(apply) return FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
+						definingColor = FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
+						customColor = true;
+					}
+					else
+						customColor = false;
+				}
+			// }
+		}/*else if(charType != 3){
+
+			var hi = new HealthIcon(curCharacter, false,clonedChar);
+			var colors:Map<Int,Int> = [];
+			var max:Int = 0;
+			var maxColor:Int = 0;
+			for(X in 0 ...hi.pixels.width){
+				for(Y in 0...hi.pixels.height){
+					var curColor:Int = hi.pixels.getPixel(X,Y);
+					if(curColor == 0) continue;
+					colors[curColor] = (colors.exists(curColor) ? 0 : colors[curColor] + 1);
+					if(colors[curColor] > max){maxColor = curColor;max=colors[curColor];}
+				}
+			}
+			trace(maxColor);
+			definingColor = maxColor;
+			hi.destroy();
+		}*/
+		return 0x000000;
+	}
+
+
+	public var animName(get,set):String; // Shorthand for either playing an animation or grabbing the name
+	public function get_animName():Null<String>{ // Instead of erroring due to curAnim being shit, just return null
+		return if(animation.curAnim != null && animation.curAnim.name != null) animation.curAnim.name else null;
+	}
+	public function set_animName(str:String):String{
+		playAnim(str,true);
+		return animName;
+	}
+
+
+	public function toJson(){
+		return Json.stringify({
+			type:"Character",
+			charType:charType,
+			isPlayer:isPlayer,
+			name:curCharacter,
+			currentAnimation:animation.curAnim,
+			hasInterp:interp != null,
+			color:definingColor
+		});
+	}
+	public override function toString(){
+		return toJson();
+	}
+	public static function hasCharacter(char:String):Bool{
+		return (TitleState.retChar(char) != "");
+	}
 
 	static var BFJSON = '{
 			"no_antialiasing": false, 

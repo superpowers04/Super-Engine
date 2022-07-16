@@ -35,6 +35,7 @@ class OfflineMenuState extends SearchMenuState
   function chartOptions(){
       openSubState(new QuickOptionsSubState());
   }
+  static var attempted:Bool = false;
   override function create()
   {
 
@@ -51,8 +52,16 @@ class OfflineMenuState extends SearchMenuState
     add(optionsButton);
     add(sideButton);
     }catch(e){
-    	showTempmessage("Unable to show options button?",FlxColor.RED);
+    	if(attempted){
+    		MainMenuState.handleError(e,"Error while trying to create state, " + e.message);
+    		attempted = false;
+    		return;
+    	}
+    	attempted = true;
+    	Main.game.forceStateSwitch(new OfflineMenuState()); // Try to load the state again
+    	return;
     }
+    attempted = false;
   }
   override function reloadList(?reload=false,?search = ""){
     curSelected = 0;

@@ -111,6 +111,7 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your FPS"),
 			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
+			new HCBoolOption("Show skip beginning prompt","Jump to first note prompt","skipToFirst"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
 			new NoteRatingOption("Toggles the rating that appears when you press a note"),
 			// new UnloadSongOption("Unload the song when exiting the game"),

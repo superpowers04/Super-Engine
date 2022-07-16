@@ -409,7 +409,7 @@ class Note extends FlxSkewedSprite
 				noteScore * 0.2;
 				alpha = 0.6;
 				// Funni downscroll flip when sussy note
-				flipY = (FlxG.save.data.downscroll);
+				
 				
 
 				// x += width / 2;
@@ -460,6 +460,7 @@ class Note extends FlxSkewedSprite
 			scale.x*=noteJSON.scale[0];
 			scale.y*=noteJSON.scale[1];
 		}
+		if (FlxG.save.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
 	var missedNote:Bool = false;
@@ -474,8 +475,14 @@ class Note extends FlxSkewedSprite
 		super.update(elapsed);
 		switch(inCharter){
 			case true:{
+
 				wasGoodHit = (strumTime <= Conductor.songPosition);
 				alpha = (wasGoodHit ? 0.7 : 1);
+				if(wasGoodHit && !tooLate  && ChartingState.playClaps && FlxG.sound.music.playing){
+					// FlxG.sound.play(Paths.sound('SNAP'),FlxG.save.data.hitvol,false,true);
+					ChartingState.playSnap();
+				}
+				tooLate = wasGoodHit;
 				visible = true;
 				skipNote = false;
 			}

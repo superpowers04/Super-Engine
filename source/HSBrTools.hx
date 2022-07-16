@@ -33,11 +33,12 @@ class HSBrTools {
 	public static var shared:Map<String,Dynamic> = new Map<String,Dynamic>();
 	public var global(get,never):Map<String,Dynamic>;
 	var id = "Unspecified script";
+	var hasSettings:Bool = false;
 	public function new(_path:String,?id:String = ""){
 		path = _path;
 		if (!path.endsWith('/')) path = path + "/";
 		if(id != "" && sys.FileSystem.exists('mods/scriptOptions/$id.json')){
-			trace('$id has user settings');
+			hasSettings = true;
 			var scriptJson:Map<String,Dynamic> = OptionsMenu.loadScriptOptions('mods/scriptOptions/$id.json');
 			if(scriptJson != null) optionsMap = scriptJson;
 			this.id = id;
@@ -56,7 +57,7 @@ class HSBrTools {
 	}
 
 	inline function handleError(e:String){
-		PlayState.instance.handleError(e);
+		PlayState.instance.handleError(e + '\nExtra info:\n\nPath:${path}\nHasOptions:${hasSettings}');
 	}
 
 

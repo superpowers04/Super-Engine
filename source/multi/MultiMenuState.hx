@@ -334,6 +334,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.actualSongName = songJSON;
 				onlinemod.OfflinePlayState.voicesFile = '';
 				PlayState.hsBrTools = new HSBrTools('${selSong}');
+				PlayState.scripts = [];
 
 
 				if(instFile == "" ){
@@ -351,7 +352,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					onlinemod.OfflinePlayState.voicesFile = voicesFile;
 				}
 				for (file in FileSystem.readDirectory(selSong)) {
-					if(file.endsWith(".hscript") && !FileSystem.isDirectory(file)){
+					if((file.endsWith(".hscript") || file.endsWith(".hx")) && !FileSystem.isDirectory(file)){
 						PlayState.scripts.push('${selSong}/$file');
 					}
 				}
@@ -365,7 +366,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					if(FileSystem.exists('${packDir}/scripts') && FileSystem.isDirectory('${packDir}/scripts')){
 
 						for (file in FileSystem.readDirectory('${packDir}/scripts')) {
-							if(file.endsWith(".hscript") && !FileSystem.isDirectory('${packDir}/scripts/$file')){
+							if((file.endsWith(".hscript") || file.endsWith(".hx")) && !FileSystem.isDirectory('${packDir}/scripts/$file')){
 								PlayState.scripts.push('${packDir}/scripts/$file');
 							}
 						}

@@ -1071,6 +1071,7 @@ class InputHandlerOption extends Option
 	var iesDesc:Array<String> = ["Kade 1.5/1.4 Input","A custom input engine based off of Kade 1.4/1.5"];
 	public function new(desc:String)
 	{
+		acceptValues = true;
 		super();
 		if (FlxG.save.data.inputHandler >= ies.length) FlxG.save.data.inputHandler = 0;
 		description = desc;
@@ -2030,6 +2031,7 @@ class QuickOption extends Option{
 
 		acceptValues = true;
 		super();
+		acceptValues = true;
 		description = "Chart options. THESE ARE TEMPORARY AND RESET WHEN GAME IS CLOSED";
 
 	}
@@ -2049,7 +2051,7 @@ class QuickOption extends Option{
 			if (val < setting.min) val = setting.max - 1; 
 			setValue(name,val);
 		}
-		updateDisplay();
+		display = updateDisplay();
 
 	}
 			

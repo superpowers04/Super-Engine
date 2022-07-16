@@ -477,28 +477,22 @@ class PlayState extends MusicBeatState
 		}
 		trace('Loaded ${id} script!');
 	}
-	static function charGet(charId:Int,field:String):Dynamic{
-		return Reflect.field(switch(charId){
-			case 1: dad; 
-			case 2: gf;
-			default: boyfriend;
-		},field);
+	static function charGet(charId:Dynamic,field:String):Dynamic{
+		return Reflect.field(getCharFromID(charId),field);
 	}
-	static public function charSet(charId:Int,field:String,value:Dynamic){
-		Reflect.setField(switch(charId){case 1: dad; case 2: gf; default: boyfriend;},field,value);
+	static public function charSet(charId:Dynamic,field:String,value:Dynamic){
+		Reflect.setField(getCharFromID(charId),field,value);
+	}
+	public static function getCharFromID(charID:Dynamic):Character{
+		return switch('$charID'){case "1" | "dad" | "opponent" | "p2": dad; case "2" | "gf" | "girlfriend" | "p3": gf; default: boyfriend;};
 	}
 	static public function charAnim(charId:Dynamic = 0,animation:String = "",?forced:Bool = false){
-		if(charId.playAnim == null){
-			try{
-				charId = Std.string(charId);
-			}catch(e){
-				return boyfriend.playAnim(animation,forced);
-			}
-			charId = switch(charId){case "1" | "dad" | "opponent" | "p2": dad; case "2" | "gf" | "girlfriend" | "p3": gf; default: boyfriend;};
-		}
-		charId.playAnim(animation,forced);
+		
+		getCharFromID(charId).playAnim(animation,forced);
 	}
 	public function clearVariables(){
+
+		resetInterps();
 		stepAnimEvents = [];
 		beatAnimEvents = [];
 		if(unspawnNotes != null){
@@ -524,6 +518,7 @@ class PlayState extends MusicBeatState
 			Paths.image("set"),
 			Paths.image("go"),
 		];
+		songStarted = false;
 	}
 	public static var hasStarted = false;
 	public static var ignoreScripts:Array<String> = [
@@ -1829,7 +1824,7 @@ class PlayState extends MusicBeatState
 	var songTime:Float = 0;
 
 
-	public var songStarted(default, null):Bool = false;
+	public var songStarted:Bool = false;
 	function loadPositions(){
 		var map:Map<String,KadeEngineData.ObjectInfo> = cast FlxG.save.data.playStateObjectLocations;
 		for (i => v in map) {
@@ -1888,9 +1883,60 @@ class PlayState extends MusicBeatState
 
 
 		updateTime = FlxG.save.data.songPosition;
+		if(!FlxG.save.data.skipToFirst) return;
+		var _validNote:Bool = false;
+		var _validUnspawn:Float = 0;
+		for (_ => n in notes.members) {
+			if(!n.eventNote){
+				if(n.strumTime >= 10000){
+					_validUnspawn = n.strumTime;
+					_validNote = false;
+					break;
+				}
+				_validNote = true;
+
+				break;
+			}
+		}
+		if(!_validNote){
+			for (_ => n in unspawnNotes) {
+				if(!n.eventNote){
+					if(n.strumTime >= 10000){
+						_validUnspawn = n.strumTime;
+						_validNote = false;
+						break;
+					}
+					_validNote = true;
+
+					break;
+				}
+			}
+		}
+		if(!_validNote){
+			skipPos = _validUnspawn - 5000; // -5000 is to make sure all of the notes actually appear and don't blindside the player
+			jumpToText = new FlxText(0,0,1000,"Press a note button to skip to " + Math.floor(skipPos * 0.001) + " seconds");
+			jumpToText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			jumpToText.cameras = [camHUD];
+			jumpToText.screenCenter(XY);
+			jumpToText.y -= 20;
+			add(jumpToText);
+			FlxTween.tween(jumpToText,{alpha:1},0.4);
+			jumpToTimer = FlxTween.tween(jumpToText,{y:jumpToText.y + 40},10,{onUpdate:function(_){
+				if(controls.RIGHT_P || controls.LEFT_P || controls.UP_P || controls.DOWN_P){
+					FlxG.sound.music.time = Conductor.songPosition = skipPos;
+					if(vocals != null) vocals.time = FlxG.sound.music.time;
+					FlxTween.tween(PlayState.jumpToText,{alpha:0},0.2,{onComplete:function(_){jumpToTimer.cancelChain();PlayState.jumpToText.destroy();}});
+					
+				}
+			}});
+			jumpToTimer.then(FlxTween.tween(PlayState.jumpToText,{alpha:0,y:jumpToText.y + 5},0.4,{onComplete:function(_){PlayState.jumpToText.destroy();}}));
+		}
 		
 
 	}
+	public var skipPos:Float = 0;
+	public static var jumpToText:FlxText;
+	var jumpToTimer:FlxTween;
 
 	function addSongBar(?minimal:Bool = false){
 
@@ -2604,7 +2650,7 @@ class PlayState extends MusicBeatState
 					notes.sort(FlxSort.byY,FlxSort.ASCENDING);
 				}
 			}
-		}catch(e){trace('Unable to sort notes? ${e.message},${e.stack}');}
+		}catch(e){}
 		super.draw();
 	}
 	public function followChar(?char:Int = 0,?locked:Bool = true){
@@ -3261,8 +3307,8 @@ class PlayState extends MusicBeatState
 					
 					if ((daNote.mustPress || !daNote.wasGoodHit) && daNote.lockToStrum){
 						daNote.visible = strumNote.visible;
-						if(daNote.updateX) daNote.x = strumNote.x + (strumNote.width * 0.5);
 						if(!daNote.isSustainNote && daNote.updateAngle) daNote.angle = strumNote.angle;
+						if(daNote.updateX) daNote.x = strumNote.x + (strumNote.width * 0.5);
 						if(daNote.updateAlpha) daNote.alpha = strumNote.alpha;
 						if(daNote.updateScrollFactor) daNote.scrollFactor.set(strumNote.scrollFactor.x,strumNote.scrollFactor.y);
 					}
@@ -3453,7 +3499,7 @@ class PlayState extends MusicBeatState
 				
 				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true)))
 				{
-					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+					if ((boyfriend.currentAnimationPriority == 10 || boyfriend.animName.contains("sing")) && !boyfriend.animation.curAnim.name.endsWith('miss'))
 						boyfriend.playAnim('idle');
 				}
 		 
@@ -3838,7 +3884,7 @@ class PlayState extends MusicBeatState
 				
 				if (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 && (!holdArray.contains(true)))
 				{
-					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+					if ((boyfriend.currentAnimationPriority == 10 || boyfriend.animName.contains("sing")) && !boyfriend.animation.curAnim.name.endsWith('miss'))
 						boyfriend.playAnim('idle');
 				}
 
@@ -4317,12 +4363,15 @@ class PlayState extends MusicBeatState
 		// 	if (curBeat % 2 == 0){boyfriend.playAnim('danceRight');}
 		// }
 		for (i => v in [boyfriend,gf,dad]) {
-			if (v.dance_idle && (v.animation.curAnim.name.startsWith("dance") || v.animation.curAnim.finished)){
-				if (curBeat % 2 == 1){v.playAnim('danceLeft');}
-				if (curBeat % 2 == 0){v.playAnim('danceRight');}
-			}else if (!v.dance_idle && !v.animation.curAnim.name.startsWith("sing"))
-			{
-			 v.playAnim('idle');
+			if(v.currentAnimationPriority != 10){
+
+				if (v.dance_idle && (v.animation.curAnim.name.startsWith("dance") || v.animation.curAnim.finished)){
+					if (curBeat % 2 == 1){v.playAnim('danceLeft');}
+					if (curBeat % 2 == 0){v.playAnim('danceRight');}
+				}else if (!v.dance_idle)
+				{
+				 v.playAnim('idle');
+				}
 			}
 		}
 
@@ -4425,6 +4474,10 @@ class PlayState extends MusicBeatState
 		
 		
 	// }
+	override function destroy(){
+		callInterp("destroy",[]);
+		super.destroy();
+	}
 
 	var curLight:Int = 0;
 }

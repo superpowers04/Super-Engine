@@ -118,6 +118,7 @@
 		<assets path="assets/shared/images/EVENTNOTE.xml" embed='true'/> 
 		<assets path="assets/preload/images/iconGrid.png" embed='true'/> 
 		<assets path="assets/preload/images/" embed='true'/> 
+		<assets path="assets/preload/images/logoBumpin.png" embed='true'/> 
 		<assets path="assets/fonts" embed='true'/>
 		<assets path="assets/shared/images/characters" embed='true'/>
 	</section>

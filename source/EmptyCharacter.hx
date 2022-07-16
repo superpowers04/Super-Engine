@@ -62,7 +62,7 @@ class EmptyCharacter extends Character
 	{
 		return;
 	}
-	override public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0):Void
+	override public function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0):Void
 	{
 		animation.play("idle",true,false,0);
 		return;

@@ -85,6 +85,8 @@ class FinishSubState extends MusicBeatSubstate
 		if(!isError) PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
 		var dad = PlayState.dad;
 		var boyfriend = PlayState.boyfriend;
+		var curAnim:String = PlayState.boyfriend.animName;
+
 		Conductor.changeBPM(70);
 		FlxG.cameras.setDefaultDrawTarget(PlayState.instance.camTOP,true);
 
@@ -150,7 +152,7 @@ class FinishSubState extends MusicBeatSubstate
 			// FlxG.camera.zoom = 1;
 			// PlayState.instance.camHUD.zoom = 1;
 
-			if((["win","lose","singup"]).contains(boyfriend.animation.curAnim.name.toLowerCase())) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+			if(curAnim == PlayState.boyfriend.animName) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 			// if (FlxG.save.data.camMovement){
 			PlayState.instance.followChar(0);
 			// }
