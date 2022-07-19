@@ -799,6 +799,10 @@ class Character extends FlxSprite
 		if(animation.getByName('songStart') != null && !lonely && !amPreview){
 			playAnim('songStart',true);
 		}
+		if(!charProperties.editableSprite){
+			// graphic.canBeDumped = true;
+			graphic.dump();
+		}
 		#if !debug
 		}catch(e){MainMenuState.handleError(e,'Error with $curCharacter: ${e}');
 			return;

@@ -188,6 +188,7 @@ class MainMenuState extends SickMenuState
 		    errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		    add(errorText);
 		}
+		FlxG.bitmap.clearCache();
 	}
 
 	override function goBack(){

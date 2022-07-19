@@ -26,12 +26,14 @@ typedef CharacterJson =
 	var char_pos3:Array<Float>;
 	var custom_misses:Int;
 	var ?flip_notes:Bool; // Tells the game if it should flip left and right notes on the right
+	var ?editableSprite:Bool; // If false, marks the sprite to not allow it's frames/bitmaps to be editable for performance after done creating
 	var color:Dynamic;
 	var sprites:Array<String>;
 
 	var embedded:Bool; // For embedded JSON chars, will not effect custom chars. Tells the game whether to use Lime assets or load them like a custom character
 	var path:String; // For embedded JSON chars, will not effect custom chars. Tells the game the asset to use or the path to load from
 	var genBy:String; // This should not be provided manually
+	var ?boneChar:BoneChar;
 }
 typedef IfStatement = {
 	var ?func:Dynamic->Void;
@@ -73,4 +75,25 @@ typedef CharJsonAnimOffsets ={
 	var player1:Array<Float>;
 	var player2:Array<Float>;
 	var player3:Array<Float>;
+}
+typedef BoneChar = {
+	var anims:Array<BCAnim>;
+
+}
+
+typedef BCAnim = {
+	var keyframes:Array<BCAnimKeyFrame>;
+	var name:String;
+	var length:Float;
+	var looped:Bool;
+	var priority:Int;
+	var blend:Float;
+}
+typedef BCAnimKeyFrame = {
+	var time:Float; // Time in seconds
+	var bone:String;
+	var type:Int; // 1 = position, 2 = angle, 3 = frame
+	var position:Array<Float>;
+	var angle:Float;
+	var frame:Int;
 }
