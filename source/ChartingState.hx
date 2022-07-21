@@ -119,7 +119,7 @@ class ChartingState extends MusicBeatState
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
-	var evNote:HealthIcon;
+	var evNote:Note;
 
 	private var lastNote:Note;
 	var claps:Array<Note> = [];
@@ -150,10 +150,14 @@ class ChartingState extends MusicBeatState
 	}
 	var chartType = "FNF";
 	static var snapSound:Sound;
+	static var clapSound:Sound;
 	public static function playSnap(){
-		snapSound= Sound.fromFile('./assets/shared/sounds/SNAP.ogg');
+		if(snapSound == null)snapSound= Sound.fromFile('./assets/shared/sounds/SNAP.ogg');
 		snapSound.play(new flash.media.SoundTransform(FlxG.save.data.hitvol));
-
+	}
+	public static function playClap(){
+		if(clapSound == null)clapSound= Sound.fromFile('./assets/shared/sounds/CLAP.ogg');
+		clapSound.play(new flash.media.SoundTransform(FlxG.save.data.hitvol));
 	}
 	override function create()
 	{try{
@@ -268,6 +272,8 @@ class ChartingState extends MusicBeatState
 
 		gridBlackLine = new FlxSprite((gridBG.x + gridBG.width / 2) + GRID_SIZE * 0.5).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
+		var gridBlackLine2 = new FlxSprite((gridBG.x + gridBG.width / 2) + GRID_SIZE * 0.5).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		add(gridBlackLine2);
 
 		curRenderedNotes = new FlxTypedGroup<Note>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
@@ -288,8 +294,8 @@ class ChartingState extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		// evNote = new Note(0,-1,null,false,true,"PLACEHOLDERICON",[0,-1,"PLACEHOLDERICON"]);
-		evNote = new HealthIcon("EVENTNOTE");
+		evNote = new Note(0,-1,null,false,true,"PLACEHOLDERICON",[0,-1,"PLACEHOLDERICON"]);
+		// evNote = new HealthIcon("EVENTNOTE");
 		leftIcon = new HealthIcon(_song.player1,true);
 		rightIcon = new HealthIcon(_song.player2);
 		leftIcon.scrollFactor.set(1, 1);
@@ -351,8 +357,9 @@ class ChartingState extends MusicBeatState
 		add(curRenderedNotes);
 		add(curRenderedSustains);
 
-		gridBlackLine.x = (gridBG.x + gridBG.width / 2) + (GRID_SIZE * 0.5);
-		waveformSprite.x = (GRID_SIZE * 4) - (GRID_SIZE * 4);
+		gridBlackLine.x = (GRID_SIZE * 5) - (gridBlackLine.y * 0.5);
+		gridBlackLine2.x = GRID_SIZE - (gridBlackLine.width * 0.5);
+		waveformSprite.x = gridBlackLine2.x;
 		waveformSprite.alpha = 0.35;
 		gridBGAbove.y = gridBG.y - gridBG.height;
 		gridBGBelow.y = gridBG.y + gridBG.height;
@@ -469,6 +476,7 @@ class ChartingState extends MusicBeatState
 		Conductor.songPosition =currentTime;
 		showTempmessage(if(FlxG.keys.pressed.SHIFT)"Restructured chart!" else "Reordered chart!");
 	}
+	static var playBeatClaps:Bool = false;
 
 	function addSongUI():Void
 	{
@@ -543,11 +551,19 @@ class ChartingState extends MusicBeatState
 
 
 		var hitsounds = new FlxUICheckBox(10, stepperSongVol.y + 60, null, null, "Play hitsounds", 100);
-		hitsounds.checked = false;
+		hitsounds.checked = playClaps;
 		hitsounds.callback = function()
 		{
 			playClaps = hitsounds.checked;
 			if(playClaps) playSnap();
+		};
+
+		var beatcheck = new FlxUICheckBox(10, check_voices.y + 20, null, null, "Play beat claps", 100);
+		beatcheck.checked = playBeatClaps;
+		beatcheck.callback = function()
+		{
+			playBeatClaps = beatcheck.checked;
+			if(playBeatClaps) playClap();
 		};
 
 		var stepperSongVolLabel = new FlxText(74, 110, 'Instrumental Volume');
@@ -612,6 +628,7 @@ class ChartingState extends MusicBeatState
         tab_group_song.add(shiftNoteDialLabel3);
         tab_group_song.add(stepperShiftNoteDialms);
         tab_group_song.add(shiftNoteButton);
+        tab_group_song.add(beatcheck);
 
         var invertChartButton:FlxButton = new FlxButton(100, 335, "Invert chart", function()
 		{
@@ -1477,6 +1494,9 @@ class ChartingState extends MusicBeatState
 				Conductor.changeBPM(Conductor.bpm + 1);
 			if (FlxG.keys.justPressed.DOWN)
 				Conductor.changeBPM(Conductor.bpm - 1); */
+		if(playBeatClaps && FlxG.sound.music.playing){ // Weird ifstatement but don't change hasClapped unless playBeatClaps is true
+			if(curStep % 4 == 0) {if(!hasClapped){playClap();hasClapped = true;}} else hasClapped = false;
+		}
 
 		bpmTxt.text = 'Buggy chart editor\n'
 			+ '${FlxMath.roundDecimal(Conductor.songPosition / 1000, 2)} / ${FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2)}'
@@ -1485,6 +1505,7 @@ class ChartingState extends MusicBeatState
 			+ '\nSpeed: ${HelperFunctions.truncateFloat(speed, 1)}'
 			+ '\nChartType: ${chartType}'
 			+ '\n\nSnap: ${notesnap}'
+			+ '\n${if(playBeatClaps)"Play clap on beat; " else ""}${if(playClaps)"Play snap on note" else ""}'
 			+ "\n"
 			+ (doSnapShit ? "Snap enabled" : "Snap disabled")
 			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right : Change playback speed\nCTRL-Left/Right : Change Snap\nHold Shift : Disable Snap\nEnter/Escape : Preview chart\n F1 : hide/show this' : "");
@@ -1505,6 +1526,7 @@ class ChartingState extends MusicBeatState
 
 			changeSection(curSection + 1, updateMusic);
 	}
+	var hasClapped = false;
 
 
 
@@ -1609,12 +1631,12 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
-	override function beatHit() 
-	{
-		trace('beat');
+	// override public function stepHit() 
+	// {
 
-		super.beatHit();
-	}
+	// 	super.stepHit();
+	// 	if(curStep % 4 == 0) playClap();
+	// }
 
 	function recalculateSteps():Int
 	{
@@ -1749,17 +1771,10 @@ class ChartingState extends MusicBeatState
 
 	function updateHeads():Void
 	{
-		if (check_mustHitSection.checked)
-		{
-			leftIcon.setPosition((GRID_SIZE * 0.5), -100);
-			rightIcon.setPosition((gridBG.width / 2) + (GRID_SIZE * 0.5), -100);
-		}
-		else
-		{
-			rightIcon.setPosition((GRID_SIZE * 0.5), -100);
-			leftIcon.setPosition((gridBG.width / 2) + (GRID_SIZE * 0.5), -100);
-		}
-		evNote.setPosition(-GRID_SIZE * 0.8 ,-80);
+		(if(check_mustHitSection.checked) leftIcon else rightIcon).setPosition(GRID_SIZE * 3, -100);
+		(if(check_mustHitSection.checked) rightIcon else leftIcon).setPosition(GRID_SIZE * 7, -100);
+
+		evNote.setPosition(evNote.width * 0.5,-80);
 	}
 
 	function updateNoteUI():Void
@@ -1938,6 +1953,7 @@ class ChartingState extends MusicBeatState
 				noteTypeInput.text = (if(arr[0] == null) '' else '${arr.shift()}');
 
 				noteTypeInputcopy.text = arr.join(', ');
+				if(noteTypeInputcopy.text.toLowerCase() == "null") noteTypeInputcopy.text = "";
 				currentNoteObj = note;
 				note.color = 0xaaFFaa;
 			}

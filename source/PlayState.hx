@@ -263,7 +263,13 @@ class PlayState extends MusicBeatState
 	public static var timeCurrentlyR:Float = 0;
 	public static var jumpTo:Float = 0;
 	public var moveCamera:Bool = true;
-	
+	public var canSaveScore(default,set):Bool = true;
+	public function set_canSaveScore(val){ // Prevents being able to enable this if it's already been disabled.
+		if(!val){
+			canSaveScore = false;
+		}
+		return canSaveScore;
+	}
 	// Will fire once to prevent debug spam messages and broken animations
 	private var triggeredAlready:Bool = false;
 	
@@ -373,14 +379,24 @@ class PlayState extends MusicBeatState
 			trace('Error! ${error}');
 			if(!songStarted && !forced && playCountdown){
 				errorMsg = error;
-				trace("Suppressing error to prevent issues as it was thrown before countdown");
+				startedCountdown = true;
+				// updateTime = true;
+				// new FlxTimer().start(0.5,function(_){
+				// 	handleError(error,true);
+				// });
 				return;
 			}
-			// generatedMusic = false;
+			errorMsg = "";
+			FlxTimer.globalManager.clear();
+			FlxTween.globalManager.clear();
+			// updateTime = false;
+
+			var _forced = (!songStarted && !forced && playCountdown);
 			generatedMusic = false;
 			persistentUpdate = false;
-			openSubState(new FinishSubState(0,0,error));
-		}catch(e){MainMenuState.handleError(e,error);
+			persistentDraw = true;
+			openSubState(new FinishSubState(0,0,error,_forced));
+		}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
 		}
 	}
 	public function revealToInterp(value:Dynamic,name:String,id:String){
@@ -436,6 +452,22 @@ class PlayState extends MusicBeatState
 		interpCount--;interps.remove(id);
 	}
 	
+	public function parseRun(?script:String = "",?id:String = "song"){
+		if(script != ""){return;}
+		if(interps[id] == null){
+			parseHScript(script,id);
+		}else{
+			var parser = new hscript.Parser();
+			try{
+				parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
+				interps[id].execute(parser.parseString(script));
+				// Reflect.callMethod(interps[id],method,args);
+			}catch(e){
+				handleError('Error parsing ${id} runtime hscript, Line:${parser.line};\n Error:${e.message}');
+				// interp = null;
+			}
+		}
+	}
 	public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song"){
 		// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled or during online play
 		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return;}
@@ -461,6 +493,10 @@ class PlayState extends MusicBeatState
 				trace('Using assets folder');
 				interp.variables.set("BRtools",new HSBrTools("assets/"));
 			}
+			// Access current state without needing to be inside of a function with ps as an argument
+			interp.variables.set("state",this); 
+			interp.variables.set("game",this);
+
 			interp.variables.set("charGet",charGet); 
 			interp.variables.set("charSet",charSet);
 			interp.variables.set("charAnim",charAnim);
@@ -1746,7 +1782,10 @@ class PlayState extends MusicBeatState
 			// loadPositions();
 
 
-			if(errorMsg != "") {handleError(errorMsg,true);return;}
+			if(errorMsg != "") {
+				Conductor.songPosition = -500;
+				return;
+			}
 		}
 		var swagCounter:Int = 0;
 		
@@ -3157,7 +3196,7 @@ class PlayState extends MusicBeatState
 
 	function setInputHandlers(){
 		inputMode = FlxG.save.data.inputHandler;
-		var inputEngines = ["KE" + MainMenuState.kadeEngineVer,"SE" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")];
+		var inputEngines = ["KE 1.5","SE" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")];
 		// if (onlinemod.OnlinePlayMenuState.socket != null && inputMode != 0) {inputMode = 0;trace("Loading with non-kade in online. Forcing kade!");} // This is to prevent input differences between clients
 		trace('Using ${inputMode}');
 		// noteShit handles moving notes around and opponent hitting them

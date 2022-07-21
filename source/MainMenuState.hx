@@ -14,6 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import sys.io.File;
+// import ScriptableState;
 
 // For Title Screen GF
 import flixel.graphics.FlxGraphic;
@@ -24,7 +25,6 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import flixel.util.FlxAxes;
 import haxe.CallStack;
-// import ScriptableState;
 
 
 using StringTools;
@@ -37,8 +37,16 @@ class MainMenuState extends SickMenuState
 
 	public static var nightly:String = "N26";
 
-	public static var kadeEngineVer:String = "1.5.2";
 	public static var gameVer:String = "0.2.7.1";
+	public static var compileType(default,never):String =
+	#if ghaction
+		"Github action build"
+	#elseif debug
+		"Manual debug build"
+	#else
+		"Manual build"
+	#end;
+	public static var buildType:String = Sys.systemName();
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
 	public static var char:Character = null;
@@ -93,7 +101,10 @@ class MainMenuState extends SickMenuState
 			FlxG.switchState(new MainMenuState());
 		
 	}
-
+	// macro function getTime():String{
+	// 	var time = Date.now();
+	// 	return '${time.getDay()}/${time.getMonth}/${time.getYear() - 2000} ${time.getHours()}:${time.getMinutes()}';
+	// }
 	override function create()
 	{
 		// forceQuit = true;
@@ -171,8 +182,7 @@ class MainMenuState extends SickMenuState
 			hasWarnedNightly = true;
 		} 
 
-
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF ${gameVer}/Kade ${kadeEngineVer}/Super-Engine ${ver}', 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF ${gameVer}/Kade 1.5.2/Super-Engine ${ver} ${buildType} ${compileType}', 12);
 		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.borderSize = 2;
 		versionShit.scrollFactor.set();
@@ -227,7 +237,7 @@ class MainMenuState extends SickMenuState
 
 	function otherSwitch(){
 		options = ["freeplay","download charts","download characters"
-		//, "scripted states"
+		// , "scripted states"
 		];
 		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"
 		// ,"Run a script inside of a semi sandboxed environment"
@@ -281,8 +291,8 @@ class MainMenuState extends SickMenuState
 			// case "Setup characters":
 			// 	FlxG.switchState(new SetupCharactersList());
 			
-			// case "scripted states":
-			// 	FlxG.switchState(new SelectScriptableState());
+			case "scripted states":
+				// FlxG.switchState(new SelectScriptableState());
 			case "download charts":
 				FlxG.switchState(new ChartRepoState());
 			case 'story mode':

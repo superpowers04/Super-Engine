@@ -57,7 +57,7 @@ class FinishSubState extends MusicBeatSubstate
 	public static var instance:FinishSubState;
 	public static var fadeOut:Bool = true;
 	public var updateBF = true;
-	public function new(x:Float, y:Float,?won = true,?error:String = "")
+	public function new(x:Float, y:Float,?won = true,?error:String = "",force:Bool = false)
 	{
 		instance = this;
 		endingMusic = null;
@@ -66,6 +66,14 @@ class FinishSubState extends MusicBeatSubstate
 			errorMsg = error;
 			won = false;
 			// PlayState.instance.paused = true;
+		}
+		if(force){
+			FlxG.state.persistentUpdate = false;
+			FlxG.sound.pause();
+			PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
+			super();
+			finishNew("FORCEDMOMENT.MP4efdhseuifghbehu");
+			return;
 		}
 		PlayState.instance.camHUD.alpha = PlayState.instance.camTOP.alpha = 1;
 		PlayState.instance.followChar(if(won) 0 else 1);
@@ -82,7 +90,9 @@ class FinishSubState extends MusicBeatSubstate
 		FlxG.state.persistentUpdate = false;
 		win = won;
 		FlxG.sound.pause();
-		if(!isError) PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
+		
+		PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
+		
 		var dad = PlayState.dad;
 		var boyfriend = PlayState.boyfriend;
 		var curAnim:String = PlayState.boyfriend.animName;
@@ -152,7 +162,7 @@ class FinishSubState extends MusicBeatSubstate
 			// FlxG.camera.zoom = 1;
 			// PlayState.instance.camHUD.zoom = 1;
 
-			if(curAnim == PlayState.boyfriend.animName) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+			if(curAnim == PlayState.boyfriend.animName && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 			// if (FlxG.save.data.camMovement){
 			PlayState.instance.followChar(0);
 			// }
@@ -165,23 +175,27 @@ class FinishSubState extends MusicBeatSubstate
 	public var cam:FlxCamera;
 	var optionsisyes:Bool = false;
 	var shownResults:Bool = false;
-	public function finishNew(?name:String){
+	public function finishNew(?name:String = ""){
 			ready =true;
 			Conductor.changeBPM(70);
-			FlxG.camera.alpha = PlayState.instance.camHUD.alpha = 1;
-			// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
-			PlayState.instance.generatedMusic = false;
-			PlayState.instance.followChar(if(win) 0 else 1);
-			var camPos = PlayState.instance.getDefaultCamPos();
-			PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
-			PlayState.instance.camGame.setPosition(camPos[0],camPos[1]);
+			if(name != "FORCEDMOMENT.MP4efdhseuifghbehu"){
+
+				FlxG.camera.alpha = PlayState.instance.camHUD.alpha = 1;
+				// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
+				PlayState.instance.generatedMusic = false;
+				PlayState.instance.followChar(if(win) 0 else 1);
+				var camPos = PlayState.instance.getDefaultCamPos();
+				PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
+				PlayState.instance.camGame.setPosition(camPos[0],camPos[1]);
+				FlxG.state.persistentUpdate = !isError && !pauseGame;
+				if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
+				updateBF = false;
+			}
 			cam = new FlxCamera();
-			updateBF = false;
 			FlxG.cameras.add(cam);
 			FlxCamera.defaultCameras = [cam];
-			if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
-			// ready = true;
-			FlxG.state.persistentUpdate = !isError && !pauseGame;
+			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
+				// ready = true;
 			pauseGame = true;
 			autoEnd = true;
 			FlxG.sound.pause();
@@ -294,7 +308,7 @@ class FinishSubState extends MusicBeatSubstate
 				// chartInfoText.scrollFactor.set();
 				
 
-				if(win && !PlayState.instance.hasDied && !ChartingState.charting){Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)]);}
+				if(win && !PlayState.instance.hasDied && !ChartingState.charting && PlayState.instance.canSaveScore){Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)]);}
 				add(bg);
 				add(finishedText);
 				add(comboText);
@@ -364,7 +378,6 @@ class FinishSubState extends MusicBeatSubstate
 				// try{TitleState.saveScore(PlayState.accuracy);}catch(e){trace("e");}
 			}
 
-			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
 	}
 	var shouldveLeft = false;
 	function retMenu(){

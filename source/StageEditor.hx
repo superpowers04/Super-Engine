@@ -112,7 +112,7 @@ class StageEditor extends MusicBeatState{
 			showGF = !stageProperties.no_gf;
 			stageTags = stageProperties.tags;
 		}catch(e){
-			MusicBeatState.instance.showTempmessage('Invalid or broken stage! ${e.message}',FlxColor.RED);
+			MusicBeatState.instance.showTempmessage('Invalid, broken or empty stage! ${e.message}',FlxColor.RED);
 			return {
 				objects:[],
 				bfPos:[770, 100],
