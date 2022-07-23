@@ -113,9 +113,9 @@ class HscriptUtils {
 		interp.variables.set("StringTools", SEStringTools); // This uses inlines, I hate my life
 		interp.variables.set("Json", SEJson);
 
-		interp.variables.set("Type", SEType);
-		interp.variables.set("getClass", SEType.getClass);
-		interp.variables.set("resolveClass", SEType.resolveClass);
+		interp.variables.set("Type", Type);
+		interp.variables.set("getClass", Type.getClass);
+		interp.variables.set("resolveClass", Type.resolveClass);
 		// SE modifications of other libraries
 		interp.variables.set("FlxTimer", BRTimer);
 
@@ -140,6 +140,10 @@ class HscriptUtils {
 		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("FlxText",FlxText);
 		interp.variables.set("FlxSort",FlxSort);
+		interp.variables.set("FlxShader",tools.FlxShader);
+		interp.variables.set("FlxShaderToy",tools.FlxShaderToy);
+
+		interp.variables.set("FlxTextBorderStyle",FlxTextBorderStyle);
 		interp.variables.set("FlxAxes",flixel.util.FlxAxes);
 
 
@@ -175,10 +179,10 @@ class SETools{
 	static public function getFromPersistant(obj:String):Dynamic{
 		return persistantVars.get(obj);
 	}
-	static public function addToPersistant(name,obj:Dynamic){
+	static public function addToPersistant(name:String,obj:Dynamic){
 		return persistantVars.set(name,obj);
 	}
-	static public function removeFromPersistant(name){
+	static public function removeFromPersistant(name:String){
 		return persistantVars.set(name,null);
 	}
 
@@ -283,49 +287,50 @@ class SESave{
 	}
 }
 
+// class SEType {
+// 	static public function allEnums<T>(e:Enum<T>):Array<T>{
+// 		return Type.allEnums(e);
+// 	}
+// 	static public function typeof(o:Dynamic):Dynamic{
+// 		return Type.typeof(o);
+// 	}
+// 	static public function getSuperClass(o:Dynamic):Dynamic{
+// 		return Type.getSuperClass(o);
+// 	}
+// 	static public function getClass(o:Dynamic):Dynamic{
+// 		return Type.getClass(o);
+// 	}
+// 	static public function getClassFields(o:Class<Dynamic>):Array<String>{
+// 		return Type.getClassFields(o);
+// 	}
+// 	static public function getClassName(o:Class<Dynamic>):Dynamic{
+// 		return Type.getClassName(o);
+// 	}
+// 	static public function createInstance<T>(cl:Class<Dynamic>, args:Array<Dynamic>):T{
+// 		return Type.createInstance(cl,args);
+// 	}
+// 	static public function createEmptyInstance<T>(cl:Class<Dynamic>):T{
+// 		return Type.createEmptyInstance(cl);
+// 	}
+// 	static public function resolveClass(name:String):Dynamic{
+// 		switch (name) {
+// 			case "FileSystem" | "File":
+// 				return FReplica;
+// 			case "sys":
+// 				return Class; // trol
+// 			case "Type":
+// 				return SEType;
+// 		}
 
-class SEType {
-
-	static public function typeof(o:Dynamic):Dynamic{
-		return Type.typeof(o);
-	}
-	static public function getSuperClass(o:Dynamic):Dynamic{
-		return Type.getSuperClass(o);
-	}
-	static public function getClass(o:Dynamic):Dynamic{
-		return Type.getClass(o);
-	}
-	static public function getClassFields(o:Class<Dynamic>):Array<String>{
-		return Type.getClassFields(o);
-	}
-	static public function getClassName(o:Class<Dynamic>):Dynamic{
-		return Type.getClassName(o);
-	}
-	static public function createInstance(cl:Class<Dynamic>, args:Array<Dynamic>):Dynamic{
-		return Type.createInstance(cl,args);
-	}
-	static public function createEmptyInstance(cl:Class<Dynamic>):Dynamic{
-		return Type.createEmptyInstance(cl);
-	}
-	static public function resolveClass(name:String):Dynamic{
-		switch (name) {
-			case "FileSystem" | "File":
-				return FReplica;
-			case "sys":
-				return Class; // trol
-			case "Type":
-				return SEType;
-		}
-
-		return Type.resolveClass(name);
-	}
-	static public function resolveEnum(name:String):Enum<Dynamic>{
-		return Type.resolveEnum(name);
-	}
-	static public function createEnum(name:String):Enum<Dynamic>{
-		return Type.resolveEnum(name);
-	}
-}
+// 		return Type.resolveClass(name);
+// 	}
+// 	static public function resolveEnum(name:String):Enum<Dynamic>{
+// 		return Type.resolveEnum(name);
+// 	}
+// 	static public function createEnum<T>(e:Enum<T>, constr:String, ?params:Array<Dynamic>):T{
+// 		return Type.createEnum(e,constr,params);
+// 	}
+// }
 
 
 // class SEType extends Type{
@@ -364,6 +369,9 @@ class FReplica{
 	}
 	static public function getContent(P:String){
 		return File.getContent(P);
+	}
+	static public function saveContent(P:String,con:String){
+		return File.saveContent(P,con);
 	}
 	static public function getBytes(P:String):haxe.io.Bytes{
 		return File.getBytes(P);

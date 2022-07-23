@@ -59,7 +59,17 @@ class MusicBeatState extends FlxUIState
 	
 	var tempMessBacking:FlxSprite;
 	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true){
-		if (tempMessage != null && tempMessTimer != null){tempMessage.destroy();tempMessTimer.cancel();}
+		if (tempMessage != null){
+			remove(tempMessage);
+			tempMessage.destroy();
+
+		}
+		if (tempMessage != null && tempMessTimer != null){
+			tempMessTimer.cancel();}
+		if(tempMessBacking != null){
+			remove(tempMessBacking);
+			tempMessBacking.destroy();
+		}
 		trace(str);
 		tempMessage = new FlxText(40,60,1000,str,24);
 		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -74,9 +84,6 @@ class MusicBeatState extends FlxUIState
 			tempMessage.screenCenter(X);
 		}
 		// tempMessage.wordWrap = false;
-		if(tempMessBacking != null){
-			tempMessBacking.destroy();
-		}
 		tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
 		tempMessBacking.scrollFactor.set();
 		if(FlxG.cameras.list[FlxG.cameras.list.length - 1] != null){
@@ -112,6 +119,11 @@ class MusicBeatState extends FlxUIState
 		updateBeat();
 		if(FlxG.keys.justPressed.F1 && forceQuit){
 			MainMenuState.handleError("Manually triggered force exit");
+		}
+		if(FlxG.keys.justPressed.F3){
+			var mess = 'Global Mouse pos: ${FlxG.mouse.x},${FlxG.mouse.y}; Screen mouse pos: ${FlxG.mouse.screenX},${FlxG.mouse.screenY}; member count: ${members.length}'; 
+			trace(mess);
+			showTempmessage(mess);
 		}
 		if(FlxG.keys.justPressed.F4 && forceQuit){
 			throw("Manually triggered error");

@@ -82,6 +82,17 @@ class LoadingScreen extends Sprite{
 		FlxG.stage.addChild(object);
 		// object.visible = true;
 	}
+	public static function forceHide(){
+		if(object == null){
+			return;
+		}
+		if(tween != null){tween.cancel();}
+		object.funni = false;
+		object.alpha = 0;
+		object.scaleX = FlxG.game.scaleX;
+		object.scaleY = FlxG.game.scaleY;
+		
+	}
 	public static function hide(){
 		if(object == null){
 			return;

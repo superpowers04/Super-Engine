@@ -40,6 +40,7 @@ class FuckState extends FlxUIState
 	override function create()
 	{
 		super.create();
+		LoadingScreen.forceHide();
 		// var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(if(Math.random() > 0.5) 'week54prototype' else "zzzzzzzz", 'shared'));
 		// bg.scale.x *= 1.55;
 		// bg.scale.y *= 1.55;
@@ -91,7 +92,7 @@ class FuckState extends FlxUIState
 		{
 			// var _main = Main.instance;
 			LoadingScreen.show();
-			TitleState.initialized = false;
+			// TitleState.initialized = false;
 			MainMenuState.firstStart = true;
 			FlxG.switchState(new TitleState());
 		}

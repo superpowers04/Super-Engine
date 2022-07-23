@@ -39,6 +39,7 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIInputText;
+import SENumericStepper as FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import flixel.ui.FlxButton;
@@ -732,6 +733,15 @@ class AnimationDebug extends MusicBeatState
 		dad.addAnimation("ANIMATIONDEBUG_tempAnim",name,24);
 		dad.playAnim("ANIMATIONDEBUG_tempAnim");
 	}
+
+	inline function updateColorBox(){
+		if(charJson.color != null && charJson.color[0] != null){
+			trace(colorFromRGB(charJson.color));
+			sampleBox.color = colorFromRGB(charJson.color);
+		}else{
+			sampleBox.color = dad.definingColor;
+		}
+	}
 	function setupUI(dest:Bool = false){
 		try{
 
@@ -741,6 +751,7 @@ class AnimationDebug extends MusicBeatState
 			animDropDown.visible = true;
 			// if (animDropDown3 != null) animDropDown3.destroy();
 			// if (animDropDown2 != null) animDropDown2.destroy();
+			sampleBox.destroy();
 			for (_ => v in uiMap) {
 				if (v.destroy != null) v.destroy();
 			}
@@ -802,11 +813,11 @@ class AnimationDebug extends MusicBeatState
 
 		// Togglables 
 
-		var looped = new FlxUICheckBox(10, 20, null, null, "Loop anim");
+		var looped = new FlxUICheckBox(10, 30, null, null, "Loop anim");
 		looped.checked = false;
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
-		var flipanim = new FlxUICheckBox(100, 20, null, null, "FlipX");
+		var flipanim = new FlxUICheckBox(100, 30, null, null, "FlipX");
 		flipanim.checked = false;
 		uiMap["flipanim"] = flipanim;
 		uiBox.add(flipanim);
@@ -814,37 +825,37 @@ class AnimationDebug extends MusicBeatState
 		// oneshot.checked = false;
 		// uiMap["oneshot"] = oneshot;
 		// uiBox.add(oneshot);
-		var animTxt = new FlxText(30, 40,0,"Priority(-1 for def)");
-		uiMap["prtxt"] = animTxt;
-		uiBox.add(animTxt);
-		var e = new FlxUIInputText(150, 40, 20, '-1');
-		uiMap["priorityText"] = e;
-		uiMap["priorityText"].customFilterPattern = ~/(?!\-[0-9]*)/gi;
+		// var prTxt = new FlxText(30, 40,0,"Priority(-1 for def)");
+		// uiMap["prtxt"] = prTxt;
+		// uiBox.add(prTxt);
+		// var priorityText = new FlxUIInputText(150, 40, 20, '-1');
+		uiBox.add(uiMap["prioritytxt"] = new FlxText(10, 60,0,"Priority(-1 for def)"));
+		uiMap["priorityText"] = new FlxUINumericStepper(140, 60, 1, -1,-999,999,2);
+		uiBox.add(uiMap["priorityText"]);
 
-		uiBox.add(e);
 
-		var loopStart = new FlxUIInputText(30, 120, null, "0");
-		loopStart.filterMode = 2;
-		uiMap["loopStart"] = loopStart;
-		uiBox.add(loopStart);
-		var animTxt = new FlxText(30, 60,0,"Animation FPS");
-		uiMap["FPStxt"] = animTxt;
-		var animFPS = new FlxUIInputText(30, 80, null, "24");
-		// animFPS.customFilterPattern = ~/[^0-9]/;
-		// animFPS.text = "24";
-		animFPS.filterMode = 2;
-		// animFPS.checked = false;
-		uiMap["FPS"] = animFPS;
-		uiBox.add(animFPS);
-		uiBox.add(animTxt);
-		// var animTxt = new FlxText(140, 130,0,"XML Name");
+		uiBox.add(uiMap["animtxt"] = new FlxText(10, 80,0,"Animation FPS"));
+		uiMap["animFPS"] = new FlxUINumericStepper(140, 80, 1, 24);
+		uiBox.add(uiMap["animFPS"]);
+
+		uiBox.add(uiMap["looptxt"] = new FlxText(10, 100,0,"Loop start frame"));
+		uiMap["loopStart"] = new FlxUINumericStepper(140, 100, 1, 0,0);
+		uiBox.add(uiMap["loopStart"]);
+		// var animTxt = new FlxText(30, 60,0,"Animation FPS");
+		// uiMap["FPStxt"] = animTxt;
+		// var animFPS = new FlxUIInputText(30, 80, null, "24");
+		// animFPS.filterMode = 2;
+		// uiMap["FPS"] = animFPS;
+		// uiBox.add(animFPS);
 		// uiBox.add(animTxt);
-		var animTxt = new FlxText(30, 100,0,"Loop Start Frame");
-		uiMap["lstxt"] = animTxt;
-		uiBox.add(animTxt);
-		uiMap["loopStart"] = new FlxUIInputText(30, 120, null, "0");
-		uiMap["loopStart"].filterMode = 2;
-		uiBox.add(animFPS);
+		// // var animTxt = new FlxText(140, 130,0,"XML Name");
+		// // uiBox.add(animTxt);
+		// var animTxt = new FlxText(30, 100,0,"Loop Start Frame");
+		// uiMap["lstxt"] = animTxt;
+		// uiBox.add(animTxt);
+		// uiMap["loopStart"] = new FlxUIInputText(30, 120, null, "0");
+		// uiMap["loopStart"].filterMode = 2;
+		// uiBox.add(animFPS);
 		uiMap["commitButton"] = new FlxUIButton(20,160,"Add animation",function(){
 			try{
 
@@ -858,10 +869,10 @@ class AnimationDebug extends MusicBeatState
 						name: animUICurName,
 						loop: uiMap["loop"].checked,
 						flipx:uiMap["flipanim"].checked,
-						fps: Std.parseInt(uiMap["FPS"].text),
-						loopStart:Std.parseInt(uiMap["loopStart"].text),
+						fps: Std.int(uiMap["animFPS"].value),
+						loopStart:Std.int(uiMap["loopStart"].value),
 						indices: [],
-						priority: (if(uiMap["priorityText"] != null || uiMap["priorityText"].text == null) -1 else Std.parseInt(uiMap["priorityText"].text))
+						priority:Std.int(uiMap["priorityText"].value)
 					},false);
 				}
 				spawnChar(true,false,charJson);
@@ -888,65 +899,119 @@ class AnimationDebug extends MusicBeatState
 		add(uiBox2);
 		uiMap["uiBox2"] = uiBox2;
 
-		var looped = checkBox(30, 40,"No antialiasing","no_antialiasing");
+		var looped = checkBox(10, 30,"No antialiasing","no_antialiasing");
 		uiBox2.add(looped);
-		var looped = checkBox(30, 60,"Flip X","flip_x");
+		var looped = checkBox(10, 50,"Flip X","flip_x");
 		uiBox2.add(looped);
 		// var looped = checkBox(30, 80,"Spirit Trail","spirit_trail");
 		// uiBox2.add(looped);
-		var looped = checkBox(30, 80,"Invert left/right singing for BF Clone","flip_notes");
+		var looped = checkBox(10, 75,"Invert left/right singing for BF Clone","flip_notes");
 		uiBox2.add(looped);
 		// var animTxt = new FlxText(30, 100,0,"Color, R/G/B");
 
-		uiBox2.add(new FlxText(30, 120,0,"Scale:"));
-		uiMap["scale"] = new FlxUIInputText(80, 120, 20, '${charJson.scale}');
-		uiMap["scale"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
-		uiMap["scale"].callback = function(text,_){
-			var int = Std.parseFloat(text);
-			if(int > 10){
-				text = "10.0";
-			}else if (Math.isNaN(int) || int < 0 || text == ""){
-				text = "1.0";
-			}
-			uiMap["scale"].text = text;
-			charJson.scale = Std.parseFloat(text);
-		}
+		uiBox2.add(uiMap["scaletxt"] = new FlxText(10, 100,0,"Scale"));
+		uiMap["scale"] = new FlxUINumericStepper(140, 100, 0.1, charJson.scale,10,2);
+		uiMap["scale"].callback = function(value,_){ charJson.scale = value;}
 		uiBox2.add(uiMap["scale"]);
 
-		uiBox2.add(new FlxText(30, 140,0,"Sing Duration:"));
-		uiMap["Sing Duration"] = new FlxUIInputText(90, 140, 20, '${charJson.sing_duration}');
-		uiMap["Sing Duration"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
-		uiMap["Sing Duration"].callback = function(text,_){
-			var int = Std.parseFloat(text);
-			if(int > 10){
-				text = "10.0";
-			}else if (Math.isNaN(int) || int < 0 || text == ""){
-				text = "1.0";
-			}
-			uiMap["Sing Duration"].text = text;
-			charJson.sing_duration = Std.parseFloat(text);
-		}
+		uiBox2.add(uiMap["scaletxt"] = new FlxText(10, 120,0,"Sing Duration"));
+		uiMap["Sing Duration"] = new FlxUINumericStepper(140, 120, 0.1, charJson.sing_duration,10,2);
+		uiMap["Sing Duration"].callback = function(value,_){ charJson.sing_duration = value;}
 		uiBox2.add(uiMap["Sing Duration"]);
-		uiBox2.add(new FlxText(30, 160,0,"Color:"));
-		uiMap["charColor"] = new FlxUIInputText(90, 160, 100, '${if(charJson.color != null) dad.definingColor.toWebString() else '#000000'}');
-		// uiMap["charColor"].customFilterPattern = ~/(?![#xXa-f0-9A-F])/gi;
+
+
+		// uiBox2.add(new FlxText(30, 120,0,"Scale:"));
+		// uiMap["scale"] = new FlxUINumericStepper(80, 120, 0.1, charJson.scale,0,10,2);
+		// uiMap["scale"].callback = function(text,_){
+		// 	charJson.scale = value;
+		// }
+		// uiBox2.add(uiMap["scale"]);
+
+		// uiBox2.add(new FlxText(30, 140,0,"Sing Duration:"));
+		// uiMap["Sing Duration"] = new FlxUINumericStepper(90, 140, 0.1, charJson.sing_duration.0,30,2);
+
+		// uiMap["Sing Duration"].callback = function(text,_){
+		// 	uiMap["Sing Duration"].text = text;
+		// }
+		// uiBox2.add(uiMap["Sing Duration"]);
+
+		// TODO, USE STEPPERS INSTEAD
+		uiBox2.add(new FlxText(20, 160,0,"Color"));
+		uiMap["charColor"] = new FlxUIInputText(90, 160, 100, (if(charJson.color != null) '${dad.definingColor.red},${dad.definingColor.green},${dad.definingColor.blue}' else '0,0,0'));
+		uiMap["charColor"].customFilterPattern = ~/(?![0-9,])/gi;
 		uiMap["charColor"].callback = function(text,a){
 			// text = text.toUpperCase();
-			var col = FlxColor.fromString(text);
-			if('$col' == "null"){ // Weird way of doing it but still returns null even if valid for some reason
-				if(a == "enter" || a == "focuslost") showTempmessage("Invalid color, valid syntax: #RRGGBB, #AARRGGBB, 0xAARRGGBB.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
+			var rgb = text.split(',');
+			if(rgb == null || rgb.length < 3){ // Weird way of doing it but still returns null even if valid for some reason
+				if(a == "enter" || a == "focuslost") showTempmessage("Invalid color, valid syntax: \"RRR,GGG,BBB\". 0-255.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
 				return;
 			}
-			charJson.color = col;
-			// uiMap["charColor"].text = col.toWebString();
-			if(uiMap["healthBar"] != null){
-				uiMap["healthBar"].color = dad.definingColor;
+			rgb[0] = Std.int(rgb[0]);
+			rgb[1] = Std.int(rgb[1]);
+			rgb[2] = Std.int(rgb[2]);
+
+			var col = colorFromRGB(rgb);
+			if('$col' == "null"){ // Weird way of doing it but still returns null even if valid for some reason
+				if(a == "enter" || a == "focuslost") showTempmessage("Invalid color, valid syntax: \"RRR,GGG,BBB\". 0-255.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
+				return;
 			}
+			// charJson.color = col;
+			if(a == "enter" || a == "focuslost"){
+				uiMap["charColor"].text = '${col.red},${col.green},${col.blue}';
+			}
+			updateColorBox();
+			// uiMap["colorSample"].color = col;
 		}
 		uiMap["charColor"].focusLost = function(){
 			uiMap["charColor"].callback(uiMap["charColor"].text,"focuslost");
 		}
 		uiBox2.add(uiMap["charColor"]);
+
+		uiMap["colorIcon"] = new FlxUIButton(20,180,"Pull color from icon",function(){
+			try{
+				if(uiMap["hi1"] == null){
+					showTempmessage('No health icon to scan!',FlxColor.RED,10);
+					return;
+				}
+				showTempmessage('Checking for color from health icon, this might take a bit...',null,10);
+				var icon = uiMap["hi1"].graphic.bitmap;
+				var colors:Map<Int,Int> = [];
+				var max:Int = 0;
+				var maxColor:Int = 0;
+				for(x in 0 ...icon.width){
+					for(y in 0...icon.height){
+						var pixel = icon.getPixel(x,y);
+						if(pixel == 0 || pixel == 0xFF000000 || FlxColor.fromInt(pixel).lightness < 0.05){continue;}
+						// trace(pixel);
+
+						// var curColor:Int = icon.getPixel32(X,Y);
+						// if(curColor == 0 ) continue;
+						colors[pixel] = (colors.exists(pixel) ? 0 : colors[pixel] + 1);
+						if(colors[pixel] > max){maxColor = pixel;max=colors[pixel];}
+					}
+				}
+				trace(maxColor);
+				// if(maxColor == 0){
+				
+				// }
+				var _Col = FlxColor.fromInt(maxColor);
+				charJson.color = [_Col.red,_Col.green,_Col.blue];
+				uiMap["charColor"].text = charJson.color;
+
+				// spawnChar(true,false,charJson);
+				updateColorBox();
+			}catch(e){
+				showTempmessage('Unable to find color! ${e.message}',FlxColor.RED,10);
+				trace(e.stack);
+			}
+		});
+		uiBox2.add(uiMap["colorIcon"]);
+		// 110,180
+		sampleBox = new FlxSprite(53,432).loadGraphic(FlxGraphic.fromRectangle(30,30,FlxColor.WHITE));
+		sampleBox.cameras = [camHUD];
+		sampleBox.scrollFactor.set();
+		updateColorBox();
+		add(sampleBox);
 
 		// e = new FlxUIInputText(90, 140, 20, '${charJson.healthicon}');
 		// uiMap["Health Icon"] = e;
@@ -1044,37 +1109,44 @@ class AnimationDebug extends MusicBeatState
 		uiBox2.add(commitButton);
 		try{
 
-			var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
-			if (FlxG.save.data.downscroll)
-				healthBarBG.y = 50 + FlxG.save.data.guiGap;
-			healthBarBG.screenCenter(X);
-			healthBarBG.scrollFactor.set();
-			add(healthBarBG);
-			var healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,'health', 0, 2);
+			// var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
+			// if (FlxG.save.data.downscroll)
+			// 	healthBarBG.y = 50 + FlxG.save.data.guiGap;
+			// healthBarBG.screenCenter(X);
+			// healthBarBG.scrollFactor.set();
+			// add(healthBarBG);
+			// var healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,'health', 0, 2);
 			
-			healthBar.scrollFactor.set();
-			healthBar.createColoredFilledBar(0xFFFFFF, 0xFFFFFF);
-			healthBar.updateBar();
-			healthBar.color = dad.definingColor;
+			// healthBar.scrollFactor.set();
+			// healthBar.createColoredFilledBar(dad.definingColor, dad.definingColor);
+			// healthBar.updateBar();
+			// healthBar.percent = 100;
 			var iconP1 = new HealthIcon(dad.curCharacter, true,dad.clonedChar);
-			iconP1.y = healthBar.y - (iconP1.height / 2);
+			iconP1.y = (FlxG.height * 0.9) - (iconP1.height / 2);
 			switch(charType){
-				case 0: iconP1.x = healthBar.x + healthBar.width;
-				case 1: iconP1.x = healthBar.x;
-				case 2: iconP1.x = healthBar.x + (healthBar.width * 0.5);
+				case 0: iconP1.x = FlxG.width * 0.75;
+				case 1: iconP1.x = FlxG.width * 0.25;
+				case 2: iconP1.x = FlxG.width * 0.5;
 
 			} 
 			iconP1.x -= iconP1.width;
 			iconP1.centerOffsets();
 			iconP1.updateHitbox();
-			healthBarBG.cameras = iconP1.cameras = healthBar.cameras = [camHUD];
-			uiMap["healthBar"] = healthBar;
-			uiMap["healthBarBG"] = healthBarBG;
+			iconP1.cameras = [camHUD];
+			// healthBarBG.cameras = 
+			// healthBar.cameras = 
+			// uiMap["healthBar"] = healthBar;
+			// uiMap["healthBarBG"] = healthBarBG;
 			uiMap["hi1"] = iconP1;
 			add(iconP1);
 		}catch(e){trace('oh no, the healthbar had an error, what ever will we do ${e.message}');}
 		}catch(e){MainMenuState.handleError(e,'Error while loading GUI: ${e.message}');}
 	}
+	static public function colorFromRGB(arr:Array<Dynamic>):FlxColor{
+		return FlxColor.fromRGB(arr[0],arr[1],arr[2]);
+	}
+	var sampleBox:FlxSprite;
+
 	// static function textBox(x:Float,y:Float,defText:String,name:String,internalName:String):FlxInputTextUpdatable{
 	// 	var ret = new FlxUIInputText(30, 100, null, "24");
 	// 	ret.checked = Reflect.field(charJson,internalName);
