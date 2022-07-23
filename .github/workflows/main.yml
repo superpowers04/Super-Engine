@@ -49,11 +49,10 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
-          haxelib install linc_luajit
-          haxelib install newgrounds
+
           haxelib install hscript
+          haxelib install hxshaders
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
-          haxelib list
         shell: cmd
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION

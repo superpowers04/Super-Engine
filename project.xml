@@ -134,6 +134,7 @@
 	<haxelib name="hscript" />
 	<haxelib name="hscript-ex"/>
 	<haxedef name="hscriptPos" />
+	<haxelib name="HxShaders"/>
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />

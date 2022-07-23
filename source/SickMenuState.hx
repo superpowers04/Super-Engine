@@ -85,6 +85,8 @@ class SickMenuState extends MusicBeatState
 	}
 	public static var reloadMusic = true;
 	public static function musicHandle(?isMainMenu:Bool = false,?_bg:FlxSprite = null,?recolor:Bool = false){
+		try{
+
 
 
 			var time:Int = Date.now().getHours();
@@ -149,6 +151,10 @@ class SickMenuState extends MusicBeatState
 			}else if(recolor && _bg != null){
 				_bg.color = FlxColor.fromString(mt.color);
 			}
+		}catch(e){
+			MusicBeatState.instance.showTempmessage('Unable to handle music ${e.message}');
+			trace('${e.stack}');
+		}
 	} 
 
 	override function create()

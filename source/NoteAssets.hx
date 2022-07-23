@@ -93,7 +93,7 @@ class NoteAssets{
 				endanimname:"purple end hold",
 			},
 			{ // Down
-				flipx:true, // Fixes the misaligned sustain
+				flipx:false,
 				flipy:false,
 				antialiasing:true,
 				scale:[1,1],

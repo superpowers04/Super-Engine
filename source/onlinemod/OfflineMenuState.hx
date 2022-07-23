@@ -39,10 +39,10 @@ class OfflineMenuState extends SearchMenuState
   override function create()
   {
 
-    optionsButton = new FlxUIButton(1100, 40, "Options", goOptions);
+    optionsButton = new FlxUIButton(1120, 30, "Options", goOptions);
     optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     optionsButton.resize(150, 30);
-    sideButton = new FlxUIButton(820, 40, "Chart Options", chartOptions);
+    sideButton = new FlxUIButton(1020, 65, "Chart Options", chartOptions);
     sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
     sideButton.resize(250, 30);
 
@@ -107,6 +107,15 @@ class OfflineMenuState extends SearchMenuState
   override function extraKeys(){
     if (FlxG.keys.justPressed.R){
       changeSelection(Math.floor(songs.length * Math.random()));
+    }
+    optionsButton.label.color = (if(FlxG.keys.pressed.SHIFT) 0xFF222222 else 0xFF000000);
+    sideButton.label.color = (if(FlxG.keys.pressed.SHIFT) 0xFF222222 else 0xFF000000);
+
+    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.O){
+      goOptions();
+    }
+    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.C){
+      chartOptions();
     }
 
   }
