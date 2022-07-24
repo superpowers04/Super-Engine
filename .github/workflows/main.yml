@@ -51,7 +51,6 @@ jobs:
           haxelib install flixel-addons
 
           haxelib install hscript
-          haxelib install hxshaders
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
         shell: cmd
       - name: Create Version Tag

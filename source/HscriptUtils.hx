@@ -140,8 +140,6 @@ class HscriptUtils {
 		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("FlxText",FlxText);
 		interp.variables.set("FlxSort",FlxSort);
-		interp.variables.set("FlxShader",tools.FlxShader);
-		interp.variables.set("FlxShaderToy",tools.FlxShaderToy);
 
 		interp.variables.set("FlxTextBorderStyle",FlxTextBorderStyle);
 		interp.variables.set("FlxAxes",flixel.util.FlxAxes);
