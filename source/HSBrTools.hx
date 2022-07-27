@@ -12,6 +12,8 @@ import sys.io.File;
 import flash.display.BitmapData;
 import Xml;
 import sys.FileSystem;
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.system.FlxAssets;
 
 // Made specifically for Super Engine
 
@@ -129,6 +131,21 @@ class HSBrTools {
 		if(textArray[textPath] == null) textArray[textPath] = File.getContent('${path}${textPath}');
 		return textArray[textPath];
 	}
+	public function loadShader(textPath:String,?glslVersion:Int = 120):Null<FlxRuntimeShader>{
+		if(textArray[textPath + ".vert"] == null && FileSystem.exists('${path}${textPath}.vert')) textArray[textPath + ".vert"] = File.getContent('${path}${textPath}.vert');
+		if(textArray[textPath + ".frag"] == null && FileSystem.exists('${path}${textPath}.frag')) textArray[textPath + ".frag"] = File.getContent('${path}${textPath}.frag');
+		try{
+			var shader = new FlxRuntimeShader(textArray[textPath + ".vert"],textArray[textPath + ".frag"],glslVersion);
+			// if(init) shader.initialise(); // If the shader uses custom variables, this can prevent loading a broken shader
+			return shader;
+
+		}catch(e){
+			handleError('${id}: Unable to load shader "${textPath}": ${e.message}');
+			trace(e.message);
+		}
+		return null;
+
+	}
 	// public function saveText(textPath:String,text:String):Bool{
 	// 	File.saveContent('${path}${textPath}',text);
 	// 	return true;
@@ -152,6 +169,10 @@ class HSBrTools {
 	}
 	public function unloadText(pngPath:String){
 		textArray[pngPath] = null;
+	}
+	public function unloadShader(pngPath:String){
+		textArray[pngPath + ".vert"] = null;
+		textArray[pngPath + ".frag"] = null;
 	}
 	public function unloadXml(pngPath:String){
 		xmlArray[pngPath] = null;
