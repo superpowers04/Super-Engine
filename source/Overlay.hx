@@ -42,8 +42,7 @@ class Overlay extends TextField
 		#if flash
 		addEventListener(Event.ENTER_FRAME, function(e)
 		{
-			var time = Lib.getTimer();
-			__enterFrame(time - currentTime);
+			__enterFrame(e);
 		});
 		#end
 	}
@@ -53,10 +52,10 @@ class Overlay extends TextField
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
-		currentTime += deltaTime;
+		currentTime += flixel.FlxG.elapsed;
 		times.push(currentTime);
 
-		while (times[0] < currentTime - 1000)
+		while (times[0] < currentTime - 1)
 		{
 			times.shift();
 		}

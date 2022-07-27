@@ -1677,7 +1677,6 @@ class PlayState extends MusicBeatState
 	}
 
 	var startTimer:FlxTimer;
-	var perfectMode:Bool = false;
 
 	function startCountdownFirst(){ // Skip the 
 		callInterp("startCountdownFirst",[]);
@@ -2362,7 +2361,6 @@ class PlayState extends MusicBeatState
 	{
 		#if !debug
 		try{
-		perfectMode = false;
 		#end
 
 
@@ -3487,9 +3485,7 @@ class PlayState extends MusicBeatState
 							dontCheck = true;
 					}
 
-					if (perfectMode)
-						goodNoteHit(possibleNotes[0]);
-					else if (possibleNotes.length > 0 && !dontCheck)
+					if (possibleNotes.length > 0 && !dontCheck)
 					{
 						if (!FlxG.save.data.ghost)
 						{
@@ -3511,12 +3507,15 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-					else if (!FlxG.save.data.ghost)
-						{
-							for (shit in 0...pressArray.length)
-								if (pressArray[shit])
+					else 
+						for (shit in 0...pressArray.length)
+							if (pressArray[shit]){
+								ghostTaps++;
+								if (!FlxG.save.data.ghost)
+									{
 									noteMiss(shit, null);
-						}
+									}
+							}
 
 					if(dontCheck && possibleNotes.length > 0 && FlxG.save.data.ghost)
 					{
@@ -3798,17 +3797,22 @@ class PlayState extends MusicBeatState
 				});
 			}
 	}
+	var holdArray:Array<Bool> = [];
+	var pressArray:Array<Bool> = [];
+	var lastPressArray:Array<Bool> = [];
+	var releaseArray:Array<Bool> = [];
  	private function kadeBRKeyShit():Void // I've invested in emma stocks
 			{
 				// control arrays, order L D R U
-				var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-				var pressArray:Array<Bool> = [
+				lastPressArray = [for (i in pressArray) i];
+				holdArray = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+				pressArray = [
 					controls.LEFT_P,
 					controls.DOWN_P,
 					controls.UP_P,
 					controls.RIGHT_P
 				];
-				var releaseArray:Array<Bool> = [
+				releaseArray = [
 					controls.LEFT_R,
 					controls.DOWN_R,
 					controls.UP_R,
@@ -3820,7 +3824,11 @@ class PlayState extends MusicBeatState
 		 
 
 
-		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
+		 		if (!acceptInput) {lastPressArray = holdArray = pressArray = releaseArray = [false,false,false,false];}
+		 		if(FlxG.save.data.debounce && lastPressArray.contains(true)){
+		 			var _pressArray=[for (i => v in lastPressArray) if(v) false else pressArray[i] ];
+		 			pressArray = _pressArray;
+		 		}
 				// HOLDS, check for sustain notes
 				if (generatedMusic && (holdArray.contains(true) || releaseArray.contains(true)))
 				{
@@ -3873,7 +3881,7 @@ class PlayState extends MusicBeatState
 								{
 									if (coolNote.noteData == daNote.noteData){
 
-										if (Math.abs(daNote.strumTime - coolNote.strumTime) < 5)
+										if (Math.abs(daNote.strumTime - coolNote.strumTime) < 7)
 										{ // if it's the same note twice at < 5ms distance, just delete it
 											// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
 											dumbNotes.push(daNote);

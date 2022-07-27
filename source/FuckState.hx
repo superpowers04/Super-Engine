@@ -59,7 +59,8 @@ class FuckState extends FlxUIState
 		outdatedLMAO.scrollFactor.set();
 		outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
 		add(outdatedLMAO);
-
+		trace("-------------------------\nERROR:\n\n"
+			+ err + "\n\n-------------------------");
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
 			"\n\nError/Stack:\n\n"
 			+ err,

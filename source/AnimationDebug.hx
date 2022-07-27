@@ -910,15 +910,45 @@ class AnimationDebug extends MusicBeatState
 		// var animTxt = new FlxText(30, 100,0,"Color, R/G/B");
 
 		uiBox2.add(uiMap["scaletxt"] = new FlxText(10, 100,0,"Scale"));
-		uiMap["scale"] = new FlxUINumericStepper(140, 100, 0.1, charJson.scale,10,2);
+		uiMap["scale"] = new FlxUINumericStepper(140, 100, 0.1, charJson.scale,0,10,2);
 		uiMap["scale"].callback = function(value,_){ charJson.scale = value;}
 		uiBox2.add(uiMap["scale"]);
 
 		uiBox2.add(uiMap["scaletxt"] = new FlxText(10, 120,0,"Sing Duration"));
-		uiMap["Sing Duration"] = new FlxUINumericStepper(140, 120, 0.1, charJson.sing_duration,10,2);
+		uiMap["Sing Duration"] = new FlxUINumericStepper(140, 120, 0.1, charJson.sing_duration,0,10,2);
 		uiMap["Sing Duration"].callback = function(value,_){ charJson.sing_duration = value;}
 		uiBox2.add(uiMap["Sing Duration"]);
+		
+		uiBox2.add(uiMap["hiredtxt"] = new FlxText(10, 160,0,"Health Red"));
+		uiMap["hired"] = new FlxUINumericStepper(140, 160, 1, (if(charJson.color[0] != null)charJson.color[0] else 0),0,255);
+		// uiMap["hired"].callback = function(value,_){
+		// 	if(charJson.color == null || charJson.color[0] == null){
+		// 		charJson.color = [0,0,0];
+		// 	}
+		// 	charJson.color[0] = value;
+		// }
+		uiBox2.add(uiMap["hired"]);
 
+
+		uiBox2.add(uiMap["higreentxt"] = new FlxText(10, 180,0,"Health Green"));
+		uiMap["higreen"] = new FlxUINumericStepper(140, 180, 1, (if(charJson.color[1] != null)charJson.color[1] else 0),0,255);
+		// uiMap["higreen"].callback = function(value,_){
+		// 	if(charJson.color == null || charJson.color[0] == null){
+		// 		charJson.color = [0,0,0];
+		// 	}
+		// 	charJson.color[1] = value;
+		// }
+		uiBox2.add(uiMap["higreen"]);
+
+		uiBox2.add(uiMap["hibluetxt"] = new FlxText(10, 200,0,"Health blue"));
+		uiMap["hiblue"] = new FlxUINumericStepper(140, 200, 1, (if(charJson.color[2] != null)charJson.color[2] else 0),0,255);
+		// uiMap["hiblue"].callback = function(value,_){
+		// 	if(charJson.color == null || charJson.color[0] == null){
+		// 		charJson.color = [0,0,0];
+		// 	}
+		// 	charJson.color[2] = value;
+		// }
+		uiBox2.add(uiMap["hiblue"]);
 
 		// uiBox2.add(new FlxText(30, 120,0,"Scale:"));
 		// uiMap["scale"] = new FlxUINumericStepper(80, 120, 0.1, charJson.scale,0,10,2);
@@ -936,38 +966,38 @@ class AnimationDebug extends MusicBeatState
 		// uiBox2.add(uiMap["Sing Duration"]);
 
 		// TODO, USE STEPPERS INSTEAD
-		uiBox2.add(new FlxText(20, 160,0,"Color"));
-		uiMap["charColor"] = new FlxUIInputText(90, 160, 100, (if(charJson.color != null) '${dad.definingColor.red},${dad.definingColor.green},${dad.definingColor.blue}' else '0,0,0'));
-		uiMap["charColor"].customFilterPattern = ~/(?![0-9,])/gi;
-		uiMap["charColor"].callback = function(text,a){
-			// text = text.toUpperCase();
-			var rgb = text.split(',');
-			if(rgb == null || rgb.length < 3){ // Weird way of doing it but still returns null even if valid for some reason
-				if(a == "enter" || a == "focuslost") showTempmessage("Invalid color, valid syntax: \"RRR,GGG,BBB\". 0-255.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
-				return;
-			}
-			rgb[0] = Std.int(rgb[0]);
-			rgb[1] = Std.int(rgb[1]);
-			rgb[2] = Std.int(rgb[2]);
+		// uiBox2.add(new FlxText(20, 160,0,"Color"));
+		// uiMap["charColor"] = new FlxUIInputText(90, 160, 100, (if(charJson.color != null) '${dad.definingColor.red},${dad.definingColor.green},${dad.definingColor.blue}' else '0,0,0'));
+		// uiMap["charColor"].customFilterPattern = ~/(?![0-9,])/gi;
+		// uiMap["charColor"].callback = function(text,a){
+		// 	// text = text.toUpperCase();
+		// 	var rgb = text.split(',');
+		// 	if(rgb == null || rgb.length < 3){ // Weird way of doing it but still returns null even if valid for some reason
+		// 		if(a == "enter" || a == "focuslost") showTempmessage("Invalid color, valid syntax: \"RRR,GGG,BBB\". 0-255.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
+		// 		return;
+		// 	}
+		// 	rgb[0] = Std.int(rgb[0]);
+		// 	rgb[1] = Std.int(rgb[1]);
+		// 	rgb[2] = Std.int(rgb[2]);
 
-			var col = colorFromRGB(rgb);
-			if('$col' == "null"){ // Weird way of doing it but still returns null even if valid for some reason
-				if(a == "enter" || a == "focuslost") showTempmessage("Invalid color, valid syntax: \"RRR,GGG,BBB\". 0-255.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
-				return;
-			}
-			// charJson.color = col;
-			if(a == "enter" || a == "focuslost"){
-				uiMap["charColor"].text = '${col.red},${col.green},${col.blue}';
-			}
-			updateColorBox();
-			// uiMap["colorSample"].color = col;
-		}
-		uiMap["charColor"].focusLost = function(){
-			uiMap["charColor"].callback(uiMap["charColor"].text,"focuslost");
-		}
-		uiBox2.add(uiMap["charColor"]);
+		// 	var col = colorFromRGB(rgb);
+		// 	if('$col' == "null"){ // Weird way of doing it but still returns null even if valid for some reason
+		// 		if(a == "enter" || a == "focuslost") showTempmessage("Invalid color, valid syntax: \"RRR,GGG,BBB\". 0-255.\n R = Red, G = Green, B = Blue, A = alpha. 0123456789abcdef allowed ",FlxColor.RED,10);
+		// 		return;
+		// 	}
+		// 	// charJson.color = col;
+		// 	if(a == "enter" || a == "focuslost"){
+		// 		uiMap["charColor"].text = '${col.red},${col.green},${col.blue}';
+		// 	}
+		// 	updateColorBox();
+		// 	// uiMap["colorSample"].color = col;
+		// }
+		// uiMap["charColor"].focusLost = function(){
+		// 	uiMap["charColor"].callback(uiMap["charColor"].text,"focuslost");
+		// }
+		// uiBox2.add(uiMap["charColor"]);
 
-		uiMap["colorIcon"] = new FlxUIButton(20,180,"Pull color from icon",function(){
+		uiMap["colorIcon"] = new FlxUIButton(20,220,"Pull color from icon",function(){
 			try{
 				if(uiMap["hi1"] == null){
 					showTempmessage('No health icon to scan!',FlxColor.RED,10);
@@ -999,98 +1029,14 @@ class AnimationDebug extends MusicBeatState
 				uiMap["charColor"].text = charJson.color;
 
 				// spawnChar(true,false,charJson);
-				updateColorBox();
+				// updateColorBox();
 			}catch(e){
 				showTempmessage('Unable to find color! ${e.message}',FlxColor.RED,10);
 				trace(e.stack);
 			}
 		});
 		uiBox2.add(uiMap["colorIcon"]);
-		// 110,180
-		sampleBox = new FlxSprite(53,432).loadGraphic(FlxGraphic.fromRectangle(30,30,FlxColor.WHITE));
-		sampleBox.cameras = [camHUD];
-		sampleBox.scrollFactor.set();
-		updateColorBox();
-		add(sampleBox);
 
-		// e = new FlxUIInputText(90, 140, 20, '${charJson.healthicon}');
-		// uiMap["Health Icon"] = e;
-		// uiMap["Sing Duration"].customFilterPattern = ~/(?![0-9]*\.[0-9]*)/gi;
-		// uiMap["Health Icon"].callback = function(text,_){
-		// 	charJson.healthicon = text;
-		// }
-		// uiBox2.add(e);
-		// var uiMap["Sing Duration"] = new FlxUIInputText(140, 130, 20, '${charJson.sing_duration}');
-
-		// uiMap["Sing Duration"].customFilterPattern = ~/(?!\[[0-9]+\])/gi;
-		// uiMap["Sing Duration"] = animFPS;
-		// uiMap["Sing Duration"].callback = function(text,_){
-		// 	var int = Std.parseFloat(text);
-		// 	if(int > 10){
-		// 		text = "10.0";
-		// 	}else if (Math.isNaN(int) || int < 0 || text == ""){
-		// 		text = "1.0";
-		// 	}
-		// 	uiMap["Sing Duration"].text = text;
-		// 	charJson.sing_duration = Std.parseFloat(text);
-		// }
-		// uiBox2.add(uiMap["Sing Duration"]);
-
-		// var animFPS = new FlxUIInputText(30, 120, 20, "0");
-		// animFPS.filterMode = 2;
-		// uiMap["colorRed"] = animFPS;
-		// var animFPS = new FlxUIInputText(60, 120, 20, "0");
-		// animFPS.filterMode = 2;
-		// uiMap["colorGreen"] = animFPS;
-		// var animFPS = new FlxUIInputText(90, 120, 20, "0");
-		// animFPS.filterMode = 2;
-		// uiMap["colorBlue"] = animFPS;
-
-		// uiBox2.add(animTxt);
-		// uiBox2.add(uiMap["colorRed"]);
-		// uiBox2.add(uiMap["colorGreen"]);
-		// uiBox2.add(uiMap["colorBlue"]);
-		// try{
-		// 	if(charJson.color != null && charJson.color[0] != null){
-		// 		uiMap["colorRed"] = '${charJson.color[0]}';
-		// 		uiMap["colorGreen"] = '${charJson.color[1]}';
-		// 		uiMap["colorBlue"] = '${charJson.color[2]}';
-		// 	}
-		// }catch(e){}
-		// if(charJson.color == null || charJson.color[0] == null) charJson.color = [0,0,0];
-		// uiMap["colorRed"].callback = function(text,_){
-		// 	var int = Std.parseInt(text);
-		// 	if(int > 255){
-		// 		text = "255";
-		// 	}else if (Math.isNaN(int) || int < 0 || text == ""){
-		// 		text = "0";
-		// 	}
-		// 	uiMap["colorRed"].text = text;
-			
-		// 	charJson.color[0] = Std.parseInt(text);
-		// }
-		// uiMap["colorGreen"].callback = function(text,_){
-		// 	var int = Std.parseInt(text);
-		// 	if(int > 255){
-		// 		text = "255";
-		// 	}else if (Math.isNaN(int) || int < 0 || text == ""){
-		// 		text = "0";
-		// 	}
-		// 	uiMap["colorGreen"].text = text;
-		// 	charJson.color[1] = Std.parseInt(text);
-		// }
-		// uiMap["colorBlue"].callback = function(text,_){
-		// 	var int = Std.parseInt(text);
-		// 	if(int > 255){
-		// 		text = "255";
-		// 		int = 255;
-		// 	}else if (Math.isNaN(int) || int < 0 || text == ""){
-		// 		// text = "0";
-		// 		int = 0;
-		// 	}
-		// 	uiMap["colorBlue"].text = text;
-		// 	charJson.color[2] = int;
-		// }
 
 
 

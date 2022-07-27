@@ -13,7 +13,6 @@ class LoadingScreen extends Sprite{
 	// var loadingText:Alphabet;
 	@:access(flixel.FlxCamera)
 
-
 	public override function new(?txt = "loading"){
 		super();
 
@@ -68,6 +67,7 @@ class LoadingScreen extends Sprite{
 
 	public static function initScreen(?text:String = "Loading"){
 		object = new LoadingScreen(text);
+
 	}
 	public static var tween:FlxTween;
 	public static function show(){
@@ -106,4 +106,9 @@ class LoadingScreen extends Sprite{
 		tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){FlxG.stage.removeChild(object);}});
 		
 	}
+
+
+
+
+
 }

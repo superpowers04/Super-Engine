@@ -56,7 +56,6 @@ typedef StageOutput = {
 }
 
 class StageEditor extends MusicBeatState{
-	public var objects = [];
 	public static function loadStage(state:FlxState,json:String):StageOutput{
 		var objects:Dynamic = [];
 		var bfPos:Array<Float> = [770, 100];
@@ -131,15 +130,56 @@ class StageEditor extends MusicBeatState{
 			showGF:showGF,
 		}
 	}
+	// Don't enable this, I'm just too lazy to comment out code
+	#if STAGEEDITOR
 	var curStage = "";
-	// public function new(stage:String = ""){
-	// 	curStage = stage;
-	// 	super();
-	// }
+	public override function new(stage:String = ""){
+		curStage = stage;
+		super();
+	}
+	public var objects:Array<Dynamic> = [];
+	// public var objectList:Map<String,Int> = [];
+	public var objectListArr:Array<String> = [];
+	public var bf:Character;
+	public function updateObjectList(){
+		objectList = [];
+		for (i => v in objects){
+			objectListArr.push(v.name);
+		}
+		objectListArr.push("boyfriend");
+		objectListArr.push("girlfriend");
+		objectListArr.push("opponent");
+	}
 
-	// public function create(){
-	// 	var out:StageOutput = loadStage(this,curStage);
+	public override function create(){
 
-	// 	super.create();
-	// }
+		super.create();
+
+		camGame = new FlxCamera();
+		camHUD = new FlxCamera();
+		camHUD.bgColor.alpha = 0;
+		FlxG.mouse.enabled = true;
+		FlxG.mouse.visible = true;
+
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camHUD);
+
+		FlxCamera.defaultCameras = [camGame];
+
+		// Music should still be playing, no reason to do anything to it
+		FlxG.sound.music.looped = true;
+		FlxG.sound.music.onComplete = null;
+		FlxG.sound.music.play(); // Music go brrr
+
+
+		var out:StageOutput = loadStage(this,curStage);
+
+
+
+
+
+	}
+
+
+	#end
 }

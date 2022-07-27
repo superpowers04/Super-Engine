@@ -111,13 +111,13 @@ class Main extends Sprite
 	}
 	function uncaughtErrorHandler(event:UncaughtErrorEvent):Void { // Yes this is copied from the wiki, fuck you
 		var message:String;
-		if (Std.is(event.error, openfl.errors.Error)) {
+		if (Std.isOfType(event.error, openfl.errors.Error)) {
 			var err = cast(event.error, openfl.errors.Error);
 			message = err.getStackTrace();
 			if(message == null){
 				message = err.message;
 			}
-		} else if (Std.is(event.error, openfl.events.ErrorEvent)) {
+		} else if (Std.isOfType(event.error, openfl.events.ErrorEvent)) {
 			message = cast(event.error, openfl.events.ErrorEvent).text;
 		} else {
 			message = Std.string(event.error);
@@ -197,6 +197,13 @@ class FlxGameEnhanced extends FlxGame{
 	public function forceStateSwitch(state:FlxState){ // Might be a bad idea but allows an error to force a state change to Mainmenu instead of softlocking
 		_requestedState = state;
 		switchState();
+	}
+	override function onEnterFrame(_){
+		try{
+			super.onEnterFrame(_);
+		}catch(e){
+			FuckState.FUCK(e,"FlxGame.onEnterFrame");
+		}
 	}
 	override function update(){
 		try{

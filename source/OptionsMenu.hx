@@ -77,6 +77,7 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Modifiers", [
 		    new PracticeModeOption("Disables the ability to get a gameover. Also disables saving scores."),
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
+			new HCBoolOption("Enables some simple debounce detection. Forces presses to be missed from one frame to another. ","Debounce detection","debounce"),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new ScrollSpeedOSUOption("Change your scroll speed on OSU charts"),
@@ -163,6 +164,7 @@ class OptionsMenu extends MusicBeatState
 	{
 		loading = false;
 		instance = this;
+		FlxG.save.data.masterVol = FlxG.sound.volume;
 		if(onlinemod.OnlinePlayMenuState.socket == null){
 			initOptions();
 		}
@@ -465,17 +467,14 @@ class OptionsMenu extends MusicBeatState
 		for (si in 0 ... FlxG.save.data.scripts.length) {
 			var script = FlxG.save.data.scripts[si];
 			if(!FileSystem.exists('mods/scripts/$script/options.json')) {
-				trace('$script has no options');
 				continue;
 			}
-			trace('$script has valid options file');
 			try{
 				var sOptions:OptionsFileDef = Json.parse(CoolUtil.cleanJSON(File.getContent('mods/scripts/$script/options.json')));
 				// var curOptions:Map<String,Dynamic> = new Map<String,Dynamic>();
 				modOptions[script] = new Map<String,Dynamic>();
 				if(FileSystem.exists('mods/scriptOptions/$script.json')){
 					var scriptJson:Map<String,Dynamic> = loadScriptOptions('mods/scriptOptions/$script.json');
-					trace('scriptJson: $scriptJson'); 
 					if(scriptJson != null) {
 						// modOptions[script] = scriptJson;
 						modOptions[script] = scriptJson;
@@ -488,7 +487,6 @@ class OptionsMenu extends MusicBeatState
 				if(sOptions.options == null){'$script has no options defined in it\'s options.json!';continue;}
 				var saveOptions:Bool = false;
 				var category:Array<Option> = [];
-				trace('$script: Setting up user settings');
 				for (v in sOptions.options) {
 					var i = v.name;
 					// trace('$script,$i: Registering. Info: ${v.type},${v.description},${v.def}');
@@ -532,7 +530,6 @@ class OptionsMenu extends MusicBeatState
 				ScriptOptions[script] = sOptions;
 				// trace('$script: Saving options');
 				if (saveOptions) saveScriptOptions('mods/scriptOptions/$script.json',modOptions[script]);
-				trace('$script registered successfully');
 			}catch(e){
 				trace('Error for $script options: ${e.message}');
 				MainMenuState.errorMessage += '\nError for $script options: ${e.message}';

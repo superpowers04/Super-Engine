@@ -452,7 +452,6 @@ class Note extends FlxSkewedSprite
 		// centerOffsets();
 		// offset.y = 0;
 		// origin.y=0;
-		offset.x = frameWidth * 0.5;
 		if(noteJSON != null){
 			flipX=noteJSON.flipx;
 			flipY=noteJSON.flipy;
@@ -460,6 +459,7 @@ class Note extends FlxSkewedSprite
 			scale.x*=noteJSON.scale[0];
 			scale.y*=noteJSON.scale[1];
 		}
+		offset.x = frameWidth * 0.5;
 		if (FlxG.save.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
@@ -478,7 +478,7 @@ class Note extends FlxSkewedSprite
 
 				wasGoodHit = (strumTime <= Conductor.songPosition);
 				alpha = (wasGoodHit ? 0.7 : 1);
-				if(wasGoodHit && !tooLate  && ChartingState.playClaps && FlxG.sound.music.playing){
+				if(wasGoodHit && !tooLate && isOnScreen() && ChartingState.playClaps && FlxG.sound.music.playing){
 					// FlxG.sound.play(Paths.sound('SNAP'),FlxG.save.data.hitvol,false,true);
 					ChartingState.playSnap();
 				}

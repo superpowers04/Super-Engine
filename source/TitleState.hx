@@ -317,7 +317,7 @@ class TitleState extends MusicBeatState
 
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
-
+		
 		// DEBUG BULLSHIT
 
 		super.create();
@@ -492,7 +492,8 @@ class TitleState extends MusicBeatState
 		shiftSkip.x = 6;
 		add(shiftSkip);
 		CoolUtil.setFramerate(true);
-		if (initialized)
+		FlxG.sound.volume = FlxG.save.data.masterVol;
+		if(initialized)
 			skipIntro();
 		else{
 
@@ -713,6 +714,7 @@ class TitleState extends MusicBeatState
 			// 	createCoolText(['Powered by',"haxeflixel"]);
 			// 	showHaxe();
 			case 0:
+			
 				deleteCoolText();
 			// 	destHaxe();
 			case 1:
@@ -850,6 +852,7 @@ class TitleState extends MusicBeatState
 		_times = null;
 		_colors = null;
 		_functions = null;
+
 	}
 	function _timerCallback(Timer:FlxTimer):Void
 	{
