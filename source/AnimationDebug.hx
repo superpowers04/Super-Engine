@@ -137,6 +137,9 @@ class AnimationDebug extends MusicBeatState
 		if(file.endsWith(".json")){
 			return multi.MultiMenuState.fileDrop(file);
 		}
+		if(file.endsWith(".osu") || file.endsWith(".osz") ){
+			return osu.OsuMenuState.fileDrop(file);
+		}
 		var validFile:String = "";
 		var ending1 = "";
 		var ending2 = "";
@@ -746,15 +749,15 @@ class AnimationDebug extends MusicBeatState
 		try{
 
 		if (dest){
-			uiBox.destroy();
-			uiBox = null;
-			animDropDown.visible = true;
 			// if (animDropDown3 != null) animDropDown3.destroy();
 			// if (animDropDown2 != null) animDropDown2.destroy();
-			sampleBox.destroy();
 			for (_ => v in uiMap) {
-				if (v.destroy != null) v.destroy();
+				if (v != null && v.destroy != null) v.destroy();
 			}
+			uiBox.destroy();
+			if(sampleBox != null)sampleBox.destroy();
+			uiBox = null;
+			animDropDown.visible = true;
 			return;
 		}
 
@@ -918,36 +921,48 @@ class AnimationDebug extends MusicBeatState
 		uiMap["Sing Duration"] = new FlxUINumericStepper(140, 120, 0.1, charJson.sing_duration,0,10,2);
 		uiMap["Sing Duration"].callback = function(value,_){ charJson.sing_duration = value;}
 		uiBox2.add(uiMap["Sing Duration"]);
+
+		if(charJson.color != null && !Std.isOfType(charJson.color,Array)){
+			var _Col = new FlxColor(0xFFFFFF);
+			try{
+				var __col = Character.getDefColorFromJson(charJson);
+				if(__col != 0x00000000) _Col = __col;
+			}catch(e){}
+			charJson.color = [_Col.red,_Col.green,_Col.blue];
+		}
+		if(charJson.color == null || charJson.color[0] == null){
+			charJson.color = [255,255,255];
+		}
 		
 		uiBox2.add(uiMap["hiredtxt"] = new FlxText(10, 160,0,"Health Red"));
-		uiMap["hired"] = new FlxUINumericStepper(140, 160, 1, (if(charJson.color[0] != null)charJson.color[0] else 0),0,255);
-		// uiMap["hired"].callback = function(value,_){
-		// 	if(charJson.color == null || charJson.color[0] == null){
-		// 		charJson.color = [0,0,0];
-		// 	}
-		// 	charJson.color[0] = value;
-		// }
+		uiMap["hired"] = new FlxUINumericStepper(140, 160, 1, charJson.color[0],0,255);
+		uiMap["hired"].callback = function(value,_){
+			if(charJson.color == null || charJson.color[0] == null){
+				charJson.color = [0,0,0];
+			}
+			charJson.color[0] = value;
+		}
 		uiBox2.add(uiMap["hired"]);
 
 
 		uiBox2.add(uiMap["higreentxt"] = new FlxText(10, 180,0,"Health Green"));
-		uiMap["higreen"] = new FlxUINumericStepper(140, 180, 1, (if(charJson.color[1] != null)charJson.color[1] else 0),0,255);
-		// uiMap["higreen"].callback = function(value,_){
-		// 	if(charJson.color == null || charJson.color[0] == null){
-		// 		charJson.color = [0,0,0];
-		// 	}
-		// 	charJson.color[1] = value;
-		// }
+		uiMap["higreen"] = new FlxUINumericStepper(140, 180, 1, charJson.color[1],0,255);
+		uiMap["higreen"].callback = function(value,_){
+			if(charJson.color == null || charJson.color[0] == null){
+				charJson.color = [0,0,0];
+			}
+			charJson.color[1] = value;
+		}
 		uiBox2.add(uiMap["higreen"]);
 
 		uiBox2.add(uiMap["hibluetxt"] = new FlxText(10, 200,0,"Health blue"));
-		uiMap["hiblue"] = new FlxUINumericStepper(140, 200, 1, (if(charJson.color[2] != null)charJson.color[2] else 0),0,255);
-		// uiMap["hiblue"].callback = function(value,_){
-		// 	if(charJson.color == null || charJson.color[0] == null){
-		// 		charJson.color = [0,0,0];
-		// 	}
-		// 	charJson.color[2] = value;
-		// }
+		uiMap["hiblue"] = new FlxUINumericStepper(140, 200, 1, charJson.color[2],0,255);
+		uiMap["hiblue"].callback = function(value,_){
+			if(charJson.color == null || charJson.color[0] == null){
+				charJson.color = [0,0,0];
+			}
+			charJson.color[2] = value;
+		}
 		uiBox2.add(uiMap["hiblue"]);
 
 		// uiBox2.add(new FlxText(30, 120,0,"Scale:"));
@@ -1026,7 +1041,9 @@ class AnimationDebug extends MusicBeatState
 				// }
 				var _Col = FlxColor.fromInt(maxColor);
 				charJson.color = [_Col.red,_Col.green,_Col.blue];
-				uiMap["charColor"].text = charJson.color;
+				uiMap["hired"].value = _Col.red;
+				uiMap["higreen"].value = _Col.green;
+				uiMap["hiblue"].value = _Col.blue;
 
 				// spawnChar(true,false,charJson);
 				// updateColorBox();

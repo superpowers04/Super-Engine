@@ -136,13 +136,20 @@ class ChartingState extends MusicBeatState
 		if(_song.chartType != null && _song.chartType != "" && _song.chartType != "KE1"){
 			return _song.chartType;
 		}
-		if(_song.eventObjects != null && _song.events != null){
+
+		inline function isPsych():Bool{
+			return _song.events != null;
+		}
+		inline function isKade():Bool{
+			return _song.eventObjects != null || _song.chartType == "KE1";
+		}
+		if(isKade() && isPsych()){
 			return _song.chartType = "KE/PSYCH HYBRID";
 		}
-		if(_song.eventObjects != null){
+		if(isKade()){
 			return _song.chartType = "KADE";
 		}
-		if(_song.events != null){
+		if(isPsych()){
 			return _song.chartType = "PSYCH";
 		}
 
@@ -2195,8 +2202,7 @@ class ChartingState extends MusicBeatState
 		try{
 
 			trace("Load song...");
-			var data:String = Json.encode(_song,"fancy",true);
-			if ((data != null) && (data.length > 0))
+
 			{// Not copied from FunkinVortex, dunno what you mean
 				fd = new FileDialog();
 				fd.onSelect.add(function(path){
@@ -2227,7 +2233,10 @@ class ChartingState extends MusicBeatState
 		try{
 
 			trace("Saving song...");
+			var _raw = _song.rawJSON;
+			_song.rawJSON = null; // It's a good idea to not include 2 copies of the json
 			var data:String = Json.encode(_song,"fancy",true);
+			_song.rawJSON = _raw; // It's a good idea to not include 2 copies of the json
 			if ((data != null) && (data.length > 0))
 			{// Not copied from FunkinVortex, dunno what you mean
 				fd = new FileDialog();

@@ -95,27 +95,30 @@ class OsuMenuState extends onlinemod.OfflineMenuState
   override function select(sel:Int = 0){
 	  if (songs[curSelected] == null) {return;}
 	  if(modes[curSelected][selMode] == "No beatmaps for this song!"){ // Actually check if the song has no charts when loading, if so then error
-		MainMenuState.handleError('${songs[curSelected]} has no beatmaps!');
+		showTempmessage('${songs[curSelected]} has no beatmaps!');
 		return;
 	  }
-	  try{
 
 	  var songJSON = modes[curSelected][selMode]; // Just for easy access
 	  var songName = songNames[curSelected]; // Easy access to var
 	  var selSong = songs[curSelected]; // Easy access to var
-	  songPath = songs[curSelected];
-	  PlayState.SONG = OsuBeatMap.loadFromText(sys.io.File.getContent('${selSong}/${songJSON}'));
-	  if(PlayState.SONG == null){
-		return;
-	  } 
-	  PlayState.isStoryMode = false;
-	  PlayState.songDiff = songJSON;
-	  PlayState.storyDifficulty = 1;
+	  play(songJSON,'${selSong}/${songJSON}');
 
-	  PlayState.actualSongName = songJSON;
-	  LoadingState.loadAndSwitchState(new OsuPlayState());
-	  }catch(e){MainMenuState.handleError(e,'Error while loading chart ${e.message}');
-	  }
+  }
+  static public function play(name:String,path:String){
+	try{
+		songPath = path.substr(0,path.lastIndexOf("/"));
+		PlayState.SONG = OsuBeatMap.loadFromText(sys.io.File.getContent(path));
+		if(PlayState.SONG == null){
+			return;
+		} 
+		PlayState.isStoryMode = false;
+		PlayState.songDiff = name;
+		PlayState.storyDifficulty = 1;
+
+		PlayState.actualSongName = name;
+		LoadingState.loadAndSwitchState(new OsuPlayState());
+	}catch(e){MainMenuState.handleError(e,'Error while loading beatmap ${e.message}');}
   }
 
   override function extraKeys(){
@@ -140,7 +143,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
 	override function changeSelection(change:Int = 0)
 	{
 		super.changeSelection(change);
-		if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
+		changeDiff(0,0);
 
 	}
 
@@ -149,6 +152,19 @@ class OsuMenuState extends onlinemod.OfflineMenuState
 	  OptionsMenu.lastState = 5;
 	  FlxG.switchState(new OptionsMenu());
   }
+	public static function fileDrop(file:String){
+		try{
+			if(file.toLowerCase().endsWith(".osu")){
+				play(file.substr(file.lastIndexOf('/')),file);
+				return;
+			}
+
+			if (!sys.FileSystem.exists(RepoState.unarExe)) {throw("Importing OSZ's require 7-Zip to be installed");return;}
+			if (!sys.FileSystem.exists(TitleState.osuBeatmapLoc)) {throw("Importing OSZ's require a valid OSU Stable install");return;}
+			RepoState.unzip(file,TitleState.osuBeatmapLoc + file.substring(file.lastIndexOf('/'),file.lastIndexOf('.')));
+			FlxG.switchState(new OsuMenuState());
+		}catch(e){MainMenuState.handleError(e,'Unable to ${if(file != null && file.toLowerCase().endsWith(".osz") ) "extract and load osz" else "import beatmap"}');}
+	}
 }
 
 

@@ -45,10 +45,11 @@ typedef RepoCharsJSON = {
 class RepoState extends SickMenuState
 {
 	var repo = "https://raw.githubusercontent.com/superpowers04/FNFBR-Repo/main/characters.json";
+	public static var unarExe = 
 	#if windows
-	var unarExe = "C:\\Program Files\\7-Zip\\7z.exe";
+	"C:\\Program Files\\7-Zip\\7z.exe";
 	#else
-	var unarExe = "/bin/7z";
+	"/bin/7z";
 	#end
 	var repoArray:RepoJSON;
 	var repoRet:String = "";
@@ -57,7 +58,7 @@ class RepoState extends SickMenuState
 	var installingText:FlxText;
 	var installedText:FlxText;
 
-	function unzip(from:String,to:String):Void{
+	public static function unzip(from:String,to:String):Void{
 		Sys.command(unarExe,['x','-y',from,'-o${to}']);
 	}
 	override function goBack(){
@@ -79,8 +80,8 @@ class RepoState extends SickMenuState
 	  }
 	override public function create():Void
 	{
-		#if mac
-			MainMenuState.handleError("This feature is not supported on mac!");
+		#if !linux && !windows
+			MainMenuState.handleError('This feature is not supported on ${Sys.systemName()}!');
 			return;
 		#end
 		descriptions = [];
@@ -153,7 +154,7 @@ class RepoState extends SickMenuState
 			installing += 1;
 			installingList.push(char.name);
 			updateText();
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+			new FlxTimer().start(0.5, function(tmr:FlxTimer)
 			{
 				
 				var http = new Http(char.url);

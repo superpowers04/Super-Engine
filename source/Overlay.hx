@@ -47,7 +47,6 @@ class Overlay extends TextField
 		#end
 	}
 	var memPeak:Float = 0;
-
 	// Event Handlers
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
@@ -60,15 +59,19 @@ class Overlay extends TextField
 			times.shift();
 		}
 
+
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) * 0.5) ;
-		var mem:Float = Math.round((System.totalMemory / 1024) / 1000);
-		if (mem > memPeak)
-			memPeak = mem;
 
-		// if (currentCount != cacheCount /*&& visible*/)
-		// {
-			// text = "FPS: " + currentFPS;
+			var mem:Float = Math.round((
+			#if cpp
+			cpp.NativeGc.memInfo(0)
+			#else
+			System.totalMemory
+			#end
+			/ 1024) / 1000);
+			if (mem > memPeak)
+				memPeak = mem;
 			text = "" + currentFPS + " FPS/" + deltaTime + " MS\nMemory/Peak: " + mem + "MB/" + memPeak + "MB" +  debugVar;
 		// }
 

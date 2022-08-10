@@ -136,14 +136,32 @@ class PauseSubState extends MusicBeatSubstate
 	}
 
 	override function update(elapsed:Float)
-	{if (ready){
+
+	{super.update(elapsed);
+		
+		if (quitHeldBar.visible && quitHeld <= 0){
+			quitHeldBar.visible = false;
+			quitHeldBG.visible = false;
+    		}
+		if (FlxG.keys.pressed.ESCAPE)
+		{
+			quitHeld += 5;
+			quitHeldBar.visible = true;
+			quitHeldBG.visible = true;
+			if (quitHeld > 1000) {quit();quitHeld = 0;} 
+			}else if (quitHeld > 0){
+			quitHeld -= 10;
+
+		}
+		if (ready){
+	
 		// if (FlxG.sound.music.volume < 0.5)
 		// 	FlxG.sound.music.volume += 0.01 * elapsed;
 		// if (FlxG.sound.music.volume > 0.25)
 		// 	FlxG.sound.music.volume -= 0.1 * elapsed;
 		PlayState.instance.callInterp("pauseUpdate",[this]);
 
-		super.update(elapsed);
+		
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
@@ -159,21 +177,6 @@ class PauseSubState extends MusicBeatSubstate
 		}else if (downP)
 		{
 			changeSelection(1);
-		}
-		
-		if (quitHeldBar.visible && quitHeld <= 0){
-			quitHeldBar.visible = false;
-			quitHeldBG.visible = false;
-    		}
-		if (FlxG.keys.pressed.ESCAPE)
-		{
-			quitHeld += 5;
-			quitHeldBar.visible = true;
-			quitHeldBG.visible = true;
-			if (quitHeld > 1000) {quit();quitHeld = 0;} 
-			}else if (quitHeld > 0){
-			quitHeld -= 10;
-
 		}
 
 		if (accepted)
@@ -261,7 +264,7 @@ class PauseSubState extends MusicBeatSubstate
 
 
 
-		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
+		startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer)
 		{
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();

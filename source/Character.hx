@@ -1038,7 +1038,8 @@ class Character extends FlxSprite
 
 
 	// Shortcut functions
-	function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
+	public static function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
+	
 	function getDefColor(e:CharacterJson,?apply:Bool = true):FlxColor{
 		if(!customColor && e.color != null){
 			// switch(Type.typeof(e.color)){
@@ -1057,6 +1058,7 @@ class Character extends FlxSprite
 						customColor = true;
 					}
 					else
+						if(apply) return 0x000000;
 						customColor = false;
 				}
 			// }
@@ -1079,6 +1081,21 @@ class Character extends FlxSprite
 			hi.destroy();
 		}*/
 		return 0x000000;
+	}
+	public static function getDefColorFromJson(e:CharacterJson):FlxColor{
+		if(e.color != null){
+			if(Std.isOfType(e.color,String)){
+				return FlxColor.fromString(e.color);
+			}else if (Std.isOfType(e.color,Int)){
+				return FlxColor.fromInt(e.color);
+			}else{
+				if(e.color[0] != null){
+					return FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
+				}
+				return 0x00000000;
+			}
+		}
+		return 0x00000000;
 	}
 
 

@@ -25,10 +25,19 @@ class OsuBeatMap{
 		e.match(beatmap);
 		return e.matched(1).trim();
 	}
+	static var bmTypes = ["All","Taiko","Catch","Mania"];
+	static function getType():String{	
+		var type = Std.parseInt(getSetting("Mode"));
+		// 
+		return (if(bmTypes[type] == null) "" else if(type == 3) " " + getSetting("CircleSize") + "k Mania" else " " + bmTypes[type]);
+	}
 	public static function getSettingBM(str:String,map:String):String{
 		var e:EReg = new EReg('${str}:([^\n]*)','ig');
 		e.match(map);
 		return e.matched(1).trim();
+	}
+	static inline function int(i:String):Int{
+		return Std.parseInt(i);
 	}
 
 	public static function loadFromText(bm:String):Null<SwagSong>{
@@ -66,28 +75,33 @@ class OsuBeatMap{
 					stage: 'stage',
 					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else FlxG.save.data.scrollOSUSpeed,
 					validScore: false,
-					chartVersion:"SE-OSU! Mania",
+					chartType:"SE-OSU!" + getType(),
+					chartVersion:"SE-OSU!" + getType(),
+
 					noteMetadata:Song.defNoteMetadata,
 					difficultyString: '[${getSetting("Version")}]'
 				};
+				var mania = (if(ChartingState.charting && getSetting("Mode") == "3") int(getSetting("CircleSize")) else 4 ); // If the song specifies that it's a mania chart and we're in the chart editor, change key range
 				var hitobjsre:EReg = (~/\[HitObjects\]/gi);
 				hitobjsre.match(bm);
 
 				var timingPoints:Array<OsuTimingPoint> = [];
 				{ // Timing points   0,0.0,0,0,0,0,0,0 |  -28,461.538461538462,4,1,0,100,1,0
 
-					var regTP:EReg = (~/(^[-0-9]*),([-0-9.]*),([-0-9.]*),([-0-9]*),([-0-9.]*),([-0-9.]*),([01]),/gm);
+					var regTP:EReg = (~/(^[-0-9.]*),([-0-9.]*),([-0-9.]*),([-0-9]*),([-0-9.]*),([-0-9.]*),([01]),/gm);
 					var input:String = bm;
 					while (regTP.match(input)) {
+						trace(regTP.matched(0));
 						input=regTP.matchedRight();
 						var inher:Bool = (regTP.matched(7) == "0");
 						if (inher) {trace('${regTP.matched(0)} is inherited, Unsupported at the moment');continue;} // Unsupported atm
-						var bpm:Float = 1 / Std.parseFloat(regTP.matched(1)) * 1000 * 60; // Did not google this, dunno what you mean. *I'm not bad at math, I swear*
-						if (bpm < 0) bpm = -bpm;
-						if (bpm > 300) bpm = 120;
+						var bpm:Float = Math.abs((1000 / Std.parseFloat(regTP.matched(2))) * 60); // Did not google this, dunno what you mean. *I'm not bad at math, I swear*
 						song.bpm = bpm;
+						var ms = Std.parseInt(regTP.matched(1));
+						if(ms < 0) ms = 0;
+						// trace('Found BPM at ${ms}, ${bpm} - ${regTP.matched(2)}');
 						timingPoints.push({
-							ms : Std.parseInt(regTP.matched(1)),
+							ms : ms,
 							bpm : bpm,
 							// uninher : uninher,
 							sliderMult : 0
@@ -193,7 +207,7 @@ class OsuBeatMap{
 						// 	trace('New section: ${curSection}');
 						// }
 						// var hold = normalizeInt(Math.round(Std.parseInt(hitobjval.matched(6)) - time * 0.01));
-						var nid = Math.floor(int(hitobjval.matched(1)) * 4 / 512);
+						var nid = Math.floor(int(hitobjval.matched(1)) * mania / 512);
 						hitobjs[curSection].sectionNotes.push([time,nid,hold,0]); 
 						noteCount++;
 						

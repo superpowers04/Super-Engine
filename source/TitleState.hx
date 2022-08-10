@@ -396,7 +396,7 @@ class TitleState extends MusicBeatState
 			// LoadingState.loadingText.setFormat();
 			findosuBeatmaps();
 			MainMenuState.firstStart = true;
-			Conductor.changeBPM(70);
+			Conductor.changeBPM(140);
 			persistentUpdate = true;
 			FlxG.mouse.enabled = true;
 			FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
@@ -704,7 +704,7 @@ class TitleState extends MusicBeatState
 		else
 			gfDance.animation.play('danceLeft');
 
-		switch (curBeat)
+		switch (curBeat * 0.5)
 		{
 
 			// case 1:

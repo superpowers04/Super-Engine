@@ -542,6 +542,9 @@ class Note extends FlxSkewedSprite
 
 					PlayState.instance.notes.remove(this, true);
 					destroy();
+				}else if(strumTime => Conductor.songPosition + 2000){ // Force kill if the note is 2 seconds after time
+					PlayState.instance.notes.remove(this, true);
+					destroy();
 				}
 				callInterp("noteUpdateAfter",[this]);
 
