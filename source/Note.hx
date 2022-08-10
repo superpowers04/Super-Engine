@@ -322,13 +322,21 @@ class Note extends FlxSkewedSprite
 					}
 					case "changescrollspeed": {
 						try{
-							// Info can be set to anything, it's being used for storing the BPM
+							// Info can be set to anything, it's being used for storing the speed
 							info = [Std.parseFloat(rawNote[4])]; 
 						}catch(e){info = [2,0];}
 						// Replaces hit func
 						hit = function(?charID:Int = 0,note){PlayState.SONG.speed = info[0];}; 
 						trace('BPM note processed');
 					}
+					// case "hscript" | "script" | "runcode" | "haxe": {
+					// 	try{
+					// 		// Info can be set to anything, it's being used for storing the script
+					// 		info = [rawNote[3],rawNote[4]]; 
+					// 	}catch(e){info = [""];}
+					// 	// Replaces hit func
+					// 	hit = function(?charID:Int = 0,note){PlayState.instance.parseRun(rawNote[4],rawNote[3]);}; 
+					// }
 					default:{ // Don't trigger hit animation
 						trace('Note with "${rawNote[2]}" hidden');
 						hit = function(?charID:Int = 0,note){trace("hit a event note");return;};
@@ -436,6 +444,7 @@ class Note extends FlxSkewedSprite
 					}
 					prevNote.isSustainNoteEnd = false;
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (if(FlxG.save.data.scrollSpeed != 1) FlxG.save.data.scrollSpeed else PlayState.SONG.speed);
+					
 					prevNote.updateHitbox();
 
 					prevNote.offset.x = prevNote.frameWidth * 0.5;
@@ -486,68 +495,71 @@ class Note extends FlxSkewedSprite
 				visible = true;
 				skipNote = false;
 			}
-			case false: if (!skipNote || isOnScreen()){ // doesn't calculate anything until they're on screen
-				skipNote = false;
-				visible = (!eventNote && showNote);
-				callInterp("noteUpdate",[this]);
+			case false:{
+				if (!skipNote || isOnScreen()){ // doesn't calculate anything until they're on screen
+					skipNote = false;
+					visible = (!eventNote && showNote);
+					callInterp("noteUpdate",[this]);
 
-				if (mustPress && !eventNote)
-				{
-					// ass
-					if (shouldntBeHit)
+					if (mustPress && !eventNote)
 					{
-						if (strumTime - Conductor.songPosition <= (45 * Conductor.timeScale) && strumTime - Conductor.songPosition >= (-45 * Conductor.timeScale))
-							canBeHit = true;
-						else
-							canBeHit = false;
-					}else{
-
-						if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
-						    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
+						// ass
+						if (shouldntBeHit)
+						{
+							if (strumTime - Conductor.songPosition <= (45 * Conductor.timeScale) && strumTime - Conductor.songPosition >= (-45 * Conductor.timeScale))
 								canBeHit = true;
+							else
+								canBeHit = false;
+						}else{
 
-						if (!wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale){
-							canBeHit = false;
-							tooLate = true;
-							skipNote = true;
-							if (!shouldntBeHit)
-							{
-								PlayState.instance.health += PlayState.SONG.noteMetadata.tooLateHealth;
-								PlayState.instance.vocals.volume = 0;
-								PlayState.instance.noteMiss(noteData, this);
+							if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
+							    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
+									canBeHit = true;
+
+							if (!wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale){
+								canBeHit = false;
+								tooLate = true;
+								skipNote = true;
+								if (!shouldntBeHit)
+								{
+									PlayState.instance.health += PlayState.SONG.noteMetadata.tooLateHealth;
+									PlayState.instance.vocals.volume = 0;
+									PlayState.instance.noteMiss(noteData, this);
+								}
+								// FlxTween.tween(this,{alpha:0},0.2,{onComplete:(_)->{
+								PlayState.instance.notes.remove(this, true);
+								destroy();
+								// }});
 							}
-							// FlxTween.tween(this,{alpha:0},0.2,{onComplete:(_)->{
-							PlayState.instance.notes.remove(this, true);
-							destroy();
-							// }});
 						}
 					}
-				}
-				else if(eventNote){
-					if (strumTime <= Conductor.songPosition){
+					else if(eventNote){
+						if (strumTime <= Conductor.songPosition){
 
-						this.hit(1,this);
-						this.destroy();
+							this.hit(1,this);
+							this.destroy();
+						}
 					}
+					else if (aiShouldPress && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
+					{
+						hit(1,this);
+						callInterp("noteHitDad",[PlayState.dad,this]);
+						
+
+						PlayState.dad.holdTimer = 0;
+
+						if (PlayState.dad.useVoices){PlayState.dad.voiceSounds[noteData].play(1);PlayState.dad.voiceSounds[noteData].time = 0;PlayState.instance.vocals.volume = 0;}else if (PlayState.SONG.needsVoices) PlayState.instance.vocals.volume = FlxG.save.data.voicesVol;
+
+						PlayState.instance.notes.remove(this, true);
+						destroy();
+					}
+					callInterp("noteUpdateAfter",[this]);
+
 				}
-				else if (aiShouldPress && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
-				{
-					hit(1,this);
-					callInterp("noteHitDad",[PlayState.dad,this]);
-					
-
-					PlayState.dad.holdTimer = 0;
-
-					if (PlayState.dad.useVoices){PlayState.dad.voiceSounds[noteData].play(1);PlayState.dad.voiceSounds[noteData].time = 0;PlayState.instance.vocals.volume = 0;}else if (PlayState.SONG.needsVoices) PlayState.instance.vocals.volume = FlxG.save.data.voicesVol;
-
+				if(strumTime >= Conductor.songPosition + 2000){ // Force kill if the note is 2 seconds after time
 					PlayState.instance.notes.remove(this, true);
 					destroy();
-				}else if(strumTime => Conductor.songPosition + 2000){ // Force kill if the note is 2 seconds after time
-					PlayState.instance.notes.remove(this, true);
-					destroy();
 				}
-				callInterp("noteUpdateAfter",[this]);
-
 			}
 		}
 	}
