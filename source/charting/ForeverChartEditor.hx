@@ -42,6 +42,7 @@ import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 import sys.FileSystem;
 import sys.io.File;
+import flixel.addons.display.FlxTiledSprite;
 
 import Song;
 
@@ -66,6 +67,7 @@ import sys.thread.Thread;
 **/
 class ForeverChartEditor extends MusicBeatState
 {
+	public static var instance:ForeverChartEditor;
 	var _song:SwagSong;
 
 	var _file:FileReference;
@@ -98,7 +100,7 @@ class ForeverChartEditor extends MusicBeatState
 
 	var dummyArrow:FlxSprite;
 	var notesGroup:FlxTypedGroup<Note>;
-	var holdsGroup:FlxTypedGroup<FlxSprite>;
+	var holdsGroup:FlxTypedGroup<FlxTiledSprite>;
 	var sectionsGroup:FlxTypedGroup<FlxBasic>;
 
 	var iconL:HealthIcon;
@@ -117,7 +119,7 @@ class ForeverChartEditor extends MusicBeatState
 	
 	final scrollArray:Array<Float> = [0.5, 0.75, 1, 1.05, 1.5, 2, 2.05, 2.5, 3, 3.05, 3.5];
 
-	var arrowGroup:FlxTypedSpriteGroup<StrumArrow>;
+	public var arrowGroup:FlxTypedSpriteGroup<StrumArrow>;
 	
 	var buttonTextGroup:FlxTypedGroup<AbsoluteText>;
 	var buttonGroup:FlxTypedGroup<ChartingButton>;
@@ -127,9 +129,17 @@ class ForeverChartEditor extends MusicBeatState
 
 	static var snapSound:Sound;
 	static var clapSound:Sound;
-	public static function playSnap(){
-		if(snapSound == null)snapSound= Sound.fromFile('./assets/shared/sounds/SNAP.ogg');
-		snapSound.play(new flash.media.SoundTransform(FlxG.save.data.hitvol));
+	public static function playSnap(?note:Int = -100){
+		try{
+			if(note != -100 && ForeverChartEditor.instance != null && ForeverChartEditor.instance.arrowGroup.members[note] != null){
+				ForeverChartEditor.instance.arrowGroup.members[note].confirm(true);
+			}
+
+		}
+		if(FlxG.sound.music.playing){
+			if(snapSound == null)snapSound= Sound.fromFile('./assets/shared/sounds/SNAP.ogg');
+			snapSound.play(new flash.media.SoundTransform(FlxG.save.data.hitvol));
+		}
 	}
 	public static function playClap(){
 		if(clapSound == null)clapSound= Sound.fromFile('./assets/shared/sounds/CLAP.ogg');
@@ -167,6 +177,7 @@ class ForeverChartEditor extends MusicBeatState
 	override public function create()
 	{
 		super.create();
+		instance = this;
 		TitleState.loadNoteAssets();
 
 		generateBackground();
@@ -186,7 +197,7 @@ class ForeverChartEditor extends MusicBeatState
 		generateGrid();
 
 		notesGroup = new FlxTypedGroup<Note>();
-		holdsGroup = new FlxTypedGroup<FlxSprite>();
+		holdsGroup = new FlxTypedGroup<FlxTiledSprite>();
 		sectionsGroup = new FlxTypedGroup<FlxBasic>();
 		buttonGroup = new FlxTypedGroup<ChartingButton>();
 		buttonTextGroup = new FlxTypedGroup<AbsoluteText>();
@@ -241,21 +252,24 @@ class ForeverChartEditor extends MusicBeatState
 		arrowGroup = new FlxTypedSpriteGroup<StrumArrow>();
 		for (i in 0...keysTotal)
 		{
-			var babyX = (FlxG.width / 2) - ((keysTotal / 2) * gridSize) + (i - 1) * gridSize;
-			var newArrow:StrumArrow = new StrumArrow(i, babyX, strumLine.y);
+			// var babyX = (FlxG.width / 2) - ((keysTotal / 2) * gridSize) + (i - 1) * gridSize;
+			var babyX = fullGrid.x + (gridSize * i);
+			var newArrow:StrumArrow = new StrumArrow(i % 4, babyX, strumLine.y);
 			newArrow.init();
 
-			newArrow.ID = i;
+			// newArrow.ID = i;
 			newArrow.setGraphicSize(gridSize);
 			newArrow.updateHitbox();
 			newArrow.alpha = 0.9;
 			newArrow.antialiasing = true;
+			newArrow.y -= newArrow.height * 0.45;
 
 			// lol silly idiot
-			newArrow.playAnim('static');
+			newArrow.playStatic();
+			// newArrow.playAnim('static');
 
 			// those look kinda weird
-			//arrowGroup.add(newArrow);
+			arrowGroup.add(newArrow);
 		}
 		add(arrowGroup);
 		arrowGroup.x -= 1;
@@ -323,6 +337,16 @@ class ForeverChartEditor extends MusicBeatState
 		// update markers if needed;
 		markerL.color = markerColors[markerLevel];
 		markerR.color = markerColors[markerLevel];
+	 	var i = arrowGroup.members.length - 1;
+		var spr:StrumArrow;
+		while (i >= 0)
+		{
+			spr = arrowGroup.members[i];
+			i--;
+			if (spr.animation.finished)
+				spr.playStatic();
+		}
+
 	}
 
 	var hitSoundsPlayed:Array<Note> = [];
@@ -512,22 +536,16 @@ class ForeverChartEditor extends MusicBeatState
 		{
 			// autosaveSong();
 			songPosition = songMusic.time;
-			PlayState.SONG = _song;
 			FlxG.mouse.visible = false;
 			songMusic.stop();
 			vocals.stop();
+			if(FlxG.keys.pressed.SHIFT){
+				FlxG.switchState(new MainMenuState());
+			}else{
+				PlayState.SONG = _song;
+				gotoPlaystate();
 
-			gotoPlaystate();
-		}
-
-		if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.ESCAPE)
-		{
-			// autosaveSong();
-			FlxG.mouse.visible = false;
-			songMusic.stop();
-			vocals.stop();
-
-			FlxG.switchState(new MainMenuState());
+			}
 		}
 
 		updateHUD();
@@ -790,8 +808,22 @@ class ForeverChartEditor extends MusicBeatState
 		// this is genuinely driving me insane and I don't know how should I do it
 		if (daSus > 0 && prevNote != null)
 		{
-			/*
 			var constSize = Std.int(gridSize / 2);
+			var noteMoment = new Note(daStrumTime, daNoteInfo, null, true, true);
+			var sustainVis:FlxTiledSprite= new FlxTiledSprite(FlxGraphic.fromFrame(noteMoment.frame),noteMoment.frame.frame.width,gridSize * daSus,false,true);
+			// sustainVis.frames = noteMoment.frames;
+			// noteMoment.graphic.imageFrame.frame.frame = noteMoment.frame.frame;
+			// sustainVis.animation.addByPrefix('hold', noteMoment.noteJSON.holdanimname);
+			// sustainVis.animation.play('hold');
+			sustainVis.scale.x = 0.5;
+			// sustainVis.setGraphicSize(constSize);
+			sustainVis.updateHitbox();
+			sustainVis.x = prevNote.x - prevNote.width * 0.5;
+			sustainVis.y = prevNote.y + prevNote.height - sustainVis.height * 0.5;
+			// sustainVis.scrollFactor.set();
+			holdsGroup.add(sustainVis);
+			noteMoment.destroy();
+			/*
 
 			var sustainVis:Note = ForeverAssets.generateArrow(_song.assetModifier, daStrumTime + Conductor.stepCrochet, daNoteInfo % 4, daNoteAlt, true,
 				prevNote, daNoteType);

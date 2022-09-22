@@ -499,8 +499,9 @@ class PlayState extends MusicBeatState
 		return switch('$charID'){case "1" | "dad" | "opponent" | "p2": dad; case "2" | "gf" | "girlfriend" | "p3": gf; default: boyfriend;};
 	}
 	static public function charAnim(charId:Dynamic = 0,animation:String = "",?forced:Bool = false){
-		
-		getCharFromID(charId).playAnim(animation,forced);
+		try{
+			getCharFromID(charId).playAnim(animation,forced);
+		}catch(e){MusicBeatState.instance.showTempmessage('Unable to play $animation: ${e.message}');}
 	}
 	public function clearVariables(){
 
@@ -2199,11 +2200,11 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
+		// iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
+		// iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		// iconP1.updateHitbox();
+		// iconP2.updateHitbox();
 
 		if(!practiceMode){
 			var iconOffset:Int = 26;
@@ -4137,12 +4138,13 @@ class PlayState extends MusicBeatState
 				camHUD.zoom += 0.03;
 			}
 		}
+		iconP1.bounce(60 / Conductor.bpm);
+		iconP2.bounce(60 / Conductor.bpm);
+		// iconP1.setGraphicSize(Std.int(iconP1.width + 30));
+		// iconP2.setGraphicSize(Std.int(iconP2.width + 30));
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		// iconP1.updateHitbox();
+		// iconP2.updateHitbox();
 
 		// if (curBeat % gfSpeed == 0)
 		// {

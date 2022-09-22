@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import sys.FileSystem;
 import flash.display.BitmapData;
+import flixel.tweens.FlxTween;
 
 class HealthIcon extends FlxSprite
 {
@@ -32,7 +33,13 @@ class HealthIcon extends FlxSprite
 		else
 			animation.curAnim.curFrame = 0;
 	}
-
+	var bounceTween:FlxTween;
+	public function bounce(time:Float){
+		
+		scale.set(1.2,1.2);
+		if(bounceTween != null) bounceTween.cancel();
+		bounceTween = FlxTween.tween(this.scale,{x:1,y:1},time);
+	}
 	public function changeSprite(?char:String = 'bf',?clone:String = "face",?useClone:Bool = true,?pathh:String = "mods/characters")
 	{
 		if(char == hichar) return;

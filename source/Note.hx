@@ -488,9 +488,10 @@ class Note extends FlxSkewedSprite
 
 				wasGoodHit = (strumTime <= Conductor.songPosition && strumTime + 100 >= Conductor.songPosition);
 				alpha = (wasGoodHit ? 0.7 : 1);
-				if(wasGoodHit && !tooLate && ChartingState.playClaps && FlxG.sound.music.playing){
+				if(wasGoodHit && !tooLate && ChartingState.playClaps){
 					// FlxG.sound.play(Paths.sound('SNAP'),FlxG.save.data.hitvol,false,true);
-					ChartingState.playSnap();
+					// ChartingState.playSnap();
+					charting.ForeverChartEditor.playSnap(rawNote[1]);
 				}
 				tooLate = wasGoodHit;
 				visible = true;
