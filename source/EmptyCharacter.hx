@@ -52,7 +52,7 @@ class EmptyCharacter extends Character
 		return;
 	}
 
-	override public function dance(?ignoreDebug:Bool = false)
+	override public function dance(Forced:Bool = false,beatDouble:Bool = false,useDanced:Bool = true,beatProg:Float = 0)
 	{
 		animation.play("idle",true,false,0);
 		return;
@@ -62,7 +62,7 @@ class EmptyCharacter extends Character
 	{
 		return;
 	}
-	override public function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0):Void
+	override public function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Void
 	{
 		animation.play("idle",true,false,0);
 		return;

@@ -45,8 +45,8 @@ class StoryMenuState extends MusicBeatState
 
 	static var curDifficulty:Int = 1;
 	public static var isVanillaWeek:Bool = true;
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
-	var weekEmbedded:Array<Bool> = [true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [true, true];
+	var weekEmbedded:Array<Bool> = [true, true];
 
 	var weekCharacters:Array<Array<String>> = [];
 	// var weekDifficulties:Array<String> = [
@@ -60,7 +60,7 @@ class StoryMenuState extends MusicBeatState
 	// ];
 
 	public static var weekNames:Array<String> = [];
-	static var weekDialogue:Array<Bool> = [true,true,true,true,true,true,true];
+	static var weekDialogue:Array<Bool> = [true,true];
 	static var weekDirectories:Array<String> = [];
 	var weekData:Array<Array<String>> = [];
 	var weekChartNames:Array<Array<String>> = [];
@@ -98,42 +98,22 @@ class StoryMenuState extends MusicBeatState
 		if(Assets.hasLibrary("week1")){
 			weekData = [
 				['Tutorial'],
-				['Bopeebo', 'Fresh', 'Dad Battle'],
-				['Spookeez', 'South', "Monster"],
-				['Pico', 'Philly Nice', "Blammed"],
-				['Satin Panties', "High", "Milf"],
-				['Cocoa', 'Eggnog', 'Winter Horrorland'],
-				['Senpai', 'Roses', 'Thorns']
+				['Dad Battle'],
 			];
 			weekDirectories = [
 				"Learning The Ropes",
-				"Daddy Dearest",
-				"Spooky Month",
-				"PICO",
-				"MOMMY MUST MURDER",
-				"RED SNOW",
-				"Hating Simulator ft. Moawling"
+				"Daddy Dearest"
 			];
 			weekCharacters = [
 				['gf', 'bf',''],
-				['dad', 'bf', 'gf'],
-				['spooky', 'bf', 'gf'],
-				['pico', 'bf', 'gf'],
-				['mom', 'bf', 'gf'],
-				['parents-christmas', 'bf', 'gf'],
-				['senpai', 'bf', 'gf']
+				['dad', 'bf', 'gf']
 			];
 
 			weekNames = [
 				"Learning The Ropes",
 				"Daddy Dearest",
-				"Spooky Month",
-				"PICO",
-				"MOMMY MUST MURDER",
-				"RED SNOW",
-				"Hating Simulator ft. Moawling"
 			];
-			weekEmbedded = [true, true, true, true, true, true, true];
+			weekEmbedded = [true, true];
 		}else{
 			weekEmbedded = [];
 			weekCharacters = [];

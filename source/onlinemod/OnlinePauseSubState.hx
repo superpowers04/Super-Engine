@@ -106,7 +106,6 @@ class OnlinePauseSubState extends MusicBeatSubstate
 				case "Restart":
 					FlxG.resetState();
 				case "Exit to lobby":
-					PlayState.loadRep = false;
 					if (TitleState.supported){
 						Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy)], OnlinePlayMenuState.socket);
 					}else{Sender.SendPacket(Packets.SEND_SCORE, [PlayState.songScore], OnlinePlayMenuState.socket);}
@@ -115,7 +114,6 @@ class OnlinePauseSubState extends MusicBeatSubstate
 					
 					FlxG.switchState(new OnlineLobbyState(true,false));
 				case "Exit to menu":
-					PlayState.loadRep = false;
 					OnlinePlayMenuState.socket.close();
 					FlxG.switchState(new OnlinePlayMenuState("Disconnected"));
 			}

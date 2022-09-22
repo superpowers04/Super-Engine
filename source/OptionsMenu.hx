@@ -77,12 +77,13 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Modifiers", [
 		    new PracticeModeOption("Disables the ability to get a gameover. Also disables saving scores."),
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
+			new HCBoolOption("Show skip beginning prompt","Jump to first note prompt","skipToFirst"),
 			new HCBoolOption("Enables some simple debounce detection. Forces presses to be missed from one frame to another. ","Debounce detection","debounce"),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new ScrollSpeedOSUOption("Change your scroll speed on OSU charts"),
 
-			new AccurateNoteHoldOption("Adjust accuracy of note sustains"),
+			new AccurateNoteHoldOption("Whether note sustains/holds are more accurate. If off then they act like vanilla/early kade"),
 			new ShittyMissesOption("Whether you'll get a miss/combobreak when getting a shit"),
 			new BadMissesOption("Whether you'll get a miss/combobreak when getting a bad"),
 			new GoodMissesOption("Whether you'll get a miss/combobreak when getting a good"),
@@ -112,7 +113,6 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your FPS"),
 			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
-			new HCBoolOption("Show skip beginning prompt","Jump to first note prompt","skipToFirst"),
 			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
 			new NoteRatingOption("Toggles the rating that appears when you press a note"),
 			// new UnloadSongOption("Unload the song when exiting the game"),

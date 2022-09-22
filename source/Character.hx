@@ -68,106 +68,116 @@ class CharAnimController extends FlxAnimationController{
 
 class Character extends FlxSprite
 {
-	public var animOffsets:Map<String, Array<Float>> = ["all" => [0.0,0.0]];
-	public var animLoopStart:Map<String,Int> = [];
-	public var animLoops:Map<String,Bool> = [];
-	public var debugMode:Bool = false;
-	public var camPos:Array<Int> = [0,0];
-	public var charX:Float = 0;
-	public var charY:Float = 0;
-	public var camX:Float = 0;
-	public var camY:Float = 0;
-	public var dadVar:Float = 4; // Singduration?
-	public var isPlayer:Bool = false;
-	public var curCharacter:String = 'bf';
-	public var hasAlts:Bool = false;
-	public var clonedChar:String = "";
-	public var charType:Int = 0;
-	public var dance_idle:Bool = false;
-	public var amPreview:Bool = false;
-	public var useMisses:Bool = false;
-	public var useVoices:Bool = false;
-	public var missSounds:Array<Sound> = [];
-	public var voiceSounds:Array<FlxSound> = [];
-	public var oneShotAnims:Array<String> = ["hey"];
-	public var tintedAnims:Array<String> = [];
-	public var loopAnimFrames:Map<String,Int> = [];
-	public var loopAnimTo:Map<String,String> = [];
-	public var animationPriorities:Map<String,Int> = [
-		"singLEFT-alt" => 10,
-		"singDOWN-alt" => 10,
-		"singUP-alt" => 10,
-		"singRIGHT-alt" => 10,
-		"singLEFT" => 10,
-		"singDOWN" => 10,
-		"singUP" => 10,
-		"singRIGHT" => 10,
-		"singLEFTmiss" => 10,
-		"singDOWNmiss" => 10,
-		"singUPmiss" => 10,
-		"singRIGHTmiss" => 10,
-		// Copy of the above but lower case because it's funny and I'm dumb
-		"singleft-alt" => 10,
-		"singdown-alt" => 10,
-		"singup-alt" => 10,
-		"singright-alt" => 10,
-		"singleft" => 10,
-		"singdown" => 10,
-		"singup" => 10,
-		"singright" => 10,
-		"singleftmiss" => 10,
-		"singdownmiss" => 10,
-		"singupmiss" => 10,
-		"singrightmiss" => 10,
+	/* Animations */
+		public var animationList:Array<CharJsonAnimation> = [];
+		public var animOffsets:Map<String, Array<Float>> = ["all" => [0.0,0.0]];
+		public var animLoopStart:Map<String,Int> = [];
+		public var animLoops:Map<String,Bool> = [];
+		public var oneShotAnims:Array<String> = ["hey"];
+		public var tintedAnims:Array<String> = [];
+		public var loopAnimFrames:Map<String,Int> = [];
+		public var loopAnimTo:Map<String,String> = [];
+		public var animationPriorities:Map<String,Int> = [
+			"singLEFT-alt" => 10,
+			"singDOWN-alt" => 10,
+			"singUP-alt" => 10,
+			"singRIGHT-alt" => 10,
+			"singLEFT" => 10,
+			"singDOWN" => 10,
+			"singUP" => 10,
+			"singRIGHT" => 10,
+			"singLEFTmiss" => 10,
+			"singDOWNmiss" => 10,
+			"singUPmiss" => 10,
+			"singRIGHTmiss" => 10,
+			// Copy of the above but lower case because it's funny and I'm dumb
+			"singleft-alt" => 10,
+			"singdown-alt" => 10,
+			"singup-alt" => 10,
+			"singright-alt" => 10,
+			"singleft" => 10,
+			"singdown" => 10,
+			"singup" => 10,
+			"singright" => 10,
+			"singleftmiss" => 10,
+			"singdownmiss" => 10,
+			"singupmiss" => 10,
+			"singrightmiss" => 10,
 
-		"idle" => 0,
-		"Idle" => 0,// Can never remember if it's idle or Idle
-		"danceRight" => 0,
-		"danceLeft" => 0,
-		"danceright" => 0,
-		"danceleft" => 0,
-		"hey" => 5,
-		"cheer" => 5,
-		"scared" => 5,
-		"win" => 100,
-		"lose" => 100,
-		"hurt" => 10,
-		"hit" => 10,
-		"attack" => 10,
-		"shoot" => 10,
-		"dodge" => 10,
-		"dodgeLeft" => 10,
-		"dodgeRight" => 10,
-		"dodgeUp" => 10,
-		"dodgeDown" => 10,
-		"dodgeleft" =>10,
-		"dodgeright" => 10,
-		"dodgeup" => 10,
-		"dodgedown" => 10,
-		"songStart" => 7
-	];
-	public var flip:Bool = true;
-	public var tex:FlxAtlasFrames = null;
-	public var holdTimer:Float = 0;
-	public var stunned:Bool = false;
-	public var loadedFrom:String = "";
-	public var isCustom:Bool = false;
-	public var charProperties:CharacterJson;
-	public var charXml:String;
-	public var definingColor:FlxColor;
-	public var animationList:Array<CharJsonAnimation> = [];
-	public var hscriptGen:Bool = false;
-	public var useHscript:Bool = true;
-	var customColor = false;
-	var flipNotes:Bool = true;
-	var needsInverted:Int= 1;
-	var danced:Bool = false;
-	var lonely:Bool = false;
-	var altAnims:Array<String> = []; 
-	var animHasFinished:Bool = false;
-	public var skipNextAnim:Bool = false;
-	public var nextAnimation:String = "";
-	public var charLoc:String = "mods/characters";
+			"idle" => 0,
+			"Idle" => 0,// Can never remember if it's idle or Idle
+			"danceRight" => 0,
+			"danceLeft" => 0,
+			"danceright" => 0,
+			"danceleft" => 0,
+			"hey" => 5,
+			"cheer" => 5,
+			"scared" => 5,
+			"win" => 100,
+			"lose" => 100,
+			"hurt" => 10,
+			"hit" => 10,
+			"attack" => 10,
+			"shoot" => 10,
+			"dodge" => 10,
+			"dodgeLeft" => 10,
+			"dodgeRight" => 10,
+			"dodgeUp" => 10,
+			"dodgeDown" => 10,
+			"dodgeleft" =>10,
+			"dodgeright" => 10,
+			"dodgeup" => 10,
+			"dodgedown" => 10,
+			"songStart" => 7
+		];
+		var altAnims:Array<String> = []; 
+		var animHasFinished:Bool = false;
+	/* JSON things */
+		public var charProperties:CharacterJson;
+		public var curCharacter:String = 'bf';
+		public var camPos:Array<Int> = [0,0];
+		public var charX:Float = 0;
+		public var charY:Float = 0;
+		public var camX:Float = 0;
+		public var camY:Float = 0;
+		public var useMisses:Bool = false;
+		public var useVoices:Bool = false;
+		public var clonedChar:String = "";
+		public var dadVar:Float = 4; // Singduration?
+		public var missSounds:Array<Sound> = [];
+		public var voiceSounds:Array<FlxSound> = [];
+		public var flip:Bool = true;
+		public var definingColor:FlxColor;
+		var flipNotes:Bool = true;
+
+	/* Internal identifier vars */
+		public var isPlayer:Bool = false;
+		public var hasAlts:Bool = false;
+		public var charType:Int = 0;
+		public var dance_idle:Bool = false;
+		public var amPreview:Bool = false;
+		public var debugMode:Bool = false;
+		public var charLoc:String = "mods/characters";
+		var needsInverted:Int= 1;
+		var customColor = false;
+
+	/*Script shite*/
+		public var skipNextAnim:Bool = false;
+		public var nextAnimation:String = "";
+		public var hscriptGen:Bool = false;
+		public var useHscript:Bool = true;
+
+		var interp:Interp;
+
+	/* Misc */
+		var danced:Bool = false;
+		var lonely:Bool = false;
+		public var tex:FlxAtlasFrames = null;
+		public var holdTimer:Float = 0;
+		public var stunned:Bool = false;
+		public var loadedFrom:String = "";
+		public var isCustom:Bool = false;
+		public var charXml:String;
 
 	// public var spriteArr:Array<FlxSprite> = [];
 	// public var animArr:Array<FlxAnimationController> = [];
@@ -177,8 +187,6 @@ class Character extends FlxSprite
 
 
 	// HScript related shit
-
-	var interp:Interp;
 	@privateAccess
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
 			if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
@@ -560,14 +568,14 @@ class Character extends FlxSprite
 			if (tex == null){
 				var charJsonF:String = ('${charLoc}/$curCharacter/${xmlName}').substr(0,-3) + "json";
 				if (FileSystem.exists(charJsonF)){
-					charXml = File.getContent(charJsonF); 				
+					charXml = SELoader.loadText(charJsonF); 				
 					if (charXml == null){handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
 
-					tex = FlxAtlasFrames.fromTexturePackerJson(FlxGraphic.fromBitmapData(BitmapData.fromFile('${charLoc}/$curCharacter/${pngName}')), charXml);
+					tex = FlxAtlasFrames.fromTexturePackerJson(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
 				} else {
 					charXml = File.getContent('${charLoc}/$curCharacter/${xmlName}'); // Loads the XML as a string
 					if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-					tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${charLoc}/$curCharacter/${pngName}')), charXml.replace("UTF-16","utf-8")); // Makes sure the xml reports utf-8 to prevent a CS6 bug or whatever
+					tex = FlxAtlasFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml.replace("UTF-16","utf-8")); // Makes sure the xml reports utf-8 to prevent a CS6 bug or whatever
 				}
 				if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 			}
@@ -646,7 +654,7 @@ class Character extends FlxSprite
 
 		}
 		if (!amPreview && FileSystem.exists('${charLoc}/$curCharacter/script.hscript')){
-			parseHScript(File.getContent('${charLoc}/$curCharacter/script.hscript'));
+			parseHScript(SELoader.loadText('${charLoc}/$curCharacter/script.hscript'));
 			trace("Loaded HScript");
 			
 		}
@@ -820,7 +828,8 @@ class Character extends FlxSprite
 			else if(animHasFinished && animLoops[animation.curAnim.name] != null && animLoops[animation.curAnim.name]) {playAnim(animation.curAnim.name);currentAnimationPriority = -1;}
 			if (animation.curAnim.name.endsWith('miss') && animHasFinished)
 			{
-				playAnim('idle', true, false, 10);
+				// playAnim('idle', true, false, 10);
+				dance();
 			}
 			if (animation.curAnim.name.startsWith('sing'))
 			{
@@ -850,30 +859,47 @@ class Character extends FlxSprite
 	/**
 	 * FOR GF DANCING SHIT
 	 */
-	public function dance(?ignoreDebug:Bool = false)
+	public function dance(Forced:Bool = false,beatDouble:Bool = false,useDanced:Bool = true,beatProg:Float = 0)
 	{
 		if (amPreview){
 			if (dance_idle || charType == 2 || curCharacter == "spooky"){
 				playAnim('danceRight');
 			}else{playAnim('idle');}
 		}
-		else if ((!debugMode || ignoreDebug) && !amPreview)
+		else
 		{
-
-			if(dance_idle || charType == 2 || curCharacter == "spooky"){
+			var frame = 0;
+			// if(beatProg != 0){
+			// 	frame = Std.int(animation.curAnim.frames.length / beatProg);
+			// }
+			if(dance_idle){
 				if (animation.curAnim == null || (!animation.curAnim.name.startsWith('hair') && animHasFinished))
 				{
 					// danced = !danced;
+					if(useDanced){
+						playAnim('dance${if(danced)'Right' else 'Left'}',Forced,beatProg);
+					}else{
+						var anim = 'dance${if(beatDouble)'Right' else 'Left'}';
+						
+						if(beatProg > 0) frame = Math.floor(Math.floor(animation.getByName(anim).frameRate / (60 / Conductor.bpm)) * beatProg);
+						playAnim(anim,Forced,frame);
 
-					if (danced)
-						playAnim('danceRight');
-					else
-						playAnim('danceLeft');
+					}
 				}
 			}else{
-				playAnim('idle');
+				if(beatProg > 0) frame = Math.floor(Math.floor(animation.getByName('idle').frameRate / (60 / Conductor.bpm)) * beatProg);
+				playAnim('idle',Forced,frame);
 			}
 		}
+	}
+	public function getJSONAnimation(name:String = ""):CharJsonAnimation{
+		for(anim in charProperties.animations){
+			if(anim.anim == name){
+				return anim;
+				break;
+			}
+		}
+		return null;
 	}
 	// Added for Animation debug
 	public function idleEnd(?ignoreDebug:Bool = false)
@@ -926,7 +952,7 @@ class Character extends FlxSprite
 		super.draw();
 	} 
 	public var currentAnimationPriority:Int = -100;
-	public dynamic function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Int = 0,?offsetX:Float = 0,?offsetY:Float = 0)
+	public dynamic function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0)
 	{
 		var lastAnim = "";
 		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
@@ -946,7 +972,7 @@ class Character extends FlxSprite
 			lastAnim = animation.curAnim.name;
 			if(animation.curAnim.name != AnimName && !animHasFinished){
 				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
-				if (animationPriorities[animation.curAnim.name] == null && !animHasFinished && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
+				if (animationPriorities[animation.curAnim.name] == null && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
 			}
 		}
 		// setSprite(animGraphics[AnimName.toLowerCase()]);
@@ -960,7 +986,10 @@ class Character extends FlxSprite
 		}
 		if (animationPriorities[AnimName] != null) currentAnimationPriority = animationPriorities[AnimName];
 		animHasFinished = false;
-		animation.play(AnimName, Force, Reversed, Frame);
+		if(Frame > 0 && Frame < 1 && Frame % 1 == Frame){
+			Frame = animation.getByName(AnimName).frames.length / Frame;
+		}
+		animation.play(AnimName, Force, Reversed, Std.int(Frame));
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
 		
 			setOffsets(AnimName,offsetX,offsetY);

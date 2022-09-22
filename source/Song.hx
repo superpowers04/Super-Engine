@@ -22,8 +22,11 @@ typedef SwagSong =
 	var player2:String;
 	var gfVersion:String;
 	var ?noteStyle:String;
+	var ?splashStyle:String;
+	var ?arrowStyle:String;
 	var stage:String;
 	var validScore:Bool;
+	var ?forceCharacters:Bool;
 	var ?events:Array<Dynamic>; // Events
 	var ?noteMetadata:NoteMetadata;
 	var ?difficultyString:String;
@@ -31,6 +34,7 @@ typedef SwagSong =
 	var ?rawJSON:Dynamic;
 	var ?chartVersion:String;
 	var ?chartType:String;
+	// var ?seSong:SESONG;
 }
 
 typedef NoteMetadata={

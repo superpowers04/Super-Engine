@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import sys.io.File;
-// import ScriptableState;
+import ScriptableState;
 
 // For Title Screen GF
 import flixel.graphics.FlxGraphic;
@@ -35,7 +35,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N26";
+	public static var nightly:String = "N27";
 
 	public static var gameVer:String = "0.2.7.1";
 	public static var compileType(default,never):String =
@@ -56,6 +56,8 @@ class MainMenuState extends SickMenuState
 	
 	public static function handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
 		// if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
+		ScriptableStateManager.lastState = "";
+		ScriptableStateManager.goToLastState = false;
 		if(MainMenuState.errorMessage.contains(error)) return; // Prevents the same error from showing twice
 		MainMenuState.errorMessage += "\n" + error;
 		if(details != "") trace(details);
@@ -124,7 +126,9 @@ class MainMenuState extends SickMenuState
 		loading = false;
 		isMainMenu = true;
 		super.create();
-
+		if(MainMenuState.errorMessage == "" && ScriptableStateManager.goToLastState && ScriptableStateManager.lastState != ""){
+			SelectScriptableState.selectState(ScriptableStateManager.lastState);
+		}
 		bg.scrollFactor.set(0.1,0.1);
 		bg.color = MainMenuState.bgcolor;
 		if (onlinemod.OnlinePlayMenuState.socket != null){
@@ -236,12 +240,8 @@ class MainMenuState extends SickMenuState
 	var otherMenu:Bool = false;
 
 	function otherSwitch(){
-		options = ["freeplay","download charts","download characters"
-		// , "scripted states"
-		];
-		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"
-		// ,"Run a script inside of a semi sandboxed environment"
-		];
+		options = ["freeplay","download charts","download characters"];
+		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
 		
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
@@ -252,8 +252,10 @@ class MainMenuState extends SickMenuState
 		changeSelection();
 	}
 	function mmSwitch(regen:Bool = false){
-		options = ['modded songs','join BR compatible server', 'online songs',"story mode",'other',"import charts from mods","changelog", 'options'];
-		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs','Convert charts from other mods to work here. Will put them in Modded Songs',"Check the latest update and it's changes",'Customise your experience to fit you'];
+		options = ['modded songs','join BR compatible server', 'online songs',"story mode",'other',"import charts from mods"
+		, "scripted states"
+		,"changelog", 'options'];
+		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs','Convert charts from other mods to work here. Will put them in Modded Songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Customise your experience to fit you'];
 		if(regen)generateList();
 		curSelected = 0;
 		if(regen)changeSelection();
@@ -292,7 +294,7 @@ class MainMenuState extends SickMenuState
 			// 	FlxG.switchState(new SetupCharactersList());
 			
 			case "scripted states":
-				// FlxG.switchState(new SelectScriptableState());
+				FlxG.switchState(new SelectScriptableState());
 			case "download charts":
 				FlxG.switchState(new ChartRepoState());
 			case 'story mode':

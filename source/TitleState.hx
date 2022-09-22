@@ -52,7 +52,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
 	public static var choosableCharacters:Array<String> = [];
-	public static var choosableStages:Array<String> = ["default","stage","nothing",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
+	public static var choosableStages:Array<String> = ["default","stage","nothing"];
 	public static var choosableStagesLower:Map<String,String> = [];
 	public static var choosableCharactersLower:Map<String,String> = [];
 	public static var weekChars:Map<String,Array<String>> = [];
@@ -79,7 +79,6 @@ class TitleState extends MusicBeatState
 		if (NoteAssets == null || NoteAssets.name != FlxG.save.data.noteAsset || forced){
 			if (!FileSystem.exists('mods/noteassets/${FlxG.save.data.noteAsset}.png') || !FileSystem.exists('mods/noteassets/${FlxG.save.data.noteAsset}.xml')){
 				FlxG.save.data.noteAsset = "default";
-
 			} // Hey, requiring an entire reset of the game's settings when noteasset goes missing is not a good idea
 			new NoteAssets(FlxG.save.data.noteAsset,forced2);
 		}
@@ -176,7 +175,7 @@ class TitleState extends MusicBeatState
 				if (FileSystem.exists(dataDir + _dir + "/characters/"))
 				{
 					var dir = dataDir + _dir + "/characters/";
-					trace('Checking ${dir} for characters');
+					// trace('Checking ${dir} for characters');
 					for (char in FileSystem.readDirectory(dir))
 					{
 						if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
@@ -228,6 +227,7 @@ class TitleState extends MusicBeatState
 			}
 			// choosableCharactersLower[char.toLowerCase()] = char;
 		}
+		trace('Found ${choosableCharacters.length} characters');
 		// try{
 
 		// 	var rawJson = File.getContent('assets/data/characterMetadata.json');
@@ -261,10 +261,9 @@ class TitleState extends MusicBeatState
 		}
 	}
 	public static function checkStages(){
-		choosableStages = ["default","stage","nothing",'halloween',"philly","limo",'mall','mallevil','school','schoolevil'];
-		choosableStagesLower = ["default" => "default","stage" => "stage",'nothing' => 'nothing','halloween' => 'halloween',"philly" => "philly","limo" => "limo",'mall' => 'mall','mallevil' => 'mallevil','school' => 'school','schoolevil' => 'schoolevil'];
+		choosableStages = ["default","stage","nothing"];
+		choosableStagesLower = ["default" => "default","stage" => "stage",'nothing' => 'nothing'];
 		#if sys
-		// Loading like this is probably not a good idea
 		var dataDir:String = "mods/stages/";
 		var customStages:Array<String> = [];
 		if (FileSystem.exists(dataDir))
@@ -496,10 +495,12 @@ class TitleState extends MusicBeatState
 		if(initialized)
 			skipIntro();
 		else{
+			Assets.loadLibrary("shared").onComplete(function (_) {
+				createCoolText(['Powered by',"haxeflixel"]);
+				showHaxe();
+				LoadingScreen.hide();
+			});
 
-			createCoolText(['Powered by',"haxeflixel"]);
-			showHaxe();
-			LoadingScreen.hide();
 		}
 			// initialized = true;
 		// credGroup.add(credTextShit);

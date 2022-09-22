@@ -10,6 +10,7 @@ import flash.media.Sound;
 import sys.FileSystem;
 import sys.io.File;
 
+
 import Section.SwagSection;
 
 using StringTools;
@@ -66,7 +67,7 @@ class OfflinePlayState extends PlayState
 				if (instFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a inst file!');}
 
 			}
-			loadedInst = Sound.fromFile(instFile);
+			loadedInst = SELoader.loadSound(instFile);
 		}
 		if(!(lastVoicesFile == voicesFile && loadedVoices != null)){
 			if(voicesFile == ""){
@@ -76,7 +77,7 @@ class OfflinePlayState extends PlayState
 					}
 				}
 			}
-			if (voicesFile != ""){loadedVoices = new FlxSound().loadEmbedded(Sound.fromFile(voicesFile));}
+			if(voicesFile != ""){loadedVoices = SELoader.loadFlxSound(voicesFile);}
 			if(voicesFile == "" && PlayState.SONG != null){
 				loadedVoices =  new FlxSound();
 				PlayState.SONG.needsVoices = false;
@@ -115,6 +116,10 @@ class OfflinePlayState extends PlayState
 				
 				}
 		}
+		// var e = chartFile.substr(0,chartFile.lastIndexOf('/') + "/SE-OVERRIDES.json";
+		// if(FileSystem.exists(e)){
+		// 	var overrides:SwagSong = 
+		// }
 	}catch(e) MainMenuState.handleError('Error loading chart \'${chartFile}\': ${e.message}');
   }
   override function create()

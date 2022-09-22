@@ -16,6 +16,7 @@ import openfl.events.Event;
 import openfl.events.UncaughtErrorEvent;
 // import crashdumper.CrashDumper;
 // import crashdumper.SessionData;
+import Overlay;
 
 import haxe.CallStack;
 import sys.FileSystem;
@@ -97,6 +98,8 @@ class Main extends Sprite
 		LoadingScreen.show();
 		fpsCounter = new Overlay(0, 0);
 		addChild(fpsCounter);
+		console = new Console();
+		addChild(console);
 
 		// fpsCounter.visible = false;
 		// fpsOverlay = new Overlay(0, 0);
@@ -127,6 +130,7 @@ class Main extends Sprite
 	public static var game:FlxGameEnhanced;
 
 	public static var fpsCounter:Overlay;
+	public static var console:Console;
 	// var fpsOverlay:Overlay;
 
 	public function toggleFPS(fpsEnabled:Bool):Void {

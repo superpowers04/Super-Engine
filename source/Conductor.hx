@@ -66,11 +66,14 @@ class Conductor
 			totalSteps += deltaSteps;
 			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
 		}
-		trace("Created new BPM map - " + bpmChangeMap);
+		// trace("Created new BPM map - " + bpmChangeMap);
 	}
 
 	public static function changeBPM(newBpm:Float)
 	{
+		if(Math.isNaN(newBpm) || newBpm < 1){
+			newBpm = 120;
+		}
 		bpm = Math.abs(newBpm);
 
 		crochet = ((60 / bpm) * 1000);

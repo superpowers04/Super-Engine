@@ -1,5 +1,4 @@
 package multi;
-
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -27,7 +26,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var diffText:FlxText;
 	var scoreText:FlxText;
 	var selMode:Int = 0;
-	var blockedFiles:Array<String> = ['picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','config.json'];
+	var blockedFiles:Array<String> = ['picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','SE-OVERRIDES.json','config.json'];
 	static var lastSel:Int = 1;
 	static var lastSearch:String = "";
 	public static var lastSong:String = ""; 
@@ -94,7 +93,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		changeSelection(lastSel);
 		lastSel = 1;
 		changeDiff();
-		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songs.length} songs.');
+		updateInfoText('Use shift to scroll faster; Shift+F10 to erase the score of the current chart. Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songs.length} songs.');
 		}catch(e){MainMenuState.handleError(e,'Something went wrong in create; ${e.message}\n${e.stack}');
 		}
 
@@ -279,7 +278,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		// 	grpSongs.members[i - 1].color = FlxColor.RED;
 		// }
 		if(reload && lastSel == 1)changeSelection(_goToSong);
-		updateInfoText('Use shift to scroll faster; Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
+		updateInfoText('Use shift to scroll faster; Shift+F10 to erase the score of the current chart. Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
 	}
 	// function checkSong(dataDir:String,directory:String){
 
@@ -431,7 +430,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			PlayState.stateType = 4;
 			PlayState.SONG.needsVoices =  onlinemod.OfflinePlayState.voicesFile != "";
 
-			LoadingState.loadAndSwitchState(new ChartingState());
+			LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
 			return;
 		}
 		if (modes[sel][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
@@ -522,6 +521,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var move = -FlxG.mouse.wheel;
 			changeSelection(Std.int(move));
 		}
+		if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F10){
+			Highscore.setScore(curScoreName,0,['N/A']);
+			changeDiff();
+		}
 		if(FlxG.keys.justPressed.CONTROL){
 				FlxG.autoPause = false;
 				playCount++;
@@ -578,6 +581,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		super.extraKeys();
 	}
 	var twee:FlxTween;
+	var curScoreName:String = "";
 	function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
 		if (songs.length == 0 || songs[curSelected] == null || songs[curSelected] == "") {
 			diffText.text = 'No song selected';
@@ -598,7 +602,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		diffText.text = (if(modes[curSelected][selMode - 1 ] != null ) '< ' else '|  ') + (if(modes[curSelected][selMode] == CATEGORYNAME) songs[curSelected] else modes[curSelected][selMode]) + (if(modes[curSelected][selMode + 1 ] != null) ' >' else '  |');
 		// diffText.centerOffsets();
 		diffText.screenCenter(X);
-		var name = '${songs[curSelected]}-${modes[curSelected][selMode]}';
+		var name = '${songs[curSelected]}-${modes[curSelected][selMode]}${(if(QuickOptionsSubState.getSetting("Inverted chart")) "-inverted" else "")}';
+		curScoreName = "";
 		if(modes[curSelected][selMode] == null || modes[curSelected][selMode] == CATEGORYNAME || !Highscore.songScores.exists(name)){
 			// score = 0;
 			scoreText.text = "N/A";
@@ -612,7 +617,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			// 	score = -1;
 			// }
 			// SCORETXT = ', ${_Arr.join(", ")}';
-			scoreText.text = (Highscore.songScores.getArr(name)).join(", ");
+			curScoreName = name;
+			scoreText.text = (Highscore.songScores.getArr(curScoreName)).join(", ");
 			scoreText.screenCenter(X);
 			// score = Highscore.getScoreUnformatted();
 		}

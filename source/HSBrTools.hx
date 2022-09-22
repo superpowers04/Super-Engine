@@ -31,7 +31,7 @@ class HSBrTools {
  
 	
 
-	var optionsMap:Map<String,Dynamic> = new Map<String,Dynamic>();
+	public var optionsMap:Map<String,Dynamic> = new Map<String,Dynamic>();
 	public static var shared:Map<String,Dynamic> = new Map<String,Dynamic>();
 	public var global(get,never):Map<String,Dynamic>;
 	var id = "Unspecified script";

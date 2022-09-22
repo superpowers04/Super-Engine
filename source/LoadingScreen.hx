@@ -19,8 +19,8 @@ class LoadingScreen extends Sprite{
 		width = 1280;
 		height = 720;
 
-		scaleX = FlxG.game.scaleX;
-		scaleY = FlxG.game.scaleY;
+			// scaleX = lime.app.Application.current.window.width / 1280;
+			// scaleY = lime.app.Application.current.window.height / 720;
 		// graphics.beginFill(0x110011);
 		// graphics.drawRect(0,0, 1280, 720);
 		// graphics.endFill();
@@ -77,8 +77,8 @@ class LoadingScreen extends Sprite{
 		object.alpha = 1;
 		if(tween != null){tween.cancel();}
 		object.funni = true;
-		object.scaleX = FlxG.game.scaleX;
-		object.scaleY = FlxG.game.scaleY;
+		object.scaleX = lime.app.Application.current.window.width / 1280;
+		object.scaleY = lime.app.Application.current.window.height / 720;
 		FlxG.stage.addChild(object);
 		// object.visible = true;
 	}
@@ -89,8 +89,6 @@ class LoadingScreen extends Sprite{
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 0;
-		object.scaleX = FlxG.game.scaleX;
-		object.scaleY = FlxG.game.scaleY;
 		
 	}
 	public static function hide(){
@@ -101,8 +99,6 @@ class LoadingScreen extends Sprite{
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 1;
-		object.scaleX = FlxG.game.scaleX;
-		object.scaleY = FlxG.game.scaleY;
 		tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){FlxG.stage.removeChild(object);}});
 		
 	}

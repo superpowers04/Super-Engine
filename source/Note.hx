@@ -35,6 +35,7 @@ class Note extends FlxSkewedSprite
 	public var updateAlpha:Bool = true;
 	public var updateAngle:Bool = true;
 	public var updateScrollFactor:Bool = true;
+	public var updateCam:Bool = true;
 	public var lockToStrum:Bool = true;
 
 	public var hitDistance:Float = 0;
@@ -186,7 +187,6 @@ class Note extends FlxSkewedSprite
 			try{
 				if(frames == null && shouldntBeHit) {color = 0x220011;}
 				if (frames == null) frames = NoteAssets.frames;
-				// frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 				vanillaFrames = true;
 				try{
 					noteJSON = NoteAssets.noteJSON.notes[noteData];
@@ -403,7 +403,6 @@ class Note extends FlxSkewedSprite
 
 
 			// x+= swagWidth * noteData;
-			animation.play(if(noteJSON == null) noteName + "Scroll" else "scroll");
 
 			// trace(prevNote);
 
@@ -450,6 +449,8 @@ class Note extends FlxSkewedSprite
 					prevNote.offset.x = prevNote.frameWidth * 0.5;
 					// prevNote.setGraphicSize();
 				}
+			}else{
+				animation.play(if(noteJSON == null) noteName + "Scroll" else "scroll");
 			}
 		}else{
 			noteID = -40;
@@ -485,9 +486,9 @@ class Note extends FlxSkewedSprite
 		switch(inCharter){
 			case true:{
 
-				wasGoodHit = (strumTime <= Conductor.songPosition);
+				wasGoodHit = (strumTime <= Conductor.songPosition && strumTime + 100 >= Conductor.songPosition);
 				alpha = (wasGoodHit ? 0.7 : 1);
-				if(wasGoodHit && !tooLate && isOnScreen() && ChartingState.playClaps && FlxG.sound.music.playing){
+				if(wasGoodHit && !tooLate && ChartingState.playClaps && FlxG.sound.music.playing){
 					// FlxG.sound.play(Paths.sound('SNAP'),FlxG.save.data.hitvol,false,true);
 					ChartingState.playSnap();
 				}

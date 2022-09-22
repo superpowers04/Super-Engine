@@ -29,19 +29,19 @@ import SEInputText as FlxInputText;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxUIState;
+import flixel.addons.ui.FlxUIText;
 import flixel.addons.ui.FlxUISubState;
 import flixel.addons.ui.FlxUIInputText;
+import flixel.addons.ui.FlxUICheckBox;
+import flixel.addons.ui.FlxUITabMenu;
+import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
+import SENumericStepper as FlxUINumericStepper;
 import Controls.Control;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.FlxSound;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
-import flixel.addons.ui.FlxUICheckBox;
-import flixel.addons.ui.FlxUIInputText;
-import SENumericStepper as FlxUINumericStepper;
-import flixel.addons.ui.FlxUITabMenu;
-import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.addons.ui.FlxUIDropDownMenu;
@@ -727,6 +727,7 @@ class AnimationDebug extends MusicBeatState
 	}
 
 	var uiMap:Map<String,Dynamic> = new Map<String,Dynamic>(); 
+	var _colText:FlxUIText;
 	var uiBox:FlxUITabMenu;
 	var animDropDown:PsychDropDown;
 	var charAnims:Array<String> = [];
@@ -744,6 +745,30 @@ class AnimationDebug extends MusicBeatState
 		}else{
 			sampleBox.color = dad.definingColor;
 		}
+	}
+	function updateColor(?r:Int = -1,?g:Int=-1,?b:Int=-1){
+
+		if(charJson.color == null || charJson.color[0] == null){
+			charJson.color = [255,255,255];
+		}
+		if(r > -1){
+			charJson.color[0] = r;
+		}
+		if(g > -1){
+			charJson.color[1] = g;
+		}
+		if(b > -1){
+			charJson.color[2] = b;
+		}
+		// var colText = uiMap["colorTxt"];
+		var col:FlxColor = FlxColor.fromRGB(charJson.color[0],charJson.color[1],charJson.color[2]);
+		_colText.color = col;
+		if(_colText.color.lightness >= 0.4){
+			_colText.borderColor = FlxColor.BLACK;
+		}else{
+			_colText.borderColor = FlxColor.WHITE;
+		}
+		_colText.text = col.toWebString();
 	}
 	function setupUI(dest:Bool = false){
 		try{
@@ -935,33 +960,31 @@ class AnimationDebug extends MusicBeatState
 		}
 		
 		uiBox2.add(uiMap["hiredtxt"] = new FlxText(10, 160,0,"Health Red"));
-		uiMap["hired"] = new FlxUINumericStepper(140, 160, 1, charJson.color[0],0,255);
+		uiMap["hired"] = new FlxUINumericStepper(100, 160, 1, charJson.color[0],0,255);
 		uiMap["hired"].callback = function(value,_){
-			if(charJson.color == null || charJson.color[0] == null){
-				charJson.color = [0,0,0];
-			}
-			charJson.color[0] = value;
+			updateColor(value);
 		}
 		uiBox2.add(uiMap["hired"]);
 
 
 		uiBox2.add(uiMap["higreentxt"] = new FlxText(10, 180,0,"Health Green"));
-		uiMap["higreen"] = new FlxUINumericStepper(140, 180, 1, charJson.color[1],0,255);
+		uiMap["higreen"] = new FlxUINumericStepper(100, 180, 1, charJson.color[1],0,255);
 		uiMap["higreen"].callback = function(value,_){
-			if(charJson.color == null || charJson.color[0] == null){
-				charJson.color = [0,0,0];
-			}
-			charJson.color[1] = value;
+			updateColor(-1,value);
 		}
 		uiBox2.add(uiMap["higreen"]);
 
+
+		uiMap["colorTxt"] = _colText = new FlxUIText(160, 180,0,"#FFFFFF",12);
+		_colText.borderSize = 2;
+		_colText.borderStyle = OUTLINE;
+		_colText.borderColor = FlxColor.BLACK;
+		uiBox2.add(_colText);
+
 		uiBox2.add(uiMap["hibluetxt"] = new FlxText(10, 200,0,"Health blue"));
-		uiMap["hiblue"] = new FlxUINumericStepper(140, 200, 1, charJson.color[2],0,255);
+		uiMap["hiblue"] = new FlxUINumericStepper(100, 200, 1, charJson.color[2],0,255);
 		uiMap["hiblue"].callback = function(value,_){
-			if(charJson.color == null || charJson.color[0] == null){
-				charJson.color = [0,0,0];
-			}
-			charJson.color[2] = value;
+			updateColor(-1,-1,value);
 		}
 		uiBox2.add(uiMap["hiblue"]);
 
@@ -1040,7 +1063,7 @@ class AnimationDebug extends MusicBeatState
 				
 				// }
 				var _Col = FlxColor.fromInt(maxColor);
-				charJson.color = [_Col.red,_Col.green,_Col.blue];
+				updateColor(_Col.red,_Col.green,_Col.blue);
 				uiMap["hired"].value = _Col.red;
 				uiMap["higreen"].value = _Col.green;
 				uiMap["hiblue"].value = _Col.blue;
@@ -1103,6 +1126,9 @@ class AnimationDebug extends MusicBeatState
 			uiMap["hi1"] = iconP1;
 			add(iconP1);
 		}catch(e){trace('oh no, the healthbar had an error, what ever will we do ${e.message}');}
+		
+		updateColor();
+		
 		}catch(e){MainMenuState.handleError(e,'Error while loading GUI: ${e.message}');}
 	}
 	static public function colorFromRGB(arr:Array<Dynamic>):FlxColor{

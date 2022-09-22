@@ -66,9 +66,9 @@ class LoadingState extends MusicBeatState
 				if (PlayState.SONG.needsVoices)
 					checkLoadSong(getVocalPath());
 				checkLibrary("shared");
-				if (PlayState.storyWeek > 0)
+				if (PlayState.storyWeek is Int && PlayState.storyWeek > 0)
 					checkLibrary("week" + PlayState.storyWeek);
-				else
+				else if (PlayState.storyWeek == 0)
 					checkLibrary("tutorial");
 				
 				var fadeTime = 0.5;
@@ -93,7 +93,7 @@ class LoadingState extends MusicBeatState
 		}
 	}
 	
-	function checkLibrary(library:String)
+	public function checkLibrary(library:String)
 	{
 		trace(Assets.hasLibrary(library));
 		if (Assets.getLibrary(library) == null)

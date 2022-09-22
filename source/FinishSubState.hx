@@ -308,7 +308,9 @@ class FinishSubState extends MusicBeatSubstate
 				// chartInfoText.scrollFactor.set();
 				
 
-				if(win && !PlayState.instance.hasDied && !FlxG.save.data.practiceMode && !ChartingState.charting && PlayState.instance.canSaveScore){Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)]);}
+				if(win && !PlayState.instance.hasDied && !FlxG.save.data.practiceMode && !ChartingState.charting && PlayState.instance.canSaveScore){
+					Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)]);
+				}
 				add(bg);
 				add(finishedText);
 				add(comboText);

@@ -2,11 +2,30 @@ import flixel.FlxG;
 
 class Ratings
 {
+	public static var rankings:Array<String> = [
+		"Perfectly legit",
+		"Perfect!",
+		"SS",
+		"S",
+		"A",
+		"B",
+		"C",
+		"Nice",
+		"C",
+		"D",
+		"F",
+		"FU",
+		"FUC",
+		"FUCK",
+		"afk",
+		"N/A",
+		"botplay"
+	];
 	public static function getLetterRankFromAcc(?accuracy:Float = 0) // generate a letter ranking
 	{
 		var ranking = "N/A";
 		var wifeConditions:Array<Bool> = [
-			accuracy > 100, // SS
+			accuracy > 100, // how
 			accuracy == 100, // fucking amazing
 			accuracy >= 99, // SS
 			accuracy >= 95, // S
@@ -26,52 +45,9 @@ class Ratings
 
 
 		];
-		for(i in 0...wifeConditions.length)
-		{
-			var b = wifeConditions[i];
-			if (b)
-			{
-				switch(i)
-				{
-					case 0:
-						ranking = "Perfectly legit";
-					case 1:
-						ranking = "Perfect!";
-					case 2:
-						ranking = "SS";
-					case 3:
-						ranking = "S";
-					case 4:
-						ranking = "A";
-					case 5:
-						ranking = "B";
-					case 6:
-						ranking = "C";
-					case 7:
-						ranking = "Nice";
-					case 8:
-						ranking = "C";
-					case 9:
-						ranking = "D";
-					case 10:
-						ranking = "F";
-					case 11:
-						ranking = "FU";
-					case 12:
-						ranking = "FUC";
-					case 13:
-						ranking = "FUCK";
-					case 14:
-						ranking = "afk";
-					case 15:
-						ranking = "N/A";
-					case 16:
-						ranking = "botplay";
-				}
-				break;
-			}
-		}
-		return ranking;
+		var ranking = wifeConditions.indexOf(true);
+		return ;
+
 	}
 	public static function GenerateLetterRank(accuracy:Float) // generate a letter ranking
 	{

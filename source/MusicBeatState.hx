@@ -22,8 +22,9 @@ class MusicBeatState extends FlxUIState
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
+	public var curStep:Int = 0;
+	public var curStepProgress:Float = 0;
+	public var curBeat:Int = 0;
 	private var controls(get, never):Controls;
 	var forceQuit = true;
 	public static var instance:MusicBeatState;
@@ -34,17 +35,20 @@ class MusicBeatState extends FlxUIState
 	public function onFileDrop(file:String):Null<Bool>{
 		return true;
 	}
+	var mouseEnabledTmr:FlxTimer;
 	override function onFocus() {
 		super.onFocus();
 		CoolUtil.setFramerate(true);
+		mouseEnabledTmr = new FlxTimer().start(0.25,function(_){FlxG.mouse.enabled = true;});
 	}
 	override function onFocusLost(){
 		super.onFocusLost();
 		CoolUtil.setFramerate(24,false,true);
+		if(mouseEnabledTmr != null)mouseEnabledTmr.cancel();
+		FlxG.mouse.enabled = false;
 	}
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
-
 	override function create()
 	{
 		CoolUtil.setFramerate(true);
@@ -117,9 +121,6 @@ class MusicBeatState extends FlxUIState
 
 		updateCurStep();
 		updateBeat();
-		if(FlxG.keys.justPressed.F1 && forceQuit){
-			MainMenuState.handleError("Manually triggered force exit");
-		}
 		if(FlxG.keys.justPressed.F3){
 			var mess = 'Global Mouse pos: ${FlxG.mouse.x},${FlxG.mouse.y}; Screen mouse pos: ${FlxG.mouse.screenX},${FlxG.mouse.screenY}; member count: ${members.length}'; 
 			trace(mess);
@@ -189,8 +190,9 @@ class MusicBeatState extends FlxUIState
 			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];
 		}
-
-		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
+		var prog = (Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet;
+		curStepProgress = prog % 1;
+		curStep = lastChange.stepTime + Math.floor(prog);
 	}
 
 	public function stepHit():Void
@@ -242,4 +244,57 @@ class MusicBeatState extends FlxUIState
 		FlxTween.tween(FlxG.camera, {zoom:2},1,{ease: FlxEase.expoIn});
 
 	}
+
+
+	// public var debugMode:Bool = false;
+	// public var debugObj:DebugOverlay;
+	override function tryUpdate(elapsed:Float):Void
+	{
+		if(FlxG.keys.justPressed.F1 && forceQuit){
+			MainMenuState.handleError("Manually triggered force exit");
+		}
+		// if(FlxG.keys.justPressed.F8){
+		// 	debugMode = !debugMode;
+		// 	if(debugMode){
+		// 		debugOverlay = new DebugOverlay();
+		// 	}else{
+		// 		debugOverlay.destroy();
+		// 	}
+		// }
+		// if(debugMode)
+		// 	debugOverlay.update();
+		// else 
+			if ((persistentUpdate || subState == null))
+				update(elapsed);
+
+		if (_requestSubStateReset)
+		{
+			_requestSubStateReset = false;
+			resetSubState();
+		}
+		if (subState != null)
+		{
+			subState.tryUpdate(elapsed);
+		}
+	}
+
+
+	// override function draw(){
+	// 	super.draw();
+	// 	if(debugMode)
+	// 		debugOverlay.draw();
+	// }
 }
+
+
+
+
+// class DebugOverlay extends FlxGroup{
+// 	var bg:FlxSprite;
+// 	override function create(){
+// 		super.create();
+// 		var bg = new FlxSprite(-50,-50).loadGraphic(FlxGraphic.fromRectangle(1360,820));
+// 		add(bg);
+
+// 	}
+// }

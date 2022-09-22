@@ -223,7 +223,6 @@ class PauseSubState extends MusicBeatSubstate
 		}
 	}
 	function quit(){
-		PlayState.loadRep = false;
 
 		if (FlxG.save.data.fpsCap > 290) (cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
 		FlxG.sound.music.stop();
@@ -259,6 +258,8 @@ class PauseSubState extends MusicBeatSubstate
 				i.destroy();
 			}
 		}
+		FlxG.sound.music.pause();
+		Conductor.songPosition = FlxG.sound.music.time = time;
 		disappearMenu(0.4);
 		PlayState.instance.callInterp("pauseResume",[this]);
 
@@ -333,7 +334,7 @@ class PauseSubState extends MusicBeatSubstate
 						t.active = false;
 					});
 					if(_tween != null)_tween.cancel();
-					FlxG.sound.music.time = time;
+					Conductor.songPosition = FlxG.sound.music.time = time;
 					FlxG.sound.music.volume = volume;
 					FlxTween.tween(FlxG.sound.music,{volume:volume},0.01);
 					FlxG.sound.music.onComplete = finishCallback;
