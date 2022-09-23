@@ -354,6 +354,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					if((file.endsWith(".hscript") || file.endsWith(".hx")) && !FileSystem.isDirectory(file)){
 						PlayState.scripts.push('${selSong}/$file');
 					}
+					
 				}
 				if(FlxG.save.data.packScripts && (selSong.contains("mods/packs") || selSong.contains("mods/weeks"))){
 					var packDirL = selSong.split("/"); // Holy shit this is shit but using substr won't work for some reason :<
@@ -429,8 +430,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			}
 			PlayState.stateType = 4;
 			PlayState.SONG.needsVoices =  onlinemod.OfflinePlayState.voicesFile != "";
-
-			LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
+			ChartingState.gotoCharter();
+			// LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
 			return;
 		}
 		if (modes[sel][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
@@ -562,6 +563,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							voices.loadEmbedded(Sound.fromFile('${songs[curSelected]}/Voices.ogg'),true);
 							voices.volume = FlxG.save.data.voicesVol;
 							voices.play(FlxG.sound.music.time);
+							FlxG.sound.list.add(voices);
 
 						}else{
 							if(!voices.playing){

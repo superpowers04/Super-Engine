@@ -343,6 +343,7 @@ class Song
 			// }
 			if(QuickOptionsSubState.getSetting("Scroll speed") > 0) swagShit.speed = QuickOptionsSubState.getSetting("Scroll speed");
 			if (swagShit.noteMetadata == null) swagShit.noteMetadata = Song.defNoteMetadata;
+			swagShit.chartType = ChartingState.detectChartType(swagShit);
 			return swagShit;
 		#if !debug
 		}catch(e){MainMenuState.handleError(e,'Error parsing chart: ${e.message}');

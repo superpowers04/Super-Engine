@@ -174,6 +174,7 @@ class KadeEngineData
 		if(FlxG.save.data.judgeShit== null) FlxG.save.data.judgeShit = Ratings.getDefRating("shit");
 		if(FlxG.save.data.skipToFirst == null) FlxG.save.data.skipToFirst = true;
 		if(FlxG.save.data.debounce == null) FlxG.save.data.debounce = false;
+		if(FlxG.save.data.legacyCharter == null) FlxG.save.data.legacyCharter = false;
 		// if(FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
 
 		if(FlxG.save.data.playStateObjectLocations == null) FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();

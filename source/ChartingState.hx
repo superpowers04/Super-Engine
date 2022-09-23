@@ -173,6 +173,13 @@ class ChartingState extends MusicBeatState
 		if(clapSound == null)clapSound= Sound.fromFile('./assets/shared/sounds/CLAP.ogg');
 		clapSound.play(new flash.media.SoundTransform(FlxG.save.data.hitvol));
 	}
+	public static function gotoCharter(){
+		if(FlxG.save.data.legacyCharter){
+			LoadingState.loadAndSwitchState(new ChartingState());
+		}else{
+			LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
+		}
+	}
 	override function create()
 	{try{
 		TitleState.loadNoteAssets();
@@ -1345,6 +1352,7 @@ class ChartingState extends MusicBeatState
 						{
 							if (FlxG.keys.pressed.CONTROL)
 							{
+								if(currentNoteObj != null)currentNoteObj.scale.set(1);
 								selectNote(note);
 								if(FlxG.keys.pressed.SHIFT){
 									addToSelected(note);
@@ -1353,6 +1361,7 @@ class ChartingState extends MusicBeatState
 								}else{
 									deselectNotes();
 								}
+								currentNoteObj.scale.set(0.9);
 
 							}
 							else
@@ -1886,6 +1895,10 @@ class ChartingState extends MusicBeatState
 		(if(check_mustHitSection.checked) rightIcon else leftIcon).setPosition(GRID_SIZE * 7, -100);
 
 		evNote.setPosition(evNote.width * 0.5,-80);
+
+		leftIcon.scrollFactor.set(1, 1);
+		rightIcon.scrollFactor.set(1, 1);
+		evNote.scrollFactor.set(1, 1);
 	}
 
 	function updateNoteUI():Void

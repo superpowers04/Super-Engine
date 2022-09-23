@@ -4293,7 +4293,8 @@ class PlayState extends MusicBeatState
 			}
 			if (FlxG.keys.justPressed.SEVEN )
 			{
-				FlxG.switchState(new ChartingState());
+				// FlxG.switchState(new ChartingState());
+				ChartingState.gotoCharter();
 			}
 		}
 	}
