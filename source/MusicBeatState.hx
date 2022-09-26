@@ -16,6 +16,10 @@ import flixel.FlxState;
 import flixel.tweens.FlxEase;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
+import flixel.FlxObject;
+import flixel.FlxBasic;
+
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 class MusicBeatState extends FlxUIState
 {
@@ -62,7 +66,7 @@ class MusicBeatState extends FlxUIState
 	}
 	
 	var tempMessBacking:FlxSprite;
-	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true){
+	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true,?trac:Bool = true){
 		if (tempMessage != null){
 			remove(tempMessage);
 			tempMessage.destroy();
@@ -74,7 +78,7 @@ class MusicBeatState extends FlxUIState
 			remove(tempMessBacking);
 			tempMessBacking.destroy();
 		}
-		trace(str);
+		if(trac) trace(str);
 		tempMessage = new FlxText(40,60,1000,str,24);
 		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		tempMessage.scrollFactor.set();
@@ -123,7 +127,7 @@ class MusicBeatState extends FlxUIState
 		updateBeat();
 		if(FlxG.keys.justPressed.F3){
 			var mess = 'Global Mouse pos: ${FlxG.mouse.x},${FlxG.mouse.y}; Screen mouse pos: ${FlxG.mouse.screenX},${FlxG.mouse.screenY}; member count: ${members.length}'; 
-			trace(mess);
+			// trace(mess);
 			showTempmessage(mess);
 		}
 		if(FlxG.keys.justPressed.F4 && forceQuit){
@@ -246,24 +250,24 @@ class MusicBeatState extends FlxUIState
 	}
 
 
-	// public var debugMode:Bool = false;
-	// public var debugObj:DebugOverlay;
+	public var debugMode:Bool = false;
+	public var debugOverlay:DebugOverlay;
 	override function tryUpdate(elapsed:Float):Void
 	{
 		if(FlxG.keys.justPressed.F1 && forceQuit){
 			MainMenuState.handleError("Manually triggered force exit");
 		}
-		// if(FlxG.keys.justPressed.F8){
-		// 	debugMode = !debugMode;
-		// 	if(debugMode){
-		// 		debugOverlay = new DebugOverlay();
-		// 	}else{
-		// 		debugOverlay.destroy();
-		// 	}
-		// }
-		// if(debugMode)
-		// 	debugOverlay.update();
-		// else 
+		if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F8){
+			debugMode = !debugMode;
+			if(debugMode){
+				debugOverlay = new DebugOverlay();
+			}else{
+				debugOverlay.destroy();
+			}
+		}
+		if(debugMode)
+			debugOverlay.update(elapsed);
+		else 
 			if ((persistentUpdate || subState == null))
 				update(elapsed);
 
@@ -279,22 +283,75 @@ class MusicBeatState extends FlxUIState
 	}
 
 
-	// override function draw(){
-	// 	super.draw();
-	// 	if(debugMode)
-	// 		debugOverlay.draw();
-	// }
+	override function draw(){
+		super.draw();
+		if(debugMode)
+			debugOverlay.draw();
+	}
 }
 
 
 
 
-// class DebugOverlay extends FlxGroup{
-// 	var bg:FlxSprite;
-// 	override function create(){
-// 		super.create();
-// 		var bg = new FlxSprite(-50,-50).loadGraphic(FlxGraphic.fromRectangle(1360,820));
-// 		add(bg);
+class DebugOverlay extends FlxTypedGroup<FlxSprite>{
+	var bg:FlxSprite;
+	override public function new(){
+		mouseEnabled = FlxG.mouse.visible;
+		FlxG.mouse.visible = true;
+		super();
+		MusicBeatState.instance.showTempmessage('Entered Debug mode');
+		// var bg = new FlxSprite(-50,-50).loadGraphic(FlxGraphic.fromRectangle(1360,820));
+		// add(bg);
+	}
+	var obj:FlxObject;
+	var ox:Float = 0;
+	var oy:Float = 0;
+	var mx:Float = 0;
+	var my:Float = 0;
+	var mouseEnabled:Bool = false;
+	override function update(el:Float){
+		super.update(el);
+		if(FlxG.mouse.justPressed){
+			var id = MusicBeatState.instance.members.length - 1;
+			while (id >= 0 && obj == null) {
+				try{
+					var _ob:Dynamic = MusicBeatState.instance.members[id];
+					if(_ob != null  && FlxG.mouse.overlaps(_ob)){
+						obj = cast (_ob,FlxSprite);
+						// trace('Funni click on ${obj}');
+							ox=obj.x;
+							oy=obj.y;
+							mx=FlxG.mouse.x;
+							my=FlxG.mouse.y;
+							// break;
+					}
 
-// 	}
-// }
+				}catch(e){obj = null;}
+				id--;
+			}
+			
+		}else if (FlxG.mouse.pressed && obj != null){
+			if(!FlxG.keys.pressed.SHIFT){
+				obj.x = ox - mx + FlxG.mouse.x;
+				obj.y = oy - my + FlxG.mouse.y;
+
+			}
+			MusicBeatState.instance.showTempmessage('Obj pos: ${obj.x},${obj.y}');
+			if(FlxG.mouse.wheel != 0){
+				obj.angle += FlxG.mouse.wheel;
+			}
+
+		}else if(obj != null){
+			if(FlxG.keys.pressed.SHIFT){
+				obj.velocity.x = (mx - FlxG.mouse.x) * 0.01;
+				obj.velocity.y = (my - FlxG.mouse.y) * 0.01;
+			}
+			obj = null;
+		}
+	}
+	override function destroy(){
+		FlxG.mouse.visible = mouseEnabled;
+		super.destroy();
+		MusicBeatState.instance.showTempmessage('Exited Debug mode');
+	}
+}

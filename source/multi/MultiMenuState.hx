@@ -278,7 +278,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		// 	grpSongs.members[i - 1].color = FlxColor.RED;
 		// }
 		if(reload && lastSel == 1)changeSelection(_goToSong);
-		updateInfoText('Use shift to scroll faster; Shift+F10 to erase the score of the current chart. Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
+		updateInfoText('Use shift to scroll faster; Shift+F7 to erase the score of the current chart. Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
 	}
 	// function checkSong(dataDir:String,directory:String){
 
@@ -522,7 +522,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var move = -FlxG.mouse.wheel;
 			changeSelection(Std.int(move));
 		}
-		if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F10){
+		if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F7){
 			Highscore.setScore(curScoreName,0,['N/A']);
 			changeDiff();
 		}
