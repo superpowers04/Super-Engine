@@ -45,6 +45,7 @@ class FinishSubState extends MusicBeatSubstate
 	public var offsetChanged:Bool = false;
 	public var win:Bool = true;
 	public var ready = false;
+	public var readyTimer:Float = 0;
 	public var errorMsg:String = "";
 	public var isError:Bool = false; 
 	public var healthBarBG:FlxSprite;
@@ -132,6 +133,7 @@ class FinishSubState extends MusicBeatSubstate
 			FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
 			FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
 		}
+		var animName = (if(boyfriend.animation.curAnim != null) boyfriend.animation.curAnim.name else "");
 		if(!isError){
 			if(win){
 				boyfriend.playAnimAvailable(['win','hey','singUP'],true);
@@ -162,7 +164,7 @@ class FinishSubState extends MusicBeatSubstate
 			// FlxG.camera.zoom = 1;
 			// PlayState.instance.camHUD.zoom = 1;
 
-			if(PlayState.boyfriend.currentAnimationPriority == 100 && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+			if(boyfriend.animation.curAnim.name == animName && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 			// if (FlxG.save.data.camMovement){
 			PlayState.instance.followChar(0);
 			// }
@@ -177,6 +179,7 @@ class FinishSubState extends MusicBeatSubstate
 	var shownResults:Bool = false;
 	public var contText:FlxText;
 	public function finishNew(?name:String = ""){
+			// var timer = new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;FlxTween.tween(FinishSubState.instance.contText,{alpha:1},0.5);});
 			Conductor.changeBPM(70);
 			if(name != "FORCEDMOMENT.MP4efdhseuifghbehu"){
 
@@ -220,7 +223,6 @@ class FinishSubState extends MusicBeatSubstate
 			var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 			bg.alpha = 0;
 			bg.scrollFactor.set();
-			new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;FlxTween.tween(FinishSubState.instance.contText,{alpha:1},0.5);});
 			if(isError){
 				// ready = false;
 				var finishedText:FlxText = new FlxText(20,-55,0, "Error caught!" );
@@ -383,6 +385,8 @@ class FinishSubState extends MusicBeatSubstate
 				// try{TitleState.saveScore(PlayState.accuracy);}catch(e){trace("e");}
 			}
 
+
+
 	}
 	var shouldveLeft = false;
 	function retMenu(){
@@ -416,6 +420,7 @@ class FinishSubState extends MusicBeatSubstate
 		if(updateBF && PlayState.boyfriend != null){
 			PlayState.boyfriend.update(elapsed);
 		}
+
 		if (ready){
 
 
@@ -435,6 +440,13 @@ class FinishSubState extends MusicBeatSubstate
 				PlayState.boyfriend.animation.finishCallback = null;
 				finishNew();
 			}
+		}else{
+			if(readyTimer > 2){
+				ready=true;
+				// FlxTween.tween(,{alpha:1},0.5);
+			}
+			readyTimer += elapsed;
+			contText.alpha = readyTimer - 1;
 		}
 
 	}

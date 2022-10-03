@@ -372,6 +372,9 @@ class PlayState extends MusicBeatState
 			generatedMusic = false;
 			persistentUpdate = false;
 			persistentDraw = true;
+			if(FinishSubState != null){
+				showTempmessage('Error! ${error}',FlxColor.RED);
+			}
 			openSubState(new FinishSubState(0,0,error,_forced));
 		}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
 		}
@@ -4142,7 +4145,7 @@ class PlayState extends MusicBeatState
 			// 	dad.dance();
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[curSection].changeBPM);
-		wiggleShit.update(Conductor.crochet);
+		// wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!
 		if (FlxG.save.data.camMovement && camBeat){
@@ -4213,7 +4216,7 @@ class PlayState extends MusicBeatState
 		// }
 		for (i => v in [boyfriend,gf,dad]) {
 			if(v.currentAnimationPriority != 10){
-				v.dance(false,curBeat % 2 == 1,false);
+				v.dance(false,null,false);
 			}
 		}
 		// 	if(v.currentAnimationPriority != 10){
@@ -4233,12 +4236,7 @@ class PlayState extends MusicBeatState
 
 		stageShit();
 
-		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
-		{
-			if(FlxG.save.data.distractions){
-				lightningStrikeShit();
-			}
-		}
+
 	}
 
 	inline function stageShit(){
@@ -4293,6 +4291,12 @@ class PlayState extends MusicBeatState
 						trainStart();
 					}
 				}
+		}
+		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
+		{
+			if(FlxG.save.data.distractions){
+				lightningStrikeShit();
+			}
 		}
 	}
 

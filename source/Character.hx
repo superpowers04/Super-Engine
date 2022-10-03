@@ -223,6 +223,7 @@ class Character extends FlxSprite
 			interp.variables.set("charName", curCharacter);
 			interp.variables.set("charProperties", charProperties);
 			interp.variables.set("PlayState", PlayState );
+			interp.variables.set("state", cast FlxG.state );
 			interp.variables.set("BRtools",new HSBrTools('${charLoc}/$curCharacter/'));
 			interp.execute(program);
 			this.interp = interp;
