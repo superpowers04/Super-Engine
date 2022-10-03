@@ -42,12 +42,21 @@ class PauseSubState extends MusicBeatSubstate
 	var finishCallback:()->Void;
 	var time:Float = 0;
 	var volume:Float = 0;
+	var timers:Array<FlxTimer> = [];
+	var tweens:Array<FlxTween> = [];
 	public function new(x:Float, y:Float)
 	{
 		openfl.system.System.gc();
+		FlxTimer.globalManager.forEach(function(tmr:FlxTimer){
+			if(tmr.active){tmr.active = false;timers.push(tmr);}
+		});
+		FlxTween.globalManager.forEach(function(tmr:FlxTween){
+			if(tmr.active){tmr.active = false;tweens.push(tmr);}
+		});
 		super();
 		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
 		PlayState.instance.callInterp("pauseCreate",[this]);
+
 
 		// pauseMusic = ;
 		// pauseMusic.volume = 0;
@@ -327,12 +336,12 @@ class PauseSubState extends MusicBeatSubstate
 				case 4:
 
 					PlayState.instance.callInterp("pauseExit",[]);
-					FlxTimer.globalManager.forEach(function(tmr:FlxTimer){
-						tmr.active = false;
-					});
-					FlxTween.globalManager.forEach(function(t){
-						t.active = false;
-					});
+					for (i in tweens){
+						i.active = true;
+					}
+					for (i in timers){
+						i.active = true;
+					}
 					if(_tween != null)_tween.cancel();
 					Conductor.songPosition = FlxG.sound.music.time = time;
 					FlxG.sound.music.volume = volume;

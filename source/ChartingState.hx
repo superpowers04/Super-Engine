@@ -802,6 +802,7 @@ class ChartingState extends MusicBeatState
 	var sectionBuffer:Array<Array<Dynamic>> = [];
 	var pasteButton:FlxButton; 
 	var disabledControls = false;
+	var lastCopiedNotes = [];
 
 	function addSectionUI():Void
 	{
@@ -850,6 +851,7 @@ class ChartingState extends MusicBeatState
 				return showTempmessage("No notes to paste!",FlxColor.RED);
 			}
 			var timing = Conductor.songPosition;
+			lastCopiedNotes = [];
 			for (i in 0...sectionBuffer.length)
 			{
 				var note:Array<Dynamic> = sectionBuffer[i].copy();
@@ -858,6 +860,7 @@ class ChartingState extends MusicBeatState
 				updateCurStep();
 				updateGrid(false);
 				updateSectionUI();
+				lastCopiedNotes.push(note);
 				_song.notes[curSection].sectionNotes.push(note);
 			}
 			Conductor.songPosition = timing;
@@ -865,6 +868,27 @@ class ChartingState extends MusicBeatState
 			updateSectionUI();
 		});
 		pasteButton.alpha = 0.7;
+		// var pastedNotes = new FlxButton(10, 130, "Undo pasted notes", function()
+		// {
+		// 	if(lastCopiedNotes[0] == null){
+		// 		pastedNotes.alpha = 0.7;
+		// 		return showTempmessage("No notes to undo!",FlxColor.RED);
+		// 	}
+		// 	var timing = Conductor.songPosition;
+		// 	for (i in 0...lastCopiedNotes.length)
+		// 	{	
+
+		// 		updateCurStep();
+		// 		updateGrid(false);
+		// 		updateSectionUI();
+		// 		lastCopiedNotes.push(note);
+		// 		_song.notes[curSection].sectionNotes.push(note);
+		// 	}
+		// 	lastCopiedNotes = [];
+		// 	Conductor.songPosition = timing;
+		// 	updateGrid();
+		// 	updateSectionUI();
+		// });
 
 		var clearSectionButton:FlxButton = new FlxButton(10, 150, "Clear Section", clearSection);
 
@@ -1404,7 +1428,7 @@ class ChartingState extends MusicBeatState
 					{
 						deselectNotes();
 						addNote();
-					}else if (FlxG.mouse.x > gridBG.x
+					}else if (!(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) && FlxG.mouse.x > gridBG.x
 						&& FlxG.mouse.x < gridBG.x + gridBG.width
 						&& FlxG.mouse.y > gridBG.y
 						&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps)){deselectNotes();}

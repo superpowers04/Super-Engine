@@ -98,6 +98,7 @@ class PlayState extends MusicBeatState
 		var songLength:Float = 0;
 		public var curSection:Int = 0;
 		public var curSong:String = "";
+		public var speed:Float = 1;
 
 	/* Story */
 		public static var storyPlaylist:Array<String> = [];
@@ -625,8 +626,8 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 		FlxG.cameras.add(camTOP);
-
-		FlxCamera.defaultCameras = [camGame];
+		FlxG.cameras.setDefaultDrawTarget(camGame,true);
+		// FlxCamera.defaultCameras = [camGame];
 
 
 
@@ -2131,6 +2132,7 @@ class PlayState extends MusicBeatState
 
 	public var interpCount:Int = 0;
 	public var lastFrameTime:Float = 0;
+	var currentSpeed:Float = 1;
 	override public function update(elapsed:Float)
 	{
 		#if !debug
@@ -2264,8 +2266,27 @@ class PlayState extends MusicBeatState
 			// Conductor.songPosition = FlxG.sound.music.time;
 			// FlxG.sound.music.time = Conductor.songPosition
 			if(FlxG.sound.music != null){
+					if(currentSpeed != speed){
+						currentSpeed = speed;
+						@:privateAccess
+						{
+							// The __backend.handle attribute is only available on native.
+							try
+							{
+								// We need to make CERTAIN vocals exist and are non-empty
+								// before we try to play them. Otherwise the game crashes.
+								lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+								if (vocals != null && vocals.length > 0)
+								{
+									lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+								}
+							}
+							catch (e) // Silent error, no need to log this error
+							{}
+						}
+					}
 					if(FlxG.sound.music.time == lastFrameTime){
-						Conductor.songPosition += elapsed * 1000;
+						Conductor.songPosition += elapsed * 1000 * speed;
 					}else{
 						Conductor.songPosition = FlxG.sound.music.time;
 					}
@@ -2310,7 +2331,7 @@ class PlayState extends MusicBeatState
 			Overlay.debugVar += '\nResync count:${resyncCount}'
 				+'\nCond/Music/Vocals time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}/${vt}'
 				+'\nHealth:${health}'
-				+'\nCamFocus: ${if(!FlxG.save.data.camMovement || camLocked) "Locked" else '${focusedCharacter}' }' //' // extra ' to prevent bad syntaxes interpeting the entire file as a string
+				+'\nCamFocus: ${if(!moveCamera) "Locked by script" else if(!FlxG.save.data.camMovement || camLocked) "Locked" else '${focusedCharacter}' }' //' // extra ' to prevent bad syntaxes interpeting the entire file as a string
 				+'\nScript Count:${interpCount}'
 				+'\nChartType: ${SONG.chartType}';
 		}
@@ -2351,7 +2372,8 @@ class PlayState extends MusicBeatState
 		if (health <= 0 && !hasDied && !ChartingState.charting){
 
 			if(practiceMode) {
-					hasDied = true;practiceText.text = "Practice Mode; Score won't be saved";practiceText.screenCenter(X);FlxG.sound.play(Paths.sound('fnf_loss_sfx'));
+					hasDied = true;practiceText.text = "Practice Mode; Score won't be saved";practiceText.screenCenter(X);
+					// FlxG.sound.play(Paths.sound('fnf_loss_sfx'));
 				} else finishSong(false);
 		}
  		if (FlxG.save.data.resetButton)
@@ -2480,9 +2502,8 @@ class PlayState extends MusicBeatState
 
 	}
 	public function getDefaultCamPos():Array<Float>{
-		if(camIsLocked){
-			return lockedCamPos; 
-		}
+		if(!moveCamera) return [camFollow.x,camFollow.y];
+		if(camIsLocked) return lockedCamPos; 
 		return cameraPositions[focusedCharacter];
 	}
 	public var cameraPositions:Array<Array<Float>> = [];
@@ -3582,7 +3603,7 @@ class PlayState extends MusicBeatState
 	var pressArray:Array<Bool> = [];
 	var lastPressArray:Array<Bool> = [];
 	var releaseArray:Array<Bool> = [];
- 	private function kadeBRKeyShit():Void // I've invested in emma stocks
+ 	private function kadeBRKeyShit():Void
 			{
 				// control arrays, order L D R U
 				lastPressArray = [for (i in pressArray) i];
@@ -3620,7 +3641,7 @@ class PlayState extends MusicBeatState
 					notes.forEachAlive(function(daNote:Note)
 					{
 						if (daNote.mustPress && daNote.isSustainNote && daNote.canBeHit && holdArray[daNote.noteData]){ // Clip note to strumline
-							if(daNote.strumTime <= Conductor.songPosition || daNote.sustainLength < 2 || !FlxG.save.data.accurateNoteSustain) // Only destroy the note when properly hit
+							if(!FlxG.save.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition || daNote.sustainLength < 2) // Only destroy the note when properly hit
 								{goodNoteHit(daNote);return;}
 							// if(Std.isOfType(daNote,HoldNote)){
 							// 	var e:HoldNote = cast daNote;
@@ -3709,11 +3730,10 @@ class PlayState extends MusicBeatState
 				}
 		 		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);
 		 		charCall("keyShitAfter",[pressArray,holdArray,hitArray]);
-				
-				if (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 && (!holdArray.contains(true)))
+				boyfriend.isPressingNote = holdArray.contains(true);
+				if (boyfriend.currentAnimationPriority == 10 && (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 || boyfriend.isDonePlayingAnim()) && !boyfriend.isPressingNote)
 				{
-					if ((boyfriend.currentAnimationPriority == 10 || boyfriend.animName.contains("sing")) && (boyfriend.animation.curAnim.finished || !boyfriend.animation.curAnim.name.endsWith('miss')))
-						boyfriend.dance(true,curBeat % 2 == 1,((curStep + curStepProgress) / 4) % 4);
+					boyfriend.dance(true,curBeat % 2 == 1,((curStep + curStepProgress) / 4) % 4);
 				}
 
 		 

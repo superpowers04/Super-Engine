@@ -77,6 +77,13 @@ class Character extends FlxSprite
 		public var tintedAnims:Array<String> = [];
 		public var loopAnimFrames:Map<String,Int> = [];
 		public var loopAnimTo:Map<String,String> = [];
+		// Anim priorities, can be used so animations can override others
+		// 0 is used for idle animations
+		// 5 is used for hey, cheer and scared
+		// 7 is used for song start 
+		// 10 is used for any sing animations, like dodge, hurt, sing or attack animations
+		// 15 is used for missing notes
+		// 100  
 		public var animationPriorities:Map<String,Int> = [
 			"singLEFT-alt" => 10,
 			"singDOWN-alt" => 10,
@@ -99,10 +106,10 @@ class Character extends FlxSprite
 			"singdown" => 10,
 			"singup" => 10,
 			"singright" => 10,
-			"singleftmiss" => 10,
-			"singdownmiss" => 10,
-			"singupmiss" => 10,
-			"singrightmiss" => 10,
+			"singleftmiss" => 15,
+			"singdownmiss" => 15,
+			"singupmiss" => 15,
+			"singrightmiss" => 15,
 
 			"idle" => 0,
 			"Idle" => 0,// Can never remember if it's idle or Idle
@@ -157,6 +164,7 @@ class Character extends FlxSprite
 		public var dance_idle:Bool = false;
 		public var amPreview:Bool = false;
 		public var debugMode:Bool = false;
+
 		public var charLoc:String = "mods/characters";
 		var needsInverted:Int= 1;
 		var customColor = false;
@@ -178,6 +186,7 @@ class Character extends FlxSprite
 		public var loadedFrom:String = "";
 		public var isCustom:Bool = false;
 		public var charXml:String;
+		public var isPressingNote:Bool = false; // Only used for the player. True if the player is currently pressing any notes keys
 
 	// public var spriteArr:Array<FlxSprite> = [];
 	// public var animArr:Array<FlxAnimationController> = [];
@@ -372,9 +381,10 @@ class Character extends FlxSprite
 				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
 
 				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
-				if(anima.priority != null || 0 > anima.priority){
+				if(anima.priority != null && -1 < anima.priority ){
 					animationPriorities[anima.name] = anima.priority;
-				}else if(animationPriorities[anima.name] == null){
+				}
+				if(animationPriorities[anima.name] == null){
 					animationPriorities[anima.name] = 1;
 
 				}
@@ -826,28 +836,24 @@ class Character extends FlxSprite
 			if(animation.curAnim.finished || animation.curAnim.curFrame >= animation.curAnim.numFrames) animHasFinished = true;
 			if(animHasFinished && loopAnimTo[animation.curAnim.name] != null) playAnim(loopAnimTo[animation.curAnim.name]);
 			else if(animHasFinished && animLoops[animation.curAnim.name] != null && animLoops[animation.curAnim.name]) {playAnim(animation.curAnim.name);currentAnimationPriority = -1;}
-			if (animation.curAnim.name.endsWith('miss') && animHasFinished)
+			if (currentAnimationPriority == 11 && isDonePlayingAnim())
 			{
 				// playAnim('idle', true, false, 10);
 				dance();
 			}
-			if (animation.curAnim.name.startsWith('sing'))
+			if (currentAnimationPriority == 10)
 			{
 				holdTimer += elapsed;
 			}
 			else
 				holdTimer = 0;
-			if (!isPlayer)
+			if (!isPlayer && holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 			{
-				if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
-				{
-					holdTimer = 0;
-					dance();
-				}
+				holdTimer = 0;
+				dance();
 			}
-			if(dance_idle || charType == 2){
-				if (animation.curAnim.name == 'hairFall' && animHasFinished)
-					playAnim('danceRight');
+			if((dance_idle || charType == 2) && (animation.curAnim.name == 'hairFall' && animHasFinished)){
+				playAnim('danceRight');
 			}
 			callInterp("update",[elapsed]);
 		}
@@ -970,7 +976,7 @@ class Character extends FlxSprite
 		}
 		if (animation.curAnim != null){
 			lastAnim = animation.curAnim.name;
-			if(animation.curAnim.name != AnimName && !animHasFinished){
+			if(animation.curAnim.name != AnimName && !isDonePlayingAnim()){
 				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
 				if (animationPriorities[animation.curAnim.name] == null && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
 			}
@@ -1068,6 +1074,7 @@ class Character extends FlxSprite
 
 	// Shortcut functions
 	public static function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
+	public function isDonePlayingAnim(){return animation.finished || animation.curAnim.finished || animHasFinished || animation.curAnim.curFrame >= numFrames;}
 	
 	function getDefColor(e:CharacterJson,?apply:Bool = true):FlxColor{
 		if(!customColor && e.color != null){

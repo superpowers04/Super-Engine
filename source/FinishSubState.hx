@@ -162,7 +162,7 @@ class FinishSubState extends MusicBeatSubstate
 			// FlxG.camera.zoom = 1;
 			// PlayState.instance.camHUD.zoom = 1;
 
-			if(curAnim == PlayState.boyfriend.animName && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+			if(PlayState.boyfriend.currentAnimationPriority == 100 && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 			// if (FlxG.save.data.camMovement){
 			PlayState.instance.followChar(0);
 			// }
@@ -175,8 +175,8 @@ class FinishSubState extends MusicBeatSubstate
 	public var cam:FlxCamera;
 	var optionsisyes:Bool = false;
 	var shownResults:Bool = false;
+	public var contText:FlxText;
 	public function finishNew(?name:String = ""){
-			ready =true;
 			Conductor.changeBPM(70);
 			if(name != "FORCEDMOMENT.MP4efdhseuifghbehu"){
 
@@ -200,6 +200,7 @@ class FinishSubState extends MusicBeatSubstate
 			autoEnd = true;
 			FlxG.sound.pause();
 
+			// if(!win)FlxG.sound.play(Paths.sound('fnf_loss_sfx'));
 			music = new FlxSound().loadEmbedded(if(endingMusic != null) endingMusic else Paths.music( if(win) 'StartItchBuild' else 'gameOver'), true, true);
 			music.play(false);
 
@@ -219,7 +220,7 @@ class FinishSubState extends MusicBeatSubstate
 			var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 			bg.alpha = 0;
 			bg.scrollFactor.set();
-			new FlxTimer().start(0.6,function(e:FlxTimer){FinishSubState.instance.ready=true;});
+			new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;FlxTween.tween(FinishSubState.instance.contText,{alpha:1},0.5);});
 			if(isError){
 				// ready = false;
 				var finishedText:FlxText = new FlxText(20,-55,0, "Error caught!" );
@@ -234,9 +235,10 @@ class FinishSubState extends MusicBeatSubstate
 				comboText.color = FlxColor.WHITE;
 				comboText.scrollFactor.set();
 				comboText.fieldWidth = FlxG.width - comboText.x;
-				var contText:FlxText = new FlxText(FlxG.width * 0.5,FlxG.height + 100,0,'Press ENTER to exit, R to reload or O to open options.');
+				contText = new FlxText(FlxG.width * 0.5,FlxG.height + 100,0,'Press ENTER to exit, R to reload or O to open options.');
 				contText.size = 28;
 				contText.x -= contText.width * 0.5;
+				contText.alpha = 0.3;
 
 				// contText.alignment = CENTER;
 				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
@@ -294,13 +296,14 @@ class FinishSubState extends MusicBeatSubstate
 				settingsText.color = FlxColor.WHITE;
 				settingsText.scrollFactor.set();
 
-				var contText:FlxText = new FlxText(FlxG.width - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue or R to restart.');
+				contText = new FlxText(FlxG.width - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue or R to restart.');
 				
 				contText.size = 28;
 				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				contText.color = FlxColor.WHITE;
 				contText.x -= contText.width;
 				contText.scrollFactor.set();
+				contText.alpha = 0.3;
 				// var chartInfoText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
 				// chartInfoText.size = 16;
 				// chartInfoText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);

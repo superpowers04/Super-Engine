@@ -300,8 +300,6 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 		FlxG.mouse.visible = true;
 		super();
 		MusicBeatState.instance.showTempmessage('Entered Debug mode');
-		// var bg = new FlxSprite(-50,-50).loadGraphic(FlxGraphic.fromRectangle(1360,820));
-		// add(bg);
 	}
 	var obj:FlxObject;
 	var ox:Float = 0;
@@ -313,39 +311,41 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 		super.update(el);
 		if(FlxG.mouse.justPressed){
 			var id = MusicBeatState.instance.members.length - 1;
+			mx=FlxG.mouse.x;
+			my=FlxG.mouse.y;
 			while (id >= 0 && obj == null) {
 				try{
 					var _ob:Dynamic = MusicBeatState.instance.members[id];
 					if(_ob != null  && FlxG.mouse.overlaps(_ob)){
 						obj = cast (_ob,FlxSprite);
 						// trace('Funni click on ${obj}');
-							ox=obj.x;
-							oy=obj.y;
-							mx=FlxG.mouse.x;
-							my=FlxG.mouse.y;
 							// break;
 					}
 
 				}catch(e){obj = null;}
 				id--;
 			}
+			if(obj != null){
+				ox=obj.x;
+				oy=obj.y;
+			}
 			
 		}else if (FlxG.mouse.pressed && obj != null){
-			if(!FlxG.keys.pressed.SHIFT){
-				obj.x = ox - mx + FlxG.mouse.x;
-				obj.y = oy - my + FlxG.mouse.y;
+			// if(!FlxG.keys.pressed.SHIFT){
+			obj.x = ox - mx + FlxG.mouse.x;
+			obj.y = oy - my + FlxG.mouse.y;
 
-			}
+			// }
 			MusicBeatState.instance.showTempmessage('Obj pos: ${obj.x},${obj.y}');
 			if(FlxG.mouse.wheel != 0){
 				obj.angle += FlxG.mouse.wheel;
 			}
 
 		}else if(obj != null){
-			if(FlxG.keys.pressed.SHIFT){
-				obj.velocity.x = (mx - FlxG.mouse.x) * 0.01;
-				obj.velocity.y = (my - FlxG.mouse.y) * 0.01;
-			}
+			// if(FlxG.keys.pressed.SHIFT){
+			// 	obj.velocity.x = (mx - FlxG.mouse.x) * 0.01;
+			// 	obj.velocity.y = (my - FlxG.mouse.y) * 0.01;
+			// }
 			obj = null;
 		}
 	}
