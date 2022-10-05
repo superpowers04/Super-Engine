@@ -127,7 +127,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
 		controlLabel.adjustAlpha = false;
 		controlLabel.screenCenter(X);
-		var blackBorder = new FlxSprite(-500,-10).makeGraphic((Std.int(FlxG.width * 2)),Std.int(controlLabel.height) + 20,FlxColor.BLACK);
+		var blackBorder = new FlxSprite(-FlxG.width,-10).makeGraphic((Std.int(FlxG.width * 2)),Std.int(controlLabel.height) + 20,FlxColor.BLACK);
 		blackBorder.alpha = 0.35;
 		// blackBorder.screenCenter(X);
 		controlLabel.insert(0,blackBorder);
@@ -489,7 +489,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			{
 				ret();
 			}
-			if(songs.length == 0) return;
+			if(songs.length == 0 || !allowInput) return;
 			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
 			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
 			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
@@ -527,15 +527,20 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			changeDiff();
 		}
 		if(FlxG.keys.justPressed.CONTROL){
-				FlxG.autoPause = false;
-				playCount++;
+			FlxG.autoPause = false;
+			playCount++;
+			allowInput = false;
+			#if (target.threaded)
+			sys.thread.Thread.create(() -> {
+			#end
 				if(curPlaying != songs[curSelected]){
+					FlxG.sound.music.fadeOut(0.4);
 					curPlaying = songs[curSelected];
 					if(voices != null){
 						voices.stop();
+						voices.destroy();
 					}
 					voices = null;
-					FlxG.sound.music.stop();
 					FlxG.sound.playMusic(Sound.fromFile('${songs[curSelected]}/Inst.ogg'),FlxG.save.data.instVol,true);
 					if (FlxG.sound.music.playing){
 						if(modes[curSelected][selMode] != "No charts for this song!" && FileSystem.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
@@ -548,6 +553,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							}catch(e){
 								showTempmessage("Unable to get BPM from chart automatically. BPM will be out of sync",0xee0011);
 							}
+							FlxG.sound.music.pause();
 						}
 
 					}else{
@@ -568,18 +574,26 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						}else{
 							if(!voices.playing){
 								voices.play(FlxG.sound.music.time);
+								voices.looped = true;
 							}else
 								voices.stop();
 						}
 					}catch(e){
 						showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
 					}
+					if(FlxG.sound.music.fadeTween != null)FlxG.sound.music.fadeTween.destroy(); // Prevents the song from muting itself
+					FlxG.sound.music.volume = FlxG.save.data.instVol;
+					FlxG.sound.music.play();
 				}
 				if(playCount > 2){
 					playCount = 0;
 					openfl.system.System.gc();
 				}
-			}
+				allowInput = true;
+			#if (target.threaded)
+			});
+			#end
+		}
 		super.extraKeys();
 	}
 	var twee:FlxTween;

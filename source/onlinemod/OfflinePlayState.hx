@@ -9,6 +9,8 @@ import flixel.util.FlxColor;
 import flash.media.Sound;
 import sys.FileSystem;
 import sys.io.File;
+import sys.thread.Lock;
+import sys.thread.Thread;
 
 
 import Section.SwagSection;
@@ -52,38 +54,50 @@ class OfflinePlayState extends PlayState
 	willChart = charting;
 	super();
   }
+
   function loadSongs(){
 		if(lastVoicesFile != voicesFile && loadedVoices != null){
 			loadedVoices.destroy();
 		}
-		if(!(lastInstFile == instFile && loadedInst != null)){
-			if(instFile == ""){
-
-				for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg']) {
-					if (FileSystem.exists('${Sys.getCwd()}/$i')){
-						instFile = i;
+		#if(target.threaded)
+		var lock = new Lock();
+		sys.thread.Thread.create(() -> { // Offload to another thread for faster loading
+		#end
+			if(!(lastVoicesFile == voicesFile && loadedVoices != null)){
+				if(voicesFile == ""){
+					for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg']) {
+						if (FileSystem.exists('${Sys.getCwd()}/$i')){
+							voicesFile = i;
+						}
 					}
 				}
-				if (instFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a inst file!');}
-
-			}
-			loadedInst = SELoader.loadSound(instFile);
-		}
-		if(!(lastVoicesFile == voicesFile && loadedVoices != null)){
-			if(voicesFile == ""){
-				for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg']) {
-					if (FileSystem.exists('${Sys.getCwd()}/$i')){
-						voicesFile = i;
-					}
+				if(voicesFile != ""){loadedVoices = SELoader.loadFlxSound(voicesFile);}
+				if(voicesFile == "" && PlayState.SONG != null){
+					loadedVoices =  new FlxSound();
+					PlayState.SONG.needsVoices = false;
 				}
-			}
-			if(voicesFile != ""){loadedVoices = SELoader.loadFlxSound(voicesFile);}
-			if(voicesFile == "" && PlayState.SONG != null){
-				loadedVoices =  new FlxSound();
-				PlayState.SONG.needsVoices = false;
-			}
 
-		}
+			}
+		#if(target.threaded)
+			lock.release();
+		});
+		#end
+			if(!(lastInstFile == instFile && loadedInst != null)){ // This doesn't need to be threaded
+				if(instFile == ""){
+
+					for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg']) {
+						if (FileSystem.exists('${Sys.getCwd()}/$i')){
+							instFile = i;
+						}
+					}
+					if (instFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a inst file!');}
+
+				}
+				loadedInst = SELoader.loadSound(instFile);
+			}
+		#if(target.threaded)
+		lock.wait();
+		#end
 		if(loadedVoices != null)loadedVoices.time = 0;
 
 		lastInstFile = instFile;

@@ -31,14 +31,15 @@ class SearchMenuState extends MusicBeatState
 	var muteKeys = FlxG.sound.muteKeys;
 	var volumeUpKeys = FlxG.sound.volumeUpKeys;
 	var volumeDownKeys = FlxG.sound.volumeDownKeys;
-	var searchList:Array<String> = ["this should be replaced"];
+	public var searchList:Array<String> = ["this should be replaced"];
 	var retAfter:Bool = true;
 	var bg:FlxSprite;
 	var titleText:FlxText;
 	var infotext:FlxText;
 	var overLay:FlxGroup = new FlxTypedGroup();
 	var infoTextBoxSize:Int = 2;
-	var supportMouse:Bool = true;
+	public var supportMouse:Bool = true;
+	public var allowInput:Bool = true;
 
 	public static var background:FlxGraphic;
 	public static var backgroundOver:FlxGraphic;
@@ -201,7 +202,7 @@ class SearchMenuState extends MusicBeatState
 			{
 				ret();
 			}
-			if(songs.length < 1){return;}
+			if(songs.length <= 0 || !allowInput) return;
 			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
 			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
 			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 

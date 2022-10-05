@@ -268,12 +268,12 @@ class ImportModFromFolder extends MusicBeatState
 				loadingText.text = "Scanning for songs..\nThe game may "+ (if(Sys.systemName() == "Windows")"'not respond'" else "freeze") + " during this process";
 				sys.thread.Thread.create(() ->
 				{
-					new FlxTimer().start(0.6, function(tmr:FlxTimer){
-						scanSongFolders();
-						loadingText.text = 'Imported ${songsImported} songs.\n They should appear under "mods/packs/${name}/charts" \nPress any key to go to the main menu';
-						loadingText.x -= 70;
-						done = true;
-					});
+					// new FlxTimer().start(0.6, function(tmr:FlxTimer){
+					scanSongFolders();
+					loadingText.text = 'Imported ${songsImported} songs.\n They should appear under "mods/packs/${name}/charts" \nPress any key to go to the main menu';
+					loadingText.x -= 70;
+					done = true;
+					// });
 				}); // Make sure the text is actually printed onto the screen before doing anything
 			}
 			// if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT){

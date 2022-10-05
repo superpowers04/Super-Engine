@@ -188,7 +188,15 @@ class PlayState extends MusicBeatState
 		public static var songScript:String = "";
 		public static var hsBrTools:HSBrTools;
 		public static var nameSpace:String = "";
-		public var moveCamera:Bool = true;
+		public var moveCamera(default,set):Bool = true;
+		public function set_moveCamera(v):Bool{
+			if(v){
+				FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast (Lib.current.getChildAt(0), Main)).getFPS()));
+			}else{
+				FlxG.camera.follow(null);
+			}
+			return moveCamera = v;
+		}
 		public static var stageTags:Array<String> = [];
 		public static var beatAnimEvents:Map<Int,Map<String,IfStatement>>;
 		public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
@@ -1008,7 +1016,7 @@ class PlayState extends MusicBeatState
 
 
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast (Lib.current.getChildAt(0), Main)).getFPS()));
+		moveCamera = moveCamera;
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
 		// FlxG.camera.focusOn(camFollow.getPosition());
@@ -2320,21 +2328,19 @@ class PlayState extends MusicBeatState
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
 			curSection = Std.int(curStep / 16);
-			if(moveCamera){
-
-				var locked = (!FlxG.save.data.camMovement || camLocked || (notes.members[0] == null && unspawnNotes[0] == null || (unspawnNotes[0] != null && (unspawnNotes[0].strumTime - Conductor.songPosition) > 1000) ));
-				if (PlayState.SONG.notes[curSection] != null) followChar((PlayState.SONG.notes[curSection].mustHitSection ? 0 : 1),locked);
-			}
+			var locked = (!FlxG.save.data.camMovement || camLocked || (notes.members[0] == null && unspawnNotes[0] == null || (unspawnNotes[0] != null && (unspawnNotes[0].strumTime - Conductor.songPosition) > 1000) ));
+			if (PlayState.SONG.notes[curSection] != null) followChar((PlayState.SONG.notes[curSection].mustHitSection ? 0 : 1),locked);
+			// if(moveCamera){
+			// }
 		}
 		if(FlxG.save.data.animDebug && updateOverlay){
 			var vt = 0;
-			if(vocals != null){
-				vt = Std.int(vocals.time);
-			}
+			if(vocals != null) vt = Std.int(vocals.time);
+			var e = getDefaultCamPos();
 			Overlay.debugVar += '\nResync count:${resyncCount}'
 				+'\nCond/Music/Vocals time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}/${vt}'
 				+'\nHealth:${health}'
-				+'\nCamFocus: ${if(!moveCamera) "Locked by script" else if(!FlxG.save.data.camMovement || camLocked) "Locked" else '${focusedCharacter}' }' //' // extra ' to prevent bad syntaxes interpeting the entire file as a string
+				+'\nCamFocus: ${camFollow.x},${camFollow.y}/${e[0]},${e[1]}   | ${if(!moveCamera) "Locked by script" else if(!FlxG.save.data.camMovement || camLocked) "Locked" else '${focusedCharacter}' } ' //' // extra ' to prevent bad syntaxes interpeting the entire file as a string
 				+'\nScript Count:${interpCount}'
 				+'\nChartType: ${SONG.chartType}';
 		}
@@ -2495,12 +2501,16 @@ class PlayState extends MusicBeatState
 		focusedCharacter = char;
 		if(locked || cameraPositions[char] == null){
 			camIsLocked = true;
-			camFollow.x = lockedCamPos[0] + additionCamPos[0];
-			camFollow.y = lockedCamPos[1] + additionCamPos[1];
-			return; 
+			// camFollow.x = lockedCamPos[0] + additionCamPos[0];
+			// camFollow.y = lockedCamPos[1] + additionCamPos[1];
+			// return; 
 		}
-		camFollow.x = cameraPositions[char][0] + additionCamPos[0];
-		camFollow.y = cameraPositions[char][1] + additionCamPos[1];
+		var f = getDefaultCamPos();
+
+		camFollow.x = f[0] + additionCamPos[0];
+		camFollow.y = f[1] + additionCamPos[1];
+		// camFollow.x = cameraPositions[char][0] + additionCamPos[0];
+		// camFollow.y = cameraPositions[char][1] + additionCamPos[1];
 
 
 	}
@@ -4216,7 +4226,7 @@ class PlayState extends MusicBeatState
 		// }
 		for (i => v in [boyfriend,gf,dad]) {
 			if(v.currentAnimationPriority != 10){
-				v.dance(false,null,false);
+				v.dance(false,false,true);
 			}
 		}
 		// 	if(v.currentAnimationPriority != 10){

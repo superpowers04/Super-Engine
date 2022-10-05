@@ -105,7 +105,7 @@ class OptionsMenu extends MusicBeatState
 			new FPSOption("Toggle the FPS Counter"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF. Also shows extra information and allows you to use the chart editor"),
-			new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
+			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
 			new LogGameplayOption("Logs your game to a text file"),
 			new EraseOption("Backs up your options to SEOPTIONS-BACKUP.json and then resets them"),
 			new ImportOption("Import your options from SEOPTIONS.json"),

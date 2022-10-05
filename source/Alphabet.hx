@@ -119,53 +119,56 @@ class Alphabet extends FlxSpriteGroup
 		}
 	}
 
+	var xPos:Float = 0;
 	public function addText()
 	{
 		doSplitWords();
 
-		var xPos:Float = 0;
 		for (character in splitWords)
 		{
 			// if (character.fastCodeAt() == " ")
 			// {
 			// }
 
-			if (character == " " || character == "-")
-			{
-				lastWasSpace = true;
-			}
-
-			if (AlphaCharacter.acceptedChars.contains(character.toLowerCase()))
-				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
-			{
-				if (lastSprite != null)
-				{
-					xPos = lastSprite.x + lastSprite.width;
-				}
-
-				if (lastWasSpace)
-				{
-					xPos += 40;
-					lastWasSpace = false;
-				}
-
-				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
-				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
-				listOAlphabets.add(letter);
-
-				if (isBold && AlphaCharacter.alphabet.contains(character.toLowerCase()))
-					letter.createBold(character);
-				else
-				{
-					letter.createLetter(character);
-				}
-
-				add(letter);
-
-				lastSprite = letter;
-			}
+			addLetter(character);
 
 			// loopNum += 1;
+		}
+	}
+	function addLetter(character){
+		if (character == " " || character == "-")
+		{
+			lastWasSpace = true;
+		}
+
+		if (AlphaCharacter.acceptedChars.contains(character.toLowerCase()))
+			// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
+		{
+			if (lastSprite != null)
+			{
+				xPos = lastSprite.x + lastSprite.width;
+			}
+
+			if (lastWasSpace)
+			{
+				xPos += 40;
+				lastWasSpace = false;
+			}
+
+			// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
+			var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
+			listOAlphabets.add(letter);
+
+			if (isBold && AlphaCharacter.alphabet.contains(character.toLowerCase()))
+				letter.createBold(character);
+			else
+			{
+				letter.createLetter(character);
+			}
+
+			add(letter);
+
+			lastSprite = letter;
 		}
 	}
 
@@ -281,8 +284,8 @@ class Alphabet extends FlxSpriteGroup
 			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48) + yOffset,10 * elapsed);
 			if(moveX)x = FlxMath.lerp(x, xOffset, 10 * elapsed);
 		}
+		if(visible) super.update(elapsed);
 
-		super.update(elapsed);
 	}
 }
 

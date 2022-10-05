@@ -174,11 +174,11 @@ class ChartingState extends MusicBeatState
 		clapSound.play(new flash.media.SoundTransform(FlxG.save.data.hitvol));
 	}
 	public static function gotoCharter(){
-		if(FlxG.save.data.legacyCharter){
+		// if(FlxG.save.data.legacyCharter){
 			LoadingState.loadAndSwitchState(new ChartingState());
-		}else{
-			LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
-		}
+		// }else{
+		// 	LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
+		// }
 	}
 	override function create()
 	{try{
