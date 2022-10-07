@@ -2,7 +2,10 @@ package;
 
 import CharacterJson;
 
-typedef CharacterMetadataJSON = {
-	var aliases:Map<String,String>;
-	var characters:Map<String,CharacterJson>;
+typedef CharacterMetadata{
+	var name:String;
+	var pack:String;
+	var location:String;
+	var description:String;
+	var valid:Bool;
 }

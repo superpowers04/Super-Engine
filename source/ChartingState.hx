@@ -1446,7 +1446,11 @@ class ChartingState extends MusicBeatState
 				dummyArrow.visible = true;
 			}
 
-			if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.ESCAPE)
+			if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.ESCAPE)
+			{
+				FlxG.switchState(new MainMenuState());
+			}
+			else if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.ESCAPE)
 			{
 				lastSection = curSection;
 
