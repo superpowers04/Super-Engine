@@ -35,9 +35,9 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N27";
+	public static var nightly:String = "N27-2";
 
-	public static var gameVer:String = "0.2.7.1";
+	public static var gameVer(default,never):String = "0.2.7.1";
 	public static var compileType(default,never):String =
 	#if ghaction
 		"Github action build"

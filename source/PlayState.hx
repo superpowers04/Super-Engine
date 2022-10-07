@@ -93,6 +93,7 @@ class PlayState extends MusicBeatState
 		public static var actualSongName:String = ''; // The actual song name, instead of the shit from the JSON
 		public static var songDir:String = ''; // The song's directory
 		public static var isStoryMode:Bool = false;
+		public static var playlistMode:Bool = false;
 		public static var songDiff:String = "";
 		public static var invertedChart:Bool = false;
 		var songLength:Float = 0;
@@ -364,7 +365,7 @@ class PlayState extends MusicBeatState
 			resetInterps();
 			trace('Error! ${error}');
 			if(!songStarted && !forced && playCountdown){
-				errorMsg = error;
+				if(errorMsg == "") errorMsg = error; else trace(errorMsg);
 				startedCountdown = true;
 				// updateTime = true;
 				// new FlxTimer().start(0.5,function(_){
