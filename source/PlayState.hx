@@ -365,7 +365,7 @@ class PlayState extends MusicBeatState
 			resetInterps();
 			trace('Error! ${error}');
 			if(!songStarted && !forced && playCountdown){
-				if(errorMsg == "") errorMsg = error; else trace(errorMsg);
+				if(errorMsg == "") errorMsg = error; else trace(error);
 				startedCountdown = true;
 				// updateTime = true;
 				// new FlxTimer().start(0.5,function(_){
