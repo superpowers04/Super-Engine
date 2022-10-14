@@ -34,6 +34,11 @@ typedef CharacterJson =
 	var path:String; // For embedded JSON chars, will not effect custom chars. Tells the game the asset to use or the path to load from
 	var genBy:String; // This should not be provided manually
 	var ?boneChar:BoneChar;
+	var ?customProperties:Array<CCProp>; // Allows the json file to edit any value about the character
+}
+typedef CCProp = {
+	var path:String;
+	var value:Dynamic;
 }
 typedef IfStatement = {
 	var ?func:Dynamic->Void;
@@ -91,9 +96,11 @@ typedef BCAnim = {
 }
 typedef BCAnimKeyFrame = {
 	var time:Float; // Time in seconds
+	var length:Float; // Time in seconds
 	var bone:String;
 	var type:Int; // 1 = position, 2 = angle, 3 = frame
 	var position:Array<Float>;
 	var angle:Float;
 	var frame:Int;
+	var tweenType:String; // Defaults to linear, allows using a Flx
 }

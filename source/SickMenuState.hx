@@ -50,7 +50,8 @@ class SickMenuState extends MusicBeatState
 		},
 		{
 			file: "mods/title-day.ogg or assets/music/freakyMenu.ogg",
-			wrapAround:false,end:100,begin:101,color:"0xECD77F",bpm:204 // Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
+			// Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
+			wrapAround:false,end:100,begin:101,color:"0xECD77F",bpm:204 
 		},
 		{
 			file: "mods/title-evening.ogg or assets/music/GiveaLilBitBack.ogg",
@@ -251,9 +252,9 @@ class SickMenuState extends MusicBeatState
 		super.beatHit();
 		if(grpControls.members[curSelected] != null && grpControls.members[curSelected].useAlphabet && !isEpicTween){
 			
-			grpControls.members[curSelected].scale.set(1.2,1.2);
+			grpControls.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();
-			curTween = FlxTween.tween(grpControls.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm));
+			curTween = FlxTween.tween(grpControls.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm),{ease:FlxEase.circOut});
 		}
 	}
 	function select(sel:Int){

@@ -392,6 +392,43 @@ class Character extends FlxSprite
 				animCount++;
 			}
 		}
+		if(charProperties.customProperties != null && charProperties.customProperties[0] != null){
+			var i = 0;
+			var prop = charProperties.customProperties[i];
+			while (i < charProperties.customProperties.length){
+				prop = charProperties.customProperties[i];
+				if(prop.path != "") {
+					var obj:Dynamic = this;
+					if(prop.path.contains('.')){
+						var path = prop.path.split('.');
+						while (path.length > 1){
+							try{
+								var e = path.shift();
+								obj = Reflect.getProperty(obj,e);
+								if(obj == null) throw('Unable to access $e');
+							}catch(e){
+								handleError('Error accessing ${curCharacter}.${prop.path}: ${e.message}');
+								obj = null;
+								break;
+							}
+						}
+						if(obj != null && path.length == 1){
+							prop.path = path[0];
+						}
+					}
+					if(obj != null){
+						try{
+							Reflect.setProperty(obj,prop.path,prop.value);
+						}catch(e){
+							handleError('Error setting ${curCharacter}.${prop.path} to ${prop.value}: ${e.message}');
+							break;
+
+						}
+					}
+				}
+				i++;
+			}
+		}
 		if(!hasIdle){
 			if(amPreview){
 				// var idleName:String = "";
@@ -774,7 +811,6 @@ class Character extends FlxSprite
 		}
 
 		if (charType == 2 && !curCharacter.startsWith("gf")){ // Checks if GF is not girlfriend
-			this.curCharacter = "gf";
 			if(animation.getByName('danceRight') == null){ // Convert sing animations into dance animations for when put as GF
 				cloneAnimation('danceRight',animation.getByName('singRIGHT'));
 				cloneAnimation('danceLeft',animation.getByName('singLEFT'));

@@ -31,11 +31,11 @@ using StringTools;
 
 class MainMenuState extends SickMenuState
 {
-	public static var ver:String = "0.11.0";
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N28";
+	public static var nightly(default,never):String = "N28";
+	public static var ver(default,never):String = "0.11.0" + (if(nightly != "") "-" + nightly else "");
 
 	public static var compileType(default,never):String =
 	#if ghaction

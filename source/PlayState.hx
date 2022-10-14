@@ -2520,6 +2520,7 @@ class PlayState extends MusicBeatState
 			}
 		}catch(e){}
 		super.draw();
+		callInterp("drawAfter",[]);
 	}
 	public function followChar(?char:Int = 0,?locked:Bool = true){
 		// if(swappedChars) char = (char == 1 ? 0 : 1);

@@ -11,6 +11,7 @@ import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
 import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -237,9 +238,9 @@ class SearchMenuState extends MusicBeatState
 		super.beatHit();
 		if(FlxG.save.data.beatBouncing && grpSongs != null && grpSongs.members[curSelected] != null && grpSongs.members[curSelected].useAlphabet){
 			
-			grpSongs.members[curSelected].scale.set(1.2,1.2);
+			grpSongs.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();
-			curTween = FlxTween.tween(grpSongs.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm));
+			curTween = FlxTween.tween(grpSongs.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm),{ease:FlxEase.circOut});
 		}
 	}
 	function ret(){

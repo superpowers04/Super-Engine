@@ -32,6 +32,7 @@ import flash.Lib;
 import SickMenuState;
 import flash.media.Sound;
 import flixel.FlxCamera;
+import sys.thread.Thread;
 
 using StringTools;
 
@@ -350,7 +351,7 @@ class TitleState extends MusicBeatState
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
 		#else
-		new FlxTimer().start(0.5, function(tmr:FlxTimer)
+		new FlxTimer().start(0.25, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
@@ -493,6 +494,7 @@ class TitleState extends MusicBeatState
 		shiftSkip = new FlxText(0,0,0,"Hold shift to go to the options menu after title screen",16);
 		shiftSkip.y = FlxG.height - shiftSkip.height - 12;
 		shiftSkip.x = 6;
+		shiftSkip.scrollFactor.set();
 		add(shiftSkip);
 		CoolUtil.setFramerate(true);
 		FlxG.sound.volume = FlxG.save.data.masterVol;
@@ -603,7 +605,7 @@ class TitleState extends MusicBeatState
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
-			if(MainMenuState.nightly != "") MainMenuState.ver += "-" + MainMenuState.nightly;
+			// if(MainMenuState.nightly != "")MainMenuState.ver += "-" + MainMenuState.nightly;
 			lime.app.Application.current.window.onDropFile.add(AnimationDebug.fileDrop);
 			if(Sys.args()[0] != null && FileSystem.exists(Sys.args()[0])){
 				AnimationDebug.fileDrop(Sys.args()[0]);
@@ -616,8 +618,10 @@ class TitleState extends MusicBeatState
 
 				showTempmessage("Checking for updates..",FlxColor.WHITE);
 				tempMessage.screenCenter(X);
-				new FlxTimer().start(0.2, function(tmr:FlxTimer)
+				#if (target.threaded)
+				Thread.create(function()
 				{
+				#end
 					// Get current version of FNFBR, Uses kade's update checker 
 	
 					var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/Super-Engine/" + (if(MainMenuState.nightly == "") "master" else "nightly") + "/version.downloadMe"); // It's recommended to change this if forking
@@ -645,7 +649,9 @@ class TitleState extends MusicBeatState
 					}
 					
 					http.request();
+				#if (target.threaded)
 				});
+				#end
 			}
 			#else
 				FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
