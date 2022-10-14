@@ -2067,7 +2067,7 @@ class PlayState extends MusicBeatState
 			}else{
 				opponentNoteCamera.x = Std.int(FlxG.width * -0.25);
 				if(middlescroll){
-					opponentNoteCamera.x += (if(downscroll) 100 else - 100);
+					opponentNoteCamera.x -= 100;
 					// if(downScroll)opponentNoteCamera.y = 360;
 				}
 				

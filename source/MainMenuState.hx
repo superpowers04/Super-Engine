@@ -35,9 +35,8 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly:String = "N27-2";
+	public static var nightly:String = "N28";
 
-	public static var gameVer(default,never):String = "0.2.7.1";
 	public static var compileType(default,never):String =
 	#if ghaction
 		"Github action build"
@@ -186,7 +185,7 @@ class MainMenuState extends SickMenuState
 			hasWarnedNightly = true;
 		} 
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF ${gameVer}/Kade 1.5.2/Super-Engine ${ver} ${buildType} ${compileType}', 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF 0.2.7.1/Kade 1.5.2/Super-Engine ${ver} ${buildType} ${compileType}', 12);
 		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionShit.borderSize = 2;
 		versionShit.scrollFactor.set();
