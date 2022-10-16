@@ -85,6 +85,7 @@ class Alphabet extends FlxSpriteGroup
 		this.useAlphabet = useAlphabet;
 		if(sprite == null || Frames == null){
 			sprite = new FlxSprite();
+			trace('Loading alphabet sprites');
 			if(FileSystem.exists("mods/alphabet.png") && FileSystem.exists("mods/alphabet.xml")){
 				try{
 					Frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/alphabet.png')),File.getContent('mods/alphabet.xml'));
@@ -99,14 +100,7 @@ class Alphabet extends FlxSpriteGroup
 		if (text != "" && useAlphabet)
 		{
 			listOAlphabets = new List<AlphaCharacter>();
-			if (typed)
-			{
-				startTypedText();
-			}
-			else
-			{
-				addText();
-			}
+			addText();
 
 		}else if (text != "" && !useAlphabet){
 			textObj = new FlxText(0, 0, FlxG.width, text, 48);
@@ -114,36 +108,30 @@ class Alphabet extends FlxSpriteGroup
 			textObj.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			textObj.borderSize = 3;
 			textObj.borderQuality = 1;
-			// textObj.borderStyle = OUTLINE_FAST;
 			add(textObj);
 		}
 	}
 
 	var xPos:Float = 0;
-	public function addText()
+	public function addText(bounce:Bool = false)
 	{
 		doSplitWords();
 
 		for (character in splitWords)
 		{
-			// if (character.fastCodeAt() == " ")
-			// {
-			// }
-
-			addLetter(character);
-
-			// loopNum += 1;
+			addLetter(character,bounce);
 		}
 	}
-	function addLetter(character){
-		if (character == " " || character == "-")
+	function addLetter(character:String,bounce:Bool = false){
+		if (character == " " || character == "-" || character == "_")
 		{
 			lastWasSpace = true;
+			return;
 		}
 
-		if (AlphaCharacter.acceptedChars.contains(character.toLowerCase()))
+		// if (AlphaCharacter.acceptedChars.contains(character.toLowerCase()))
 			// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
-		{
+		// {
 			if (lastSprite != null)
 			{
 				xPos = lastSprite.x + lastSprite.width;
@@ -159,7 +147,7 @@ class Alphabet extends FlxSpriteGroup
 			var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
 			listOAlphabets.add(letter);
 
-			if (isBold && AlphaCharacter.alphabet.contains(character.toLowerCase()))
+			if (isBold)
 				letter.createBold(character);
 			else
 			{
@@ -169,7 +157,11 @@ class Alphabet extends FlxSpriteGroup
 			add(letter);
 
 			lastSprite = letter;
-		}
+			// if(bounce) {
+			// 	letter.scale.x = letter.scale.y = 1.1;
+			// 	FlxTween.tween(letter.scale,{x:1,y:1},0.5,{ease:FlxEase.quadInOut});
+			// }
+		// }
 	}
 
 	function doSplitWords():Void
@@ -179,7 +171,7 @@ class Alphabet extends FlxSpriteGroup
 
 	public var personTalking:String = 'gf';
 
-	public function startTypedText():Void
+/*	public function startTypedText():Void
 	{
 		_finalText = text;
 		doSplitWords();
@@ -273,8 +265,31 @@ class Alphabet extends FlxSpriteGroup
 
 			tmr.time = FlxG.random.float(0.04, 0.09);
 		}, splitWords.length);
-	}
+	}*/
+	public function setText(repl:String = ""){
+		xPos = 0;
+		lastWasSpace = false;
+		lastSprite = null;
+		if(members.length > 0){
+			var e:FlxSprite;
+			while (members.length > 0){
+				e = members.pop();
+				if(e != null) e.destroy();
+			}
+		}
+		if(listOAlphabets.length > 0){
+			var e:FlxSprite;
+			while (listOAlphabets.length > 0){
+				e = listOAlphabets.pop();
+				if(e != null && e.destroy != null) e.destroy();
+			}
+		}
+		listOAlphabets = new List<AlphaCharacter>();
+		
+		_finalText = text = repl;
+		addText(true);
 
+	}
 	override function update(elapsed:Float)
 	{
 		if (isMenuItem)
@@ -293,6 +308,18 @@ class AlphaCharacter extends FlxSprite
 {
 	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
 	public static var acceptedChars:String = "abcdefghijklmnopqrstuvwxyz1234567890~#$%()*+:;<=>@[]^.,'!?/";
+	public static var alphabetMap:Map<String,String> = [
+		","=>"-comma-",
+		'.'=>"-period-",
+		'?'=>"-question-",
+		'\''=>"-apostraphie-",
+		">"=>"-left arrow-",
+		"<"=>"-right arrow-",
+		"*"=>"-multiply x-",
+		"\""=>"-end quote-",
+		"/"=>"-forward slash-",
+		"\\"=>"-back slash-",
+	];
 
 	public static var numbers:String = "1234567890";
 
@@ -312,39 +339,72 @@ class AlphaCharacter extends FlxSprite
 	public function createBold(letter:String)
 	{
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
-		animation.play(letter);
-		updateHitbox();
+		// animation.play(letter);
+
+		if(animation.exists(letter)){
+			animation.play(letter);
+			updateHitbox();
+		}else{
+			// createLetter(letter.toUpperCase());
+			useFLXTEXT(letter,true);
+		}
 	}
 
 	public function createLetter(letter:String):Void
 	{
-		var letterCase:String = (if (letter.toLowerCase() == letter) "lowercase" else 'capital');
+		// var letterCase:String = (if (letter.toLowerCase() == letter) "lowercase" else 'capital');
 		if (symbols.contains(letter)){
 			createSymbol(letter);
 		}else if (alphabet.contains(letter)){
-			animation.addByPrefix(letter, letter + " " + letterCase, 24);
+			animation.addByPrefix(letter, letter + " " + letterCase, 24); // Backwards compat
+			animation.addByPrefix(letter, letter, 24);
 		}else{
 			animation.addByPrefix(letter, letter, 24);
 			
 
 		}
-		animation.play(letter);
-		updateHitbox();
+		
+		if(animation.exists(letter)){
+			animation.play(letter);
+			updateHitbox();
+		}else{
+			useFLXTEXT(letter);
+		}
 
-		if (alphabet.contains(letter)){y = (110 - height);
-		y += row * 60;}
+		if (alphabet.contains(letter)){y = (110 - height);y += row * 60;}
 	}
 
-	public function createNumber(letter:String):Void
+	public function createNumber(letter:String,bold:Bool = false):Void
 	{
 		animation.addByPrefix(letter, letter, 24);
-		animation.play(letter);
-
 		updateHitbox();
+	}
+	inline function useFLXTEXT(letter:String,bold:Bool = false){
+		var txt = new FlxText(-10000,0,letter,48);
+		if(bold){
+			txt.color = 0xFFFFFF;
+			txt.setBorderStyle(OUTLINE,0xff000000,5);
+			txt.draw();
+		}else{
+			txt.color = 0xff000000;
+			txt.draw();
+
+		}
+		graphic = txt.graphic;
+		frames = txt.frames;
+		txt.destroy();
 	}
 
 	public function createSymbol(letter:String)
 	{
+		if(alphabetMap[letter] != null){
+			animation.addByPrefix(letter, alphabetMap[letter], 24);
+			if(animation.exists(letter)){
+				animation.play(letter);
+				updateHitbox();
+				return;
+			}
+		}
 		switch (letter)
 		{
 			case '.':
@@ -407,9 +467,16 @@ class AlphaCharacter extends FlxSprite
 				animation.addByPrefix(letter, 'forward slash', 24);
 				animation.play(letter);
 			default:
-				animation.addByPrefix(letter, '#', 24);
+				
+				// animation.addByPrefix(letter, '#', 24);
 				animation.addByPrefix(letter, letter, 24);
-				animation.play(letter);
+				
+				if(animation.exists(letter)){
+					animation.play(letter);
+					updateHitbox();
+				}else{
+					useFLXTEXT(letter);
+				};
 		}
 	}
 }

@@ -2167,7 +2167,7 @@ class PlayState extends MusicBeatState
 		
 	}
 
-	var songLengthTxt = "N/A";
+	public var songLengthTxt = "N/A";
 
 	public var interpCount:Int = 0;
 	public var lastFrameTime:Float = 0;
@@ -2411,35 +2411,16 @@ class PlayState extends MusicBeatState
 				finishSong(false);
 		}
 
-		if (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
+		while (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
 		{
 			var dunceNote:Note = unspawnNotes.shift();
-			notes.add(dunceNote);
+			if(!dunceNote.eventNote && unspawnNotes[0].strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms back
+				dunceNote.destroy();
+			}else{ // we add note lmao
+				notes.add(dunceNote);
+			}
 		}
-			// if(dunceNote.childNotes.length > 0){
-			// 	while (dunceNote.childNotes.length > 0) {
-			// 		var sussy = dunceNote.childNotes.shift();
-			// 		notes.add(sussy);
-			// 		unspawnNotes.remove(sussy);
-			// 	}
-			// }
 
-		// if (addNotes && FlxG.random.int(0,1000) > 700){
-		// 	var note:Array<Dynamic> = [Conductor.songPosition + FlxG.random.int(400,1000),FlxG.random.int(0,3),0];
-		// 	var swagNote:Note = new Note(note[0], note[1], null,null,null,0,note,true);
-		// 	swagNote.scrollFactor.set(0, 0);				
-
-		// 	unspawnNotes.push(swagNote);
-		// 	notes.add(swagNote);
-
-
-		// 	swagNote.mustPress = true;
-
-		// 	if (swagNote.mustPress)
-		// 	{
-		// 		swagNote.x += FlxG.width / 2; // general offset
-		// 	}
-		// }
 		if(realtimeCharCam){
 			var f = getDefaultCamPos();
 

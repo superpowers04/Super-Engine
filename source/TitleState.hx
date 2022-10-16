@@ -673,7 +673,7 @@ class TitleState extends MusicBeatState
 		{
 			var money:Alphabet = new Alphabet(0, 0, textArray[i], true, false);
 			money.screenCenter(X);
-			money.y += (i * 60) + 200;
+			money.y += (i * 60) + 220;
 			money.scale.x = money.scale.y = 1.1;
 			FlxTween.tween(money.scale,{x:1,y:1},0.2,{ease:FlxEase.expoOut});
 			credGroup.add(money);
@@ -685,7 +685,7 @@ class TitleState extends MusicBeatState
 	{
 		var coolText:Alphabet = new Alphabet(0, 0, text, true, false);
 		coolText.screenCenter(X);
-		coolText.y += (60 * textGroup.length) + 200;
+		coolText.y += (60 * textGroup.length) + 220;
 			coolText.scale.x = coolText.scale.y = 1.1;
 			FlxTween.tween(coolText.scale,{x:1,y:1},0.2,{ease:FlxEase.expoOut});
 		credGroup.add(coolText);
@@ -731,8 +731,8 @@ class TitleState extends MusicBeatState
 				deleteCoolText();
 			// 	destHaxe();
 			case 1:
-				createCoolText(['ninjamuffin', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-			case 3:
+				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+			case 4:
 				addMoreText('present');
 			case 7:
 				deleteCoolText();
@@ -740,7 +740,13 @@ class TitleState extends MusicBeatState
 				// if (Main.watermarks)  You're not more important than fucking newgrounds
 				// 	createCoolText(['Kade Engine', 'by']);
 				// else
-					createCoolText(['In Partnership', 'with']);
+					createCoolText(['In Partnership']);
+			case 11:
+				// if (Main.watermarks)  You're not more important than fucking newgrounds
+				// 	createCoolText(['Kade Engine', 'by']);
+				// else
+				deleteCoolText();
+				createCoolText(['In Partnership', 'with']);
 			case 12:
 				addMoreText('Newgrounds');
 				ngSpr.visible = true;

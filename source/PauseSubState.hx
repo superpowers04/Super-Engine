@@ -17,12 +17,16 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.ui.FlxBar;
+import flixel.util.FlxStringUtil;
+
+using StringTools;
 
 class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', "Options Menu",'Exit to menu'];
+	var menuItems:Array<String> = [];
+	var songLengthTxt = "N/A";
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -44,8 +48,15 @@ class PauseSubState extends MusicBeatSubstate
 	var volume:Float = 0;
 	var timers:Array<FlxTimer> = [];
 	var tweens:Array<FlxTween> = [];
-	public function new(x:Float, y:Float)
-	{
+	var jumpToTime:Float = 0;
+	public static var charts:Array<String> = [];
+	public function new(x:Float, y:Float){
+		if(FlxG.sound.music != null ) songLengthTxt = FlxStringUtil.formatTime(Math.floor((FlxG.sound.music.length) / 1000), false);
+		jumpToTime = Conductor.songPosition; 
+		menuItems = ['Resume', 'Restart Song',"Options Menu",'Exit to menu'];
+		if(ChartingState.charting && FlxG.sound.music != null) menuItems.insert(2,'Jump to');
+		if(ChartingState.charting ) menuItems.insert(3,'Exit Charting Mode');
+		// if(charts[0] != null ) menuItems.insert(3,'Change Difficulty ');
 		openfl.system.System.gc();
 		FlxTimer.globalManager.forEach(function(tmr:FlxTimer){
 			if(tmr.active){tmr.active = false;timers.push(tmr);}
@@ -142,11 +153,21 @@ class PauseSubState extends MusicBeatSubstate
 		volume = FlxG.sound.music.volume;
 		FlxTween.tween(FlxG.sound.music,{volume:0.2},0.5);
 		FlxG.sound.music.looped = true;
+		updateJumpTo();
 	}
-
-	override function update(elapsed:Float)
-
-	{super.update(elapsed);
+	function updateJumpTo(){
+		var i = menuItems.length;
+		while(i > 0){
+			i--;
+			if(menuItems[i] != null && menuItems[i].startsWith('Jump to')){
+				grpMenuShit.members[i].setText('Jump to ${FlxStringUtil.formatTime(Math.floor(jumpToTime / 1000), false)}|${songLengthTxt}');
+				break;
+			}
+		}
+	}
+	inline function callInterp(name:String,args:Array<Dynamic>){args.unshift(this); if(PlayState.instance != null) PlayState.instance.callInterp(name,args);}
+	override function update(elapsed:Float){
+		super.update(elapsed);
 		
 		if (quitHeldBar.visible && quitHeld <= 0){
 			quitHeldBar.visible = false;
@@ -163,67 +184,89 @@ class PauseSubState extends MusicBeatSubstate
 
 		}
 		if (ready){
-	
-		// if (FlxG.sound.music.volume < 0.5)
-		// 	FlxG.sound.music.volume += 0.01 * elapsed;
-		// if (FlxG.sound.music.volume > 0.25)
-		// 	FlxG.sound.music.volume -= 0.1 * elapsed;
-		PlayState.instance.callInterp("pauseUpdate",[this]);
-
 		
+			// if (FlxG.sound.music.volume < 0.5)
+			// 	FlxG.sound.music.volume += 0.01 * elapsed;
+			// if (FlxG.sound.music.volume > 0.25)
+			// 	FlxG.sound.music.volume -= 0.1 * elapsed;
+			callInterp("pauseUpdate",[]);
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-		var rightP = controls.RIGHT_P;
-		var accepted = controls.ACCEPT;
-		var oldOffset:Float = 0;
+			
 
-		if (upP)
-		{
-			changeSelection(-1);
-   
-		}else if (downP)
-		{
-			changeSelection(1);
-		}
+			var upP = controls.UP_P;
+			var downP = controls.DOWN_P;
+			var accepted = controls.ACCEPT;
+			var oldOffset:Float = 0;
 
-		if (accepted)
-		{
-			var daSelected:String = menuItems[curSelected];
-
-			switch (daSelected)
+			if (upP)
 			{
-				case "Resume":
-					countdown();
-				case "Restart Song":
-					disappearMenu();
-					new FlxTimer().start(0.3,function(tmr:FlxTimer){
-						FlxG.resetState();
-					},1);
-				case "Options Menu":
-					disappearMenu();
-					new FlxTimer().start(0.3,function(tmr:FlxTimer){
-						SearchMenuState.doReset = false;
-						OptionsMenu.lastState = PlayState.stateType + 10;
-						FlxG.switchState(new OptionsMenu());
-					},1);
+				changeSelection(-1);
+	   
+			}else if (downP)
+			{
+				changeSelection(1);
+			}
 
-				case "Exit to menu":
-					disappearMenu();
-					new FlxTimer().start(0.3,function(tmr:FlxTimer){
-						FlxTween.globalManager.clear();
-						quit();
-					},1);
+			var daSelected:String = menuItems[curSelected];
+			if(daSelected.startsWith('Jump to')){
+				if(controls.LEFT_P || controls.LEFT && FlxG.keys.pressed.SHIFT){
+					jumpToTime -= 1000;
+					updateJumpTo();
+				}
+				if(controls.RIGHT_P || controls.RIGHT && FlxG.keys.pressed.SHIFT){
+					jumpToTime += 1000;
+					updateJumpTo();
+				}
+			}
+			if (accepted)
+			{
+
+				switch (daSelected)
+				{
+					case "Resume":
+						countdown();
+					case "Restart Song":
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							FlxG.resetState();
+						},1);
+					case "Exit Charting Mode":
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							ChartingState.charting = false;
+							FlxG.resetState();
+						},1);
+					case "Options Menu":
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							SearchMenuState.doReset = false;
+							OptionsMenu.lastState = PlayState.stateType + 10;
+							FlxG.switchState(new OptionsMenu());
+						},1);
+
+					case "Exit to menu":
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							FlxTween.globalManager.clear();
+							quit();
+						},1);
+					default:
+						if(daSelected.startsWith('Jump to')){
+							time = jumpToTime;
+							countdown();
+						}else{
+							callInterp("pauseSelect",[]);
+						}
+				}
+			}
+
+		}else{
+			if (controls.ACCEPT && menuItems[curSelected] == "Exit to menu")
+			{
+				quit();
 			}
 		}
-
-	}else{
-		if (controls.ACCEPT && menuItems[curSelected] == "Exit to menu")
-		{
-			quit();
-		}
-	}}
+	}
 	function disappearMenu(?time:Float = 0.3){
 		for (_ => v in grpMenuShit.members)
 		{
@@ -270,7 +313,7 @@ class PauseSubState extends MusicBeatSubstate
 		FlxG.sound.music.pause();
 		Conductor.songPosition = FlxG.sound.music.time = time;
 		disappearMenu(0.4);
-		PlayState.instance.callInterp("pauseResume",[this]);
+		callInterp("pauseResume",[]);
 
 
 

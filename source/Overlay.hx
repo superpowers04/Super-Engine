@@ -165,10 +165,12 @@ class Console extends TextField
 			if(showConsole){
 				wasMouseDisabled = FlxG.mouse.visible;
 				FlxG.mouse.visible = true;
+				FlxG.mouse.enabled = false;
 				requestUpdate = true;
 				scaleX = lime.app.Application.current.window.width / 1280;
 				scaleY = lime.app.Application.current.window.height / 720;
 			}else{
+				FlxG.mouse.enabled = true;
 				text = ""; // No need to have text if the console isn't showing
 				FlxG.mouse.visible = wasMouseDisabled;
 			}
