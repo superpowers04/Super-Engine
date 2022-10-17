@@ -435,13 +435,13 @@ class OnlinePlayState extends PlayState
 			case Packets.BROADCAST_SCORE:
 				var id:Int = data[0];
 				var score:Int = data[1];
-				if(id == null){
-					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID($id) ');
-					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID($id) ');
+				if(Math.isNaN(id)){
+					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
+					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
 					return;
 				}
-				if(score == null){
-					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score($score) ');
+				if(Math.isNaN(score)){
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score(${data[1]}) ');
 					return;
 				}
 
@@ -453,21 +453,21 @@ class OnlinePlayState extends PlayState
 				var score:Int = data[1];
 				var misses:Int = data[2];
 				var accuracy:Int = data[3];
-				if(id == null){
-					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID($id) ');
-					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID($id) ');
+				if(Math.isNaN(id)){
+					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
+					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
 					return;
 				}
-				if(score == null){
-					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score($score) ');
+				if(Math.isNaN(score)){
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score(${data[1]}) ');
 					return;
 				}
-				if(misses == null){
-					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Miss count($misses) ');
+				if(Math.isNaN(misses)){
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Miss count(${data[2]}) ');
 					return;
 				}
-				if(accuracy == null){
-					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Accuracy($accuracy) ');
+				if(Math.isNaN(accuracy)){
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Accuracy(${data[3]}) ');
 					return;
 				}
 
