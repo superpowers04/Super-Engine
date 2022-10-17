@@ -63,7 +63,7 @@ class OptionsMenu extends MusicBeatState
 			new MiddlescrollOption("Move the strumline to the middle of the screen"),
 
 			new AccuracyDOption("Change how accuracy is calculated. ( Simple = Rating based, SE = Distance from note to time, Complex = Etterna(?) )"),
-			new OffsetMenu("Get a note offset based off of your inputs!"),
+			// new OffsetMenu("Get a note offset based off of your inputs!"),
 			new InputHandlerOption("Change the input engine used, only works locally. Kade is considered legacy and will not be improved")
 		],"Edit things like Keybinds, scroll direction, etc"),
 		new OptionCategory("Judgements", [

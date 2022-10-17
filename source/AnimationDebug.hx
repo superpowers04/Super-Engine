@@ -169,30 +169,6 @@ class AnimationDebug extends MusicBeatState
 
 	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false,?dragDrop:Bool = false)
 	{
-		// if (!PlayState.hasStarted){
-		// 	// try{
-		// 	// 	PlayState.SONG = {
-		// 	// 		song: "Nothing",
-		// 	// 		notes: [],
-		// 	// 		bpm: 120,
-		// 	// 		needsVoices: false,
-		// 	// 		player1: 'bf',
-		// 	// 		player2: 'bf',
-		// 	// 		gfVersion: 'gf',
-		// 	// 		noteStyle: 'normal',
-		// 	// 		stage: 'stage',
-		// 	// 		speed: 2.0,
-		// 	// 		validScore: false,
-		// 	// 		difficultyString: "Unknown"
-		// 	// 	};
-		// 	// 	var e = new PlayState();
-		// 	// 	e.destroy();
-		// 	// }catch(e){
-		// 	MainMenuState.handleError("A song needs to be loaded first!");
-		// 	return;
-		// 	// }
-		// } 
-			// MainMenuState.handleError("A song needs to be loaded first due to a crashing bug!");
 		super();
 		dragdrop = dragDrop;
 		this.daAnim = daAnim;
@@ -1232,118 +1208,53 @@ class AnimationDebug extends MusicBeatState
 
 				}
 
-				pressArray = [
-					 (FlxG.keys.pressed.A), // Play note animation
-					 (FlxG.keys.pressed.S),
-					 (FlxG.keys.pressed.W),
-					 (FlxG.keys.pressed.D),
-					 (FlxG.keys.pressed.V),
-					 (FlxG.keys.justPressed.UP), // Adjust offsets
-					 (FlxG.keys.justPressed.LEFT),
-					 (FlxG.keys.justPressed.DOWN),
-					 (FlxG.keys.justPressed.RIGHT),
-					 (FlxG.keys.justPressed.I), // Adjust Character position
-					 (FlxG.keys.justPressed.J),
-					 (FlxG.keys.justPressed.K),
-					 (FlxG.keys.justPressed.L),
-					 (FlxG.keys.justPressed.ONE),
-					 (FlxG.keys.justPressed.TWO),
-					 (FlxG.keys.justPressed.THREE),
-					 (FlxG.keys.justPressed.M),
-					 (FlxG.keys.justPressed.FOUR),
-					 // Shift to move when pressed instead of hammering key
-					 (FlxG.keys.pressed.UP), // Adjust offsets
-					 (FlxG.keys.pressed.LEFT),
-					 (FlxG.keys.pressed.DOWN),
-					 (FlxG.keys.pressed.RIGHT),
-					 (FlxG.keys.pressed.I), // Adjust Character position
-					 (FlxG.keys.pressed.J),
-					 (FlxG.keys.pressed.K),
-					 (FlxG.keys.pressed.L),
-				];
-
 				var modifier = "";
 				if (shiftPress) {modifier += "miss";}
 				if (ctrlPress) modifier += "-alt";
-				if(FlxG.keys.pressed.SEVEN)swapSides();
-				// var animToPlay = "";
-				for (i => v in pressArray) {
-					if (v){
-						switch(i){
-							case 0: // Play notes
-								animToPlay = 'singLEFT' + modifier;
-							case 1:
-								animToPlay = 'singDOWN' + modifier;
-							case 2:
-								animToPlay = 'singUP' + modifier;
-							case 3:
-								animToPlay = 'singRIGHT' + modifier;
-
-								
-								
-							case 5: // Offset adjusting
-								moveOffset(0,1,false,ctrlPress);
-							case 6:
-								moveOffset(1,0,false,ctrlPress);
-							case 7:
-								moveOffset(0,-1,false,ctrlPress);
-							case 8:
-								moveOffset(-1,0,false,ctrlPress);
-
-							case 9: // Char position
-								updateCharPos(0,1,false,ctrlPress);
-							case 10:
-								updateCharPos(-1,0,false,ctrlPress);
-							case 11:
-								updateCharPos(0,-1,false,ctrlPress);
-							case 12:
-								updateCharPos(1,0,false,ctrlPress);
-
-							case 13: // Unload character offsets
-								resetOffsets();
-								updateCameraPos(false,720, 500);
-							case 14: // Write to file
-								outputCharOffsets();
-							case 15: // Save Char JSON
-								outputChar();
-							case 16:
-								editMode = 1;
-								toggleOffsetText(false);
-
-							case 17: // Unload character offsets
-								dad.animOffsets['all'] = [0.0,0.0];
-								charX = 0;charY = 0;
-								updateCharPos(0,0,false,false);
-								dad.dance();
-								absPos = true;
-
-							case 18: // Offset adjusting
-								if (shiftPress)
-									moveOffset(0,1,false,ctrlPress);
-							case 19:
-								if (shiftPress)
-									moveOffset(1,0,false,ctrlPress);
-							case 20:
-								if (shiftPress)
-									moveOffset(0,-1,false,ctrlPress);
-							case 21:
-								if (shiftPress)
-									moveOffset(-1,0,false,ctrlPress);
-							case 22: // Char position
-								if (shiftPress)
-									updateCharPos(0,1,false,ctrlPress);
-							case 23:
-								if (shiftPress)
-									updateCharPos(-1,0,false,ctrlPress);
-							case 24:
-								if (shiftPress)
-									updateCharPos(0,-1,false,ctrlPress);
-							case 25:
-								if (shiftPress)
-									updateCharPos(1,0,false,ctrlPress);
-						}	
+				if(FlxG.keys.pressed.SEVEN) swapSides();
+				// Note animations
+				if(FlxG.keys.pressed.W)	animToPlay = 'singUP' + modifier;
+				else if(FlxG.keys.pressed.A) animToPlay = 'singLEFT' + modifier;
+				else if((!ctrlPress || !shiftPress) && FlxG.keys.pressed.S) animToPlay = 'singDOWN' + modifier;
+				else if(FlxG.keys.pressed.D) animToPlay = 'singRIGHT' + modifier;
+				// A bit ugly but a lot better for performance
+				// Offsets and Character position, shift: pressed else: justPressed
+				if(shiftPress){
+					// Offset adjustment
+					if ((FlxG.keys.pressed.UP) || (FlxG.keys.pressed.LEFT) || (FlxG.keys.pressed.DOWN) || (FlxG.keys.pressed.RIGHT)){
+						moveOffset((if((FlxG.keys.pressed.LEFT)) 1 else if(FlxG.keys.pressed.RIGHT) -1 else 0)
+						           ,(if((FlxG.keys.pressed.UP)) 1 else if(FlxG.keys.pressed.DOWN) -1 else 0)
+						           ,false,ctrlPress);
+					}
+					// Char position
+					if ((FlxG.keys.pressed.I) || (FlxG.keys.pressed.J) || (FlxG.keys.pressed.K) || (FlxG.keys.pressed.L)){
+						updateCharPos((if((FlxG.keys.pressed.J)) 1 else if(FlxG.keys.pressed.L) -1 else 0)
+						           ,(if((FlxG.keys.pressed.I)) 1 else if(FlxG.keys.pressed.K) -1 else 0)
+						           ,false,ctrlPress);
+					}
+				}else{
+					if ((FlxG.keys.justPressed.UP) || (FlxG.keys.justPressed.LEFT) || (FlxG.keys.justPressed.DOWN) || (FlxG.keys.justPressed.RIGHT)){
+						moveOffset((if((FlxG.keys.justPressed.LEFT)) 1 else if(FlxG.keys.justPressed.RIGHT) -1 else 0)
+						           ,(if((FlxG.keys.justPressed.UP)) 1 else if(FlxG.keys.justPressed.DOWN) -1 else 0)
+						           ,false,ctrlPress);
+					}
+					// Char position
+					if ((FlxG.keys.justPressed.I) || (FlxG.keys.justPressed.J) || (FlxG.keys.justPressed.K) || (FlxG.keys.justPressed.L)){
+						updateCharPos((if((FlxG.keys.justPressed.J)) 1 else if(FlxG.keys.justPressed.L) -1 else 0)
+						           ,(if((FlxG.keys.justPressed.I)) 1 else if(FlxG.keys.justPressed.K) -1 else 0)
+						           ,false,ctrlPress);
 					}
 				}
+				if(FlxG.keys.justPressed.ONE){resetOffsets(); updateCameraPos(false,720, 500);}// Unload character offsets
+				if(FlxG.keys.justPressed.THREE || ctrlPress && shiftPress && FlxG.keys.justPressed.S){outputChar();} // Saving
+				if(FlxG.keys.justPressed.M){editMode = 1; toggleOffsetText(false);} // Switch modes
+				// if(FlxG.keys.justPressed.TWO){outputCharOffsets();}
+				// if(FlxG.keys.justPressed.FOUR){
+				// 				dad.animOffsets['all'] = [0.0,0.0];
+				// 				charX = 0;charY = 0;
+				// 				updateCharPos(0,0,false,false);
+				// 				dad.dance();
+				// 				absPos = true;}
 				if (animToPlay != "") {
 					playAnim();
 				}
@@ -1354,17 +1265,6 @@ class AnimationDebug extends MusicBeatState
 					lastRMouseX = Std.int(FlxG.mouse.screenX);
 					lastRMouseY = Std.int(FlxG.mouse.screenY);
 				}
-				pressArray = [
-					 (FlxG.keys.justPressed.M),
-					 (FlxG.keys.justPressed.UP), // Adjust camera position
-					 (FlxG.keys.justPressed.LEFT),
-					 (FlxG.keys.justPressed.DOWN),
-					 (FlxG.keys.justPressed.RIGHT),
-					 (FlxG.keys.pressed.UP), // Adjust camera position
-					 (FlxG.keys.pressed.LEFT),
-					 (FlxG.keys.pressed.DOWN),
-					 (FlxG.keys.pressed.RIGHT),
-				];
 				if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
 					var mx = Std.int(FlxG.mouse.screenX);
 					var my = Std.int(FlxG.mouse.screenY);
@@ -1374,36 +1274,22 @@ class AnimationDebug extends MusicBeatState
 					lastRMouseY = my;
 					// offsetTopText.text = "X: " + lastMouseX + ",Y: " + lastMouseY;
 				}
-				for (i => v in pressArray) {
-					if (v){
-						switch(i){
-							case 0:
-								editMode = 2;
-								setupUI(false);
-								toggleOffsetText(false);
-							case 1: // Offset adjusting
-								updateCameraPos(true,0,-1,false,ctrlPress);
-							case 2:
-								updateCameraPos(true,-1,0,false,ctrlPress);
-							case 3:
-								updateCameraPos(true,0,1,false,ctrlPress);
-							case 4:
-								updateCameraPos(true,1,0,false,ctrlPress);
-							case 5: // Offset adjusting
-								if (shiftPress)
-									updateCameraPos(true,0,-1,false,ctrlPress);
-							case 6:
-								if (shiftPress)
-									updateCameraPos(true,-1,0,false,ctrlPress);
-							case 7:
-								if (shiftPress)
-									updateCameraPos(true,0,1,false,ctrlPress);
-							case 8:
-								if (shiftPress)
-									updateCameraPos(true,1,0,false,ctrlPress);
-						}	
+				// Camera position
+				if(shiftPress){
+					if ((FlxG.keys.pressed.UP) || (FlxG.keys.pressed.LEFT) || (FlxG.keys.pressed.DOWN) || (FlxG.keys.pressed.RIGHT)){
+						updateCameraPos((if((FlxG.keys.pressed.LEFT)) 1 else if(FlxG.keys.pressed.RIGHT) -1 else 0)
+						           ,(if((FlxG.keys.pressed.UP)) 1 else if(FlxG.keys.pressed.DOWN) -1 else 0)
+						           ,false,ctrlPress);
 					}
+				}else{
+					if ((FlxG.keys.justPressed.UP) || (FlxG.keys.justPressed.LEFT) || (FlxG.keys.justPressed.DOWN) || (FlxG.keys.justPressed.RIGHT)){
+						updateCameraPos((if((FlxG.keys.justPressed.LEFT)) 1 else if(FlxG.keys.justPressed.RIGHT) -1 else 0)
+						           ,(if((FlxG.keys.justPressed.UP)) 1 else if(FlxG.keys.justPressed.DOWN) -1 else 0)
+						           ,false,ctrlPress);
+					}
+					
 				}
+				if(FlxG.keys.justPressed.M){editMode = 2; setupUI(false); toggleOffsetText(false);} // Switch modes
 			}
 			case 2:{
 				if(FlxG.mouse.justPressedRight){
@@ -1476,15 +1362,16 @@ class AnimHelpScreen extends FlxUISubState{
 				+'\n *Ctrl - Move by *0.1'
 				+"\n\nUtilities:\n"
 				+'\n1 - Unloads all offsets from the game or json file, including character position.\n'
-				+'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
-				+(if(canEditJson)'\n3 - Write character info to characters JSON' else '\n3 - Write character info to output.json in FNFBR folder')
-				+'\n4 - Unloads character position from json file.(Useful if the game refuses to save the character\'s pos)\n'	
+				// +'\n2 - Write offsets to offsets.txt in FNFBR\'s folder for easier copying'
+				+(if(canEditJson)'\n3/Ctrl+Shift+S - Save Character' else '\n3/Ctrl+Shift+S - Write character to output.json in Super Engine folder')
+				// +'\n4 - Unloads character position from json file.(Useful if the game refuses to save the character\'s pos)\n'	
 				+'\n7 - Reloads Animation debug with the character\'s side swapped\n'
 				+"\nB - Hide/Show offset text";
 			case 1:
 				'\n\nArrows - Move camera, Moves per press for accuracy'
 				+'\n *Shift - Hold to move'
 				+'\n *Ctrl - Move by *0.1'
+				+'\n Left Click - Move Camera'
 				+'\n\nUtilities:\n';
 			case 2:
 				'';

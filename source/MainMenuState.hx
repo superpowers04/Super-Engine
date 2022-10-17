@@ -118,10 +118,7 @@ class MainMenuState extends SickMenuState
 
 		persistentUpdate = persistentDraw = true;
 		bgImage = 'menuDesat';
-		if (FlxG.save.data.dfjk)
-			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
-		else
-			controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
+		controls.setKeyboardScheme(KeyboardScheme.Solo, true);
 		loading = false;
 		isMainMenu = true;
 		super.create();

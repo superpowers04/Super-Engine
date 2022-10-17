@@ -141,14 +141,14 @@ class Console extends TextField
 		// text += "\n-" + lineCount + ": " + str;
 		lineCount++;
 		lines.push('$lineCount ~ $str');
-		while(lines.length > 100){
+		while(lines.length > 500){
 			lines.shift();
 		}
 		requestUpdate = true;
 
 	}
 	var requestUpdate = false;
-	var showConsole = false;
+	public var showConsole = false;
 	var wasMouseDisabled = false;
 
 	// Event Handlers
@@ -156,6 +156,11 @@ class Console extends TextField
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
 		if(FlxG.keys == null || FlxG.save.data == null || !FlxG.save.data.animDebug) return;
+		if(showConsole && requestUpdate){
+			text = lines.join("\n");
+			scrollV = bottomScrollV;
+			requestUpdate = false;
+		}
 		if(FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F10){
 			lines = [];
 			trace("Cleared log");
@@ -165,20 +170,17 @@ class Console extends TextField
 			if(showConsole){
 				wasMouseDisabled = FlxG.mouse.visible;
 				FlxG.mouse.visible = true;
-				FlxG.mouse.enabled = false;
+				// FlxG.mouse.enabled = false;
 				requestUpdate = true;
 				scaleX = lime.app.Application.current.window.width / 1280;
 				scaleY = lime.app.Application.current.window.height / 720;
 			}else{
-				FlxG.mouse.enabled = true;
-				text = ""; // No need to have text if the console isn't showing
+				// FlxG.mouse.enabled = true;
+				// text = ""; // No need to have text if the console isn't showing
 				FlxG.mouse.visible = wasMouseDisabled;
 			}
-		}
-		if(showConsole && requestUpdate){
-			text = lines.join("\n");
-			scrollV = bottomScrollV;
-			requestUpdate = false;
+
+			selectable = showConsole;
 		}
 		
 

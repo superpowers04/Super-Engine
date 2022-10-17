@@ -233,18 +233,25 @@ class SickMenuState extends MusicBeatState
 			}
 			select(curSelected);
 		}
-		if(FlxG.mouse.justPressed){
+		if(supportMouse){
 
-			for (i in -2 ... 2) {
-				if(grpControls.members[curSelected + i] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + i])){
-					select(curSelected + i);
+			if(FlxG.mouse.justPressed){
+				for (i in -2 ... 2) {
+					if(grpControls.members[curSelected + i] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + i])){
+						select(curSelected + i);
+					}
 				}
 			}
+			if(FlxG.mouse.wheel != 0){
+				var move = -FlxG.mouse.wheel;
+				changeSelection(Std.int(move));
+			}
 		}
-		if(FlxG.mouse.wheel != 0){
-			var move = -FlxG.mouse.wheel;
-			changeSelection(Std.int(move));
-		}
+	}
+
+	public var supportMouse(get,default):Bool = true;
+	public function get_supportMouse():Bool{
+		return supportMouse && !Overlay.Console.instance.showConsole;
 	}
 	var isEpicTween:Bool = false;
 	var curTween:FlxTween;

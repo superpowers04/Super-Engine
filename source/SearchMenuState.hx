@@ -39,7 +39,10 @@ class SearchMenuState extends MusicBeatState
 	var infotext:FlxText;
 	var overLay:FlxGroup = new FlxTypedGroup();
 	var infoTextBoxSize:Int = 2;
-	public var supportMouse:Bool = true;
+	public var supportMouse(get,default):Bool = true;
+	public function get_supportMouse():Bool{
+		return supportMouse && !Overlay.Console.instance.showConsole;
+	}
 	public var allowInput:Bool = true;
 
 	public static var background:FlxGraphic;

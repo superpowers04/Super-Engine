@@ -288,7 +288,11 @@ class KeyBindMenu extends FlxSubState
     }
 
     function save(){
-
+		for(i in 0...8){
+			if(keys[i] == null){
+				keys[i] = "F12";
+			}
+		}
         FlxG.save.data.upBind = keys[2];
         FlxG.save.data.downBind = keys[1];
         FlxG.save.data.leftBind = keys[0];

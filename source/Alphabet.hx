@@ -115,7 +115,7 @@ class Alphabet extends FlxSpriteGroup
 	var xPos:Float = 0;
 	public function addText(bounce:Bool = false)
 	{
-		doSplitWords();
+		splitWords = _finalText.split("");
 
 		for (character in splitWords)
 		{
@@ -157,17 +157,13 @@ class Alphabet extends FlxSpriteGroup
 			add(letter);
 
 			lastSprite = letter;
-			// if(bounce) {
-			// 	letter.scale.x = letter.scale.y = 1.1;
-			// 	FlxTween.tween(letter.scale,{x:1,y:1},0.5,{ease:FlxEase.quadInOut});
-			// }
+			if(bounce) {
+				letter.scale.x = letter.scale.y = 1.1;
+				FlxTween.tween(letter.scale,{x:1,y:1},0.5,{ease:FlxEase.quadInOut});
+			}
 		// }
 	}
 
-	function doSplitWords():Void
-	{
-		splitWords = _finalText.split("");
-	}
 
 	public var personTalking:String = 'gf';
 
@@ -352,7 +348,7 @@ class AlphaCharacter extends FlxSprite
 
 	public function createLetter(letter:String):Void
 	{
-		// var letterCase:String = (if (letter.toLowerCase() == letter) "lowercase" else 'capital');
+		var letterCase:String = (if (letter.toLowerCase() == letter) "lowercase" else 'capital');
 		if (symbols.contains(letter)){
 			createSymbol(letter);
 		}else if (alphabet.contains(letter)){

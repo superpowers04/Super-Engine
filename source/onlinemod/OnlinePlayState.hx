@@ -435,6 +435,15 @@ class OnlinePlayState extends PlayState
 			case Packets.BROADCAST_SCORE:
 				var id:Int = data[0];
 				var score:Int = data[1];
+				if(id == null){
+					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID($id) ');
+					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID($id) ');
+					return;
+				}
+				if(score == null){
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score($score) ');
+					return;
+				}
 
 				clientScores[id] = score;
 				clientText[id] = "S:" + score+ " M:n/a A:n/a";
@@ -444,6 +453,23 @@ class OnlinePlayState extends PlayState
 				var score:Int = data[1];
 				var misses:Int = data[2];
 				var accuracy:Int = data[3];
+				if(id == null){
+					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID($id) ');
+					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID($id) ');
+					return;
+				}
+				if(score == null){
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score($score) ');
+					return;
+				}
+				if(misses == null){
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Miss count($misses) ');
+					return;
+				}
+				if(accuracy == null){
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Accuracy($accuracy) ');
+					return;
+				}
 
 				clientScores[id] = score;
 				clientText[id] = "S:" + score+ " M:" + misses+ " A:" + accuracy;
@@ -470,6 +496,7 @@ class OnlinePlayState extends PlayState
 				FlxG.switchState(new OnlineLobbyState(true));
 			case Packets.KEYPRESS:
 				if (PlayState.p2canplay){
+					if(data[1] == null){data[1] = 0;}
 					var charID = 1;
 					if(data[2] != null && data[2] != 0) charID = data[2];
 
@@ -536,7 +563,7 @@ class OnlinePlayState extends PlayState
 					// 	p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1) // Holds
 					// 	];
 
-					// }
+					// } 
 				}
 			case Packets.BROADCAST_NEW_PLAYER:
 				var id:Int = data[0];
@@ -566,6 +593,12 @@ class OnlinePlayState extends PlayState
 		}}catch(e){
 			Chat.OutputChatMessage("[Client] You had an error when receiving packet '" + '$packetId' + "':");
 			Chat.OutputChatMessage(e.message);
+			var err = ('${e.stack}').split('\n');
+			var _e = "";
+			while ((_e = err.pop()) != null){
+				Chat.OutputChatMessage('||${_e}');
+
+			}
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OnlineLobbyState(true));
 		}}

@@ -21,7 +21,7 @@ class OsuPlayState extends onlinemod.OfflinePlayState
 	loadedVoices = new FlxSound();
 	trace('Loading ${instFile}');
 	if (!FileSystem.exists(instFile)) {MainMenuState.handleError('${instFile} doesn\'t exist!');}
-	loadedSong = Sound.fromFile(instFile);
+	loadedSong = SELoader.loadSound(instFile);
 	if (loadedSong == null || loadedSong.length == 0) MainMenuState.handleError('${instFile} couldn\'t be loaded!');
 	}catch(e){MainMenuState.handleError(e,'Caught "loadSongs" crash: ${e.message}');}}
   }

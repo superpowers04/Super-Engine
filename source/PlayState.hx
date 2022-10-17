@@ -1620,7 +1620,7 @@ class PlayState extends MusicBeatState
 
 
 		updateTime = FlxG.save.data.songPosition;
-		if(!FlxG.save.data.skipToFirst) return;
+		if(!FlxG.save.data.skipToFirst || onlinemod.OnlinePlayMenuState.socket != null) return;
 
 		var _validNote:Bool = false;
 		var _validUnspawn:Float = 0;
