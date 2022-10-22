@@ -174,7 +174,7 @@ class SearchMenuState extends MusicBeatState
 
 	function reloadList(?reload = false,?search=""){try{
 		curSelected = 0;
-		if(reload){grpSongs.clear();}
+		if(reload){CoolUtil.clearFlxGroup(grpSongs);}
 		songs = [];
 
 		var i:Int = 0;

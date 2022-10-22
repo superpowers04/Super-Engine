@@ -316,7 +316,7 @@ class TitleState extends MusicBeatState
 		PlayerSettings.init();
 
 
-		curWacky = FlxG.random.getObject(getIntroTextShit());
+		curWacky = getIntroTextShit();
 		
 		// DEBUG BULLSHIT
 
@@ -527,27 +527,21 @@ class TitleState extends MusicBeatState
 		],
 	];
 	var forcedText:Bool = false;
-	function getIntroTextShit():Array<Array<String>>
+	function getIntroTextShit():Array<String>
 	{
 		var now = Date.now();
 		// FlxG.save.data.seenText = true;
 		if(hardcodedDays[now.getMonth()] != null && hardcodedDays[now.getMonth()][now.getDate()] != null){
 			// FlxG.save.data.seenText = false;
 			forcedText = true;
-			return hardcodedDays[now.getMonth()][now.getDate()];
+			return FlxG.random.getObject(hardcodedDays[now.getMonth()][now.getDate()]);
 		}
 		if(FlxG.save.data.seenForcedText) FlxG.save.data.seenForcedText = false;
 		var fullText:String = Assets.getText(Paths.txt('introText'));
 
 		var firstArray:Array<String> = fullText.split('\n');
-		var swagGoodArray:Array<Array<String>> = [];
 
-		for (i in firstArray)
-		{
-			swagGoodArray.push(i.split('--'));
-		}
-
-		return swagGoodArray;
+		return FlxG.random.getObject(firstArray).split('--');
 	}
 
 	var transitioning:Bool = false;
@@ -667,29 +661,30 @@ class TitleState extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	function createCoolText(textArray:Array<String>)
+	function createCoolText(textArray:Array<String>,yOffset:Int = 200)
 	{
 		for (i in 0...textArray.length)
 		{
-			var money:Alphabet = new Alphabet(0, 0, textArray[i], true, false);
-			money.screenCenter(X);
-			money.y += (i * 60) + 220;
-			money.scale.x = money.scale.y = 1.1;
-			FlxTween.tween(money.scale,{x:1,y:1},0.2,{ease:FlxEase.expoOut});
-			credGroup.add(money);
-			textGroup.add(money);
+			addMoreText(textArray[i],yOffset);
+			// var money:Alphabet = new Alphabet(0, 0, textArray[i], true, false);
+			// money.screenCenter(X);
+			// money.y += (i * 70) + 100;
+			// money.scale.x = money.scale.y = 1.1;
+			// FlxTween.tween(money.scale,{x:1,y:1},0.2,{ease:FlxEase.expoOut});
+			// credGroup.add(money);
+			// textGroup.add(money);
 		}
 	}
 
-	function addMoreText(text:String)
+	function addMoreText(text:String,yOffset:Int = 200):Alphabet
 	{
 		var coolText:Alphabet = new Alphabet(0, 0, text, true, false);
 		coolText.screenCenter(X);
-		coolText.y += (60 * textGroup.length) + 220;
-			coolText.scale.x = coolText.scale.y = 1.1;
-			FlxTween.tween(coolText.scale,{x:1,y:1},0.2,{ease:FlxEase.expoOut});
+		coolText.y += (70 * textGroup.length) + yOffset;
+		coolText.bounce();
 		credGroup.add(coolText);
 		textGroup.add(coolText);
+		return coolText;
 	}
 
 	function deleteCoolText()
@@ -731,8 +726,14 @@ class TitleState extends MusicBeatState
 				deleteCoolText();
 			// 	destHaxe();
 			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-			case 4:
+				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'], 0);
+
+				// addMoreText('ninjamuffin99').startTyping(0.015,Conductor.crochetSecs);
+				// addMoreText('phantomArcade').startTyping(0.015,Conductor.crochetSecs);
+				// addMoreText('kawaisprite').startTyping(0.02,Conductor.crochetSecs);
+				// addMoreText('evilsk8er').startTyping(0.022,Conductor.crochetSecs);
+				credTextShit.x -= 130;
+			case 2:
 				addMoreText('present');
 			case 7:
 				deleteCoolText();
@@ -740,26 +741,34 @@ class TitleState extends MusicBeatState
 				// if (Main.watermarks)  You're not more important than fucking newgrounds
 				// 	createCoolText(['Kade Engine', 'by']);
 				// else
-					createCoolText(['In Partnership']);
+					// createCoolText(['In Partnership']);
+				
+				deleteCoolText();
+				addMoreText('In Partnership with').startTyping(0,Conductor.crochetSecs * 2);
 			case 11:
 				// if (Main.watermarks)  You're not more important than fucking newgrounds
 				// 	createCoolText(['Kade Engine', 'by']);
 				// else
-				deleteCoolText();
-				createCoolText(['In Partnership', 'with']);
 			case 12:
 				addMoreText('Newgrounds');
+				ngSpr.scale.x = ngSpr.scale.y = 1.1;
+				FlxTween.tween(ngSpr.scale,{x:1,y:1},0.2);
 				ngSpr.visible = true;
 			case 16:
 				deleteCoolText();
+				credTextShit.y += 130;
 				ngSpr.visible = false;
 
 
 
 			case 18:
-				createCoolText([curWacky[0]]);
+			// 	// createCoolText([curWacky[0]]);
+				if(curWacky.length % 2 == 1){curWacky.push('');}// Hacky but fuck you
+				var max = Std.int(Math.floor(curWacky.length * 0.5));
+				createCoolText(curWacky.slice(0,max));
 			case 20:
-				addMoreText(curWacky[1]);
+				var max = Std.int(Math.floor(curWacky.length * 0.5));
+				createCoolText(curWacky.slice(max));
 			case 24:
 				deleteCoolText();
 				if(forcedText) FlxG.save.data.seenForcedText = true;
@@ -777,6 +786,13 @@ class TitleState extends MusicBeatState
 
 			case 32:
 				skipIntro();
+			default:
+				// if(curBeat > 17 && curBeat < (20 + (curWacky.length * 2))){
+				// 	var _beat:Float = (curBeat - 17) * 0.5;
+				// 	if(_beat % 1 == 0){
+				// 		addMoreText(curWacky[_beat]);
+				// 	}
+				// }
 		}
 	}
 

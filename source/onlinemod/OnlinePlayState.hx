@@ -12,6 +12,7 @@ import flixel.FlxSubState;
 import flixel.tweens.FlxTween;
 import flixel.system.FlxSound;
 import flash.media.Sound;
+import onlinemod.Packets;
 
 import Section.SwagSection;
 
@@ -57,6 +58,7 @@ class OnlinePlayState extends PlayState
 		this.customSong = customSong;
 		this.loadedVoices = voices;
 		this.loadedInst = inst;
+		practiceMode = true;
 
 	}
 
@@ -144,9 +146,9 @@ class OnlinePlayState extends PlayState
 
 		// Remove healthbar
 		// if (FlxG.save.data.downscroll){scoreTxt.y = 10;}
-		remove(healthBarBG);
-		remove(healthBar);
-		remove(iconP1);
+		// remove(healthBarBG);
+		// remove(healthBar);
+		// remove(iconP1);
 		remove(iconP2);
 
 
@@ -174,15 +176,6 @@ class OnlinePlayState extends PlayState
 
 		// We be good and actually just use an argument to not load the song instead of "pausing" the game
 		super.startSong(true);
-		if(PlayState.p2canplay){
-
-			var _note:Note;
-			for (i in 0 ... unspawnNotes.length) {
-				_note = unspawnNotes[i];
-				if(_note == null || _note.noteData == -1) continue;
-				noteData[_note.noteID] = [_note,_note.noteData % 4];
-			}
-		}
 		
 	}catch(e){MainMenuState.handleError(e,'Crash in "startsong" caught: ${e.message}');}}
 
@@ -199,6 +192,17 @@ class OnlinePlayState extends PlayState
 		else
 			vocals = new FlxSound();
 		super.generateSong(dataPath);
+
+		// Instantly get note id's, if this isn't done now, a note might not get added to the list
+		if(PlayState.p2canplay){
+
+			var _note:Note;
+			for (i in 0 ... unspawnNotes.length) {
+				_note = unspawnNotes[i];
+				if(_note == null || _note.noteData == -1) continue;
+				noteData[_note.noteID] = [_note,_note.noteData % 4];
+			}
+		}
 
 
 	}
@@ -312,7 +316,7 @@ class OnlinePlayState extends PlayState
 	}
 
 
-
+	override function finishSong(?win=true){}
 	override function endSong():Void
 	{
 		clients[-1] = OnlineNickState.nickname;
@@ -496,12 +500,15 @@ class OnlinePlayState extends PlayState
 				FlxG.switchState(new OnlineLobbyState(true));
 			case Packets.KEYPRESS:
 				if (PlayState.p2canplay){
+					try{
+
 					if(data[1] == null){data[1] = 0;}
 					var charID = 1;
 					if(data[2] != null && data[2] != 0) charID = data[2];
 
 					if(data[0] == -1 && data[1] != null && data[1] != 0 ){
 						PlayState.charAnim(1,Note.noteAnims[Std.int(data[1] - 1)],true);
+
 					}else{
 						var killedNote = false;
 						var mustPress = false;
@@ -534,7 +541,18 @@ class OnlinePlayState extends PlayState
 						for (i => note in notes.members){
 							mustPress = false;
 							if(note.noteID == data[0]){
-
+								mustPress = note.mustPress;
+								if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
+									note.miss(charID,note);
+								}else{
+									note.hit(charID,note);
+								}
+								note.mustPress = mustPress;
+								if(!note.mustPress){ // Oi, dumbass, don't delete notes from the player
+									note.kill();
+									notes.remove(note, true);
+									note.destroy();
+								}
 							}
 						}
 						// if(!killedNote){
@@ -557,7 +575,10 @@ class OnlinePlayState extends PlayState
 						// if(!killedNote){ // Note was deleted, cringe
 						// }
 					}
-
+				}catch(e){
+					showTempmessage('Error with KEYPRESS: $data',FlxColor.RED);
+					trace('Error with KEYPRESS: $data ${e.message}');
+				}
 					// // PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
 					// 	p2Int = data[0];
 					// 	p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1) // Holds
@@ -591,7 +612,12 @@ class OnlinePlayState extends PlayState
 				FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
 
 		}}catch(e){
-			Chat.OutputChatMessage("[Client] You had an error when receiving packet '" + '$packetId' + "':");
+			var packetName = "Unknown";
+			if(PacketsShit.fields[packetId] != null){
+				packetName = PacketsShit.fields[packetId].name;
+			}
+			trace(e);
+			Chat.OutputChatMessage("[Client] You had an error when receiving packet '" + '${packetName}' + "' with ID '" + '$packetId' + "' :");
 			Chat.OutputChatMessage(e.message);
 			var err = ('${e.stack}').split('\n');
 			var _e = "";

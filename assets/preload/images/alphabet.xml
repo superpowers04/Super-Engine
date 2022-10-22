@@ -2,7 +2,7 @@
 <TextureAtlas imagePath="bold.png">
 	<!-- Created with Adobe Animate version 19.2.1.408 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="# bold0000" x="2" y="2" width="50" height="56"/>
+<!-- 	<SubTexture name="# bold0000" x="2" y="2" width="50" height="56"/>
 	<SubTexture name="# bold0001" x="2" y="2" width="50" height="56"/>
 	<SubTexture name="# bold0002" x="54" y="2" width="50" height="56"/>
 	<SubTexture name="# bold0003" x="54" y="2" width="50" height="56"/>
@@ -33,7 +33,7 @@
 	<SubTexture name="+ bold0000" x="140" y="80" width="42" height="39"/>
 	<SubTexture name="+ bold0001" x="140" y="80" width="42" height="39"/>
 	<SubTexture name="+ bold0002" x="184" y="80" width="42" height="39"/>
-	<SubTexture name="+ bold0003" x="184" y="80" width="42" height="39"/>
+	<SubTexture name="+ bold0003" x="184" y="80" width="42" height="39"/> -->
 	<SubTexture name="-angry faic- bold0000" x="228" y="80" width="54" height="54"/>
 	<SubTexture name="-angry faic- bold0001" x="228" y="80" width="54" height="54"/>
 	<SubTexture name="-angry faic- bold0002" x="284" y="80" width="54" height="54"/>
@@ -54,10 +54,22 @@
 	<SubTexture name="-dash- bold0001" x="68" y="149" width="49" height="25"/>
 	<SubTexture name="-dash- bold0002" x="119" y="149" width="49" height="25"/>
 	<SubTexture name="-dash- bold0003" x="119" y="149" width="49" height="25"/>
-	<SubTexture name="-down arrow- bold0000" x="170" y="149" width="39" height="44"/>
+<!-- 	<SubTexture name="-down arrow- bold0000" x="170" y="149" width="39" height="44"/>
 	<SubTexture name="-down arrow- bold0001" x="170" y="149" width="39" height="44"/>
 	<SubTexture name="-down arrow- bold0002" x="211" y="149" width="39" height="44"/>
 	<SubTexture name="-down arrow- bold0003" x="211" y="149" width="39" height="44"/>
+	<SubTexture name="-left arrow- bold0000" x="92" y="227" width="41" height="39"/>
+	<SubTexture name="-left arrow- bold0001" x="92" y="227" width="41" height="39"/>
+	<SubTexture name="-left arrow- bold0002" x="135" y="227" width="41" height="39"/>
+	<SubTexture name="-left arrow- bold0003" x="135" y="227" width="41" height="39"/>
+	<SubTexture name="-right arrow- bold0000" x="412" y="227" width="40" height="36"/>
+	<SubTexture name="-right arrow- bold0001" x="412" y="227" width="40" height="36"/>
+	<SubTexture name="-right arrow- bold0002" x="454" y="227" width="40" height="36"/>
+	<SubTexture name="-right arrow- bold0003" x="454" y="227" width="40" height="36"/>
+	<SubTexture name="-up arrow- bold0000" x="92" y="306" width="36" height="42"/>
+	<SubTexture name="-up arrow- bold0001" x="92" y="306" width="36" height="42"/>
+	<SubTexture name="-up arrow- bold0002" x="130" y="306" width="36" height="42"/>
+	<SubTexture name="-up arrow- bold0003" x="130" y="306" width="36" height="42"/> -->
 	<SubTexture name="-end quote- bold0000" x="252" y="149" width="40" height="48"/>
 	<SubTexture name="-end quote- bold0001" x="252" y="149" width="40" height="48"/>
 	<SubTexture name="-end quote- bold0002" x="294" y="149" width="40" height="48"/>
@@ -74,10 +86,6 @@
 	<SubTexture name="-heart- bold0001" x="2" y="227" width="43" height="41"/>
 	<SubTexture name="-heart- bold0002" x="47" y="227" width="43" height="41"/>
 	<SubTexture name="-heart- bold0003" x="47" y="227" width="43" height="41"/>
-	<SubTexture name="-left arrow- bold0000" x="92" y="227" width="41" height="39"/>
-	<SubTexture name="-left arrow- bold0001" x="92" y="227" width="41" height="39"/>
-	<SubTexture name="-left arrow- bold0002" x="135" y="227" width="41" height="39"/>
-	<SubTexture name="-left arrow- bold0003" x="135" y="227" width="41" height="39"/>
 	<SubTexture name="-multiply x- bold0000" x="178" y="227" width="34" height="32"/>
 	<SubTexture name="-multiply x- bold0001" x="178" y="227" width="34" height="32"/>
 	<SubTexture name="-multiply x- bold0002" x="214" y="227" width="34" height="32"/>
@@ -90,18 +98,10 @@
 	<SubTexture name="-question mark- bold0001" x="306" y="227" width="51" height="77"/>
 	<SubTexture name="-question mark- bold0002" x="359" y="227" width="51" height="77"/>
 	<SubTexture name="-question mark- bold0003" x="359" y="227" width="51" height="77"/>
-	<SubTexture name="-right arrow- bold0000" x="412" y="227" width="40" height="36"/>
-	<SubTexture name="-right arrow- bold0001" x="412" y="227" width="40" height="36"/>
-	<SubTexture name="-right arrow- bold0002" x="454" y="227" width="40" height="36"/>
-	<SubTexture name="-right arrow- bold0003" x="454" y="227" width="40" height="36"/>
 	<SubTexture name="-start quote- bold0000" x="2" y="306" width="43" height="45"/>
 	<SubTexture name="-start quote- bold0001" x="2" y="306" width="43" height="45"/>
 	<SubTexture name="-start quote- bold0002" x="47" y="306" width="43" height="45"/>
 	<SubTexture name="-start quote- bold0003" x="47" y="306" width="43" height="45"/>
-	<SubTexture name="-up arrow- bold0000" x="92" y="306" width="36" height="42"/>
-	<SubTexture name="-up arrow- bold0001" x="92" y="306" width="36" height="42"/>
-	<SubTexture name="-up arrow- bold0002" x="130" y="306" width="36" height="42"/>
-	<SubTexture name="-up arrow- bold0003" x="130" y="306" width="36" height="42"/>
 	<SubTexture name=": bold0000" x="168" y="306" width="26" height="52"/>
 	<SubTexture name=": bold0001" x="168" y="306" width="26" height="52"/>
 	<SubTexture name=": bold0002" x="196" y="306" width="26" height="52"/>

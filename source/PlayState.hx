@@ -532,7 +532,7 @@ class PlayState extends MusicBeatState
 		strumLineNotes = null;
 		playerStrums = null;
 		cpuStrums = null;
-		practiceMode = (FlxG.save.data.practiceMode || ChartingState.charting);
+		practiceMode = (FlxG.save.data.practiceMode || ChartingState.charting || onlinemod.OnlinePlayMenuState.socket != null);
 		introAudio = [
 			Paths.sound('intro3'),
 			Paths.sound('intro2'),
@@ -619,13 +619,6 @@ class PlayState extends MusicBeatState
 
 		resetScore();
 
-		if(ChartingState.charting || FlxG.save.data.playerChar == "automatic" || SONG.forceCharacters || isStoryMode){
-			if (TitleState.retChar(PlayState.SONG.player1) != "") player1 = TitleState.retChar(PlayState.SONG.player1);
-			else if(FlxG.save.data.playerChar == "automatic") player1 = "bf";
-			else player1 = FlxG.save.data.playerChar;
-		}else{
-			player1 = FlxG.save.data.playerChar;
-		}
 		TitleState.loadNoteAssets(); // Make sure note assets are actually loaded
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -827,6 +820,7 @@ class PlayState extends MusicBeatState
 				parseHScript(onlinemod.OnlinePlayMenuState.rawScripts[i][1],hsBrTools,onlinemod.OnlinePlayMenuState.rawScripts[i][0]);
 			}
 		}
+		if(PlayState.player1 == "")PlayState.player1 = SONG.player2;
 		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
 		callInterp("afterStage",[]);
@@ -836,6 +830,14 @@ class PlayState extends MusicBeatState
 			PlayState.player2 = TitleState.retChar(PlayState.player2);
 		}else{
 			PlayState.player2 = FlxG.save.data.opponent;
+    	}
+		if ((FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) && TitleState.retChar(PlayState.player1) != ""){ // Check is second player is a valid character
+			PlayState.player1 = TitleState.retChar(PlayState.player1);
+			if(PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic"){
+				PlayState.player1 = FlxG.save.data.playerChar;
+			}
+		}else{
+			PlayState.player1 = FlxG.save.data.playerChar;
     	}
 		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
 		// 	var pl:Array<String> = [player1,player2];
@@ -1762,33 +1764,15 @@ class PlayState extends MusicBeatState
 	}
 
 	var debugNum:Int = 0;
-
-	public function generateSong(?dataPath:String = ""):Void
-	{
-		// FlxG.log.add(ChartParser.parse());
-
+	public function generateNotes(){
+		callInterp("generateNotes",[]);
 		var songData = SONG;
-		Conductor.changeBPM(songData.bpm);
-
-		curSong = songData.song;
-		if (vocals == null ){
-			if (SONG.needsVoices)
-				try{
-					vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
-				}catch(e){
-					SONG.needsVoices = false;
-					showTempmessage("Song needs voices but none found! Automatically disabled");
-					vocals = new FlxSound();
-
-				}
-			else
-				SONG.needsVoices = false;
-				vocals = new FlxSound();
-		}
-		vocals.looped = false;
-		FlxG.sound.list.add(vocals);
-		if (notes == null) 
+		if (notes == null)
 			notes = new FlxTypedGroup<Note>();
+		while (notes.members.length > 0){
+			var e = notes.members.pop();
+			if(e != null) e.destroy();
+		}
 		notes.clear();
 		// add(notes);
 		add(notes);
@@ -1801,8 +1785,6 @@ class PlayState extends MusicBeatState
 
 		var playerCounter:Int = 0;
 
-
-		callInterp("generateSongBefore",[]);
 		// Per song offset check
 		
 		var daBeats:Int = 0; // Current section ID, ig
@@ -1925,7 +1907,37 @@ class PlayState extends MusicBeatState
 		unspawnNotes.sort(sortByShit);
 
 		generatedMusic = true;
-		callInterp("generateSong",[]);
+		callInterp("generateNotesAfter",[unspawnNotes]);
+
+	}
+	public function generateSong(?dataPath:String = ""):Void
+	{
+		// FlxG.log.add(ChartParser.parse());
+
+		var songData = SONG;
+		Conductor.changeBPM(songData.bpm);
+
+		curSong = songData.song;
+		if (vocals == null ){
+			if (SONG.needsVoices)
+				try{
+					vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+				}catch(e){
+					SONG.needsVoices = false;
+					showTempmessage("Song needs voices but none found! Automatically disabled");
+					vocals = new FlxSound();
+
+				}
+			else
+				SONG.needsVoices = false;
+				vocals = new FlxSound();
+		}
+		vocals.looped = false;
+		FlxG.sound.list.add(vocals);
+
+		callInterp("generateSongBefore",[]);
+		generateNotes();
+		callInterp("generateSong",[unspawnNotes]);
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -2398,14 +2410,14 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (health <= 0 && !hasDied && !ChartingState.charting){
+		if (health <= 0 && !hasDied && !ChartingState.charting && onlinemod.OnlinePlayMenuState.socket != null){
 
 			if(practiceMode) {
 					hasDied = true;practiceText.text = "Practice Mode; Score won't be saved";practiceText.screenCenter(X);
 					// FlxG.sound.play(Paths.sound('fnf_loss_sfx'));
 				} else finishSong(false);
 		}
- 		if (FlxG.save.data.resetButton)
+ 		if (FlxG.save.data.resetButton && onlinemod.OnlinePlayMenuState.socket == null)
 		{
 			if(controls.RESET)
 				finishSong(false);

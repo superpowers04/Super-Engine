@@ -884,6 +884,27 @@ class CharAutoOption extends Option
 		return "Force selected opponent " + (!FlxG.save.data.charAuto ? "on" : "off");
 	}
 }
+class CharAutoBFOption extends Option
+{
+
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.charAutoBF = !FlxG.save.data.charAutoBF;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Force selected player " + (!FlxG.save.data.charAutoBF ? "on" : "off");
+	}
+}
 class AnimDebugOption extends Option
 {
 	public function new(desc:String)

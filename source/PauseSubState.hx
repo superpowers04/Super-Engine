@@ -52,7 +52,7 @@ class PauseSubState extends MusicBeatSubstate
 	public static var charts:Array<String> = [];
 	public function new(x:Float, y:Float){
 		if(FlxG.sound.music != null ) songLengthTxt = FlxStringUtil.formatTime(Math.floor((FlxG.sound.music.length) / 1000), false);
-		jumpToTime = Conductor.songPosition; 
+		time = jumpToTime = Conductor.songPosition;
 		menuItems = ['Resume', 'Restart Song',"Options Menu",'Exit to menu'];
 		if(ChartingState.charting && FlxG.sound.music != null) menuItems.insert(2,'Jump to');
 		if(ChartingState.charting ) menuItems.insert(3,'Exit Charting Mode');
@@ -77,7 +77,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		finishCallback = FlxG.sound.music.onComplete;
 
-		time = FlxG.sound.music.time;
 		FlxG.sound.music.onComplete = null;
 		FlxG.sound.music.looped = true;
 		// FlxG.sound.list.add(pauseMusic);
@@ -153,14 +152,26 @@ class PauseSubState extends MusicBeatSubstate
 		volume = FlxG.sound.music.volume;
 		FlxTween.tween(FlxG.sound.music,{volume:0.2},0.5);
 		FlxG.sound.music.looped = true;
-		updateJumpTo();
+		new FlxTimer().start(0.3,function(_){updateJumpTo();});
 	}
 	function updateJumpTo(){
 		var i = menuItems.length;
 		while(i > 0){
 			i--;
 			if(menuItems[i] != null && menuItems[i].startsWith('Jump to')){
-				grpMenuShit.members[i].setText('Jump to ${FlxStringUtil.formatTime(Math.floor(jumpToTime / 1000), false)}|${songLengthTxt}');
+				grpMenuShit.members[i].removeDashes = false;
+				var time:String = FlxStringUtil.formatTime(Math.floor(Math.abs(jumpToTime / 1000)), false);
+				if(jumpToTime < 0){
+					time = "-" + time;
+				}
+				grpMenuShit.members[i].text = 'Jump to ${time} / ${songLengthTxt}';
+				grpMenuShit.members[i].screenCenter(X);
+				// var old = grpMenuShit.members[i];
+				// grpMenuShit.members[i] = new Alphabet(old.x,old.y,'Jump to ${FlxStringUtil.formatTime(Math.floor(jumpToTime / 1000), false)}|${songLengthTxt}',true,false,true);
+				// grpMenuShit.members[i].targetY = old.targetY;
+				// old.destroy();
+				// grpMenuShit.members[i].scale.x = grpMenuShit.members[i].scale.y = 1.1;
+				// FlxTween.tween(grpMenuShit.members[i].scale,{x:1,y:1},0.3);
 				break;
 			}
 		}
@@ -210,12 +221,17 @@ class PauseSubState extends MusicBeatSubstate
 			var daSelected:String = menuItems[curSelected];
 			if(daSelected.startsWith('Jump to')){
 				if(controls.LEFT_P || controls.LEFT && FlxG.keys.pressed.SHIFT){
-					jumpToTime -= 1000;
-					updateJumpTo();
+					if(jumpToTime - 1000 > -5000){
+						jumpToTime -= 1000;
+						updateJumpTo();
+					}
 				}
 				if(controls.RIGHT_P || controls.RIGHT && FlxG.keys.pressed.SHIFT){
-					jumpToTime += 1000;
-					updateJumpTo();
+					if(jumpToTime + 1000 < FlxG.sound.music.length){
+						jumpToTime += 1000;
+						updateJumpTo();
+
+					}
 				}
 			}
 			if (accepted)
@@ -252,7 +268,9 @@ class PauseSubState extends MusicBeatSubstate
 						},1);
 					default:
 						if(daSelected.startsWith('Jump to')){
-							time = jumpToTime;
+							Conductor.songPosition = FlxG.sound.music.time = time = jumpToTime;
+
+							PlayState.instance.generateNotes();
 							countdown();
 						}else{
 							callInterp("pauseSelect",[]);

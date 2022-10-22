@@ -19,6 +19,13 @@ class Conductor
 {
 	public static var bpm:Float = 100;
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
+	public static var crochetSecs(get,set):Float;
+	public static function get_crochetSecs():Float{
+		return crochet * 0.001;
+	}
+	public static function set_crochetSecs(val:Float):Float{
+		return crochet = val * 1000;
+	}
 	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
 	public static var songPosition:Float;
 	public static var lastSongPos:Float;

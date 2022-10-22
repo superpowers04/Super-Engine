@@ -2,7 +2,7 @@ package;
 
 
 
-
+ 
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -655,7 +655,7 @@ class AnimationDebug extends MusicBeatState
 		}
 
 	}
-	inline function get_Dad_X(){return dad.getMidpoint().x + (if (charType == 0) 100 else 150) + dad.camX;}
+	inline function get_Dad_X(){return dad.getMidpoint().x + (if (charType == 0) -100 else if (charType == 2) 0 else 150) + dad.camX;}
 	inline function get_Dad_Y(){return dad.getMidpoint().y - 100 + dad.camY;}
 
 	function playAnim(?animName:String = ""){

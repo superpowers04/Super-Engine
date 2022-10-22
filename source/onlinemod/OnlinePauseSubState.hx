@@ -50,6 +50,14 @@ class OnlinePauseSubState extends MusicBeatSubstate
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
 
+		var notPaused:FlxText = new FlxText(20, 15 + 32, 0, "", 48);
+		notPaused.text = "GAME IS NOT PAUSED";
+		notPaused.scrollFactor.set();
+		notPaused.setFormat(Paths.font('vcr.ttf'), 32);
+		notPaused.screenCenter(X);
+		notPaused.updateHitbox();
+		add(notPaused);
+
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
 

@@ -113,7 +113,9 @@ class KadeEngineData
 			FlxG.save.data.preformance = false;
 		// View Character on Character Select
 		if (FlxG.save.data.charAuto == null)
-			FlxG.save.data.charAuto = false;
+			FlxG.save.data.charAuto  = false;
+		if (FlxG.save.data.charAutoBF == null)
+			FlxG.save.data.charAutoBF= false;
 
 		if (FlxG.save.data.lastServer == null)
 			FlxG.save.data.lastServer = "";

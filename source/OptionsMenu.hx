@@ -23,6 +23,7 @@ import sys.FileSystem;
 import sys.io.File;
 import OptionsFileDef;
 import Reflect;
+using StringTools;
 
 class OptionsMenu extends MusicBeatState
 {
@@ -48,10 +49,11 @@ class OptionsMenu extends MusicBeatState
 			new OpponentOption("Change the opponent character"),
 			new PlayerOption("Change the player character"),
 			new GFOption("Change the GF used"),
+			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
+			new CharAutoBFOption("Force the player you've selected or allow the song to choose the player if you have them installed"),
 			new NoteSelOption("Change the note assets used, pulled from mods/noteassets"),
 			new SelStageOption("Select the stage to use, Default will use song default"),
 			new SelScriptOption("Enable/Disable scripts that run withsongs"),
-			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
 			new HCBoolOption("Toggle the ability for packs to provide scripts","Pack scripts","packScripts"),
 			// new HCBoolOption("Show your player character on the main menu, MAY CAUSE CRASHES!","Show player on main menu","mainMenuChar"),
 			new AllowServerScriptsOption("Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS"),
@@ -208,7 +210,6 @@ class OptionsMenu extends MusicBeatState
 		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
 
 		super.create();
-		updateCat();
 	}
 
 	var isCat:Bool = false;
@@ -246,16 +247,8 @@ class OptionsMenu extends MusicBeatState
 			else if (controls.BACK)
 			{
 				isCat = false;
-				if (catControls != null){
-					catControls.clear();
-					grpControls.forEach(function(item){
-						catControls.add(item);
-						item.xOffset = FlxG.width * 0.60;
-						item.alpha = 0.3;
-						item.color = 0xdddddd;
-					});
-				}
-				grpControls.clear();
+
+				CoolUtil.clearFlxGroup(grpControls);
 				for (i in 0...options.length)
 					{
 						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
@@ -318,10 +311,12 @@ class OptionsMenu extends MusicBeatState
 				if (isCat)
 				{
 					if (currentSelectedCat.getOptions()[curSelected].press()) {
-						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, currentSelectedCat.getOptions()[curSelected].getDisplay(), true, false);
-						ctrl.isMenuItem = true;
+						// var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, currentSelectedCat.getOptions()[curSelected].getDisplay(), true, false);
+						// ctrl.isMenuItem = true;
 						// grpControls.add(ctrl);
-						grpControls.replace(grpControls.members[curSelected],ctrl);
+						// grpControls.replace(
+						updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].getDisplay());
+						                    // ,ctrl);
 					}
 				}
 				else
@@ -332,49 +327,47 @@ class OptionsMenu extends MusicBeatState
 					var start = 0;
 					var iy = FlxG.height * 0.50;
 					if ( grpControls_ == null) {grpControls_ = new FlxTypedGroup<Alphabet>();add(grpControls_);}
-					grpControls_.clear();
-					grpControls.forEach(function(item){
-						item.xOffset = -1500;
-						grpControls_.add(item);
-					});
-					grpControls.clear();
-					if (timer != null)timer.cancel();
-					timer=new FlxTimer().start(0.4, function(tmr:FlxTimer){grpControls_.clear();},1);
-					
+					CoolUtil.clearFlxGroup(grpControls);					
 
 					if (catControls != null){
 						start = 4;
 						iy=FlxG.height;
-						catControls.forEach(function(item){
-							grpControls.add(item);
-							item.xOffset = 70;
-							item.alpha = 1;
-							item.color = 0xFFFFFFFF;
-						});
+
 						catControls.clear();
 						curSelected = 0;
 						changeSelection(0);
 					}
-					// for (i in start...currentSelectedCat.getOptions().length)
-					// 	{
-					// 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
-					// 		controlLabel.isMenuItem = true;
-					// 		controlLabel.targetY = i;
-					// 		controlLabel.x = FlxG.width * 0.60;
-					// 		controlLabel.y = iy;
-					// 		grpControls.add(controlLabel);
-					// 		// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-					// 	}
+					for (i in start...currentSelectedCat.getOptions().length)
+						{
+							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
+							controlLabel.isMenuItem = true;
+							controlLabel.targetY = i;
+							// controlLabel.y = iy;
+							updateAlphabet(controlLabel);
+							controlLabel.y+=360;
+							controlLabel.x=1280;
+							grpControls.add(controlLabel);
+							// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+						}
 					
 					curSelected = 0;
-					addTitleText(options[selCat].getName());
+					addTitleText('Options > ' + options[selCat].getName());
 					updateOffsetText();
 				}
-
-				updateCat();
 			}
 		}
 		
+	}
+	function updateAlphabet(obj:Alphabet,str:String = ""){
+
+		if(str != "") obj.text = str;
+		var txt = obj.text.toLowerCase();
+		if(txt.endsWith(" true") || txt.endsWith(" on")){
+			obj.color = 0x55FF55;
+		}else if(txt.endsWith(" false") || txt.endsWith(" off")){
+			obj.color = 0xFF5555;
+		}
+		obj.bounce();
 	}
 
 	var isSettingControl:Bool = false;
@@ -394,30 +387,6 @@ class OptionsMenu extends MusicBeatState
 		}
 		else
 			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
-	}
-
-	function updateCat(){
-		if (catControls != null){catControls.clear();} else{catControls = new FlxTypedGroup<Alphabet>();add(catControls);}
-		
-		if (isCat) return;
-		// catControls = new FlxTypedGroup<Alphabet>();
-		// add(catControls);
-		var ia = 0;
-		if (options[curSelected].modded) ia = 1;
-		for (i in 0...options[curSelected].getOptions().length)
-		{
-			// if(i >= 4) break; // No reason to add more than 4 // Actually, probably not a good idea, slower machines don't load the rest for some reason
-			
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[curSelected].getOptions()[i].getDisplay(), true, false, false,FlxG.width * 0.60);
-			controlLabel.isMenuItem = true;
-			controlLabel.targetY = i + ia;
-			controlLabel.alpha = 0.3;
-			controlLabel.color = 0xdddddd;
-			controlLabel.x = 80;
-			controlLabel.y = FlxG.height * 0.50;
-			// if(options[curSelected].getOptions()[i].getDisplay().length > 24) controlLabel.scale.set(0.6);
-			catControls.add(controlLabel);
-		}
 	}
 
 	function changeSelection(change:Int = 0,?upCat = true)
@@ -441,7 +410,6 @@ class OptionsMenu extends MusicBeatState
 			currentDescription = "Select a category";
 
 		updateOffsetText();
-		if (upCat) updateCat();
 		// selector.y = (70 * curSelected) + 30;
 
 		var bullShit:Int = 0;

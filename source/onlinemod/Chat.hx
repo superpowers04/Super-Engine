@@ -89,7 +89,7 @@ class Chat
 	}
 	if (register)
 	  Chat.RegisterChatMessage(message, color,false);
-
+	trace(message);
 	if (!Chat.created)
 	  return;
 

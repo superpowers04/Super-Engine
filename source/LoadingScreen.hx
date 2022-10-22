@@ -28,18 +28,20 @@ class LoadingScreen extends Sprite{
 		loadingText.isMenuItem = false;
 		loadingText.visible = true;
 		var funniBitmap = new BitmapData(1290,730,false,0x100010);
-		var x = 850;
+		var x = 1200;
 		var y = 600;
-		for (i in 0...loadingText.members.length) {
+		var i = loadingText.members.length - 1;
+		while (i >= 0) { // Writing backwards instead of forwards
 			var v = loadingText.members[i];
 			v.useFramePixels = true;
 			v.draw();
+			x -= Std.int(v.width - 2);
 			funniBitmap.copyPixels(v.framePixels,new flash.geom.Rectangle(0,0,v.width,v.height),new flash.geom.Point(x,y));
 			// graphics.beginBitmapFill(v.framePixels,false,true);
 			// graphics.moveTo(x,y);
 			// graphics.drawRect(0,0, v.width, v.height);
 			// graphics.endFill();
-			x += Std.int(v.width + 2);
+			i--;
 		}
 
 		graphics.beginBitmapFill(funniBitmap,false,true);
