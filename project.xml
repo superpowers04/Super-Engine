@@ -134,6 +134,7 @@
 	<haxelib name="hscript" />
 	<haxelib name="hscript-ex"/>
 	<haxedef name="hscriptPos" />
+	<!-- <haxelib name="hxcodec"/> -->
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
@@ -165,7 +166,7 @@
 	<!-- This engine is not optimised for mobile, so this is disabled. If you do make a mobile port, contact Superpowers04#3887 on Discord and I might help/merge it to main   -->
 	<haxedef name="FLX_NO_TOUCH" />
 	
-	<!--<haxedef name="FLX_NO_GAMEPAD" />-->
+	<haxedef name="FLX_NO_GAMEPAD" />
 
 	<!--Disable the Flixel core sound tray-->
 	<!--<haxedef name="FLX_NO_SOUND_TRAY" />-->

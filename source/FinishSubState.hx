@@ -186,10 +186,11 @@ class FinishSubState extends MusicBeatSubstate
 				FlxG.camera.alpha = PlayState.instance.camHUD.alpha = 1;
 				// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
 				PlayState.instance.generatedMusic = false;
-				PlayState.instance.followChar(if(win) 0 else 1);
 				var camPos = PlayState.instance.getDefaultCamPos();
-				PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
-				PlayState.instance.camGame.setPosition(camPos[0],camPos[1]);
+				// PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
+				PlayState.instance.moveCamera = false;
+				PlayState.instance.camGame.scroll.x = camPos[0];
+				PlayState.instance.camGame.scroll.y = camPos[1];
 				FlxG.state.persistentUpdate = !isError && !pauseGame;
 				if (win) PlayState.boyfriend.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
 				updateBF = false;

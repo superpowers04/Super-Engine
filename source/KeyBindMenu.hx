@@ -125,8 +125,9 @@ class KeyBindMenu extends FlxSubState
 
     override function update(elapsed:Float)
     {
-        var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
-
+    	#if (!FLX_NO_GAMEPAD)
+        	var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+        #end
         if (frames <= 10)
             frames++;
 
@@ -146,12 +147,13 @@ class KeyBindMenu extends FlxSubState
                     FlxG.sound.play(Paths.sound('scrollMenu'));
                     changeItem(1);
                 }
-
+                #if (!FLX_NO_GAMEPAD)
                 if (FlxG.keys.justPressed.TAB)
                 {
                     KeyBinds.gamepad = !KeyBinds.gamepad;
                     textUpdate();
                 }
+                #end
 
                 if (FlxG.keys.justPressed.ENTER){
                     FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -163,6 +165,7 @@ class KeyBindMenu extends FlxSubState
                 else if (FlxG.keys.justPressed.BACKSPACE){
                     reset();
                 }
+                #if (!FLX_NO_GAMEPAD)
                 if (gamepad != null) // GP Logic
                 {
                     if (gamepad.justPressed.DPAD_UP)
@@ -189,16 +192,20 @@ class KeyBindMenu extends FlxSubState
                         reset();
                     }
                 }
+                #end
 
             case "input":
                 tempKey = keys[curSelected];
                 keys[curSelected] = "?";
-                if (KeyBinds.gamepad)
-                    gpKeys[curSelected] = "?";
+           		#if (!FLX_NO_GAMEPAD)
+                	if (KeyBinds.gamepad)
+                		gpKeys[curSelected] = "?";
+                #end
                 textUpdate();
                 state = "waiting";
 
             case "waiting":
+           		 #if (!FLX_NO_GAMEPAD)
                 if (gamepad != null && KeyBinds.gamepad) // GP Logic
                 {
                     if(FlxG.keys.justPressed.ESCAPE){ // just in case you get stuck
@@ -225,6 +232,7 @@ class KeyBindMenu extends FlxSubState
 
                 }
                 else
+                #end
                 {
                     if(FlxG.keys.justPressed.ESCAPE){
                         keys[curSelected] = tempKey;
@@ -262,7 +270,7 @@ class KeyBindMenu extends FlxSubState
     function textUpdate(){
 
         keyTextDisplay.text = "\n\n";
-
+        #if (!FLX_NO_GAMEPAD)
         if (KeyBinds.gamepad)
         {
             for(i in 0...4){
@@ -274,6 +282,7 @@ class KeyBindMenu extends FlxSubState
             }
         }
         else
+       	#end
         {
             for(i in 0...8){
 
@@ -301,11 +310,12 @@ class KeyBindMenu extends FlxSubState
         FlxG.save.data.AltdownBind = keys[5];
         FlxG.save.data.AltleftBind = keys[4];
         FlxG.save.data.AltrightBind = keys[7];
-        
-        FlxG.save.data.gpupBind = gpKeys[2];
-        FlxG.save.data.gpdownBind = gpKeys[1];
-        FlxG.save.data.gpleftBind = gpKeys[0];
-        FlxG.save.data.gprightBind = gpKeys[3];
+        #if (!FLX_NO_GAMEPAD)
+	        FlxG.save.data.gpupBind = gpKeys[2];
+	        FlxG.save.data.gpdownBind = gpKeys[1];
+	        FlxG.save.data.gpleftBind = gpKeys[0];
+	        FlxG.save.data.gprightBind = gpKeys[3];
+        #end
 
         FlxG.save.flush();
 
@@ -335,7 +345,7 @@ class KeyBindMenu extends FlxSubState
         FlxTween.tween(infoText, {alpha: 0}, 1, {ease: FlxEase.expoInOut});
     }
 
-
+	#if (!FLX_NO_GAMEPAD)
     function addKeyGamepad(r:String){
 
         var shouldReturn:Bool = true;
@@ -365,6 +375,7 @@ class KeyBindMenu extends FlxSubState
         }
 
     }
+    #end
 
     public var lastKey:String = "";
 

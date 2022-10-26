@@ -82,6 +82,33 @@ class HscriptUtils {
 		reterp = addVarsToInterp(reterp);
 		return reterp;
 	}
+	public static function eval<T:Interp>(interp:T,str:String):Array<Dynamic>{ // [Errored, Error message if so, stack if present,stage]
+		if(str == null || str == ""){
+			return [true,'Eval string is empty',null,'str != null'];
+		}
+		if(interp == null){
+			return [true,'No interpeter!',null,'interp != null'];
+		}
+
+		var program;
+		var parser = new hscript.Parser();
+		try{
+			parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
+
+			// parser.parseModule(songScript);
+			program = parser.parseString(str);
+		}catch(e){return [true,'Line:${parser.line};\n Error:${e.message}',null,'Parsing'];}
+		// catch(e){
+		// 	return [true,e.message,e.stack,'Parsing'];
+		// }
+		try{
+			interp.execute(program);
+		}
+		catch(e){
+			return [true,e.message,e.stack,'Executing'];
+		}
+		return [false];
+	}
 	 public static function addVarsToInterp<T:Interp>(interp:T):T {
 		// // : )
 		// SE Specific
@@ -100,6 +127,7 @@ class HscriptUtils {
 		interp.variables.set("Paths",Paths);
 		interp.variables.set("HSBrTools",HSBrTools);
 		interp.variables.set("SETools",SETools);
+		interp.variables.set("eval", eval.bind(Interp,_)); // Eval code 
 		// interp.variables.set("SEKeys", SEKeys);
 
 
@@ -155,12 +183,14 @@ class HscriptUtils {
 
 
 
+		interp.variables.set("this", interp);
 
 		
+		interp.variables.set("debug",
 		#if debug
-		interp.variables.set("debug", true);
+			true);
 		#else
-		interp.variables.set("debug", false);
+			false);
 		#end
 		
 		
@@ -752,7 +782,12 @@ class HscriptGlobals {
 		return FlxG.game;
 	}
 	static function get_gamepads():FlxGamepadManager {
-		return FlxG.gamepads;
+
+		#if (FLX_NO_GAMEPAD)
+			return null;
+		#else
+			return FlxG.gamepads;
+		#end
 	}
 	static function get_initialWidth():Int {
 		return FlxG.initialWidth;

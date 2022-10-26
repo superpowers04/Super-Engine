@@ -569,6 +569,8 @@ class TitleState extends MusicBeatState
 		}
 		#end
 
+		#if (!FLX_NO_GAMEPAD)
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
@@ -581,6 +583,7 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			#end
 		}
+		#end
 		if(shiftSkip != null && isShift != FlxG.keys.pressed.SHIFT){
 			isShift = FlxG.keys.pressed.SHIFT;
 			shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else 0xFFFFFF);

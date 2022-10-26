@@ -903,8 +903,8 @@ class ChartingState extends MusicBeatState
 					updateNote(null,_song.notes[curSection].sectionNotes[i]);
 					// updateSectionUI();
 				}
-				// updateGrid();
 			}
+			updateGrid();
 		});
 		var mirrorSection:FlxButton = new FlxButton(10, 190, "Mirror Section", function()
 		{
@@ -917,6 +917,7 @@ class ChartingState extends MusicBeatState
 					updateNote(null,_song.notes[curSection].sectionNotes[i]);
 				}
 			}
+			updateGrid();
 		});
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Is player section", 100);
 		check_mustHitSection.name = 'check_mustHit';
@@ -2017,16 +2018,11 @@ class ChartingState extends MusicBeatState
 		if(updateNotes){
 			rawToNote = [];
 			noteToRaw = [];
-			while (curRenderedNotes.members.length > 0)
-			{
-				curRenderedNotes.remove(curRenderedNotes.members[0], true);
-			}
+			CoolUtil.clearFlxGroup(curRenderedNotes);
 		}
 
-		while (curRenderedSustains.members.length > 0)
-		{
-			curRenderedSustains.remove(curRenderedSustains.members[0], true);
-		}
+		
+		CoolUtil.clearFlxGroup(curRenderedSustains);
 
 		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;
 
@@ -2041,7 +2037,6 @@ class ChartingState extends MusicBeatState
 		if (_song.notes[curSection].changeBPM && _song.notes[curSection].bpm > 0)
 		{
 			Conductor.changeBPM(_song.notes[curSection].bpm);
-			FlxG.log.add('CHANGED BPM!');
 		}
 		else
 		{
@@ -2069,16 +2064,19 @@ class ChartingState extends MusicBeatState
 		for (secID => sectionInfo in [lastSectionInfo,sectionInfo,nextSectionInfo]){
 			// secID += 1;
 			if(sectionInfo == null || sectionInfo[0] == null) {continue;}
-			for (i in sectionInfo)
+			var id = 0;
+			var i:Array<Dynamic>;
+			while (id <= sectionInfo.length)
 			{
-
+				i = sectionInfo[id];
+				id++;
+				if(i == null || i[0] == null){continue;}
 				var daSus = i[2];
 				if(rawToNote[i] == null){
-
 					updateNote(null,i,secID);
 				}
 
-				if (daSus > 0)
+				if (!Math.isNaN(daSus) && daSus > 0)
 				{
 					var note = rawToNote[i];
 					var daNoteInfo = i[1];
@@ -2261,20 +2259,22 @@ class ChartingState extends MusicBeatState
 			}
 			if(noteData == -1){
 				if (n != null)
-					_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.type]);
+					_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData]);
 				else
-					_song.notes[curSection].sectionNotes.push([noteStrum, noteData, type]);
+					_song.notes[curSection].sectionNotes.push([noteStrum, noteData]);
 
 			}else{
 
 				if (n != null)
-					_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, n.type]);
+					_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.sustainLength]);
 				else
-					_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, type]);
+					_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
 			}
 
 			var thingy:Array<Dynamic> = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
+			if (n != null && n.type != null && n.type != "") thingy.push(n.type);
+			else if (type != null && type != "") thingy.push(type);
 			for (_ => v in params) {
 				if(Math.isNaN(Std.parseFloat(v))){
 					thingy.push(v);

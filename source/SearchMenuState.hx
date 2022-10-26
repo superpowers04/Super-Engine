@@ -90,7 +90,7 @@ class SearchMenuState extends MusicBeatState
 	static public inline function resetVars(){
 		if (ChartingState.charting) ChartingState.charting = false;
 		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
-		PlayState.nameSpace = "";PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
+		multi.MultiPlayState.scriptLoc = "";PlayState.nameSpace = "";PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
 		SickMenuState.chgTime = true;
 		onlinemod.OfflinePlayState.nameSpace = "";
 	}

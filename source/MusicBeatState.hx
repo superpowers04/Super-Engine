@@ -57,8 +57,6 @@ class MusicBeatState extends FlxUIState
 	{
 		CoolUtil.setFramerate(true);
 
-		if (transIn != null)
-			trace('reg ' + transIn.region);
 		instance = this;
 		super.create();
 
@@ -181,7 +179,6 @@ class MusicBeatState extends FlxUIState
 	}
 
 	public static var currentColor = 0;
-
 	private function updateCurStep():Void
 	{
 		var lastChange:BPMChangeEvent = {
@@ -191,9 +188,11 @@ class MusicBeatState extends FlxUIState
 		}
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
-			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
+			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime){
 				lastChange = Conductor.bpmChangeMap[i];
+			}else break;
 		}
+
 		var prog = (Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet;
 		curStepProgress = prog % 1;
 		curStep = lastChange.stepTime + Math.floor(prog);
@@ -201,7 +200,6 @@ class MusicBeatState extends FlxUIState
 
 	public function stepHit():Void
 	{
-
 		if (curStep % 4 == 0)
 			beatHit();
 	}
@@ -301,6 +299,7 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 		super();
 		MusicBeatState.instance.showTempmessage('Entered Debug mode');
 	}
+	
 	var obj:FlxObject;
 	var ox:Float = 0;
 	var oy:Float = 0;

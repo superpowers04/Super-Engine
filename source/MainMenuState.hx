@@ -248,10 +248,10 @@ class MainMenuState extends SickMenuState
 		changeSelection();
 	}
 	function mmSwitch(regen:Bool = false){
-		options = ['modded songs','join BR compatible server', 'online songs',"story mode",'other',"import charts from mods"
+		options = ['modded songs','join BR compatible server','host br server', 'online songs',"story mode",'other',"import charts from mods"
 		, "scripted states"
 		,"changelog", 'options'];
-		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs','Convert charts from other mods to work here. Will put them in Modded Songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Customise your experience to fit you'];
+		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.",'fuck you lmao',"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs','Convert charts from other mods to work here. Will put them in Modded Songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Customise your experience to fit you'];
 		if(regen)generateList();
 		curSelected = 0;
 		if(regen)changeSelection();
@@ -276,8 +276,8 @@ class MainMenuState extends SickMenuState
 				otherSwitch();
 			case 'join BR compatible server':
 				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
-			// case 'host br server':
-			// 	FlxG.switchState(new onlinemod.OnlineHostMenu());
+			case 'host br server':
+				FlxG.switchState(new onlinemod.OnlineHostMenu());
 			case 'modded songs':
 				FlxG.switchState(new multi.MultiMenuState());
 			case 'online songs':

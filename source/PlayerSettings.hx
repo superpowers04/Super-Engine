@@ -51,7 +51,7 @@ class PlayerSettings
 			player1 = new PlayerSettings(0, Solo);
 			++numPlayers;
 		}
-
+		#if (!FLX_NO_GAMEPAD)
 		var numGamepads = FlxG.gamepads.numActiveGamepads;
 		if (numGamepads > 0)
 		{
@@ -69,13 +69,13 @@ class PlayerSettings
 				player2 = new PlayerSettings(1, None);
 				++numPlayers;
 			}
-
 			var gamepad = FlxG.gamepads.getByID(1);
 			if (gamepad == null)
 				throw 'Unexpected null gamepad. id:0';
 
 			player2.controls.addDefaultGamepad(1);
 		}
+		#end
 
 		// DeviceManager.init();
 	}

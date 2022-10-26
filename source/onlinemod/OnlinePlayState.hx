@@ -308,7 +308,6 @@ class OnlinePlayState extends PlayState
 
 	override function resyncVocals()
 	{
-		// So you can't play the game while being paused
 		if (inPause)
 			return;
 

@@ -1,5 +1,52 @@
 package;
 
+// import tjson.Json;
+
+// class CharacterJson {
+// 	@:publicFields
+// 	var asset_files:Array<CharacterAssetFiles>; // Might deprecate this, idk
+// 	var sideInfo:Array<CharSideInfo> = []; // Info about sides
+// 	var animations:Array<CharJsonAnimation> = [];
+// 	var customProperties:Array<CCProp> = []; // Allows the json file to edit any value about the character
+// 	var genBy:String = "Unknown";
+// 	var formatVersion:Float = 0; // Version of the format being used
+
+// 	static public function import(json:String){
+// 		var charJson = new CharacterJson;
+// 		var jsonImport:Dynamic = Json.decode(json);
+// 		if(jsonImport.formatVersion == null){
+
+// 		}
+// 	} 
+
+// }
+
+
+
+// typedef CharacterJsonRaw = {
+// 	var asset_files:Array<CharacterAssetFiles>; // Might deprecate this, idk
+// 	var ?flip_notes:Bool; // Tells the game if it should flip left and right notes on the right
+// 	var sideInfo:Array<CharSideInfo>; // Info about sides
+// 	var animations:Array<CharJsonAnimation>;
+// 	var ?customProperties:Array<CCProp>; // Allows the json file to edit any value about the character
+// 	var genBy:String;
+// 	var formatVersion:Float; // Version of the format being used
+
+// 	// var no_antialiasing:Bool;
+// }
+// typedef CharSideInfo = {
+// 	var flip_x:Bool; // Flip character's X
+// 	var flip_y:Bool; // Flip character's Y
+// 	var flip_anims:Bool; // Flip animations like singLeft and singRight;
+// 	var position:Array<Float>; // Character's Position
+// 	var camera_position:Array<Float>; // Camera position
+// 	var ?customProperties:Array<CCProp>; // Allows the json file to edit any value about the character
+// 	var png:String; // Sprite to use
+// 	var xml:String; // Xml to use
+// }
+
+
+
 typedef CharacterJson =
 {
 	var flip_x:Bool;
@@ -36,6 +83,27 @@ typedef CharacterJson =
 	var ?boneChar:BoneChar;
 	var ?customProperties:Array<CCProp>; // Allows the json file to edit any value about the character
 }
+
+typedef CharJsonAnimation ={
+	var ?ifstate:Null<IfStatement>;
+	var anim:String;
+	var name:String;
+	var fps:Int;
+	var loop:Bool;
+	var ?flipx:Null<Bool>;
+	var indices:Array<Int>; 
+	var ?loopStart:Null<Int>; // Tells the game where to restart the animation if looped
+	var ?playAfter:Null<String>; // Tells the game to swap animations, useful for a start animation and then a loop animation
+	var ?stage:Null<String>; // Set on specific stage
+	var ?song:Null<String>; // Set on specific songname
+	var ?char_side:Null<Int>; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
+	var ?oneshot:Null<Bool>; // Should animation overlap everything?
+	var ?priority:Null<Int>; // Animation priority, 0 is idle, 10 is sing, 5 is hey, and the rest is up to you. The engine will handle the rest
+	
+	var ?offsets:Array<Array<Float>>;
+	var ?ifstates:Array<IfStatement>;
+}
+
 typedef CCProp = {
 	var path:String;
 	var value:Dynamic;
@@ -48,22 +116,6 @@ typedef IfStatement = {
 	var	value:Dynamic;
 	var check:Int; // 0 = beat, 1 = step
 } 
-typedef CharJsonAnimation ={
-	var ?ifstate:Null<IfStatement>;
-	var anim:String;
-	var name:String;
-	var fps:Int;
-	var loop:Bool;
-	var ?flipx:Null<Bool>;
-	var indices:Array<Int>;
-	var ?loopStart:Null<Int>; // Tells the game where to restart the animation if looped
-	var ?playAfter:Null<String>; // Tells the game to swap animations, useful for a start animation and then a loop animation
-	var ?stage:Null<String>; // Set on specific stage
-	var ?song:Null<String>; // Set on specific songname
-	var ?char_side:Null<Int>; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
-	var ?oneshot:Null<Bool>; // Should animation overlap everything?
-	var ?priority:Null<Int>; // Animation priority, 0 is idle, 10 is sing, 5 is hey, and the rest is up to you. The engine will handle the rest
-}
 
 typedef CharacterAssetFiles ={
 	var xml:String;

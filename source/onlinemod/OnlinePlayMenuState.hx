@@ -177,22 +177,22 @@ class OnlinePlayMenuState extends MusicBeatState
 		super.create();
 	}
 
-	function HandleData(packetId:Int, data:Array<Dynamic>)
+	public function HandleData(packetId:Int, data:Array<Dynamic>)
 	{
 		switch (packetId)
 		{
 			case Packets.SEND_SERVER_TOKEN:
-				var serverToken:Int = data[0];
-				if (serverToken == Tokens.serverToken)
-				{
+				// var serverToken:Int = data[0];
+				// if (serverToken == Tokens.serverToken)
+				// {
 					Sender.SendPacket(Packets.SEND_PASSWORD, [pwdField.text], socket);
-				}
-				else
-				{
-					SetErrorText("Failed to verify server. Make sure the server and client are up to date");
-					if (socket.connected)
-						socket.close();
-				}
+				// }
+				// else
+				// {
+				// 	SetErrorText("Failed to verify server. Make sure the server and client are up to date");
+				// 	if (socket.connected)
+				// 		socket.close();
+				// }
 			case Packets.PASSWORD_CONFIRM:
 				switch (data[0])
 				{

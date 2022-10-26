@@ -263,9 +263,9 @@ class OptionsMenu extends MusicBeatState
 				addTitleText();
 				updateOffsetText();
 			}
-			if (controls.UP_P)
+			if (controls.UP_P || FlxG.keys.justPressed.UP)
 				changeSelection(-1);
-			if (controls.DOWN_P)
+			if (controls.DOWN_P || FlxG.keys.justPressed.DOWN)
 				changeSelection(1);
 			
 			if (isCat)

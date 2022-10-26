@@ -334,6 +334,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				onlinemod.OfflinePlayState.voicesFile = '';
 				PlayState.hsBrTools = new HSBrTools('${selSong}');
 				PlayState.scripts = [];
+				PlayState.songScript = "";
 
 
 				if(instFile == "" ){
@@ -672,18 +673,28 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var voices = "";
 			var inst = "";
 			var dir = file.substr(0,file.lastIndexOf("/"));
-			var fileThing = file.substr(0,file.lastIndexOf("-")) + ".json"; // Difficulty detection
+			var dashind = file.lastIndexOf("-");
+			if(dashind < 0){
+				dashind = file.lastIndexOf(".");
+			}
+			var fileThing = file.substr(0,dashind) + ".json"; // Difficulty detection
 			trace(fileThing);
 			if(FileSystem.exists(fileThing)){
 				file = fileThing;
 			}
 			var json = file.substr(file.lastIndexOf("/"));
 			var name = json.substr(0,json.lastIndexOf("."));
-			if(file.contains("assets/")){
+			if(FileSystem.exists('${dir}/Inst.ogg')){ 
+				inst = '${dir}/Inst.ogg';
+				if(FileSystem.exists('${dir}/Voices.ogg')){
+					voices = '${dir}/Voices.ogg';
+				}
+			}
+			else if(file.contains("assets/")){
 				var assets = file.substr(0,file.lastIndexOf("assets/"));
 				trace('${assets}assets/songs/${name}/Inst.ogg');
 				// Attempt 1 at finding the song files
-				if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){ 
+				if(inst == "" &&  FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){ 
 					inst = '${assets}assets/songs/${name}/Inst.ogg';
 				}
 				if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){

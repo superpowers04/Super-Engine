@@ -45,6 +45,8 @@ class Sender
 
       if (socket != null && socket.connected)
         socket.flush();
+   	  else
+   	  	trace('how the fuck did the socket disconnect');
     }catch(e){
       FlxG.switchState(new OnlinePlayMenuState(e.message));
       return;
