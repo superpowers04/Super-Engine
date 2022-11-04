@@ -41,6 +41,19 @@ typedef Scorekillme = {
 	var songs:Array<String>;
 	var funniNumber:Float;
 }
+@:structInit class CharInfo{
+	public var id:String = "";
+	public var path:String = 'mods/characters/';
+	public var folderName:String = "";
+	public var description:String = null;
+	public var nameSpace:String = null;
+	public var nameSpaceType:Int = 0; // 0: mods/characters, 1: mods/weeks, 2: mods/packs 
+	public function toString(){
+		return 'Character $nameSpace/$id, Raw folder name:$folderName, path:$path';
+	}
+}
+
+
 
 class TitleState extends MusicBeatState
 {
@@ -52,14 +65,20 @@ class TitleState extends MusicBeatState
 	var textGroup:FlxTypedGroup<FlxSprite>;
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
-	public static var choosableCharacters:Array<String> = [];
 	public static var choosableStages:Array<String> = ["default","stage","nothing"];
 	public static var choosableStagesLower:Map<String,String> = [];
-	public static var choosableCharactersLower:Map<String,String> = [];
-	public static var weekChars:Map<String,Array<String>> = [];
-	public static var characterDescriptions:Map<String,String> = [];
-	public static var characterPaths:Map<String,String> = [];
-	public static var invalidCharacters:Array<String> = [];
+
+	// TODO, FIX CHARACTERS LOADING FROM WRONG FOLDER WHNE SELECTED
+	public static var characters:Array<CharInfo> = [];
+
+	// public static var choosableCharacters:Array<String> = [];
+	// public static var choosableCharactersLower:Map<String,String> = [];
+	// public static var weekChars:Map<String,Array<String>> = [];
+	// public static var characterDescriptions:Map<String,String> = [];
+	// public static var characterPaths:Map<String,String> = [];
+	public static var invalidCharacters:Array<Array<String>> = []; // This is a seperate array because the character doesn't need metadata beyond it being invalid
+
+
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
 	public static var returnStateID:Int = 0;
 	public static var supported:Bool = false;
@@ -84,22 +103,61 @@ class TitleState extends MusicBeatState
 			new NoteAssets(FlxG.save.data.noteAsset,forced2);
 		}
 	}
-	public static function retChar(char:String):String{
-		if (choosableCharactersLower[char.toLowerCase()] != null){
-			return choosableCharactersLower[char.toLowerCase()];
-		}else{
-			return "";
+	public static function findChar(char:String,?retBF:Bool = true,?ignoreNSCheck:Bool = false):Null<CharInfo>{
+		if(char.contains('|') && !ignoreNSCheck){
+			return findCharByNamespace(char,retBF);
 		}
+		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
+		for (i in characters){
+			if(i.id == char.toLowerCase()){
+				return i;
+			}
+		}
+		trace('Unable to find $char!');
+		if(retBF) return characters[0];
+		return null;
+	}
+	public static function findInvalidChar(char:String):String{
+		for (i in invalidCharacters){
+			if(i[0] == char){
+				return i[1];
+			}
+		}
+		trace('Unable to find $char!');
+		return null;
+	}
+	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
+	public static function findCharByNamespace(char:String,?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
+		if(char.contains('|')){
+			var _e = char.split('|');
+			namespace = _e[0];
+			char = _e[1];
+		}
+		if(namespace == "") return findChar(char,retBF,true);
+		var currentChar:CharInfo = null;
+		char = char.replace(' ',"-").replace('_',"-");
+		for (i in characters){
+			if(i.id == char.toLowerCase()){
+				if(i.nameSpace == namespace && (nameSpaceType == -1 || i.nameSpaceType == nameSpaceType)){
+					return i;
+				}
+				currentChar = i;
+			}
+		}
+		if(currentChar == null){
+			if(retBF) return characters[0];
+			trace('Unable to find $char!');
+		}
+		return currentChar;
+
+	}
+	public static function retChar(char:String):String{
+		var char = findChar(char,false);
+		return (if(char != null) char.id else "");
 	}
 	public static function retCharPath(char:String):String{
-		if (characterPaths[retChar(char)] != null){
-			if(characterPaths[retChar(char)].substring(-1) == "/"){
-				return characterPaths[retChar(char)].substring(0,-1);
-			}
-			return characterPaths[retChar(char)];
-		}else{
-			return "mods/characters";
-		}
+		var path = findChar(char,false);
+		return (if(path == null || path.path == null) "" else path.path);
 	}
 	public static function retStage(char:String):String{
 		if (choosableStagesLower[char.toLowerCase()] != null){
@@ -109,11 +167,10 @@ class TitleState extends MusicBeatState
 		}
 	}
 	public static function checkCharacters(){
-		choosableCharacters = ["bf","gf"];
-		choosableCharactersLower = ["bf" => "bf","gf" => "gf"];
-		characterDescriptions = ["automatic" => "Automatically uses character from song json", "bf" => "Boyfriend, the main protagonist. Provided by the base game.","gf" => "Girlfriend, boyfriend's partner. Provided by the base game."];
-		characterPaths = [];
-		weekChars = [];
+		characters = [
+			{id:"bf",folderName:"bf",path:"assets/",description:"Base Character; Boyfriend, the funny rap guy"},
+			{id:"gf",folderName:"gf",path:"assets/",description:"Base Character; Girlfriend, the funny boombox girl"}
+		];
 		invalidCharacters = [];
 		#if sys
 		// Loading like this is probably not a good idea
@@ -133,14 +190,18 @@ class TitleState extends MusicBeatState
 					var desc = 'Assets character';
 					if (FileSystem.exists('${dir}/${char}/description.txt'))
 						desc += ";" +File.getContent('${dir}/${char}/description.txt');
-					characterDescriptions[char] = desc;
-					choosableCharactersLower[char.toLowerCase()] = char;
-					characterPaths[char] = dir;
+					characters.push({
+						id:char.replace(' ','-').replace('_','-').toLowerCase(),
+						folderName:char,
+						path:"assets/characters/",
+						description:desc
+					});
+					// characterDescriptions[char] = desc;
+					// choosableCharactersLower[char.toLowerCase()] = char;
+					// characterPaths[char] = dir;
 
 				}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
-					invalidCharacters.push(char);
-					characterPaths[char] = dir;
-					// customCharacters.push(directory);
+					invalidCharacters.push([char,dir]);
 				}
 			}
 		}
@@ -152,12 +213,19 @@ class TitleState extends MusicBeatState
 			if (!FileSystem.isDirectory(dataDir+"/"+directory)){continue;}
 			if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/config.json"))
 			{
-				customCharacters.push(directory);
+				// customCharacters.push(directory);
+				var desc = null;
 				if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/description.txt"))
-					characterDescriptions[directory] = File.getContent('${dataDir}/${directory}/description.txt');
-				choosableCharactersLower[directory.toLowerCase()] = directory;
+					desc = File.getContent('${dataDir}/${directory}/description.txt');
+
+				characters.push({
+					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+					folderName:directory,
+					description:desc
+				});
+				// choosableCharactersLower[directory.toLowerCase()] = directory;
 			}else if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
-				invalidCharacters.push(directory);
+				invalidCharacters.push([directory,'mods/characters']);
 				// customCharacters.push(directory);
 			}
 		  }
@@ -165,7 +233,7 @@ class TitleState extends MusicBeatState
 
 		
 
-		for (_ => dataDir in ['mods/weeks/','mods/packs/']) {
+		for (ID => dataDir in ['mods/weeks/','mods/packs/']) {
 			
 			if (FileSystem.exists(dataDir))
 			{
@@ -182,33 +250,40 @@ class TitleState extends MusicBeatState
 						if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
 						if (FileSystem.exists(dir+"/"+char+"/config.json"))
 						{
-							var charPack = "";
-							if(choosableCharactersLower[char.toLowerCase()] != null){
-								var e = charPack;
-								charPack = _dir+"|"+char;
-								char = e;
-							}
-							customCharacters.push(char);
+							// var charPack = "";
+							// if(choosableCharactersLower[char.toLowerCase()] != null){
+							// 	var e = charPack;
+							// 	charPack = _dir+"|"+char;
+							// 	char = e;
+							// }
+							// customCharacters.push(char);
 							var desc = 'Provided by ' + _dir;
 							if (FileSystem.exists('${dir}/${char}/description.txt'))
 								desc += ";" +File.getContent('${dir}/${char}/description.txt');
-							characterDescriptions[char] = desc;
-							if(choosableCharactersLower[char.toLowerCase()] != null){
+							characters.push({
+								id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
+								folderName:char,
+								description:desc,
+								path:dir,
+								nameSpaceType:ID,
+								nameSpace:_dir
+							});
 
-								choosableCharactersLower[charPack.toLowerCase()] = char;
-								if(weekChars[char] == null){
-									weekChars[char] = [];
-								}
-								weekChars[char].push(charPack);
-								characterPaths[charPack] = dir;
-							}else{
-								choosableCharactersLower[char.toLowerCase()] = char;
-								characterPaths[char] = dir;
-							}
+							// if(choosableCharactersLower[char.toLowerCase()] != null){
+
+							// 	choosableCharactersLower[charPack.toLowerCase()] = char;
+							// 	if(weekChars[char] == null){
+							// 		weekChars[char] = [];
+							// 	}
+							// 	weekChars[char].push(charPack);
+							// 	characterPaths[charPack] = dir;
+							// }else{
+							// 	choosableCharactersLower[char.toLowerCase()] = char;
+							// 	characterPaths[char] = dir;
+							// }
 
 						}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
-							invalidCharacters.push(char);
-							characterPaths[char] = dir;
+							invalidCharacters.push([char,dir]);
 							// customCharacters.push(directory);
 						}
 					}
@@ -217,18 +292,7 @@ class TitleState extends MusicBeatState
 			}
 		}
 
-		haxe.ds.ArraySort.sort(customCharacters, function(a, b) {
-		   if(a < b) return -1;
-		   else if(b > a) return 1;
-		   else return 0;
-		});
-		for (char in customCharacters){
-			if(char.length > 0){
-				choosableCharacters.push(char);
-			}
-			// choosableCharactersLower[char.toLowerCase()] = char;
-		}
-		trace('Found ${choosableCharacters.length} characters');
+		trace('Found ${characters.length} characters');
 		// try{
 
 		// 	var rawJson = File.getContent('assets/data/characterMetadata.json');
@@ -310,7 +374,7 @@ class TitleState extends MusicBeatState
 		Assets.loadLibrary("shared");
 		@:privateAccess
 		{
-			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");
+			trace("Loaded " + (openfl.Assets.list().length) + " assets");
 		}
 		
 		PlayerSettings.init();

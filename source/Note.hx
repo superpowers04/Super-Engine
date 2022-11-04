@@ -310,7 +310,7 @@ class Note extends FlxSkewedSprite
 						hit = function(?charID:Int = 0,note){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);}; 
 						trace('Animation note processed');
 					}
-					case "changebpm", "bgm change": {
+					case "changebpm" | "bgm change": {
 						try{
 							// Info can be set to anything, it's being used for storing the BPM
 
@@ -338,41 +338,23 @@ class Note extends FlxSkewedSprite
 					// 	hit = function(?charID:Int = 0,note){PlayState.instance.parseRun(rawNote[4],rawNote[3]);}; 
 					// }
 					default:{ // Don't trigger hit animation
-						trace('Note with "${rawNote[2]}" hidden');
-						hit = function(?charID:Int = 0,note){trace("hit a event note");return;};
+						hit = function(?charID:Int = 0,note){trace('hit a event note without a hit function!');return;};
 					}
 				}
-			}else if(rawNote[3] != null && Std.isOfType(rawNote[3],String)){
-				switch (Std.string(rawNote[3]).toLowerCase()) {
-					case "play animation" | "playanimation": {
-						try{
-							// Info can be set to anything, it's being used for storing the Animation and character
-							info = [rawNote[4]
-							]; 
-						}catch(e){info = [rawNote[4],0];}
-						// Replaces hit func
-						hit = function(?charID:Int = 0,note){PlayState.charAnim(charID,info[0],true);}; 
-						trace('Animation note processed');
-					}
-					case "changebpm", "bgm change": {
-						try{
-							// Info can be set to anything, it's being used for storing the BPM
-
-							info = [Std.parseFloat(rawNote[4])]; 
-						}catch(e){info = [120,0];}
-						// Replaces hit func
-						hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
-						trace('BPM note processed');
-					}
-					case "changescrollspeed": {
-						try{
-							// Info can be set to anything, it's being used for storing the BPM
-							info = [Std.parseFloat(rawNote[4])]; 
-						}catch(e){info = [2,0];}
-						// Replaces hit func
-						hit = function(?charID:Int = 0,note){PlayState.SONG.speed = info[0];}; 
-						trace('BPM note processed');
-					}
+			}
+		}
+		if(rawNote[3] != null && Std.isOfType(rawNote[3],String)){
+			switch (Std.string(rawNote[3]).toLowerCase()) {
+				case "play animation" | "playanimation" | "animation" | "anim": {
+					noteAnimation = rawNote[4];
+				}
+				case "noanimation" | "no animation" | "noanim": {
+					// Replaces hit func
+					noteAnimation = null;
+				}
+				case 'script','hscript':{
+					info = [rawNote[4]]; 
+					hit = function(?charID:Int = 0,note){PlayState.instance.parseRun(rawNote[4]);}; 
 				}
 			}
 		}

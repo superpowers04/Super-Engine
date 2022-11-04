@@ -144,15 +144,15 @@ class MainMenuState extends SickMenuState
 			add(outdatedLMAO);
 		}
 		//  Whole bunch of checks to prevent crashing
-		if (!TitleState.choosableCharacters.contains(FlxG.save.data.playerChar) && FlxG.save.data.playerChar != "automatic"){
+		if (TitleState.retChar(FlxG.save.data.playerChar) == "" && FlxG.save.data.playerChar != "automatic"){
 			errorMessage += '\n${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
 			FlxG.save.data.playerChar = "bf";
 		}
-		if (!TitleState.choosableCharacters.contains(FlxG.save.data.opponent)){
+		if (TitleState.retChar(FlxG.save.data.opponent) == null){
 			errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to BF!';
 			FlxG.save.data.opponent = "bf";
 		}
-		if (!TitleState.choosableCharacters.contains(FlxG.save.data.gfChar)){
+		if (TitleState.retChar(FlxG.save.data.gfChar) == null){
 			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
 			FlxG.save.data.gfChar = "gf";
 		}
@@ -268,6 +268,9 @@ class MainMenuState extends SickMenuState
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));
 		triedChar = false;
+		if(daChoice != "other" && daChoice != 'back'){
+			FlxTween.tween(grpControls.members[sel],{x:500},0.4,{ease:FlxEase.quadIn});
+		}
 		
 		switch (daChoice)
 		{

@@ -902,7 +902,7 @@ class CharAutoBFOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Force selected player " + (!FlxG.save.data.charAutoBF ? "on" : "off");
+		return "Force selected player " + (!FlxG.save.data.charAutoBF ? "off" : "on");
 	}
 }
 class AnimDebugOption extends Option
@@ -1082,7 +1082,7 @@ class ReloadCharlist extends Option
 	}
 
 	override function getValue():String {
-		return '${TitleState.choosableCharacters.length} char${CoolUtil.multiInt(TitleState.choosableCharacters.length)}, and ${TitleState.choosableStages.length} stage${CoolUtil.multiInt(TitleState.choosableStages.length)} recognized';
+		return '${TitleState.characters.length} char${CoolUtil.multiInt(TitleState.characters.length)}, and ${TitleState.choosableStages.length} stage${CoolUtil.multiInt(TitleState.choosableStages.length)} recognized';
 	}
 
 }

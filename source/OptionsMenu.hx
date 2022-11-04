@@ -148,8 +148,6 @@ class OptionsMenu extends MusicBeatState
 
 	private var currentDescription:String = "";
 	private var grpControls:FlxTypedGroup<Alphabet>;
-	private var grpControls_:FlxTypedGroup<Alphabet>;
-	private var catControls:FlxTypedGroup<Alphabet>;
 	public static var versionShit:FlxText;
 	var timer:FlxTimer;
 
@@ -259,7 +257,7 @@ class OptionsMenu extends MusicBeatState
 						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 					}
 				curSelected = selCat;
-				changeSelection(0,false);
+				changeSelection(0);
 				addTitleText();
 				updateOffsetText();
 			}
@@ -326,17 +324,7 @@ class OptionsMenu extends MusicBeatState
 					isCat = true;
 					var start = 0;
 					var iy = FlxG.height * 0.50;
-					if ( grpControls_ == null) {grpControls_ = new FlxTypedGroup<Alphabet>();add(grpControls_);}
-					CoolUtil.clearFlxGroup(grpControls);					
-
-					if (catControls != null){
-						start = 4;
-						iy=FlxG.height;
-
-						catControls.clear();
-						curSelected = 0;
-						changeSelection(0);
-					}
+					CoolUtil.clearFlxGroup(grpControls);
 					for (i in start...currentSelectedCat.getOptions().length)
 						{
 							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
@@ -389,17 +377,16 @@ class OptionsMenu extends MusicBeatState
 			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 	}
 
-	function changeSelection(change:Int = 0,?upCat = true)
+	function changeSelection(change:Int = 0)
 	{
 
 		if (change != 0 )FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-		if(transitioning) return;
 
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = grpControls.length - 1;
-		if (curSelected >= grpControls.length)
+			curSelected = grpControls.members.length - 1;
+		if (curSelected >= grpControls.members.length)
 			curSelected = 0;
 
 		if (isCat)

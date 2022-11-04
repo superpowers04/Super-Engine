@@ -84,6 +84,7 @@ class RepoState extends SickMenuState
 			MainMenuState.handleError('This feature is not supported on ${Sys.systemName()}!');
 			return;
 		#else
+	
 		descriptions = [];
 		if (!sys.FileSystem.exists(unarExe)) {
 			MainMenuState.handleError("This feature requires 7-Zip to be installed");
@@ -183,7 +184,7 @@ class RepoState extends SickMenuState
 	}
 	function updateText(){
 		installingText.text = 'Installing ${installing} mod${if (installing != 1) 's' else '' }';
-		installedText.text = if (TitleState.choosableCharacters.contains(repoArray.characters[curSelected].name)) "Installed" else "Not Installed";
+		installedText.text = if (TitleState.retChar(repoArray.characters[curSelected].name) != "") "Installed" else "Not Installed";
 	#end
 	}
 	function finishDownload(data:Bytes,char:RepoCharsJSON,sel:Int){

@@ -54,6 +54,8 @@ import tjson.Json;
 
 import haxe.iterators.StringIterator;
 import haxe.iterators.StringKeyValueIterator;
+import hscript.InterpEx;
+import hscript.Expr;
 
 #if cpp
 using cpp.NativeString;
@@ -78,11 +80,11 @@ class HscriptUtils {
 	 * @return Interp
 	 */
 	public static function createSimpleInterp():Interp {
-		var reterp = new Interp();
+		var reterp = new InterpEx();
 		reterp = addVarsToInterp(reterp);
 		return reterp;
 	}
-	public static function eval<T:Interp>(interp:T,str:String):Array<Dynamic>{ // [Errored, Error message if so, stack if present,stage]
+	public static function eval<T:Interp>(interp:T,parser:hscript.Parser,str:String):Array<Dynamic>{ // [Errored, Error message if so, stack if present,stage]
 		if(str == null || str == ""){
 			return [true,'Eval string is empty',null,'str != null'];
 		}
@@ -97,6 +99,7 @@ class HscriptUtils {
 
 			// parser.parseModule(songScript);
 			program = parser.parseString(str);
+			if(program == null){throw('Parser is null?');}
 		}catch(e){return [true,'Line:${parser.line};\n Error:${e.message}',null,'Parsing'];}
 		// catch(e){
 		// 	return [true,e.message,e.stack,'Parsing'];
@@ -109,7 +112,28 @@ class HscriptUtils {
 		}
 		return [false];
 	}
-	 public static function addVarsToInterp<T:Interp>(interp:T):T {
+	public static function genErrorMessage(e:hscript.Expr.Error,func:String,id:String,?line:String = ""):String {
+		var message = switch( #if hscriptPos e.e #else e #end ) {
+			case EInvalidChar(c): "Invalid character: '"+(StringTools.isEof(c) ? "EOF" : String.fromCharCode(c))+"' ("+c+")";
+			case EUnexpected(s): "Unexpected token: \""+s+"\"";
+			case EUnterminatedString: "Unterminated string";
+			case EUnterminatedComment: "Unterminated comment";
+			case EInvalidPreprocessor(str): "Invalid preprocessor (" + str + ")";
+			case EUnknownVariable(v): "Unknown variable: "+v;
+			case EInvalidIterator(v): "Invalid iterator: "+v;
+			case EInvalidOp(op): "Invalid operator: "+op;
+			case EInvalidAccess(f): "Invalid access to field " + f;
+			case ECustom(msg): msg;
+		};
+		#if hscriptPos
+			return	'Function "${func}" caused exception for "$id"\n'+
+					'${e.origin}:${e.line}$line\n$message';
+		#else
+			return message;
+		#end
+
+	}
+	public static function addVarsToInterp<T:Interp>(interp:T):T {
 		// // : )
 		// SE Specific
 		interp.variables.set("Character", Character);

@@ -18,6 +18,7 @@ import flixel.FlxG;
 import flixel.system.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;
 import lime.media.AudioBuffer;
+// import vlc.VLCSound;
 
 class SELoader {
 
@@ -100,9 +101,7 @@ class SELoader {
 		if(!FileSystem.exists(soundPath)){
 			handleError('${id}: Sound "${soundPath}" doesn\'t exist!');
 		}
-		var _AB = AudioBuffer.fromFile(soundPath);
-		if(_AB.bitsPerSample > 200000){trace('${soundPath} has a really high bitrate(${_AB.bitsPerSample}), Flixel usually doesn\'t like that, so this file might not load! ');}
-		return Sound.fromAudioBuffer(_AB);
+		return Sound.fromFile(soundPath);
 	}
 	public static function loadFlxSound(soundPath:String):FlxSound{
 		return new FlxSound().loadEmbedded(loadSound(soundPath));

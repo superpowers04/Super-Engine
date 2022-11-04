@@ -443,6 +443,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		onlinemod.OfflinePlayState.nameSpace = "";
 		if(nameSpaces[sel] != null){
 			onlinemod.OfflinePlayState.nameSpace = nameSpaces[sel];
+			trace('Using namespace ${onlinemod.OfflinePlayState.nameSpace}');
 		}
 		lastSel = sel;
 		lastSearch = searchField.text;

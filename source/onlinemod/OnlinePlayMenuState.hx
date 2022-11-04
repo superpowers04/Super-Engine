@@ -46,6 +46,9 @@ class OnlinePlayMenuState extends MusicBeatState
 		OnlinePlayState.useSongChar = ["","",""];
 		errorMessage = message;
 		errorColor = color;
+		if(OnlineHostMenu.socket != null){
+			OnlineHostMenu.shutdownServer();
+		}
 		QuickOptionsSubState.setSetting("Song hscripts",false);
 		scripts = [];
 		rawScripts = [];

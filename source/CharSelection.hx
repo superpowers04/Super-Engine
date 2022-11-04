@@ -13,6 +13,7 @@ import flixel.tweens.FlxEase;
 
 import sys.io.File;
 import sys.FileSystem;
+import TitleState;
 
 using StringTools;
 
@@ -21,6 +22,9 @@ class CharSelection extends SearchMenuState
 	var defText:String = "Use shift to scroll faster";
 	var uiIcon:HealthIcon;
 	var curChar = "";
+	var descriptions:Map<String,String> = [];
+	var chars:Map<String,CharInfo> = [];
+	var invalid:Array<String> = [];
 	override function addToList(char:String,i:Int = 0){
 		songs.push(char);
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false);
@@ -28,7 +32,7 @@ class CharSelection extends SearchMenuState
 		controlLabel.targetY = i;
 		if (i != 0)
 			controlLabel.alpha = 0.6;
-		if(TitleState.invalidCharacters.contains(char)){
+		if(invalid.contains(char)){
 			controlLabel.color = FlxColor.RED;
 		}
 		if(char == curChar){
@@ -48,17 +52,22 @@ class CharSelection extends SearchMenuState
 			curChar = FlxG.save.data.gfChar;
 	}
 	searchList = [];
-	for (i in TitleState.choosableCharacters) {
-		searchList.push(i);
-	}
+	descriptions = [];
 	if(TitleState.invalidCharacters.length > 0){
 		for (i in 0 ... TitleState.invalidCharacters.length) {
-			searchList.insert(0,TitleState.invalidCharacters[i]);
+			invalid.push(TitleState.invalidCharacters[i][0]);
+			searchList.push(TitleState.invalidCharacters[i][0]);
+			descriptions[TitleState.invalidCharacters[i][0]] = 'This character is invalid, you need to set them up in Animation Debug. To set them up now, press 1 for BF, 2 for dad, 3 for GF. If you need help please ask on my Discord, you can access it from the changelog screen';
 		}
+	}
+	for (i => v in TitleState.characters) {
+		searchList[invalid.length + i - 1] = v.id;
+		chars[ v.id] = v;
+		descriptions[v.id] = v.description;
 	}
 
 	if (Options.PlayerOption.playerEdit == 0){
-		if(!searchList.contains("automatic")) searchList.insert(0,"automatic");
+		if(!searchList.contains("automatic")){searchList.insert(0,"automatic");descriptions['automatic'] = 'Automatically choose whatever BF is suitable for the chart';}
 	} else if (searchList.contains("automatic")) searchList.remove("automatic");
 	super.create();
 	var title = "";
@@ -97,19 +106,20 @@ class CharSelection extends SearchMenuState
 		super.changeSelection(change);
 		retAfter = true;
 
-		if (songs[curSelected] != "" && TitleState.invalidCharacters.contains(songs[curSelected])){
-			grpSongs.members[curSelected].color = FlxColor.RED;
-			updateInfoText('This character is invalid, you need to set them up in Animation Debug. To set them up now, press 1 for BF, 2 for dad, 3 for GF. If you need help please ask on my Discord, you can access it from the changelog screen');
-		}else if (songs[curSelected] != "" && TitleState.characterDescriptions[songs[curSelected]] != null && TitleState.characterDescriptions[songs[curSelected]] != "" ){
-			updateInfoText('${defText}; ' + TitleState.characterDescriptions[songs[curSelected]]);
+		// if (songs[curSelected] != "" && TitleState.invalidCharacters.contains(songs[curSelected])){
+		// 	grpSongs.members[curSelected].color = FlxColor.RED;
+		// 	updateInfoText();
+		// }else 
+		if (songs[curSelected] != "" && descriptions[songs[curSelected]] != null ){
+			updateInfoText('${defText}; ' + descriptions[songs[curSelected]]);
 		}else{
 			updateInfoText('${defText}; No description for this character.');
 		}
-		uiIcon.changeSprite(songs[curSelected],'face',false,(if(TitleState.characterPaths[songs[curSelected]] != null) TitleState.characterPaths[songs[curSelected]] else null) );
+		uiIcon.changeSprite(songs[curSelected],'face',false,(if(chars[songs[curSelected]] != null) chars[songs[curSelected]].path else null) );
 	}
 
 	override function select(sel:Int = 0){
-	if(TitleState.invalidCharacters.contains(songs[curSelected])){
+	if(curSelected < TitleState.invalidCharacters.length + 1 && invalid.contains(songs[curSelected])){
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		FlxTween.tween(grpSongs.members[curSelected], {x: grpSongs.members[curSelected].x + 100}, 0.4, {ease: FlxEase.bounceInOut,onComplete: function(twn:FlxTween){return;}});
 		FlxTween.tween(infotext, {alpha:0}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){FlxTween.tween(infotext, {alpha:1}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){return;}});}});

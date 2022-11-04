@@ -64,7 +64,6 @@ import Xml;
 import hscript.Expr;
 import hscript.Interp;
 import hscript.InterpEx;
-import hscript.ParserEx;
 
 import CharacterJson;
 import StageJson;
@@ -159,6 +158,7 @@ class PlayState extends MusicBeatState
 		public static var noteBools:Array<Bool> = [false, false, false, false];
 		public static var p2canplay = false;//TitleState.p2canplay
 		public var notes:FlxTypedGroup<Note>;
+		public var eventNotes:FlxTypedGroup<Note>; // The above but doesn't need to update anything beyond the strumtime
 		public var unspawnNotes:Array<Note> = [];
 		public var strumLine:FlxSprite;
 		public var strumLineNotes:FlxTypedGroup<StrumArrow> = null;
@@ -189,6 +189,7 @@ class PlayState extends MusicBeatState
 		public static var songScript:String = "";
 		public static var hsBrTools:HSBrTools;
 		public static var nameSpace:String = "";
+		public static var nsType:String = "";
 		public var realtimeCharCam:Bool = true;
 		public var moveCamera(default,set):Bool = true;
 		public function set_moveCamera(v):Bool{
@@ -373,6 +374,8 @@ class PlayState extends MusicBeatState
 			if(FinishSubState != null){
 				showTempmessage('Error! ${error}',FlxColor.RED);
 			}
+
+			Main.game.blockUpdate = Main.game.blockDraw = false;
 			openSubState(new FinishSubState(0,0,error,_forced));
 		}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
 		}
@@ -397,7 +400,14 @@ class PlayState extends MusicBeatState
 			
 			var method = interps[id].variables.get(func_name);
 			Reflect.callMethod(interps[id],method,args);
-		}catch(e:hscript.Expr.Error){handleError('${func_name} for ${id}:\n ${e.toString()}');}
+		}catch(e:hscript.Expr.Error){
+			var line = '';
+			try{
+				line = ':"${interps[id].variables.get('scriptContents').split('\n')[e.line]}"';
+			}catch(e){line="";trace(e.message);}
+			handleError(HscriptUtils.genErrorMessage(e,func_name,id));
+			// handleError('${func_name} for ${id}:\n ${e.toString()}');
+		}
 	}
 
 	public function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
@@ -433,7 +443,7 @@ class PlayState extends MusicBeatState
 	public function parseRun(?script:String = "",?id:String = "song"){
 		if(script != ""){return;}
 		if(interps[id] == null){
-			parseHScript(script,id);
+			parseHScript(script,null,id,"eval");
 		}else{
 			var parser = new hscript.Parser();
 			try{
@@ -446,7 +456,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
-	public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song"){
+	public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"){
 		// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled or during online play
 		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return;}
 		var songScript = songScript;
@@ -454,14 +464,13 @@ class PlayState extends MusicBeatState
 		if (script != "") songScript = script;
 		if (brTools == null && hsBrTools != null) brTools = hsBrTools;
 		if (songScript == "") {return;}
-		var interp = HscriptUtils.createSimpleInterp();
-		var parser = new hscript.Parser();
+		var parser:hscript.Parser = new hscript.Parser();
+		var interp:Interp = HscriptUtils.createSimpleInterp();
 		try{
 			parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
 
-			var program;
 			// parser.parseModule(songScript);
-			program = parser.parseString(songScript);
+			var program = parser.parseString(songScript,file);
 
 			if (brTools != null) {
 				trace('Using hsBrTools');
@@ -474,6 +483,7 @@ class PlayState extends MusicBeatState
 			// Access current state without needing to be inside of a function with ps as an argument
 			interp.variables.set("state",this); 
 			interp.variables.set("game",this);
+			interp.variables.set("scriptContents",script);
 
 			interp.variables.set("charGet",charGet); 
 			interp.variables.set("charSet",charSet);
@@ -492,7 +502,12 @@ class PlayState extends MusicBeatState
 			callInterp("initScript",[],id);
 			interpCount++;
 		}catch(e){
-			handleError('Error parsing ${id} hscript, Line:${parser.line};\n Error:${e.message}');
+			var _line = '${parser.line}';
+			try{
+				var _split = script.split('\n');
+				_line = '${parser.line};"${_split[parser.line]}"';
+			}catch(e){_line = '${parser.line}';}
+			handleError('Error parsing ${id} hscript\n Line:${_line}\n ${e.message}');
 			// interp = null;
 		}
 		trace('Loaded ${id} script!');
@@ -551,7 +566,7 @@ class PlayState extends MusicBeatState
 		if(interps['${nameSpace}-${v}'] != null || interps['global-${v}'] != null) return true; // Don't load the same script twice
 		trace('Checking for ${v}');
 		if (FileSystem.exists('mods/scripts/${v}/script.hscript')){
-			parseHScript(SELoader.loadText('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'${nameSpace}-${v}');
+			parseHScript(SELoader.loadText('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'${nameSpace}-${v}','mods/scripts/${v}/script.hscript');
 		// }else if (FileSystem.exists('mods/dependancies/${v}/script.hscript')){
 		// 	parseHScript(File.getContent('mods/dependancies/${v}/script.hscript'),new HSBrTools('mods/dependancies/${v}',v),'${nameSpace}-${v}');
 		}else{showTempmessage('Script \'${v}\'' + (if(script == "") "" else ' required by \'${script}\'') + ' doesn\'t exist!');}
@@ -589,7 +604,7 @@ class PlayState extends MusicBeatState
 		}
 		var e = v.substr(0,v.lastIndexOf("/"));
 		e = e.substr(0,e.lastIndexOf("/"));
-		parseHScript(SELoader.loadText('${v}'),new HSBrTools(v.substr(0,v.lastIndexOf("/"))),'${e}-${v.substr(v.lastIndexOf("/"))}');
+		parseHScript(SELoader.loadText('${v}'),new HSBrTools(v.substr(0,v.lastIndexOf("/"))),'${e}-${v.substr(v.lastIndexOf("/"))}',v);
 	}
 	public function loadScript(v:String){
 		if (FileSystem.exists('mods/scripts/${v}')){
@@ -601,24 +616,27 @@ class PlayState extends MusicBeatState
 						if(v.contains(i)) cont = true;
 					}
 					if(cont) continue;
-					parseHScript(SELoader.loadText('mods/scripts/${v}/$i'),brtool,'global-${v}-${i}');
+					parseHScript(SELoader.loadText('mods/scripts/${v}/$i'),brtool,'global-${v}-${i}','mods/scripts/${v}/$i');
 				}
 			}
 			// parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'global-${v}');
 		}else{showTempmessage('Global script \'${v}\' doesn\'t exist!');}
 	}
 	override public function new(){
+		LoadingScreen.loadingText = "Starting Playstate";
 		super();
 		checkInputFocus = false;
 		PlayState.player1 = "";
 		PlayState.player2 = "";
 		PlayState.player3 = "";
 	}
-	override public function create()
-	{
+
+	
+	override public function create(){
 		#if !debug
 		try{
 		#end
+		LoadingScreen.loadingText = 'Loading playstate variables';
 		if (instance != null) instance.destroy();
 		downscroll = FlxG.save.data.downscroll;
 		middlescroll = FlxG.save.data.middleScroll;
@@ -667,6 +685,7 @@ class PlayState extends MusicBeatState
 		
 		//dialogue shit
 		loadDialog();
+		LoadingScreen.loadingText = "Loading stage";
 		// Stage management
 		var bfPos:Array<Float> = [0,0]; 
 		var gfPos:Array<Float> = [0,0]; 
@@ -795,7 +814,7 @@ class PlayState extends MusicBeatState
 							var brTool = new HSBrTools(stagePath);
 							for (i in CoolUtil.orderList(FileSystem.readDirectory(stagePath))) {
 								if(i.endsWith(".hscript")){
-									parseHScript(File.getContent('$stagePath/$i'),brTool,"STAGE-" + i);
+									parseHScript(File.getContent('$stagePath/$i'),brTool,"STAGE-" + i,'$stagePath/$i');
 								}
 							}
 							
@@ -803,12 +822,14 @@ class PlayState extends MusicBeatState
 					}
 				}
 		}
+		LoadingScreen.loadingText = "Loading scripts";
 		parseHScript(songScript,null,"song");
 		if(QuickOptionsSubState.getSetting("Song hscripts") && FlxG.save.data.scripts != null){
 			for (i in 0 ... FlxG.save.data.scripts.length) {
 				
 				var v = FlxG.save.data.scripts[i];
 				trace('Checking for ${v}');
+				LoadingScreen.loadingText = 'Loading script: $v';
 				loadScript(v);
 			}
 		}
@@ -817,6 +838,7 @@ class PlayState extends MusicBeatState
 				
 				var v = scripts[i];
 				trace('Loading ${v}');
+				LoadingScreen.loadingText = 'Loading script: $v';
 				loadSingleScript(v);
 			}
 		}
@@ -825,6 +847,7 @@ class PlayState extends MusicBeatState
 				
 				var v = onlinemod.OnlinePlayMenuState.scripts[i];
 				trace('Checking for ${v}');
+				LoadingScreen.loadingText = 'loading script: $v';
 				loadScript(v);
 			}
 		}
@@ -832,34 +855,32 @@ class PlayState extends MusicBeatState
 		if(onlinemod.OnlinePlayMenuState.socket != null){
 
 			for (i in 0 ... onlinemod.OnlinePlayMenuState.rawScripts.length) {
-				parseHScript(onlinemod.OnlinePlayMenuState.rawScripts[i][1],hsBrTools,onlinemod.OnlinePlayMenuState.rawScripts[i][0]);
+				parseHScript(onlinemod.OnlinePlayMenuState.rawScripts[i][1],hsBrTools,onlinemod.OnlinePlayMenuState.rawScripts[i][0],'onlineScript:$i');
 			}
 		}
-		if(PlayState.player1 == "")PlayState.player1 = SONG.player2;
+		if(PlayState.player1 == "")PlayState.player1 = TitleState.retChar(PlayState.player1);
 		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
 		callInterp("afterStage",[]);
 
 
-		if ((FlxG.save.data.charAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
+		if (TitleState.retChar(PlayState.player2) != "" && (FlxG.save.data.charAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode)){ // Check is second player is a valid character
 			PlayState.player2 = TitleState.retChar(PlayState.player2);
 		}else{
 			PlayState.player2 = FlxG.save.data.opponent;
     	}
-		if ((FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) && TitleState.retChar(PlayState.player1) != ""){ // Check is second player is a valid character
-			PlayState.player1 = TitleState.retChar(PlayState.player1);
-			if(PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic"){
-				PlayState.player1 = FlxG.save.data.playerChar;
-			}
-		}else{
+    	
+		if((PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || !(TitleState.retChar(PlayState.player1) != "" && (FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) )){
 			PlayState.player1 = FlxG.save.data.playerChar;
-    	}
+		}
 		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
 		// 	var pl:Array<String> = [player1,player2];
 		// 	player1 = pl[1];
 		// 	player2 = pl[0];
 		// }
 		if(loadChars){
+
+			LoadingScreen.loadingText = "Loading GF";
 			switch (SONG.gfVersion)
 			{
 				case 'gf-car':
@@ -875,9 +896,13 @@ class PlayState extends MusicBeatState
 			gfChar = player3;
 			 gf = (if (FlxG.save.data.gfShow && loadChars && gfShow) new Character(400, 100, player3,false,2) else new EmptyCharacter(400, 100));
 			gf.scrollFactor.set(0.95, 0.95);
+			
+			LoadingScreen.loadingText = "Loading opponent";
 			if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
 			if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
 			 dad = (if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2)) new Character(100, 100, player2,false,1) else new EmptyCharacter(100, 100));
+
+			 LoadingScreen.loadingText = "Loading BF";
 			 boyfriend = (if (FlxG.save.data.bfShow && loadChars) new Character(770, 100, player1,true,0) else new EmptyCharacter(770,100));
 		}else{
 			dad = new EmptyCharacter(100, 100);
@@ -888,6 +913,7 @@ class PlayState extends MusicBeatState
 
 		camPos.set(camPos.x + gf.camX, camPos.y + gf.camY);
 		
+		LoadingScreen.loadingText = "Adding characters";
 
 		// REPOSITIONING PER STAGE
 		for (i => v in [bfPos,dadPos,gfPos]) {
@@ -983,8 +1009,10 @@ class PlayState extends MusicBeatState
 
 
 
+		LoadingScreen.loadingText = "Loading chart";
 		generateSong(SONG.song);
 
+		LoadingScreen.loadingText = "Loading UI";
 		// add(strumLine);
 
 
@@ -1098,11 +1126,11 @@ class PlayState extends MusicBeatState
 
 		
 
-		iconP1 = new HealthIcon(player1, true,boyfriend.clonedChar,boyfriend.charLoc);
+		iconP1 = new HealthIcon(bf.getNamespacedName(), true,boyfriend.clonedChar,boyfriend.charLoc);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
-		iconP2 = new HealthIcon(player2, false,dad.clonedChar,dad.charLoc);
+		iconP2 = new HealthIcon(dad.getNamespacedName(), false,dad.clonedChar,dad.charLoc);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		// iconP2.offset.set(0,iconP2.width);
 
@@ -1189,11 +1217,13 @@ class PlayState extends MusicBeatState
 		// FlxG.sound.cache("missnote3");
 		
 
+		LoadingScreen.loadingText = "Finishing up";
 		super.create();
 
-
-
 		openfl.system.System.gc();
+
+
+		LoadingScreen.loadingText = "Done!";
 	#if !debug 
 	}catch(e){MainMenuState.handleError(e,'Caught "create" crash: ${e.message}\n ${e.stack}');}
 	#end
@@ -1642,7 +1672,10 @@ class PlayState extends MusicBeatState
 		var songData = SONG;
 		if (notes == null)
 			notes = new FlxTypedGroup<Note>();
+		if (eventNotes == null)
+			eventNotes = new FlxTypedGroup<Note>();
 		CoolUtil.clearFlxGroup(notes);
+		CoolUtil.clearFlxGroup(eventNotes);
 		// add(notes);
 		add(notes);
 		Note.lastNoteID = -1;
@@ -1670,19 +1703,14 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				daStrumTime = songNotes[0] + FlxG.save.data.offset;
-				if (daStrumTime < 0)
-					daStrumTime = 0;
-
+				if (daStrumTime < 0) daStrumTime = 0;
+				if(daStrumTime < Conductor.songPosition) continue;
 
 				var daNoteData:Int = songNotes[1];
 
 
-				var gottaHitNote:Bool = section.mustHitSection;
+				var gottaHitNote:Bool = (if (daNoteData % 8 > 3) !section.mustHitSection else section.mustHitSection);
 
-				if (daNoteData % 8 > 3)
-				{
-					gottaHitNote = !section.mustHitSection;
-				}
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -1694,11 +1722,12 @@ class PlayState extends MusicBeatState
 				if(swagNote.killNote){swagNote.destroy();continue;}
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
+				unspawnNotes.push(swagNote);
+				if(swagNote.eventNote) continue;
 
 				var susLength:Float = swagNote.sustainLength;
 
 				susLength = susLength / Conductor.stepCrochet;
-				unspawnNotes.push(swagNote);
 				var lastSusNote = false; // If the last note is a sus note
 				var _susNote = -1;
 				if(susLength > 0.1){
@@ -2189,6 +2218,9 @@ class PlayState extends MusicBeatState
 					}else{
 						Conductor.songPosition = FlxG.sound.music.time;
 					}
+					if(vocals != null && vocals.playing && Conductor.songPosition > vocals.length){
+						vocals.pause();
+					}
 					lastFrameTime = FlxG.sound.music.time;
 
 			}
@@ -2278,6 +2310,8 @@ class PlayState extends MusicBeatState
 					unspawnNotes.remove(unspawnNotes[0]); // Why the fuck do I have to do this?
 					if(!dunceNote.eventNote && unspawnNotes[0].strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms back
 						dunceNote.destroy();
+					}else if(dunceNote.eventNote){ // eventNote
+						eventNotes.add(dunceNote);
 					}else{ // we add note lmao
 						notes.add(dunceNote);
 					}
@@ -2340,7 +2374,27 @@ class PlayState extends MusicBeatState
 						// }
 			});
 		}
+		if(eventNotes.members.length > 0){
+			var i = 0;
+			var note:Note;
+			var noteKill:Array<Note> = [];
+			while (i < eventNotes.members.length){
+				note = eventNotes.members[i];
+				i++;
+				if(note != null){
+					if(note.strumTime <= Conductor.songPosition){
+						note.hit(note);
+						note.destroy();
+						noteKill.push(note);
+					}
+				}
+			}
+			while(noteKill.length > 0){
+				var n = noteKill.pop();
+				eventNotes.remove(n);
 
+			}
+		}
 
 		if (!inCutscene)
 			keyShit();
@@ -3083,10 +3137,13 @@ class PlayState extends MusicBeatState
 					var possibleNotes:Array<Note> = []; // notes that can be hit
 					var directionList:Array<Int> = []; // directions that can be hit
 					var dumbNotes:Array<Note> = []; // notes to kill later
-		 
-					notes.forEachAlive(function(daNote:Note)
+		 			var i = notes.members.length;
+					var daNote:Note;
+					while (i > 0) 
 					{
-						if (daNote.skipNote) return;
+						daNote = notes.members[i];
+						i--;
+						if (daNote == null || daNote.skipNote) continue;
 						if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 						{
 							if (directionList.contains(daNote.noteData))
@@ -3113,7 +3170,7 @@ class PlayState extends MusicBeatState
 								directionList.push(daNote.noteData);
 							}
 						}
-					});
+					};
 		 
 					for (note in dumbNotes)
 					{
@@ -3302,9 +3359,13 @@ class PlayState extends MusicBeatState
 			{
 				var _scrollSpeed = FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2); // Probably better to calculate this beforehand
 				var strumNote:StrumArrow;
-				notes.forEachAlive(function(daNote:Note)
+				var i = notes.members.length - 1;
+				var daNote:Note;
+				while (i > -1)
 				{	
-
+					daNote = notes.members[i];
+					i--;
+					if(daNote == null || !daNote.alive) continue;
 					// instead of doing stupid y > FlxG.height
 					// we be men and actually calculate the time :)
 					if (daNote.tooLate)
@@ -3375,8 +3436,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-					if (daNote.skipNote) return;
-		
+					if (daNote.skipNote) continue;
 	
 					if ((daNote.mustPress || !daNote.wasGoodHit) && daNote.lockToStrum){
 						daNote.visible = strumNote.visible;
@@ -3443,7 +3503,7 @@ class PlayState extends MusicBeatState
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
 					
-				});
+				}
 			}
 	}
 	var holdArray:Array<Bool> = [];

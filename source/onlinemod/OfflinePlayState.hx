@@ -56,6 +56,7 @@ class OfflinePlayState extends PlayState
   }
 
   function loadSongs(){
+  		LoadingScreen.loadingText = "Loading music";
 		if(lastVoicesFile != voicesFile && loadedVoices != null){
 			loadedVoices.destroy();
 		}
@@ -75,6 +76,9 @@ class OfflinePlayState extends PlayState
 				if(voicesFile == "" && PlayState.SONG != null){
 					loadedVoices =  new FlxSound();
 					PlayState.SONG.needsVoices = false;
+				}
+				if(loadedVoices.length < 1){
+					trace('Voices.ogg didn\'t load properly. Try converting to MP3 and then into OGG Vorbis');
 				}
 
 			}

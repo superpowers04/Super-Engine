@@ -254,12 +254,12 @@ class OnlineHostMenu extends MusicBeatState
 					// 	closeSocket(socketID);
 					// }
 				case Packets.SEND_PASSWORD:
+					if(data[0] == null) data[0] = "";
 					Sender.SendPacket(Packets.PASSWORD_CONFIRM, [(if(data[0] == serverVariables["password"]) 0 else 1)], socket);
 					if(data[0] != serverVariables["password"]) closeSocket(socketID);
 				case Packets.SEND_NICKNAME:
 					if(data[0] != "unspecified" || clientsFromNames[data[0]] != null){
 						Sender.SendPacket(Packets.NICKNAME_CONFIRM, [1], socket);
-						closeSocket(socketID);
 					}else{
 						clientsFromNames[data[0]] = socketID;
 						player.nick = data[0];

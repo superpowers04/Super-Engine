@@ -15,6 +15,7 @@ import haxe.DynamicAccess;
 import lime.utils.Assets;
 import lime.graphics.Image;
 import CharacterJson;
+import TitleState;
 import flixel.util.FlxColor;
 
 import flash.media.Sound;
@@ -117,9 +118,9 @@ class Character extends FlxSprite
 			"danceLeft" => 0,
 			"danceright" => 0,
 			"danceleft" => 0,
-			"hey" => 5,
-			"cheer" => 5,
-			"scared" => 5,
+			"hey" => 13,
+			"cheer" => 13,
+			"scared" => 13,
 			"win" => 100,
 			"lose" => 100,
 			"hurt" => 10,
@@ -141,7 +142,10 @@ class Character extends FlxSprite
 		var animHasFinished:Bool = false;
 	/* JSON things */
 		public var charProperties:CharacterJson;
+		public var charInfo:CharInfo;
 		public var curCharacter:String = 'bf';
+		public var namespace:String = "";
+		public function getNamespacedName():String{return (if(namespace != null && namespace != "") '$namespace|' else "") + curCharacter;}
 		public var camPos:Array<Int> = [0,0];
 		public var charX:Float = 0;
 		public var charY:Float = 0;
@@ -517,24 +521,36 @@ class Character extends FlxSprite
 			case 2: return FlxG.save.data.gfChar == curCharacter;
 		}
 	}
-
 	function loadCustomChar(){
-		if(!amPreview){
-			curCharacter = TitleState.retChar(curCharacter); // Make sure you're grabbing the right character
-		}			
-		if(charLoc == "mods/characters"){
-
-			if(TitleState.weekChars[curCharacter] != null && TitleState.weekChars[curCharacter].contains(onlinemod.OfflinePlayState.nameSpace) && TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter] != null){
-				charLoc = TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter];
-				trace('$curCharacter is loading from $charLoc');
-			}else if(TitleState.characterPaths[curCharacter] != null){
-				charLoc = TitleState.characterPaths[curCharacter];
-				trace('$curCharacter is loading from $charLoc');
+		if(amPreview){
+			charLoc = TitleState.findInvalidChar(curCharacter);
+			if(charLoc == null){
+				if(charInfo == null) charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
+				curCharacter = charInfo.folderName; // Make sure you're grabbing the right character
+				charLoc = charInfo.path;
+				namespace = charInfo.nameSpace;
+				trace(charInfo);
 			}
+		}else{
+			charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
+			curCharacter = charInfo.folderName;
+			charLoc = charInfo.path;
+			namespace = charInfo.nameSpace;
+			trace(charInfo);
 		}
+		// if(charLoc == "mods/characters"){
+
+		// 	if(TitleState.weekChars[curCharacter] != null && TitleState.weekChars[curCharacter].contains(onlinemod.OfflinePlayState.nameSpace) && TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter] != null){
+		// 		charLoc = TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter];
+		// 		trace('$curCharacter is loading from $charLoc');
+		// 	}else if(TitleState.characterPaths[curCharacter] != null){
+		// 		charLoc = TitleState.characterPaths[curCharacter];
+		// 		trace('$curCharacter is loading from $charLoc');
+		// 	}
+		// }
 		isCustom = true;
 		var charPropJson:String = "";
-		if(!FileSystem.exists('${charLoc}/$curCharacter/config.json')  && charProperties == null || (amPreview && FlxG.keys.pressed.SHIFT)){
+		if(!FileSystem.exists('${charLoc}/$curCharacter/config.json') && charProperties == null || (amPreview && FlxG.keys.pressed.SHIFT)){
 			if(amPreview){
 				// if(FlxG.keys.pressed.SHIFT) MusicBeatState.instance.showTempmessage("Forcing new JSON due to shift being held");
 				var idleName:String = "";
@@ -561,10 +577,14 @@ class Character extends FlxSprite
 				}');
 				animOffsets['all'] = [0.0,0.0];
 			}else{
-				MusicBeatState.instance.showTempmessage('Character ${curCharacter} is missing a config.json! You need to set them up in character selection. Using BF',FlxColor.RED);
 				// loadChar('bfHC');
+				if(curCharacter == "bf" || curCharacter == "gf"){
+					MainMenuState.handleError('Character ${curCharacter} has no character json and is a hardcoded character, Something went terribly wrong!');
+					return;
+				}
+				MusicBeatState.instance.showTempmessage('Character ${curCharacter} is missing a config.json!("${charLoc}/$curCharacter/config.json" is non-existant) You need to set them up in character selection. Using BF',FlxColor.RED);
 				curCharacter = "bf";
-				loadCustomChar();
+				loadChar();
 				return;
 			}
 		}else{
@@ -572,8 +592,6 @@ class Character extends FlxSprite
 			try{
 				if (charProperties == null) {charPropJson = File.getContent('${charLoc}/$curCharacter/config.json');charProperties = Json.parse(CoolUtil.cleanJSON(charPropJson));}
 			}catch(e){MainMenuState.handleError(e,'Character ${curCharacter} has a broken config.json! ${e.message}');
-				// loadChar('bfHC');
-
 				return;
 			}
 		}
@@ -741,14 +759,14 @@ class Character extends FlxSprite
 					case 'gf':
 						// GIRLFRIEND CODE
 						frames = tex = Paths.getSparrowAtlas('characters/GF_assets');
-					case 'bf','bfHC':
+					case 'bf' | 'bfHC':
 						frames = tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
 				}
 			}
 			if(charProperties == null){
 				switch (curCharacter)
 				{
-					case 'bf':// Hardcoded to atleast have a single character
+					case 'bf' | 'bfHC':// Hardcoded to atleast have a single character
 						charProperties = Json.parse(BFJSON);
 					case 'gf':// The game crashes if she doesn't exist, BF and GF must not be seperated
 						charProperties = Json.parse(GFJSON);
@@ -770,14 +788,14 @@ class Character extends FlxSprite
 		if (character == ""){
 			switch(charType){
 				case 0:character = "bf";
-				case 1:character = "dad";
+				case 1:character = "bf";
 				case 2:character = "gf";
 			}
 		}
 		curCharacter = character;
 		this.charType = charType;
 		this.useHscript = useHscript;
-		if (curCharacter == 'dad'){dadVar = 6.1;}
+		namespace = onlinemod.OfflinePlayState.nameSpace;
 
 		this.isPlayer = isPlayer;
 		amPreview = preview;

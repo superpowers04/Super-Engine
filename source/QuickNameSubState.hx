@@ -37,7 +37,7 @@ class QuickNameSubState extends MusicBeatSubstate{
 		// FlxG.state.persistentDraw = false;
 		// oldCam = FlxG.camera;
 		CoolUtil.toggleVolKeys(false);
-
+		
 		super();
 
 		var box = new FlxSprite(20,20).loadGraphic(FlxGraphic.fromRectangle(1240,680,0xdd000000));
@@ -84,6 +84,12 @@ class QuickNameSubState extends MusicBeatSubstate{
 			cancelButton.x = textBox.x + 2;
 			cancelButton.y = textBox.y + textBox.height + 5;
 			add(cancelButton);
+		}
+	}
+	override function update(e){
+		super.update(e);
+		if(FlxG.keys.justPressed.ESCAPE){
+			close();
 		}
 	}
 	var _grab:BitmapData;

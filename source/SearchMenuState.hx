@@ -207,10 +207,12 @@ class SearchMenuState extends MusicBeatState
 				ret();
 			}
 			if(songs.length <= 0 || !allowInput) return;
-			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
-			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
-			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
-			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(1);}
+			if(songs.length > 1){
+				if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
+				else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
+				if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
+				else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(1);}
+			}
 			extraKeys();
 
 			if (controls.ACCEPT)
@@ -243,7 +245,7 @@ class SearchMenuState extends MusicBeatState
 			
 			grpSongs.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();
-			curTween = FlxTween.tween(grpSongs.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm),{ease:FlxEase.circOut});
+			curTween = FlxTween.tween(grpSongs.members[curSelected],{"scale.x":1,"scale.y":1},(60 / Conductor.bpm),{ease:FlxEase.circOut});
 		}
 	}
 	function ret(){
@@ -253,14 +255,14 @@ class SearchMenuState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{try{
 		if (change != 0) FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-		if (grpSongs.length < 2){
-			return;
-		}
+		// if (grpSongs.length < 2){
+		// 	return;
+		// }
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = grpSongs.length - 1;
-		if (curSelected >= grpSongs.length)
+			curSelected = grpSongs.members.length - 1;
+		if (curSelected >= grpSongs.members.length)
 			curSelected = 0;
 
 		var bullShit:Int = 0;

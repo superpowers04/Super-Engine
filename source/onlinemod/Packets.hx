@@ -126,10 +126,10 @@ class Packet
   public function handle(buf:ByteArray)
   {
     var arguments:Array<Dynamic> = [];
-
-    for (type in types)
+    var i = 0;
+    while (i < types.length)
     {
-      switch (type.id)
+      switch (types[i].id)
       {
         case DataTypes.UINT:
           arguments.push(buf.readUnsignedInt());
@@ -148,6 +148,7 @@ class Packet
           buf.readBytes(bytes, 0, size);
           arguments.push(bytes);
       }
+      i++;
     }
     return arguments;
   }

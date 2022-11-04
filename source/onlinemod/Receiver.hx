@@ -27,6 +27,7 @@ class Receiver
   {
     this.HandleData = HandleData;
   }
+  public var isServer:Bool = false;
 
   public function OnData(data:ByteArray)
   {
@@ -47,7 +48,14 @@ class Receiver
           packet = PacketsShit.fields[packetId];
         else{
           // If the PacketID doesn't exist, close the socket.
-          FlxG.switchState(new OnlinePlayMenuState("Received invalid packet"));
+          // FlxG.switchState(new OnlinePlayMenuState("Received invalid packet"));
+          // Actually, nah, just print that the id was invalid
+          try{
+          	Chat.OutputChatMessage('Recieved abnormal packet with id $packetId?');
+          }catch(e){
+
+          }
+          trace('Recieved abnormal packet with id $packetId?');
           return;
         }
 
@@ -69,7 +77,16 @@ class Receiver
       if (bufferedBytes >= packet.varSpaces[w] + varLength && w == packet.varLengths.length)
       {
         // Handle the whole packet.
-        HandleData(packetId, packet.handle(consume(packet.size + varLength)));
+      	var _data:Array<Dynamic> = packet.handle(consume(packet.size + varLength));
+        if(OnlineHostMenu.socket != null){
+
+			var pktName:String = 'Unknown ID ${packetId}';
+			if(Packets.PacketsShit.fields[packetId] != null){
+				pktName = Packets.PacketsShit.fields[packetId].name;
+			}
+        	trace('Handling $pktName with data $_data');
+        }
+        HandleData(packetId, _data);
         w = 0;
         varLength = 0;
         endedPacket = true;
