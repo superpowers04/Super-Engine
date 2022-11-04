@@ -98,9 +98,9 @@ class ArrowSelection extends SearchMenuState
 		}
 
 	}
-	override function extraKeys(){
-		if(FlxG.keys.justPressed.CONTROL) {arrowDisplay = !arrowDisplay;updateArrowDisplay();}
-	}
+	// override function extraKeys(){
+		// if(FlxG.keys.justPressed.CONTROL) {arrowDisplay = !arrowDisplay;updateArrowDisplay();}
+	// }
 	var arrowDisplay:Bool = false;
 	public var notes:FlxTypedGroup<FakeNote> = new FlxTypedGroup<FakeNote>();
 	inline static var time = 100000000000;
@@ -113,36 +113,36 @@ class ArrowSelection extends SearchMenuState
 			var noteSus:FakeNote = null;
 			var noteSusEnd:FakeNote = null;
 			var strumNote:StrumArrow = null;
-			for (i in 0 ... 4) {
-				strumNote = playerStrums.members[i];
-				note = new FakeNote(time,i,null,false);
-				noteSus = new FakeNote(time,i,note,true);
-				noteSusEnd = new FakeNote(time,i,noteSus,true);
+			// for (i in 0 ... 4) {
+			// 	strumNote = playerStrums.members[i];
+			// 	note = new FakeNote(time,i,null,false);
+			// 	noteSus = new FakeNote(time,i,note,true);
+			// 	noteSusEnd = new FakeNote(time,i,noteSus,true);
 
-				note.x = strumNote.x + (strumNote.width * 0.5);
-				noteSus.x = strumNote.x + (strumNote.width * 0.5);
-				noteSusEnd.x = strumNote.x + (strumNote.width * 0.5);
+			// 	note.x = strumNote.x + (strumNote.width * 0.5);
+			// 	noteSus.x = strumNote.x + (strumNote.width * 0.5);
+			// 	noteSusEnd.x = strumNote.x + (strumNote.width * 0.5);
 
-				note.y = strumNote.y + strumNote.height;
-				noteSus.y = note.y + note.height;
-				noteSusEnd.y = noteSus.y + noteSus.height * 2;
+			// 	note.y = strumNote.y + strumNote.height;
+			// 	noteSus.y = note.y + note.height;
+			// 	noteSusEnd.y = noteSus.y + noteSus.height * 2;
 
-				notes.add(note);
-				notes.add(noteSus);
-				notes.add(noteSusEnd);
-			}
+			// 	notes.add(note);
+			// 	notes.add(noteSus);
+			// 	notes.add(noteSusEnd);
+			// }
 		}
 		for (i in notes.members) {
 			i.visible = arrowDisplay;
 		}
-		if(notes.members[0] != null && arrowDisplay){
-			var i:Int = 0;
-			var note:FakeNote = null;
-			while (i < notes.members.length) {
-				notes.members[i].changeSprite(songs[curSelected]);
-				i++;
-			}
-		}
+		// if(notes.members[0] != null && arrowDisplay){
+		// 	var i:Int = 0;
+		// 	var note:FakeNote = null;
+		// 	while (i < notes.members.length) {
+		// 		notes.members[i].changeSprite(songs[curSelected]);
+		// 		i++;
+		// 	}
+		// }
 	}
 	override function changeSelection(change:Int = 0){
 		super.changeSelection(change);

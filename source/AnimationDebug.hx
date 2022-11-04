@@ -140,6 +140,7 @@ class AnimationDebug extends MusicBeatState
 		if(file.endsWith(".osu") || file.endsWith(".osz") ){
 			return osu.OsuMenuState.fileDrop(file);
 		}
+		if(FlxG.state is PlayState) return;
 		var validFile:String = "";
 		var ending1 = "";
 		var ending2 = "";
@@ -1175,6 +1176,7 @@ class AnimationDebug extends MusicBeatState
 		if (hPress && editMode != 2) openSubState(new AnimHelpScreen(canEditJson,editMode));
 		switch(editMode){
 			case 0:{
+				if (rPress && !pressArray.contains(true)) spawnChar(true);
 				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
 				if(FlxG.mouse.justPressed){
 					lastMouseX = Std.int(FlxG.mouse.x);
@@ -1315,7 +1317,6 @@ class AnimationDebug extends MusicBeatState
 				// }
 			}
 		}
-		if (rPress && !pressArray.contains(true)) spawnChar(true);
 		if (reloadChar) spawnChar(true,false,charJson);
 
 		super.update(elapsed);
