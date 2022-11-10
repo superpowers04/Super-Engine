@@ -92,6 +92,9 @@ class SearchMenuState extends MusicBeatState
 		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
 		multi.MultiPlayState.scriptLoc = "";PlayState.nameSpace = "";PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
 		SickMenuState.chgTime = true;
+		if(Note.noteNames[0] == null){Note.noteNames = ["purple","blue","green",'red'];}
+		if(Note.noteAnims[0] == null){Note.noteAnims = ["singLEFT","singDOWN","singUP",'singRIGHT'];}
+		if(Note.noteDirections[0] == null){Note.noteDirections = ["LEFT","DOWN","UP",'RIGHT','NONE'];}
 		onlinemod.OfflinePlayState.nameSpace = "";
 	}
 	public static var doReset:Bool = true;

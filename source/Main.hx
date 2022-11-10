@@ -26,6 +26,7 @@ class Main extends Sprite
 {
 	public static var errorMessage = "";
 	public static var instance:Main;
+	public static var funniSprite:Sprite;
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
@@ -35,6 +36,11 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets 
 
 	public static var watermarks = true; // Whether to put Kade Engine liteartly anywhere
+
+	public static var game:FlxGameEnhanced;
+
+	public static var fpsCounter:Overlay;
+	public static var console:Console;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -92,9 +98,11 @@ class Main extends Sprite
 		// Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		
 		addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
+		funniSprite = new Sprite();
 
 		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
-		addChild(game);
+		addChild(funniSprite);
+		funniSprite.addChild(game);
 		LoadingScreen.show();
 		fpsCounter = new Overlay(0, 0);
 		addChild(fpsCounter);
@@ -127,10 +135,6 @@ class Main extends Sprite
 		}
 		FuckState.FUCK(null,message);
 	}
-	public static var game:FlxGameEnhanced;
-
-	public static var fpsCounter:Overlay;
-	public static var console:Console;
 	// var fpsOverlay:Overlay;
 
 	public function toggleFPS(fpsEnabled:Bool):Void {
@@ -198,27 +202,47 @@ class Main extends Sprite
 
 
 class FlxGameEnhanced extends FlxGame{
+	public var blockUpdate:Bool = false;
+	public var blockDraw:Bool = false;
+	public var blockEnterFrame:Bool = false;
 	public function forceStateSwitch(state:FlxState){ // Might be a bad idea but allows an error to force a state change to Mainmenu instead of softlocking
 		_requestedState = state;
 		switchState();
 	}
 	override function onEnterFrame(_){
 		try{
-			super.onEnterFrame(_);
+			if(!blockEnterFrame) super.onEnterFrame(_);
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.onEnterFrame");
 		}
 	}
+	function _update(){
+		super.update();
+	}
+	public var funniLoad:Bool = false;
 	override function update(){
 		try{
-			super.update();
+			#if(target.threaded && false)
+			if(_state != _requestedState && (funniLoad)){
+				blockUpdate = blockDraw = true;
+				// Main.funniSprite.removeChild(this);
+				funniLoad = false;
+				sys.thread.Thread.create(() -> { 
+					_update();
+					// Main.funniSprite.addChild(this);
+					funniLoad = false;
+				});
+				return;
+			}
+			#end
+			if(!blockUpdate) super.update();
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.Update");
 		}
 	}
 	override function draw(){
 		try{
-			super.draw();
+			if(!blockDraw) super.draw();
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.Draw");
 		}

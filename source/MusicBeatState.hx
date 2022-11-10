@@ -108,7 +108,6 @@ class MusicBeatState extends FlxUIState
 	var checkInputFocus:Bool = true;
 	var hasTextInputFocus = false;
 	public var toggleVolKeys:Bool = true; 
-
 	public function onTextInputFocus(object:Dynamic){
 		if(toggleVolKeys) CoolUtil.toggleVolKeys(false);
 	}
@@ -116,6 +115,14 @@ class MusicBeatState extends FlxUIState
 		if(toggleVolKeys) CoolUtil.toggleVolKeys(true);
 	}
 
+	// public var UIElements:Array<Dynamic> = [];
+	public var uiMap:Map<String,Dynamic> = new Map<String,Dynamic>(); 
+	inline function clearUIMap(){
+		for (i => v in uiMap){
+			if (v != null && v.destroy != null) v.destroy();
+			uiMap[i] = null;
+		}
+	}
 	override function update(elapsed:Float)
 	{
 		//everyStep();
@@ -134,20 +141,29 @@ class MusicBeatState extends FlxUIState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
-		if(FlxG.mouse.justPressed && checkInputFocus){
+		if(FlxG.mouse.justPressed && checkInputFocus && FlxG.mouse.visible){
 			var hasPressed = false;
 
 			var i:Int = 0;
 			var obj:Dynamic = null;
-			forEach(function(basic:Dynamic){
-				try{
+			try{
 
-					if(!Std.isOfType(basic,flixel.addons.ui.FlxUITabMenu) && !Std.isOfType(basic,flixel.addons.ui.FlxUI) && Reflect.field(basic,"HasFocus") != null && Reflect.field(basic,"HasFocus")){
-						obj = basic;
-						hasPressed = true;
+				forEach(function(basic:Dynamic){
+					try{
+
+						if(!Std.isOfType(basic,flixel.addons.ui.FlxUITabMenu) && !Std.isOfType(basic,flixel.addons.ui.FlxUI) && Reflect.field(basic,"HasFocus") != null && Reflect.field(basic,"HasFocus")){
+							obj = basic;
+							hasPressed = true;
+						}
+					}catch(e){trace('oh no i errored while checking for a item');}
+				},true);
+				if(!hasPressed){
+					for (i => obj in uiMap){
+						if(obj != null && Reflect.field(obj,"HasFocus") != null && Reflect.field(obj,"HasFocus")) hasPressed = true; break;
 					}
-				}catch(e){trace('oh no i errored while checking for a item');}
-			},true);
+					
+				}
+			}catch(e){trace('oh no i errored while checking for a item');}
 
 			// while (i < length)
 			// {

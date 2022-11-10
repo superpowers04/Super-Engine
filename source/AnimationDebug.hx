@@ -703,7 +703,7 @@ class AnimationDebug extends MusicBeatState
 		
 	}
 
-	var uiMap:Map<String,Dynamic> = new Map<String,Dynamic>(); 
+	
 	var _colText:FlxUIText;
 	var uiBox:FlxUITabMenu;
 	var animDropDown:PsychDropDown;
@@ -753,9 +753,7 @@ class AnimationDebug extends MusicBeatState
 		if (dest){
 			// if (animDropDown3 != null) animDropDown3.destroy();
 			// if (animDropDown2 != null) animDropDown2.destroy();
-			for (_ => v in uiMap) {
-				if (v != null && v.destroy != null) v.destroy();
-			}
+			clearUIMap();
 			uiBox.destroy();
 			if(sampleBox != null)sampleBox.destroy();
 			uiBox = null;
@@ -1023,16 +1021,20 @@ class AnimationDebug extends MusicBeatState
 				var colors:Map<Int,Int> = [];
 				var max:Int = 0;
 				var maxColor:Int = 0;
+				var maxLight:Float = 0
 				for(x in 0 ...icon.width){
 					for(y in 0...icon.height){
 						var pixel = icon.getPixel(x,y);
 						if(pixel == 0 || pixel == 0xFF000000 || FlxColor.fromInt(pixel).lightness < 0.05){continue;}
-						// trace(pixel);
+						if(FlxColor.fromInt(pixel).lightness > maxLight){
+							maxColor = pixel;maxLight = FlxColor.fromInt(pixel).lightness;
+						}
+						// // trace(pixel);
 
-						// var curColor:Int = icon.getPixel32(X,Y);
-						// if(curColor == 0 ) continue;
-						colors[pixel] = (colors.exists(pixel) ? 0 : colors[pixel] + 1);
-						if(colors[pixel] > max){maxColor = pixel;max=colors[pixel];}
+						// // var curColor:Int = icon.getPixel32(X,Y);
+						// // if(curColor == 0 ) continue;
+						// colors[pixel] = (colors.exists(pixel) ? 0 : colors[pixel] + 1);
+						// if(colors[pixel] > max){maxColor = pixel;max=colors[pixel];}
 					}
 				}
 				trace(maxColor);

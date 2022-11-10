@@ -231,16 +231,19 @@ class Note extends FlxSkewedSprite
 		}; // Strums
 
 		if(noteAnimation != null){
-			PlayState.charAnim(charID,(if(noteAnimation == "")noteAnims[noteData] else noteAnimation),true); // Play animation
+			PlayState.charAnim(charID,(if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
 		}
 	}
+	inline function getNoteAnim(noteData){return (if (noteAnims[noteData] == null) _noteAnimsBackup[noteData % 4] else noteAnims[noteData]);}
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		if(noteAnimationMiss != null){
-			PlayState.charAnim(charID,(if(noteAnimationMiss == "")noteAnims[noteData] + "miss" else noteAnimationMiss),true); // Play animation
+			PlayState.charAnim(charID,(if(noteAnimationMiss == "") getNoteAnim(noteData) + "miss" else noteAnimationMiss),true); // Play animation
 		}
 	}
 	// Array of animations, to be used above
+
+	static var _noteAnimsBackup(default,null):Array<String> = ['singLEFT','singDOWN','singUP','singRIGHT']; 
 	public static var noteAnims:Array<String> = ['singLEFT','singDOWN','singUP','singRIGHT']; 
 	public static var noteDirections:Array<String> = ['LEFT','DOWN','UP','RIGHT','NONE']; 
 

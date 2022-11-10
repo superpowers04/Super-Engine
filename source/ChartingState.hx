@@ -656,6 +656,8 @@ class ChartingState extends MusicBeatState
 		var hurtnotehealthapply = new FlxButton(hurtnotehealth.x + 60 , hurtnotehealth.y , 'apply', function(){_song.noteMetadata.badnoteHealth = hurtnotehealth.value;});
 
 
+		// tab_group_song.add(loadButton);
+		// tab_group_song.add(loadAutosaveBtn);
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -663,9 +665,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
-		// tab_group_song.add(loadButton);
 		tab_group_song.add(reloadSong);
-		// tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(fixchart);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperBPMLabel);
@@ -683,6 +683,29 @@ class ChartingState extends MusicBeatState
         tab_group_song.add(stepperShiftNoteDialms);
         tab_group_song.add(shiftNoteButton);
         tab_group_song.add(beatcheck);
+		uiMap["UI_songTitle"] = UI_songTitle;
+		uiMap["restart"] = restart;
+		uiMap["check_voices"] = check_voices;
+		uiMap["check_mute_inst"] = check_mute_inst;
+		uiMap["saveButton"] = saveButton;
+		uiMap["reloadSong"] = reloadSong;
+		uiMap["fixchart"] = fixchart;
+		uiMap["stepperBPM"] = stepperBPM;
+		uiMap["stepperBPMLabel"] = stepperBPMLabel;
+		uiMap["stepperSpeed"] = stepperSpeed;
+		uiMap["stepperSpeedLabel"] = stepperSpeedLabel;
+		uiMap["stepperVocalVol"] = stepperVocalVol;
+		uiMap["stepperVocalVolLabel"] = stepperVocalVolLabel;
+		uiMap["stepperSongVol"] = stepperSongVol;
+		uiMap["stepperSongVolLabel"] = stepperSongVolLabel;
+		uiMap["shiftNoteDialLabel"] = shiftNoteDialLabel;
+		uiMap["stepperShiftNoteDial"] = stepperShiftNoteDial;
+		uiMap["shiftNoteDialLabel2"] = shiftNoteDialLabel2;
+		uiMap["stepperShiftNoteDialstep"] = stepperShiftNoteDialstep;
+		uiMap["shiftNoteDialLabel3"] = shiftNoteDialLabel3;
+		uiMap["stepperShiftNoteDialms"] = stepperShiftNoteDialms;
+		uiMap["shiftNoteButton"] = shiftNoteButton;
+		uiMap["beatcheck"] = beatcheck;
 
         var invertChartButton:FlxButton = new FlxButton(100, 335, "Invert chart", function()
 		{
@@ -697,7 +720,6 @@ class ChartingState extends MusicBeatState
 			updateSectionUI();
 			
 		});
-        tab_group_song.add(invertChartButton);
 
         var invertSectionsButton:FlxButton = new FlxButton(210, 335, "Invert all sections", function()
 		{
@@ -708,15 +730,16 @@ class ChartingState extends MusicBeatState
 			updateSectionUI();
 			
 		});
-        tab_group_song.add(invertSectionsButton);
-		tab_group_song.add(hitsounds);
 
-		tab_group_song.add(hurtnotescoretxt);
-		tab_group_song.add(hurtnotescore);
-		tab_group_song.add(hurtnotescoreapply);
-		tab_group_song.add(hurtnotehealthtxt);
-		tab_group_song.add(hurtnotehealth);
-		tab_group_song.add(hurtnotehealthapply);
+        tab_group_song.add(invertChartButton);uiMap['invertChartButton'] = invertChartButton;
+        tab_group_song.add(invertSectionsButton);uiMap['invertSectionsButton'] = invertSectionsButton;
+		tab_group_song.add(hitsounds);uiMap['hitsounds'] = hitsounds;
+		tab_group_song.add(hurtnotescoretxt);uiMap['hurtnotescoretxt'] = hurtnotescoretxt;
+		tab_group_song.add(hurtnotescore);uiMap['hurtnotescore'] = hurtnotescore;
+		tab_group_song.add(hurtnotescoreapply);uiMap['hurtnotescoreapply'] = hurtnotescoreapply;
+		tab_group_song.add(hurtnotehealthtxt);uiMap['hurtnotehealthtxt'] = hurtnotehealthtxt;
+		tab_group_song.add(hurtnotehealth);uiMap['hurtnotehealth'] = hurtnotehealth;
+		tab_group_song.add(hurtnotehealthapply);uiMap['hurtnotehealthapply'] = hurtnotehealthapply;
 
 		var tab_group_assets = new FlxUI(null, UI_box);
 		waveformEnabled = new FlxUICheckBox(10, 10, null, null, "Visible Waveform", 100);
@@ -768,23 +791,20 @@ class ChartingState extends MusicBeatState
 		var stageLabel = new FlxText(10,100,64,'Stage');
 
 		tab_group_assets.name = "ZAssets";
-		tab_group_assets.add(player1DropDown);
-		tab_group_assets.add(player2DropDown);
-		tab_group_assets.add(player1Label);
-		tab_group_assets.add(player2Label);
-		tab_group_assets.add(acceptplayer1);
-		tab_group_assets.add(acceptplayer2);
-		tab_group_assets.add(stageSel);
-		tab_group_assets.add(stageLabel);
-
-
-		tab_group_assets.add(waveformEnabled);
-		tab_group_assets.add(forceChars);
-		tab_group_assets.add(waveformUseInstrumental);
-
-        tab_group_assets.add(jumpsectiontext);
-		tab_group_assets.add(jumpsectionbox);
-		tab_group_assets.add(jumpsectionbutton);
+		tab_group_assets.add(player1DropDown); uiMap["player1DropDown"] = player1DropDown;
+		tab_group_assets.add(player2DropDown); uiMap["player2DropDown"] = player2DropDown;
+		tab_group_assets.add(player1Label); uiMap["player1Label"] = player1Label;
+		tab_group_assets.add(player2Label); uiMap["player2Label"] = player2Label;
+		tab_group_assets.add(acceptplayer1); uiMap["acceptplayer1"] = acceptplayer1;
+		tab_group_assets.add(acceptplayer2); uiMap["acceptplayer2"] = acceptplayer2;
+		tab_group_assets.add(stageSel); uiMap["stageSel"] = stageSel;
+		tab_group_assets.add(stageLabel); uiMap["stageLabel"] = stageLabel;
+		tab_group_assets.add(waveformEnabled); uiMap['waveformEnabled'] = waveformEnabled;
+		tab_group_assets.add(forceChars); uiMap['forceChars'] = forceChars;
+		tab_group_assets.add(waveformUseInstrumental); uiMap['waveformUseInstrumental'] = waveformUseInstrumental;
+        tab_group_assets.add(jumpsectiontext); uiMap['jumpsectiontext'] = jumpsectiontext;
+		tab_group_assets.add(jumpsectionbox); uiMap['jumpsectionbox'] = jumpsectionbox;
+		tab_group_assets.add(jumpsectionbutton); uiMap['jumpsectionbutton'] = jumpsectionbutton;
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.addGroup(tab_group_assets);
@@ -930,21 +950,21 @@ class ChartingState extends MusicBeatState
 		check_changeBPM = new FlxUICheckBox(10, 60, null, null, 'Change BPM', 100);
 		check_changeBPM.name = 'check_changeBPM';
 
-		tab_group_section.add(stepperLength);
-		tab_group_section.add(stepperLengthLabel);
-		tab_group_section.add(stepperSectionBPM);
 		// tab_group_section.add(stepperCopy);
 		// tab_group_section.add(stepperCopy);
 		// tab_group_section.add(stepperCopyLabel);
-		tab_group_section.add(check_mustHitSection);
-		tab_group_section.add(mirrorSection);
-		tab_group_section.add(check_altAnim);
-		tab_group_section.add(check_changeBPM);
-		tab_group_section.add(copyButton);
-		tab_group_section.add(copyInfo);
-		tab_group_section.add(pasteButton);
-		tab_group_section.add(clearSectionButton);
-		tab_group_section.add(swapSection);
+		tab_group_section.add(stepperLength);uiMap['stepperLength'] = stepperLength;
+		tab_group_section.add(stepperLengthLabel);uiMap['stepperLengthLabel'] = stepperLengthLabel;
+		tab_group_section.add(stepperSectionBPM);uiMap['stepperSectionBPM'] = stepperSectionBPM;
+		tab_group_section.add(check_mustHitSection);uiMap['check_mustHitSection'] = check_mustHitSection;
+		tab_group_section.add(mirrorSection);uiMap['mirrorSection'] = mirrorSection;
+		tab_group_section.add(check_altAnim);uiMap['check_altAnim'] = check_altAnim;
+		tab_group_section.add(check_changeBPM);uiMap['check_changeBPM'] = check_changeBPM;
+		tab_group_section.add(copyButton);uiMap['copyButton'] = copyButton;
+		tab_group_section.add(copyInfo);uiMap['copyInfo'] = copyInfo;
+		tab_group_section.add(pasteButton);uiMap['pasteButton'] = pasteButton;
+		tab_group_section.add(clearSectionButton);uiMap['clearSectionButton'] = clearSectionButton;
+		tab_group_section.add(swapSection);uiMap['swapSection'] = swapSection;
 
 		UI_box.addGroup(tab_group_section);
 	}
@@ -976,11 +996,11 @@ class ChartingState extends MusicBeatState
 		forcehurtnote = new FlxUICheckBox(notetypeinput.x , notetypeinput.y + 20 ,null,null, 'Is hurt note, Will overwrite Note Type!');
 
 		//tab_group_note.add(m_checkhell);
-		tab_group_note.add(notetypeinput);
-		tab_group_note.add(notetypetxt);
-		tab_group_note.add(notetype2input);
-		tab_group_note.add(notetype2txt);
-		tab_group_note.add(forcehurtnote);
+		tab_group_note.add(notetypeinput);uiMap['notetypeinput'] = notetypeinput;
+		tab_group_note.add(notetypetxt);uiMap['notetypetxt'] = notetypetxt;
+		tab_group_note.add(notetype2input);uiMap['notetype2input'] = notetype2input;
+		tab_group_note.add(notetype2txt);uiMap['notetype2txt'] = notetype2txt;
+		tab_group_note.add(forcehurtnote);uiMap['forcehurtnote'] = forcehurtnote;
 
 
 		UI_box.addGroup(tab_group_note);

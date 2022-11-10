@@ -196,9 +196,6 @@ class TitleState extends MusicBeatState
 						path:"assets/characters/",
 						description:desc
 					});
-					// characterDescriptions[char] = desc;
-					// choosableCharactersLower[char.toLowerCase()] = char;
-					// characterPaths[char] = dir;
 
 				}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
 					invalidCharacters.push([char,dir]);
@@ -213,7 +210,6 @@ class TitleState extends MusicBeatState
 			if (!FileSystem.isDirectory(dataDir+"/"+directory)){continue;}
 			if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/config.json"))
 			{
-				// customCharacters.push(directory);
 				var desc = null;
 				if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/description.txt"))
 					desc = File.getContent('${dataDir}/${directory}/description.txt');
@@ -223,10 +219,8 @@ class TitleState extends MusicBeatState
 					folderName:directory,
 					description:desc
 				});
-				// choosableCharactersLower[directory.toLowerCase()] = directory;
 			}else if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
 				invalidCharacters.push([directory,'mods/characters']);
-				// customCharacters.push(directory);
 			}
 		  }
 		}
@@ -250,13 +244,6 @@ class TitleState extends MusicBeatState
 						if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
 						if (FileSystem.exists(dir+"/"+char+"/config.json"))
 						{
-							// var charPack = "";
-							// if(choosableCharactersLower[char.toLowerCase()] != null){
-							// 	var e = charPack;
-							// 	charPack = _dir+"|"+char;
-							// 	char = e;
-							// }
-							// customCharacters.push(char);
 							var desc = 'Provided by ' + _dir;
 							if (FileSystem.exists('${dir}/${char}/description.txt'))
 								desc += ";" +File.getContent('${dir}/${char}/description.txt');
@@ -269,22 +256,8 @@ class TitleState extends MusicBeatState
 								nameSpace:_dir
 							});
 
-							// if(choosableCharactersLower[char.toLowerCase()] != null){
-
-							// 	choosableCharactersLower[charPack.toLowerCase()] = char;
-							// 	if(weekChars[char] == null){
-							// 		weekChars[char] = [];
-							// 	}
-							// 	weekChars[char].push(charPack);
-							// 	characterPaths[charPack] = dir;
-							// }else{
-							// 	choosableCharactersLower[char.toLowerCase()] = char;
-							// 	characterPaths[char] = dir;
-							// }
-
 						}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
 							invalidCharacters.push([char,dir]);
-							// customCharacters.push(directory);
 						}
 					}
 				}		

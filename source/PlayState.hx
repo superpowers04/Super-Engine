@@ -133,7 +133,8 @@ class PlayState extends MusicBeatState
 		public var health:Float = 1;
 		public var healthPercent(get,set):Int;
 		public function get_healthPercent() return Std.int(health * 50);
-		public function set_healthPercent(vari:Int){ health = vari * 50; return get_healthPercent();}
+		public function set_healthPercent(vari:Int){ health = vari / 50; return get_healthPercent();}
+		public var handleHealth:Bool = true;
 		public var downscroll:Bool;
 		public var middlescroll:Bool;
 		public var generatedMusic:Bool = false;
@@ -507,7 +508,7 @@ class PlayState extends MusicBeatState
 				var _split = script.split('\n');
 				_line = '${parser.line};"${_split[parser.line]}"';
 			}catch(e){_line = '${parser.line}';}
-			handleError('Error parsing ${id} hscript\n Line:${_line}\n ${e.message}');
+			handleError('Error parsing ${id} hscript\nLine:${_line}\n ${e.message}');
 			// interp = null;
 		}
 		trace('Loaded ${id} script!');
@@ -2154,7 +2155,7 @@ class PlayState extends MusicBeatState
 		// 	iconP2.y = playerStrums.members[0].y - (iconP2.height / 2);
 		// }
 
-		if (health > 2)
+		if (health > 2 && handleHealth)
 			health = 2;
 		if(swappedChars){
 
@@ -2638,7 +2639,7 @@ class PlayState extends MusicBeatState
 					score = -300;
 					// combo = 0;
 					// misses++; A shit should not equal a miss
-					health -= 0.2;
+					if(handleHealth) health -= 0.2;
 					ss = false;
 					shits++;
 					if(FlxG.save.data.shittyMiss){misses++;combo = 0;noteMiss(daNote.noteData,null,null,false);}
@@ -2646,7 +2647,7 @@ class PlayState extends MusicBeatState
 						totalNotesHit += 0.25;
 				case 'bad':
 					score = 0;
-					health -= 0.06;
+					if(handleHealth) health -= 0.06;
 					ss = false;
 					bads++;
 					if(FlxG.save.data.badMiss){misses++;combo = 0;noteMiss(daNote.noteData,null,null,false);}
@@ -2657,12 +2658,12 @@ class PlayState extends MusicBeatState
 					ss = false;
 					goods++;
 					if(FlxG.save.data.goodMiss){misses++;combo = 0;noteMiss(daNote.noteData,null,null,false);}
-					if (health < 2)
+					if (handleHealth && health < 2)
 						health += 0.04;
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 0.75;
 				case 'sick':
-					if (health < 2)
+					if (handleHealth && health < 2)
 						health += 0.1;
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 1;
@@ -3454,7 +3455,7 @@ class PlayState extends MusicBeatState
 						}
 						else if (!daNote.shouldntBeHit)
 						{
-							health += SONG.noteMetadata.tooLateHealth;
+							if(handleHealth) health += SONG.noteMetadata.tooLateHealth;
 							vocals.volume = 0;
 							noteMiss(daNote.noteData, daNote);
 						}
@@ -3738,7 +3739,7 @@ class PlayState extends MusicBeatState
 		}
 		if(FlxG.save.data.playMisses) if (boyfriend.useMisses){FlxG.sound.play(boyfriend.missSounds[direction], FlxG.save.data.missVol);}else{FlxG.sound.play(vanillaHurtSounds[Math.round(Math.random() * 2)], FlxG.save.data.missVol);}
 		// FlxG.sound.play(hurtSoundEff, 1);
-		if(calcStats) health += SONG.noteMetadata.missHealth;
+		if(calcStats && handleHealth) health += SONG.noteMetadata.missHealth;
 		// switch (direction)
 		// {
 		// 	case 0:
@@ -3777,7 +3778,7 @@ class PlayState extends MusicBeatState
 			totalNotesHit -= 1;
 
 		if(calcStats) songScore -= 10;
-		if (daNote != null && daNote.shouldntBeHit) {songScore += SONG.noteMetadata.badnoteScore; health += SONG.noteMetadata.badnoteHealth;} // Having it insta kill, not a good idea 
+		if (daNote != null && daNote.shouldntBeHit) {songScore += SONG.noteMetadata.badnoteScore; if(handleHealth) health += SONG.noteMetadata.badnoteHealth;} // Having it insta kill, not a good idea 
 		if(daNote == null) callInterp("miss",[boyfriend,direction,calcStats]); else callInterp("noteMiss",[boyfriend,daNote,direction,calcStats]);
 		onlineNoteHit(if(daNote == null) -1 else daNote.noteID,direction + 1);
 
