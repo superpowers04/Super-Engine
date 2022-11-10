@@ -45,6 +45,7 @@ import flixel.ui.FlxBar;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.addons.ui.FlxUIDropDownMenu;
+import flixel.addons.plugin.screengrab.FlxScreenGrab;
 import ImportMod;
 
 import CharacterJson;
@@ -1010,42 +1011,35 @@ class AnimationDebug extends MusicBeatState
 		// }
 		// uiBox2.add(uiMap["charColor"]);
 
-		uiMap["colorIcon"] = new FlxUIButton(20,220,"Pull color from icon",function(){
+		uiMap["colorIcon"] = new FlxUIButton(20,220,"Pull color from screen pixel",function(){
 			try{
 				if(uiMap["hi1"] == null){
 					showTempmessage('No health icon to scan!',FlxColor.RED,10);
 					return;
 				}
-				showTempmessage('Checking for color from health icon, this might take a bit...',null,10);
-				var icon = uiMap["hi1"].graphic.bitmap;
-				var colors:Map<Int,Int> = [];
-				var max:Int = 0;
-				var maxColor:Int = 0;
-				var maxLight:Float = 0
-				for(x in 0 ...icon.width){
-					for(y in 0...icon.height){
-						var pixel = icon.getPixel(x,y);
-						if(pixel == 0 || pixel == 0xFF000000 || FlxColor.fromInt(pixel).lightness < 0.05){continue;}
-						if(FlxColor.fromInt(pixel).lightness > maxLight){
-							maxColor = pixel;maxLight = FlxColor.fromInt(pixel).lightness;
-						}
-						// // trace(pixel);
+				showTempmessage('Click somewhere on the screen to grab the color from there',null,10);
+				// var icon = uiMap["hi1"].graphic.bitmap;
+				// var colors:Map<Int,Int> = [];
+				// var max:Int = 0;
+				// var maxColor:Int = 0;
+				// var maxLight:Float = 0;
+				// for(x in 0 ...icon.width){
+				// 	for(y in 0...icon.height){
+				// 		var pixel = icon.getPixel(x,y);
+				// 		if(pixel == 0 || pixel == 0xFF000000  || FlxColor.fromInt(pixel).alpha < 0.9 || FlxColor.fromInt(pixel).lightness < 0.05){continue;}
+				// 		// // trace(pixel);
 
-						// // var curColor:Int = icon.getPixel32(X,Y);
-						// // if(curColor == 0 ) continue;
-						// colors[pixel] = (colors.exists(pixel) ? 0 : colors[pixel] + 1);
-						// if(colors[pixel] > max){maxColor = pixel;max=colors[pixel];}
-					}
-				}
-				trace(maxColor);
+				// 		// var curColor:Int = icon.getPixel32(X,Y);
+				// 		// if(curColor == 0 ) continue;
+				// 		colors[pixel] = (colors.exists(pixel) ? 0 : colors[pixel] + 1);
+				// 		if(colors[pixel] > max){maxColor = pixel;max=colors[pixel];}
+				// 	}
+				// }
+				// trace(maxColor);
 				// if(maxColor == 0){
 				
 				// }
-				var _Col = FlxColor.fromInt(maxColor);
-				updateColor(_Col.red,_Col.green,_Col.blue);
-				uiMap["hired"].value = _Col.red;
-				uiMap["higreen"].value = _Col.green;
-				uiMap["hiblue"].value = _Col.blue;
+				colorPickerMode = true;
 
 				// spawnChar(true,false,charJson);
 				// updateColorBox();
@@ -1086,15 +1080,10 @@ class AnimationDebug extends MusicBeatState
 			// healthBar.createColoredFilledBar(dad.definingColor, dad.definingColor);
 			// healthBar.updateBar();
 			// healthBar.percent = 100;
-			var iconP1 = new HealthIcon(dad.curCharacter, true,dad.clonedChar);
+			var iconP1 = new HealthIcon(dad.curCharacter, (charType == 0),dad.clonedChar);
 			iconP1.y = (FlxG.height * 0.9) - (iconP1.height / 2);
-			switch(charType){
-				case 0: iconP1.x = FlxG.width * 0.75;
-				case 1: iconP1.x = FlxG.width * 0.25;
-				case 2: iconP1.x = FlxG.width * 0.5;
-
-			} 
-			iconP1.x -= iconP1.width;
+			
+			iconP1.screenCenter(X);
 			iconP1.centerOffsets();
 			iconP1.updateHitbox();
 			iconP1.cameras = [camHUD];
@@ -1114,7 +1103,7 @@ class AnimationDebug extends MusicBeatState
 		return FlxColor.fromRGB(arr[0],arr[1],arr[2]);
 	}
 	var sampleBox:FlxSprite;
-
+	var colorPickerMode = false;
 	// static function textBox(x:Float,y:Float,defText:String,name:String,internalName:String):FlxInputTextUpdatable{
 	// 	var ret = new FlxUIInputText(30, 100, null, "24");
 	// 	ret.checked = Reflect.field(charJson,internalName);
@@ -1310,6 +1299,19 @@ class AnimationDebug extends MusicBeatState
 					camFollow.y+=lastRMouseY - my;
 					lastRMouseX = mx;
 					lastRMouseY = my;
+				}
+				if(colorPickerMode && FlxG.mouse.pressed){
+					colorPickerMode = false;
+					try{
+						var grabbed = FlxScreenGrab.grab(false,true);
+						var _Col = FlxColor.fromInt(grabbed.bitmapData.getPixel(FlxG.mouse.screenX,FlxG.mouse.screenY));
+						updateColor(_Col.red,_Col.green,_Col.blue);
+						uiMap["hired"].value = _Col.red;
+						uiMap["higreen"].value = _Col.green;
+						uiMap["hiblue"].value = _Col.blue;
+					}catch(e){
+						showTempmessage('Unable to grab color of that pixel!',FlxColor.RED);
+					}
 				}
 				// if (FlxG.keys.justPressed.M && canSwitch()){
 				// 	editMode = 0;

@@ -802,7 +802,7 @@ class Character extends FlxSprite
 		if(charPath != "") charLoc = charPath;
 
 
-		if(TitleState.retChar(curCharacter) == "" && charProperties == null && !amPreview && exitex == null){
+		if(curCharacter == "automatic" || (TitleState.retChar(curCharacter) == "" && charProperties == null && !amPreview && exitex == null)){
 			curCharacter = "bf";
 		}
 

@@ -107,13 +107,13 @@ class Main extends Sprite
 		fpsCounter = new Overlay(0, 0);
 		addChild(fpsCounter);
 		console = new Console();
+		#if !mobile
 		addChild(console);
 
 		// fpsCounter.visible = false;
 		// fpsOverlay = new Overlay(0, 0);
 		// addChild(fpsCounter);
 
-		#if !mobile
 		// fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		// addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
@@ -222,15 +222,16 @@ class FlxGameEnhanced extends FlxGame{
 	public var funniLoad:Bool = false;
 	override function update(){
 		try{
-			#if(target.threaded && false)
-			if(_state != _requestedState && (funniLoad)){
-				blockUpdate = blockDraw = true;
-				// Main.funniSprite.removeChild(this);
-				funniLoad = false;
+			#if(target.threaded && false) // This is broken at the moment
+			if(_state != _requestedState){
+				// blockUpdate = blockEnterFrame = blockDraw = true;
+				Main.funniSprite.removeChild(this);
+				// funniLoad = true;
 				sys.thread.Thread.create(() -> { 
-					_update();
-					// Main.funniSprite.addChild(this);
-					funniLoad = false;
+					// _update();
+					switchState();
+					Main.funniSprite.addChild(this);
+					// funniLoad = false;
 				});
 				return;
 			}

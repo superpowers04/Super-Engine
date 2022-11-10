@@ -404,7 +404,7 @@ class PlayState extends MusicBeatState
 		}catch(e:hscript.Expr.Error){
 			var line = '';
 			try{
-				line = ':"${interps[id].variables.get('scriptContents').split('\n')[e.line]}"';
+				line = ':"${interps[id].variables.get('scriptContents').split('\n')[e.line - 1]}"';
 			}catch(e){line="";trace(e.message);}
 			handleError(HscriptUtils.genErrorMessage(e,func_name,id));
 			// handleError('${func_name} for ${id}:\n ${e.toString()}');
@@ -506,7 +506,7 @@ class PlayState extends MusicBeatState
 			var _line = '${parser.line}';
 			try{
 				var _split = script.split('\n');
-				_line = '${parser.line};"${_split[parser.line]}"';
+				_line = '${parser.line};"${_split[parser.line - 1]}"';
 			}catch(e){_line = '${parser.line}';}
 			handleError('Error parsing ${id} hscript\nLine:${_line}\n ${e.message}');
 			// interp = null;
@@ -860,18 +860,16 @@ class PlayState extends MusicBeatState
 			}
 		}
 		if(PlayState.player1 == "")PlayState.player1 = TitleState.retChar(PlayState.player1);
-		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
+		if(PlayState.player2 == "")PlayState.player2 = TitleState.retChar(SONG.player2);
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
 		callInterp("afterStage",[]);
 
 
-		if (TitleState.retChar(PlayState.player2) != "" && (FlxG.save.data.charAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode)){ // Check is second player is a valid character
-			PlayState.player2 = TitleState.retChar(PlayState.player2);
-		}else{
+		if (PlayState.player2 == "" || !FlxG.save.data.charAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode){ // Check is second player is a valid character
 			PlayState.player2 = FlxG.save.data.opponent;
     	}
     	
-		if((PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || !(TitleState.retChar(PlayState.player1) != "" && (FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) )){
+		if(PlayState.player1 == "bf" || (PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || (!FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) ){
 			PlayState.player1 = FlxG.save.data.playerChar;
 		}
 		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
@@ -895,16 +893,17 @@ class PlayState extends MusicBeatState
 			}
 			if (FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
 			gfChar = player3;
-			 gf = (if (FlxG.save.data.gfShow && loadChars && gfShow) new Character(400, 100, player3,false,2) else new EmptyCharacter(400, 100));
+			gf = (if (FlxG.save.data.gfShow && loadChars && gfShow) new Character(400, 100, player3,false,2) else new EmptyCharacter(400, 100));
 			gf.scrollFactor.set(0.95, 0.95);
 			
 			LoadingScreen.loadingText = "Loading opponent";
 			if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
 			if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
-			 dad = (if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2)) new Character(100, 100, player2,false,1) else new EmptyCharacter(100, 100));
 
-			 LoadingScreen.loadingText = "Loading BF";
-			 boyfriend = (if (FlxG.save.data.bfShow && loadChars) new Character(770, 100, player1,true,0) else new EmptyCharacter(770,100));
+			dad = (if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2)) new Character(100, 100, player2,false,1) else new EmptyCharacter(100, 100));
+
+			LoadingScreen.loadingText = "Loading BF";
+			boyfriend = (if (FlxG.save.data.bfShow && loadChars) new Character(770, 100, player1,true,0) else new EmptyCharacter(770,100));
 		}else{
 			dad = new EmptyCharacter(100, 100);
 			boyfriend = new EmptyCharacter(400,100);
