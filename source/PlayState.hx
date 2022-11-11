@@ -865,11 +865,11 @@ class PlayState extends MusicBeatState
 		callInterp("afterStage",[]);
 
 
-		if (PlayState.player2 == "" || !FlxG.save.data.charAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode){ // Check is second player is a valid character
+		if (PlayState.player2 == "" || PlayState.player2 == "bf" || !FlxG.save.data.charAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode){ // Check is second player is a valid character
 			PlayState.player2 = FlxG.save.data.opponent;
     	}
     	
-		if(PlayState.player1 == "bf" || (PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || (!FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) ){
+		if(PlayState.player1 == "" || (PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || (!FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) ){
 			PlayState.player1 = FlxG.save.data.playerChar;
 		}
 		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
@@ -2290,7 +2290,7 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (health <= 0 && !hasDied && !ChartingState.charting && onlinemod.OnlinePlayMenuState.socket != null){
+		if (health <= 0 && !hasDied && !ChartingState.charting && onlinemod.OnlinePlayMenuState.socket == null){
 
 			if(practiceMode) {
 					hasDied = true;practiceText.text = "Practice Mode; Score won't be saved";practiceText.screenCenter(X);
