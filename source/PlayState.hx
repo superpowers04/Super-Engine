@@ -2306,9 +2306,9 @@ class PlayState extends MusicBeatState
 			if(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500){
 				while(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
 				{
-					var dunceNote:Note = unspawnNotes[0];
-					unspawnNotes.remove(unspawnNotes[0]); // Why the fuck do I have to do this?
-					if(!dunceNote.eventNote && unspawnNotes[0].strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms back
+					var dunceNote:Note = unspawnNotes.shift();
+					// unspawnNotes.remove(unspawnNotes[0]); // Why the fuck do I have to do this?
+					if(!dunceNote.eventNote && dunceNote.strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms before the current time
 						dunceNote.destroy();
 					}else if(dunceNote.eventNote){ // eventNote
 						eventNotes.add(dunceNote);
