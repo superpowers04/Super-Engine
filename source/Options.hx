@@ -902,7 +902,7 @@ class CharAutoBFOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Force selected player " + (!FlxG.save.data.charAutoBF ? "off" : "on");
+		return "Force selected player " + (!FlxG.save.data.charAutoBF ? "on" : "off");
 	}
 }
 class AnimDebugOption extends Option

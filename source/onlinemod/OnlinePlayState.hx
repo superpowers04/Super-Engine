@@ -411,9 +411,12 @@ class OnlinePlayState extends PlayState
 
 	public static var handleNextPacket = true;
 	static var noteData:Array<Array<Dynamic>> = []; // Stores notes so they can be hit by other players
+	var lastPacket:Array<Dynamic> = [];
+	var lastPacketID:Int = 0;
 	function HandleData(packetId:Int, data:Array<Dynamic>)
 	{try{
-
+		lastPacketID = packetId;
+		lastPacket = data;
 		OnlinePlayMenuState.RespondKeepAlive(packetId);
 		callInterp("packetRecieve",[packetId,data]);
 		if(!handleNextPacket){
@@ -626,7 +629,9 @@ class OnlinePlayState extends PlayState
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OnlineLobbyState(true));
-		}}
+		}
+
+	}
 	
 
 	function SendScore()
@@ -650,12 +655,8 @@ class OnlinePlayState extends PlayState
 			songTime = 0;
 		}
 		if(FlxG.save.data.animDebug){
-			Overlay.debugVar += '\nResync count:${resyncCount}'
-				+'\nCond/Music time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}'
-				+'\nAssumed Section:${curSection}'
-				+'\nHealth:${health}'
-				+'\nCamFocus:${if(!FlxG.save.data.camMovement || camLocked || PlayState.SONG.notes[curSection].sectionNotes[0] == null) " Locked" else (PlayState.SONG.notes[curSection].mustHitSection ? " BF" : " Dad") }'
-				+'\nScript Count:${interpCount}';
+			Overlay.debugVar += '\nClient count:${clientCount}'
+				+'\nLast Packet: ${lastPacketID};${lastPacket}';
 		}
 	}
 
