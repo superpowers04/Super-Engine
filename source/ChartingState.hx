@@ -344,7 +344,7 @@ class ChartingState extends MusicBeatState
 		add(dummyArrow);
 
 		var tabs = [
-			{name: "ZAssets", label: "Extra Features"},
+			{name: "Assets", label: "Extra Features"},
 			{name: "Song", label: 'Song Data'},
 			{name: "Section", label: 'Section Data'},
 			{name: "Note", label: 'Note Data'}
@@ -790,7 +790,7 @@ class ChartingState extends MusicBeatState
 
 		var stageLabel = new FlxText(10,100,64,'Stage');
 
-		tab_group_assets.name = "ZAssets";
+		tab_group_assets.name = "Assets";
 		tab_group_assets.add(player1DropDown); uiMap["player1DropDown"] = player1DropDown;
 		tab_group_assets.add(player2DropDown); uiMap["player2DropDown"] = player2DropDown;
 		tab_group_assets.add(player1Label); uiMap["player1Label"] = player1Label;

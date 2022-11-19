@@ -138,7 +138,7 @@ class SickMenuState extends MusicBeatState
 				}
 				SickMenuState.fading = false;
 				
-				SickMenuState.menuMusic = Sound.fromFile(SickMenuState.musicFileLoc);
+				SickMenuState.menuMusic = SELoader.loadSound(SickMenuState.musicFileLoc);
 				SickMenuState.musicTime = curMusicTime;
 				Conductor.changeBPM(mt.bpm);
 

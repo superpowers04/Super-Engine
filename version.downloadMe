@@ -1,13 +1,3 @@
-1.0.0-U28f1;
-- Switch from 0.11 to 1.0.0
-- Titlestate's been redesigned
-- Changed the layout for the error screen
-- Pause menu has some new options for charting
-- Gamepad support has been disabled due to bugs
-- Options menu has been downgraded to make it more stable
-- Removed all pre-installed songs, and hardcoded stage shit
-- Event notes are now handled seperately from normal notes, Built-in notetypes actually work
-- Completely new character backend making storing information about a character less annoying
-- Better alphabet with falling back to FlxText if character is missing and now alphabet text can be changed
-- Dragging a chart into the game without a difficulty into the game works again and inst/voices are properly detected
+1.0.0-U29;
+- Fix a bunch of character related issues
 

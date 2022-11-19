@@ -522,22 +522,22 @@ class Character extends FlxSprite
 		}
 	}
 	function loadCustomChar(){
-		if(amPreview){
-			charLoc = TitleState.findInvalidChar(curCharacter);
-			if(charLoc == null){
-				if(charInfo == null) charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
-				curCharacter = charInfo.folderName; // Make sure you're grabbing the right character
-				charLoc = charInfo.path;
-				namespace = charInfo.nameSpace;
-				trace(charInfo);
-			}
-		}else{
-			charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
-			curCharacter = charInfo.folderName;
-			charLoc = charInfo.path;
-			namespace = charInfo.nameSpace;
-			trace(charInfo);
-		}
+		// if(amPreview){
+		// 	charLoc = TitleState.findInvalidChar(curCharacter);
+		// 	if(charLoc == null){
+		// 		if(charInfo == null) charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
+		// 		curCharacter = charInfo.folderName; // Make sure you're grabbing the right character
+		// 		charLoc = charInfo.path;
+		// 		namespace = charInfo.nameSpace;
+		// 		trace(charInfo);
+		// 	}
+		// }else{
+		charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
+		curCharacter = charInfo.folderName;
+		charLoc = charInfo.path;
+		namespace = charInfo.nameSpace;
+		trace(charInfo);
+		// }
 		// if(charLoc == "mods/characters"){
 
 		// 	if(TitleState.weekChars[curCharacter] != null && TitleState.weekChars[curCharacter].contains(onlinemod.OfflinePlayState.nameSpace) && TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter] != null){
@@ -802,7 +802,7 @@ class Character extends FlxSprite
 		if(charPath != "") charLoc = charPath;
 
 
-		if(curCharacter == "automatic" || (TitleState.retChar(curCharacter) == "" && charProperties == null && !amPreview && exitex == null)){
+		if(curCharacter == "automatic" || curCharacter == "" || curCharacter == "bfHC" ){
 			curCharacter = "bf";
 		}
 

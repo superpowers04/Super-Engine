@@ -76,7 +76,7 @@ class TitleState extends MusicBeatState
 	// public static var weekChars:Map<String,Array<String>> = [];
 	// public static var characterDescriptions:Map<String,String> = [];
 	// public static var characterPaths:Map<String,String> = [];
-	public static var invalidCharacters:Array<Array<String>> = []; // This is a seperate array because the character doesn't need metadata beyond it being invalid
+	public static var invalidCharacters:Array<CharInfo> = []; // This is a seperate array because the character doesn't need metadata beyond it being invalid
 
 
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
@@ -104,8 +104,25 @@ class TitleState extends MusicBeatState
 		}
 	}
 	public static function findChar(char:String,?retBF:Bool = true,?ignoreNSCheck:Bool = false):Null<CharInfo>{
+		if(char == ""){
+			trace('Empty character search, returning BF');
+			if(retBF) return characters[0];
+			return null;
+		}
 		if(char.contains('|') && !ignoreNSCheck){
 			return findCharByNamespace(char,retBF);
+		}
+		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
+			var e = Std.parseInt(char);
+			if(characters[e] != null){
+
+				// trace('Found char with ID of $e');
+				return characters[e];
+			}else{
+				trace('Invalid ID $e, out of range 0-${characters.length}');
+				if(retBF) return characters[0];
+				return null;
+			}
 		}
 		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
 		for (i in characters){
@@ -117,10 +134,20 @@ class TitleState extends MusicBeatState
 		if(retBF) return characters[0];
 		return null;
 	}
-	public static function findInvalidChar(char:String):String{
+	public static function findInvalidChar(char:String):CharInfo{
+
+		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
+			var e = Std.parseInt(char);
+			if(invalidCharacters[e] != null){
+				return invalidCharacters[e];
+			}else{
+				return null;
+			}
+		}
+		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
 		for (i in invalidCharacters){
-			if(i[0] == char){
-				return i[1];
+			if(i.id == char){
+				return i;
 			}
 		}
 		trace('Unable to find $char!');
@@ -128,12 +155,21 @@ class TitleState extends MusicBeatState
 	}
 	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
 	public static function findCharByNamespace(char:String,?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
+		if(char == ""){
+			trace('Empty character search, returning BF');
+			if(retBF) return characters[0];
+			return null;
+		}
 		if(char.contains('|')){
 			var _e = char.split('|');
 			namespace = _e[0];
 			char = _e[1];
 		}
 		if(namespace == "") return findChar(char,retBF,true);
+		if(namespace == "INVALID"){
+			return findInvalidChar(char);
+		}
+
 		var currentChar:CharInfo = null;
 		char = char.replace(' ',"-").replace('_',"-");
 		for (i in characters){
@@ -145,8 +181,9 @@ class TitleState extends MusicBeatState
 			}
 		}
 		if(currentChar == null){
-			if(retBF) return characters[0];
 			trace('Unable to find $char!');
+			if(retBF) return characters[0];
+			return null;
 		}
 		return currentChar;
 
@@ -198,7 +235,12 @@ class TitleState extends MusicBeatState
 					});
 
 				}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
-					invalidCharacters.push([char,dir]);
+					// invalidCharacters.push([char,dir]);
+					invalidCharacters.push({
+						id:char.replace(' ','-').replace('_','-').toLowerCase(),
+						folderName:char,
+						path:dir
+					});
 				}
 			}
 		}
@@ -220,7 +262,12 @@ class TitleState extends MusicBeatState
 					description:desc
 				});
 			}else if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
-				invalidCharacters.push([directory,'mods/characters']);
+				// invalidCharacters.push([directory,'mods/characters']);
+					invalidCharacters.push({
+						id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+						folderName:directory,
+						path:'mods/characters'
+					});
 			}
 		  }
 		}
@@ -257,7 +304,13 @@ class TitleState extends MusicBeatState
 							});
 
 						}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
-							invalidCharacters.push([char,dir]);
+							invalidCharacters.push({
+								id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
+								folderName:char,
+								path:dir,
+								nameSpaceType:ID,
+								nameSpace:_dir
+							});
 						}
 					}
 				}		
