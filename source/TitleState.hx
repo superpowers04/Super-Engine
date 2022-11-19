@@ -1,5 +1,6 @@
 package;
 
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -48,8 +49,15 @@ typedef Scorekillme = {
 	public var description:String = null;
 	public var nameSpace:String = null;
 	public var nameSpaceType:Int = 0; // 0: mods/characters, 1: mods/weeks, 2: mods/packs 
+	public var internal:Bool = false;
+	public var internalAtlas:String = "";
+	public var internalJSON:String = "";
+
 	public function toString(){
 		return 'Character $nameSpace/$id, Raw folder name:$folderName, path:$path';
+	}
+	public function getNamespacedName(){
+		return (if (nameSpace != null) '$nameSpace|$id' else id);
 	}
 }
 
@@ -112,6 +120,11 @@ class TitleState extends MusicBeatState
 		if(char.contains('|') && !ignoreNSCheck){
 			return findCharByNamespace(char,retBF);
 		}
+		if(char == ""){
+			trace('Tried to get a blank character!');
+			if(retBF) return characters[0];
+			return null;
+		}
 		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
 			var e = Std.parseInt(char);
 			if(characters[e] != null){
@@ -154,7 +167,7 @@ class TitleState extends MusicBeatState
 		return null;
 	}
 	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
-	public static function findCharByNamespace(char:String,?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
+	public static function findCharByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
 		if(char == ""){
 			trace('Empty character search, returning BF');
 			if(retBF) return characters[0];
@@ -169,7 +182,11 @@ class TitleState extends MusicBeatState
 		if(namespace == "INVALID"){
 			return findInvalidChar(char);
 		}
-
+		if(char == ""){
+			trace('Tried to get a blank character!');
+			if(retBF) return characters[0];
+			return null;
+		}
 		var currentChar:CharInfo = null;
 		char = char.replace(' ',"-").replace('_',"-");
 		for (i in characters){
@@ -192,6 +209,18 @@ class TitleState extends MusicBeatState
 		var char = findChar(char,false);
 		return (if(char != null) char.id else "");
 	}
+	public static function getCharFromList(list:Array<String>,nameSpace:String = ""):CharInfo{
+		trace(list);
+		while (list.length > 0){
+			var char = list.pop();
+			if(char == "" ){continue;}
+			var charInfo = findCharByNamespace(char,nameSpace,false);
+			if(charInfo != null){
+				return charInfo;
+			}
+		}
+		return characters[0];
+	}
 	public static function retCharPath(char:String):String{
 		var path = findChar(char,false);
 		return (if(path == null || path.path == null) "" else path.path);
@@ -205,8 +234,8 @@ class TitleState extends MusicBeatState
 	}
 	public static function checkCharacters(){
 		characters = [
-			{id:"bf",folderName:"bf",path:"assets/",description:"Base Character; Boyfriend, the funny rap guy"},
-			{id:"gf",folderName:"gf",path:"assets/",description:"Base Character; Girlfriend, the funny boombox girl"}
+			{id:"bf",folderName:"bf",path:"assets/",internal:true,internalAtlas:"characters/BOYFRIEND",internalJSON:Character.BFJSON,description:"Base Character; Boyfriend, the funny rap guy"},
+			{id:"gf",folderName:"gf",path:"assets/",internal:true,internalAtlas:"characters/GF_assets",internalJSON:Character.GFJSON,description:"Base Character; Girlfriend, the funny boombox girl"}
 		];
 		invalidCharacters = [];
 		#if sys
@@ -436,16 +465,18 @@ class TitleState extends MusicBeatState
 		// loadScores();
 		// pauseMenuMusic = Sound.fromFile((if (FileSystem.exists('mods/pauseMenu.ogg')) 'mods/pauseMenu.ogg' else if (FileSystem.exists('assets/music/breakfast.ogg')) 'assets/music/breakfast.ogg' else "assets/shared/music/breakfast.ogg"));
 
-		#if FREEPLAY
-		FlxG.switchState(new FreeplayState());
-		#elseif CHARTING
-		FlxG.switchState(new ChartingState());
-		#else
+		#if discord_rpc
+			DiscordClient.initialize();
+		
+			Application.current.onExit.add (function (exitCode) {
+				DiscordClient.shutdown();
+			 });
+		#end
+
 		new FlxTimer().start(0.25, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
-		#end
 	}
 
 	var logoBl:FlxSprite;

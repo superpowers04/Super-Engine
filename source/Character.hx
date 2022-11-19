@@ -67,7 +67,7 @@ class CharAnimController extends FlxAnimationController{
 
 
 
-class Character extends FlxSprite
+@:structInit class Character extends FlxSprite
 {
 	/* Animations */
 		public var animationList:Array<CharJsonAnimation> = [];
@@ -532,7 +532,7 @@ class Character extends FlxSprite
 		// 		trace(charInfo);
 		// 	}
 		// }else{
-		charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
+		if(charInfo == null) charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
 		curCharacter = charInfo.folderName;
 		charLoc = charInfo.path;
 		namespace = charInfo.nameSpace;
@@ -550,106 +550,120 @@ class Character extends FlxSprite
 		// }
 		isCustom = true;
 		var charPropJson:String = "";
-		if(!FileSystem.exists('${charLoc}/$curCharacter/config.json') && charProperties == null || (amPreview && FlxG.keys.pressed.SHIFT)){
-			if(amPreview){
-				// if(FlxG.keys.pressed.SHIFT) MusicBeatState.instance.showTempmessage("Forcing new JSON due to shift being held");
-				var idleName:String = "";
-				// { // Load characters without an idle animation, hopefully
-				// 	var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+[iI][dD][lL][eE][A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
-				// 	var input:String = charXml;
-				// 	while (regTP.match(input)) {
-				// 		input=regTP.matchedRight();
-				// 		// addAnimation("Idle", regTP.matched(1));
-				// 		idleName = regTP.matched(1);
-				// 		break;
-				// 	}
-				// }
-				charProperties = Json.parse('{
-					"clone":"",
-					"flip_x":false,
-					"sing_duration":6.1,
-					"scale":1,
-					"dance_idle":false,
-					"voices":"",
-					"no_antialiasing":false,
-					"animations": [],
-					"animations_offsets": [{"anim":"all","player1":[0,0],"player2":[0,0],"player3":[0,0]}]
-				}');
-				animOffsets['all'] = [0.0,0.0];
-			}else{
-				// loadChar('bfHC');
-				if(curCharacter == "bf" || curCharacter == "gf"){
-					MainMenuState.handleError('Character ${curCharacter} has no character json and is a hardcoded character, Something went terribly wrong!');
-					return;
-				}
-				MusicBeatState.instance.showTempmessage('Character ${curCharacter} is missing a config.json!("${charLoc}/$curCharacter/config.json" is non-existant) You need to set them up in character selection. Using BF',FlxColor.RED);
-				curCharacter = "bf";
-				loadChar();
+		if(charInfo.internal){
+			frames=tex=Paths.getSparrowAtlas(charInfo.internalAtlas);
+			charPropJson = charInfo.internalJSON;
+			try{
+				charProperties = Json.parse(CoolUtil.cleanJSON(charPropJson));
+			}catch(e){
+				MainMenuState.handleError(e,'Character ${curCharacter} is a hardcoded character and caused an error, Something went terribly wrong! ${e.message}');
 				return;
 			}
 		}else{
 
-			try{
-				if (charProperties == null) {charPropJson = File.getContent('${charLoc}/$curCharacter/config.json');charProperties = Json.parse(CoolUtil.cleanJSON(charPropJson));}
-			}catch(e){MainMenuState.handleError(e,'Character ${curCharacter} has a broken config.json! ${e.message}');
-				return;
-			}
-		}
-		if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && !amPreview){handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
-		// if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && amPreview){
-
-		// }
-		loadedFrom = '${charLoc}/$curCharacter/config.json';
-		if(frames == null){
-
-
-			var pngName:String = "character.png";
-			var xmlName:String = "character.xml";
-			var forced:Int = 0;
-			if (charProperties.asset_files != null){
-				var invChIDs:Array<Int> = [1,0,2];
-				var selAssets = -10;
-				for (i => charFile in charProperties.asset_files) {
-					if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side == charType){continue;} // This if statement hurts my brain
-					if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
-					if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
-					var tagsMatched = 0;
-					if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
-						for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
-						if (tagsMatched == 0) continue;
+			if(charProperties == null && !FileSystem.exists('${charLoc}/$curCharacter/config.json') || (amPreview && FlxG.keys.pressed.SHIFT)){
+				if(amPreview){
+					// if(FlxG.keys.pressed.SHIFT) MusicBeatState.instance.showTempmessage("Forcing new JSON due to shift being held");
+					var idleName:String = "";
+					// { // Load characters without an idle animation, hopefully
+					// 	var regTP:EReg = (~/<SubTexture name="([A-z 0-9]+[iI][dD][lL][eE][A-z 0-9]+)[0-9][0-9][0-9][0-9]"/gm);
+					// 	var input:String = charXml;
+					// 	while (regTP.match(input)) {
+					// 		input=regTP.matchedRight();
+					// 		// addAnimation("Idle", regTP.matched(1));
+					// 		idleName = regTP.matched(1);
+					// 		break;
+					// 	}
+					// }
+					charProperties = Json.parse('{
+						"clone":"",
+						"flip_x":false,
+						"sing_duration":6.1,
+						"scale":1,
+						"dance_idle":false,
+						"voices":"",
+						"no_antialiasing":false,
+						"animations": [],
+						"animations_offsets": [{"anim":"all","player1":[0,0],"player2":[0,0],"player3":[0,0]}]
+					}');
+					animOffsets['all'] = [0.0,0.0];
+				}else{
+					// loadChar('bfHC');
+					if(curCharacter == "bf" || curCharacter == "gf"){
+						MainMenuState.handleError('Character ${curCharacter} has no character json and is a hardcoded character, Something went terribly wrong!');
+						return;
 					}
-					
-					if (forced == 0 || tagsMatched == forced)
-						selAssets = i;
+					MusicBeatState.instance.showTempmessage('Character ${curCharacter} is missing a config.json!("${charLoc}/$curCharacter/config.json" is non-existant) You need to set them up in character selection. Using BF',FlxColor.RED);
+					curCharacter = "bf";
+					loadChar();
+					return;
 				}
-				if (selAssets != -10){
-					if (charProperties.asset_files[selAssets].png != null )pngName=charProperties.asset_files[selAssets].png;
-					if (charProperties.asset_files[selAssets].xml != null )xmlName=charProperties.asset_files[selAssets].xml;
-					if (charProperties.asset_files[selAssets].animations != null )charProperties.animations=charProperties.asset_files[selAssets].animations;
-					if (charProperties.asset_files[selAssets].animations_offsets != null )charProperties.animations_offsets=charProperties.asset_files[selAssets].animations_offsets;
+			}else{
+
+				try{
+					if (charProperties == null) {charPropJson = File.getContent('${charLoc}/$curCharacter/config.json');charProperties = Json.parse(CoolUtil.cleanJSON(charPropJson));}
+				}catch(e){MainMenuState.handleError(e,'Character ${curCharacter} has a broken config.json! ${e.message}');
+					return;
 				}
 			}
+			if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && !amPreview){handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
+			// if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && amPreview){
 
 
-			if (tex == null){
-				var charJsonF:String = ('${charLoc}/$curCharacter/${xmlName}').substr(0,-3) + "json";
-				if (FileSystem.exists(charJsonF)){
-					charXml = SELoader.loadText(charJsonF); 				
-					if (charXml == null){handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
+			// }
+			loadedFrom = '${charLoc}/$curCharacter/config.json';
+			if(frames == null){
 
-					tex = FlxAtlasFrames.fromTexturePackerJson(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
-				} else {
-					charXml = File.getContent('${charLoc}/$curCharacter/${xmlName}'); // Loads the XML as a string
-					if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-					tex = FlxAtlasFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml.replace("UTF-16","utf-8")); // Makes sure the xml reports utf-8 to prevent a CS6 bug or whatever
+
+				var pngName:String = "character.png";
+				var xmlName:String = "character.xml";
+				var forced:Int = 0;
+				if (charProperties.asset_files != null){
+					var invChIDs:Array<Int> = [1,0,2];
+					var selAssets = -10;
+					for (i => charFile in charProperties.asset_files) {
+						if (charFile.char_side != null && charFile.char_side != 3 && charFile.char_side == charType){continue;} // This if statement hurts my brain
+						if (charFile.stage != "" && charFile.stage != null){if(PlayState.curStage.toLowerCase() != charFile.stage.toLowerCase()){continue;}} // Check if charFiletion specifies stage, skip if it doesn't match PlayState's stage
+						if (charFile.song != "" && charFile.song != null){if(PlayState.SONG.song.toLowerCase() != charFile.song.toLowerCase()){continue;}} // Check if charFiletion specifies song, skip if it doesn't match PlayState's song
+						var tagsMatched = 0;
+						if (charFile.tags != null && charFile.tags[0] != null && PlayState.stageTags != null){
+							for (i in charFile.tags) {if (PlayState.stageTags.contains(i)) tagsMatched++;}
+							if (tagsMatched == 0) continue;
+						}
+						
+						if (forced == 0 || tagsMatched == forced)
+							selAssets = i;
+					}
+					if (selAssets != -10){
+						if (charProperties.asset_files[selAssets].png != null )pngName=charProperties.asset_files[selAssets].png;
+						if (charProperties.asset_files[selAssets].xml != null )xmlName=charProperties.asset_files[selAssets].xml;
+						if (charProperties.asset_files[selAssets].animations != null )charProperties.animations=charProperties.asset_files[selAssets].animations;
+						if (charProperties.asset_files[selAssets].animations_offsets != null )charProperties.animations_offsets=charProperties.asset_files[selAssets].animations_offsets;
+					}
 				}
-				if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
+
+
+				if (tex == null){
+					var charJsonF:String = ('${charLoc}/$curCharacter/${xmlName}').substr(0,-3) + "json";
+					if (FileSystem.exists(charJsonF)){
+						charXml = SELoader.loadText(charJsonF); 				
+						if (charXml == null){handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
+
+						tex = FlxAtlasFrames.fromTexturePackerJson(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
+					} else {
+						charXml = File.getContent('${charLoc}/$curCharacter/${xmlName}'); // Loads the XML as a string
+						if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
+						tex = FlxAtlasFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml.replace("UTF-16","utf-8")); // Makes sure the xml reports utf-8 to prevent a CS6 bug or whatever
+					}
+					if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
+				}
 			}
 		}
 		frames = tex;
 
 
-		if (charProperties == null) trace("No charProperites?");
+
+		if (charProperties == null) trace('Still no charProperties for $curCharacter?');
 		// spriteArr = [this];
 		// animArr = [animation];
 		// if(charProperties.sprites != null && charProperties.sprites[0] != null){
@@ -703,6 +717,7 @@ class Character extends FlxSprite
 
 
 		loadJSONChar(charProperties);
+		if(charInfo.internal){return trace('Finished loading hardcoded character: $curCharacter.');}
 		// Custom misses
 		if (charType == 0 && !amPreview && !debugMode){
 			switch(charProperties.custom_misses){
@@ -727,7 +742,7 @@ class Character extends FlxSprite
 		 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
 		trace('Finished loading $curCharacter, Lets get funky!');
-		}
+	}
 
 
 
@@ -752,36 +767,40 @@ class Character extends FlxSprite
 
 	function loadChar(?char:String = ""){
 			if(char != "")curCharacter = char;
-			if(frames == null){
+			// if(frames == null){
 
-				switch (curCharacter) // Seperate statement for duplicated character paths
-				{
-					case 'gf':
-						// GIRLFRIEND CODE
-						frames = tex = Paths.getSparrowAtlas('characters/GF_assets');
-					case 'bf' | 'bfHC':
-						frames = tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
-				}
-			}
-			if(charProperties == null){
-				switch (curCharacter)
-				{
-					case 'bf' | 'bfHC':// Hardcoded to atleast have a single character
-						charProperties = Json.parse(BFJSON);
-					case 'gf':// The game crashes if she doesn't exist, BF and GF must not be seperated
-						charProperties = Json.parse(GFJSON);
-				}
-			}
+			// 	switch (curCharacter) // Seperate statement for duplicated character paths
+			// 	{
+			// 		case 'gf':
+			// 			// GIRLFRIEND CODE
+			// 			frames = tex = Paths.getSparrowAtlas('characters/GF_assets');
+			// 		case 'bf' | 'bfHC':
+			// 			frames = tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
+			// 	}
+			// }
+			// if(charProperties == null){
+			// 	switch (curCharacter)
+			// 	{
+			// 		case 'bf' | 'bfHC':// Hardcoded to atleast have a single character
+			// 			charProperties = Json.parse(BFJSON);
+			// 		case 'gf':// The game crashes if she doesn't exist, BF and GF must not be seperated
+			// 			charProperties = Json.parse(GFJSON);
+			// 	}
+			// }
 			loadCustomChar();
 	}
 
 
-	public function new(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true,?charPath:String = "") // CharTypes: 0=BF 1=Dad 2=GF
+	public function new(?x:Float = 0, ?y:Float = 0, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true,?charPath:String = "",?charInfo:Null<CharInfo> = null) // CharTypes: 0=BF 1=Dad 2=GF
 	{
 		#if !debug 
 		try{
 		#end
 		super(x, y);
+		if(charInfo != null){
+			this.charInfo = charInfo;
+			character = charInfo.folderName;
+		}
 		trace('Loading ${character}');
 		animOffsets = ["all" => [0,0] ];
 		// animOffsets['all'] = [0.0, 0.0];
@@ -1218,7 +1237,7 @@ class Character extends FlxSprite
 		return (TitleState.retChar(char) != "");
 	}
 
-	static var BFJSON = '{
+	public static var BFJSON(default,null):String = '{
 			"no_antialiasing": false, 
 			"sing_duration": 4, 
 			"dance_idle": false, 
@@ -1373,8 +1392,7 @@ class Character extends FlxSprite
 			"char_pos": [0, -300], 
 			"cam_pos": [0, 300],
 		}';
-
-	static var GFJSON = '{
+	public static var GFJSON(default,null) = '{
 	"animations_offsets": [
 		{
 			"player1": [0, 0],

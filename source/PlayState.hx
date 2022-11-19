@@ -859,19 +859,25 @@ class PlayState extends MusicBeatState
 				parseHScript(onlinemod.OnlinePlayMenuState.rawScripts[i][1],hsBrTools,onlinemod.OnlinePlayMenuState.rawScripts[i][0],'onlineScript:$i');
 			}
 		}
-		if(PlayState.player1 == "")PlayState.player1 = TitleState.retChar(PlayState.player1);
-		if(PlayState.player2 == "")PlayState.player2 = TitleState.retChar(SONG.player2);
+		if(PlayState.player1 == "")PlayState.player1 = SONG.player1;
+		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
+		var player1CharInfo = null;
+		var player2CharInfo = null;
 		callInterp("afterStage",[]);
 
 
-		if (PlayState.player2 == "" || PlayState.player2 == "bf" || !FlxG.save.data.charAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode){ // Check is second player is a valid character
+		if (PlayState.player2 == "bf" || !FlxG.save.data.charAuto && !(PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode)){
 			PlayState.player2 = FlxG.save.data.opponent;
     	}
     	
-		if(PlayState.player1 == "" || (PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || (!FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) ){
+		if((PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || !(!FlxG.save.data.charAutoBF || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) ){
 			PlayState.player1 = FlxG.save.data.playerChar;
 		}
+		player1CharInfo = TitleState.getCharFromList([FlxG.save.data.playerChar,PlayState.player1],onlinemod.OfflinePlayState.nameSpace);
+		player2CharInfo = TitleState.getCharFromList([FlxG.save.data.opponent,PlayState.player2],onlinemod.OfflinePlayState.nameSpace);
+		PlayState.player1 = player1CharInfo.getNamespacedName();
+		PlayState.player2 = player2CharInfo.getNamespacedName();
 		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
 		// 	var pl:Array<String> = [player1,player2];
 		// 	player1 = pl[1];
@@ -900,10 +906,14 @@ class PlayState extends MusicBeatState
 			if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
 			if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
 
-			dad = (if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2)) new Character(100, 100, player2,false,1) else new EmptyCharacter(100, 100));
+			dad = (if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2))
+			      {x:100, y:100, charInfo:player2CharInfo,isPlayer:false,charType:1}
+			      else new EmptyCharacter(100, 100));
 
 			LoadingScreen.loadingText = "Loading BF";
-			boyfriend = (if (FlxG.save.data.bfShow && loadChars) new Character(770, 100, player1,true,0) else new EmptyCharacter(770,100));
+			boyfriend = (if (FlxG.save.data.bfShow && loadChars) 
+			             {x:770, y:100, charInfo:player1CharInfo,isPlayer:true,charType:0} 
+			             else new EmptyCharacter(770,100));
 		}else{
 			dad = new EmptyCharacter(100, 100);
 			boyfriend = new EmptyCharacter(400,100);
@@ -1219,7 +1229,6 @@ class PlayState extends MusicBeatState
 
 		LoadingScreen.loadingText = "Finishing up";
 		super.create();
-
 		openfl.system.System.gc();
 
 

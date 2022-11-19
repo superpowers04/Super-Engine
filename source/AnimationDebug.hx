@@ -762,20 +762,15 @@ class AnimationDebug extends MusicBeatState
 			return;
 		}
 
-		var ui = new FlxUI();
-		ui.cameras = [camHUD];
-		ui.scrollFactor.set();
-		add(ui);
 		animDropDown.visible = false;
-		var uiBox = new FlxUITabMenu(null, [{name:"animationbinder",label:"Animation binder"}], true);
-		
-		// uiBox.cameras = [camHUD];
+		uiBox = new FlxUITabMenu(null, [{name:"Animation binder",label:"Animation binder"}], true);
+		uiBox.cameras = [camHUD];
 
 		uiBox.resize(250, 330);
 		uiBox.x = FlxG.width - 275;
 		uiBox.y = 80;
 		uiBox.scrollFactor.set();
-		ui.add(uiBox);
+		add(uiBox);
 		uiMap["animSel"] = new FlxInputTextUpdatable(11, 230, 100, '');
 		// animSel.text = "idle";
 
@@ -898,7 +893,6 @@ class AnimationDebug extends MusicBeatState
 		// ----------------
 
 
-
 		var uiBox2 = new FlxUITabMenu(null, [{name:"Config Editor",label:"Config Editor"}], true);
 		uiBox2.cameras = [camHUD];
 
@@ -906,7 +900,7 @@ class AnimationDebug extends MusicBeatState
 		uiBox2.x = 15;
 		uiBox2.y = 80;
 		uiBox2.scrollFactor.set();
-		ui.add(uiBox2);
+		add(uiBox2);
 		uiMap["uiBox2"] = uiBox2;
 
 		var looped = checkBox(10, 30,"No antialiasing","no_antialiasing");
