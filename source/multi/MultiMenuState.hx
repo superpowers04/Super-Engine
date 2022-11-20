@@ -14,6 +14,7 @@ import sys.io.File;
 import sys.FileSystem;
 import tjson.Json;
 import flixel.system.FlxSound;
+import Discord.DiscordClient;
 
 import flixel.tweens.FlxTween;
 
@@ -502,7 +503,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				select(curSelected);
 			}
 	}
-
+	var listeningTime:Float = 0;
 	override function extraKeys(){
 		if(controls.LEFT_P){changeDiff(-1);}
 		if(controls.RIGHT_P){changeDiff(1);}
@@ -558,6 +559,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							FlxG.sound.music.pause();
 						}
 
+						#if discord_rpc
+							if(listeningTime == 0)listeningTime = Date.now().getTime();
+							DiscordClient.changePresence('Listening to a song in menus',songNames[curSelected],listeningTime);
+						#end
 					}else{
 						curPlaying = "";
 						SickMenuState.musicHandle();

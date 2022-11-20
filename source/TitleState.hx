@@ -100,7 +100,7 @@ class TitleState extends MusicBeatState
 
 
 
-	var curWacky:Array<String> = [];
+	public static var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
 	public static function loadNoteAssets(?forced:Bool = false,?forced2:Bool = false){

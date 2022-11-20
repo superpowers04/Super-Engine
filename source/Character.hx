@@ -1140,7 +1140,7 @@ class CharAnimController extends FlxAnimationController{
 		if (indices != null && indices.length > 0) { // Add using indices if specified
 			animation.addByIndices(anim, prefix,indices,postFix, fps,false,flipx);
 		}else if (frameNames != null && frameNames.length > 0) { // Add using indices if specified
-			animation.addByIndices(anim, frameNames,postFix, fps,false,flipx);
+			animation.addByNames(anim, frameNames, fps,false,flipx);
 		}else{
 			animation.addByPrefix(anim, prefix, fps, false,flipx);
 		}

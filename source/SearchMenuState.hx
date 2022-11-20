@@ -96,6 +96,10 @@ class SearchMenuState extends MusicBeatState
 		if(Note.noteAnims[0] == null){Note.noteAnims = ["singLEFT","singDOWN","singUP",'singRIGHT'];}
 		if(Note.noteDirections[0] == null){Note.noteDirections = ["LEFT","DOWN","UP",'RIGHT','NONE'];}
 		onlinemod.OfflinePlayState.nameSpace = "";
+
+		#if discord_rpc
+			DiscordClient.changePresence('Admiring the menus',"Probably configurin something or choosing a song");
+		#end
 	}
 	public static var doReset:Bool = true;
 	public var blackBorder:FlxSprite;

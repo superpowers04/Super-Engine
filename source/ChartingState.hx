@@ -411,6 +411,9 @@ class ChartingState extends MusicBeatState
 		super.create();
 		saveRemind(true);
 		updateHeads();
+		#if discord_rpc
+			DiscordClient.changePresence("Editing a chart",_song.song);
+		#end
 		}catch(e){MainMenuState.handleError(e,"chart editor did a fucky: " + e.message);
 		}
 	}

@@ -69,8 +69,10 @@ class PauseSubState extends MusicBeatSubstate
 		// PlayState.canPause = false; // Prevents the game from glitching somehow and trying to pause when already paused
 		PlayState.instance.callInterp("pauseCreate",[this]);
 
-
-		// pauseMusic = ;
+		#if discord_rpc
+			DiscordClient.updateSong(true);
+		#end
+		// pauseMusic = ; 
 		// pauseMusic.volume = 0;
 		// FlxG.sound.playMusic(SickMenuState.menuMusic,FlxG.save.data.instVol);
 		// FlxG.sound.music.play(false, FlxG.save.data.instVol * 0.8);
@@ -416,6 +418,9 @@ class PauseSubState extends MusicBeatSubstate
 					FlxTween.tween(FlxG.sound.music,{volume:volume},0.01);
 					FlxG.sound.music.onComplete = finishCallback;
 					FlxG.sound.music.pause();
+					#if discord_rpc
+						DiscordClient.updateSong();
+					#end
 					close();
 
 			}

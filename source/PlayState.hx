@@ -1526,7 +1526,9 @@ class PlayState extends MusicBeatState
 		{
 			addSongBar();
 		}
-		
+		#if discord_rpc
+			DiscordClient.updateSong();
+		#end
 		// Song check real quick
 		switch(curSong)
 		{
