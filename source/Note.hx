@@ -476,7 +476,7 @@ class Note extends FlxSkewedSprite
 				if(wasGoodHit && !tooLate && ChartingState.playClaps){
 					// FlxG.sound.play(Paths.sound('SNAP'),FlxG.save.data.hitvol,false,true);
 					// ChartingState.playSnap();
-					charting.ForeverChartEditor.playSnap(rawNote[1]);
+					ChartingState.playSnap();
 				}
 				tooLate = wasGoodHit;
 				visible = true;
