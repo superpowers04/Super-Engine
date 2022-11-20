@@ -383,6 +383,8 @@ class CharAnimController extends FlxAnimationController{
 				if(anima.anim == "idle" || anima.anim == "danceLeft")hasIdle = true;
 				if (anima.indices.length > 0) { // Add using indices if specified
 					addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop,anima.flipx);
+				}else if (anima.frameNames != null && anima.frameNames.length > 0) { // Add using frameNames if specified
+					addAnimation(anima.anim, anima.name,anima.frameNames,"", anima.fps, anima.loop,anima.flipx);
 				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
 
 				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
@@ -1122,7 +1124,7 @@ class CharAnimController extends FlxAnimationController{
 	}
 
 	// Handles adding animations
-	public function addAnimation(anim:String,prefix:String,?indices:Array<Int>,?postFix:String = "",?fps:Int = 24,?loop:Bool = false,?flipx:Bool = false){
+	public function addAnimation(anim:String,?prefix:String = "",?indices:Array<Int>,?frameNames:Array<String>,?postFix:String = "",?fps:Int = 24,?loop:Bool = false,?flipx:Bool = false){
 		// animGraphics[anim.toLowerCase()] = ((xmlMap[prefix.toLowerCase()] != null) ? xmlMap[prefix.toLowerCase()] : 0);
 		// setSprite(animGraphics[anim.toLowerCase()]);
 		if(amPreview){
@@ -1137,6 +1139,8 @@ class CharAnimController extends FlxAnimationController{
 		animLoops[anim] = loop;
 		if (indices != null && indices.length > 0) { // Add using indices if specified
 			animation.addByIndices(anim, prefix,indices,postFix, fps,false,flipx);
+		}else if (frameNames != null && frameNames.length > 0) { // Add using indices if specified
+			animation.addByIndices(anim, frameNames,postFix, fps,false,flipx);
 		}else{
 			animation.addByPrefix(anim, prefix, fps, false,flipx);
 		}

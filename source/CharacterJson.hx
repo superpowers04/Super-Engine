@@ -86,12 +86,14 @@ typedef CharacterJson =
 
 typedef CharJsonAnimation ={
 	var ?ifstate:Null<IfStatement>;
-	var anim:String;
-	var name:String;
-	var fps:Int;
-	var loop:Bool;
-	var ?flipx:Null<Bool>;
-	var indices:Array<Int>; 
+	var anim:String; // The name that'll be used internally to refer to this animation
+	var ?name:String; // Prefix
+	var fps:Int; // FPS to play animation at
+	var loop:Bool; // Loop animation
+	var ?flipx:Null<Bool>; // Whether to flip the animation on the X-Axis or not
+	var indices:Array<Int>;  // List of frame numbers to use
+	var ?frameNames:Array<String>; // List of frame names to use, removes the need for name
+
 	var ?loopStart:Null<Int>; // Tells the game where to restart the animation if looped
 	var ?playAfter:Null<String>; // Tells the game to swap animations, useful for a start animation and then a loop animation
 	var ?stage:Null<String>; // Set on specific stage

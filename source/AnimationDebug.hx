@@ -574,7 +574,7 @@ class AnimationDebug extends MusicBeatState
 					charJson.cam_pos3 = [dad.camX,dad.camY];
 				};
 			}
-			charJson.genBy = "FNFBR; Animation Editor";
+			charJson.genBy = 'FNFSE ${MainMenuState.ver}; Animation Debug';
 			errorStage = 6; // Saving
 			var backed = false;
 			if (FileSystem.exists(dad.loadedFrom)) {backed=true;File.copy(dad.loadedFrom,dad.loadedFrom + "-bak.json");}
