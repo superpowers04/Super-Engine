@@ -113,7 +113,10 @@
 	<haxelib name="hscript" />
 	<haxelib name="hscript-ex"/>
 	<haxedef name="hscriptPos" />
-	<!-- <haxelib name="hxCodec"/> -->
+
+	<haxelib name="discord_rpc" if="desktop"/>
+
+	<!-- <haxelib name="hxCodec" if="desktop || android"/> -->
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
@@ -143,7 +146,7 @@
 	<!-- <haxedef name="FLX_NO_KEYBOARD" if="mobile" /> -->
 
 	<!-- This engine is not optimised for mobile, so this is disabled. If you do make a mobile port, contact Superpowers04#3887 on Discord and I might help/merge it to main   -->
-	<haxedef name="FLX_NO_TOUCH" />
+	<haxedef name="FLX_NO_TOUCH" unless="mobile"/>
 	
 	<haxedef name="FLX_NO_GAMEPAD" />
 

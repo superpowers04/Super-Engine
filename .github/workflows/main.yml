@@ -49,6 +49,7 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
 
           haxelib install hscript
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
