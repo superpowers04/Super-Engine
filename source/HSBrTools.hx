@@ -153,6 +153,7 @@ class HSBrTools {
 
 
 
+
 	public function loadSound(soundPath:String):Sound{
 		if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
 		return soundArray[soundPath];
@@ -211,6 +212,3 @@ class HSBrTools {
 		}
 	}
 }
-
-
-

@@ -100,7 +100,7 @@ class Main extends Sprite
 		addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
 		funniSprite = new Sprite();
 
-		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
+		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
 		addChild(funniSprite);
 		funniSprite.addChild(game);
 		LoadingScreen.show();

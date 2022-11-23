@@ -57,6 +57,8 @@ import haxe.iterators.StringKeyValueIterator;
 import hscript.InterpEx;
 import hscript.Expr;
 
+import flixel.util.FlxAxes;
+
 #if cpp
 using cpp.NativeString;
 #end
@@ -71,7 +73,6 @@ class HscriptUtils {
 		// var filelist = hscriptClasses = CoolUtil.coolTextFile("assets/scripts/plugin_classes/classes.txt");
 		interp = addVarsToInterp(interp);
 		HscriptGlobals.init();
-		trace(InterpEx._scriptClassDescriptors);
 	}
 	/**
 	 * Create a simple interp, that already added all the needed shit
@@ -185,7 +186,7 @@ class HscriptUtils {
 		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
 		interp.variables.set("FlxTrail", FlxTrail);
 		interp.variables.set("FlxTrailArea", FlxTrailArea);
-		interp.variables.set("FlxPoint", FlxPoint);
+		interp.variables.set("FlxPoint", FlxBasePoint);
 		interp.variables.set("FlxTrail", FlxTrail);
 		interp.variables.set("FlxEase", FlxEase);
 		interp.variables.set("FlxCamera",FlxCamera);
@@ -196,7 +197,7 @@ class HscriptUtils {
 		interp.variables.set("FlxRuntimeShader",flixel.addons.display.FlxRuntimeShader);
 		interp.variables.set("FlxShader",flixel.graphics.tile.FlxGraphicsShader);
 		interp.variables.set("FlxTextBorderStyle",FlxTextBorderStyle);
-		interp.variables.set("FlxAxes",flixel.util.FlxAxes);
+		interp.variables.set("FlxAxes",SEAxes);
 
 
 		// Normal Haxe
@@ -221,7 +222,12 @@ class HscriptUtils {
 		return interp;
 	}
 }
-
+class SEAxes{
+	public static var X    = 0x01;
+	public static var Y    = 0x10;
+	public static var XY   = 0x11;
+	public static var NONE = 0x00;
+}
 class SETools{
 	public static var persistantVars:Map<String,Dynamic> = new Map<String,Dynamic>();
 	static public function areSameType(o:Dynamic,c:Dynamic):Bool{
@@ -712,7 +718,6 @@ class HscriptGlobals {
 	public static var height(get, never):Int;
 	public static var initialHeight(get, never):Int;
 	public static var initialWidth(get, never):Int;
-	public static var initialZoom(get, never):Float;
 	public static var keys(get, never):FlxKeyboard;
 	// no log
 	public static var maxElapsed(get, set):Float;
@@ -816,9 +821,7 @@ class HscriptGlobals {
 	static function get_initialWidth():Int {
 		return FlxG.initialWidth;
 	}
-	static function get_initialZoom():Float {
-		return FlxG.initialZoom;
-	}
+
 	static function get_inputs() {
 		return FlxG.inputs;
 	}

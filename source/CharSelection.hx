@@ -39,10 +39,9 @@ class CharSelection extends SearchMenuState
 
 		var i:Int = 0;
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i');
-		for (char in chars){
+		for (i => char in chars){
 			if(search == "" || query.match(char[0].toLowerCase()) ){
 				_addToList(char,i);
-				i++;
 			}
 		}
 	}catch(e) MainMenuState.handleError('Error with loading stage list ${e.message}');}
@@ -118,8 +117,8 @@ class CharSelection extends SearchMenuState
 			if (FlxG.keys.justPressed.THREE){LoadingState.loadAndSwitchState(new AnimationDebug(_char,false,2,true));}
 		}
 	}
-	inline function formatChar(char:Array<Dynamic>){
-		return (if(char[1] == 1)"INVALID|" else if(char[4] != null && char[4].nameSpace != null) '${char[4].namespace}|' else "") +'${char[2]}';
+	inline function formatChar(char:Array<Dynamic>):String{
+		return ((if(char[1] == 1)"INVALID|" else if(char[4] != null && char[4].nameSpace != null) '${char[4].namespace}|' else "") +'${char[0]}');
 	}
 	inline function getChar(){
 		return charIDList[curSelected];

@@ -10,31 +10,33 @@ using StringTools;
 
 typedef SwagSong =
 {
-	var song:String;
-	var notes:Array<SwagSection>;
-	var bpm:Float;
-	var needsVoices:Bool;
-	var ?eventObjects:Array<Event>;
+	// Vanilla Shit
+		var song:String;
+		var notes:Array<SwagSection>;
+		var bpm:Float;
+		var needsVoices:Bool;
+		var speed:Float;
+		var player1:String;
+		var player2:String;
+		var gfVersion:String;
+		var stage:String;
+		var validScore:Bool;
+		var ?chartVersion:String;
 
-	var speed:Float;
+	// Super Engine things
+		var ?rawJSON:Dynamic;
+		var ?chartType:String;
+		var ?forceCharacters:Bool;
+		var ?inverthurtnotes:Bool;
+		var ?difficultyString:String;
+		var ?noteMetadata:NoteMetadata;
 
-	var player1:String;
-	var player2:String;
-	var gfVersion:String;
-	var ?noteStyle:String;
-	var ?splashStyle:String;
-	var ?arrowStyle:String;
-	var stage:String;
-	var validScore:Bool;
-	var ?forceCharacters:Bool;
-	var ?events:Array<Dynamic>; // Events
-	var ?noteMetadata:NoteMetadata;
-	var ?difficultyString:String;
-	var ?inverthurtnotes:Bool;
-	var ?rawJSON:Dynamic;
-	var ?chartVersion:String;
-	var ?chartType:String;
-	// var ?seSong:SESONG;
+	// Chart type identification
+		var ?noteStyle:String;
+		var ?splashStyle:String;
+		var ?arrowStyle:String;
+		var ?events:Array<Dynamic>;
+		var ?eventObjects:Array<Event>;
 }
 
 typedef NoteMetadata={

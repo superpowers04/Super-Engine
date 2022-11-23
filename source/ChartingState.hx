@@ -163,6 +163,7 @@ class ChartingState extends MusicBeatState
 		return _song.chartType = "FNF/UNKNOWN";
 	}
 	var chartType = "FNF";
+
 	static var snapSound:Sound;
 	static var clapSound:Sound;
 	public static function playSnap(){
