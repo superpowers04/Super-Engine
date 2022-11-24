@@ -34,7 +34,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly(default,never):String = "U29";
+	public static var nightly(default,never):String = "U30";
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 
 	public static var compileType(default,never):String =
@@ -77,19 +77,7 @@ class MainMenuState extends SickMenuState
 				trace('${exception.message}\n${exception.stack}');
 			}catch(e){}
 		}
-		// try{
-		// 	var callStack:Array<StackItem> = cast CallStack.exceptionStack(true);
-		// 	for (stackItem in callStack)
-		// 	{
-		// 		switch (stackItem)
-		// 		{
-		// 			case FilePos(s, file, line, column):
-		// 				Sys.println(file + ":" + line + "");
-		// 			default:
-		// 				Sys.println(stackItem);
-		// 		}
-		// 	}
-		// }catch(e){trace('I fucking errored while tracing a stack: ${e.message}');}
+
 		try{
 			LoadingScreen.object.alpha = 0;
 			

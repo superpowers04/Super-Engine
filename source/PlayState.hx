@@ -2981,7 +2981,7 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 			{
 				var _scrollSpeed = FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2); // Probably better to calculate this beforehand
-				var strumNote:StrumArrow;
+				var strumNote:FlxSprite;
 				notes.forEachAlive(function(daNote:Note)
 				{	
 
@@ -3000,12 +3000,14 @@ class PlayState extends MusicBeatState
 					}
 					// if (!daNote.modifiedByLua) Modcharts don't work, this check is useless
 					// 	{
-					strumNote = (if (daNote.mustPress) playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))]);
+					strumNote = (if (daNote.parentSprite != null) daNote.parentSprite else if (daNote.mustPress) playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))]);
+					daNote.distanceToSprite = 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed;
 					if(daNote.updateY){
+					
 							if (downscroll)
 							{
 								if (daNote.mustPress)
-									daNote.y = (strumNote.y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
+									daNote.y = (strumNote.y + daNote.distanceToSprite);
 								if(daNote.isSustainNote)
 								{
 									// Remember = minus makes notes go up, plus makes them go down
@@ -3028,7 +3030,7 @@ class PlayState extends MusicBeatState
 							}else
 							{
 								if (daNote.mustPress)
-									daNote.y = (strumNote.y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
+									daNote.y = (strumNote.y - daNote.distanceToSprite);
 								if(daNote.isSustainNote)
 								{
 									daNote.y -= daNote.height * 0.5;
@@ -3369,7 +3371,7 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 			{
 				var _scrollSpeed = FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2); // Probably better to calculate this beforehand
-				var strumNote:StrumArrow;
+				var strumNote:FlxSprite;
 				var i = notes.members.length - 1;
 				var daNote:Note;
 				while (i > -1)
@@ -3391,18 +3393,18 @@ class PlayState extends MusicBeatState
 						daNote.visible = true;
 						daNote.active = true;
 					}
-					strumNote = (if (daNote.mustPress) playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))]);
+					strumNote = (if (daNote.parentSprite != null) daNote.parentSprite else if (daNote.mustPress) playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))] );
+					daNote.distanceToSprite = 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed;
 					if(daNote.updateY){
-
 						switch (downscroll){
 
 							case true:{
-								daNote.y = (strumNote.y + 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
+								daNote.y = strumNote.y + daNote.distanceToSprite;
 								if(daNote.isSustainNote)
 								{
-									// Remember = minus makes notes go up, plus makes them go down
-									if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
-										daNote.y += daNote.prevNote.height;
+									// daNote.isSustainNoteEnd && 
+									if(daNote.isSustainNoteEnd && daNote.prevNote != null)
+										daNote.y = daNote.prevNote.y + daNote.prevNote.height;
 									else
 										daNote.y += daNote.height * 0.5;
 	
@@ -3425,7 +3427,7 @@ class PlayState extends MusicBeatState
 						
 							}
 							case false:{
-								daNote.y = (strumNote.y - 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed);
+								daNote.y = strumNote.y - daNote.distanceToSprite;
 								if(daNote.isSustainNote)
 								{
 									daNote.y -= daNote.height / 2;

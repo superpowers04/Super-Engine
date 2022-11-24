@@ -9,8 +9,10 @@ using StringTools;
 
 class DiscordClient
 {
+	public static var canSend:Bool = false;
 	public function new()
 	{
+		if(!FlxG.save.data.discordDRP) return;
 		#if discord_rpc
 		trace("Discord Client starting...");
 		DiscordRpc.start({
@@ -19,6 +21,7 @@ class DiscordClient
 			onError: onError,
 			onDisconnected: onDisconnected
 		});
+		canSend = true;
 		trace("Discord Client started.");
 
 		while (true)
@@ -27,6 +30,7 @@ class DiscordClient
 			sleep(2);
 			//trace("Discord Client Update");
 		}
+		canSend = false;
 
 		DiscordRpc.shutdown();
 		#end
@@ -35,13 +39,16 @@ class DiscordClient
 	public static function shutdown()
 	{
 		#if discord_rpc
+		if(!canSend) return;
 		DiscordRpc.shutdown();
+		canSend = false;
 		#end
 	}
 	
 	static function onReady()
 	{
 		#if discord_rpc
+		if(!canSend) return;
 		DiscordRpc.presence({
 			details: "Titlescreen moment",
 			state: "beans",
@@ -64,6 +71,7 @@ class DiscordClient
 	public static function initialize()
 	{
 		#if discord_rpc
+		if(!FlxG.save.data.discordDRP) return;
 		var DiscordDaemon = sys.thread.Thread.create(() ->
 		{
 			new DiscordClient();
@@ -77,6 +85,7 @@ class DiscordClient
 	static var _timestampEnd:Float = 0;
 	public static function updateSong(?paused:Bool = false){
 		#if discord_rpc
+			if(!canSend) return;
 			var details = (if(paused) "Paused" else (switch(PlayState.stateType){
 					case 2:"Playing a downloaded song";
 					case 3:"Playing online";
@@ -103,6 +112,7 @@ class DiscordClient
 	public static function changePresence(details:String, state:Null<String>, ?smallImageKey : String, startTimestamp:Float = 0, ?endTimestamp: Float = 0)
 	{
 		#if discord_rpc
+			if(!canSend) return;
 			if(details == _details && _state == state && _timestampEnd == endTimestamp && _timestampStart == startTimestamp){return;}
 			_timestampStart = startTimestamp;
 			_timestampEnd = endTimestamp;

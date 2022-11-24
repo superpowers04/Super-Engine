@@ -66,6 +66,8 @@ class Note extends FlxSkewedSprite
 	public var skipNote:Bool = true;
 	public var childNotes:Array<Note> = [];
 	public var parentNote:Note = null;
+	public var parentSprite:FlxSprite = null;
+	public var distanceToSprite:Float = 0;
 	public var showNote = true;
 	public var info:Array<Dynamic> = [];
 	public var rawNote:Array<Dynamic> = [];

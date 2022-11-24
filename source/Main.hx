@@ -202,13 +202,13 @@ class Main extends Sprite
 
 
 class FlxGameEnhanced extends FlxGame{
-	public var blockUpdate:Bool = false;
-	public var blockDraw:Bool = false;
-	public var blockEnterFrame:Bool = false;
 	public function forceStateSwitch(state:FlxState){ // Might be a bad idea but allows an error to force a state change to Mainmenu instead of softlocking
 		_requestedState = state;
 		switchState();
 	}
+	public var blockUpdate:Bool = false;
+	public var blockDraw:Bool = false;
+	public var blockEnterFrame:Bool = false;
 	override function onEnterFrame(_){
 		try{
 			if(!blockEnterFrame) super.onEnterFrame(_);

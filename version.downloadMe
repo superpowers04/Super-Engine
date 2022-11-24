@@ -1,5 +1,5 @@
-1.0.0-U29;
-- Fix a bunch of character related issues
-- Discord rich presense
-- Fix notes not appearing at the end of song
-
+1.0.0-U30;
+- Empty categories now show up at the bottom of the song list instead of cluttering it
+- Remove week 7 songs from import
+- Discord Rich Presence can be toggled now
+- Note.parentSprite, Allows you to change the sprite that the note will move towards

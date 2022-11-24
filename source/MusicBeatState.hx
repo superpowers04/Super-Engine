@@ -33,8 +33,6 @@ class MusicBeatState extends FlxUIState
 	var forceQuit = true;
 	public static var instance:MusicBeatState;
 
-	var tempMessage:FlxText;
-	var tempMessTimer:FlxTimer;
 	var loading = true;
 	public function onFileDrop(file:String):Null<Bool>{
 		return true;
@@ -64,6 +62,8 @@ class MusicBeatState extends FlxUIState
 	}
 	
 	var tempMessBacking:FlxSprite;
+	var tempMessage:FlxText;
+	var tempMessTimer:FlxTimer;
 	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true,?trac:Bool = true){
 		if (tempMessage != null){
 			remove(tempMessage);

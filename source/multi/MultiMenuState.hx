@@ -113,7 +113,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			inTween.destroy();
 		}
 	}
-	function addListing(name:String,i:Int){
+	function addListing(name:String,i:Int):Alphabet{
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false);
 		controlLabel.yOffset = 20;
 		controlLabel.isMenuItem = true;
@@ -121,8 +121,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if (i != 0)
 			controlLabel.alpha = 0.6;
 		grpSongs.add(controlLabel);
+		return controlLabel;
 	}
-	function addCategory(name:String,i:Int){
+	function addCategory(name:String,i:Int):Alphabet{
 		songs[i] = name;
 		modes[i] = [CATEGORYNAME];
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
@@ -137,6 +138,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		controlLabel.targetY = i;
 		controlLabel.alpha = 1;
 		grpSongs.add(controlLabel);
+		return controlLabel;
 	}
 	inline function isValidFile(file) {return (!blockedFiles.contains(file.toLowerCase()) && (StringTools.endsWith(file, '.json') || StringTools.endsWith(file, '.sm')));}
 	override function reloadList(?reload=false,?search = ""){
@@ -148,6 +150,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		songNames = ["Nothing"];
 		modes = [0 => ["None"]];
 		var i:Int = 0;
+
 
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
 		if (FileSystem.exists(dataDir))
@@ -227,6 +230,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}
 			}
 		}
+		var emptyCats:Array<String> = [];
 		if (FileSystem.exists("mods/packs"))
 		{
 			for (name in FileSystem.readDirectory("mods/packs"))
@@ -235,10 +239,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				var catMatch = query.match(name.toLowerCase());
 				var dataDir = "mods/packs/" + name + "/charts/";
 				if(!FileSystem.exists(dataDir)){continue;}
-				
-				addCategory(name,i);
-				
-				i++;
 				var containsSong = false;
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
 				for (directory in dirs)
@@ -246,6 +246,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
 					{
 						if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
+							if(!containsSong){
+								containsSong = true;
+								addCategory(name,i);
+								i++;
+							}
 							modes[i] = [];
 							for (file in FileSystem.readDirectory(dataDir + directory))
 							{
@@ -262,7 +267,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 							
 							addListing(directory,i);
-							containsSong = true;
 							if(_goToSong == 0)_goToSong = i;
 							nameSpaces[i] = dataDir;
 							i++;
@@ -270,9 +274,15 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					}
 				}
 				if(!containsSong){
-					grpSongs.members[i - 1].color = FlxColor.RED;
+					// grpSongs.members[i - 1].color = FlxColor.RED;
+					emptyCats.push(name);
 				}
 			}
+		}
+		while(emptyCats.length > 0){
+			var e = emptyCats.shift();
+			addCategory(e,i).color = FlxColor.RED;
+			i++;
 		}
 		// if(_packCount == 0){
 		// 	addCategory("No packs or weeks to show",i);
