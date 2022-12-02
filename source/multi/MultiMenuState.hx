@@ -23,11 +23,11 @@ using StringTools;
 class MultiMenuState extends onlinemod.OfflineMenuState
 {
 	var modes:Map<Int,Array<String>> = [];
-	static var CATEGORYNAME:String = "-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-CATEGORY";
+	static inline var CATEGORYNAME:String = "-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-CATEGORY";
 	var diffText:FlxText;
 	var scoreText:FlxText;
 	var selMode:Int = 0;
-	var blockedFiles:Array<String> = ['picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','SE-OVERRIDES.json','config.json'];
+	var blockedFiles:Array<String> = ['events.json','picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','se-overrides.json','config.json'];
 	static var lastSel:Int = 1;
 	static var lastSearch:String = "";
 	public static var lastSong:String = ""; 

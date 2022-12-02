@@ -396,10 +396,10 @@ class PlayState extends MusicBeatState
 	public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String){
 		try{
 			if (interps[id] == null) {trace('No Interp ${id}!');return;}
-			if (!interps[id].variables.exists(func_name)) {return;}
+			var method = interps[id].variables.get(func_name);
+			if (method == null) {return;}
 			// trace('$func_name:$id $args');
 			
-			var method = interps[id].variables.get(func_name);
 			Reflect.callMethod(interps[id],method,args);
 		}catch(e:hscript.Expr.Error){
 			var line = '';
@@ -442,7 +442,7 @@ class PlayState extends MusicBeatState
 	}
 	
 	public function parseRun(?script:String = "",?id:String = "song"){
-		if(script != ""){return;}
+		if(script == ""){return;}
 		if(interps[id] == null){
 			parseHScript(script,null,id,"eval");
 		}else{
@@ -1056,20 +1056,17 @@ class PlayState extends MusicBeatState
 					songPosBG_.y = FlxG.height * 0.9 + 45 - FlxG.save.data.guiGap; 
 				songPosBG_.screenCenter(X);
 				songPosBG_.scrollFactor.set();
-				// add(songPosBG_);
 				
 				songPosBar_ = new FlxBar(songPosBG_.x + 4, songPosBG_.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG_.width - 8), Std.int(songPosBG_.height - 8), this,
 					'songPositionBar', 0, 90000);
 				songPosBar_.scrollFactor.set();
 				songPosBar_.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
-				// add(songPosBar_);
 	
 				songName = new FlxText(songPosBG_.x + (songPosBG_.width / 2) - 20,songPosBG_.y,0,SONG.song, 16);
 				if (downscroll)
 					songName.y -= 3;
 				songName.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 				songName.scrollFactor.set();
-				// add(songName);
 				songName.cameras = [camHUD];
 			}
 
@@ -1160,6 +1157,9 @@ class PlayState extends MusicBeatState
 			practiceText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 			practiceText.cameras = [camHUD];
 			practiceText.screenCenter(X);
+			if(downscroll){
+				practiceText.y += 20;
+			}
 			insert(members.indexOf(healthBar),practiceText);
 			FlxTween.tween(practiceText,{alpha:0},1,{type:PINGPONG});
 			// }
@@ -1203,6 +1203,20 @@ class PlayState extends MusicBeatState
 
 		startingSong = true;
 		
+
+		// if (!loadRep)
+		// 	rep = new Replay("na");
+		
+		add(scoreTxt);
+		// FlxG.sound.cache("missnote1");
+		// FlxG.sound.cache("missnote2");
+		// FlxG.sound.cache("missnote3");
+		
+
+		LoadingScreen.loadingText = "Finishing up";
+		super.create();
+		openfl.system.System.gc();
+		LoadingScreen.loadingText = "Starting countdown/dialog";
 		if (isStoryMode)
 		{
 			if(dialogue[0] != null){
@@ -1218,21 +1232,6 @@ class PlayState extends MusicBeatState
 			startCountdownFirst();
 		}
 
-		// if (!loadRep)
-		// 	rep = new Replay("na");
-		
-		add(scoreTxt);
-		// FlxG.sound.cache("missnote1");
-		// FlxG.sound.cache("missnote2");
-		// FlxG.sound.cache("missnote3");
-		
-
-		LoadingScreen.loadingText = "Finishing up";
-		super.create();
-		openfl.system.System.gc();
-
-
-		LoadingScreen.loadingText = "Done!";
 	#if !debug 
 	}catch(e){MainMenuState.handleError(e,'Caught "create" crash: ${e.message}\n ${e.stack}');}
 	#end
@@ -1775,7 +1774,7 @@ class PlayState extends MusicBeatState
 
 					}
 
-					if (onlinemod.OnlinePlayMenuState.socket == null && lastSusNote){ // Moves last sustain note so it looks right, hopefully
+					if (onlinemod.OnlinePlayMenuState.socket == null && lastSusNote && !downscroll){ // Moves last sustain note so it looks right, hopefully
 						var note = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						// if(note.parentNote != null){
 						note.strumTime = unspawnNotes[Std.int(unspawnNotes.length - 2)].strumTime + (Conductor.stepCrochet * 0.5);
@@ -3430,7 +3429,10 @@ class PlayState extends MusicBeatState
 								daNote.y = strumNote.y - daNote.distanceToSprite;
 								if(daNote.isSustainNote)
 								{
-									daNote.y -= daNote.height / 2;
+									if(daNote.isSustainNoteEnd && daNote.prevNote != null)
+										daNote.y = daNote.prevNote.y;
+									else
+										daNote.y -= daNote.height * 0.5;
 									// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
 									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
 									{
@@ -3653,7 +3655,7 @@ class PlayState extends MusicBeatState
 				boyfriend.isPressingNote = holdArray.contains(true);
 				if (boyfriend.currentAnimationPriority == 10 && (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 || boyfriend.isDonePlayingAnim()) && !boyfriend.isPressingNote)
 				{
-					boyfriend.dance(true,curBeat % 2 == 1,((curStep + curStepProgress) / 4) % 4);
+					boyfriend.dance(true,curBeat % 2 == 1);
 				}
 
 		 
@@ -4013,7 +4015,7 @@ class PlayState extends MusicBeatState
 		// }
 		for (i => v in [boyfriend,gf,dad]) {
 			if(v != null && v.currentAnimationPriority != 10){
-				v.dance(false,false,true);
+				v.dance(true,curBeat % 2 == 0,true);
 			}
 		}
 		// 	if(v.currentAnimationPriority != 10){

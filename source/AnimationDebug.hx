@@ -163,7 +163,7 @@ class AnimationDebug extends MusicBeatState
 			FileSystem.createDirectory('mods/characters/$name');
 			File.copy(file,'mods/characters/$name/character.$ending1');
 			File.copy(validFile,'mods/characters/$name/character.$ending2');
-			LoadingState.loadAndSwitchState(new AnimationDebug(name,false,1,false,true));
+			LoadingState.loadAndSwitchState(new AnimationDebug("Invalid|" + name,false,1,false,true));
 
 		},[file,validFile,ending1,ending2],"Type a name for the character\n",name,function(name:String){return (if(TitleState.retChar(name) != "") "This character already exists! Please use a different name" else "");}));
 	} 
@@ -193,6 +193,12 @@ class AnimationDebug extends MusicBeatState
 	{
 		var phase:Int = 0;
 		var phases:Array<String> = ["Adding cams","Adding Stage","Adding First UI","super.create","Adding char","Moving character","Adding more UI","Adding healthbar"];
+
+		inline function updateTxt():Int{
+			phase++;
+			LoadingScreen.loadingText = phases[phase];
+			return phase;
+		}
 		try{
 			camGame = new FlxCamera();
 			camHUD = new FlxCamera();
@@ -212,7 +218,7 @@ class AnimationDebug extends MusicBeatState
 			FlxG.sound.music.play(); // Music go brrr
 			// }
 
-			phase++;
+			updateTxt();
 			var gridBG:FlxSprite = FlxGridOverlay.create(50, 20);
 			gridBG.scrollFactor.set();
 			gridBG.cameras = [camGame];
@@ -252,7 +258,7 @@ class AnimationDebug extends MusicBeatState
 			}catch(e){
 				trace("Hey look, an error:" + e.stack + ";\n\\Message:" + e.message);
 			}
-			phase++;
+			updateTxt();
 			offsetTopText = new FlxText(30,20,0,'');
 			offsetTopText.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			offsetTopText.scrollFactor.set();
@@ -281,17 +287,17 @@ class AnimationDebug extends MusicBeatState
 
 
 			camGame.follow(camFollow);
-			phase++;
+			updateTxt();
 			super.create();
-			phase++;
+			updateTxt();
 			spawnChar();
 			if(dad == null)throw("Player object is null!");
-			phase++;
+			updateTxt();
 			updateCharPos(0,0,false,false);
 
 
 
-			phase++;
+			updateTxt();
 			var contText:FlxText = new FlxText(FlxG.width * 0.81,FlxG.height * 0.94,0,'Press H for help');
 			contText.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			contText.color = FlxColor.BLACK;
@@ -314,7 +320,7 @@ class AnimationDebug extends MusicBeatState
 			quitHeldBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			quitHeldBar.cameras = quitHeldBG.cameras = [camHUD];
 			add(quitHeldBar);
-			phase++;
+			updateTxt();
 			if(dragdrop)showTempmessage('Imported character $daAnim');
 		}catch(e) {MainMenuState.handleError('Error occurred, while loading Animation Debug. Current phase:${phases[phase]}; ${e.message}');}
 	}

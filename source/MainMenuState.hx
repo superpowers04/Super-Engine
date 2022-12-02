@@ -279,8 +279,10 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new onlinemod.OnlineHostMenu());
 			#end
 			case 'modded songs':
+				loading = true;
 				FlxG.switchState(new multi.MultiMenuState());
 			case 'online songs':
+				loading = true;
 				FlxG.switchState(new onlinemod.OfflineMenuState());
 			case 'changelog':
 				FlxG.switchState(new OutdatedSubState());
@@ -294,10 +296,13 @@ class MainMenuState extends SickMenuState
 			case "download charts":
 				FlxG.switchState(new ChartRepoState());
 			case 'story mode':
+				loading = true;
 				FlxG.switchState(new StoryMenuState());
 			case 'freeplay':
+				loading = true;
 				FlxG.switchState(new FreeplayState());
 			case 'osu beatmaps':
+				loading = true;
 				FlxG.switchState(new osu.OsuMenuState());
 			case "import charts from mods":
 				FlxG.switchState(new ImportMod());

@@ -300,7 +300,7 @@ class FinishSubState extends MusicBeatSubstate
 				+'\n\nSettings:'
 				+'\n\n Downscroll: ${FlxG.save.data.downscroll}'
 				+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
-				+'\n Practice: ${FlxG.save.data.practiceMode}${if(FlxG.save.data.practiceMode)' - Score unsaved' else ''}'
+				+'\n Practice: ${FlxG.save.data.practiceMode}${if(PlayState.instance.hasDied)' - Score not saved' else ''}'
 				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}' + (QuickOptionsSubState.getSetting("Song hscripts") ? '\n  Script Count:${PlayState.instance.interpCount}' : "")
 				+(if(FlxG.save.data.inputHandler == 1) '\n Safe Frames: ${FlxG.save.data.frames}' else 
 				 '\n HitWindows: ${Ratings.ratingMS("sick")},${Ratings.ratingMS("good")},${Ratings.ratingMS("bad")},${Ratings.ratingMS("shit")} MS')
@@ -328,7 +328,7 @@ class FinishSubState extends MusicBeatSubstate
 				// chartInfoText.scrollFactor.set();
 				
 
-				if(win && !PlayState.instance.hasDied && !FlxG.save.data.practiceMode && !ChartingState.charting && PlayState.instance.canSaveScore){
+				if(win && !PlayState.instance.hasDied && !ChartingState.charting && PlayState.instance.canSaveScore){
 					Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)]);
 				}
 				add(bg);

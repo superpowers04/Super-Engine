@@ -50,6 +50,7 @@ class LoadingScreen extends Sprite{
 			v.draw();
 			x -= Std.int(v.width - 2);
 			funniBitmap.copyPixels(v.framePixels,new flash.geom.Rectangle(0,0,v.width,v.height),new flash.geom.Point(x,y));
+			v.destroy();
 			// graphics.beginBitmapFill(v.framePixels,false,true);
 			// graphics.moveTo(x,y);
 			// graphics.drawRect(0,0, v.width, v.height);
@@ -111,6 +112,17 @@ class LoadingScreen extends Sprite{
 		if(textField.htmlText != loadingText){
 			updateText();
 		}
+		if(FlxG.save.data.doCoolLoading){
+			if(object.funni && alpha < 1){
+				alpha += e * 0.003;
+			}else if(!object.funni) {
+				if(alpha > 0.003){
+					alpha -= e * 0.003;
+				}else{
+					FlxG.stage.removeChild(this);
+				}
+			}
+		}
 		super.__enterFrame(e);
 	} 
 	function updateText(){
@@ -122,7 +134,7 @@ class LoadingScreen extends Sprite{
 		if(object == null){
 			initScreen();
 		}
-		object.alpha = 1;
+		// object.alpha = 1;
 		if(tween != null){tween.cancel();}
 		object.funni = true;
 		object.elapsed = 0;
@@ -131,6 +143,7 @@ class LoadingScreen extends Sprite{
 		FlxG.stage.addChild(object);
 		loadingText = "";
 		object.updateText();
+		if(!FlxG.save.data.doCoolLoading)object.alpha = 1;
 		// object.visible = true;
 	}
 	public static function forceHide(){
@@ -140,7 +153,6 @@ class LoadingScreen extends Sprite{
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 0;
-		
 	}
 	public static function hide(){
 		Main.game.blockUpdate = Main.game.blockDraw = false;
@@ -151,7 +163,7 @@ class LoadingScreen extends Sprite{
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 1;
-		tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){FlxG.stage.removeChild(object);}});
+		if(!FlxG.save.data.doCoolLoading)tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){FlxG.stage.removeChild(object);}});
 		
 	}
 

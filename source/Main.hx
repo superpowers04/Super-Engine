@@ -105,7 +105,7 @@ class Main extends Sprite
 		funniSprite.addChild(game);
 		LoadingScreen.show();
 		fpsCounter = new Overlay(0, 0);
-		addChild(fpsCounter);
+		game.addChild(fpsCounter);
 		console = new Console();
 		#if !mobile
 		addChild(console);
@@ -202,6 +202,7 @@ class Main extends Sprite
 
 
 class FlxGameEnhanced extends FlxGame{
+	static var blankState:FlxState = new FlxState();
 	public function forceStateSwitch(state:FlxState){ // Might be a bad idea but allows an error to force a state change to Mainmenu instead of softlocking
 		_requestedState = state;
 		switchState();
@@ -209,34 +210,90 @@ class FlxGameEnhanced extends FlxGame{
 	public var blockUpdate:Bool = false;
 	public var blockDraw:Bool = false;
 	public var blockEnterFrame:Bool = false;
+	var requestAdd = false;
 	override function onEnterFrame(_){
 		try{
-			if(!blockEnterFrame) super.onEnterFrame(_);
+			if(requestAdd){
+				requestAdd = false;
+				Main.funniSprite.addChild(this);
+				blockUpdate = blockEnterFrame = blockDraw = false;
+				if(_lostFocusWhileLoading != null){
+					onFocusLost(_lostFocusWhileLoading);_lostFocusWhileLoading = null;
+				}
+				// FlxG.autoPause = _oldAutoPause;
+
+			}
+			if(blockEnterFrame) {
+				ticks = getTicks();
+				_elapsedMS = ticks - _total;
+				_total = ticks;
+			}else{
+				super.onEnterFrame(_);
+			}
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.onEnterFrame");
 		}
 	}
-	function _update(){
-		super.update();
-	}
 	public var funniLoad:Bool = false;
+	// public var queuedState:Bool = false;
+	function _update(){
+		if (!_state.active || !_state.exists)
+			return;
+
+		if (_state != _requestedState)
+			switchState();
+
+		#if FLX_DEBUG
+		if (FlxG.debugger.visible)
+			ticks = getTicks();
+		#end
+
+		updateElapsed();
+
+		FlxG.signals.preUpdate.dispatch();
+
+		#if FLX_POST_PROCESS
+		if (postProcesses[0] != null)
+			postProcesses[0].update(FlxG.elapsed);
+		#end
+
+		#if FLX_SOUND_SYSTEM
+		FlxG.sound.update(FlxG.elapsed);
+		#end
+		FlxG.plugins.update(FlxG.elapsed);
+
+		FlxG.signals.postUpdate.dispatch();
+
+		#if FLX_DEBUG
+		debugger.stats.flixelUpdate(getTicks() - ticks);
+		#end
+
+		filters = filtersEnabled ? _filters : null;
+	}
+
+
 	override function update(){
 		try{
-			#if(target.threaded && false) // This is broken at the moment
-			if(_state != _requestedState){
-				// blockUpdate = blockEnterFrame = blockDraw = true;
+			#if(target.threaded) // This is broken at the moment
+			if(_state != _requestedState && FlxG.save.data.doCoolLoading){
+				blockUpdate = blockEnterFrame = blockDraw = true;
 				Main.funniSprite.removeChild(this);
+				var _oldAutoPause = FlxG.autoPause;
+				FlxG.autoPause = false;
 				// funniLoad = true;
 				sys.thread.Thread.create(() -> { 
 					// _update();
 					switchState();
-					Main.funniSprite.addChild(this);
+					
+					FlxG.autoPause = _oldAutoPause;
+					requestAdd = true;
+					
 					// funniLoad = false;
 				});
 				return;
 			}
 			#end
-			if(!blockUpdate) super.update();
+			if(blockUpdate) _update(); else super.update();
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.Update");
 		}
@@ -248,16 +305,20 @@ class FlxGameEnhanced extends FlxGame{
 			FuckState.FUCK(e,"FlxGame.Draw");
 		}
 	}
+	var _lostFocusWhileLoading:flash.events.Event = null;
 	override function onFocus(_){
 		try{
-			super.onFocus(_);
+			if(blockEnterFrame)
+				_lostFocusWhileLoading = null;
+			else
+				super.onFocus(_);
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.onFocus");
 		}
 	}
 	override function onFocusLost(_){
 		try{
-			super.onFocusLost(_);
+			if(blockEnterFrame) _lostFocusWhileLoading = _; else super.onFocusLost(_);
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.onFocusLost");
 		}

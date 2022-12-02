@@ -289,6 +289,7 @@ class CharAnimController extends FlxAnimationController{
 			for (offset in charProperties.animations_offsets){ // Custom offsets
 				offsetCount++;
 				if (needsInverted == 1)
+
 					switch (charType) {
 						case 0:
 							if (offset.player1 != null && offset.player1.length > 1) addOffset(offset.anim,offset.player1[0],offset.player1[1]);
@@ -928,9 +929,6 @@ class CharAnimController extends FlxAnimationController{
 				holdTimer = 0;
 				dance();
 			}
-			if((dance_idle || charType == 2) && (animation.curAnim.name == 'hairFall' && animHasFinished)){
-				playAnim('danceRight');
-			}
 			callInterp("update",[elapsed]);
 		}
 
@@ -941,36 +939,27 @@ class CharAnimController extends FlxAnimationController{
 	/**
 	 * FOR GF DANCING SHIT
 	 */
-	public function dance(Forced:Bool = false,beatDouble:Bool = false,useDanced:Bool = true,beatProg:Float = 0)
+	public function dance(Forced:Bool = false,beatDouble:Bool = false,useDanced:Bool = true)
 	{
 		if (amPreview){
-			if (dance_idle || charType == 2 || curCharacter == "spooky"){
+			if (dance_idle || charType == 2 ){
 				playAnim('danceRight');
 			}else{playAnim('idle');}
 		}
 		else
 		{
 			var frame = 0;
-			// if(beatProg != 0){
-			// 	frame = Std.int(animation.curAnim.frames.length / beatProg);
-			// }
 			if(dance_idle){
-				if (animation.curAnim == null || (!animation.curAnim.name.startsWith('hair') && animHasFinished))
+				if (animation.curAnim == null || animHasFinished)
 				{
-					// danced = !danced;
 					if(useDanced){
-						playAnim('dance${if(danced)'Right' else 'Left'}',Forced,beatProg);
+						playAnim('dance${if(danced)'Right' else 'Left'}',Forced/*,beatProg*/);
 					}else{
-						var anim = 'dance${if(beatDouble)'Right' else 'Left'}';
-						
-						if(beatProg > 0) frame = Math.floor(Math.floor(animation.getByName(anim).frameRate / (60 / Conductor.bpm)) * beatProg);
-						playAnim(anim,Forced,frame);
-
+						playAnim('dance${if(beatDouble)'Right' else 'Left'}',Forced);
 					}
 				}
-			}else{
-				if(beatProg > 0) frame = Math.floor(Math.floor(animation.getByName('idle').frameRate / (60 / Conductor.bpm)) * beatProg);
-				playAnim('idle',Forced,frame);
+			}else if (!beatDouble){
+				playAnim('idle',Forced/*,frame*/);
 			}
 		}
 	}
@@ -1071,6 +1060,7 @@ class CharAnimController extends FlxAnimationController{
 		if(Frame > 0 && Frame < 1 && Frame % 1 == Frame){
 			Frame = animation.getByName(AnimName).frames.length / Frame;
 		}
+		callInterp("playAnimBefore",[AnimName]);
 		animation.play(AnimName, Force, Reversed, Std.int(Frame));
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
 		

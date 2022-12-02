@@ -32,14 +32,17 @@ class SELoader {
 		if(MusicBeatState.instance != null) MusicBeatState.instance.showTempmessage(e); else MainMenuState.handleError(e);
 	}
 
-	public static function loadFlxSprite(x:Int,y:Int,pngPath:String):FlxSprite{
+	public static function loadFlxSprite(x:Int,y:Int,pngPath:String,?useCache:Bool = false):FlxSprite{
 		if(!FileSystem.exists('${pngPath}')){
 			handleError('${id}: Image "${pngPath}" doesn\'t exist!');
 			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
 		}
-		return new FlxSprite(x, y).loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile(pngPath)));
+		return new FlxSprite(x, y).loadGraphic(loadGraphic(pngPath,useCache));
 	}
-	public static function loadGraphic(pngPath:String):FlxGraphic{
+	public static function loadGraphic(pngPath:String,?useCache:Bool = false):FlxGraphic{
+		if(cache.spriteArray[pngPath] != null || useCache){
+			return cache.loadGraphic(pngPath);
+		}
 		if(!FileSystem.exists('${pngPath}')){
 			handleError('${id}: "${pngPath}" doesn\'t exist!');
 			return FlxGraphic.fromRectangle(0,0,0); // Prevents the script from throwing a null error or something
@@ -58,7 +61,7 @@ class SELoader {
 		}
 		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath),File.getContent('${pngPath}.xml'));
 	}
-	public static function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
+	public static function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24,?useCache:Bool = false):FlxSprite{
 
 		if(!FileSystem.exists('${pngPath}.png')){
 			handleError('${id}: SparrowSprite PNG "${pngPath}.png" doesn\'t exist!');
@@ -71,7 +74,7 @@ class SELoader {
 		
 		var spr = new FlxSprite(x, y);
 
-		spr.frames= FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile(pngPath)),File.getContent('${pngPath}.xml'));
+		spr.frames= FlxAtlasFrames.fromSparrow(loadGraphic(pngPath,useCache),loadText('${pngPath}.xml',useCache));
 		if (anim != ""){
 			spr.animation.addByPrefix(anim,anim,fps,loop);
 			spr.animation.play(anim);
@@ -83,7 +86,10 @@ class SELoader {
 		cache = new InternalCache();
 	}
 
-	public static function loadText(textPath:String):String{
+	public static function loadText(textPath:String,?useCache:Bool = false):String{
+		if(cache.textArray[textPath] != null || useCache){
+			return cache.loadText(textPath);
+		}
 		if(!FileSystem.exists(textPath)){
 			handleError('${id}: Text "${textPath}" doesn\'t exist!');
 			return "";
@@ -95,13 +101,34 @@ class SELoader {
 	// 	return true;
 	// }
 
+	public static function createVLCUrl(FileName:String):String
+	{
+		FileName = haxe.io.Path.normalize(FileSystem.absolutePath(FileName));
+		#if android
+		return Uri.fromFile(FileName);
+		#elseif linux
+		return 'file://' + FileName;
+		#elseif (windows || mac)
+		return 'file:///' + FileName;
+		#end
+	}
 
 
-	public static function loadSound(soundPath:String):Sound{
+	public static function loadSound(soundPath:String,?useCache:Bool = false):Sound{
+		if(cache.soundArray[soundPath] != null || useCache){
+			return cache.loadSound(soundPath);
+		}
 		if(!FileSystem.exists(soundPath)){
 			handleError('${id}: Sound "${soundPath}" doesn\'t exist!');
 		}
+		#if hxCodec
+			if(FlxG.save.data.vlcSound)
+				return vlc.VLCSound.fromFile(createVLCUrl(soundPath));
+			else
+				return Sound.fromFile(soundPath);
+		#else
 		return Sound.fromFile(soundPath);
+		#end
 	}
 	public static function loadFlxSound(soundPath:String):FlxSound{
 		return new FlxSound().loadEmbedded(loadSound(soundPath));
@@ -145,7 +172,7 @@ class SELoader {
 	// 	SoundList = [];
 	// 	TextList = [];
 	// }   
-	// public static function loadFlxSound(path:String,?cache:Bool = false,?cacheTemp:Bool = false,?cacheID):Null<FlxSound>{
+	// public static function loadFlxSound(path:String,?useCache:Bool = false,?cacheTemp:Bool = false,?cacheID):Null<FlxSound>{
 	// 	if(cacheID != "" && cacheIDList["FLXSOUND:" + cacheID] == path){
 	// 		if(FLXSoundList[cacheID] == null){
 	// 			cacheIDList["FLXSOUND:" + cacheID] = "";
@@ -169,7 +196,7 @@ class SELoader {
 		
 	// 	return FLXSoundList[path];
 	// } 
-	// public static function loadSound(path:String,?cache:Bool = false,?cacheTemp:Bool = false,?cacheID):Null<Sound>{
+	// public static function loadSound(path:String,?useCache:Bool = false,?cacheTemp:Bool = false,?cacheID):Null<Sound>{
 	// 	if(cacheID != "" && cacheIDList["SOUND:" + cacheID] == path){
 	// 		if(SoundList[cacheID] == null){
 	// 			cacheIDList["SOUND:" + cacheID] = "";
@@ -193,7 +220,7 @@ class SELoader {
 		
 	// 	return SoundList[path];
 	// } 
-	// public static function getSprite(path:String,?cache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):Null<FlxGraphic>{
+	// public static function getSprite(path:String,?useCache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):Null<FlxGraphic>{
 	// 	if(cacheID != "" && cacheIDList["SPRITE:" + cacheID] == path){
 	// 		if(SpriteList[cacheID] == null){
 	// 			cacheIDList["SPRITE:" + cacheID] = "";
@@ -221,13 +248,13 @@ class SELoader {
 	// 	return SpriteList[path];
 	// }
 
-	// public static function loadGraphic(path:String,?cache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):Null<FlxGraphic>{
+	// public static function loadGraphic(path:String,?useCache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):Null<FlxGraphic>{
 	// 	// var spr = getSprite(path,cache,cacheTemp);
 	// 	// if (spr == null) return null;
 	// 	return FlxGraphic.fromBitmapData(getSprite(path,cache,cacheTemp,cacheID));
 	// }
 
-	// public static function loadText(textPath:String,?cache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):String{
+	// public static function loadText(textPath:String,?useCache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):String{
 		
 	// 	if(cacheID != "" && cacheIDList["TEXT:" + cacheID] == textPath){
 	// 		if(TextList[cacheID] == null){
@@ -287,7 +314,7 @@ class SELoader {
 	// 		SpriteList[path].persist = true;
 	// 	}
  //    }
- //    public static function loadSFramesSep(pngPath:String,xmlPath:String,?cache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):Null<FlxAtlasFrames>{
+ //    public static function loadSFramesSep(pngPath:String,xmlPath:String,?useCache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):Null<FlxAtlasFrames>{
  //    	if(!FileSystem.exists(pngPath)){
  //    		handleError("Invalid path " + pngPath);
  //    		return null;
@@ -302,7 +329,7 @@ class SELoader {
 
  //        return FlxAtlasFrames.fromSparrow(getSprite(pngPath,cache,cacheTemp,cacheID),loadText(xmlPath,cache,cacheTemp,cacheID));
  //    }
- //    public static function loadSparrowFrames(pngPath:String,?cache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):Null<FlxAtlasFrames>{
+ //    public static function loadSparrowFrames(pngPath:String,?useCache:Bool = false,?cacheTemp:Bool = false,?cacheID:String = ""):Null<FlxAtlasFrames>{
  //    	if(!FileSystem.exists(pngPath + ".png") || !FileSystem.exists(pngPath + ".xml")){
  //    		handleError("Invalid path " + pngPath);
  //    		return null;

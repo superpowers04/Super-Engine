@@ -124,15 +124,15 @@ class OfflinePlayState extends PlayState
 					PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
 
 				}
-				if(nameSpace != ""){
-					if(TitleState.retChar(nameSpace + "|" + PlayState.player2) != null){
-						PlayState.player2 = nameSpace + "|" + PlayState.player2;
-					}
-					if(TitleState.retChar(nameSpace + "|" + PlayState.SONG.player1) != null){
-						PlayState.player1 = nameSpace + "|" + PlayState.player1;
-					}
+				// if(nameSpace != ""){
+				// 	if(TitleState.retChar(nameSpace + "|" + PlayState.player2) != null){
+				// 		PlayState.player2 = nameSpace + "|" + PlayState.player2;
+				// 	}
+				// 	if(TitleState.retChar(nameSpace + "|" + PlayState.SONG.player1) != null){
+				// 		PlayState.player1 = nameSpace + "|" + PlayState.player1;
+				// 	}
 				
-				}
+				// }
 		}
 		// var e = chartFile.substr(0,chartFile.lastIndexOf('/') + "/SE-OVERRIDES.json";
 		// if(FileSystem.exists(e)){

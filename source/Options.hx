@@ -11,6 +11,8 @@ import hscript.Interp;
 import tjson.Json;
 import QuickOptionsSubState;
 
+using StringTools;
+
 class OptionCategory
 {
 	private var _options:Array<Option> = new Array<Option>();
@@ -797,7 +799,7 @@ class PlayerOption extends Option
 	}
 
 	override function getValue():String {
-		return "Current Player: " + FlxG.save.data.playerChar;
+		return "Current Player: " + ('${FlxG.save.data.playerChar}').replace('null|',"");
 	}
 }
 class GFOption extends Option
@@ -829,7 +831,7 @@ class GFOption extends Option
 	}
 
 	override function getValue():String {
-		return "Current GF: " + FlxG.save.data.gfChar;
+		return "Current GF: " + ('${FlxG.save.data.gfChar}').replace('null|',"");
 	}
 }
 class OpponentOption extends Option
@@ -860,7 +862,7 @@ class OpponentOption extends Option
 	}
 
 	override function getValue():String {
-		return "Current Opponent: " + FlxG.save.data.opponent;
+		return "Current Opponent: " + ('${FlxG.save.data.opponent}').replace('null|',"");
 	}
 
 }

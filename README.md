@@ -1,19 +1,19 @@
-# Super Engine
+# Super Engine (Unstable)[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml)
 This is a mod of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/)<br>
 This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine) with a hint of [FPSPlus](https://github.com/ThatRozebudDude/FPS-Plus-Public/) added in and with some inspiration from [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine)/[FNF Multi](https://shadowmario.itch.io/funkinmulti) <br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
 This client aims to allow people to use normal Funkin Battle Royale servers with custom characters or play custom charts and such when offline<br>
-Last Build:[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml) Click on a commit and go to the artifacts to download, you need a github account to download artifacts
+ Click on a commit and go to the artifacts to download, you need a github account to download artifacts
 <br>[Discord server](https://discord.gg/28GPGTRuuR)
-
 <br><br>For an **unofficial** version that supports more keys, [You can use cartoon032's fork](https://github.com/cartoon032/FunkinBattleRoyale-Mod)
 <br><br>Note that due to the setup on my end, I push commits all at once, so pull requests and other things might be out of date and need to be merged manually
+# Modding information
+Read the [mods/readme.txt](https://github.com/superpowers04/Super-Engine/blob/nightly/example_mods/readme.txt) for info about installing/making custom characters, charts, stages and more. 
+<br>**Anything beyond bf and gf SHOULD NOT be hardcoded into this engine.** This engine is meant to be a 1 time install with updates, Please do not package this engine inside of a mod. 
+<br>If you *have* to include an engine/exe in your mod, [Forever Engine](https://github.com/Yoshubs/Forever-Engine-Legacy) and [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) are far more fit for this
 
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide
-
-# Read mods/readme.txt for info about custom characters, charts, stages and more. Custom characters and charts beyond vanilla charts, bf and gf SHOULD NOT be hardcoded into this engine
-
 
 # Information
 ## Friday Night Funkin'

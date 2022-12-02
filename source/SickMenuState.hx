@@ -138,7 +138,7 @@ class SickMenuState extends MusicBeatState
 				}
 				SickMenuState.fading = false;
 				
-				SickMenuState.menuMusic = SELoader.loadSound(SickMenuState.musicFileLoc);
+				SickMenuState.menuMusic = SELoader.loadSound(SickMenuState.musicFileLoc,true);
 				SickMenuState.musicTime = curMusicTime;
 				Conductor.changeBPM(mt.bpm);
 
@@ -165,8 +165,8 @@ class SickMenuState extends MusicBeatState
 		// if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;}
 		// PlayState.songScript = "";PlayState.hsBrTools = null;
 		if(SearchMenuState.background == null){
-			SearchMenuState.background = if(FileSystem.exists("mods/bg.png")) Paths.getImageDirect("mods/bg.png"); else Paths.getImageDirect("assets/images/menuDesat.png");
-			SearchMenuState.backgroundOver = if(FileSystem.exists("mods/fg.png")) Paths.getImageDirect("mods/fg.png"); else FlxGraphic.fromRectangle(0,0,0x00000000);
+			SearchMenuState.background = if(FileSystem.exists("mods/bg.png")) SELoader.loadGraphic("mods/bg.png",true); else SELoader.loadGraphic("assets/images/menuDesat.png",true);
+			SearchMenuState.backgroundOver = if(FileSystem.exists("mods/fg.png")) SELoader.loadGraphic("mods/fg.png",true); else FlxGraphic.fromRectangle(0,0,0x00000000);
 			SearchMenuState.background.persist = SearchMenuState.backgroundOver.persist = true;
 			SearchMenuState.background.destroyOnNoUse = SearchMenuState.backgroundOver.destroyOnNoUse = false;
 		}

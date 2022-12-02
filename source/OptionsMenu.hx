@@ -132,9 +132,13 @@ class OptionsMenu extends MusicBeatState
 			new ShowP2Option("Show Opponent"),
 			new ShowGFOption("Show Girlfriend"),
 			new ShowP1Option("Show Player 1"),
+			new HCBoolOption("Makes the loading screen use threads and show loading progress but is buggy","Threaded loading screen","doCoolLoading"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
 		],"Toggle visibility of certain gameplay aspects"),
 		new OptionCategory("Auditory", [
+			#if hxCodec
+			new HCBoolOption("Whether to use Flixel or VLC for audio. VLC supports more formats but may cause issues","VLC Audio Handling","vlcSound"),
+			#end
 			new VolumeOption("Adjust the volume of the entire game","master"),
 			new VolumeOption("Adjust the volume of the background music","inst"),
 			new VolumeOption("Adjust the volume of the vocals","voices"),

@@ -87,7 +87,8 @@ class SearchMenuState extends MusicBeatState
 		}
 	}
 	// var bgColor:FlxColor = 0xFFFF6E6E;
-	static public inline function resetVars(){
+	static public function resetVars(){
+		LoadingScreen.loadingText = "Resetting Variables";
 		if (ChartingState.charting) ChartingState.charting = false;
 		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
 		multi.MultiPlayState.scriptLoc = "";PlayState.nameSpace = "";PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
@@ -125,6 +126,7 @@ class SearchMenuState extends MusicBeatState
 		bgOver.scrollFactor.set(0.01,0.01);
 		add(bgOver);
 		grpSongs = new FlxTypedGroup<Alphabet>();
+		LoadingScreen.loadingText = "Loading list";
 		reloadList();
 		add(grpSongs);
 		FlxG.mouse.visible = true;

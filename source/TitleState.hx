@@ -148,7 +148,7 @@ class TitleState extends MusicBeatState
 		return null;
 	}
 	public static function findInvalidChar(char:String):CharInfo{
-
+		char = char.replace('INVALID|',"");
 		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
 			var e = Std.parseInt(char);
 			if(invalidCharacters[e] != null){
@@ -163,8 +163,8 @@ class TitleState extends MusicBeatState
 				return i;
 			}
 		}
-		trace('Unable to find $char!');
-		return null;
+		
+		return findChar(char);
 	}
 	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
 	public static function findCharByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
