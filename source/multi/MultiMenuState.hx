@@ -158,6 +158,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var dirs = orderList(FileSystem.readDirectory(dataDir));
 			addCategory("charts folder",i);
 			i++;
+
+			LoadingScreen.loadingText = 'Scanning mods/charts';
 			for (directory in dirs)
 			{
 				if (search == "" || query.match(directory.toLowerCase())) // Handles searching
@@ -198,6 +200,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				i++;
 				_packCount++;
 				var containsSong = false;
+				LoadingScreen.loadingText = 'Scanning mods/weeks/$name';
 				for (directory in dirs)
 				{
 					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
@@ -241,6 +244,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				if(!FileSystem.exists(dataDir)){continue;}
 				var containsSong = false;
 				var dirs = orderList(FileSystem.readDirectory(dataDir));
+				LoadingScreen.loadingText = 'Scanning mods/packs/$name/charts/';
 				for (directory in dirs)
 				{
 					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching

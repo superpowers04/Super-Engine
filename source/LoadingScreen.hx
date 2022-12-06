@@ -12,6 +12,7 @@ import flixel.text.FlxText;
 
 class LoadingScreen extends Sprite{
 	public static var object:LoadingScreen;
+
 	public static var loadingText(default,set):String = "";
 	public static function set_loadingText(val:String):String{
 		loadingText = val;
@@ -24,7 +25,7 @@ class LoadingScreen extends Sprite{
 	var funni = false;
 	var textField:TextField;
 	// var loadingText:Alphabet;
-	
+	var loadingIcon:Sprite;
 
 	public override function new(?txt = "loading"){
 		super();
@@ -40,6 +41,23 @@ class LoadingScreen extends Sprite{
 		var loadingText = new Alphabet(0,0,txt,true);
 		loadingText.isMenuItem = false;
 		loadingText.visible = true;
+		// if(FlxG.save.data.doCoolLoading){
+		// 	loadingIcon = new Sprite();
+		// 	loadingIcon.x = 1240;
+		// 	loadingIcon.y = 550;
+		// 	addChild(loadingIcon);
+		// 	var note = new Note(0, 0, null,false,false);
+		// 	note.useFramePixels = true;
+		// 	note.draw();
+		// 	loadingIcon.graphics.beginBitmapFill(note.framePixels,false,true);
+		// 	loadingIcon.graphics.moveTo(0,0);
+		// 	// note.framePixels.width * -0.5,note.framePixels.height * -0.5
+		// 	loadingIcon.graphics.drawRect(0,0, note.framePixels.width, note.framePixels.height);
+		// 	loadingIcon.graphics.endFill();
+		// 	loadingIcon.scaleX = loadingIcon.scaleY= 0.25;
+			
+		// }
+
 		var funniBitmap = new BitmapData(1290,730,false,0x100010);
 		var x = 1200;
 		var y = 600;
@@ -47,7 +65,7 @@ class LoadingScreen extends Sprite{
 		while (i >= 0) { // Writing backwards instead of forwards
 			var v = loadingText.members[i];
 			v.useFramePixels = true;
-			v.draw();
+			v.drawFrame();
 			x -= Std.int(v.width - 2);
 			funniBitmap.copyPixels(v.framePixels,new flash.geom.Rectangle(0,0,v.width,v.height),new flash.geom.Point(x,y));
 			v.destroy();
@@ -113,6 +131,9 @@ class LoadingScreen extends Sprite{
 			updateText();
 		}
 		if(FlxG.save.data.doCoolLoading){
+			if(loadingIcon != null){
+				loadingIcon.rotation += e * 0.05;
+			}
 			if(object.funni && alpha < 1){
 				alpha += e * 0.003;
 			}else if(!object.funni) {
@@ -144,6 +165,7 @@ class LoadingScreen extends Sprite{
 		loadingText = "";
 		object.updateText();
 		if(!FlxG.save.data.doCoolLoading)object.alpha = 1;
+
 		// object.visible = true;
 	}
 	public static function forceHide(){
@@ -163,7 +185,12 @@ class LoadingScreen extends Sprite{
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 1;
-		if(!FlxG.save.data.doCoolLoading)tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){FlxG.stage.removeChild(object);}});
+		if(!FlxG.save.data.doCoolLoading)
+			try{
+				tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){FlxG.stage.removeChild(object);}});
+			}catch(e){
+				object.alpha = 0;
+			}
 		
 	}
 

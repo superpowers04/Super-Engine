@@ -75,6 +75,18 @@ class CoolUtil
 
 		return daList;
 	}
+	public static function splitFilenameFromPath(str:String):Array<String>{
+		return [str.substr(0,str.lastIndexOf("/")),str.substr(str.lastIndexOf("/") + 1)];
+	}
+
+	public inline static function getFilenameFromPath(str:String):String{
+		if(str.lastIndexOf("/") == -1) return str;
+		return str.substr(str.lastIndexOf("/") + 1);
+	}
+	public inline static function removeFileFromPath(str:String):String{
+		if(str.lastIndexOf("/") == -1) return str;
+		return str.substr(0,str.lastIndexOf("/"));
+	}
 	public static function coolFormat(text:String){
 		var daList:Array<String> = text.trim().split('\n');
 

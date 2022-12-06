@@ -110,9 +110,8 @@ class OnlinePauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
+					FlxG.sound.music.volume = FlxG.save.data.instVol;
 					close();
-				case "Restart":
-					FlxG.resetState();
 				case "Exit to lobby":
 					if (TitleState.supported){
 						Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy)], OnlinePlayMenuState.socket);

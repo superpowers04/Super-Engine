@@ -386,7 +386,7 @@ class CharAnimController extends FlxAnimationController{
 					addAnimation(anima.anim, anima.name,anima.indices,"", anima.fps, anima.loop,anima.flipx);
 				}else if (anima.frameNames != null && anima.frameNames.length > 0) { // Add using frameNames if specified
 					addAnimation(anima.anim, anima.name,anima.frameNames,"", anima.fps, anima.loop,anima.flipx);
-				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop);}
+				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop,anima.flipx);}
 
 				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
 				if(anima.priority != null && -1 < anima.priority ){

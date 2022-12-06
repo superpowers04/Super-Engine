@@ -150,7 +150,8 @@ class OnlinePlayState extends PlayState
 		// remove(healthBar);
 		// remove(iconP1);
 		remove(iconP2);
-
+		camGame.alpha = 1;
+		camGame.visible = true;
 
 		OnlinePlayMenuState.receiver.HandleData = HandleData;
 		new FlxTimer().start(transIn.duration, (timer:FlxTimer) -> Sender.SendPacket(Packets.GAME_READY, [], OnlinePlayMenuState.socket));
@@ -323,7 +324,7 @@ class OnlinePlayState extends PlayState
 		clientText[-1] = "S:" + PlayState.songScore+ " M:" + PlayState.misses+ " A:" + Std.int(PlayState.accuracy);
 
 		canPause = false;
-		FlxG.sound.playMusic(loadedInst, 1, true);
+		FlxG.sound.playMusic(loadedInst, FlxG.save.data.instVol, true);
 		FlxG.sound.music.onComplete = null;
 		FlxG.sound.music.pause();
 		vocals.volume = 0;
@@ -504,83 +505,68 @@ class OnlinePlayState extends PlayState
 				if (PlayState.p2canplay){
 					try{
 
-					if(data[1] == null){data[1] = 0;}
-					var charID = 1;
-					if(data[2] != null && data[2] != 0) charID = data[2];
+						if(data[1] == null){data[1] = 0;}
+						var charID = 1;
+						if(data[2] != null && data[2] != 0) charID = data[2];
+						// trace('packet lmao ${data}');
 
-					if(data[0] == -1 && data[1] != null && data[1] != 0 ){
-						PlayState.charAnim(1,Note.noteAnims[Std.int(data[1] - 1)],true);
-
-					}else{
-						var killedNote = false;
-						var mustPress = false;
-
-						if(noteData[data[0]] != null){
-							
-							if(noteData[data[0]][0] != null){
+						if(data[0] == -1 && data[1] != null && data[1] != 0 ){
+							PlayState.charAnim(1,Note.noteAnims[Std.int(data[1] - 1)],true);
+						}else{
+							var killedNote = false;
+							var mustPress = false;
+							if(noteData[data[0]] != null){
 								var note = noteData[data[0]][0];
-								mustPress = note.mustPress;
-								if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
-									note.miss(charID,note);
+								
+								if(note != null && note.hit != null && note.miss != null){
+									mustPress = note.mustPress;
+									if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
+										note.miss(charID,note);
+									}else{
+										note.hit(charID,note);
+									}
+									note.mustPress = mustPress;
+									if(!note.mustPress){ // Oi, dumbass, don't delete notes from the player
+										note.kill();
+										notes.remove(note, true);
+										note.destroy();
+									}
+									return;
 								}else{
-									note.hit(charID,note);
-								}
-								note.mustPress = mustPress;
-								if(!note.mustPress){ // Oi, dumbass, don't delete notes from the player
-									note.kill();
-									notes.remove(note, true);
-									note.destroy();
-								}
-							}else{
-								var noteData:Int = noteData[data[0]][1];
-								switch (charID) {
-									case 0:PlayState.instance.BFStrumPlayAnim(noteData);
-									case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
-								}; // Strums
-								PlayState.charAnim(charID,Note.noteAnims[noteData] = (if(data[1] != null && data[1] != 0 ) "miss" else ""),true); // Play animation
-							}
-						}
-						for (i => note in notes.members){
-							mustPress = false;
-							if(note.noteID == data[0]){
-								mustPress = note.mustPress;
-								if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
-									note.miss(charID,note);
-								}else{
-									note.hit(charID,note);
-								}
-								note.mustPress = mustPress;
-								if(!note.mustPress){ // Oi, dumbass, don't delete notes from the player
-									note.kill();
-									notes.remove(note, true);
-									note.destroy();
+									var noteData:Int = noteData[data[0]][1];
+									switch (charID) {
+										case 0:PlayState.instance.BFStrumPlayAnim(noteData);
+										case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
+									}; // Strums
+									PlayState.charAnim(charID,Note.noteAnims[noteData] = (if(data[1] != null && data[1] != 0 ) "miss" else ""),true); // Play animation
 								}
 							}
+							for (i => note in notes.members){
+								mustPress = false;
+								if(note.noteID == data[0]){
+									mustPress = note.mustPress;
+									if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
+										note.miss(charID,note);
+									}else{
+										note.hit(charID,note);
+									}
+									note.mustPress = mustPress;
+									if(!note.mustPress){ // Oi, dumbass, don't delete notes from the player
+										note.kill();
+										notes.remove(note, true);
+										note.destroy();
+									}
+									break;
+								}
+							}
 						}
-						// if(!killedNote){
-						// 	for (_ => note in unspawnNotes) {
-						// 		if(note.noteID == data[0]){
-						// 			killedNote = true;
-						// 			if(data[1] != null && data[1] != 0 || note.shouldntBeHit){ // Miss
-						// 				note.miss(charID,note);
-						// 			}else{
-						// 				note.hit(charID,note);
-						// 			}
-						// 			if(!note.mustPress){
-						// 				note.kill();
-						// 				// note.destroy();
-						// 			}
-						// 			break;
-						// 		}
-						// 	}
-						// }
-						// if(!killedNote){ // Note was deleted, cringe
-						// }
+					}catch(e){
+						showTempmessage('Error with KEYPRESS: $data',FlxColor.RED);
+						// Reset animations
+						PlayState.boyfriend.dance(true);
+						PlayState.dad.dance(true);
+						trace('Error with KEYPRESS: $data ${e.message}');
 					}
-				}catch(e){
-					showTempmessage('Error with KEYPRESS: $data',FlxColor.RED);
-					trace('Error with KEYPRESS: $data ${e.message}');
-				}
 					// // PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
 					// 	p2Int = data[0];
 					// 	p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1) // Holds

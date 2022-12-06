@@ -163,7 +163,7 @@ class AnimationDebug extends MusicBeatState
 			FileSystem.createDirectory('mods/characters/$name');
 			File.copy(file,'mods/characters/$name/character.$ending1');
 			File.copy(validFile,'mods/characters/$name/character.$ending2');
-			LoadingState.loadAndSwitchState(new AnimationDebug("Invalid|" + name,false,1,false,true));
+			LoadingState.loadAndSwitchState(new AnimationDebug("INVALID|" + name,false,1,false,true));
 
 		},[file,validFile,ending1,ending2],"Type a name for the character\n",name,function(name:String){return (if(TitleState.retChar(name) != "") "This character already exists! Please use a different name" else "");}));
 	} 
@@ -192,7 +192,7 @@ class AnimationDebug extends MusicBeatState
 	override function create()
 	{
 		var phase:Int = 0;
-		var phases:Array<String> = ["Adding cams","Adding Stage","Adding First UI","super.create","Adding char","Moving character","Adding more UI","Adding healthbar"];
+		var phases:Array<String> = ["Adding cams","Adding Stage","Adding First UI","super.create","Adding char","Moving character","Adding more UI","Adding healthbar","finished"];
 
 		inline function updateTxt():Int{
 			phase++;
@@ -200,6 +200,7 @@ class AnimationDebug extends MusicBeatState
 			return phase;
 		}
 		try{
+			updateTxt();
 			camGame = new FlxCamera();
 			camHUD = new FlxCamera();
 			camHUD.bgColor.alpha = 0;
@@ -265,7 +266,6 @@ class AnimationDebug extends MusicBeatState
 			offsetTopText.cameras = [camHUD];
 			animDropDown = new PsychDropDown(FlxG.width - 300, 50, FlxUIDropDownMenu.makeStrIdLabelArray([''], true), function(id:String)
 			{
-				trace('Drop: ${Std.parseInt(id)}');
 				var anim = animList[Std.parseInt(id)];
 				playAnim(anim);
 				// animToPlay = anim;
@@ -288,12 +288,11 @@ class AnimationDebug extends MusicBeatState
 
 			camGame.follow(camFollow);
 			updateTxt();
-			super.create();
 			updateTxt();
 			spawnChar();
 			if(dad == null)throw("Player object is null!");
-			updateTxt();
 			updateCharPos(0,0,false,false);
+			updateTxt();
 
 
 
@@ -320,6 +319,7 @@ class AnimationDebug extends MusicBeatState
 			quitHeldBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			quitHeldBar.cameras = quitHeldBG.cameras = [camHUD];
 			add(quitHeldBar);
+			super.create();
 			updateTxt();
 			if(dragdrop)showTempmessage('Imported character $daAnim');
 		}catch(e) {MainMenuState.handleError('Error occurred, while loading Animation Debug. Current phase:${phases[phase]}; ${e.message}');}
@@ -644,7 +644,25 @@ class AnimationDebug extends MusicBeatState
 		isAbsoluteOffsets = true;
 		offsetTopText.text = offsetTopTextList[1];
 	}
-	function toggleOffsetText(?value:Bool = false){
+	function updateOffsetText(?value:Bool = false){
+		showOffsets = value;
+		// for (i => v in offsetList) {
+		// 	offsetText[v].visible = showOffsets;
+		// };
+		offsetTopText.visible = true;
+		if(dad.animation.curAnim == null){
+			offsetTopText.text = 'Per frame offsetting, No animation selected??';
+			return;
+
+		}
+		var frame = dad.frames.frames[dad.animation.frameIndex];
+		if (frame == null){
+			offsetTopText.text = 'Per frame offsetting, No frame selected??';
+			return;
+		}
+		offsetTopText.text = 'Per frame offsetting, ${frame.name}, frameX:${frame.offset.x}, frameY:${frame.offset.y}';
+	}
+	public function toggleOffsetText(?value:Bool = false){
 		showOffsets = value;
 		for (i => v in offsetList) {
 			offsetText[v].visible = showOffsets;
@@ -661,7 +679,6 @@ class AnimationDebug extends MusicBeatState
 		}else{
 			updateCameraPos(false,720, 500);
 		}
-
 	}
 	inline function get_Dad_X(){return dad.getMidpoint().x + (if (charType == 0) -100 else if (charType == 2) 0 else 150) + dad.camX;}
 	inline function get_Dad_Y(){return dad.getMidpoint().y - 100 + dad.camY;}
@@ -754,17 +771,20 @@ class AnimationDebug extends MusicBeatState
 		}
 		_colText.text = col.toWebString();
 	}
-	function setupUI(dest:Bool = false){
+	public function setupUI(dest:Bool = false){
 		try{
 
 		if (dest){
 			// if (animDropDown3 != null) animDropDown3.destroy();
 			// if (animDropDown2 != null) animDropDown2.destroy();
-			clearUIMap();
-			uiBox.destroy();
-			if(sampleBox != null)sampleBox.destroy();
-			uiBox = null;
-			animDropDown.visible = true;
+			try{
+
+				clearUIMap();
+				uiBox.destroy();
+				if(sampleBox != null)sampleBox.destroy();
+				uiBox = null;
+				animDropDown.visible = true;
+			}catch(e){return;}
 			return;
 		}
 
@@ -1065,17 +1085,13 @@ class AnimationDebug extends MusicBeatState
 		commitButton.resize(120,30);
 		uiBox2.add(commitButton);
 
-		var commitButton = new FlxUIButton(20,280,"Back to Offsetting",function(){
-			editMode = 0;
-			setupUI(true);
-			toggleOffsetText(false);
+		var commitButton = new FlxUIButton(20,280,"Switch Modes",function(){
+			openSubState(new AnimSwitchMode());
 		});
 		commitButton.resize(120,20);
 		uiBox2.add(commitButton);
-		var commitButton = new FlxUIButton(20,680,"Back to Offsetting",function(){
-			editMode = 0;
-			setupUI(true);
-			toggleOffsetText(false);
+		var commitButton = new FlxUIButton(20,680,"Switch modes",function(){
+			openSubState(new AnimSwitchMode());
 		});
 		commitButton.resize(120,20);
 		commitButton.cameras = [camHUD];
@@ -1179,6 +1195,7 @@ class AnimationDebug extends MusicBeatState
 		dadBG.y = dad.y;
 
 		if (hPress && editMode != 2) openSubState(new AnimHelpScreen(canEditJson,editMode));
+		if (FlxG.keys.justPressed.M && editMode != 2) openSubState(new AnimSwitchMode());
 		switch(editMode){
 			case 0:{
 				if (rPress && !pressArray.contains(true)) spawnChar(true);
@@ -1254,7 +1271,7 @@ class AnimationDebug extends MusicBeatState
 				}
 				if(FlxG.keys.justPressed.ONE){resetOffsets(); updateCameraPos(false,720, 500);}// Unload character offsets
 				if(FlxG.keys.justPressed.THREE || ctrlPress && shiftPress && FlxG.keys.justPressed.S){outputChar();} // Saving
-				if(FlxG.keys.justPressed.M){editMode = 1; toggleOffsetText(false);} // Switch modes
+				// if(FlxG.keys.justPressed.M){editMode = 1; toggleOffsetText(false);} // Switch modes
 				// if(FlxG.keys.justPressed.TWO){outputCharOffsets();}
 				// if(FlxG.keys.justPressed.FOUR){
 				// 				dad.animOffsets['all'] = [0.0,0.0];
@@ -1296,7 +1313,7 @@ class AnimationDebug extends MusicBeatState
 					}
 					
 				}
-				if(FlxG.keys.justPressed.M){editMode = 2; setupUI(false); toggleOffsetText(false);} // Switch modes
+				// if(FlxG.keys.justPressed.M){editMode = 2; setupUI(false); toggleOffsetText(false);} // Switch modes
 			}
 			case 2:{
 				if(FlxG.mouse.justPressedRight){
@@ -1333,6 +1350,102 @@ class AnimationDebug extends MusicBeatState
 				// 	toggleOffsetText(false);
 
 				// }
+			}
+
+			case 3:{
+				if (rPress && !pressArray.contains(true)) spawnChar(true);
+				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
+				if(FlxG.mouse.justPressed){
+					lastMouseX = Std.int(FlxG.mouse.x);
+					lastMouseY = Std.int(FlxG.mouse.y);
+				}
+				if(FlxG.mouse.justPressedRight){
+					lastRMouseX = Std.int(FlxG.mouse.screenX);
+					lastRMouseY = Std.int(FlxG.mouse.screenY);
+				}
+				var ox = 0;
+				var oy = 0;
+				if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
+
+					var mx = Std.int(FlxG.mouse.screenX);
+					var my = Std.int(FlxG.mouse.screenY);
+
+					camFollow.x+=lastRMouseX - mx;
+					camFollow.y+=lastRMouseY - my;
+					lastRMouseX = mx;
+					lastRMouseY = my;
+				}
+				if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
+					var mx = Std.int(FlxG.mouse.x);
+					var my = Std.int(FlxG.mouse.y);
+					ox = lastMouseX - mx;
+					oy = lastMouseY - my;
+					lastMouseX = mx;
+					lastMouseY = my;
+
+				}
+
+				var modifier = "";
+				if (shiftPress) {modifier += "miss";}
+				if (ctrlPress) modifier += "-alt";
+				if(FlxG.keys.pressed.SEVEN) swapSides();
+				// Note animations
+				if(FlxG.keys.pressed.W)	animToPlay = 'singUP' + modifier;
+				else if(FlxG.keys.pressed.A) animToPlay = 'singLEFT' + modifier;
+				else if((!ctrlPress || !shiftPress) && FlxG.keys.pressed.S) animToPlay = 'singDOWN' + modifier;
+				else if(FlxG.keys.pressed.D) animToPlay = 'singRIGHT' + modifier;
+				else if(FlxG.keys.pressed.V) animToPlay = 'Idle';
+				// A bit ugly but a lot better for performance
+				// Offsets and Character position, shift: pressed else: justPressed
+				if(shiftPress){
+					// Offset adjustment
+					if ((FlxG.keys.pressed.UP) || (FlxG.keys.pressed.LEFT) || (FlxG.keys.pressed.DOWN) || (FlxG.keys.pressed.RIGHT)){
+						ox += (if((FlxG.keys.pressed.LEFT)) 1 else if(FlxG.keys.pressed.RIGHT) -1 else 0);
+						oy += (if((FlxG.keys.pressed.UP)) 1 else if(FlxG.keys.pressed.DOWN) -1 else 0);
+					}
+				}else{
+					if ((FlxG.keys.justPressed.UP) || (FlxG.keys.justPressed.LEFT) || (FlxG.keys.justPressed.DOWN) || (FlxG.keys.justPressed.RIGHT)){
+						ox += (if((FlxG.keys.justPressed.LEFT)) 1 else if(FlxG.keys.justPressed.RIGHT) -1 else 0);
+						oy += (if((FlxG.keys.justPressed.UP)) 1 else if(FlxG.keys.justPressed.DOWN) -1 else 0);
+					}
+				}
+				var anim = dad.frames.frames[dad.animation.frameIndex];
+				if(ox != 0){
+					dad.frames.frames[dad.animation.frameIndex].offset.x += ox;
+					updateOffsetText(true);
+					dad.animation.curAnim.curFrame = dad.animation.curAnim.curFrame;
+				}if(oy != 0){
+					dad.frames.frames[dad.animation.frameIndex].offset.y += oy;
+					updateOffsetText(true);
+					dad.animation.curAnim.curFrame = dad.animation.curAnim.curFrame;
+				}
+				if(FlxG.keys.justPressed.Q){
+					var e = (dad.animation.curAnim.curFrame - 1);
+					if(e < 0){
+						e = dad.animation.curAnim.frames.length - 1;
+					}
+					dad.animation.curAnim.curFrame = e;
+					updateOffsetText(true);
+
+				}
+				if(FlxG.keys.justPressed.E){
+					dad.animation.curAnim.curFrame = (dad.animation.curAnim.curFrame + 1) % dad.animation.curAnim.frames.length;
+					updateOffsetText(true);
+				}
+				// if(FlxG.keys.justPressed.THREE || ctrlPress && shiftPress && FlxG.keys.justPressed.S){outputChar();} // Saving
+				// if(FlxG.keys.justPressed.M){editMode = 1; toggleOffsetText(false);} // Switch modes
+				// if(FlxG.keys.justPressed.TWO){outputCharOffsets();}
+				// if(FlxG.keys.justPressed.FOUR){
+				// 				dad.animOffsets['all'] = [0.0,0.0];
+				// 				charX = 0;charY = 0;
+				// 				updateCharPos(0,0,false,false);
+				// 				dad.dance();
+				// 				absPos = true;}
+				if (animToPlay != "") {
+					playAnim();
+					dad.animation.curAnim.pause();
+					updateOffsetText(true);
+				}
 			}
 		}
 		if (reloadChar) spawnChar(true,false,charJson);
@@ -1398,7 +1511,7 @@ class AnimHelpScreen extends FlxUISubState{
 				'This should not happen, please report this!.\nEdit mode:${editMode}';
 		})
 		+'\nR - Reload character'
-		+"\nM - Cycle between Offsetting, Camera and config/animation editing modes"
+		+"\nM - Switch mode"
 		+'\n\nC - Open property editor in help screen\nEscape - Close animation debug');
 		controlsText.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlsText.scrollFactor.set();
@@ -1468,11 +1581,150 @@ class AnimHelpScreen extends FlxUISubState{
 typedef AnimSetting={
 	var ?max:Float;
 	var ?min:Float;
-	var type:Int; // 0 = bool, 1 = int, 2 = float
+	var ?type:Int; // 0 = bool, 1 = int, 2 = float
 	var value:Dynamic;
 	var description:String;
+	var ?name:String;
 }
 
+class AnimSwitchMode extends MusicBeatSubstate
+{
+	var grpMenuShit:FlxTypedGroup<Alphabet>;
+	var animDebug:AnimationDebug;
+	var settings:Array<AnimSetting> = [];
+	var curSelected:Int = 0;
+	var infotext:FlxText;
+
+
+	function reloadList():Void{
+		grpMenuShit.clear();
+		var i = 0;
+		for (name => value in settings)
+		{
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, '${value.name}', true, false,70,false);
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpMenuShit.add(songText);
+			i++;
+		}
+		changeSelection();
+	}
+
+
+	public function new()
+	{
+		AnimationDebug.reloadChar = true;
+		AnimationDebug.instance.setupUI(true);
+		AnimationDebug.instance.editMode = 1;
+		AnimationDebug.instance.toggleOffsetText(false);
+		super();
+		FlxG.state.persistentUpdate = false;
+		FlxG.state.persistentDraw = true;
+		settings = [
+			{name:"Offsetting",value:function(){
+				AnimationDebug.instance.editMode = 0;
+				AnimationDebug.instance.toggleOffsetText(false);
+			},description:"Edit offsets for animations"},
+			{name:"Reposition Camera",value:function(){
+				AnimationDebug.instance.editMode = 1;
+				AnimationDebug.instance.toggleOffsetText(false);
+			},description:"Edit the position of the camera"},
+			{name:"Animation Binder",value:function(){
+				AnimationDebug.instance.editMode = 2;
+				AnimationDebug.instance.setupUI(false);
+				AnimationDebug.instance.toggleOffsetText(false);
+			},description:"Setup animations"},
+			{name:"Per frame offsetting",value:function(){
+				AnimationDebug.instance.editMode = 3;
+				AnimationDebug.instance.toggleOffsetText(false);
+			},description:"Move character per animation frame to fix broken XML frame positions"},
+		];
+
+		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		bg.alpha = 0.0;
+		bg.scrollFactor.set();
+		add(bg);
+		grpMenuShit = new FlxTypedGroup<Alphabet>();
+		add(grpMenuShit);
+
+		var infotexttxt:String = "";
+		infotext = new FlxText(5, FlxG.height - 40, FlxG.width - 100, infotexttxt, 16);
+		infotext.wordWrap = true;
+		infotext.scrollFactor.set();
+		infotext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(FlxG.width)),Std.int(50),FlxColor.BLACK);
+		blackBorder.alpha = 0.5;
+		add(blackBorder);
+		add(infotext);
+		FlxTween.tween(bg, {alpha: 0.7}, 0.4, {ease: FlxEase.quartInOut});
+		reloadList();
+		changeSelection(0);
+
+
+		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+	}
+
+	override function update(elapsed:Float)
+	{
+
+		super.update(elapsed);
+
+		var upP = controls.UP_P;
+		var downP = controls.DOWN_P;
+		var leftP = controls.LEFT_P;
+		var rightP = controls.RIGHT_P;
+		var accepted = controls.ACCEPT;
+		var oldOffset:Float = 0;
+
+		if (upP)
+		{
+			changeSelection(-1);
+   
+		}else if (downP)
+		{
+			changeSelection(1);
+		}
+		
+		if (FlxG.keys.pressed.ESCAPE){
+			AnimationDebug.instance.editMode = 0;
+			AnimationDebug.instance.toggleOffsetText(false);
+			close();
+		}
+
+		if (accepted && settings[curSelected].type != 1) {settings[curSelected].value();close();}
+	}
+
+	function changeSelection(?change:Int = 0)
+	{
+		curSelected += change;
+
+		if (curSelected < 0)
+			curSelected = settings.length - 1;
+		if (curSelected >= settings.length)
+			curSelected = 0;
+
+		var bullShit:Int = 0;
+
+		for (item in grpMenuShit.members)
+		{
+			item.targetY = bullShit - curSelected;
+			bullShit++;
+
+			item.alpha = 0.6;
+			// item.setGraphicSize(Std.int(item.width * 0.8));
+
+			if (item.targetY == 0)
+			{
+				item.alpha = 1;
+				// item.setGraphicSize(Std.int(item.width));
+			}
+		}
+		if (settings[curSelected].description != null)
+			infotext.text = settings[curSelected].description;
+		else
+			infotext.text = "No description";
+	}
+}
 class AnimDebugOptions extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;

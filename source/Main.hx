@@ -211,12 +211,23 @@ class FlxGameEnhanced extends FlxGame{
 	public var blockDraw:Bool = false;
 	public var blockEnterFrame:Bool = false;
 	var requestAdd = false;
+	override function create(_){
+
+		try{
+			super.create(_);
+		}catch(e){
+			FuckState.FUCK(e,"FlxGame.Create");
+		}
+	}
 	override function onEnterFrame(_){
 		try{
 			if(requestAdd){
 				requestAdd = false;
 				Main.funniSprite.addChild(this);
 				blockUpdate = blockEnterFrame = blockDraw = false;
+				FlxG.autoPause = _oldAutoPause;
+				_oldAutoPause = false;
+
 				if(_lostFocusWhileLoading != null){
 					onFocusLost(_lostFocusWhileLoading);_lostFocusWhileLoading = null;
 				}
@@ -270,7 +281,7 @@ class FlxGameEnhanced extends FlxGame{
 
 		filters = filtersEnabled ? _filters : null;
 	}
-
+	var _oldAutoPause:Bool = false;
 
 	override function update(){
 		try{
@@ -278,15 +289,16 @@ class FlxGameEnhanced extends FlxGame{
 			if(_state != _requestedState && FlxG.save.data.doCoolLoading){
 				blockUpdate = blockEnterFrame = blockDraw = true;
 				Main.funniSprite.removeChild(this);
-				var _oldAutoPause = FlxG.autoPause;
+				_oldAutoPause = FlxG.autoPause;
 				FlxG.autoPause = false;
+				visible = false;
 				// funniLoad = true;
 				sys.thread.Thread.create(() -> { 
 					// _update();
 					switchState();
 					
-					FlxG.autoPause = _oldAutoPause;
 					requestAdd = true;
+					visible = true;
 					
 					// funniLoad = false;
 				});
@@ -300,7 +312,11 @@ class FlxGameEnhanced extends FlxGame{
 	}
 	override function draw(){
 		try{
-			if(!blockDraw) super.draw();
+			if(blockDraw)
+				return;
+			else{
+				super.draw();
+			}
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.Draw");
 		}
@@ -318,7 +334,9 @@ class FlxGameEnhanced extends FlxGame{
 	}
 	override function onFocusLost(_){
 		try{
-			if(blockEnterFrame) _lostFocusWhileLoading = _; else super.onFocusLost(_);
+			if(blockEnterFrame && _oldAutoPause) _lostFocusWhileLoading = _; 
+			else if(!blockEnterFrame && onlinemod.OnlinePlayMenuState.socket == null) 
+				super.onFocusLost(_);
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.onFocusLost");
 		}

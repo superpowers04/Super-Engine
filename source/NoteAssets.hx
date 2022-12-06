@@ -9,7 +9,7 @@ import flash.display.BitmapData;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxAtlasFrames;
 import tjson.Json;
-
+ 
 
 // typedef NoteSplashType = {
 // 	var type:String;
@@ -163,6 +163,9 @@ class NoteAssets{
 	static function doThing(name_:String,?forced:Bool = false){
 		try{
 			if(name == name_ && !forced){return;}
+			// if(name_.indexOf('/') != -1){
+				
+			// }
 			splashType = "se";
 			modified = false;
 			if(image != null){

@@ -29,6 +29,7 @@ class Alphabet extends FlxSpriteGroup
 	// for menu shit
 	public var targetY:Float = 0;
 	public var isMenuItem:Bool = false;
+	public var menuValue:Dynamic = null; // So you can just add the value to this alphabet instead of needing a completely seperate array
 
 	public var text(default,set):String = "";
 
@@ -314,10 +315,10 @@ class AlphaCharacter extends FlxSprite
 		if(bold){
 			txt.color = 0xFFFFFF;
 			txt.setBorderStyle(OUTLINE,0xff000000,5);
-			txt.draw();
+			txt.drawFrame();
 		}else{
 			txt.color = 0xff000000;
-			txt.draw();
+			txt.drawFrame();
 
 		}
 		graphic = txt.graphic;

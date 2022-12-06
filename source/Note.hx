@@ -444,20 +444,22 @@ class Note extends FlxSkewedSprite
 		}
 		visible = false;
 		callInterp("noteAdd",[this,rawNote]);
-		updateHitbox();
-		// centerOrigin();
-		// centerOffsets();
-		// offset.y = 0;
-		// origin.y=0;
-		if(noteJSON != null){
-			flipX=noteJSON.flipx;
-			flipY=noteJSON.flipy;
-			antialiasing=noteJSON.antialiasing;
-			scale.x*=noteJSON.scale[0];
-			scale.y*=noteJSON.scale[1];
+		if(!eventNote){
+			updateHitbox();
+			// centerOrigin();
+			// centerOffsets();
+			// offset.y = 0;
+			// origin.y=0;
+			if(noteJSON != null){
+				flipX=noteJSON.flipx;
+				flipY=noteJSON.flipy;
+				antialiasing=noteJSON.antialiasing;
+				scale.x*=noteJSON.scale[0];
+				scale.y*=noteJSON.scale[1];
+			}
+			offset.x = frameWidth * 0.5;
+			if (FlxG.save.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
 		}
-		offset.x = frameWidth * 0.5;
-		if (FlxG.save.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
 	var missedNote:Bool = false;
@@ -489,8 +491,15 @@ class Note extends FlxSkewedSprite
 					skipNote = false;
 					visible = (!eventNote && showNote);
 					callInterp("noteUpdate",[this]);
+					if(eventNote){
+						if (strumTime <= Conductor.songPosition){
 
-					if (mustPress && !eventNote)
+							this.hit(1,this);
+							this.destroy();
+						}
+						return;
+					}
+					else if (mustPress && !eventNote)
 					{
 						// ass
 						if (shouldntBeHit)
@@ -520,13 +529,6 @@ class Note extends FlxSkewedSprite
 								destroy();
 								// }});
 							}
-						}
-					}
-					else if(eventNote){
-						if (strumTime <= Conductor.songPosition){
-
-							this.hit(1,this);
-							this.destroy();
 						}
 					}
 					else if (aiShouldPress && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition)

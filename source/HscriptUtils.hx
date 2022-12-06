@@ -56,6 +56,7 @@ import haxe.iterators.StringIterator;
 import haxe.iterators.StringKeyValueIterator;
 import hscript.InterpEx;
 import hscript.Expr;
+import hscriptfork.InterpSE;
 
 import flixel.util.FlxAxes;
 
@@ -81,7 +82,7 @@ class HscriptUtils {
 	 * @return Interp
 	 */
 	public static function createSimpleInterp():Interp {
-		var reterp = new InterpEx();
+		var reterp = new InterpSE();
 		reterp = addVarsToInterp(reterp);
 		return reterp;
 	}

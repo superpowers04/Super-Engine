@@ -10,7 +10,7 @@ import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
 
 import sys.io.File;
-import sys.FileSystem;
+import sys.FileSystem; 
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
@@ -63,7 +63,29 @@ class ArrowSelection extends SearchMenuState
 						}
 					}
 				}
-			}else{MainMenuState.handleError('mods/noteassets is not a folder!');}
+			}else{MainMenuState.handleError('mods/noteassets is not a folder. You need to create it to use custom arrow skins!');}
+			{
+				var dataDir = "mods/packs/";
+				for (_dir in FileSystem.readDirectory(dataDir))
+				{
+					var dataDir = 'mods/packs/$_dir/noteassets/';
+					if(FileSystem.exists(dataDir)){
+
+						for (file in FileSystem.readDirectory(dataDir))
+						{
+							if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("-splash.png")){
+								var name = file.substr(0,-4);
+								if (FileSystem.exists('${dataDir}${name}.xml'))
+								{
+									// Really shit but it works
+									customArrows.push('../packs/$_dir/noteassets/$name');
+
+								}
+							}
+						}
+					}
+				}
+			}
 			// customCharacters.sort((a, b) -> );
 			haxe.ds.ArraySort.sort(customArrows, function(a, b) {
 						 if(a < b) return -1;
@@ -83,7 +105,18 @@ class ArrowSelection extends SearchMenuState
 		changeSelection();
 
 	}catch(e) MainMenuState.handleError('Error with notesel "create" ${e.message}');}
-
+	override function addToList(char:String,i:Int = 0){
+		songs.push(char);
+		if(char.indexOf('packs/') != -1){
+			char = char.substr(char.indexOf('packs/') + 6).replace('noteassets/',"");
+		}
+		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false,false,useAlphabet);
+		controlLabel.isMenuItem = true;
+		controlLabel.targetY = i;
+		if (i != 0)
+			controlLabel.alpha = 0.6;
+		grpSongs.add(controlLabel);
+	}
 	override function update(e){ // This is shit but I don't want these to update
 		// members.pop();
 		super.update(e);

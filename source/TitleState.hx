@@ -612,7 +612,7 @@ class TitleState extends MusicBeatState
 		FlxG.mouse.visible = false;
 
 
-		shiftSkip = new FlxText(0,0,0,"Hold shift to go to the options menu after title screen",16);
+		shiftSkip = new FlxText(0,0,0,"DRP not init - Hold shift to go to the options menu after title screen",16);
 		shiftSkip.y = FlxG.height - shiftSkip.height - 12;
 		shiftSkip.x = 6;
 		shiftSkip.scrollFactor.set();
@@ -846,7 +846,7 @@ class TitleState extends MusicBeatState
 		switch (curBeat)
 		{
 			case 0:
-			
+				if(DiscordClient.canSend) shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
 				deleteCoolText();
 			// 	destHaxe();
 			case 1:

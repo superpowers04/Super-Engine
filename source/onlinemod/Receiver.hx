@@ -31,6 +31,8 @@ class Receiver
 
   public function OnData(data:ByteArray)
   {
+  	try{
+
     // This function is triggered whenever data is received from a socket.
 
     // Save the bytes on memory.
@@ -96,6 +98,9 @@ class Receiver
       // If you can't do anything with the data, just stop and wait for more data to come.
       break;
     }
+	}catch(e){
+		FuckState.FUCK(e,"Reciever.onData");
+	}
   }
 
   public function readBuffer(n:Int, bytes:Int)
