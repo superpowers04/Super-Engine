@@ -797,15 +797,24 @@ class AnimationDebug extends MusicBeatState
 		uiBox.y = 80;
 		uiBox.scrollFactor.set();
 		add(uiBox);
-		uiMap["animSel"] = new FlxInputTextUpdatable(11, 230, 100, '');
+		uiMap["animSel"] = new FlxInputTextUpdatable(11, 230, 100, 'idle');
+
+		if(dad.charType == 0){
+
+			var warning = new FlxText(2, 180,0,"Anims might not add correctly when editing as BF.\nIt is recommended to add anims as Dad, save-\n and then swap back to editing BF");
+			warning.setFormat(CoolUtil.font, 10, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
+			uiBox.add(warning);
+		}
 		// animSel.text = "idle";
 
-		var animDropDown2 = new PsychDropDown(10, 260, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
+		var animDropDown2 = new PsychDropDown(10, 230, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
 		{			// animUICurAnim = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 
 			uiMap["animSel"].updateText(INTERNALANIMATIONLIST[Std.parseInt(anim)]);
 			// uiMap["animSel"].textField.text = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 		});
+		animDropDown2.header.background.visible = animDropDown2.header.text.visible = false;
 		animDropDown2.cameras = [camHUD];
 		// animFPS.checked = false;
 		uiBox.add(animDropDown2);
@@ -830,16 +839,11 @@ class AnimationDebug extends MusicBeatState
 		animDropDown3.selectedLabel = '';animDropDown3.cameras = [camHUD];
 		uiBox.add(animDropDown3);
 
-		var animTxt = new FlxText(10, 200,0,"Internal Name");
+		var animTxt = new FlxText(10, 210,0,"Internal Name");
 		uiBox.add(animTxt);
 
 		var animTxt = new FlxText(140, 135,0,"XML Name");
 		uiBox.add(animTxt);
-		if(dad.charType == 0){
-
-			var warning = new FlxText(2, 180,0,"Anims might not add correctly when editing as BF.\nIt is recommended to add anims as Dad, save and then swap back to editing BF");
-			uiBox.add(warning);
-		}
 
 		// Togglables 
 
@@ -1301,13 +1305,13 @@ class AnimationDebug extends MusicBeatState
 				// Camera position
 				if(shiftPress){
 					if ((FlxG.keys.pressed.UP) || (FlxG.keys.pressed.LEFT) || (FlxG.keys.pressed.DOWN) || (FlxG.keys.pressed.RIGHT)){
-						updateCameraPos((if((FlxG.keys.pressed.LEFT)) 1 else if(FlxG.keys.pressed.RIGHT) -1 else 0)
+						updateCameraPos(true,(if((FlxG.keys.pressed.LEFT)) 1 else if(FlxG.keys.pressed.RIGHT) -1 else 0)
 						           ,(if((FlxG.keys.pressed.UP)) 1 else if(FlxG.keys.pressed.DOWN) -1 else 0)
 						           ,false,ctrlPress);
 					}
 				}else{
 					if ((FlxG.keys.justPressed.UP) || (FlxG.keys.justPressed.LEFT) || (FlxG.keys.justPressed.DOWN) || (FlxG.keys.justPressed.RIGHT)){
-						updateCameraPos((if((FlxG.keys.justPressed.LEFT)) 1 else if(FlxG.keys.justPressed.RIGHT) -1 else 0)
+						updateCameraPos(true,(if((FlxG.keys.justPressed.LEFT)) 1 else if(FlxG.keys.justPressed.RIGHT) -1 else 0)
 						           ,(if((FlxG.keys.justPressed.UP)) 1 else if(FlxG.keys.justPressed.DOWN) -1 else 0)
 						           ,false,ctrlPress);
 					}
@@ -1613,9 +1617,9 @@ class AnimSwitchMode extends MusicBeatSubstate
 
 	public function new()
 	{
-		AnimationDebug.reloadChar = true;
+		// AnimationDebug.reloadChar = true;
 		AnimationDebug.instance.setupUI(true);
-		AnimationDebug.instance.editMode = 1;
+		AnimationDebug.instance.editMode = 0;
 		AnimationDebug.instance.toggleOffsetText(false);
 		super();
 		FlxG.state.persistentUpdate = false;
@@ -1652,6 +1656,11 @@ class AnimSwitchMode extends MusicBeatSubstate
 		infotext.wordWrap = true;
 		infotext.scrollFactor.set();
 		infotext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var toptext = new FlxText(5, 40, FlxG.width - 100, "Switch mode", 16);
+		toptext.scrollFactor.set();
+		toptext.setFormat(CoolUtil.font, 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		toptext.screenCenter(X);
+		add(toptext);
 		var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(FlxG.width)),Std.int(50),FlxColor.BLACK);
 		blackBorder.alpha = 0.5;
 		add(blackBorder);

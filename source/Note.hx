@@ -223,7 +223,7 @@ class Note extends FlxSkewedSprite
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
 		if(noteAnimation != null){
-			PlayState.charAnim(charID,(if(noteAnimation == "")noteAnims[noteData] else noteAnimation),true); // Play animation
+			PlayState.charAnim(charID,(if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
 		}
 	}
 	dynamic public function susHit(?charID:Int = 0,note:Note){ // Played every update instead of every time the strumnote is hit
@@ -299,7 +299,7 @@ class Note extends FlxSkewedSprite
 				// _update = function(elapsed:Float){if (strumTime <= Conductor.songPosition) wasGoodHit = true;};
 				frames = new flixel.graphics.frames.FlxFramesCollection(FlxGraphic.fromRectangle(1,1,0x01000000,false,"blank.mp4"));
 				switch (Std.string(rawNote[2]).toLowerCase()) {
-					case "play animation" | "playanimation": {
+					case "play animation" | "playanimation"| "playanim" | "animation" | "anim": {
 						try{
 							// Info can be set to anything, it's being used for storing the Animation and character
 							info = [rawNote[3],

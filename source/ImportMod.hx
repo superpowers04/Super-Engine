@@ -94,14 +94,14 @@ class ImportModFromFolder extends MusicBeatState
 		folder = FileSystem.absolutePath(folder);
 		var assets = '${folder}assets/'; // For easy access
 			// done = selectedLength = true;
-			// loadingText.text = '${folder} doesn\'t have a assets folder!';
+			// changedText = '${folder} doesn\'t have a assets folder!';
 			// loadingText.color = FlxColor.RED;
 			// FlxG.sound.play(Paths.sound('cancelMenu'));
 			// return;
 		
 		if (folder == Sys.getCwd()) {//This folder is the same folder that FNFBR is running in!
 			done = selectedLength = true;
-			loadingText.text = 'You\'re trying to import songs from me!';
+			changedText = 'You\'re trying to import songs from me!';
 			loadingText.color = FlxColor.RED;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			return;
@@ -171,7 +171,7 @@ class ImportModFromFolder extends MusicBeatState
 		if(valid || folderList.length > 0){
 			chartPrefix = name;
 			loadingText.alignment = CENTER;
-			loadingText.text = 'Songs will be placed under:'+
+			changedText = 'Songs will be placed under:'+
 				'\nmods/packs/${name}/charts'+
 				'\nPress Enter to continue'+
 				"\nPress Escape to go back";
@@ -180,7 +180,7 @@ class ImportModFromFolder extends MusicBeatState
 			loadingText.color = FlxColor.RED;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			trace(folder);
-			loadingText.text = '${folder.substr(-17)} doesn\'t contain any songs!' + (if(!importExisting) "\nMaybe try allowing vanilla songs to be imported?\n*(Press 1 to toggle importing vanilla songs in the list)" else "");
+			changedText = '${folder.substr(-17)} doesn\'t contain any songs!' + (if(!importExisting) "\nMaybe try allowing vanilla songs to be imported?\n*(Press 1 to toggle importing vanilla songs in the list)" else "");
 
 		}
 		}catch(e){MainMenuState.handleError(e,'Something went wrong when trying to scan for songs! ${e.message}');}
@@ -191,7 +191,7 @@ class ImportModFromFolder extends MusicBeatState
 			if(FileSystem.exists('${assets}songs/')){ // Chad github style
 				var inCharts = (if(FileSystem.isDirectory('${assets}data/songs/')) '${assets}data/songs/' else '${assets}data/'); // Fuckin later versions of kade engine
 				for (directory in FileSystem.readDirectory('${assets}songs/')) {
-					loadingText.text = 'Checking ${directory}...'; // Just display this text
+					changedText = 'Checking ${directory}...'; // Just display this text
 					
 					if(!FileSystem.isDirectory('${assets}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
 					var dir:String = '${assets}songs/${directory}/';
@@ -202,14 +202,14 @@ class ImportModFromFolder extends MusicBeatState
 					
 					for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg','${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
 						try{
-							loadingText.text = 'Copying ${i}...';// Just display this text
+							changedText = 'Copying ${i}...';// Just display this text
 					
 							File.copy(i,v);
 						}catch(e) trace('$i caused ${e.message}');
 					}
 					for (file in FileSystem.readDirectory('${inCharts}${directory}/')) {
 						try{
-							loadingText.text = 'Copying ${file}...';// Just display this text
+							changedText = 'Copying ${file}...';// Just display this text
 					
 							File.copy('${inCharts}${directory}/${file}','${outDir}${file}');
 						}catch(e) trace('$file caused ${e.message}');
@@ -220,7 +220,7 @@ class ImportModFromFolder extends MusicBeatState
 			for (directory in FileSystem.readDirectory('${assets}music/')) {
 				if (!directory.endsWith("inst.ogg")) continue;
 				directory = directory.substr(0,-8);
-				loadingText.text = 'Checking ${directory}...'; // Just display this text
+				changedText = 'Checking ${directory}...'; // Just display this text
 				
 				if(!importExisting && existingSongs.contains(directory.toLowerCase())) {continue;} // Skip if it's on the existing songs list
 				var dir:String = '${folder}assets/music/${directory}-';
@@ -232,14 +232,14 @@ class ImportModFromFolder extends MusicBeatState
 				for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg',
 									'${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
 					try{
-						loadingText.text = 'Copying ${i}...';// Just display this text
+						changedText = 'Copying ${i}...';// Just display this text
 				
 						File.copy(i,v);
 					}catch(e) trace('$i caused ${e.message}');
 				}
 				for (file in FileSystem.readDirectory('${assets}data/${directory}/')) {
 					try{
-						loadingText.text = 'Copying ${file}...';// Just display this text
+						changedText = 'Copying ${file}...';// Just display this text
 				
 						File.copy('${assets}data/${directory}/${file}','${outDir}${file}');
 					}catch(e) trace('$file caused ${e.message}');
@@ -256,6 +256,14 @@ class ImportModFromFolder extends MusicBeatState
 			scanSongs(v,v);
 		}
 	}
+	var changedText = "";
+	override function draw(){
+		if(changedText != ""){
+			loadingText.text = changedText;
+			changedText = "";
+		}
+		super.draw();
+	}
 	override function update(elapsed:Float)
 	{
 		loadingText.screenCenter(XY);
@@ -265,12 +273,12 @@ class ImportModFromFolder extends MusicBeatState
 		if(!selectedLength){
 			if(FlxG.keys.justPressed.ENTER){
 				selectedLength = true;
-				loadingText.text = "Scanning for songs..\nThe game may "+ (if(Sys.systemName() == "Windows")"'not respond'" else "freeze") + " during this process";
+				changedText = "Scanning for songs..\nThe game may "+ (if(Sys.systemName() == "Windows")"'not respond'" else "freeze") + " during this process";
 				sys.thread.Thread.create(() ->
 				{
 					// new FlxTimer().start(0.6, function(tmr:FlxTimer){
 					scanSongFolders();
-					loadingText.text = 'Imported ${songsImported} songs.\n They should appear under "mods/packs/${name}/charts" \nPress any key to go to the main menu';
+					changedText = 'Imported ${songsImported} songs.\n They should appear under "mods/packs/${name}/charts" \nPress any key to go to the main menu';
 					loadingText.x -= 70;
 					done = true;
 					// });

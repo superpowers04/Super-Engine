@@ -113,6 +113,7 @@ class CharAnimController extends FlxAnimationController{
 			"singrightmiss" => 15,
 
 			"idle" => 0,
+			"idle-alt" => 0,
 			"Idle" => 0,// Can never remember if it's idle or Idle
 			"danceRight" => 0,
 			"danceLeft" => 0,
@@ -201,17 +202,17 @@ class CharAnimController extends FlxAnimationController{
 
 	// HScript related shit
 	@privateAccess
-	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false) { // Modified from Modding Plus, I am too dumb to figure this out myself 
-			if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return;}
+	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false):Dynamic { // Modified from Modding Plus, I am too dumb to figure this out myself 
+			if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return null;}
 			try{
 				args.insert(0,this);
 				var method = interp.variables.get(func_name);
-				Reflect.callMethod(interp,method,args);
-			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}'); return;}
+				return Reflect.callMethod(interp,method,args);
+			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}'); return null;}
 		}
 
 	function parseHScript(scriptContents:String){
-		if (amPreview || !useHscript || QuickOptionsSubState.getSetting("Song hscripts") != true){
+		if (amPreview || !useHscript){
 			interp = null;
 			trace("Skipping HScript for " + curCharacter);
 			return; // Don't load in editor
@@ -228,10 +229,10 @@ class CharAnimController extends FlxAnimationController{
 			interp.variables.set("charProperties", charProperties);
 			interp.variables.set("PlayState", PlayState );
 			interp.variables.set("state", cast FlxG.state );
+			interp.variables.set("animation", animation );
 			interp.variables.set("BRtools",new HSBrTools('${charLoc}/$curCharacter/'));
 			interp.execute(program);
 			this.interp = interp;
-			callInterp("initScript",[],true);
 		}catch(e){
 			handleError('Error parsing char ${curCharacter} hscript, Line:${parser.line}; Error:${e.message}');
 			
@@ -540,6 +541,14 @@ class CharAnimController extends FlxAnimationController{
 		charLoc = charInfo.path;
 		namespace = charInfo.nameSpace;
 		trace(charInfo);
+
+		if (!amPreview && FileSystem.exists('${charLoc}/$curCharacter/script.hscript')){
+			parseHScript(SELoader.loadText('${charLoc}/$curCharacter/script.hscript'));
+			var skipConstruct:Dynamic = callInterp("initCharacter",[]);
+			if(skipConstruct != null && skipConstruct == true){
+				return;
+			}
+		}
 		// }
 		// if(charLoc == "mods/characters"){
 
@@ -737,11 +746,7 @@ class CharAnimController extends FlxAnimationController{
 			voiceSounds = [new FlxSound().loadEmbedded(Sound.fromFile('${charLoc}/$curCharacter/custom_left.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('${charLoc}/$curCharacter/custom_down.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('${charLoc}/$curCharacter/custom_up.ogg')),new FlxSound().loadEmbedded(Sound.fromFile('${charLoc}/$curCharacter/custom_right.ogg'))];
 
 		}
-		if (!amPreview && FileSystem.exists('${charLoc}/$curCharacter/script.hscript')){
-			parseHScript(SELoader.loadText('${charLoc}/$curCharacter/script.hscript'));
-			trace("Loaded HScript");
-			
-		}
+		callInterp("initScript",[]);
 		 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
 		trace('Finished loading $curCharacter, Lets get funky!');
@@ -1143,7 +1148,15 @@ class CharAnimController extends FlxAnimationController{
 	// Shortcut functions
 	public static function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
 	public function isDonePlayingAnim(){return animation.finished || animation.curAnim.finished || animHasFinished || animation.curAnim.curFrame >= numFrames;}
-	
+	public function getScriptOption(path:String = ""):Dynamic{
+		if(charProperties.scriptOptions == null){
+			return null;
+		}
+		if(charProperties.scriptOptions[path] == null){
+			return null;
+		}
+		return charProperties.scriptOptions[path];
+	}
 	function getDefColor(e:CharacterJson,?apply:Bool = true):FlxColor{
 		if(!customColor && e.color != null){
 			// switch(Type.typeof(e.color)){

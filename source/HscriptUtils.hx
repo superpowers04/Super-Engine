@@ -23,8 +23,6 @@ import flixel.FlxGame;
 import flixel.FlxCamera;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
-import hscript.InterpEx;
-import hscript.Interp;
 import flixel.FlxG;
 import flash.media.Sound;
 import flixel.graphics.FlxGraphic;
@@ -54,7 +52,10 @@ import tjson.Json;
 
 import haxe.iterators.StringIterator;
 import haxe.iterators.StringKeyValueIterator;
+import hscript.Interp;
 import hscript.InterpEx;
+import hscript.Parser;
+import hscript.ParserEx;
 import hscript.Expr;
 import hscriptfork.InterpSE;
 
@@ -86,7 +87,14 @@ class HscriptUtils {
 		reterp = addVarsToInterp(reterp);
 		return reterp;
 	}
-	public static function eval<T:Interp>(interp:T,parser:hscript.Parser,str:String):Array<Dynamic>{ // [Errored, Error message if so, stack if present,stage]
+	public static function createSimpleParser():Parser {
+		var parser = new ParserEx();
+		parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
+		parser.preprocesorValues["version"] = MainMenuState.ver;
+		parser.preprocesorValues["debug"] = #if debug true #else false #end;
+		return parser;
+	}
+	public static function eval<T:Interp>(interp:T,?parser:hscript.Parser,str:String):Array<Dynamic>{ // [Errored, Error message if so, stack if present,stage]
 		if(str == null || str == ""){
 			return [true,'Eval string is empty',null,'str != null'];
 		}
@@ -95,17 +103,14 @@ class HscriptUtils {
 		}
 
 		var program;
-		var parser = new hscript.Parser();
+		var parser = (if(parser == null) createSimpleParser() else parser);
 		try{
-			parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
 
 			// parser.parseModule(songScript);
 			program = parser.parseString(str);
 			if(program == null){throw('Parser is null?');}
 		}catch(e){return [true,'Line:${parser.line};\n Error:${e.message}',null,'Parsing'];}
-		// catch(e){
-		// 	return [true,e.message,e.stack,'Parsing'];
-		// }
+
 		try{
 			interp.execute(program);
 		}
@@ -212,12 +217,7 @@ class HscriptUtils {
 		interp.variables.set("this", interp);
 
 		
-		interp.variables.set("debug",
-		#if debug
-			true);
-		#else
-			false);
-		#end
+		interp.variables.set("debug", #if(debug) true #else false #end );
 		
 		
 		return interp;

@@ -2,9 +2,12 @@ This was last updated as of 0.11.0.
 
 This file might look weird inside of Notepad, I highly recommend using Notepad++, SublimeText or VSCode for editing and reading text files
 
+If this file is confusing or you need help, feel free to join the Discord server and ask for help https://discord.gg/28GPGTRuuR
+
 FOLDERS AND WHAT THEY MEAN:
- - charts | Where charts will go. You can just put the json files, inst and voices in a folder and Super Engine will automatically read them
+ - stages | Where custom stages go
  - characters | Where custom characters go
+ - charts | Where charts will go. You can just put the json files, inst and voices in a folder and Super Engine will automatically read them
  - noteassets | You can put a png and xml from note skins here
  - weeks | Where weeks go, eventually there should be documentation on how to make them at https://github.com/superpowers04/Super-Engine/wiki
  - packs | You can make folders and then put charts and characters inside of them to organise your charts, characters and add pack specific scripts without having 20 copies of the same script. While this isn't required, it might make your mods folder less of a mess
@@ -72,9 +75,39 @@ MAKING CHARACTERS:
  You can find the wiki page for character jsons here: https://github.com/superpowers04/Super-Engine/wiki/Character-JSON
  You can also provide a script.hscript to add custom scripting to your characters for things like custom animations, character position manipulation and more
  
+MAKING STAGES:
+	Stages are more complex than making a character as there is no Stage Debug or Stage Maker. 
+	Stages are handled through scripts instead of a json, this makes them much harder to get into, but you can do some really cool things with stages as they are basically just a script
+	If you end up getting confused or need help, feel free to ask for help on the Discord server
+
+	I'd recommend getting a better text editor like Sublime Text or Notepad++ as they are easier to code with than Notepad. 
+	* If you're using sublime text, Make sure to install the Haxe package
+
+	This assumes you have file extensions visible in your file manager 
+	* On Windows, you can change this in the View tab of Explorer
+
+	To make a new stage:
+		Make a folder named `stages` in your mods folder, add a folder to that named whatever you want the stage to be named
+		Make a file named `script.hscript`, this'll be the script you'll use to create the stage.
+
+		Now we have a stage, but if we go ingame with it, it won't actually do anything yet. Lets try adding an image.
+		Copy and paste an image into the script's folder(I'd recommend just using your desktop wallpaper as a test but any image is fine) If you want things to be neat, you can make a subfolder named `sprites` and put the picture there
+
+		Open your script.hscript and add ```function initScript(){}```. initScript is the first function that's run when a script is loaded.
+		Anything in between the {}'s will be run when initScript is called.
+
+		Now lets actually add our image to the game
+		Super Engine has a custom class named BRtools, it allows you to easily create sprites, play sounds and other things without needing to know where the script is. We'll be using this to create our sprite
  
- 
- 
+		Add `var background = BRtools.loadFlxSprite(0,0,"wallpaper.png");` inside of the brackets,
+		This will create a variable named `background` and then it'll be set to a sprite. The sprite will be positioned at the top left corner of the screen and it'll use the file named "wallpaper.png" as it's graphic
+		* The first 0 is it's X value, the higher it is, the more to the right it'll be, the lower it is, the more to the left it'll be
+		* The second 0 is it's Y value, the higher it is, the more to the bottom it'll be, the lower it is, the more to the top it'll be
+		* "wallpaper.png" is the file the sprite will use as it's image. If you used a subfolder, you'll need to add it to the string, like `sprites/wallpaper.png` 
+		** The game's playspace/stage size is 1280x720, no matter the resolution of the device
+		This will load the sprite but we need to actually add it to the state, for that we can use `state.add(background);`
+
+
  
 OLDER README:
  Characters work like FNF Multi, Check BF-faceanim for an example. You can also make custom animations using IfStates

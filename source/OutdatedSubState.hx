@@ -27,13 +27,12 @@ class OutdatedSubState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(if(Math.random() > 0.5) 'week54prototype' else "zzzzzzzz", 'shared'));
-		bg.scale.x *= 1.55;
-		bg.scale.y *= 1.55;
+		var bg:FlxSprite = new FlxSprite().loadGraphic(SearchMenuState.background);
+		bg.color = 0x350035;
 		bg.screenCenter();
 		add(bg);
 		
-		var kadeLogo:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.image('KadeEngineLogo'));
+		var kadeLogo:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.image('logoBumpin'));
 		kadeLogo.scale.y = 0.3;
 		kadeLogo.scale.x = 0.3;
 		kadeLogo.x -= kadeLogo.frameHeight;

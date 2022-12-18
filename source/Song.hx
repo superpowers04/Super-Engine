@@ -32,11 +32,12 @@ typedef SwagSong =
 		var ?noteMetadata:NoteMetadata;
 
 	// Chart type identification
-		var ?noteStyle:String;
-		var ?splashStyle:String;
-		var ?arrowStyle:String;
-		var ?events:Array<Dynamic>;
-		var ?eventObjects:Array<Event>;
+		var ?noteStyle:String; // Psych
+		var ?splashStyle:String; // Psych
+		var ?arrowStyle:String; // Psych
+		var ?events:Array<Dynamic>; // Psych
+		var ?eventObjects:Array<Event>; // Kade
+		var ?mania:Null<Int>; // Multikey
 }
 
 typedef NoteMetadata={

@@ -135,6 +135,7 @@ class PlayState extends MusicBeatState
 		public function get_healthPercent() return Std.int(health * 50);
 		public function set_healthPercent(vari:Int){ health = vari / 50; return get_healthPercent();}
 		public var handleHealth:Bool = true;
+		public var checkHealth:Bool = true;
 		public var downscroll:Bool = false;
 		public var middlescroll:Bool = false;
 		public var generatedMusic:Bool = false;
@@ -457,28 +458,25 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
-	public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"){
+	public function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"):Interp{
 		// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled or during online play
-		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return;}
+		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return null;}
 		var songScript = songScript;
 		// var hsBrTools = hsBrTools;
 		if (script != "") songScript = script;
 		if (brTools == null && hsBrTools != null) brTools = hsBrTools;
-		if (songScript == "") {return;}
-		var parser:hscript.Parser = new hscript.Parser();
+		if (songScript == "") {return null;}
+		var parser:hscript.Parser = HscriptUtils.createSimpleParser();
 		var interp:Interp = HscriptUtils.createSimpleInterp();
 		try{
-			parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
 
 			// parser.parseModule(songScript);
 			var program = parser.parseString(songScript,file);
 
 			if (brTools != null) {
-				trace('Using hsBrTools');
 				interp.variables.set("BRtools",brTools); 
 				brTools.reset();
 			}else {
-				trace('Using assets folder');
 				interp.variables.set("BRtools",new HSBrTools("assets/"));
 			}
 			// Access current state without needing to be inside of a function with ps as an argument
@@ -509,9 +507,11 @@ class PlayState extends MusicBeatState
 				_line = '${parser.line};"${_split[parser.line - 1]}"';
 			}catch(e){_line = '${parser.line}';}
 			handleError('Error parsing ${id} hscript\nLine:${_line}\n ${e.message}');
+			return null;
 			// interp = null;
 		}
 		trace('Loaded ${id} script!');
+		return interp;
 	}
 	static function charGet(charId:Dynamic,field:String):Dynamic{
 		return Reflect.field(getCharFromID(charId),field);
@@ -2300,7 +2300,7 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (health <= 0 && !hasDied && !ChartingState.charting && onlinemod.OnlinePlayMenuState.socket == null){
+		if (health <= 0 && !hasDied && checkHealth && !ChartingState.charting && onlinemod.OnlinePlayMenuState.socket == null){
 
 			if(practiceMode) {
 					hasDied = true;practiceText.text = "Practice Mode; Score won't be saved";practiceText.screenCenter(X);
@@ -2317,7 +2317,6 @@ class PlayState extends MusicBeatState
 				while(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
 				{
 					var dunceNote:Note = unspawnNotes.shift();
-					// unspawnNotes.remove(unspawnNotes[0]); // Why the fuck do I have to do this?
 					if(!dunceNote.eventNote && dunceNote.strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms before the current time
 						dunceNote.destroy();
 					}else if(dunceNote.eventNote){ // eventNote
@@ -2498,8 +2497,9 @@ class PlayState extends MusicBeatState
 			return;
 		}
 
-		if (FlxG.save.data.fpsCap > 290)
-			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
+		charCall("endSong",[]);
+		callInterp("endSong",[]);
+		if(!shouldEndSong){shouldEndSong = true;return;}
 
 		canPause = false;
 		FlxG.sound.music.volume = 0;
@@ -2511,9 +2511,6 @@ class PlayState extends MusicBeatState
 
 		// }
 		// #end
-		charCall("endSong",[]);
-		callInterp("endSong",[]);
-		if(!shouldEndSong){shouldEndSong = true;return;}
 		// if(!ChartingState.charting ){
 		// 	Highscore.saveScore('${nameSpace}-${actualSongName}', Math.round(songScore), storyDifficulty);
 		// }

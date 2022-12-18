@@ -154,6 +154,16 @@ class CharSelection extends SearchMenuState
 			retAfter = false;
 			return;
 		}
+		if(chars[curSelected][4].type == 1){
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxTween.tween(grpSongs.members[curSelected], {x: grpSongs.members[curSelected].x + 100}, 0.4, {ease: FlxEase.bounceInOut,onComplete: function(twn:FlxTween){return;}});
+			FlxTween.tween(infotext, {alpha:0}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){FlxTween.tween(infotext, {alpha:1}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){return;}});}});
+			
+			updateInfoText('This character is a script based character and cannot be edited!');
+			
+			retAfter = false;
+			return;
+		}
 		var _char =formatChar(chars[curSelected]);
 
 		switch (Options.PlayerOption.playerEdit){

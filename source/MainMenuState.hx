@@ -100,9 +100,9 @@ class MainMenuState extends SickMenuState
 		if (Main.errorMessage != ""){
 			errorMessage = Main.errorMessage;
 			Main.errorMessage = "";
+			trace(errorMessage);
 		}
 		mmSwitch(false);
-		trace(errorMessage);
 
 		persistentUpdate = persistentDraw = true;
 		bgImage = 'menuDesat';

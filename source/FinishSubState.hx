@@ -329,7 +329,10 @@ class FinishSubState extends MusicBeatSubstate
 				
 
 				if(win && !PlayState.instance.hasDied && !ChartingState.charting && PlayState.instance.canSaveScore){
-					Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)]);
+					if(Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)])){
+						finishedText.text+=" | New Personal Best!";
+					}
+					
 				}
 				add(bg);
 				add(finishedText);

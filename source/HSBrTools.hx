@@ -20,6 +20,9 @@ import flixel.system.FlxAssets;
 
 using StringTools;
 
+
+// A class that handles IO for scripts. Allowing easy loading of sprites, sounds and text without having to keep track of where the script actually is 
+
 class HSBrTools {
 	var path:String;
 	public var spriteArray:Map<String,FlxGraphic> = [];

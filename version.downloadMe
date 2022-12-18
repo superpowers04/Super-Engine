@@ -3,3 +3,5 @@
 - Remove week 7 songs from import
 - Discord Rich Presence can be toggled now
 - Note.parentSprite, Allows you to change the sprite that the note will move towards
+- Option for using an unstable Threaded loading screen
+- Remove a bunch of useless assets and optimise some of the existing ones

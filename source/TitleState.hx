@@ -52,6 +52,7 @@ typedef Scorekillme = {
 	public var internal:Bool = false;
 	public var internalAtlas:String = "";
 	public var internalJSON:String = "";
+	public var type:Int = 0; // 0: PNG/XML based, 1: Script based
 
 	public function toString(){
 		return 'Character $nameSpace/$id, Raw folder name:$folderName, path:$path';
@@ -290,13 +291,25 @@ class TitleState extends MusicBeatState
 					folderName:directory,
 					description:desc
 				});
+			}else if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/script.hscript"))
+			{
+				var desc = null;
+				if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/description.txt"))
+					desc = File.getContent('${dataDir}/${directory}/description.txt');
+
+				characters.push({
+					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+					folderName:directory,
+					description:desc,
+					type:1
+				});
 			}else if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
 				// invalidCharacters.push([directory,'mods/characters']);
-					invalidCharacters.push({
-						id:directory.replace(' ','-').replace('_','-').toLowerCase(),
-						folderName:directory,
-						path:'mods/characters'
-					});
+				invalidCharacters.push({
+					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+					folderName:directory,
+					path:'mods/characters'
+				});
 			}
 		  }
 		}
@@ -329,6 +342,21 @@ class TitleState extends MusicBeatState
 								description:desc,
 								path:dir,
 								nameSpaceType:ID,
+								nameSpace:_dir
+							});
+
+						}else if (FileSystem.exists(dir+"/"+char+"/script.hscript"))
+						{
+							var desc = 'Provided by ' + _dir;
+							if (FileSystem.exists('${dir}/${char}/description.txt'))
+								desc += ";" +File.getContent('${dir}/${char}/description.txt');
+							characters.push({
+								id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
+								folderName:char,
+								description:desc,
+								path:dir,
+								nameSpaceType:ID,
+								type:1,
 								nameSpace:_dir
 							});
 
@@ -370,7 +398,6 @@ class TitleState extends MusicBeatState
 
 
 		if(FlxG.save.data.scripts != null){
-			trace('Currently enabled scripts: ${FlxG.save.data.scripts}');
 			for (i in 0 ... FlxG.save.data.scripts.length) {
 				var v = FlxG.save.data.scripts[i];
 				if(!FileSystem.exists('mods/scripts/${v}/')){

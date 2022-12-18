@@ -234,6 +234,13 @@ class FlxGameEnhanced extends FlxGame{
 				// FlxG.autoPause = _oldAutoPause;
 
 			}
+
+			if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F1){
+				MainMenuState.handleError("Manually triggered force exit");
+			}
+			if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F4){
+				throw('Manually triggered crash');
+			}
 			if(blockEnterFrame) {
 				ticks = getTicks();
 				_elapsedMS = ticks - _total;
@@ -241,6 +248,7 @@ class FlxGameEnhanced extends FlxGame{
 			}else{
 				super.onEnterFrame(_);
 			}
+
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.onEnterFrame");
 		}
@@ -251,8 +259,6 @@ class FlxGameEnhanced extends FlxGame{
 		if (!_state.active || !_state.exists)
 			return;
 
-		if (_state != _requestedState)
-			switchState();
 
 		#if FLX_DEBUG
 		if (FlxG.debugger.visible)

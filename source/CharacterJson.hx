@@ -82,6 +82,7 @@ typedef CharacterJson =
 	var genBy:String; // This should not be provided manually
 	var ?boneChar:BoneChar;
 	var ?customProperties:Array<CCProp>; // Allows the json file to edit any value about the character
+	var ?scriptOptions:Map<String,Dynamic>; // Allows characters to tell scripts to use custom settings
 }
 
 typedef CharJsonAnimation ={

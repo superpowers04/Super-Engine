@@ -92,6 +92,7 @@ class SearchMenuState extends MusicBeatState
 		if (ChartingState.charting) ChartingState.charting = false;
 		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
 		multi.MultiPlayState.scriptLoc = "";PlayState.nameSpace = "";PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
+		HSBrTools.shared = [];
 		SickMenuState.chgTime = true;
 		if(Note.noteNames[0] == null){Note.noteNames = ["purple","blue","green",'red'];}
 		if(Note.noteAnims[0] == null){Note.noteAnims = ["singLEFT","singDOWN","singUP",'singRIGHT'];}
@@ -259,6 +260,7 @@ class SearchMenuState extends MusicBeatState
 	}
 	function ret(){
 		FlxG.mouse.visible = false;
+		FlxG.sound.play(Paths.sound('cancelMenu'));
 		if (onlinemod.OnlinePlayMenuState.socket != null){FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{FlxG.switchState(new OptionsMenu());}
 	}
 	function changeSelection(change:Int = 0)

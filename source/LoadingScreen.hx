@@ -127,24 +127,37 @@ class LoadingScreen extends Sprite{
 	}
 	var elapsed = 0;
 	override function __enterFrame(e:Int){
-		if(textField.htmlText != loadingText){
-			updateText();
-		}
-		if(FlxG.save.data.doCoolLoading){
-			if(loadingIcon != null){
-				loadingIcon.rotation += e * 0.05;
+		try{
+			if(textField.htmlText != loadingText){
+				updateText();
 			}
-			if(object.funni && alpha < 1){
-				alpha += e * 0.003;
-			}else if(!object.funni) {
-				if(alpha > 0.003){
-					alpha -= e * 0.003;
-				}else{
-					FlxG.stage.removeChild(this);
+			if(FlxG.save.data.doCoolLoading){
+				if(loadingIcon != null){
+					loadingIcon.rotation += e * 0.05;
+				}
+				if(object.funni && alpha < 1){
+					alpha += e * 0.003;
+				}else if(!object.funni) {
+					if(alpha > 0.003){
+						alpha -= e * 0.003;
+					}else{
+						FlxG.stage.removeChild(this);
+					}
 				}
 			}
+
+			if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F1){
+				MainMenuState.handleError("Manually triggered force exit");
+			}
+			if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F4){
+				throw('Manually triggered crash');
+			}
+			super.__enterFrame(e);
 		}
-		super.__enterFrame(e);
+		catch(e){
+			trace(e);
+
+		}	
 	} 
 	function updateText(){
 		textField.htmlText = loadingText;
