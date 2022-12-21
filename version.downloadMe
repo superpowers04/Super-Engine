@@ -5,3 +5,4 @@
 - Note.parentSprite, Allows you to change the sprite that the note will move towards
 - Option for using an unstable Threaded loading screen
 - Remove a bunch of useless assets and optimise some of the existing ones
+- Experimental and unstable loading screen with text(In visibility for now and disabled by default)
