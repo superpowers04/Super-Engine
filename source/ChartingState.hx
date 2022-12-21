@@ -129,8 +129,10 @@ class ChartingState extends MusicBeatState
 	var voices:FlxSound;
 	var saveReminder:FlxTimer;
 	var chartPath = "";
+
 	static var globalChartPath = "";
-	override public function new(){
+	override public function new(?time:Float = 0){
+		this.time = time;
 		super();
 	}
 	var stageSel:FlxInputText;
@@ -174,11 +176,12 @@ class ChartingState extends MusicBeatState
 	}
 	public static function gotoCharter(){
 		// if(FlxG.save.data.legacyCharter){
-			LoadingState.loadAndSwitchState(new ChartingState());
+			LoadingState.loadAndSwitchState(new ChartingState(Conductor.songPosition));
 		// }else{
 		// 	LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
 		// }
 	}
+	var time:Float = 0;
 	override function create()
 	{try{
 		TitleState.loadNoteAssets();
@@ -190,32 +193,7 @@ class ChartingState extends MusicBeatState
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
-		{ 
-			/*{"song":{
-			     "rawJSON" : {
-			         "sections" : 158,
-			        "bpm" : 158,
-			        "song" : "@~obRef#0"
-			    },
-			    "sectionLengths" : [
-
-			    ],
-			    "player1" : "bf",
-			    "noteMetadata" : {
-			         "tooLateHealth" : -0.075,
-			        "badnoteHealth" : -0.24,
-			        "badnoteScore" : -7490,
-			        "missHealth" : -0.04,
-			        "missScore" : -10
-			    },
-			    "player2" : "bf",
-			    "song" : "SONG",
-			    "validScore" : true,
-			    "sections" : 0,
-			    "needsVoices" : false,
-			    "speed" : 2,
-			    "bpm" : 158
-			}}*/
+		{
 			_song = {
 				song: 'Test',
 				notes: [
@@ -313,6 +291,7 @@ class ChartingState extends MusicBeatState
 		loadAudioBuffer();
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
+		Conductor.songPosition = time;
 
 		evNote = new Note(0,-1,null,false,true,"PLACEHOLDERICON",[0,-1,"PLACEHOLDERICON"]);
 		// evNote = new HealthIcon("EVENTNOTE");
@@ -408,6 +387,11 @@ class ChartingState extends MusicBeatState
 		gridBGBelow.alpha = 0.7;
 
 		super.create();
+		if(time != 0){
+			Conductor.songPosition = time;
+			updateSection();
+			time = 0;
+		}
 		saveRemind(true);
 		updateHeads();
 		#if discord_rpc

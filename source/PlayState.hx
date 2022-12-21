@@ -251,7 +251,7 @@ class PlayState extends MusicBeatState
 
 		/* Stage Shite */
 
-
+			public static var stage:String = "nothing";
 			/* Varis, too lazy to move somewhere else*/
 			// Will fire once to prevent debug spam messages and broken animations
 			private var triggeredAlready:Bool = false;
@@ -417,15 +417,13 @@ class PlayState extends MusicBeatState
 				if(func_name == "noteHitDad"){
 					charCall("noteHitSelf",[args[1]],1);
 					charCall("noteHitOpponent",[args[1]],0);
-				}
-				if(func_name == "noteHit"){
+				}else if(func_name == "noteHit"){
 					charCall("noteHitSelf",[args[1]],0);
 					charCall("noteHitOpponent",[args[1]],1);
 				}
 				// if(func_name != "update") trace('Called $func_name for ${(if(id != "")id else "Global")}');
 				args.insert(0,this);
 				if (id == "") {
-
 					for (name in interps.keys()) {
 						// var ag:Array<Dynamic> = [];
 						// for (i => v in args) { // Recreates the array
@@ -691,6 +689,7 @@ class PlayState extends MusicBeatState
 		var bfPos:Array<Float> = [0,0]; 
 		var gfPos:Array<Float> = [0,0]; 
 		var dadPos:Array<Float> = [0,0]; 
+		stage = (if(PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || FlxG.save.data.selStage == "default") TitleState.retStage(stage); else FlxG.save.data.selStage);
 		if (FlxG.save.data.preformance){
 			defaultCamZoom = 0.9;
 			curStage = 'stage';
@@ -703,72 +702,71 @@ class PlayState extends MusicBeatState
 			stageFront.active = false;
 			add(stageFront);
 		}else{
-			if (FlxG.save.data.selStage != "default"){SONG.stage = FlxG.save.data.selStage;}
-			switch(SONG.stage.toLowerCase()){
+			switch(stage.toLowerCase()){
 					case 'stage','default':
 					{
-								defaultCamZoom = 0.9;
-								curStage = 'stage';
-								stageTags = ["inside","stage"];
-								var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
-								bg.antialiasing = true;
-								bg.scrollFactor.set(0.9, 0.9);
-								bg.active = false;
-								add(bg);
-			
-								var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
-								stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-								stageFront.updateHitbox();
-								stageFront.antialiasing = true;
-								stageFront.scrollFactor.set(0.9, 0.9);
-								stageFront.active = false;
-								add(stageFront);
-			
-								var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
-								stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-								stageCurtains.updateHitbox();
-								stageCurtains.antialiasing = true;
-								stageCurtains.scrollFactor.set(1.3, 1.3);
-								stageCurtains.active = false;
-			
-								add(stageCurtains);
+						defaultCamZoom = 0.9;
+						curStage = 'stage';
+						stageTags = ["inside","stage"];
+						var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+						bg.antialiasing = true;
+						bg.scrollFactor.set(0.9, 0.9);
+						bg.active = false;
+						add(bg);
+	
+						var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+						stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+						stageFront.updateHitbox();
+						stageFront.antialiasing = true;
+						stageFront.scrollFactor.set(0.9, 0.9);
+						stageFront.active = false;
+						add(stageFront);
+	
+						var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+						stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+						stageCurtains.updateHitbox();
+						stageCurtains.antialiasing = true;
+						stageCurtains.scrollFactor.set(1.3, 1.3);
+						stageCurtains.active = false;
+	
+						add(stageCurtains);
 					}
 					default:
 					{	
-						var stage:String = TitleState.retStage(SONG.stage);
+						stage = TitleState.retStage(stage);
 						if(stage == "nothing"){
 							stageTags = ["empty"];
 							defaultCamZoom = 0.9;
 							curStage = 'nothing';
 						}else if(stage == "" || !FileSystem.exists('mods/stages/$stage')){
-								trace('"${SONG.stage}" not found, using "Stage"!');
-								stageTags = ["inside"];
-								defaultCamZoom = 0.9;
-								curStage = 'stage';
-								var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
-								bg.antialiasing = true;
-								bg.scrollFactor.set(0.9, 0.9);
-								bg.active = false;
-								add(bg);
-			
-								var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
-								stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-								stageFront.updateHitbox();
-								stageFront.antialiasing = true;
-								stageFront.scrollFactor.set(0.9, 0.9);
-								stageFront.active = false;
-								add(stageFront);
-			
-								var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
-								stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-								stageCurtains.updateHitbox();
-								stageCurtains.antialiasing = true;
-								stageCurtains.scrollFactor.set(1.3, 1.3);
-								stageCurtains.active = false;
-			
-								add(stageCurtains);
+							trace('"${stage}" not found, using "Stage"!');
+							stageTags = ["inside"];
+							defaultCamZoom = 0.9;
+							stage = curStage = 'stage';
+							var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+							bg.antialiasing = true;
+							bg.scrollFactor.set(0.9, 0.9);
+							bg.active = false;
+							add(bg);
+		
+							var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+							stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+							stageFront.updateHitbox();
+							stageFront.antialiasing = true;
+							stageFront.scrollFactor.set(0.9, 0.9);
+							stageFront.active = false;
+							add(stageFront);
+		
+							var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+							stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+							stageCurtains.updateHitbox();
+							stageCurtains.antialiasing = true;
+							stageCurtains.scrollFactor.set(1.3, 1.3);
+							stageCurtains.active = false;
+		
+							add(stageCurtains);
 						}else{
-							curStage = SONG.stage;
+							curStage = stage;
 							stageTags = [];
 							var stagePath:String = 'mods/stages/$stage';
 							if (FileSystem.exists('$stagePath/config.json')){

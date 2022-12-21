@@ -113,7 +113,6 @@ class SELoader {
 		#end
 	}
 
-
 	public static function loadSound(soundPath:String,?useCache:Bool = false):Sound{
 		if(cache.soundArray[soundPath] != null || useCache){
 			return cache.loadSound(soundPath);
@@ -127,7 +126,10 @@ class SELoader {
 			else
 				return Sound.fromFile(soundPath);
 		#else
+
 		return Sound.fromFile(soundPath);
+		
+
 		#end
 	}
 	public static function loadFlxSound(soundPath:String):FlxSound{
@@ -138,6 +140,23 @@ class SELoader {
 		if(volume == -1) volume = FlxG.save.data.otherVol;
 		return FlxG.sound.play(loadSound(${soundPath}),volume);
 	}
+
+
+	// Clones of FileSystem and File functions. Eventually, zip support might be added. This'll also allow custom formats to be used
+
+	public static function absolutePath(path:String):String{
+		return FileSystem.absolutePath(path);
+	}
+	public static function fullPath(path:String):String{
+		return FileSystem.fullPath(path);
+	}
+	public static function exists(path:String):Bool{
+		return FileSystem.exists(path);
+	}
+	public static function readDirectory(path:String):Array<String>{
+		return FileSystem.readDirectory(path);
+	}
+
 
 
 	// public static function cleanUp(){ // This will be used for when a song ends, 

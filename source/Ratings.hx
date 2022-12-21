@@ -1,52 +1,40 @@
 import flixel.FlxG;
 
+@:structInit class Rating{
+	public var accuracy:Float = 0;
+	public var name:String = "";
+}
+
 class Ratings
 {
-	public static var rankings:Array<String> = [
-		"Perfectly legit",
-		"Perfect!",
-		"SS",
-		"S",
-		"A",
-		"B",
-		"C",
-		"Nice",
-		"C",
-		"D",
-		"F",
-		"FU",
-		"FUC",
-		"FUCK",
-		"afk",
-		"N/A",
-		"botplay"
+	public static var rankings:Array<Rating> = [
+		{name:"Perfectly legit",accuracy:100.0001},
+		{name:"Perfect!",accuracy:100},
+		{name:"SS",accuracy:99},
+		{name:"S",accuracy:95},
+		{name:"A",accuracy:90},
+		{name:"B",accuracy:80},
+		{name:"C",accuracy:70},
+		{name:"Nice",accuracy:69},
+		{name:"C",accuracy:60},
+		{name:"D",accuracy:50},
+		{name:"F",accuracy:40},
+		{name:"FU",accuracy:30},
+		{name:"FUC",accuracy:20},
+		{name:"FUCK",accuracy:10},
+		{name:"afk",accuracy:1},
+		{name:"N/A",accuracy:-1},
+		{name:"actual bot moment",accuracy:-100}
 	];
 	public static function getLetterRankFromAcc(?accuracy:Float = 0) // generate a letter ranking
 	{
 		var ranking = "N/A";
-		var wifeConditions:Array<Bool> = [
-			accuracy > 100, // how
-			accuracy == 100, // fucking amazing
-			accuracy >= 99, // SS
-			accuracy >= 95, // S
-			accuracy >= 90, // A
-			accuracy >= 80, // B
-			accuracy >= 70, // back to C
-			accuracy >= 69, // nice
-			accuracy >= 60, // C
-			accuracy >= 50, // D
-			accuracy >= 40, // F
-			accuracy >= 30, // FU
-			accuracy >= 20, // FUC
-			accuracy >= 10, // FUCK
-			accuracy > 0, // oh
-			accuracy == 0, // N/A
-			accuracy < 0, // bot moment
-
-
-		];
-		var ranking = wifeConditions.indexOf(true);
-		return ;
+		for (ranking in rankings){
+			if(accuracy >= ranking.accuracy){
+				return ranking.name;
+			}
+		}
+		return "what";
 
 	}
 	public static function GenerateLetterRank(accuracy:Float) // generate a letter ranking
@@ -55,69 +43,22 @@ class Ratings
 		if(FlxG.save.data.botplay)
 			ranking = "BotPlay";
 
-		if (PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0) // Marvelous (SICK) Full Combo
-			ranking = "(MFC)";
-		else if (PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
-			ranking = "(GFC)";
-		else if (PlayState.misses == 0) // Regular FC
-			ranking = "(FC)";
-		else if (PlayState.misses < 10) // Single Digit Combo Breaks
-			ranking = "(SDCB)";
-		else
+		// These ratings are pretty self explanatory
+		if (PlayState.misses > 10)
 			ranking = "(Clear)";
+		else if (PlayState.misses > 0) // Single Digit Combo Breaks
+			ranking = "(SDCB)";
+		else if (PlayState.shits > 0) 
+			ranking = "(ShitFC)";
+		else if (PlayState.bads > 0)
+			ranking = "(BadFC)";
+		else if (PlayState.goods > 0)
+			ranking = "(GoodFC)";
+		else
+			ranking = "(SickFC)";
 
 		// WIFE TIME :)))) (based on Wife3)
-
-		var wifeConditions:Array<Bool> = [
-			accuracy >= 100.1, // SS
-			accuracy >= 99, // SS
-			accuracy >= 95, // S
-			accuracy >= 90, // A
-			accuracy >= 80, // B
-			accuracy >= 70, // back to C
-			accuracy >= 69, // nice
-			accuracy >= 60, // C
-			accuracy >= 50, // D
-			accuracy > 2, // F
-			accuracy > 0, // F
-			accuracy < 0, // F
-		];
-
-		for(i in 0...wifeConditions.length)
-		{
-			var b = wifeConditions[i];
-			if (b)
-			{
-				switch(i)
-				{
-					case 0:
-						ranking += " Perfectly Legit";
-					case 1:
-						ranking += " SS";
-					case 2:
-						ranking += " S";
-					case 3:
-						ranking += " A";
-					case 4:
-						ranking += " B";
-					case 5:
-						ranking += " C";
-					case 6:
-						ranking += " Nice";
-					case 7:
-						ranking += " C";
-					case 8:
-						ranking += " D";
-					case 9:
-						ranking += " F";
-					case 10:
-						ranking += " AFK";
-					case 11:
-						ranking += " BotPlay";
-				}
-				break;
-			}
-		}
+		ranking += getLetterRankFromAcc(accuracy);
 
 		if (accuracy == 0)
 			ranking = "N/A";
@@ -129,12 +70,12 @@ class Ratings
 	
 	public static function CalculateRating(noteDiff:Float, ?customSafeZone:Float):String // Generate a judgement through some timing shit
 	{
-
+		noteDiff = Math.abs(noteDiff);
 		var customTimeScale = Conductor.timeScale;
 
 		if (customSafeZone != null)
 			customTimeScale = customSafeZone / 166;
-		
+
 		if (noteDiff > 156 * customTimeScale) // so god damn early its a miss
 			return "miss";
 		if (noteDiff > 125 * customTimeScale) // way early
@@ -143,14 +84,6 @@ class Ratings
 			return "bad";
 		if (noteDiff > 45 * customTimeScale) // your kinda there
 			return "good";
-		if (noteDiff < -45 * customTimeScale) // little late
-			return "good";
-		if (noteDiff < -90 * customTimeScale) // late
-			return "bad";
-		if (noteDiff < -125 * customTimeScale) // late as fuck
-			return "shit";
-		if (noteDiff < -156 * customTimeScale) // so god damn late its a miss
-			return "miss";
 		return "sick";
 	}
 
