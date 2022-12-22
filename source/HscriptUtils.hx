@@ -159,6 +159,7 @@ class HscriptUtils {
 		interp.variables.set("HSBrTools",HSBrTools);
 		interp.variables.set("SETools",SETools);
 		interp.variables.set("SELoader",SELoader);
+		interp.variables.set("FlxSprTrail",FlxSprTrail);
 		interp.variables.set("eval", eval.bind(Interp,_)); // Eval code 
 		// interp.variables.set("SEKeys", SEKeys);
 

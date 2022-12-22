@@ -3522,6 +3522,8 @@ class PlayState extends MusicBeatState
 			
 		}catch(e){handleError('A animation event caused an error: ${e.message}\n ${e.stack}');}
 
+		callInterp("stepHitAfter",[]);
+		charCall("stepHitAfter",[curStep]);
 	}
 	
 
@@ -3642,6 +3644,8 @@ class PlayState extends MusicBeatState
 		// 		}
 		// 	}
 		// }
+		callInterp("beatHitAfter",[]);
+		charCall("beatHitAfter",[curBeat]);
 
 
 

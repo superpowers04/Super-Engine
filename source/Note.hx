@@ -313,21 +313,16 @@ class Note extends FlxSkewedSprite
 						}catch(e){info = [rawNote[3],0];}
 						// Replaces hit func
 						hit = function(?charID:Int = 0,note){trace('Playing ${info[0]} for ${info[1]}');PlayState.charAnim(info[1],info[0],true);}; 
-						trace('Animation note processed');
 					}
 					case "changebpm" | "bgm change": {
 						try{
-							// Info can be set to anything, it's being used for storing the BPM
-
 							info = [(if(rawNote[4] != "" && !Math.isNaN(Std.parseFloat(rawNote[4])))Std.parseFloat(rawNote[4]) else Std.parseFloat(rawNote[3]))]; 
 						}catch(e){info = [120,0];}
-						// Replaces hit func
 						hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
 						trace('BPM note processed');
 					}
 					case "changescrollspeed": {
 						try{
-							// Info can be set to anything, it's being used for storing the speed
 							info = [Std.parseFloat(rawNote[4])]; 
 						}catch(e){info = [2,0];}
 						// Replaces hit func
@@ -343,7 +338,7 @@ class Note extends FlxSkewedSprite
 					// 	hit = function(?charID:Int = 0,note){PlayState.instance.parseRun(rawNote[4],rawNote[3]);}; 
 					// }
 					default:{ // Don't trigger hit animation
-						hit = function(?charID:Int = 0,note){trace('hit a event note without a hit function!');return;};
+						hit = function(?charID:Int = 0,note){trace('Hit an empty event note ${note.type}.');return;};
 					}
 				}
 			}
@@ -354,7 +349,6 @@ class Note extends FlxSkewedSprite
 					noteAnimation = rawNote[4];
 				}
 				case "noanimation" | "no animation" | "noanim": {
-					// Replaces hit func
 					noteAnimation = null;
 				}
 				case 'script','hscript':{
@@ -365,9 +359,7 @@ class Note extends FlxSkewedSprite
 		}
 			
 			
-
-		// MAKE SURE ITS DEFINITELY OFF SCREEN?
-		y = 9000;
+		y = 1300; // Prevents the note from being seen when it first gets added to PlayState.notes 
 
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
@@ -387,15 +379,6 @@ class Note extends FlxSkewedSprite
 			antialiasing = true;
 			var noteName = noteNames[noteData];
 			if(eventNote || noteName == null || noteName == "") noteName = noteNames[0];
-
-
-			// x+= swagWidth * noteData;
-
-			// trace(prevNote);
-
-			// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
-			// and flip it so it doesn't look weird.
-			// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS 
 			
 
 			if (isSustainNote && prevNote != null)
@@ -406,13 +389,9 @@ class Note extends FlxSkewedSprite
 				
 				
 
-				// x += width / 2;
-
 				animation.play(if(noteJSON == null) noteName + "holdend" else "holdend");
 				isSustainNoteEnd = true;
 				updateHitbox();
-
-				// x -= width / 2;
 
 
 				parentNoteWidth = prevNote.width;
@@ -467,7 +446,6 @@ class Note extends FlxSkewedSprite
 		if(!(eventNote && !inCharter) && showNote){
 			super.draw();
 		}
-		// if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
 	}
 	override function update(elapsed:Float)
 	{

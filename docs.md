@@ -121,9 +121,7 @@
 ##NoteAssets.hx##
 
 | 	public static function | get_frames():FlxFramesCollection |
-### SplashNoteAsset ### 
-| Type | Name |
-|------------------|------|
+|  public var | name:String |
 |  public function | genSplashes(?name_:String = "noteSplashes",?path_:String = "assets/shared/images/"):Void |
 
 ##StrumArrow.hx##
@@ -143,9 +141,10 @@
 
 ##SearchMenuState.hx##
 
-| 	public static var | background:FlxGraphic |
+| 	public function | get_supportMouse():Bool |
 | static public function | resetVars() |
 | 	public static var | doReset:Bool  |
+| 	public var | blackBorder:FlxSprite |
 
 ##GameplayCustomizeState.hx##
 
@@ -153,7 +152,7 @@
 
 ##StageEditor.hx##
 
-| 	public static function | loadStage(state:FlxState,json:String):StageOutput |
+| 	public var | objects:Array<Dynamic>  |
 | 	public function | updateObjectList() |
 
 ##PauseSubState.hx##
@@ -162,7 +161,7 @@
 
 ##MusicBeatSubstate.hx##
 
-| 	public function | new()	 |
+| 	public var | toggleVolKeys:Bool  |
 | 	public function | onTextInputFocus(object:Dynamic) |
 | 	public function | onTextInputUnfocus(object:Dynamic) |
 | 	public function | stepHit():Void	 |
@@ -192,9 +191,7 @@
 ##SELoader.hx##
 
 | 	public static function | loadFlxSprite(x:Int,y:Int,pngPath:String,?useCache:Bool = false):FlxSprite |
-### InternalCache ### 
-| Type | Name |
-|------------------|------|
+| 	public var | spriteArray:Map<String,FlxGraphic>  |
 | 	public function | new() |
 | 	public function | clear() |
 | 	public function | getPath(?str:String = "") |
@@ -226,7 +223,7 @@
 
 ##KeyBindMenu.hx##
 
-|  public static function | getKeyBindsString():String |
+|  public var | lastKey:String  |
 
 ##RepoState.hx##
 
@@ -238,7 +235,7 @@
 
 | 	public function | new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)	 |
 | 	public function | new(x:Float = 20, y:Float = 20, color:Int = 0xFFFFFFFF)	 |
-| 	public function | log(str:String) |
+| 	public var | showConsole  |
 
 ##SongHScripts.hx##
 
@@ -259,13 +256,6 @@
 
 |  public static function | resetBinds():Void |
 |  public static function | keyCheck():Void     |
-
-##Replay.hx##
-
-|  public function | new(path:String)     |
-|  public static function | LoadReplay(path:String):Replay     |
-|  public function | SaveReplay(notearray:Array<Float>)     |
-|  public function | LoadFromJSON()     |
 
 ##EventNote.hx##
 
@@ -296,14 +286,12 @@
 
 ##ArrowCustomizationState.hx##
 
-### ArrowCustomizationState ###
- extends MusicBeatSubstate  
-| Type | Name |
-|------------------|------|
+| 	public var | playerStrums:FlxTypedGroup<StrumArrow>  |
+| 	public var | strumList:Array<FlxGroup>  |
 
 ##Song.hx##
 
-| 	public static var | defNoteMetadata:NoteMetadata  |
+| 	public function | new(name:String, pos:Float, value:Float, type:String)	 |
 | 	public function | new(song, notes, bpm)	 |
 | 	public static function | getEmptySong():SwagSong |
 | 	public static function | getEmptySongJSON():String |
@@ -349,6 +337,7 @@
 
 ##TitleState.hx##
 
+| 	public function | toString() |
 | 	public static var | initialized:Bool  |
 ### FuckinNoDestCam ###
  extends FlxCamera  
@@ -371,7 +360,7 @@
 | 	public function | set_moveCamera(v):Bool |
 | 	public static function | get_songPosBG() |
 | 	public static var | songPosBar(get,set):FlxBar |
-| 	public static var | underlay:FlxSprite |
+| 	public var | kadeEngineWatermark:FlxText |
 | 	public static function | get_girlfriend() |
 | 	public static var | bf(get,set):Character |
 | 	public static var | opponent(get,set):Character |
@@ -379,18 +368,15 @@
 | 	public static function | addEvent(id:Int,name:String,check:Int,value:Int,func:Dynamic->Void,?variable:String = "def",?type:String="equals"):IfStatement |
 | 	public static var | hasStarted  |
 | 	public function | requireScript(v:String,?important:Bool = false,?nameSpace:String = "requirement",?script:String = ""):Bool |
+| 	public var | swappedChars  |
 | 	public static var | introAudio:Array<flixel.system.FlxAssets.FlxSoundAsset>  |
 | 	public function | startCountdown():Void	 |
 | 	public function | generateNotes() |
-| 	public function | generateSong(?dataPath:String = ""):Void	 |
+| 	public var | useNoteCameras:Bool  |
 |  public function | update(elapsed:Float)	 |
-| 	public function | followChar(?char:Int = 0,?locked:Bool = true) |
-| 	public function | getDefaultCamPos():Array<Float> |
+| 	public var | cameraPositions:Array<Array<Float>>  |
 | 	public function | updateCharacterCamPos() |
-| 	public function | NearlyEquals(value1:Float, value2:Float, unimportantDifference:Float = 10):Bool		 |
-| 	public function | DadStrumPlayAnim(id:Int,?anim:String = "confirm")  |
-| 	public function | BFStrumPlayAnim(id:Int,anim:String = 'confirm')  |
-| 	public function | noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void	 |
+| 	public var | acceptInput  |
 | 	public function | testanimdebug() |
 
 ##PlayListState.hx##
@@ -408,11 +394,11 @@
 ##Main.hx##
 
 | 	public static function | main():Void	 |
-### FlxGameEnhanced ###
- extends FlxGame  
-| Type | Name |
-|------------------|------|
-| 	public function | forceStateSwitch(state:FlxState) |
+| 	public var | blockUpdate:Bool  |
+| 	public var | blockDraw:Bool  |
+| 	public var | blockEnterFrame:Bool  |
+| 	public var | funniLoad:Bool  |
+|  public var | queuedState:Bool  |
 
 ##ArrowSelection.hx##
 
@@ -476,6 +462,7 @@
 
 ##Options.hx##
 
+| 	public function | new (catName:String, options:Array<Option>,?desc:String = "",?mod:Bool = false)	 |
 | 	public static var | playerEdit:Int  |
 ### GFOption ###
  extends Option   
@@ -665,16 +652,17 @@
 
 ##LoadingState.hx##
 
-| 	public function | checkLibrary(library:String)	 |
-### MultiCallback  ### 
-| Type | Name |
-|------------------|------|
+| 	public var | callback:Void->Void |
 | 	public function | new (callback:Void->Void, logId:String = null)	 |
 | 	public function | add(id = "untitled")	 |
 | 	public function | getFired() return fired.copy();	public function getUnfired() return [for (id in unfired.keys()) id]; |
 
 ##Character.hx##
 
+| 	public function | getNamespacedName():String |
+| 	public function | callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false):Dynamic  |
+| 	public var | currentAnimationPriority:Int  |
+| 	public var | animName(get,set):String |
 | 	public static var | BFJSON(default,null):String  |
 | 	public static var | GFJSON(default,null)  |
 
@@ -717,8 +705,9 @@
 ##Note.hx##
 
 | 	public function | get_skipXAdjust() |
-| 	public static var | swagWidth:Float  |
+| 	public var | updateY:Bool  |
 | 	public function | toJson() |
+| 	public function | addAnimations() |
 | 	public static var | noteAnims:Array<String>  |
 | 	public function | new(?strumTime:Float = 0, ?_noteData:Int = 0, ?prevNote:Note, ?sustainNote:Bool = false, ?_inCharter:Bool = false,?_type:Dynamic = 0,?_rawNote:Array<Dynamic> = null,?playerNote:Bool = false)	 |
 
@@ -737,10 +726,9 @@
 
 ##SndTV.hx##
 
-| 	public function | clear() |
+| 	public var | fps 				 |
 | 	public function | new()  |
-| 	public function | count()  |
-| 	public function | exists(p:Snd)  |
+| 	public var | pool : hxd.Stack<TweenV>  |
 | 	public function | killWithoutCallbacks(parent:Snd)  |
 | 	public function | terminate(parent:Snd)  |
 | 	public function | forceTerminateTween(t:TweenV)  |
@@ -774,7 +762,7 @@
 
 ##Alphabet.hx##
 
-| 	public static var | sprite:FlxSprite |
+| 	public function | set_text(repl:String = ""):String |
 ### AlphaCharacter ###
  extends FlxSprite   
 | Type | Name |
@@ -787,6 +775,7 @@
 
 ##Snd.hx##
 
+| 	public function | poolBack() |
 | 	public static var | EMPTY_STRING  |
 ### ChannelLowLevel ###
  extends Channel  
@@ -795,8 +784,19 @@
 ### Sound  ### 
 | Type | Name |
 |------------------|------|
-| 	public static var | EMPTY_STRING  |
+### SoundLowLevel ###
+ extends Sound  
+| Type | Name |
+|------------------|------|
+### SoundEvent ###
+ extends Sound  
+| Type | Name |
+|------------------|------|
+### Snd  ### 
+| Type | Name |
+|------------------|------|
 | 	public function | new( snd : Sound, ?name:String )  |
+| 	public var | muted : Bool  |
 | 	public static var | released  |
 | 	public static var | DEBUG_TRACK  |
 | 	public static function | loadSound( path:String, streaming : Bool, blocking : Bool  ) : Sound  |
@@ -811,24 +811,19 @@
 
 ##ScriptableStateMacro.hx##
 
-|  public static function | build():Array<Field>  |
+| public var | $fieldName(get,null)`	// var propertyField:Field  |
 
 ##PsychDropDown.hx##
 
 | 	public function | new(X:Float = 0, Y:Float = 0, DataList:Array<StrNameLabel>, ?Callback:String->Void, ?Header:FlxUIDropDownHeader,			?DropPanel:FlxUI9SliceSprite, ?ButtonList:Array<FlxUIButton>, ?UIControlCallback:Bool->PsychDropDown->Void)	 |
-### FlxUIDropDownHeader ###
- extends FlxUIGroup   
-| Type | Name |
-|------------------|------|
+| 	public var | background:FlxSprite |
 | 	public function | new(Width:Int = 120, ?Background:FlxSprite, ?Text:FlxUIText, ?Button:FlxUISpriteButton)	 |
 |  public function | destroy():Void	 |
 
 ##FreeplayState.hx##
 
 | 	public static var | lastSong:String  |
-### SongMetadata  ### 
-| Type | Name |
-|------------------|------|
+| 	public var | songName:String  |
 | 	public function | new(song:String, week:Int, songCharacter:String)	 |
 
 ##OverlayShader.hx##
@@ -840,6 +835,7 @@
 | 	public static function | init()  |
 | 	public static var | X     |
 | static public function | areSameType(o:Dynamic,c:Dynamic):Bool |
+| 	public var | isNew:Bool  |
 | 	public static var | TRANSPARENT:FlxColor  |
 ### HscriptGlobals  ### 
 | Type | Name |

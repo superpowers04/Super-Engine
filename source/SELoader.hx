@@ -121,16 +121,12 @@ class SELoader {
 			handleError('${id}: Sound "${soundPath}" doesn\'t exist!');
 		}
 		#if hxCodec
-			if(FlxG.save.data.vlcSound)
-				return vlc.VLCSound.fromFile(createVLCUrl(soundPath));
-			else
-				return Sound.fromFile(soundPath);
-		#else
-
+		if(FlxG.save.data.vlcSound)
+			return vlc.VLCSound.fromFile(createVLCUrl(soundPath));
+		#end
 		return Sound.fromFile(soundPath);
 		
 
-		#end
 	}
 	public static function loadFlxSound(soundPath:String):FlxSound{
 		return new FlxSound().loadEmbedded(loadSound(soundPath));
