@@ -304,8 +304,11 @@
 
 ##FlxSprTrail.hx##
 
-|  public function | new(parent:FlxSprite,?time:Float = 0.5) |
+|  public function | new(parent:FlxSprite,?time:Float = 0,spriteStart:Int = 1,spriteAmount:Int = 2,spriteOffsetX:Float = 0,spriteOffsetY:Float = 0) |
+| 	public function | generateSprites() |
 |  public function | update(e:Float) |
+| 	public function | addToBuffer(?index:Int = -1,?color:FlxColor = 0xFFFFFF) |
+| 	public function | updateFrames(?color:FlxColor = 0xFFFFFF,?changeFrame:Bool = true) |
 
 ##HelperFunctions.hx##
 
