@@ -507,7 +507,6 @@ class TitleState extends MusicBeatState
 	}
 
 	var logoBl:FlxSprite;
-	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:Alphabet;
 	override function tranOut(){return;}
@@ -583,13 +582,6 @@ class TitleState extends MusicBeatState
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
-		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
-		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
-		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-		gfDance.antialiasing = true;
-		gfDance.scrollFactor.set(0.8,0.8);
-		add(gfDance);
 		add(logoBl);
 		titleText = new Alphabet(0, 0,"PRESS ENTER TO BEGIN",true,false);
 		titleText.x = 100;
@@ -661,17 +653,40 @@ class TitleState extends MusicBeatState
 	}
 	var shiftSkip:FlxText;
 	var isShift = false;
-
+	static var technoAnni = [
+			["Technoblade","never dies"],
+			['SAY IT WITH ME','Not even close'],
+			["thank you hypixel",'very cool'],
+			["if you wish to defeat me",'train for another 100 years'],
+			["all part of",'my master plan'],
+			['subscribe to','technoblade'],
+			['This is the second-worst thing','that has happened to these orphans']
+		];
 	public static var hardcodedDays(default,never):Map<Int,Map<Int,Array<Array<String>>>> = [
+		0=>[
+			0 => [["New Year","More Pain :)"],["Good bye",'${Date.now().getFullYear() - 1}'],["Hey look","New year"]],
+			4 => [["Happy Birthday","PhantomArcade"]],
+		],
+		4 => [
+			11 => [["Hey look","an idiot was born"],['its supers birthday?','whos that?']],
+		],
 		6 => [
-			1 => [["Technoblade","never dies"]],
-			30 => [["Technoblade","never dies"]]
+			1 => technoAnni,
+			30 => technoAnni
 		],
 		7 => [
-			1 => [["Technoblade","never dies"]]
+			1 => technoAnni
+		],
+		8 => [
+			12 => [["Happy Birthday","ninjamuffin"]]
 		],
 		10 => [
-			28 => [["Technoblade","never dies"]]
+			4 => [['funkin on a','friday night']],
+			28 => technoAnni,
+			30 => [["Spooky time","very spoopy"],["pumpkin pog","wait what"],["Spooky scary skeletons","send shivers down your spine"]]
+		],
+		11 => [
+			30 => [["New Year","More Pain :)"],["Just one more day",'of ${Date.now().getFullYear()}'],["Hey look","New year"]],
 		],
 	];
 	var forcedText:Bool = false;
@@ -786,11 +801,11 @@ class TitleState extends MusicBeatState
 							outdated = true;
 							
 						}
-						FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
+						MainMenu();
 					}
 					http.onError = function (error) {
 					  trace('error: $error');
-					  FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState()); // fail but we go anyway
+					  MainMenu(); // fail but we go anyway
 					}
 					
 					http.request();
@@ -799,7 +814,7 @@ class TitleState extends MusicBeatState
 				#end
 			}
 			#else
-				FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
+				MainMenu();
 			#end
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -810,6 +825,11 @@ class TitleState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+	}
+	inline function MainMenu(){
+
+		FlxTween.tween(FlxG.camera.scroll,{y:-300},4,{ease:FlxEase.cubeOut});
+		FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
 	}
 
 	function createCoolText(textArray:Array<String>,yOffset:Int = 200)
@@ -865,10 +885,6 @@ class TitleState extends MusicBeatState
 		// logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
 
-		if (danceLeft)
-			gfDance.animation.play('danceRight');
-		else
-			gfDance.animation.play('danceLeft');
 
 		switch (curBeat)
 		{
@@ -964,6 +980,8 @@ class TitleState extends MusicBeatState
 			skippedIntro = true;
 			FlxG.camera.scroll.x += 100;
 			FlxG.camera.scroll.y += 100;
+			logoBl.screenCenter();
+			logoBl.y -= 100;
 
 			FlxTween.tween(FlxG.camera.scroll,{x: 0,y:0},1,{ease:FlxEase.cubeOut});
 			// var _x = logoBl.x;

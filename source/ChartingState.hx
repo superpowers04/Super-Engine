@@ -669,7 +669,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
-		tab_group_song.add(fixchart);
+		// tab_group_song.add(fixchart);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperBPMLabel);
 		tab_group_song.add(stepperSpeed);

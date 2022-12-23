@@ -110,20 +110,17 @@ class SickMenuState extends MusicBeatState
 					if(isMainMenu && _bg != null){
 						MainMenuState.bgcolor = switchToColor;
 					}
-					var col = _bg.color;
-					new FlxTimer().start(0.1, function(tmr:FlxTimer)
+					FlxTween.tween(FlxG.sound.music,{volume:0},1);
+					if((isMainMenu || recolor) && _bg != null){
+						FlxTween.color(_bg,1,_bg.color,switchToColor);
+					}
+					new FlxTimer().start(1, function(tmr:FlxTimer)
 					{
-						FlxG.sound.music.volume -= 0.1;
-						if((isMainMenu || recolor) && _bg != null){
-							_bg.color = FlxColor.interpolate(col,switchToColor,tmr.loops * 0.1);
-						}              
-						if(tmr.elapsedLoops > 9){
-							SickMenuState.curSongTime = FlxG.sound.music.time;
-							FlxG.sound.music.stop();
-							
-							musicHandle(isMainMenu,_bg);
-						}
-					},10);
+						SickMenuState.curSongTime = FlxG.sound.music.time;
+						FlxG.sound.music.stop();
+						
+						musicHandle(isMainMenu,_bg);
+					});
 					}
 					return;}
 				SickMenuState.musicFileLoc = mt.file;

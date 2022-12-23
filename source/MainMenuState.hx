@@ -156,6 +156,8 @@ class MainMenuState extends SickMenuState
 			// 	FlxG.save.data.masterVol = volume;
 			// 	FlxG.save.data.flush();
 			// };
+			FlxG.camera.scroll.y -= 100;
+			FlxTween.tween(FlxG.camera.scroll,{y:0},1,{ease:FlxEase.cubeOut});
 			firstStart = false;
 		}
 
@@ -187,6 +189,20 @@ class MainMenuState extends SickMenuState
 		    add(errorText);
 		}
 		FlxG.bitmap.clearCache();
+		eventColors(Date.now());
+	}
+
+	public function eventColors(date:Date){
+		if(date.getMonth() == 11){
+
+			var _d = date.getDate();
+			if(_d > 19 && _d < 26){
+				bg.color = 0xaa3333;
+				FlxTween.cancelTweensOf(bg);
+				FlxTween.color(bg,10,FlxColor.fromString("#aa3333"),FlxColor.fromString("#33aa33"),{type:FlxTweenType.PINGPONG});
+			}
+			return;
+		}
 	}
 
 	override function goBack(){

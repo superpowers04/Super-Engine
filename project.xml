@@ -18,7 +18,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="false" />
+	<window width="1280" height="720" fps="" background="#100010" hardware="true" vsync="false" allowShaders="true" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
@@ -27,10 +27,10 @@
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
+	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false"/>
 
 	<!--Switch-specific-->
-	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
+	<window if="switch" orientation="landscape" fullscreen="true" resizable="true" />
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
@@ -43,20 +43,25 @@
 
 	<classpath name="source" />
 
-	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" if="web"/>
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" embed='false' unless="web"/>
+
 	
-	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 	<define name="EMBED_ALL" unless="NO_EMBED_ALL"/>
 	
-	<section if="PRELOAD_ALL">
+	<section if="EMBED_ALL">
 		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
-		<library name="tutorial" preload="true" />
-		<library name="week1"    preload="true" />
-		<!-- <library name="mods"    preload="true" /> -->
+		<library name="tutorial" preload="true" embed='true' />
+		<library name="week1"    preload="true" embed='true' />
+	</section>
+	<section if="PRELOAD_ALL" unless="EMBED_ALL">
+		<library name="songs"    preload="true" />
+		<library name="shared"   preload="true" />
+		<library name="tutorial" preload="true" embed='true' />
+		<library name="week1"    preload="true" embed='true' />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
@@ -65,18 +70,11 @@
 		<library name="tutorial" preload="false" />
 		<library name="week1"    preload="false" />
 	</section>
-	<section if="web">
-		<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-		<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
-		<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
-		<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
-	</section>
-	<section unless="web">
-		<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
-		<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
-		<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
-		<assets path="assets/week1"    library="week1"    exclude="*.mp3" unless="web"/>
-	</section>
+
+	<assets path="assets/songs"    library="songs"    exclude="*.mp3" />
+	<assets path="assets/shared"   library="shared"   exclude="*.mp3" />
+	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" embed='true'/>
+	<assets path="assets/week1"    library="week1"    exclude="*.mp3" embed='true'/>
 	
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />

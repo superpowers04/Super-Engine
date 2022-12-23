@@ -135,6 +135,8 @@ class FlxSprTrail extends FlxSpriteGroup {
 			buffer[i] = buffer[i - 1];
 			if(sprites[i] != null){
 				sprites[i].antialiasing = parent.antialiasing;
+				sprites[i].scale.y = buffer[i].scaleY;
+				sprites[i].scale.x = buffer[i].scaleX;
 				sprites[i].x = buffer[i].x + (offsetX * i);
 				sprites[i].y = buffer[i].y + (offsetY * i);
 				if(changeFrame){
@@ -144,8 +146,6 @@ class FlxSprTrail extends FlxSpriteGroup {
 					sprites[i].flipX = buffer[i].flipX;
 					sprites[i].flipY = buffer[i].flipY;
 				}
-				sprites[i].scale.y = buffer[i].scaleY;
-				sprites[i].scale.x = buffer[i].scaleX;
 				sprites[i].visible = buffer[i].visible;
 				sprites[i].alpha = buffer[i].alpha;
 				if(fallOff > 0){
