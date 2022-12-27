@@ -161,46 +161,12 @@ class Main extends Sprite
 		return fpsCounter.currentFPS;
 	}
 	public function onCrash(e:UncaughtErrorEvent){
-
-		game = null;
-		// overlay.destroy();
-
-		var errMsg:String = "";
-		var path:String;
-		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
-		var dateNow:String = Date.now().toString();
-
-		dateNow = StringTools.replace(dateNow, " ", "_");
-		dateNow = StringTools.replace(dateNow, ":", ".");
-
-		var path:String = "./crash/" + "FNFBR_" + dateNow + ".txt";
-
-		for (stackItem in callStack)
-		{
-			switch (stackItem)
-			{
-				case FilePos(s, file, line, column):
-					errMsg += file + " (line " + line + ")\n";
-				default:
-					Sys.println(stackItem);
-			}
-		}
-
-		errMsg += "\nUncaught Error: " + e.error;
-
-		if (!FileSystem.exists("./crash/"))
-			FileSystem.createDirectory("./crash/");
-
-		File.saveContent(path, errMsg + "\n");
-		LimeApp.current.window.alert(errMsg, "Restarting game due to error!");
-		Sys.println(errMsg);
-		Sys.println("Crash dump saved in " + path);
-		// errorMessage = 'Uncaught error forced game to reboot, Crash dump saved in "${Path.normalize(path)}"';
-		setupGame();
+		FuckState.FUCK(e);
 	}
 }
 
-
+// Made specifically for Super Engine. Adds some extensions to FlxGame to allow it to handle errors
+// If you use this at all, Please credit me
 class FlxGameEnhanced extends FlxGame{
 	static var blankState:FlxState = new FlxState();
 	public function forceStateSwitch(state:FlxState){ // Might be a bad idea but allows an error to force a state change to Mainmenu instead of softlocking
@@ -231,7 +197,6 @@ class FlxGameEnhanced extends FlxGame{
 				if(_lostFocusWhileLoading != null){
 					onFocusLost(_lostFocusWhileLoading);_lostFocusWhileLoading = null;
 				}
-				// FlxG.autoPause = _oldAutoPause;
 
 			}
 
@@ -254,7 +219,6 @@ class FlxGameEnhanced extends FlxGame{
 		}
 	}
 	public var funniLoad:Bool = false;
-	// public var queuedState:Bool = false;
 	function _update(){
 		if (!_state.active || !_state.exists)
 			return;
@@ -290,26 +254,23 @@ class FlxGameEnhanced extends FlxGame{
 	var _oldAutoPause:Bool = false;
 
 	override function update(){
+		
 		try{
-			#if(target.threaded) // This is broken at the moment
-			if(_state != _requestedState && FlxG.save.data.doCoolLoading){
-				blockUpdate = blockEnterFrame = blockDraw = true;
-				Main.funniSprite.removeChild(this);
-				_oldAutoPause = FlxG.autoPause;
-				FlxG.autoPause = false;
-				visible = false;
-				// funniLoad = true;
-				sys.thread.Thread.create(() -> { 
-					// _update();
-					switchState();
-					
-					requestAdd = true;
-					visible = true;
-					
-					// funniLoad = false;
-				});
-				return;
-			}
+			#if(target.threaded)
+				if(_state != _requestedState && FlxG.save.data.doCoolLoading){
+					blockUpdate = blockEnterFrame = blockDraw = true;
+					Main.funniSprite.removeChild(this);
+					_oldAutoPause = FlxG.autoPause;
+					FlxG.autoPause = false;
+					visible = false;
+					sys.thread.Thread.create(() -> { 
+						switchState();
+						
+						requestAdd = true;
+						visible = true;
+					});
+					return;
+				}
 			#end
 			if(blockUpdate) _update(); else super.update();
 		}catch(e){

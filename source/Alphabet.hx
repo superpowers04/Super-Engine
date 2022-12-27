@@ -233,10 +233,16 @@ class Alphabet extends FlxSpriteGroup
 	}
 }
 
+@:structInit class CachedSprite{
+	public var frames:flixel.graphics.frames.FlxFramesCollection;
+	public var graphic:FlxGraphic;
+}
+
+
 class AlphaCharacter extends FlxSprite
 {
 	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
-	public static var acceptedChars:String = "abcdefghijklmnopqrstuvwxyz1234567890~#$%()*+:;<=>@[]^.,'!?/";
+	public static var acceptedChars:String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890~#$%()*+:;<=>@[|]^.,'!?/";
 	public static var alphabetMap:Map<String,String> = [
 		","=>"-comma-",
 		'.'=>"-period-",
@@ -253,6 +259,47 @@ class AlphaCharacter extends FlxSprite
 	public static var numbers:String = "1234567890";
 
 	public static var symbols:String = "|~#$%()*+-:;<=>@[]^_.,'!? /";
+
+	public static var textCache:Map<String,FlxSprite> = [];
+
+	public static function cacheAlphaChars(){
+		LoadingScreen.loadingText = "Caching text characters";
+		var txt = new FlxText(-10000,0,"",48);
+		for (char in acceptedChars) {
+			cacheText(acceptedChars.charAt(char),true,txt);
+			cacheText(acceptedChars.charAt(char),false,txt);
+		}
+		txt.destroy();
+		trace('Cached Alpha Characters');
+	}
+	public static function cacheText(char:String = "",?bold:Bool = false,?txt:FlxText = null){
+		var kill = false;
+		if(txt == null) {
+			txt = new FlxText(-10000,0,"",48);
+			kill = true;
+		}
+		if(char == "") return;
+		var charID = char + '${if(bold) '-bold' else ''}';
+		txt.text = char;
+		if(bold){
+			txt.color = 0xFFFFFF;
+			txt.setBorderStyle(OUTLINE,0xff000000,5);
+		}else{
+			txt.color = 0xff000000;
+		}
+		txt.drawFrame();
+		// var _char:CachedSprite = {
+		// 	frames:txt.frames,
+		// 	graphic:FlxGraphic.fromGraphic(txt.graphic,true,charID)
+		// };
+		// _char.graphic.dump();
+		// _char.graphic.persist = true;
+		textCache[charID] = new FlxSprite();
+		textCache[charID].frames = txt.frames;
+		textCache[charID].graphic = txt.graphic;
+
+		if(kill) txt.destroy();
+	}
 
 	public var row:Int = 0;
 	public var showDashes = false;
@@ -311,19 +358,17 @@ class AlphaCharacter extends FlxSprite
 		updateHitbox();
 	}
 	inline function useFLXTEXT(letter:String,bold:Bool = false){
-		var txt = new FlxText(-10000,0,letter,48);
-		if(bold){
-			txt.color = 0xFFFFFF;
-			txt.setBorderStyle(OUTLINE,0xff000000,5);
-			txt.drawFrame();
-		}else{
-			txt.color = 0xff000000;
-			txt.drawFrame();
 
+		var cacheID = letter + '${if(bold) '-bold' else ''}';
+		var txt = textCache[cacheID];
+		if(txt == null){
+			cacheText(letter,bold);
 		}
-		graphic = txt.graphic;
-		frames = txt.frames;
-		txt.destroy();
+		txt = textCache[cacheID];
+		if(txt != null){
+			graphic = txt.graphic;
+			frames = txt.frames;
+		}
 	}
 
 	public function createSymbol(letter:String)

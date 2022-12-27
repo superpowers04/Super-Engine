@@ -54,7 +54,7 @@ class LoadingState extends MusicBeatState
 		// gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		// gfDance.antialiasing = true;
 		// add(gfDance);
-		
+		LoadingScreen.loadingText = "Loading libraries";
 		
 		initSongsManifest().onComplete
 		(
@@ -66,10 +66,6 @@ class LoadingState extends MusicBeatState
 				if (PlayState.SONG.needsVoices)
 					checkLoadSong(getVocalPath());
 				checkLibrary("shared");
-				if (PlayState.storyWeek is Int && PlayState.storyWeek > 0)
-					checkLibrary("week" + PlayState.storyWeek);
-				else if (PlayState.storyWeek == 0)
-					checkLibrary("tutorial");
 				
 				var fadeTime = 0.5;
 				FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
@@ -103,6 +99,7 @@ class LoadingState extends MusicBeatState
 				throw "Missing library: " + library;
 			
 			var callback = callbacks.add("library:" + library);
+			LoadingScreen.loadingText = 'Loading libraries($library)';
 			Assets.loadLibrary(library).onComplete(function (_) { callback(); });
 		}
 	}
@@ -118,8 +115,7 @@ class LoadingState extends MusicBeatState
 			gfDance.animation.play('danceRight');
 		else
 			gfDance.animation.play('danceLeft');
-	}
-	
+	}	 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);

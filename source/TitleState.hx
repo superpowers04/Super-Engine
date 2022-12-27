@@ -34,6 +34,7 @@ import SickMenuState;
 import flash.media.Sound;
 import flixel.FlxCamera;
 import sys.thread.Thread;
+import Alphabet;
 
 using StringTools;
 
@@ -234,6 +235,8 @@ class TitleState extends MusicBeatState
 		}
 	}
 	public static function checkCharacters(){
+
+		LoadingScreen.loadingText = 'Updating character lis';
 		characters = [
 			{id:"bf",folderName:"bf",path:"assets/",internal:true,internalAtlas:"characters/BOYFRIEND",internalJSON:Character.BFJSON,description:"Base Character; Boyfriend, the funny rap guy"},
 			{id:"gf",folderName:"gf",path:"assets/",internal:true,internalAtlas:"characters/GF_assets",internalJSON:Character.GFJSON,description:"Base Character; Girlfriend, the funny boombox girl"}
@@ -453,6 +456,8 @@ class TitleState extends MusicBeatState
 	{
 
 		forceQuit = false; // You can't force quit to something that hasn't been loaded
+
+		LoadingScreen.loadingText = 'Loading "shared" library';
 		Assets.loadLibrary("shared");
 		@:privateAccess
 		{
@@ -473,6 +478,7 @@ class TitleState extends MusicBeatState
 		KadeEngineData.initSave();
 
 		Highscore.load();
+
 		checkCharacters();			
 
 
@@ -512,6 +518,9 @@ class TitleState extends MusicBeatState
 	override function tranOut(){return;}
 	function startIntro()
 	{
+		
+		AlphaCharacter.cacheAlphaChars();
+		LoadingScreen.loadingText = 'Loading TitleState';
 		if (!initialized)
 		{
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
