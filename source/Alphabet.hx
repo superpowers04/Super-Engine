@@ -92,6 +92,7 @@ class Alphabet extends FlxSpriteGroup
 	public var adjustAlpha:Bool = true;
 	public var persist:Bool = false;
 	public var removeDashes = true;
+	public var forceFlxText:Bool = false;
 	// public var bounce=true;
 	public var bounceTween:FlxTween;
 	public function bounce(){
@@ -203,7 +204,7 @@ class Alphabet extends FlxSpriteGroup
 			}
 
 			// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
-			var letter:AlphaCharacter = new AlphaCharacter(xPos, 0,removeDashes);
+			var letter:AlphaCharacter = new AlphaCharacter(xPos, 0,removeDashes,forceFlxText);
 			listOAlphabets.add(letter);
 			if (isBold) letter.createBold(character);
 			else letter.createLetter(character);
@@ -263,14 +264,14 @@ class AlphaCharacter extends FlxSprite
 	public static var textCache:Map<String,FlxSprite> = [];
 
 	public static function cacheAlphaChars(){
-		LoadingScreen.loadingText = "Caching text characters";
-		var txt = new FlxText(-10000,0,"",48);
-		for (char in acceptedChars) {
-			cacheText(acceptedChars.charAt(char),true,txt);
-			cacheText(acceptedChars.charAt(char),false,txt);
-		}
-		txt.destroy();
-		trace('Cached Alpha Characters');
+		// LoadingScreen.loadingText = "Caching text characters";
+		// var txt = new FlxText(-10000,0,"",48);
+		// for (char in acceptedChars) {
+		// 	cacheText(acceptedChars.charAt(char),true,txt);
+		// 	cacheText(acceptedChars.charAt(char),false,txt);
+		// }
+		// txt.destroy();
+		// trace('Cached Alpha Characters');
 	}
 	public static function cacheText(char:String = "",?bold:Bool = false,?txt:FlxText = null){
 		var kill = false;
@@ -297,19 +298,22 @@ class AlphaCharacter extends FlxSprite
 		textCache[charID] = new FlxSprite();
 		textCache[charID].frames = txt.frames;
 		textCache[charID].graphic = txt.graphic;
+		textCache[charID].graphic.persist = true;
 
 		if(kill) txt.destroy();
 	}
 
 	public var row:Int = 0;
 	public var showDashes = false;
+	public var forceFlxText:Bool = false;
 
-	public function new(x:Float, y:Float,?allowDashes:Bool = false)
+	public function new(x:Float, y:Float,?allowDashes:Bool = false,?forcedFlxText:Bool = false)
 	{
 		super(x, y);
 		var tex = Alphabet.Frames;
 		frames = tex;
 		showDashes = allowDashes;
+		forceFlxText = forcedFlxText;
 
 		antialiasing = true;
 	}
@@ -331,22 +335,27 @@ class AlphaCharacter extends FlxSprite
 	public function createLetter(letter:String):Void
 	{
 		var letterCase:String = (if (letter.toLowerCase() == letter) "lowercase" else 'capital');
-		if (symbols.contains(letter)){
-			createSymbol(letter);
-		}else if (alphabet.contains(letter)){
-			animation.addByPrefix(letter, letter + " " + letterCase, 24); // Backwards compat
-			animation.addByPrefix(letter, letter, 24);
-		}else{
-			animation.addByPrefix(letter, letter, 24);
-			
-
-		}
-		
-		if(animation.exists(letter)){
-			animation.play(letter);
-			updateHitbox();
-		}else{
+		if(forceFlxText){
 			useFLXTEXT(letter);
+		}else{
+
+			if (symbols.contains(letter)){
+				createSymbol(letter);
+			}else if (alphabet.contains(letter)){
+				animation.addByPrefix(letter, letter + " " + letterCase, 24); // Backwards compat
+				animation.addByPrefix(letter, letter, 24);
+			}else{
+				animation.addByPrefix(letter, letter, 24);
+				
+
+			}
+			
+			if(animation.exists(letter)){
+				animation.play(letter);
+				updateHitbox();
+			}else{
+				useFLXTEXT(letter);
+			}
 		}
 
 		if (alphabet.contains(letter)){y = (110 - height);y += row * 60;}

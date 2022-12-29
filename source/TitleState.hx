@@ -877,6 +877,7 @@ class TitleState extends MusicBeatState
 	}
 	var tweeny:FlxTween;
 	var ttBounce:FlxTween;
+	var cachingText:Alphabet;
 	override function beatHit()
 	{
 		super.beatHit();
@@ -900,8 +901,10 @@ class TitleState extends MusicBeatState
 			case 0:
 				if(DiscordClient.canSend) shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
 				deleteCoolText();
+				
 			// 	destHaxe();
 			case 1:
+				
 				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'], 0);
 
 				// addMoreText('ninjamuffin99').startTyping(0.015,Conductor.crochetSecs);
@@ -1026,6 +1029,13 @@ class TitleState extends MusicBeatState
 		_gfx = _sprite.graphics;
 		_sprite.filters = [new flash.filters.GlowFilter(0xFFFFFF,1,6,6,1,1)];
 
+		// This is shit, but it caches unloaded sprites for FlxText
+		var coolText:Alphabet = new Alphabet(0, 0, "_", true, false);
+		coolText.screenCenter(X);
+		coolText.forceFlxText = true;
+		coolText.text = 'PRECACHING TEXT: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890~#$%&()*+:;<=>@[|]^.,\'!?/';
+		coolText.bounce();
+		add(cachingText = coolText);
 
 		_sprite.x = (FlxG.width / 2);
 		_sprite.y = (FlxG.height * 0.60) - 20 * FlxG.game.scaleY;
@@ -1098,6 +1108,7 @@ class TitleState extends MusicBeatState
 	}
 	function drawGreen():Void
 	{
+		cachingText.destroy();
 		_gfx.beginFill(0x00b922);
 		_gfx.moveTo(0, -37);
 		_gfx.lineTo(1, -37);
@@ -1140,7 +1151,6 @@ class TitleState extends MusicBeatState
 		_gfx.lineTo(50, -25);
 		_gfx.lineTo(50, -50);
 		_gfx.endFill();
-
 		
 	}
 

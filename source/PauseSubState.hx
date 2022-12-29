@@ -125,7 +125,9 @@ class PauseSubState extends MusicBeatSubstate
 
 		for (i in 0...menuItems.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false,true);
+			var _text = menuItems[i];
+			if(_text == "Jump to") _text = getJumpTo();
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, _text, true, false,true);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpMenuShit.add(songText);
@@ -134,7 +136,6 @@ class PauseSubState extends MusicBeatSubstate
 			songText.x = 100 - songText.width * 0.5;
 			FlxTween.tween(songText,{x : sX},0.9,{ease:FlxEase.bounceOut});
 		}
-		updateJumpTo();
 		changeSelection();
 
 		quitHeldBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar','shared'));
@@ -157,27 +158,32 @@ class PauseSubState extends MusicBeatSubstate
 		FlxG.sound.music.looped = true;
 		new FlxTimer().start(0.9,function(_){updateJumpTo();});
 	}
-	function updateJumpTo(){
-		var i = menuItems.length;
-		while(i > 0){
-			i--;
-			if(menuItems[i] != null && menuItems[i].startsWith('Jump to')){
-				grpMenuShit.members[i].removeDashes = false;
-				var time:String = FlxStringUtil.formatTime(Math.floor(Math.abs(jumpToTime / 1000)), false);
-				if(jumpToTime < 0){
-					time = "-" + time;
-				}
-				grpMenuShit.members[i].text = 'Jump to ${time} / ${songLengthTxt}';
-				grpMenuShit.members[i].screenCenter(X);
-				// var old = grpMenuShit.members[i];
-				// grpMenuShit.members[i] = new Alphabet(old.x,old.y,'Jump to ${FlxStringUtil.formatTime(Math.floor(jumpToTime / 1000), false)}|${songLengthTxt}',true,false,true);
-				// grpMenuShit.members[i].targetY = old.targetY;
-				// old.destroy();
-				// grpMenuShit.members[i].scale.x = grpMenuShit.members[i].scale.y = 1.1;
-				// FlxTween.tween(grpMenuShit.members[i].scale,{x:1,y:1},0.3);
-				break;
-			}
+	inline function getJumpTo(){
+
+		var time:String = FlxStringUtil.formatTime(Math.floor(Math.abs(jumpToTime / 1000)), false);
+		if(jumpToTime < 0){
+			time = "-" + time;
 		}
+		return 'Jump to ${time} / ${songLengthTxt}';
+	} 
+	function updateJumpTo(){
+		// var i = menuItems.length;
+		// while(i > 0){
+		// 	i--;
+		var i = menuItems.indexOf('Jump to');
+		if(i > 0){
+			grpMenuShit.members[i].removeDashes = false;
+			grpMenuShit.members[i].text = getJumpTo();
+			grpMenuShit.members[i].screenCenter(X);
+			// var old = grpMenuShit.members[i];
+			// grpMenuShit.members[i] = new Alphabet(old.x,old.y,'Jump to ${FlxStringUtil.formatTime(Math.floor(jumpToTime / 1000), false)}|${songLengthTxt}',true,false,true);
+			// grpMenuShit.members[i].targetY = old.targetY;
+			// old.destroy();
+			// grpMenuShit.members[i].scale.x = grpMenuShit.members[i].scale.y = 1.1;
+			// FlxTween.tween(grpMenuShit.members[i].scale,{x:1,y:1},0.3);
+			// break;
+		}
+		// }
 	}
 	inline function callInterp(name:String,args:Array<Dynamic>){args.unshift(this); if(PlayState.instance != null) PlayState.instance.callInterp(name,args);}
 	override function update(elapsed:Float){

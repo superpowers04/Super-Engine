@@ -45,6 +45,7 @@ class FuckState extends FlxUIState
 		'What is a error exactly?',
 		"I just got ratioed :(",
 		"L + Ratio + Skill Issue",
+		"Now with more crashes",
 		"I'm out of ideas.",
 	];
 

@@ -54,6 +54,7 @@ class ImportModFromFolder extends MusicBeatState
 	var loadingText:FlxText;
 	var progress:Float = 0;
 	static var existingSongs:Array<String> = ['guns','stress',"ugh","hotdilf","hot-dilf","hot dilf","offsettest", 'tutorial', 'bopeebo', 'fresh', 'dad-battle', 'dad battle', 'dadbattle', 'spookeez', 'south', "monster", 'pico', 'philly-nice', 'philly nice', 'philly', 'phillynice', "blammed", 'satin panties','satin-panties','satinpanties', "high", "milf", 'cocoa', 'eggnog', 'winter-horrorland', 'winter horrorland', 'winterhorrorland', 'senpai', 'roses', 'thorns', 'test'];
+	
 	var songName:EReg = ~/.+\/(.*?)\//g;
 	var songsImported:Int = 0;
 	var importExisting:Bool = false;
