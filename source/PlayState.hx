@@ -956,7 +956,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		// if (dad.spiritTrail && FlxG.save.data.distractions){
-		// 	var dadTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+		// 	var dadTrail = new FlxSprTrail(dad, 0.2,0,2);
 		// 	add(dadTrail);
 		// }
 		// if (boyfriend.spiritTrail && FlxG.save.data.distractions){
@@ -1772,16 +1772,16 @@ class PlayState extends MusicBeatState
 
 					}
 
-					if (onlinemod.OnlinePlayMenuState.socket == null && lastSusNote && !downscroll){ // Moves last sustain note so it looks right, hopefully
-						var note = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-						// if(note.parentNote != null){
-						note.strumTime = unspawnNotes[Std.int(unspawnNotes.length - 2)].strumTime + (Conductor.stepCrochet * 0.5);
-						// }
-						// if(susLength < 2){
-						// 	// swagNote.stamp(unspawnNotes[Std.int(unspawnNotes.length - 1)],Std.int(swagNote.width * 0.5),Std.int(swagNote.height * 0.6));
-						// 	swagNote.scale.set(swagNote.scale.x,swagNote.scale.y * 1.25);
-						// }
-					}
+					// if (onlinemod.OnlinePlayMenuState.socket == null && lastSusNote){ // Moves last sustain note so it looks right, hopefully
+					// 	var note = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+					// 	// if(note.parentNote != null){
+					// 	note.strumTime = unspawnNotes[Std.int(unspawnNotes.length - 2)].strumTime + (Conductor.stepCrochet * 0.5);
+					// 	// }
+					// 	// if(susLength < 2){
+					// 	// 	// swagNote.stamp(unspawnNotes[Std.int(unspawnNotes.length - 1)],Std.int(swagNote.width * 0.5),Std.int(swagNote.height * 0.6));
+					// 	// 	swagNote.scale.set(swagNote.scale.x,swagNote.scale.y * 1.25);
+					// 	// }
+					// }
 				}
 
 				// swagNote.mustPress = gottaHitNote;
@@ -3016,24 +3016,24 @@ class PlayState extends MusicBeatState
 								{
 									// daNote.isSustainNoteEnd && 
 									if(daNote.isSustainNoteEnd && daNote.prevNote != null)
-										daNote.y = daNote.prevNote.y - daNote.prevNote.height;
+										daNote.y = daNote.prevNote.y - (daNote.frameHeight * daNote.scale.y);
 									else
 										daNote.y += daNote.height * 0.5;
 	
 									// Only clip sustain notes when properly hit
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
+									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth * 2))
 									{
 										// Clip to strumline
-										var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
-										swagRect.height = (strumNote.y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
-										swagRect.y = daNote.frameHeight - swagRect.height;
+										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.frameHeight);
+										// swagRect.height = (strumNote.y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+										// swagRect.y = daNote.frameHeight - swagRect.height;
+										swagRect.height = ((strumNote.y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y);
+										swagRect.y -= swagRect.height;
+
 
 										daNote.clipRect = swagRect;
-										if(daNote.mustPress || !(!daNote.mustPress && !p2canplay)){
-
-											daNote.susHit(if(daNote.mustPress)0 else 1,daNote);
-											callInterp("susHit" + (if(daNote.mustPress) "" else "Dad"),[daNote]);
-										}
+										daNote.susHit(if(daNote.mustPress)0 else 1,daNote);
+										callInterp("susHit" + (if(daNote.mustPress) "" else "Dad"),[daNote]);
 									}
 								}
 						
@@ -3043,11 +3043,11 @@ class PlayState extends MusicBeatState
 								if(daNote.isSustainNote)
 								{
 									if(daNote.isSustainNoteEnd && daNote.prevNote != null)
-										daNote.y = daNote.prevNote.y + daNote.height;
+										daNote.y = daNote.prevNote.y + (daNote.prevNote.height - 8); // why
 									else
 										daNote.y -= daNote.height * 0.5;
 									// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
@@ -3055,10 +3055,8 @@ class PlayState extends MusicBeatState
 										swagRect.height -= swagRect.y;
 
 										daNote.clipRect = swagRect;
-										if(daNote.mustPress || !(!daNote.mustPress && !p2canplay)){
-											daNote.susHit(if(daNote.mustPress)0 else 1,daNote);
-											callInterp("susHit" + (if(daNote.mustPress) "" else "Dad"),[daNote]);
-										}
+										daNote.susHit(if(daNote.mustPress) 0 else 1,daNote);
+										callInterp("susHit" + (if(daNote.mustPress) "" else "Dad"),[daNote]);
 									}
 								}
 							}
@@ -4066,6 +4064,11 @@ class PlayState extends MusicBeatState
 			{
 				// FlxG.switchState(new ChartingState());
 				ChartingState.gotoCharter();
+			}
+			if (FlxG.keys.pressed.SHIFT && (FlxG.keys.justPressed.LBRACKET || FlxG.keys.justPressed.RBRACKET) )
+			{
+				FlxG.save.data.scrollSpeed += (if(FlxG.keys.justPressed.LBRACKET) -0.05 else 0.05);
+				showTempmessage('Changed scrollspeed to ${FlxG.save.data.scrollSpeed}');
 			}
 		}
 	}
