@@ -1054,7 +1054,6 @@ class TitleState extends MusicBeatState
 			_sound.pause();
 			_sound.destroy();
 		} 
-		// remove(_sprite);
 		flixel.util.FlxTimer.globalManager.clear();
 		FlxG.stage.removeChild(_sprite);
 		_sprite = null;

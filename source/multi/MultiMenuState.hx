@@ -687,44 +687,65 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		super.changeSelection(change);
 		if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
 
-	}	
+	}
+	public static function findFileFromAssets(path:String,name:String,file:String):String{
+		if(FileSystem.exists('${path}/songs/${name}/$file')){
+			return '${path}/songs/${name}/$file';
+		}
+		if(FileSystem.exists('${path}/music/${name}-${file}')){
+			return '${path}/music/${name}-${file}';
+		}
+		if(FileSystem.exists('${path}/${name}/${file}')){
+			return '${path}/${name}/${file}';
+		}
+		if(FileSystem.exists('${path}/${name}-${file}')){
+			return '${path}/${name}-${file}';
+		}
+		if(FileSystem.exists('${path}/${file}')){
+			return '${path}/${file}';
+		}
+		return '';
+	}
+	inline static function upToString(str:String,ending:String){
+		return str.substr(0,str.lastIndexOf(ending) + ending.length);
+	}
+	public static function getAssetsPathFromChart(path:String):String{
+		if(path.contains('data/')){
+			return path.substr(0,path.lastIndexOf('data/'));
+		}
+		if(path.contains('assets/')){
+			return upToString(path,'assets/');
+		}
+		if(path.contains('mods/')){
+			return upToString(path,'mods/');
+		}
+		return "";
+	}
 	public static function fileDrop(file:String){
 		try{
 			var voices = "";
 			var inst = "";
 			var dir = file.substr(0,file.lastIndexOf("/"));
-			var dashind = file.lastIndexOf("-");
-			if(dashind < 0){
-				dashind = file.lastIndexOf(".");
-			}
-			var fileThing = file.substr(0,dashind) + ".json"; // Difficulty detection
-			trace(fileThing);
-			if(FileSystem.exists(fileThing)){
-				file = fileThing;
-			}
-			var json = file.substr(file.lastIndexOf("/"));
-			var name = json.substr(0,json.lastIndexOf("."));
+			var json = file.substr(file.lastIndexOf("/") + 1);
+			var name = file.substr(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
+
+			var assets = getAssetsPathFromChart(file);
 			if(FileSystem.exists('${dir}/Inst.ogg')){ 
 				inst = '${dir}/Inst.ogg';
 				if(FileSystem.exists('${dir}/Voices.ogg')){
 					voices = '${dir}/Voices.ogg';
 				}
 			}
-			else if(file.contains("assets/")){
-				var assets = file.substr(0,file.lastIndexOf("assets/"));
-				trace('${assets}assets/songs/${name}/Inst.ogg');
+			else if(assets != ""){
 				// Attempt 1 at finding the song files
-				if(inst == "" &&  FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){ 
-					inst = '${assets}assets/songs/${name}/Inst.ogg';
-				}
-				if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
-					inst = '${assets}assets/music/${name}-Inst.ogg';
-				}
-				if(FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
-					voices = '${assets}assets/songs/${name}/Voices.ogg';
-				}
-				if(voices == "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
-					voices = '${assets}assets/music/${name}-Voices.ogg';
+
+				inst = findFileFromAssets(assets,name,'Inst.ogg');
+				voices = findFileFromAssets(assets,name,'Voices.ogg');
+
+				if(inst == ""){ // Try without the extra - part, some songs only have a hard variant
+					var name = name.substr(0,name.lastIndexOf("-"));
+					inst = findFileFromAssets(assets,name,'Inst.ogg');
+					voices = findFileFromAssets(assets,name,'Voices.ogg');
 				}
 				if(inst == ""){ // Check more places
 					var name:Dynamic = cast Json.parse(file);
@@ -735,33 +756,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						songName = cast name.song.song;
 					}
 					if(songName != null && songName != ""){ // Try using the chart name maybe?
-						if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
-							inst = '${assets}assets/songs/${name}/Inst.ogg';
-						}
-						if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
-							inst = '${assets}assets/songs/${name}-Inst.ogg';
-						}
-						if(voices == "" && FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
-							voices = '${assets}assets/songs/${name}/Voices.ogg';
-						}
-						if(voices == "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
-							voices = '${assets}assets/songs/${name}-Voices.ogg';
-						}
-					}
-					if(inst == ""){ // Try without the extra - part, some songs only have a hard variant
-						var name = fileThing.substr(fileThing.lastIndexOf("/"),fileThing.lastIndexOf("."));
-						if(FileSystem.exists('${assets}assets/songs/${name}/Inst.ogg')){
-							inst = '${assets}assets/songs/${name}/Inst.ogg';
-						}
-						if(inst == "" && FileSystem.exists('${assets}assets/music/${name}-Inst.ogg')){
-							inst = '${assets}assets/music/${name}-Inst.ogg';
-						}
-						if(voices == "" && FileSystem.exists('${assets}assets/songs/${name}/Voices.ogg')){
-							voices = '${assets}assets/songs/${name}/Voices.ogg';
-						}
-						if(voices == "" && FileSystem.exists('${assets}assets/music/${name}-Voices.ogg')){
-							voices = '${assets}assets/music/${name}-Voices.ogg';
-						}
+						inst = findFileFromAssets(assets,name,'Inst.ogg');
+						voices = findFileFromAssets(assets,name,'Voices.ogg');
 					}
 
 				}
