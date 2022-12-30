@@ -133,10 +133,10 @@ class FinishSubState extends MusicBeatSubstate
 			FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
 			FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
 		}
-		var animName = (if(boyfriend.animation.curAnim != null) boyfriend.animation.curAnim.name else "");
+		var bfAnims = [];
 		if(!isError){
 			if(win){
-				boyfriend.playAnimAvailable(['win','hey','singUP'],true);
+				bfAnims = ['win','hey','singUP'];
 				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('cheer',true); else {dad.playAnimAvailable(['lose','singDOWNmiss'],true);}
 				PlayState.gf.playAnim('cheer',true);
 			}else{
@@ -145,7 +145,7 @@ class FinishSubState extends MusicBeatSubstate
 
 				// dad.playAnim("hey",true);
 				// dad.playAnim("win",true);
-				boyfriend.playAnimAvailable(['lose'],true);
+				bfAnims = ['lose'];
 				dad.playAnimAvailable(['win','hey'],true);
 				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('sad',true); else dad.playAnim("hey",true);
 				PlayState.gf.playAnim('sad',true);
@@ -164,7 +164,7 @@ class FinishSubState extends MusicBeatSubstate
 			// FlxG.camera.zoom = 1;
 			// PlayState.instance.camHUD.zoom = 1;
 
-			if(boyfriend.animation.curAnim.name == animName && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+			if(boyfriend.playAnimAvailable(bfAnims,true) && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 			// if (FlxG.save.data.camMovement){
 			PlayState.instance.followChar(0);
 			// }
@@ -293,7 +293,6 @@ class FinishSubState extends MusicBeatSubstate
 				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				comboText.color = FlxColor.WHITE;
 				comboText.scrollFactor.set();
-// Std.int(FlxG.width * 0.45)
 				var settingsText:FlxText = new FlxText(comboText.width * 1.10 + FlxG.save.data.guiGap,-30,0,
 				(if(PlayState.isStoryMode) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
 				
@@ -415,6 +414,7 @@ class FinishSubState extends MusicBeatSubstate
 			Main.game.forceStateSwitch(new MainMenuState());
 
 		}else{
+			FlxTween.tween(FlxG.camera.scroll,{y:-100},0.2);
 			switch (PlayState.stateType)
 			{
 				case 2:FlxG.switchState(new onlinemod.OfflineMenuState());

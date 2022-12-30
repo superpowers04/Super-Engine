@@ -62,10 +62,10 @@ class EmptyCharacter extends Character
 	{
 		return;
 	}
-	override public function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Void
+	override public function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool
 	{
 		animation.play("idle",true,false,0);
-		return;
+		return false;
 	}
 	override public function cloneAnimation(name:String,anim:FlxAnimation):Void{
 		return;

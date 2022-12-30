@@ -959,12 +959,13 @@ class CharAnimController extends FlxAnimationController{
 				{
 					if(useDanced){
 						playAnim('dance${if(danced)'Right' else 'Left'}',Forced/*,beatProg*/);
+
 					}else{
 						playAnim('dance${if(beatDouble)'Right' else 'Left'}',Forced);
 					}
 				}
-			}else if (!beatDouble){
-				playAnim('idle',Forced/*,frame*/);
+			}else{
+				playAnim('idle'/*,frame*/);
 			}
 		}
 	}
@@ -1028,7 +1029,7 @@ class CharAnimController extends FlxAnimationController{
 		super.draw();
 	} 
 	public var currentAnimationPriority:Int = -100;
-	public dynamic function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0)
+	public dynamic function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool
 	{
 		var lastAnim = "";
 		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
@@ -1038,7 +1039,7 @@ class CharAnimController extends FlxAnimationController{
 		callInterp("playAnim",[AnimName]);
 		if (skipNextAnim){
 			skipNextAnim = false;
-			return;
+			return false;
 		}
 		if(nextAnimation != ""){
 			AnimName = nextAnimation;
@@ -1047,23 +1048,23 @@ class CharAnimController extends FlxAnimationController{
 		if (animation.curAnim != null){
 			lastAnim = animation.curAnim.name;
 			if(animation.curAnim.name != AnimName && !isDonePlayingAnim()){
-				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return;} // Skip if current animation has a higher priority
-				if (animationPriorities[animation.curAnim.name] == null && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return;} // Don't do anything if the current animation is oneShot
+				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return false;} // Skip if current animation has a higher priority
+				if (animationPriorities[animation.curAnim.name] == null && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return false;} // Don't do anything if the current animation is oneShot
 			}
 		}
 		// setSprite(animGraphics[AnimName.toLowerCase()]);
 
-		if (animation.getByName(AnimName) == null) return;
+		if (animation.getByName(AnimName) == null) return false;
 		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){
 			if(animation.curAnim != null && animation.curAnim.curFrame < loopAnimFrames[AnimName]){
-				return; // Don't loop to frame position unless we've actually gotten past that frame
+				return false; // Don't loop to frame position unless we've actually gotten past that frame
 			}
 			Frame = loopAnimFrames[AnimName];
 		}
 		if (animationPriorities[AnimName] != null) currentAnimationPriority = animationPriorities[AnimName];
 		animHasFinished = false;
 		if(Frame > 0 && Frame < 1 && Frame % 1 == Frame){
-			Frame = animation.getByName(AnimName).frames.length / Frame;
+			Frame = animation.getByName(AnimName).frames.length * Frame;
 		}
 		callInterp("playAnimBefore",[AnimName]);
 		animation.play(AnimName, Force, Reversed, Std.int(Frame));
@@ -1085,14 +1086,16 @@ class CharAnimController extends FlxAnimationController{
 		}
 		skipNextAnim = false;
 		callInterp("playAnimAfter",[AnimName,animation.curAnim]);
+		return true;
 	}
-	public function playAnimAvailable(animList:Array<String>,forced:Bool = false,reversed:Bool = false,frame:Int = 0){
+	public function playAnimAvailable(animList:Array<String>,forced:Bool = false,reversed:Bool = false,frame:Int = 0):Bool{
 		for (i in animList) {
 			if(animation.getByName(i) != null){
-				playAnim(i,forced,reversed,frame);
-				return;
+				if(playAnim(i,forced,reversed,frame)) return true;
+				
 			}
 		}
+		return false;
 	}
 	public function cloneAnimation(name:String,anim:FlxAnimation){
 		try{
