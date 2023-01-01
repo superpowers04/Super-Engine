@@ -272,7 +272,14 @@ class FlxGameEnhanced extends FlxGame{
 					return;
 				}
 			#end
-			if(blockUpdate) _update(); else super.update();
+			if(blockUpdate) _update(); else {
+				super.update();
+
+				if (FlxG.keys.justPressed.F11)
+				{
+					FlxG.save.data.fullscreen = (FlxG.fullscreen = !FlxG.fullscreen);
+				}
+			}
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.Update");
 		}

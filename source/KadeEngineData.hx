@@ -182,6 +182,8 @@ class KadeEngineData
 
 		if(FlxG.save.data.discordDRP == null) FlxG.save.data.discordDRP = true;
 		if(FlxG.save.data.doCoolLoading == null) FlxG.save.data.doCoolLoading = false;
+		if(FlxG.save.data.fullscreen == null) FlxG.save.data.fullscreen = false;
+
 		// if(FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
 
 		// if(FlxG.save.data.playStateObjectLocations == null) FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();

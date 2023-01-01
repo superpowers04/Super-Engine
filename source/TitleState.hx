@@ -724,10 +724,6 @@ class TitleState extends MusicBeatState
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
-		if (FlxG.keys.justPressed.F11)
-		{
-			FlxG.fullscreen = !FlxG.fullscreen;
-		}
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || skipBoth;
 
@@ -1101,6 +1097,10 @@ class TitleState extends MusicBeatState
 		destHaxe();
 		FlxG.sound.music.play();
 		FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
+		if(!isShift){
+			FlxG.fullscreen = FlxG.save.data.fullscreen;
+
+		}
 		if(isShift || FlxG.keys.pressed.ENTER || (Sys.args()[0] != null && FileSystem.exists(Sys.args()[0]))){
 			skipBoth = true;
 		}

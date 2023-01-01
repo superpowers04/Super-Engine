@@ -1461,6 +1461,27 @@ class SongInfoOption extends Option
 		return 'Song Info: ${ies[FlxG.save.data.songInfo]}';
 	}
 }
+class FullscreenOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.fullscreen = (FlxG.fullscreen = !FlxG.fullscreen);
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Fullscreen " + (!FlxG.save.data.fullscreen ? "off" : "on");
+	}
+
+}
 
 class MissSoundsOption extends Option
 {
