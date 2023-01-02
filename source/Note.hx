@@ -338,19 +338,17 @@ class Note extends FlxSkewedSprite
 					}
 					case "changecharacter" | "change character" | "changechar" | "change char": {
 						try{
-							info = [switch(Std.string(rawNote[4]).toLowerCase()){
-									case "dad","opponent","1":1;
-									case "gf","girlfriend","2":2;
-									default:0;
-								},rawNote[4]];
+							info = [Std.string(rawNote[3]),rawNote[4]];
 							var _char = PlayState.getCharFromID(info[0]);
 							if(_char == null || _char.curCharacter == "lonely" || _char.lonely){ // If this character isn't enabled, no reason to allow switching for it
 								killNote = true;
 							}else{
-								var id = info[0];
+								var id = PlayState.getCharID(info[0]);
+								info[0]=id;
 								var name = info[1];
 								if(PlayState.instance.cachedChars[id][name] == null){ // Absolutely no reason to cache the character again if it's already cached
-									trace('Caching $name for changeChar note');
+									trace('Caching ${rawNote[3]}/${id}:${name} for changeChar note');
+
 									var psChar = PlayState.getCharFromID(id);
 									var cachingChar:Character = {x:psChar.x, y:psChar.y,character:name,isPlayer:psChar.isPlayer,charType:psChar.charType};
 									PlayState.instance.cachedChars[id][name] = cachingChar;

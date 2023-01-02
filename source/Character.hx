@@ -540,7 +540,7 @@ class CharAnimController extends FlxAnimationController{
 		curCharacter = charInfo.folderName;
 		charLoc = charInfo.path;
 		namespace = charInfo.nameSpace;
-		trace(charInfo);
+		if(FlxG.save.data.doCoolLoading) LoadingScreen.loadingText = 'Loading Character "${getNamespacedName()}"';
 
 		if (!amPreview && FileSystem.exists('${charLoc}/$curCharacter/script.hscript')){
 			parseHScript(SELoader.loadText('${charLoc}/$curCharacter/script.hscript'));
@@ -805,6 +805,7 @@ class CharAnimController extends FlxAnimationController{
 		try{
 		#end
 		super(x, y);
+		if(lonely || character == "lonely") return;
 		if(charInfo != null){
 			this.charInfo = charInfo;
 			character = charInfo.folderName;

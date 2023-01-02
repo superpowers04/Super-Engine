@@ -103,6 +103,7 @@ class LoadingScreen extends Sprite{
 		tf.align = "center";
 
 		textField.defaultTextFormat = tf;
+		// addChild(Main.fpsCounter);
 
 		// new FlxTimer().start(0.1,function(_){
 		// 	FlxG.cameras.remove(cam);
@@ -174,7 +175,7 @@ class LoadingScreen extends Sprite{
 		object.elapsed = 0;
 		object.scaleX = lime.app.Application.current.window.width / 1280;
 		object.scaleY = lime.app.Application.current.window.height / 720;
-		FlxG.stage.addChild(object);
+		Main.funniSprite.addChildAt(object,1);
 		loadingText = "";
 		object.updateText();
 		if(!FlxG.save.data.doCoolLoading)object.alpha = 1;
@@ -188,6 +189,8 @@ class LoadingScreen extends Sprite{
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 0;
+		try{
+			Main.funniSprite.removeChild(object);}catch(e){}
 	}
 	public static function hide(){
 		Main.game.blockUpdate = Main.game.blockDraw = false;
@@ -200,7 +203,7 @@ class LoadingScreen extends Sprite{
 		object.alpha = 1;
 		if(!FlxG.save.data.doCoolLoading)
 			try{
-				tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){FlxG.stage.removeChild(object);}});
+				tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){Main.funniSprite.removeChild(object);}});
 			}catch(e){
 				object.alpha = 0;
 			}

@@ -524,6 +524,9 @@ class PlayState extends MusicBeatState
 	public static function getCharFromID(charID:Dynamic):Character{
 		return switch('$charID'){case "1" | "dad" | "opponent" | "p2": dad; case "2" | "gf" | "girlfriend" | "p3": gf; default: boyfriend;};
 	}
+	public static function getCharID(charID:Dynamic):Int{
+		return switch('$charID'){case "1" | "dad" | "opponent" | "p2": 1; case "2" | "gf" | "girlfriend" | "p3": 2; default: 0;};
+	}
 	static public function charAnim(charId:Dynamic = 0,animation:String = "",?forced:Bool = false){
 		try{
 			getCharFromID(charId).playAnim(animation,forced);

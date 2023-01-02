@@ -105,7 +105,7 @@ class Main extends Sprite
 		funniSprite.addChild(game);
 		LoadingScreen.show();
 		fpsCounter = new Overlay(0, 0);
-		game.addChild(fpsCounter);
+		funniSprite.addChild(fpsCounter);
 		console = new Console();
 		#if !mobile
 		addChild(console);
@@ -189,7 +189,7 @@ class FlxGameEnhanced extends FlxGame{
 		try{
 			if(requestAdd){
 				requestAdd = false;
-				Main.funniSprite.addChild(this);
+				Main.funniSprite.addChildAt(this,0);
 				blockUpdate = blockEnterFrame = blockDraw = false;
 				FlxG.autoPause = _oldAutoPause;
 				_oldAutoPause = false;

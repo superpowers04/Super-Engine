@@ -236,7 +236,7 @@ class TitleState extends MusicBeatState
 	}
 	public static function checkCharacters(){
 
-		LoadingScreen.loadingText = 'Updating character lis';
+		LoadingScreen.loadingText = 'Updating character list';
 		characters = [
 			{id:"bf",folderName:"bf",path:"assets/",internal:true,internalAtlas:"characters/BOYFRIEND",internalJSON:Character.BFJSON,description:"Base Character; Boyfriend, the funny rap guy"},
 			{id:"gf",folderName:"gf",path:"assets/",internal:true,internalAtlas:"characters/GF_assets",internalJSON:Character.GFJSON,description:"Base Character; Girlfriend, the funny boombox girl"}
