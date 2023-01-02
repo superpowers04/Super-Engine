@@ -215,6 +215,7 @@ class PlayState extends MusicBeatState
 		public static var stageObjects:Array<Dynamic<FlxObject>> = [];
 		public var interps:Map<String,Interp> = new Map();
 		public static var customDiff = "";
+		public var cachedChars:Array<Map<String,Character>> = [[],[],[]];
 
 	/* Objects */
 
@@ -516,6 +517,9 @@ class PlayState extends MusicBeatState
 	}
 	static public function charSet(charId:Dynamic,field:String,value:Dynamic){
 		Reflect.setField(getCharFromID(charId),field,value);
+	}
+	public static function getCharVariName(charID:Dynamic):String{
+		return switch('$charID'){case "1" | "dad" | "opponent" | "p2": "dad"; case "2" | "gf" | "girlfriend" | "p3": "gf"; default: "boyfriend";};
 	}
 	public static function getCharFromID(charID:Dynamic):Character{
 		return switch('$charID'){case "1" | "dad" | "opponent" | "p2": dad; case "2" | "gf" | "girlfriend" | "p3": gf; default: boyfriend;};
@@ -920,6 +924,9 @@ class PlayState extends MusicBeatState
 		var camPos:FlxPoint = new FlxPoint(gf.getGraphicMidpoint().x, gf.getGraphicMidpoint().y);
 
 		camPos.set(camPos.x + gf.camX, camPos.y + gf.camY);
+		cachedChars[0][bf.curCharacter] = bf;
+		cachedChars[1][dad.curCharacter] = dad;
+		cachedChars[2][gf.curCharacter] = gf;
 		
 		LoadingScreen.loadingText = "Adding characters";
 

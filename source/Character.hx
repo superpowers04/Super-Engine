@@ -184,7 +184,7 @@ class CharAnimController extends FlxAnimationController{
 
 	/* Misc */
 		var danced:Bool = false;
-		var lonely:Bool = false;
+		public var lonely:Bool = false;
 		public var tex:FlxAtlasFrames = null;
 		public var holdTimer:Float = 0;
 		public var stunned:Bool = false;

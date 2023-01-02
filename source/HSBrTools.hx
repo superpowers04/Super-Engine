@@ -130,6 +130,9 @@ class HSBrTools {
 		spriteArray = new Map<String,FlxGraphic>();
 	}
 
+	public function exists(textPath:String):Bool{
+		return FileSystem.exists('${path}${textPath}');
+	}
 	public function loadText(textPath:String):String{
 		if(textArray[textPath] == null) textArray[textPath] = File.getContent('${path}${textPath}');
 		return textArray[textPath];
