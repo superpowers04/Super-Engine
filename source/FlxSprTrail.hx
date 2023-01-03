@@ -5,6 +5,10 @@ import flixel.*;
 import flixel.util.FlxColor;
 import flixel.graphics.frames.FlxFrame;
 
+
+// Reimplementation of FlxTrail for FlxSprites that doesn't do fucky things with it's parent
+// Meant for Super Engine, pls leave credit in or else i murder you :>
+
 @:structInit class TrailData {
 	public var frame:FlxFrame;
 	public var x:Float = 0;
@@ -21,7 +25,6 @@ import flixel.graphics.frames.FlxFrame;
 }
 
 
-// haha funni FlxTrail but lesss shit
 
 
 class FlxSprTrail extends FlxSpriteGroup {

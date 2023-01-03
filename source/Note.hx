@@ -182,6 +182,7 @@ class Note extends FlxSkewedSprite
 		}
 	}
 	public function loadFrames(){
+		if(eventNote && !inCharter) return;
 		if (frames == null){
 			try{
 				if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
@@ -336,7 +337,7 @@ class Note extends FlxSkewedSprite
 						hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
 						trace('BPM note processed');
 					}
-					case "changecharacter" | "change character" | "changechar" | "change char": {
+					case /*"changecharacter" | "change character" | "changechar" | "change char"*/null: {
 						try{
 							info = [Std.string(rawNote[3]),rawNote[4]];
 							var _char = PlayState.getCharFromID(info[0]);
@@ -532,7 +533,6 @@ class Note extends FlxSkewedSprite
 		}
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
-	var missedNote:Bool = false;
 	override function draw(){
 		if(!(eventNote && !inCharter) && showNote){
 			super.draw();

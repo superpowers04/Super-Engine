@@ -155,6 +155,7 @@ class PlayState extends MusicBeatState
 		var inCutscene:Bool = false;
 		public var canPause:Bool = true;
 		public var camZooming:Bool = false;
+		public var timeSinceOnscreenNote:Float = 0;
 
 	/* Notes & Strumline */
 		public static var noteBools:Array<Bool> = [false, false, false, false];
@@ -2413,8 +2414,10 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (!inCutscene)
+		if (!inCutscene){
+			if(timeSinceOnscreenNote > 0) timeSinceOnscreenNote -= elapsed;
 			keyShit();
+		}
 	#if !debug
 	}catch(e){
 		MainMenuState.handleError(e,'Caught "update" crash: ${e.message}\n ${e.stack}');
@@ -3144,6 +3147,7 @@ class PlayState extends MusicBeatState
 	var pressArray:Array<Bool> = [];
 	var lastPressArray:Array<Bool> = [];
 	var releaseArray:Array<Bool> = [];
+
  	private function kadeBRKeyShit():Void
 			{
 				// control arrays, order L D R U
@@ -3252,6 +3256,7 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote);
 						daNote.destroy();
 					}
+					if(onScreenNote)timeSinceOnscreenNote = 1;
 
 					for (i in 0...possibleNotes.length) {
 						hitArray[possibleNotes[i].noteData] = true;
@@ -3260,7 +3265,7 @@ class PlayState extends MusicBeatState
 					for (i in 0 ... pressArray.length) {
 						if(pressArray[i] && !directionList[i]){
 							ghostTaps += 1;
-							if(!FlxG.save.data.ghost && onScreenNote){
+							if(!FlxG.save.data.ghost && timeSinceOnscreenNote > 0){
 								noteMiss(i, null);
 							}
 						}
