@@ -3256,7 +3256,7 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote);
 						daNote.destroy();
 					}
-					if(onScreenNote)timeSinceOnscreenNote = 1;
+					if(onScreenNote)timeSinceOnscreenNote = 0.5;
 
 					for (i in 0...possibleNotes.length) {
 						hitArray[possibleNotes[i].noteData] = true;
