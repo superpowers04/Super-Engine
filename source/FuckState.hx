@@ -87,7 +87,7 @@ class FuckState extends FlxUIState
 				+'\n Current Working Directory: ${Sys.getCwd()}'
 				+'\n Executable path: ${Sys.programPath()}'
 				+'\n Arguments: ${Sys.args()}'
-				+'\n Environment: ${Sys.environment()}'
+				// +'\n Environment: ${Sys.environment()}'
 				+"\n # ---------- GAME INFORMATION ----------"
 				+'\n Version: ${MainMenuState.ver}'
 				+'\n Buildtype: ${MainMenuState.compileType}'
