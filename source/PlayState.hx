@@ -2371,11 +2371,11 @@ class PlayState extends MusicBeatState
 		callInterp("updateAfter",[elapsed]);
 		if(!dadShow&& SONG.needsVoices){
 			notes.forEachAlive(function(daNote:Note){
-						if (daNote.skipNote || daNote.mustPress || !daNote.wasGoodHit) return;
-							daNote.active = false;
-							vocals.volume = 0;
-							daNote.kill();
-							notes.remove(daNote, true);
+				if (daNote.skipNote || daNote.mustPress || !daNote.wasGoodHit) return;
+				daNote.active = false;
+				vocals.volume = 0;
+				daNote.kill();
+				notes.remove(daNote, true);
 		
 						// if (daNote.mustPress && daNote.tooLate)
 						// {
@@ -3207,8 +3207,7 @@ class PlayState extends MusicBeatState
 				{
 					boyfriend.holdTimer = 0;
 		 
-					var possibleNotes:Array<Note> = []; // notes that can be hit
-					var directionList:Array<Bool> = [false,false,false,false]; // directions that can be hit
+					var possibleNotes:Array<Note> = [null,null,null,null]; // notes that can be hit
 					var dumbNotes:Array<Note> = []; // notes to kill later
 		 			var onScreenNote:Bool = false;
 		 			var i = notes.members.length;
@@ -3220,59 +3219,36 @@ class PlayState extends MusicBeatState
 						if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) continue;
 
 						if (!onScreenNote) onScreenNote = true;
-						if (daNote.canBeHit && !daNote.tooLate && !daNote.wasGoodHit && pressArray[daNote.noteData])
+						if (!pressArray[daNote.noteData] || !daNote.canBeHit || daNote.tooLate || daNote.wasGoodHit) continue;
+						var coolNote = possibleNotes[daNote.noteData];
+						if (coolNote != null)
 						{
-							if (directionList[daNote.noteData])
-							{
-								for (coolNote in possibleNotes)
-								{
-									if (coolNote.noteData == daNote.noteData){
-
-										if (Math.abs(daNote.strumTime - coolNote.strumTime) < 7)
-										{ // if it's the same note twice at < 5ms distance, just delete it
-											// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
-											dumbNotes.push(daNote);
-											break;
-										}
-										if (daNote.strumTime < coolNote.strumTime)
-										{ // if daNote is earlier than existing note (coolNote), replace
-											// This shouldn't happen due to all of the notes being arranged by strumtime, if it does, run
-											possibleNotes.remove(coolNote);
-											possibleNotes.push(daNote);
-											break;
-										}
-									}
-								}
-							}
-							else
-							{
-								possibleNotes.push(daNote);
-								directionList[daNote.noteData] = true;
-							}
+							if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7)){dumbNotes.push(daNote);continue;}
+							if((daNote.strumTime > coolNote.strumTime)) continue;
 						}
-						
+						possibleNotes[daNote.noteData] = daNote;
 					};
 					while((daNote = dumbNotes.pop()) != null) {
 						notes.remove(daNote);
 						daNote.destroy();
 					}
-					if(onScreenNote)timeSinceOnscreenNote = 0.5;
-
-					for (i in 0...possibleNotes.length) {
-						hitArray[possibleNotes[i].noteData] = true;
-						goodNoteHit(possibleNotes[i]);
-					}
-					for (i in 0 ... pressArray.length) {
-						if(pressArray[i] && !directionList[i]){
+					if(onScreenNote) timeSinceOnscreenNote = 0.5;
+		 			var i = pressArray.length;
+		 			var daNote:Note;
+					while(i > 0) {
+						i--;
+						daNote = possibleNotes[i];
+						if(daNote == null && pressArray[i]){
 							ghostTaps += 1;
 							if(!FlxG.save.data.ghost && timeSinceOnscreenNote > 0){
 								noteMiss(i, null);
 							}
+							continue;
 						}
+						if(daNote == null) continue;
+						hitArray[daNote.noteData] = true;
+						goodNoteHit(daNote);
 					}
-
-		 			// }
-
 				}
 		 		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);
 		 		charCall("keyShitAfter",[pressArray,holdArray,hitArray]);

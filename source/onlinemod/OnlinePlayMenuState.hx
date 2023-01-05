@@ -135,6 +135,14 @@ class OnlinePlayMenuState extends MusicBeatState
 		connectButton.resize(300, FlxG.height * 0.1);
 		connectButton.screenCenter(FlxAxes.X);
 		add(connectButton);
+		var connectButton = new FlxUIButton(0, FlxG.height * 0.85, "Main Menu", () -> {
+			FlxG.switchState(new MainMenuState());
+		});
+		connectButton.setLabelFormat(32, FlxColor.BLACK, CENTER);
+		connectButton.resize(300, FlxG.height * 0.1);
+		connectButton.x = FlxG.width - connectButton.width + 10;
+		connectButton.y = connectButton.height + 10;
+		add(connectButton);
 
 
 		// var helpButton = new FlxUIButton(FlxG.width - 170, FlxG.height * 0.925 - 20, "Help", () -> {

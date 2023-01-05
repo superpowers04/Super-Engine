@@ -1347,52 +1347,60 @@ class CharAnimController extends FlxAnimationController{
 				
 			], 
 
-			"animations_offsets":
-			[			
+			"animations_offsets": [
 				{
-					"anim": "idle",
-					"player1": [0, 0],
-					"player2": [0, 0]
-				},
-				{
-					"anim": "singUP",
-					"player1": [-45, 25],
-					"player2": [5, 30]
-				},
-				{
-					"anim": "singRIGHT",
-					"player1": [-40, -7],
-					"player2": [-35, -5.5]
-				},
-				{
-					"anim": "singLEFT",
-					"player1": [8, -6],
-					"player2": [40, -5]
-				},
-				{
-					"anim": "singDOWN",
 					"player1": [-20, -50],
-					"player2": [-20, -50]
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "singDOWN"
 				},
 				{
-					"anim": "singUPmiss",
-					"player1": [-41, 25],
-					"player2": [1, 30]
-				},
-				{
-					"anim": "singRIGHTmiss",
 					"player1": [-34, 21],
-					"player2": [-35.8, 20.5]
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "singRIGHTmiss"
 				},
 				{
-					"anim": "singLEFTmiss",
+					"player1": [-42, 30],
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "singUP"
+				},
+				{
 					"player1": [8, 20],
-					"player2": [40, 23]
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "singLEFTmiss"
 				},
 				{
-					"anim": "singDOWNmiss",
+					"player1": [0, 0],
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "idle"
+				},
+				{
 					"player1": [-20, -20],
-					"player2": [-20, -20]
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "singDOWNmiss"
+				},
+				{
+					"player1": [-40, -7],
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "singRIGHT"
+				},
+				{
+					"player1": [-41, 25],
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "singUPmiss"
+				},
+				{
+					"player1": [8, -6],
+					"player2": [0, 0],
+					"player3": [0, 0],
+					"anim": "singLEFT"
 				}
 			],
 
