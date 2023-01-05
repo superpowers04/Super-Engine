@@ -25,6 +25,7 @@ class QuickNameSubState extends MusicBeatSubstate{
 	var defaultText:String;
 	var cam:FlxCamera;
 	var oldCam:FlxCamera;
+	var oldMVis:Bool = false;
 	override public function new(funk:Dynamic,args:Array<Dynamic>,?text:String = "Placeholder text goddammit",?defaultText:String = "mooooooooooooo.png",?cancelable:Bool = true,check:String -> String){
 		funky = funk;
 		this.args = args;
@@ -37,6 +38,8 @@ class QuickNameSubState extends MusicBeatSubstate{
 		// FlxG.state.persistentDraw = false;
 		// oldCam = FlxG.camera;
 		CoolUtil.toggleVolKeys(false);
+		oldMVis = FlxG.mouse.visible;
+		FlxG.mouse.visible = true;
 		
 		super();
 
@@ -89,6 +92,7 @@ class QuickNameSubState extends MusicBeatSubstate{
 	override function update(e){
 		super.update(e);
 		if(FlxG.keys.justPressed.ESCAPE){
+			FlxG.mouse.visible = oldMVis;
 			close();
 		}
 	}

@@ -9,7 +9,7 @@ using StringTools;
 
 
 
-// A rewrite of how FNF songs are read, intended to prevent changing bpm and such to break the current song's location
+// A rewrite of how FNF songs are read, intended to prevent changing bpm and such to break the current song's time
 // While you can convert into this format, converting out will be a bit finnicky
 
 class SESONG{

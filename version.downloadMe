@@ -1,5 +1,6 @@
 1.0.0-U31;
-- Port several Psych Engine note types(Change character, add camzoom, set camzoom, hey, camflash and screenshake). Their values should be the same as Psych engine to keep compatibility
+- Port several Psych Engine note types(add camzoom, set camzoom, hey, camflash and screenshake). Their values should be the same as Psych engine to keep compatibility
+- Input optimisations
 - Fix some bugs regarding scrolling
 - Finally fix FinishSubState not waiting for win/lose animation to play
 - Partially(?) fix the issue with characters not playing idle animations properly

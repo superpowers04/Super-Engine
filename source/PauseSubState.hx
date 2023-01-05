@@ -419,7 +419,7 @@ class PauseSubState extends MusicBeatSubstate
 						i.active = true;
 					}
 					if(_tween != null)_tween.cancel();
-					Conductor.songPosition = FlxG.sound.music.time = time;
+					FlxG.sound.music.time = Conductor.songPosition;
 					FlxG.sound.music.volume = volume;
 					FlxTween.tween(FlxG.sound.music,{volume:volume},0.01);
 					FlxG.sound.music.onComplete = finishCallback;

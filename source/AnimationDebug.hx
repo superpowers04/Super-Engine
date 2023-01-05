@@ -1275,6 +1275,7 @@ class AnimationDebug extends MusicBeatState
 				}
 				if(FlxG.keys.justPressed.ONE){resetOffsets(); updateCameraPos(false,720, 500);}// Unload character offsets
 				if(FlxG.keys.justPressed.THREE || ctrlPress && shiftPress && FlxG.keys.justPressed.S){outputChar();} // Saving
+				if(FlxG.keys.pressed.V){dad.dance();}
 				// if(FlxG.keys.justPressed.M){editMode = 1; toggleOffsetText(false);} // Switch modes
 				// if(FlxG.keys.justPressed.TWO){outputCharOffsets();}
 				// if(FlxG.keys.justPressed.FOUR){

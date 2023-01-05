@@ -1709,7 +1709,7 @@ class ChartingState extends MusicBeatState
 			+ '\n${if(playBeatClaps)"Play clap on beat; " else ""}${if(playClaps)"Play snap on note" else ""}'
 			+ "\n"
 			+ (doSnapShit ? "Snap enabled" : "Snap disabled")
-			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right : Change playback speed\nCTRL-Left/Right : Change Snap\nHold Shift : Disable Snap\nEnter/Escape : Preview chart\n F1 : hide/show this' : "");
+			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right : Change playback speed\nCTRL-Left/Right : Change Snap\nHold Shift : Disable SnapShift+Escape : Exit to main menu\n Enter/Escape : Preview chart\n F1 : hide/show this' : "");
 		super.update(elapsed);
 		if(requestMusicPlay){
 			vocals.play();
