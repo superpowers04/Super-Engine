@@ -21,7 +21,7 @@ class FuckState extends FlxUIState
 	// public static var currChanges:String = "Check for Updates needs to be enabled in Options > Misc!";
 	public var err:String = "";
 	public var info:String = "";
-	public var currentStateName:String = "";
+	public static var currentStateName:String = "";
 	public static var jokes:Array<String> = [
 		"Hey look, mom! I'm on a crash report!",
 		"This wasn't supposed to go down like this...",
@@ -80,6 +80,9 @@ class FuckState extends FlxUIState
 			dateNow = StringTools.replace(dateNow, " ", "_");
 			dateNow = StringTools.replace(dateNow, ":", ".");
 			try{
+				currentStateName = haxe.rtti.Rtti.getRtti(cast FlxG.state).path;
+			}catch(e){}
+			try{
 				err += "\n\n# ---------- SYSTEM INFORMATION ----------";
 				err += ''
 				+'\n Operating System: ${Sys.systemName()}'
@@ -95,7 +98,7 @@ class FuckState extends FlxUIState
 				+'\n Registered character count: ${TitleState.characters.length}'
 				// +'\n Registered stage count: ${TitleState.stages.length}'
 				+'\n Scripts: ${FlxG.save.data.scripts}'
-				+'\n State: ${TitleState.characters.length}'
+				+'\n State: ${currentStateName}'
 				+'\n Save: ${FlxG.save.data}'
 				+'\n# -------------------';
 			}catch(e){}

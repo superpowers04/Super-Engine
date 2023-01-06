@@ -589,6 +589,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							voices = new FlxSound();
 							voices.loadEmbedded(Sound.fromFile('${songs[curSelected]}/Voices.ogg'),true);
 							voices.volume = FlxG.save.data.voicesVol;
+							voices.looped = true;
 							voices.play(FlxG.sound.music.time);
 							FlxG.sound.list.add(voices);
 

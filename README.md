@@ -1,10 +1,21 @@
-# Super Engine (Unstable)[![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml)
-This is a mod of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/)<br>
+# Super Engine (Unstable) [![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml)
+An overhaul of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/) and [Kade Engine](https://github.com/KadeDev/Kade-Engine) to add a whole bunch of features.
+- No base game bloat
+- Easy to setup custom characters 
+- One single install for all of your mods
+- Error handling that rarely ever needs you to restart the game
+- A bunch of customization to make the engine tailored to how you want to play
+- Dragging charts into the game's window/mod folder to play them without much setup
+- Scripting capabilities that allow you to add mechanics, features, new input systems or out-right overhauls
+- Easy importing of existing mods so you can play charts with a (hopefully) better input system and user experience
+
+All without recompiling the game at all or editing source code. Infact, editing source code is discouraged unless you're going to directly contribute to the engine or make a fork of the engine.
+
 This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine) with a hint of [FPSPlus](https://github.com/ThatRozebudDude/FPS-Plus-Public/) added in and with some inspiration from [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine)/[FNF Multi](https://shadowmario.itch.io/funkinmulti) <br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
-This client aims to allow people to use normal Funkin Battle Royale servers with custom characters or play custom charts and such when offline<br>
+
  Click on a commit and go to the artifacts to download, you need a github account to download artifacts
-<br>[Discord server](https://discord.gg/28GPGTRuuR)
+<br>You can find downloads, custom content, get help and more at the [Super Engine Discord server](https://discord.gg/28GPGTRuuR)
 <br><br>For an **unofficial** version that supports more keys, [You can use cartoon032's fork](https://github.com/cartoon032/FunkinBattleRoyale-Mod)
 <br><br>Note that due to the setup on my end, I push commits all at once, so pull requests and other things might be out of date and need to be merged manually
 # Modding information
@@ -32,19 +43,19 @@ Friday Night Funkin' Modding Plus is a mod of Friday Night Funkin' that aims to 
 Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/14264) ⋅ [latest stable release](https://github.com/FunkinModdingPlus/ModdingPlus/releases/)
 
 
-
-
-# Credits for every mod included/used
+# Credits for everything
+<small>I think I got everyone, lemmie know if I missed anyone</small>
 ## Friday Night Funkin'
  - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programming
  - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
  - [Kawai Sprite](https://twitter.com/kawaisprite) - Music
 
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp.
+
 ## Super Engine
-- [Superpowers04](https://github.com/superpowers04) - Pretty much everything
+- [Superpowers04](https://github.com/superpowers04) - Pretty much everything specific to Super Engine/Lead Developer
 - [NayToon](https://github.com/cartoon032) - Some help and providing early Windows builds
-- [XieneDev](https://github.com/XieneDev/) - Responsible for the base mod
+- [XieneDev](https://github.com/XieneDev/) - Made Battle Royale. This engine actually wouldn't exist if it wasn't for this pog FNF mod
 ## Kade Engine (The base engine)
 - [KadeDeveloper](https://twitter.com/KadeDeveloper) - Maintainer and lead programmer
 - [The contributors](https://github.com/KadeDev/Kade-Engine/graphs/contributors)
@@ -62,11 +73,15 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 ## FPS Plus (Some improvements)
 - [Rozebud](https://twitter.com/helpme_thebigt) - *Everything*
 
+## Embedded Libraries
+- [TJSON](https://github.com/JWambaugh/TJSON) - The JSON decoder/encoder SE uses. It's fast and less error-prone than haxe.Json
+
+### Special Thanks
+- [JWambaugh](https://github.com/JWambaugh) - The epic tjson library that I copied and modified for Super Engine
+- [NoLime](https://gamebanana.com/members/1762727) - Giving permission to have [BF Girlfriend mode](https://gamebanana.com/mods/185105) as a built-in character
+
 ## Shoutouts
 - [GWebDev](https://twitter.com/GFlipaclip) - Haxeflixel Video
 - [Ethab Taxi](https://twitter.com/EthabTaxi) - He's just sorta chillin'.<br>
 - [V.S. Ex Tabi](https://gamebanana.com/mods/286388) - The arrow examples are from here
-- [Smoke 'Em Out Struggle](https://gamebanana.com/mods/166531) - Used Garcello's character for testing custom characters/custom animations
-### Special Thanks
-- [JWambaugh](https://github.com/JWambaugh) - The epic tjson library that I copied and modified for Super Engine
-- [NoLime](https://gamebanana.com/members/1762727) - Giving permission to have [BF Girlfriend mode](https://gamebanana.com/mods/185105) as a built-in character
+- [Shadow Mario](https://github.com/ShadowMario/) - A whole bunch of inspiration. Both from [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) and [FNF Multi 3.X](https://shadowmario.itch.io/funkinmulti)

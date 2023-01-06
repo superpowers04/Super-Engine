@@ -10,6 +10,7 @@ import flixel.graphics.frames.FlxFrame;
 // Meant for Super Engine, pls leave credit in or else i murder you :>
 
 @:structInit class TrailData {
+	public var antialiasing:Bool = false;
 	public var frame:FlxFrame;
 	public var x:Float = 0;
 	public var y:Float = 0;
@@ -17,11 +18,33 @@ import flixel.graphics.frames.FlxFrame;
 	public var scaleY:Float = 0;
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
+	public var originX:Float = 0;
+	public var originY:Float = 0;
 	public var flipX:Bool = false;
 	public var flipY:Bool = false;
 	public var color:FlxColor = 0xFFFFFF;
 	public var visible:Bool = true;
 	public var alpha:Float = 0;
+	public var angle:Int = 0;
+	public function applyTo(object:Dynamic,?changeFrame:Bool = true){
+		object.x = x;
+		object.y = y;
+		object.scale.x = scaleX;
+		object.scale.y = scaleY;
+		if(changeFrame){
+			object.offset.x = offsetX;
+			object.offset.y = offsetY;
+			object.frame = frame;
+			object.flipX = flipX;
+			object.flipY = flipY;
+		}
+		object.origin.x = originX;
+		object.origin.y = originY;
+		object.color = color;
+		object.angle = angle;
+		object.alpha = alpha;
+		object.antialiasing = antialiasing;
+	}
 }
 
 
@@ -101,6 +124,8 @@ class FlxSprTrail extends FlxSpriteGroup {
 			y:parent.y,
 			offsetY:parent.offset.y,
 			offsetX:parent.offset.x,
+			originY:parent.origin.y,
+			originX:parent.origin.x,
 			scaleY:parent.scale.y,
 			scaleX:parent.scale.x,
 			flipX:parent.flipX,
@@ -108,6 +133,8 @@ class FlxSprTrail extends FlxSpriteGroup {
 			color:color,
 			alpha:parent.alpha,
 			visible:parent.visible,
+			angle:parent.angle,
+			antialiasing:parent.antialiasing,
 		}
 	}
 	public override function draw(){
@@ -137,24 +164,12 @@ class FlxSprTrail extends FlxSpriteGroup {
 		while (i > 0){
 			buffer[i] = buffer[i - 1];
 			if(sprites[i] != null){
-				sprites[i].antialiasing = parent.antialiasing;
-				sprites[i].scale.y = buffer[i].scaleY;
-				sprites[i].scale.x = buffer[i].scaleX;
-				sprites[i].x = buffer[i].x + (offsetX * i);
-				sprites[i].y = buffer[i].y + (offsetY * i);
-				if(changeFrame){
-					sprites[i].frame = buffer[i].frame;
-					sprites[i].offset.y = buffer[i].offsetY;
-					sprites[i].offset.x = buffer[i].offsetX;
-					sprites[i].flipX = buffer[i].flipX;
-					sprites[i].flipY = buffer[i].flipY;
-				}
-				sprites[i].visible = buffer[i].visible;
-				sprites[i].alpha = buffer[i].alpha;
+				buffer[i].applyTo(sprites[i],changeFrame);
+				sprites[i].x += (offsetX * i);
+				sprites[i].y += (offsetY * i);
 				if(fallOff > 0){
 					sprites[i].alpha *=	1 - (fallOff * (i / end));
 				}
-				sprites[i].color = buffer[i].color;
 			}
 			i--;
 		}
