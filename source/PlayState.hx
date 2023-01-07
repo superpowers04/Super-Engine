@@ -67,6 +67,7 @@ import hscript.InterpEx;
 
 import CharacterJson;
 import StageJson;
+import TitleState;
 
 
 
@@ -254,6 +255,7 @@ class PlayState extends MusicBeatState
 		/* Stage Shite */
 
 			public static var stage:String = "nothing";
+			public static var stageInfo:StageInfo = null;
 			/* Varis, too lazy to move somewhere else*/
 			// Will fire once to prevent debug spam messages and broken animations
 			private var triggeredAlready:Bool = false;
@@ -685,7 +687,7 @@ class PlayState extends MusicBeatState
 		persistentDraw = true;
 
 		if (SONG == null)
-			SONG = Song.loadFromJson('tutorial');
+			SONG = Song.parseJSONshit(SELoader.loadText('assets/data/tutorial/tutorial-hard.json'));
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -697,7 +699,8 @@ class PlayState extends MusicBeatState
 		var bfPos:Array<Float> = [0,0]; 
 		var gfPos:Array<Float> = [0,0]; 
 		var dadPos:Array<Float> = [0,0]; 
-		stage = (if(PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || FlxG.save.data.selStage == "default") TitleState.retStage(stage); else FlxG.save.data.selStage);
+		stageInfo = (if(PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || FlxG.save.data.selStage == "default") TitleState.findStageByNamespace(SONG.stage,onlinemod.OfflinePlayState.nameSpace) else TitleState.findStageByNamespace(FlxG.save.data.selStage,onlinemod.OfflinePlayState.nameSpace));
+		stage = stageInfo.folderName;
 		if (FlxG.save.data.preformance){
 			defaultCamZoom = 0.9;
 			curStage = 'stage';
@@ -746,7 +749,7 @@ class PlayState extends MusicBeatState
 							stageTags = ["empty"];
 							defaultCamZoom = 0.9;
 							curStage = 'nothing';
-						}else if(stage == "" || !FileSystem.exists('mods/stages/$stage')){
+						}else if(stage == "" || !FileSystem.exists('${stageInfo.path}/${stageInfo.folderName}')){
 							trace('"${stage}" not found, using "Stage"!');
 							stageTags = ["inside"];
 							defaultCamZoom = 0.9;
@@ -776,7 +779,7 @@ class PlayState extends MusicBeatState
 						}else{
 							curStage = stage;
 							stageTags = [];
-							var stagePath:String = 'mods/stages/$stage';
+							var stagePath:String = '${stageInfo.path}/${stageInfo.folderName}';
 							if (FileSystem.exists('$stagePath/config.json')){
 								// var stagePropJson:String = File.getContent('$stagePath/config.json');
 								// var stageProperties:StageJSON = haxe.Json.parse(CoolUtil.cleanJSON(stagePropJson));
@@ -995,6 +998,7 @@ class PlayState extends MusicBeatState
 			// doof.y = FlxG.height * 0.5;
 			doof.scrollFactor.set();
 			doof.finishThing = startCountdownFirst;
+			doof.cameras = [camTOP];
 		}
 
 		Conductor.songPosition = -5000;
@@ -1189,7 +1193,7 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		scoreTxt.alpha = 0;
-		if(doof != null) doof.cameras = [camHUD];
+		// if(doof != null) doof.cameras = [camHUD];
 		iconP1.y = healthBarBG.y - (iconP1.height / 2);
 		iconP2.y = healthBarBG.y - (iconP2.height / 2);
 		// if (FlxG.save.data.songPosition)
@@ -1257,17 +1261,19 @@ class PlayState extends MusicBeatState
 					'dad:HEY!\n' +
 					'bf:Beep?\n' +
 					"dad:You think you can just sing\\nwith my daughter like that?\n" +
+					'bf:Beep' +
 					"dad:If you want to date her...\\n" +
 					"dad:You're going to have to go \\nthrough ME first!\n" +
 					'bf:Beep bop!'
 				);
 			case 'fresh':
-				dialogue = CoolUtil.coolFormat("dad:Not too shabby boy.\ndad:But I'd like to see you\\n keep up with this!");
+				dialogue = CoolUtil.coolFormat("dad:Not too shabby $BF.\ndad:But I'd like to see you\\n keep up with this!");
 			case 'dad battle':
 				dialogue = CoolUtil.coolFormat(
 					"dad:Gah, you think you're hot stuff?\n"+
 					"dad:If you can beat me here...\n"+
-					"dad:Only then I will even CONSIDER letting you\\ndate my daughter!"
+					"dad:Only then I will even CONSIDER letting you\\ndate my daughter!"+
+					'bf:Beep!'
 				);
 		}
 	}
@@ -1286,7 +1292,7 @@ class PlayState extends MusicBeatState
 		add(black);
 		
 		// FlxTween.tween(black,0.3)
-		playCountdown = false;
+		// playCountdown = false;
 		// startCountdownFirst();
 		
 		FlxTween.tween(black, {alpha: 0}, 1, {
@@ -2598,7 +2604,7 @@ class PlayState extends MusicBeatState
 					FlxTransitionableState.skipNextTransOut = true;
 					prevCamFollow = camFollow;
 
-					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+					PlayState.SONG = Song.parseJSONshit(SELoader.loadText('assets/data/${PlayState.storyPlaylist[0]}/${PlayState.storyPlaylist[0]}$difficulty.json'));
 					FlxG.sound.music.stop();
 
 					LoadingState.loadAndSwitchState(new PlayState());

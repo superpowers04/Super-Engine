@@ -135,18 +135,6 @@ class Song
 		}';
 	}
 
-	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
-	{
-		var rawJson = CoolUtil.cleanJSON(Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())));
-		rawJson = rawJson.substr(0, rawJson.lastIndexOf("}")); // Clean the funni json
-		// while (!rawJson.endsWith("}"))
-		// {
-		// 	rawJson = rawJson.substr(0, rawJson.length - 1);
-		// 	// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-		// }
-
-		return parseJSONshit(rawJson);
-	}
 
 	static function invertChart(swagShit:SwagSong):SwagSong{
 		var invertedNotes:Array<Int> = [4,5,6,7,0,1,2,3];
@@ -333,7 +321,7 @@ class Song
 		#if !debug
 		try{
 		#end
-			var rawJson:Dynamic = Json.parse(rawJson);
+			var rawJson:Dynamic = Json.parse(rawJson.substr(0, rawJson.lastIndexOf("}") + 1));
 			var swagShit:SwagSong = cast rawJson.song;
 			swagShit.rawJSON = rawJson;
 			swagShit.validScore = true;

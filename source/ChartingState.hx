@@ -2382,7 +2382,7 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+		PlayState.SONG = Song.parseJSONshit(SELoader.loadText('assets/data/${song.toLowerCase()}/${song.toLowerCase()}.json'));
 		FlxG.resetState();
 	}
 

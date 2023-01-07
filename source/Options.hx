@@ -738,34 +738,34 @@ class CustomizeGameplay extends Option
 // 	}
 // }
 
-class OffsetMenu extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-	}
+// class OffsetMenu extends Option
+// {
+// 	public function new(desc:String)
+// 	{
+// 		super();
+// 		description = desc;
+// 	}
 
-	public override function press():Bool
-	{
-		trace("switch");
-		var poop:String = Highscore.formatSong("Tutorial", 1);
+// 	public override function press():Bool
+// 	{
+// 		trace("switch");
+// 		var poop:String = Highscore.formatSong("Tutorial", 1);
 
-		PlayState.SONG = Song.loadFromJson(poop, "Tutorial");
-		PlayState.isStoryMode = false;
-		PlayState.storyDifficulty = 0;
-		PlayState.storyWeek = 0;
-		PlayState.offsetTesting = true;
-		trace('CUR WEEK' + PlayState.storyWeek);
-		LoadingState.loadAndSwitchState(new PlayState());
-		return false;
-	}
+// 		PlayState.SONG = Song.loadFromJson(poop, "Tutorial");
+// 		PlayState.isStoryMode = false;
+// 		PlayState.storyDifficulty = 0;
+// 		PlayState.storyWeek = 0;
+// 		PlayState.offsetTesting = true;
+// 		trace('CUR WEEK' + PlayState.storyWeek);
+// 		LoadingState.loadAndSwitchState(new PlayState());
+// 		return false;
+// 	}
 
-	private override function updateDisplay():String
-	{
-		return "Time your offset";
-	}
-}
+// 	private override function updateDisplay():String
+// 	{
+// 		return "Time your offset";
+// 	}
+// }
 	
 	
 // Added options
@@ -1084,7 +1084,7 @@ class ReloadCharlist extends Option
 	}
 
 	override function getValue():String {
-		return '${TitleState.characters.length} char${CoolUtil.multiInt(TitleState.characters.length)}, and ${TitleState.choosableStages.length} stage${CoolUtil.multiInt(TitleState.choosableStages.length)} recognized';
+		return '${TitleState.characters.length} char${CoolUtil.multiInt(TitleState.characters.length)}, and ${TitleState.stages.length} stage${CoolUtil.multiInt(TitleState.stages.length)} recognized';
 	}
 
 }

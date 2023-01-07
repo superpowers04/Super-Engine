@@ -94,8 +94,8 @@ class StoryMenuState extends MusicBeatState
 
 		if(Assets.hasLibrary("week1")){
 			weekData = [
-				['Tutorial'],
-				['Dad Battle'],
+				['tutorial'],
+				['dad battle'],
 			];
 			weekDirectories = [
 				"Learning The Ropes",
@@ -277,7 +277,7 @@ class StoryMenuState extends MusicBeatState
 			onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
 			onlinemod.OfflinePlayState.nameSpace = weekNames[curWeek];
 			// LoadingState.loadAndSwitchState(new MultiPlayState());
-						new FlxTimer().start(1, function(tmr:FlxTimer)
+			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				LoadingState.loadAndSwitchState(new MultiPlayState(), true);
 			// 	// PlayState.instance.clearVariables();
@@ -510,7 +510,7 @@ class StoryMenuState extends MusicBeatState
 
 			PlayState.storyDifficulty = curDifficulty;
 
-			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
+			PlayState.SONG = Song.parseJSONshit(SELoader.loadText('assets/data/${PlayState.storyPlaylist[0]}/${PlayState.storyPlaylist[0]}$diffic.json'));
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 

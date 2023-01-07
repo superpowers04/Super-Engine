@@ -62,6 +62,20 @@ typedef Scorekillme = {
 		return (if (nameSpace != null) '$nameSpace|$id' else id);
 	}
 }
+@:structInit class StageInfo{
+	public var id:String = "";
+	public var path:String = 'mods/stages/';
+	public var folderName:String = "";
+	public var nameSpace:String = null;
+	public var nameSpaceType:Int = 0; // 0: mods/stages, 1: mods/weeks, 2: mods/packs 
+
+	public function toString(){
+		return 'Stage $nameSpace/$id, Raw folder name:$folderName, path:$path';
+	}
+	public function getNamespacedName(){
+		return (if (nameSpace != null) '$nameSpace|$id' else id);
+	}
+}
 
 
 
@@ -75,11 +89,11 @@ class TitleState extends MusicBeatState
 	var textGroup:FlxTypedGroup<FlxSprite>;
 	var ngSpr:FlxSprite;
 	public static var p2canplay = true;
-	public static var choosableStages:Array<String> = ["default","stage","nothing"];
-	public static var choosableStagesLower:Map<String,String> = [];
+	// public static var choosableStages:Array<String> = ["default","stage","nothing"];
+	// public static var choosableStagesLower:Map<String,String> = [];
 
-	// TODO, FIX CHARACTERS LOADING FROM WRONG FOLDER WHNE SELECTED
 	public static var characters:Array<CharInfo> = [];
+	public static var stages:Array<StageInfo> = [];
 
 	// public static var choosableCharacters:Array<String> = [];
 	// public static var choosableCharactersLower:Map<String,String> = [];
@@ -119,6 +133,7 @@ class TitleState extends MusicBeatState
 			if(retBF) return characters[0];
 			return null;
 		}
+		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
 		if(char.contains('|') && !ignoreNSCheck){
 			return findCharByNamespace(char,retBF);
 		}
@@ -226,13 +241,6 @@ class TitleState extends MusicBeatState
 	public static function retCharPath(char:String):String{
 		var path = findChar(char,false);
 		return (if(path == null || path.path == null) "" else path.path);
-	}
-	public static function retStage(char:String):String{
-		if (choosableStagesLower[char.toLowerCase()] != null){
-			return choosableStagesLower[char.toLowerCase()];
-		}else{
-			return "";
-		}
 	}
 	public static function checkCharacters(){
 
@@ -410,33 +418,142 @@ class TitleState extends MusicBeatState
 			}
 		}
 	}
+
+	public static function retStage(char:String):String{
+		return findStageByNamespace(char,true).getNamespacedName();
+	}
+
+	public static function findStage(char:String,?retStage:Bool = true,?ignoreNSCheck:Bool = false):Null<StageInfo>{
+		if(char == ""){
+			trace('Empty stage search, returning Stage');
+			if(retStage) return stages[0];
+			return null;
+		}
+		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
+		if(char.contains('|') && !ignoreNSCheck){
+			return findStageByNamespace(char,retStage);
+		}
+		if(char == ""){
+			trace('Tried to get a blank stage!');
+			if(retStage) return stages[0];
+			return null;
+		}
+		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
+			var e = Std.parseInt(char);
+			if(stages[e] != null){
+
+				// trace('Found char with ID of $e');
+				return stages[e];
+			}else{
+				trace('Invalid ID $e, out of range 0-${stages.length}');
+				if(retStage) return stages[0];
+				return null;
+			}
+		}
+		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
+		for (i in stages){
+			if(i.id == char.toLowerCase()){
+				return i;
+			}
+		}
+		trace('Unable to find $char!');
+		if(retStage) return stages[0];
+		return null;
+	}
+	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
+	public static function findStageByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retStage:Bool = true):Null<StageInfo>{ 
+		if(char == ""){
+			trace('Empty stage search, returning stage');
+			if(retStage) return stages[0];
+			return null;
+		}
+		if(char.contains('|')){
+			var _e = char.split('|');
+			namespace = _e[0];
+			char = _e[1];
+		}
+		if(namespace == "") return findStage(char,retStage,true);
+		if(char == ""){
+			trace('Tried to get a blank character!');
+			if(retStage) return stages[0];
+			return null;
+		}
+		var currentChar:StageInfo = null;
+		char = char.replace(' ',"-").replace('_',"-");
+		for (i in stages){
+			if(i.id == char.toLowerCase()){
+				if(i.nameSpace == namespace && (nameSpaceType == -1 || i.nameSpaceType == nameSpaceType)){
+					return i;
+				}
+				currentChar = i;
+			}
+		}
+		if(currentChar == null){
+			trace('Unable to find $char!');
+			if(retStage) return stages[0];
+			return null;
+		}
+		return currentChar;
+
+	}
 	public static function checkStages(){
-		choosableStages = ["default","stage","nothing"];
-		choosableStagesLower = ["default" => "default","stage" => "stage",'nothing' => 'nothing'];
+
+		LoadingScreen.loadingText = 'Updating stage list';
+		stages = [
+			{id:"nothing",folderName:"nothing",path:"assets/",},
+			{id:"stage",folderName:"stage",path:"assets/",},
+		];
 		#if sys
+		// Loading like this is probably not a good idea
 		var dataDir:String = "mods/stages/";
-		var customStages:Array<String> = [];
+
 		if (FileSystem.exists(dataDir))
 		{
 		  for (directory in FileSystem.readDirectory(dataDir))
 		  {
-			if (FileSystem.exists(Sys.getCwd() + "mods/stages/"+directory+"/config.json") || FileSystem.exists(Sys.getCwd() + "mods/stages/"+directory+"/script.hscript"))
+			if (!FileSystem.isDirectory(Sys.getCwd() +dataDir+"/"+directory)){continue;}
+			if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/"))
 			{
-				customStages.push(directory);
-
+				stages.push({
+					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+					folderName:directory,
+				});
 			}
 		  }
 		}
-		haxe.ds.ArraySort.sort(customStages, function(a, b) {
-		   if(a < b) return -1;
-		   else if(b > a) return 1;
-		   else return 0;
-		});
-		for (char in customStages){
-			choosableStages.push(char);
-			choosableStagesLower[char.toLowerCase()] = char;
+
+		
+
+		for (ID => dataDir in ['mods/weeks/','mods/packs/']) {
+			
+			if (FileSystem.exists(dataDir))
+			{
+			  for (_dir in FileSystem.readDirectory(dataDir))
+			  {
+				if (!FileSystem.isDirectory(dataDir + _dir)){continue;}
+				// trace(_dir);
+				if (FileSystem.exists(dataDir + _dir + "/stages/"))
+				{
+					var dir = dataDir + _dir + "/stages/";
+					// trace('Checking ${dir} for characters');
+					for (char in FileSystem.readDirectory(dir))
+					{
+						if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
+						stages.push({
+							id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
+							folderName:char,
+							path:dir,
+							nameSpaceType:ID,
+							nameSpace:_dir
+						});
+					}
+				}		
+			  }
+			}
 		}
+		trace('Found ${stages.length} stages');
 		#end
+
 	}
 	public static function findosuBeatmaps(){
 		var loc = "";
