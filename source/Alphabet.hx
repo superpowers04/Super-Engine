@@ -97,7 +97,10 @@ class Alphabet extends FlxSpriteGroup
 	public var bounceTween:FlxTween;
 	public function bounce(){
 		scale.x = scale.y = 1.1;
-		if(bounceTween != null)bounceTween.destroy();
+		if(bounceTween != null){
+			bounceTween.cancel();
+			bounceTween.destroy();
+		}
 		bounceTween = FlxTween.tween(scale,{x:1,y:1},0.2,{ease:FlxEase.expoOut});
 	}
 	public override function destroy(){

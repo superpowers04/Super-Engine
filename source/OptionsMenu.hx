@@ -230,6 +230,7 @@ class OptionsMenu extends MusicBeatState
 				case 3:FlxG.switchState(new onlinemod.OfflineMenuState());
 				case 4:FlxG.switchState(new multi.MultiMenuState());
 				case 5:FlxG.switchState(new osu.OsuMenuState());
+				// case 6:FlxG.switchState(new PlayListState());
 				case 12:FlxG.switchState(new onlinemod.OfflinePlayState());
 				case 14:FlxG.switchState(new multi.MultiPlayState());
 				case 15:FlxG.switchState(new osu.OsuPlayState());
@@ -279,20 +280,15 @@ class OptionsMenu extends MusicBeatState
 				
 				if (currentSelectedCat.getOptions()[curSelected].getAccept())
 				{
-					if (FlxG.keys.pressed.SHIFT)
-						{
-							if (FlxG.keys.pressed.RIGHT)
-								currentSelectedCat.getOptions()[curSelected].right();
-							if (FlxG.keys.pressed.LEFT)
-								currentSelectedCat.getOptions()[curSelected].left();
-						}
-					else
-					{
-						if (FlxG.keys.justPressed.RIGHT)
-							currentSelectedCat.getOptions()[curSelected].right();
-						if (FlxG.keys.justPressed.LEFT)
-							currentSelectedCat.getOptions()[curSelected].left();
+
+					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.RIGHT || FlxG.keys.justPressed.RIGHT ){
+						if(currentSelectedCat.getOptions()[curSelected].right()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].getDisplay());
+
 					}
+					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.LEFT || FlxG.keys.justPressed.LEFT ){
+						if(currentSelectedCat.getOptions()[curSelected].left()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].getDisplay());
+					}
+
 				}
 				updateOffsetText();
 			}
