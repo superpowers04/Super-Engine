@@ -25,7 +25,7 @@ import flixel.graphics.frames.FlxFrame;
 	public var color:FlxColor = 0xFFFFFF;
 	public var visible:Bool = true;
 	public var alpha:Float = 0;
-	public var angle:Int = 0;
+	public var angle:Float = 0;
 	public function applyTo(object:Dynamic,?changeFrame:Bool = true){
 		object.x = x;
 		object.y = y;

@@ -3181,29 +3181,26 @@ class PlayState extends MusicBeatState
 				{
 
 		 			var daNote:Note;
-		 			var i:Int = notes.members.length;
+		 			var i:Int = 0;
 					
-					notes.forEachAlive(function(daNote:Note)
+					while(i < notes.members.length)
 					{
-						if (daNote.mustPress && daNote.isSustainNote && daNote.canBeHit && holdArray[daNote.noteData]){ // Clip note to strumline
-							if(!FlxG.save.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition || daNote.isSustainNoteEnd) // Only destroy the note when properly hit
-								{goodNoteHit(daNote);return;}
-							// if(Std.isOfType(daNote,HoldNote)){
-							// 	var e:HoldNote = cast daNote;
-							// 	daNote.clip = true;
-							// }else{
-							daNote.isPressed = true;
-							// }
-							
-							daNote.susHit(0,daNote);
-							callInterp("susHit",[daNote]);
-						}
-					});
+						daNote = notes.members[i];
+						i++;
+						if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.canBeHit) continue;
+						if(!FlxG.save.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition) // Only destroy the note when properly hit
+							{goodNoteHit(daNote);continue;}
+						// Tell note to be clipped to strumline
+						daNote.isPressed = true;
+						
+						daNote.susHit(0,daNote);
+						callInterp("susHit",[daNote]);
+					}
 				}
 		 
 				// PRESSES, check for note hits
 				
-				if (generatedMusic && pressArray.contains(true) /*!boyfriend.stunned && */ )
+				if (generatedMusic && pressArray.contains(true))
 				{
 					boyfriend.holdTimer = 0;
 		 
