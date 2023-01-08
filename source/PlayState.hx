@@ -2764,29 +2764,31 @@ class PlayState extends MusicBeatState
 			currentTimingShown.borderStyle = OUTLINE;
 			currentTimingShown.borderSize = 1;
 			currentTimingShown.borderColor = FlxColor.BLACK;
-			currentTimingShown.text = msTiming + "ms " + (if((Conductor.songPosition - daNote.strumTime) > 0) "^" else "v");
+			var _dist = (Conductor.songPosition - daNote.strumTime);
+			// This if statement is shit but it should work
+			currentTimingShown.text = msTiming + "ms " + (if(_dist == 0) "=" else if(downscroll && _dist < 0 || !downscroll && _dist > 0) "^" else "v");
 			currentTimingShown.size = 20;
 
-			if (offsetTesting && msTiming >= 0.03)
-			{
-				//Remove Outliers
-				hits.shift();
-				hits.shift();
-				hits.shift();
-				hits.pop();
-				hits.pop();
-				hits.pop();
-				hits.push(msTiming);
+			// if (offsetTesting && msTiming >= 0.03)
+			// {
+			// 	//Remove Outliers
+			// 	hits.shift();
+			// 	hits.shift();
+			// 	hits.shift();
+			// 	hits.pop();
+			// 	hits.pop();
+			// 	hits.pop();
+			// 	hits.push(msTiming);
 
-				var total = 0.0;
+			// 	var total = 0.0;
 
-				for(i in hits)
-					total += i;
+			// 	for(i in hits)
+			// 		total += i;
 				
 
 				
-				offsetTest = HelperFunctions.truncateFloat(total / hits.length,2);
-			}
+			// 	offsetTest = HelperFunctions.truncateFloat(total / hits.length,2);
+			// }
 
 			add(currentTimingShown);
 			// var comboSpr:FlxSprite = null;
@@ -3060,7 +3062,7 @@ class PlayState extends MusicBeatState
 								if(daNote.isSustainNote)
 								{
 									if(daNote.isSustainNoteEnd && daNote.prevNote != null)
-										daNote.y = daNote.prevNote.y + (daNote.prevNote.height - 8); // why
+										daNote.y = daNote.prevNote.y + (daNote.prevNote.height - 10); // why
 									else
 										daNote.y -= daNote.height * 0.5;
 									// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
@@ -3194,7 +3196,7 @@ class PlayState extends MusicBeatState
 						daNote = notes.members[i];
 						i++;
 						if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.canBeHit) continue;
-						if(!FlxG.save.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition) // Only destroy the note when properly hit
+						if(!FlxG.save.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition || daNote.isSustainNoteEnd) // Only destroy the note when properly hit
 							{goodNoteHit(daNote);continue;}
 						// Tell note to be clipped to strumline
 						daNote.isPressed = true;

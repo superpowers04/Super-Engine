@@ -48,8 +48,8 @@ class FuckState extends FlxUIState
 		"Now with more crashes",
 		"I'm out of ideas.",
 	];
-
-	public static function FUCK(e:Dynamic,?info:String = "unknown"){
+	// This function has a lot of try statements. The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
+	public static function FUCK(e:Dynamic,?info:String = "unknown",?limeWindow:Bool = false){
 		try{LoadingScreen.hide();}catch(e){}
 		var exception = "Unable to grab exception!";
 		if(e != null && e.message != null){
@@ -63,6 +63,7 @@ class FuckState extends FlxUIState
 			}catch(e){}
 		}
 		var saved = false;
+		var dateNow:String = "";
 		// Crash log 
 		try{
 			var funnyQuip = "insert funny line here";
@@ -75,7 +76,7 @@ class FuckState extends FlxUIState
 				sys.FileSystem.createDirectory('crashReports/');
 			}
 
-			var dateNow:String = _date.toString();
+			dateNow = _date.toString();
 
 			dateNow = StringTools.replace(dateNow, " ", "_");
 			dateNow = StringTools.replace(dateNow, ":", ".");
@@ -104,7 +105,15 @@ class FuckState extends FlxUIState
 			}catch(e){}
 			sys.io.File.saveContent('crashReports/SUPERENGINE_CRASH-${dateNow}.log',err);
 			saved = true;
-		}catch(e){} 
+		}catch(e){}
+		// This'll cause a crash on linux for some reason, while it's still using a try/catch, no fucking around with crashes
+		#if !linux
+			if(limeWindow){
+				try{
+					Application.current.window.alert(message + (if(saved) '\nA crash log has been saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log"' else ""), "Uncaught error!");
+				}catch(e){}
+			}
+		#end
 		Main.game.forceStateSwitch(new FuckState(exception,info,saved));
 	}
 	var saved:Bool = false;

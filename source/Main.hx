@@ -121,19 +121,20 @@ class Main extends Sprite
 		#end
 	}
 	function uncaughtErrorHandler(event:UncaughtErrorEvent):Void { // Yes this is copied from the wiki, fuck you
-		var message:String;
-		if (Std.isOfType(event.error, openfl.errors.Error)) {
-			var err = cast(event.error, openfl.errors.Error);
-			message = err.getStackTrace();
-			if(message == null){
-				message = err.message;
+		var message:String = "";
+		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+
+		for (stackItem in callStack)
+		{
+			switch (stackItem)
+			{
+				case FilePos(s, file, line, column):
+					message += file + " (line " + line + ")\n";
+				default:
+					Sys.println(stackItem);
 			}
-		} else if (Std.isOfType(event.error, openfl.events.ErrorEvent)) {
-			message = cast(event.error, openfl.events.ErrorEvent).text;
-		} else {
-			message = Std.string(event.error);
 		}
-		FuckState.FUCK(null,message);
+		FuckState.FUCK(null,message,true);
 	}
 	// var fpsOverlay:Overlay;
 

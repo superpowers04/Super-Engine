@@ -209,7 +209,7 @@ class MusicBeatState extends FlxUIState
 			}else break;
 		}
 
-		var prog = (Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet;
+		var prog = (Conductor.offset + Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet;
 		curStepProgress = prog % 1;
 		curStep = lastChange.stepTime + Math.floor(prog);
 	}

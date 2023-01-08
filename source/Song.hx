@@ -30,6 +30,7 @@ typedef SwagSong =
 		var ?inverthurtnotes:Bool;
 		var ?difficultyString:String;
 		var ?noteMetadata:NoteMetadata;
+		var ?offset:Float;
 
 	// Chart type identification
 		var ?noteStyle:String; // Psych
@@ -326,6 +327,7 @@ class Song
 			swagShit.rawJSON = rawJson;
 			swagShit.validScore = true;
 			if ((PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) && !charting) swagShit = invertChart(swagShit);
+			if(Math.isNaN(swagShit.offset)) swagShit.offset = 0;
 			swagShit = modifyChart(swagShit,charting);
 			// if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null) swagShit = convHurtArrows(swagShit);
 			// if (onlinemod.OnlinePlayMenuState.socket == null){

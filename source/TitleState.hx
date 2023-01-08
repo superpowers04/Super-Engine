@@ -426,7 +426,7 @@ class TitleState extends MusicBeatState
 	public static function findStage(char:String,?retStage:Bool = true,?ignoreNSCheck:Bool = false):Null<StageInfo>{
 		if(char == ""){
 			trace('Empty stage search, returning Stage');
-			if(retStage) return stages[0];
+			if(retStage) return stages[1];
 			return null;
 		}
 		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
@@ -435,7 +435,7 @@ class TitleState extends MusicBeatState
 		}
 		if(char == ""){
 			trace('Tried to get a blank stage!');
-			if(retStage) return stages[0];
+			if(retStage) return stages[1];
 			return null;
 		}
 		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
@@ -446,7 +446,7 @@ class TitleState extends MusicBeatState
 				return stages[e];
 			}else{
 				trace('Invalid ID $e, out of range 0-${stages.length}');
-				if(retStage) return stages[0];
+				if(retStage) return stages[1];
 				return null;
 			}
 		}
@@ -457,14 +457,14 @@ class TitleState extends MusicBeatState
 			}
 		}
 		trace('Unable to find $char!');
-		if(retStage) return stages[0];
+		if(retStage) return stages[1];
 		return null;
 	}
 	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
 	public static function findStageByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retStage:Bool = true):Null<StageInfo>{ 
 		if(char == ""){
 			trace('Empty stage search, returning stage');
-			if(retStage) return stages[0];
+			if(retStage) return stages[1];
 			return null;
 		}
 		if(char.contains('|')){
@@ -475,7 +475,7 @@ class TitleState extends MusicBeatState
 		if(namespace == "") return findStage(char,retStage,true);
 		if(char == ""){
 			trace('Tried to get a blank character!');
-			if(retStage) return stages[0];
+			if(retStage) return stages[1];
 			return null;
 		}
 		var currentChar:StageInfo = null;
@@ -490,7 +490,7 @@ class TitleState extends MusicBeatState
 		}
 		if(currentChar == null){
 			trace('Unable to find $char!');
-			if(retStage) return stages[0];
+			if(retStage) return stages[1];
 			return null;
 		}
 		return currentChar;
@@ -562,7 +562,7 @@ class TitleState extends MusicBeatState
 			if (Sys.getEnv("LOCALAPPDATA") != null && FileSystem.exists('${Sys.getEnv("LOCALAPPDATA")}/osu-stable/Songs/')) loc = '${Sys.getEnv("LOCALAPPDATA")}/osu-stable/Songs/';
 		#else
 			if (Sys.getEnv("HOME") != null && FileSystem.exists('${Sys.getEnv("HOME")}/.local/share/osu-stable/Songs/')) loc = '${Sys.getEnv("HOME")}/.local/share/osu-stable/Songs/';
-			if (loc == "") trace('${Sys.getEnv("HOME")}/.local/share/osu-stable/songs/ doesnt exist!');
+			// if (loc == "") trace('${Sys.getEnv("HOME")}/.local/share/osu-stable/songs/ doesnt exist!');
 		#end
 
 		osuBeatmapLoc = loc;

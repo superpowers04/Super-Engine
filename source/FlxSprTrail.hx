@@ -26,7 +26,7 @@ import flixel.graphics.frames.FlxFrame;
 	public var visible:Bool = true;
 	public var alpha:Float = 0;
 	public var angle:Float = 0;
-	public function applyTo(object:Dynamic,?changeFrame:Bool = true){
+	public function applyTo(object:FlxSprite,?changeFrame:Bool = true){
 		object.x = x;
 		object.y = y;
 		object.scale.x = scaleX;
@@ -154,7 +154,7 @@ class FlxSprTrail extends FlxSpriteGroup {
 		}
 
 	}
-	public function updateFrames(?color:FlxColor = 0xFFFFFF,?changeFrame:Bool = true){
+	public function updateFrames(?color:FlxColor = 0xFFFFFFF,?changeFrame:Bool = true){
 		var i = end;
 
 		if(parent == null){
@@ -165,6 +165,7 @@ class FlxSprTrail extends FlxSpriteGroup {
 			buffer[i] = buffer[i - 1];
 			if(sprites[i] != null){
 				buffer[i].applyTo(sprites[i],changeFrame);
+				sprites[i].color = color;
 				sprites[i].x += (offsetX * i);
 				sprites[i].y += (offsetY * i);
 				if(fallOff > 0){

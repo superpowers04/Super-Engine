@@ -540,21 +540,13 @@ class ChartingState extends MusicBeatState
 		var UI_songTitle = new FlxInputText(10, 10, 200, _song.song, 8);
 		typingShit = UI_songTitle;
 
-		var check_voices = new FlxUICheckBox(10, 220, null, null, "Has voice track", 100);
+		var check_voices = new FlxUICheckBox(10, 200, null, null, "Has voice track", 100);
 		check_voices.checked = _song.needsVoices;
 		// _song.needsVoices = check_voices.checked;
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
 			vocals.volume = if (check_voices.checked) 1 else 0;
-		};
-
-		var check_mute_inst = new FlxUICheckBox(10, 200, null, null, "Mute Instrumental (in editor)", 100);
-		check_mute_inst.checked = false;
-		check_mute_inst.callback = function()
-		{
-
-			FlxG.sound.music.volume = if (check_mute_inst.checked) 0 else 1;
 		};
 
 		var saveButton:FlxButton = new FlxButton(110, 27, "Save", function()
@@ -573,7 +565,7 @@ class ChartingState extends MusicBeatState
 		});
 
 		
-		var restart = new FlxButton(10,140,"Reset Chart", function()
+		var restart = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y + 40,"Reset Chart", function()
             {
                 for (ii in 0..._song.notes.length)
                 {
@@ -583,31 +575,34 @@ class ChartingState extends MusicBeatState
             });
 
 		// var loadAutosaveBtn:FlxButton = new FlxButton(reloadSong.x, reloadSong.y + 30, 'load autosave', loadAutosave);
-		var fixchart:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, 'Reorder notes to sections', sectionRestructure);
-		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 0.1, 1, 1.0, 5000.0, 3);
+		// var fixchart:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 40, 'Reorder notes to sections', sectionRestructure);
+		var stepperBPMLabel = new FlxText(74,65,'BPM');
+		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 0.1, 1, 1.0, 9999.0, 3);
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var stepperBPMLabel = new FlxText(74,65,'BPM');
+		var stepperBPMOffsetLabel = new FlxText(74,80,'BPM Offset');
+		var stepperBPMOffset:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0, 1, -9999, 9999, 0);
+		stepperBPMOffset.value = Conductor.offset;
+		stepperBPMOffset.name = 'song_offset';
 		
-		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 3);
+		var stepperSpeedLabel = new FlxText(74,95,'Scroll Speed');
+		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 95, 0.1, 1, 0.1, 10, 3);
 		stepperSpeed.value = _song.speed;
 		stepperSpeed.name = 'song_speed';
-
-		var stepperSpeedLabel = new FlxText(74,80,'Scroll Speed');
 		
-		var stepperVocalVol:FlxUINumericStepper = new FlxUINumericStepper(10, 95, 0.1, 1, 0.1, 10, 3);
+		var stepperVocalVolLabel = new FlxText(74, 110, 'Editor Vocal Volume');
+		var stepperVocalVol:FlxUINumericStepper = new FlxUINumericStepper(10, 110, 0.1, 1, 0, 10, 3);
 		stepperVocalVol.value = vocals.volume;
 		stepperVocalVol.name = 'song_vocalvol';
 
-		var stepperVocalVolLabel = new FlxText(74, 95, 'Vocal Volume');
 		
-		var stepperSongVol:FlxUINumericStepper = new FlxUINumericStepper(10, 110, 0.1, 1, 0.1, 10, 3);
+		var stepperSongVolLabel = new FlxText(74, 125, 'Editor Instrumental Volume');
+		var stepperSongVol:FlxUINumericStepper = new FlxUINumericStepper(10, 125, 0.1, 1, 0, 10, 3);
 		stepperSongVol.value = FlxG.sound.music.volume;
 		stepperSongVol.name = 'song_instvol';
 
-
-		var hitsounds = new FlxUICheckBox(10, stepperSongVol.y + 60, null, null, "Play hitsounds", 100);
+		var hitsounds = new FlxUICheckBox(10, 180, null, null, "Play hitsounds", 100);
 		hitsounds.checked = playClaps;
 		hitsounds.callback = function()
 		{
@@ -622,8 +617,6 @@ class ChartingState extends MusicBeatState
 			playBeatClaps = beatcheck.checked;
 			if(playBeatClaps) playClap();
 		};
-
-		var stepperSongVolLabel = new FlxText(74, 110, 'Instrumental Volume');
 
 		
 		var shiftNoteDialLabel = new FlxText(10, 275, 'Shift Note by Section');
@@ -666,12 +659,13 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(UI_songTitle);
 		tab_group_song.add(restart);
 		tab_group_song.add(check_voices);
-		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		// tab_group_song.add(fixchart);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperBPMLabel);
+		tab_group_song.add(stepperBPMOffset);
+		tab_group_song.add(stepperBPMOffsetLabel);
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(stepperSpeedLabel);
 		tab_group_song.add(stepperVocalVol);
@@ -689,12 +683,13 @@ class ChartingState extends MusicBeatState
 		uiMap["UI_songTitle"] = UI_songTitle;
 		uiMap["restart"] = restart;
 		uiMap["check_voices"] = check_voices;
-		uiMap["check_mute_inst"] = check_mute_inst;
 		uiMap["saveButton"] = saveButton;
 		uiMap["reloadSong"] = reloadSong;
-		uiMap["fixchart"] = fixchart;
+		// uiMap["fixchart"] = fixchart;
 		uiMap["stepperBPM"] = stepperBPM;
 		uiMap["stepperBPMLabel"] = stepperBPMLabel;
+		uiMap["stepperBPMOffset"] = stepperBPMOffset;
+		uiMap["stepperBPMOffsetLabel"] = stepperBPMOffsetLabel;
 		uiMap["stepperSpeed"] = stepperSpeed;
 		uiMap["stepperSpeedLabel"] = stepperSpeedLabel;
 		uiMap["stepperVocalVol"] = stepperVocalVol;
@@ -1115,6 +1110,12 @@ class ChartingState extends MusicBeatState
 					nums.value = 0;
 				_song.speed = nums.value;
 			}
+			else if (wname == 'song_offset')
+			{
+				_song.offset = nums.value;
+				Conductor.mapBPMChanges(_song);
+				// Conductor.changeBPM(nums.value);
+			}
 			else if (wname == 'song_bpm')
 			{
 				if (nums.value <= 0)
@@ -1141,13 +1142,13 @@ class ChartingState extends MusicBeatState
 				updateGrid();
 			}else if (wname == 'song_vocalvol')
 			{
-				if (nums.value <= 0.1)
-					nums.value = 0.1;
+				if (nums.value <= 0)
+					nums.value = 0;
 				vocals.volume = nums.value;
 			}else if (wname == 'song_instvol')
 			{
-				if (nums.value <= 0.1)
-					nums.value = 0.1;
+				if (nums.value <= 0)
+					nums.value = 0;
 				FlxG.sound.music.volume = nums.value;
 			}
 		}
