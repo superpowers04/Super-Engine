@@ -97,6 +97,7 @@ class SearchMenuState extends MusicBeatState
 		if(Note.noteNames[0] == null){Note.noteNames = ["purple","blue","green",'red'];}
 		if(Note.noteAnims[0] == null){Note.noteAnims = ["singLEFT","singDOWN","singUP",'singRIGHT'];}
 		if(Note.noteDirections[0] == null){Note.noteDirections = ["LEFT","DOWN","UP",'RIGHT','NONE'];}
+		Conductor.offset = 0;
 		onlinemod.OfflinePlayState.nameSpace = "";
 
 		#if discord_rpc
