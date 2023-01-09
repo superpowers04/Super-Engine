@@ -91,6 +91,7 @@ typedef CharJsonAnimation ={
 	var ?name:String; // Prefix
 	var fps:Int; // FPS to play animation at
 	var loop:Bool; // Loop animation
+	var ?noreplaywhencalled:Bool; // Whether the animation should replay when it's told to play, useful for looping animations or hold end animations
 	var ?flipx:Null<Bool>; // Whether to flip the animation on the X-Axis or not
 	var indices:Array<Int>;  // List of frame numbers to use
 	var ?frameNames:Array<String>; // List of frame names to use, removes the need for name

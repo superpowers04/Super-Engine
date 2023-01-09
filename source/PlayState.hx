@@ -883,10 +883,17 @@ class PlayState extends MusicBeatState
 		if((PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || !FlxG.save.data.charAutoBF || !(PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) ){
 			PlayState.player1 = FlxG.save.data.playerChar;
 		}
-		player1CharInfo = TitleState.getCharFromList([FlxG.save.data.playerChar,PlayState.player1],onlinemod.OfflinePlayState.nameSpace);
-		player2CharInfo = TitleState.getCharFromList([FlxG.save.data.opponent,PlayState.player2],onlinemod.OfflinePlayState.nameSpace);
-		PlayState.player1 = player1CharInfo.getNamespacedName();
-		PlayState.player2 = player2CharInfo.getNamespacedName();
+		{
+			var p1List:Array<String> = [FlxG.save.data.playerChar];
+			var p2List:Array<String> = [FlxG.save.data.opponent];
+			for(id in PlayState.player1.split('/')) p1List.push(id);
+			for(id in PlayState.player2.split('/')) p2List.push(id);
+
+			player1CharInfo = TitleState.getCharFromList(p1List,onlinemod.OfflinePlayState.nameSpace);
+			player2CharInfo = TitleState.getCharFromList(p2List,onlinemod.OfflinePlayState.nameSpace);
+			PlayState.player1 = player1CharInfo.getNamespacedName();
+			PlayState.player2 = player2CharInfo.getNamespacedName();
+		}
 		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
 		// 	var pl:Array<String> = [player1,player2];
 		// 	player1 = pl[1];

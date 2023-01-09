@@ -211,7 +211,7 @@ class AnimationDebug extends MusicBeatState
 			FlxG.cameras.reset(camGame);
 			FlxG.cameras.add(camHUD);
 
-			FlxCamera.defaultCameras = [camGame];
+			FlxG.cameras.setDefaultDrawTarget(camGame,true);
 
 			// if (!charSel){ // Music should still be playing, no reason to do anything to it
 			FlxG.sound.music.looped = true;
@@ -784,6 +784,9 @@ class AnimationDebug extends MusicBeatState
 				if(sampleBox != null)sampleBox.destroy();
 				uiBox = null;
 				animDropDown.visible = true;
+				// for(i in uiMap){
+				// 	try{i.destroy();}catch(){}
+				// }
 			}catch(e){return;}
 			return;
 		}
@@ -797,18 +800,11 @@ class AnimationDebug extends MusicBeatState
 		uiBox.y = 80;
 		uiBox.scrollFactor.set();
 		add(uiBox);
-		uiMap["animSel"] = new FlxInputTextUpdatable(11, 230, 100, 'idle');
+		uiMap["animSel"] = new FlxInputTextUpdatable(5, 232, 100, 'idle');
 
-		if(dad.charType == 0){
-
-			var warning = new FlxText(2, 180,0,"Anims might not add correctly when editing as BF.\nIt is recommended to add anims as Dad, save-\n and then swap back to editing BF");
-			warning.setFormat(CoolUtil.font, 10, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-
-			uiBox.add(warning);
-		}
 		// animSel.text = "idle";
 
-		var animDropDown2 = new PsychDropDown(10, 230, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
+		var animDropDown2 = new PsychDropDown(5, 230, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
 		{			// animUICurAnim = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 
 			uiMap["animSel"].updateText(INTERNALANIMATIONLIST[Std.parseInt(anim)]);
@@ -816,14 +812,13 @@ class AnimationDebug extends MusicBeatState
 		});
 		animDropDown2.header.background.visible = animDropDown2.header.text.visible = false;
 		animDropDown2.cameras = [camHUD];
-		// animFPS.checked = false;
 		uiBox.add(animDropDown2);
 		uiBox.add(uiMap["animSel"]);
 		
 		animUICurName = charAnims[0];
 		uiMap["animSel"].text = "idle";
 		animDropDown2.selectedLabel = animUICurName;
-		animDropDown3 = new PsychDropDown(125, 150, FlxUIDropDownMenu.makeStrIdLabelArray(charAnims, true), function(anim:String)
+		animDropDown3 = new PsychDropDown(130, 230, FlxUIDropDownMenu.makeStrIdLabelArray(charAnims, true), function(anim:String)
 		{
 			// trace('Drop3: ${Std.parseInt(anim)}');
 			animUICurName = charAnims[Std.parseInt(anim)];
@@ -839,19 +834,22 @@ class AnimationDebug extends MusicBeatState
 		animDropDown3.selectedLabel = '';animDropDown3.cameras = [camHUD];
 		uiBox.add(animDropDown3);
 
-		var animTxt = new FlxText(10, 210,0,"Internal Name");
+		var animTxt = new FlxText(5, 210,0,"Internal Name");
 		uiBox.add(animTxt);
 
-		var animTxt = new FlxText(140, 135,0,"XML Name");
+		var animTxt = new FlxText(140, 210,0,"XML Name");
 		uiBox.add(animTxt);
 
 		// Togglables 
 
-		var looped = new FlxUICheckBox(10, 30, null, null, "Loop anim");
+		var looped = new FlxUICheckBox(10, 30, null, null, "Loop animation");
 		looped.checked = false;
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
-		var flipanim = new FlxUICheckBox(100, 30, null, null, "FlipX");
+		var restplay = new FlxUICheckBox(10, 50, null, null, "Restart Anim when played");
+		restplay.checked = true;
+		uiBox.add(uiMap["restplay"] = restplay);
+		var flipanim = new FlxUICheckBox(10, 70, null, null, "FlipX");
 		flipanim.checked = false;
 		uiMap["flipanim"] = flipanim;
 		uiBox.add(flipanim);
@@ -863,17 +861,17 @@ class AnimationDebug extends MusicBeatState
 		// uiMap["prtxt"] = prTxt;
 		// uiBox.add(prTxt);
 		// var priorityText = new FlxUIInputText(150, 40, 20, '-1');
-		uiBox.add(uiMap["prioritytxt"] = new FlxText(10, 60,0,"Priority(-1 for def)"));
-		uiMap["priorityText"] = new FlxUINumericStepper(140, 60, 1, -1,-999,999,2);
+		uiBox.add(uiMap["prioritytxt"] = new FlxText(10, 90,0,"Priority(-1 for def)"));
+		uiMap["priorityText"] = new FlxUINumericStepper(140, 90, 1, -1,-999,999,2);
 		uiBox.add(uiMap["priorityText"]);
 
 
-		uiBox.add(uiMap["animtxt"] = new FlxText(10, 80,0,"Animation FPS"));
-		uiMap["animFPS"] = new FlxUINumericStepper(140, 80, 1, 24);
+		uiBox.add(uiMap["animtxt"] = new FlxText(10, 110,0,"Animation FPS"));
+		uiMap["animFPS"] = new FlxUINumericStepper(140, 110, 1, 24);
 		uiBox.add(uiMap["animFPS"]);
 
-		uiBox.add(uiMap["looptxt"] = new FlxText(10, 100,0,"Loop start frame"));
-		uiMap["loopStart"] = new FlxUINumericStepper(140, 100, 1, 0,0);
+		uiBox.add(uiMap["looptxt"] = new FlxText(10, 130,0,"Loop start frame"));
+		uiMap["loopStart"] = new FlxUINumericStepper(140, 130, 1, 0,0);
 		uiBox.add(uiMap["loopStart"]);
 		// var animTxt = new FlxText(30, 60,0,"Animation FPS");
 		// uiMap["FPStxt"] = animTxt;
@@ -903,6 +901,7 @@ class AnimationDebug extends MusicBeatState
 						name: animUICurName,
 						loop: uiMap["loop"].checked,
 						flipx:uiMap["flipanim"].checked,
+						noreplaywhencalled:!uiMap["restplay"].checked,
 						fps: Std.int(uiMap["animFPS"].value),
 						loopStart:Std.int(uiMap["loopStart"].value),
 						indices: [],
@@ -1100,6 +1099,16 @@ class AnimationDebug extends MusicBeatState
 		commitButton.resize(120,20);
 		commitButton.cameras = [camHUD];
 		add(uiMap["commit"] = commitButton);
+
+		if(dad.charType == 0){
+
+			var warning = new FlxText(2, 180,0,"Animations might not add correctly when editing as BF.\nIt is recommended to add anims as Dad, save and then swap back to editing BF");
+			warning.setFormat(CoolUtil.font, 28, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			warning.scrollFactor.set();
+			warning.screenCenter(X);
+			warning.y = 50;
+			add(uiMap["warning"] = warning);
+		}
 		try{
 
 			// var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));

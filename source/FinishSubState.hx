@@ -61,6 +61,7 @@ class FinishSubState extends MusicBeatSubstate
 	public function new(x:Float, y:Float,?won = true,?error:String = "",force:Bool = false)
 	{
 		instance = this;
+		super();
 		endingMusic = null;
 		if (error != ""){
 			isError = true;
@@ -98,8 +99,8 @@ class FinishSubState extends MusicBeatSubstate
 		var boyfriend = PlayState.boyfriend;
 		var curAnim:String = PlayState.boyfriend.animName;
 
-		Conductor.changeBPM(70);
-		FlxG.cameras.setDefaultDrawTarget(PlayState.instance.camTOP,true);
+		// Conductor.changeBPM(70);
+		FlxG.cameras.setDefaultDrawTarget(PlayState.instance.camGame,true);
 
 
 		// For healthbar shit
@@ -152,7 +153,6 @@ class FinishSubState extends MusicBeatSubstate
 			}
 		}
 
-		super();
 		// if(fadeOut){
 		// 	FlxTween.tween(PlayState.instance.camGame,{alpha:0},0.5);
 		// 	// FlxTween.tween(FlxG.boyfriend,{x:FlxG.width - (boyfriend.width * 0.5),y:FlxG.height - (boyfriend.height * 0.5)},0.5);
@@ -197,7 +197,7 @@ class FinishSubState extends MusicBeatSubstate
 			}
 			cam = new FlxCamera();
 			FlxG.cameras.add(cam);
-			FlxCamera.defaultCameras = [cam];
+			FlxG.cameras.setDefaultDrawTarget(cam,true);
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
 				// ready = true;
 			pauseGame = true;

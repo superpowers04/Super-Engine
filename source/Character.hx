@@ -76,6 +76,7 @@ class CharAnimController extends FlxAnimationController{
 		public var animLoops:Map<String,Bool> = [];
 		public var oneShotAnims:Array<String> = ["hey"];
 		public var tintedAnims:Array<String> = [];
+		public var replayAnims:Array<String> = [];
 		public var loopAnimFrames:Map<String,Int> = [];
 		public var loopAnimTo:Map<String,String> = [];
 		// Anim priorities, can be used so animations can override others
@@ -380,6 +381,9 @@ class CharAnimController extends FlxAnimationController{
 					oneShotAnims.push(anima.anim);
 					anima.loop = false; // Looping when oneshot is a terrible idea
 				}
+				if (anima.noreplaywhencalled == true && !amPreview){ //
+					replayAnims.push(anima.anim);
+				}
 				if(anima.loopStart != null && anima.loopStart != 0 )loopAnimFrames[anima.anim] = anima.loopStart;
 				if(anima.playAfter != null && anima.playAfter != '' )loopAnimTo[anima.anim] = anima.playAfter;
 				if(anima.anim == "idle" || anima.anim == "danceLeft")hasIdle = true;
@@ -563,6 +567,7 @@ class CharAnimController extends FlxAnimationController{
 		isCustom = true;
 		var charPropJson:String = "";
 		if(charInfo.internal){
+			charXml = Paths.xml(charInfo.internalAtlas);
 			frames=tex=Paths.getSparrowAtlas(charInfo.internalAtlas);
 			charPropJson = charInfo.internalJSON;
 			try{
@@ -663,9 +668,13 @@ class CharAnimController extends FlxAnimationController{
 
 						tex = FlxAtlasFrames.fromTexturePackerJson(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
 					} else {
-						charXml = File.getContent('${charLoc}/$curCharacter/${xmlName}'); // Loads the XML as a string
+						charXml = File.getContent('${charLoc}/$curCharacter/${xmlName}').replace("UTF-16","utf-8"); // Loads the XML as a string. 
 						if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-						tex = FlxAtlasFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml.replace("UTF-16","utf-8")); // Makes sure the xml reports utf-8 to prevent a CS6 bug or whatever
+						if(charXml.substr(2).replace(String.fromCharCode(0),'').contains('UTF-16')){ // Flash CS6 outputs a UTF-16 xml even though no UTF-16 characters are usually used. This reformats the file to be UTF-8 *hopefully*
+							charXml = '<?' + charXml.substr(2).replace(String.fromCharCode(0),'').replace('UTF-16','utf-8');
+						}
+						File.saveContent('/tmp/test.xml',charXml);
+						tex = FlxAtlasFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
 					}
 					if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 				}
@@ -1047,8 +1056,10 @@ class CharAnimController extends FlxAnimationController{
 			nextAnimation = "";
 		}
 		if (animation.curAnim != null){
-			lastAnim = animation.curAnim.name;
-			if(animation.curAnim.name != AnimName && !isDonePlayingAnim()){
+			lastAnim = animName;
+			if(lastAnim == AnimName && replayAnims.contains(AnimName)){
+				if(!animLoops[AnimName] || !isDonePlayingAnim() )return false;
+			}else if(animation.curAnim.name != AnimName && !isDonePlayingAnim()){
 				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return false;} // Skip if current animation has a higher priority
 				if (animationPriorities[animation.curAnim.name] == null && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return false;} // Don't do anything if the current animation is oneShot
 			}
@@ -1249,168 +1260,249 @@ class CharAnimController extends FlxAnimationController{
 	}
 
 	public static var BFJSON(default,null):String = '{
-			"no_antialiasing": false, 
-			"sing_duration": 4, 
-			"dance_idle": false, 
-			"embedded":true,
-			"path":"characters/BOYFRIEND",
-			"scale": 1, 
-
-			"flip_x": true, 
-			"color":[49,176,209],
-
-			"animations":
-			[
-				{
-					"anim": "idle",
-					"name": "BF idle dance",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "singUP",
-					"name": "BF NOTE UP0",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "singDOWN",
-					"name": "BF NOTE DOWN0",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "singRIGHT",
-					"name": "BF NOTE LEFT0",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "singLEFT",
-					"name": "BF NOTE RIGHT0",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "singUPmiss",
-					"name": "BF NOTE UP MISS0",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "singDOWNmiss",
-					"name": "BF NOTE DOWN MISS0",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "singLEFTmiss",
-					"name": "BF NOTE LEFT MISS0",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "singRIGHTmiss",
-					"name": "BF NOTE RIGHT MISS0",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "hey",
-					"name": "BF HEY",
-					"fps": 24,
-					"loop": false,
-					"indices": []
-				},
-				{
-					"anim": "scared",
-					"name": "BF idle shaking",
-					"fps": 24,
-					"loop": true,
-					"indices": []
-				},
-				{"anim":"dodge","name": "boyfriend dodge","oneshot":true,"fps": 24,"loop": false,"indices":[]},
-				{"anim":"attack","name": "boyfriend attack","oneshot":true,"fps": 24,"loop": false,"indices":[]},
-				{"anim":"hit","name": "boyfriend hit","oneshot":true,"fps": 24,"loop": false,"indices":[]},
-				{"anim":"preattack","name": "bf pre attack","oneshot":true,"fps": 24,"loop": false,"indices":[]},
-				{"anim":"dies","name": "bf dies","oneshot":true,"fps": 24,"loop": false,"indices":[]}
-
-				
-			], 
-
-			"animations_offsets": [
-				{
-					"player1": [-20, -50],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "singDOWN"
-				},
-				{
-					"player1": [-34, 21],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "singRIGHTmiss"
-				},
-				{
-					"player1": [-42, 30],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "singUP"
-				},
-				{
-					"player1": [8, 20],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "singLEFTmiss"
-				},
-				{
-					"player1": [0, 0],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "idle"
-				},
-				{
-					"player1": [-20, -20],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "singDOWNmiss"
-				},
-				{
-					"player1": [-40, -7],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "singRIGHT"
-				},
-				{
-					"player1": [-41, 25],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "singUPmiss"
-				},
-				{
-					"player1": [8, -6],
-					"player2": [0, 0],
-					"player3": [0, 0],
-					"anim": "singLEFT"
-				}
-			],
-
-			"hey_anim": "hey", 
-			"scared_anim": "scared", 
-
-			"common_stage_offset": [0, 0, 0, 0], 
-			"char_pos": [0, -300], 
-			"cam_pos": [0, 300],
-		}';
+	"embedded": true,
+	"path": "characters/BOYFRIEND",
+	"animations_offsets": [
+		{
+			"player1": [300, 267],
+			"player2": [0, 0],
+			"player3": [0, 0],
+			"anim": "attack"
+		},
+		{
+			"player1": [-18, -51],
+			"player2": [-24, -52],
+			"player3": [0, 0],
+			"anim": "singDOWN"
+		},
+		{
+			"player1": [-37, 22],
+			"player2": [-34, 20],
+			"player3": [0, 0],
+			"anim": "singRIGHTmiss"
+		},
+		{
+			"player1": [-41, 26],
+			"player2": [4, 29],
+			"player3": [0, 0],
+			"anim": "singUP"
+		},
+		{
+			"player1": [10, 17],
+			"player2": [36, 23],
+			"player3": [0, 0],
+			"anim": "singLEFTmiss"
+		},
+		{
+			"player1": [-26, -39],
+			"player2": [-3, -39],
+			"player3": [0, 0],
+			"anim": "preattack"
+		},
+		{
+			"player1": [1, 4],
+			"player2": [2, 4],
+			"player3": [0, 0],
+			"anim": "hey"
+		},
+		{
+			"player1": [0, 0],
+			"player2": [-1, -1],
+			"player3": [0, 0],
+			"anim": "idle"
+		},
+		{
+			"player1": [26, 2],
+			"player2": [0, 6],
+			"player3": [0, 0],
+			"anim": "lose"
+		},
+		{
+			"player1": [-18, -21],
+			"player2": [-24, -22],
+			"player3": [0, 0],
+			"anim": "singDOWNmiss"
+		},
+		{
+			"player1": [-43, -6],
+			"player2": [-35, -6],
+			"player3": [0, 0],
+			"anim": "singRIGHT"
+		},
+		{
+			"player1": [-37, 26],
+			"player2": [0, 29],
+			"player3": [0, 0],
+			"anim": "singUPmiss"
+		},
+		{
+			"player1": [10, -9],
+			"player2": [42, -5],
+			"player3": [0, 0],
+			"anim": "singLEFT"
+		},
+		{
+			"player1": [22, 18],
+			"player2": [20, 22],
+			"player3": [0, 0],
+			"anim": "hurt"
+		},
+		{
+			"player1": [0, -18],
+			"player2": [-27, -13],
+			"player3": [0, 0],
+			"anim": "dodge"
+		}
+	],
+	"no_antialiasing": false,
+	"color": [49, 176, 209],
+	"sing_duration": 4,
+	"cam_pos": [0, 0],
+	"char_pos1": [-6, -305],
+	"flip_x": true,
+	"like": "",
+	"genBy": "FNFSE 1.0.0-U31; Animation Debug",
+	"char_pos2": [-4, -308],
+	"common_stage_offset": [],
+	"offset_flip": 1,
+	"scale": 1,
+	"char_pos": [],
+	"cam_pos1": [0, 300],
+	"clone": "",
+	"cam_pos2": [0, 0],
+	"animations": [
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "BF idle dance"
+		},
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "BF NOTE UP0"
+		},
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "BF NOTE DOWN0"
+		},
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "BF NOTE LEFT0"
+		},
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "BF NOTE RIGHT0"
+		},
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "singUPmiss",
+			"indices": [],
+			"name": "BF NOTE UP MISS0"
+		},
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWNmiss",
+			"indices": [],
+			"name": "BF NOTE DOWN MISS0"
+		},
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFTmiss",
+			"indices": [],
+			"name": "BF NOTE RIGHT MISS0"
+		},
+		{
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHTmiss",
+			"indices": [],
+			"name": "BF NOTE LEFT MISS0"
+		},
+		{
+			"loop": false,
+			"priority": -1,
+			"anim": "hey",
+			"fps": 24,
+			"loopStart": 0,
+			"name": "BF HEY!!",
+			"flipx": false,
+			"indices": []
+		},
+		{
+			"loop": true,
+			"fps": 24,
+			"anim": "scared",
+			"indices": [],
+			"name": "BF idle shaking"
+		},
+		{
+			"loop": false,
+			"oneshot": true,
+			"fps": 24,
+			"anim": "dodge",
+			"indices": [],
+			"name": "boyfriend dodge"
+		},
+		{
+			"loop": false,
+			"oneshot": true,
+			"fps": 24,
+			"anim": "attack",
+			"indices": [],
+			"name": "boyfriend attack"
+		},
+		{
+			"loop": false,
+			"oneshot": true,
+			"fps": 24,
+			"anim": "hit",
+			"indices": [],
+			"name": "boyfriend hit"
+		},
+		{
+			"loop": false,
+			"oneshot": true,
+			"fps": 24,
+			"anim": "preattack",
+			"indices": [],
+			"name": "bf pre attack"
+		},
+		{
+			"loop": false,
+			"oneshot": true,
+			"fps": 24,
+			"anim": "lose",
+			"indices": [],
+			"name": "bf dies"
+		},
+		{
+			"loop": false,
+			"priority": -1,
+			"anim": "hurt",
+			"fps": 24,
+			"loopStart": 0,
+			"name": "BF hit",
+			"flipx": false,
+			"indices": []
+		}
+	]
+}';
 	public static var GFJSON(default,null) = '{
 	"animations_offsets": [
 		{
