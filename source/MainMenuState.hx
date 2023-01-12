@@ -317,9 +317,11 @@ class MainMenuState extends SickMenuState
 						}
 					}
 					showTempmessage('Unable to find suitable opener!');
-				#else if(windows)
+				#end
+				#if(windows)
 					Sys.command('start',[FileSystem.fullpath('mods/')]);
-				#else if(macos)
+				#end
+				#if(macos)
 					Sys.command('open',[FileSystem.fullpath('mods/')]);
 				#end
 			case "scripted states":
