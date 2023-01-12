@@ -137,7 +137,7 @@ class TitleState extends MusicBeatState
 		if(char.contains('|') && !ignoreNSCheck){
 			return findCharByNamespace(char,retBF);
 		}
-		if(char == ""){
+		if(char == "" || char == "automatic"){
 			trace('Tried to get a blank character!');
 			if(retBF) return characters[0];
 			return null;
@@ -199,7 +199,7 @@ class TitleState extends MusicBeatState
 		if(namespace == "INVALID"){
 			return findInvalidChar(char);
 		}
-		if(char == ""){
+		if(char == "" || char == "automatic"){
 			trace('Tried to get a blank character!');
 			if(retBF) return characters[0];
 			return null;
@@ -757,7 +757,8 @@ class TitleState extends MusicBeatState
 		FlxG.mouse.visible = false;
 
 
-		shiftSkip = new FlxText(0,0,0,"DRP not init - Hold shift to go to the options menu after title screen",16);
+		shiftSkip = new FlxText(0,0,0,#if(discord_rpc) "DRP not init -" + #end "Hold shift to go to the options menu after title screen",16);
+		
 		shiftSkip.y = FlxG.height - shiftSkip.height - 12;
 		shiftSkip.x = 6;
 		shiftSkip.scrollFactor.set();
@@ -1012,7 +1013,9 @@ class TitleState extends MusicBeatState
 		switch (curBeat)
 		{
 			case 0:
-				if(DiscordClient.canSend) shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
+				#if discord_rpc
+					if(DiscordClient.canSend) shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
+				#end
 				deleteCoolText();
 				
 			// 	destHaxe();

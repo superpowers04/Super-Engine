@@ -126,18 +126,18 @@ class GameplayCustomizeState extends PlayState
 		FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();
 		FlxG.resetState();
 	}
-	override function generateSong(?dataPath:String = ""){
-		PlayState.SONG.needsVoices = false;
-		vocals = new FlxSound();
-		FlxG.sound.list.add(vocals);
-		SickMenuState.musicHandle();
-		if (notes == null) 
-			notes = new FlxTypedGroup<Note>();
-		notes.clear();
-		// add(notes);
-		add(notes);
-		Note.lastNoteID = -1;
-	}
+	// override function generateSong(?dataPath:String = ""){
+	// 	PlayState.SONG.needsVoices = false;
+	// 	vocals = new FlxSound();
+	// 	FlxG.sound.list.add(vocals);
+	// 	SickMenuState.musicHandle();
+	// 	if (notes == null) 
+	// 		notes = new FlxTypedSpriteGroup<Note>();
+	// 	notes.clear();
+	// 	// add(notes);
+	// 	add(notes);
+	// 	Note.lastNoteID = -1;
+	// }
 
 	override function startSong(?alrLoaded:Bool = false){
 		super.startSong(true);

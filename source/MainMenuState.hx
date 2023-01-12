@@ -240,8 +240,8 @@ class MainMenuState extends SickMenuState
 	var otherMenu:Bool = false;
 
 	function otherSwitch(){
-		options = ["freeplay","download charts","download characters"];
-		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine"];
+		options = ["freeplay","download charts","download characters","import charts from mods"];
+		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine",'Convert charts from other mods to work here. Will put them in Modded Songs'];
 		
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
@@ -256,12 +256,12 @@ class MainMenuState extends SickMenuState
 		#if !ghaction
 			'host br server',
 		#end
-			'online songs',"story mode",'other',"import charts from mods", "scripted states","changelog", 'options'];
+			'online songs',"story mode",'other',"scripted states","changelog", 'open mods folder','options'];
 		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.",
 		#if !ghaction
 		'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
 		#end
-		"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs','Convert charts from other mods to work here. Will put them in Modded Songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Customise your experience to fit you'];
+		"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Open your mods folder in your File Manager','Customise your experience to fit you'];
 		if(regen)generateList();
 		curSelected = 0;
 		if(regen)changeSelection();
@@ -306,7 +306,22 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new OptionsMenu());
 			// case "Setup characters":
 			// 	FlxG.switchState(new SetupCharactersList());
-			
+			case 'open mods folder':
+				selected = false;
+				changeSelection(0);
+				#if(linux)
+					var _path = FileSystem.fullPath('mods/');
+					for(i in ['exo-open','xdg-open','nemo','dolphin','nautilus','pcmanfm']){
+						if(Sys.command(i,[_path]) != 127){
+							return;
+						}
+					}
+					showTempmessage('Unable to find suitable opener!');
+				#else if(windows)
+					Sys.command('start',[FileSystem.fullpath('mods/')]);
+				#else if(macos)
+					Sys.command('open',[FileSystem.fullpath('mods/')]);
+				#end
 			case "scripted states":
 				FlxG.switchState(new SelectScriptableState());
 			case "download charts":

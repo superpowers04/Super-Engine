@@ -13,13 +13,128 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  buildLinux:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      - name: Cache HaxeLib
+        uses: actions/cache
+        with:
+          path: |
+            ~/haxelib
+          key: LinHaxelib
+      #Cache to prevent 30 minute compile time for smallest of changes
+      - name: Cache FNFBRBIN
+        uses: actions/cache
+        with:
+          path: |
+            ~/fnfbrbin
+          key: LinBin
+      # Runs a set of commands using the runners shell
+          
+          # haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
+      - name: Install Haxelib
+        run: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp
+          haxelib install lime
+          haxelib install openfl
+          haxelib --never install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-ui
+          haxelib install flixel-addons
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+        shell: cmd
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: haxelib run lime build linux --app-version="4.2.5-${{ github.run_id}}" -Dghaction
+      - name: Publish Artifact
+        uses: actions/upload-artifact
+        with:
+          name: linuxBuild
+          path: ~/fnfbrbin/linux/bin      
+      - name: Publish without changed assets as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linuxBuild-Minimal
+          path: |
+                ~/fnfbrbin/linux/bin/FNF Super Engine
+                ~/fnfbrbin/linux/bin/manifest
+                ~/fnfbrbin/linux/bin/mods/readme.txt
+                ~/fnfbrbin/linux/bin/mods/docs.md
+  buildMac:
+    runs-on: macos-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      - name: Cache HaxeLib
+        uses: actions/cache
+        with:
+          path: |
+            ~/haxelib
+          key: macHaxelib
+      #Cache to prevent 30 minute compile time for smallest of changes
+      - name: Cache FNFBRBIN
+        uses: actions/cache
+        with:
+          path: |
+            ~/fnfbrbin
+          key: macBin
+      # Runs a set of commands using the runners shell
+          
+          # haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
+      - name: Install Haxelib
+        run: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp
+          haxelib install lime
+          haxelib install openfl
+          haxelib --never install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-ui
+          haxelib install flixel-addons
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+        shell: cmd
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: haxelib run lime build mac --app-version="4.2.5-${{ github.run_id}}" -Dghaction
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact
+        with:
+          name: macBuild
+          path: ~/fnfbrbin/macos/bin
+
+
   buildWindows:
     runs-on: windows-latest
     
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout
 
       - uses: krdlab/setup-haxe@master
         with:
@@ -30,7 +145,7 @@ jobs:
           path: |
             C:/haxelib
           key: Haxelib
-      # Cache to prevent 30 minute compile time for smallest of changes
+      #Cache to prevent 30 minute compile time for smallest of changes
       - name: Cache FNFBRBIN
         uses: actions/cache@v2
         with:
@@ -60,14 +175,14 @@ jobs:
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
-        run: haxelib run lime build windows --app-version="4.2.5-${{ github.run_id}}" -Dghaction
+        run: haxelib run lime build windows --app-version="4.2.5-${{github.run_id}}" -Dghaction
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
           name: windowsBuild
           path: C:/fnfbrbin/windows/bin      
       - name: Publish without changed assets as Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact
         with:
           name: windowsBuild-Minimal
           path: |

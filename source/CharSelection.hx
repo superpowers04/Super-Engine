@@ -35,6 +35,7 @@ class CharSelection extends SearchMenuState
 		if(reload){CoolUtil.clearFlxGroup(grpSongs);}
 		songs = [];
 		charIDList = [];
+		charIDList[-1] = -1;
 		searchList = songs;
 
 		var i:Int = 0;
@@ -74,7 +75,9 @@ class CharSelection extends SearchMenuState
 				curChar = FlxG.save.data.gfChar;
 		}
 		chars = [];
-		if (Options.PlayerOption.playerEdit == 0){chars.push(['automatic',-1,'Automatically choose whatever BF is suitable for the chart']);}
+		if (Options.PlayerOption.playerEdit == 0){
+			chars.push(['automatic',-1,'Automatically choose whatever BF is suitable for the chart']);
+		}
 		searchList = [];
 		if(TitleState.invalidCharacters.length > 0 && onlinemod.OnlinePlayMenuState.socket == null){
 			for (i => v in TitleState.invalidCharacters) {
@@ -143,7 +146,13 @@ class CharSelection extends SearchMenuState
 	}
 
 	override function select(sel:Int = 0){
+		var _char = 'automatic';
 		var curSelected =getChar();
+		if(curSelected == -1){
+			FlxG.save.data.playerChar = 'automatic';
+
+			return;
+		}
 		if(chars[curSelected][1] == 1){
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxTween.tween(grpSongs.members[curSelected], {x: grpSongs.members[curSelected].x + 100}, 0.4, {ease: FlxEase.bounceInOut,onComplete: function(twn:FlxTween){return;}});

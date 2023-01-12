@@ -28,9 +28,12 @@ typedef SwagSong =
 		var ?chartType:String;
 		var ?forceCharacters:Bool;
 		var ?inverthurtnotes:Bool;
-		var ?difficultyString:String;
 		var ?noteMetadata:NoteMetadata;
 		var ?offset:Float;
+
+		var ?modName:String;
+		var ?artist:String;
+		var ?difficultyString:String;
 
 	// Chart type identification
 		var ?noteStyle:String; // Psych

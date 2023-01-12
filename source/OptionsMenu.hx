@@ -92,7 +92,6 @@ class OptionsMenu extends MusicBeatState
 		],"Toggle Practice mode, Ghost Tapping, etc"),
 
 		new OptionCategory("Appearance", [
-			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			new CamMovementOption("Toggle the camera moving"),
 			new NPSDisplayOption("Shows your current Notes Per Second."),
@@ -107,7 +106,6 @@ class OptionsMenu extends MusicBeatState
 			#if discord_rpc
 			new HCBoolOption("Toggle Discord Rich Presence(Requires restart)","Discord Rich Presence","discordDRP"),
 			#end
-			new FPSOption("Toggle the FPS Counter"),
 			new FullscreenOption("Toggle fullscreen mode. Press F11 to toggle fullscreen ingame"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF. Also shows extra information and allows you to use the chart editor"),
@@ -127,7 +125,9 @@ class OptionsMenu extends MusicBeatState
 		],"Disable some features for better performance"),
 		new OptionCategory("Visibility", [
             new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),new BackTransOption("Change underlay opacity"),new BackgroundSizeOption("Change underlay size"),
+			new FPSOption("Toggle the FPS Counter"),
 			new BeatBouncingOption("Toggle certain animations like text beating on the main menu. Useful if text is hard to read"),
+			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
 			new OpponentStrumlineOption("Whether to show the opponent's notes or not"),
 			new ShowP2Option("Show Opponent"),
@@ -270,10 +270,8 @@ class OptionsMenu extends MusicBeatState
 				addTitleText();
 				updateOffsetText();
 			}
-			if (controls.UP_P || FlxG.keys.justPressed.UP)
-				changeSelection(-1);
-			if (controls.DOWN_P || FlxG.keys.justPressed.DOWN)
-				changeSelection(1);
+			if (controls.UP_P || FlxG.keys.justPressed.UP) changeSelection(-1);
+			if (controls.DOWN_P || FlxG.keys.justPressed.DOWN) changeSelection(1);
 			
 			if (isCat)
 			{

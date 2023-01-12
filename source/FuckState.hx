@@ -110,7 +110,7 @@ class FuckState extends FlxUIState
 		#if !linux
 			if(limeWindow){
 				try{
-					Application.current.window.alert(message + (if(saved) '\nA crash log has been saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log"' else ""), "Uncaught error!");
+					Application.current.window.alert(exception + (if(saved) '\nA crash log has been saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log"' else ""), "Uncaught error!");
 				}catch(e){}
 			}
 		#end

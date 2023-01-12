@@ -2339,6 +2339,7 @@ class PlayState extends MusicBeatState
 				while(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
 				{
 					var dunceNote:Note = unspawnNotes.shift();
+					callInterp('noteSpawn',[dunceNote]);
 					if(!dunceNote.eventNote && dunceNote.strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms before the current time
 						dunceNote.destroy();
 					}else if(dunceNote.eventNote){ // eventNote

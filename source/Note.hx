@@ -67,7 +67,7 @@ class Note extends FlxSkewedSprite
 	public var childNotes:Array<Note> = [];
 	public var parentNote:Note = null;
 	public var parentSprite:FlxSprite = null;
-	public var distanceToSprite:Float = 0;
+	public var distanceToSprite:Float = 0; // This is inverted because i am dumb and stupid and dumb
 	public var showNote = true;
 	public var info:Array<Dynamic> = [];
 	public var rawNote:Array<Dynamic> = [];
@@ -556,13 +556,13 @@ class Note extends FlxSkewedSprite
 				skipNote = false;
 			}
 			case false:{
+				callInterp("noteUpdate",[this]);
 				if (!skipNote || isOnScreen()){ // doesn't calculate anything until they're on screen
-					skipNote = false;
 					visible = (!eventNote && showNote);
-					callInterp("noteUpdate",[this]);
+					skipNote = false;
 					if(eventNote){
 						if (strumTime <= Conductor.songPosition){
-
+							callInterp("eventNoteHit",[this]);
 							this.hit(1,this);
 							this.destroy();
 						}

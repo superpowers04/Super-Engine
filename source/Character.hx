@@ -839,9 +839,7 @@ class CharAnimController extends FlxAnimationController{
 		if(charPath != "") charLoc = charPath;
 
 
-		if(curCharacter == "automatic" || curCharacter == "" || curCharacter == "bfHC" ){
-			curCharacter = "bf";
-		}
+		if(curCharacter == "automatic" || curCharacter == "" || curCharacter == "bfHC" ) curCharacter = "bf";
 
 		animation = new CharAnimController(this);
 
@@ -855,9 +853,8 @@ class CharAnimController extends FlxAnimationController{
 
 		dance();
 		// var alloffset = animOffsets.get("all");
-		if (clonedChar == ""){
-			clonedChar = curCharacter;
-		}
+		if (clonedChar == "")clonedChar = curCharacter;
+
 		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over miss if miss isn't present
 			if (animation.getByName('sing${i}miss') == null){
 				cloneAnimation('sing${i}miss', animation.getByName('sing$i'));
@@ -906,9 +903,7 @@ class CharAnimController extends FlxAnimationController{
 			callInterp("animFrame",[animation.curAnim,frameNumber,frameIndex]);
 		};
 		if(animation.curAnim == null && !lonely && !amPreview){MainMenuState.handleError('$curCharacter is missing an idle/dance animation!');}
-		if(animation.getByName('songStart') != null && !lonely && !amPreview){
-			playAnim('songStart',true);
-		}
+		if(animation.getByName('songStart') != null && !lonely && !amPreview) playAnim('songStart',true);
 		if(!charProperties.editableSprite){
 			// graphic.canBeDumped = true;
 			graphic.dump();
@@ -1039,7 +1034,7 @@ class CharAnimController extends FlxAnimationController{
 		super.draw();
 	} 
 	public var currentAnimationPriority:Int = -100;
-	public dynamic function playAnim(AnimName:String = "idle", Force:Bool = false, Reversed:Bool = false, Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool
+	public dynamic function playAnim(AnimName:String = "idle", ?Force:Bool = false, ?Reversed:Bool = false, ?Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool
 	{
 		var lastAnim = "";
 		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
@@ -1216,14 +1211,10 @@ class CharAnimController extends FlxAnimationController{
 	}
 	public static function getDefColorFromJson(e:CharacterJson):FlxColor{
 		if(e.color != null){
-			if(Std.isOfType(e.color,String)){
-				return FlxColor.fromString(e.color);
-			}else if (Std.isOfType(e.color,Int)){
-				return FlxColor.fromInt(e.color);
+			if(Std.isOfType(e.color,String)){ return FlxColor.fromString(e.color);
+			}else if (Std.isOfType(e.color,Int)){return FlxColor.fromInt(e.color);
 			}else{
-				if(e.color[0] != null){
-					return FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
-				}
+				if(e.color[0] != null) return FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
 				return 0x00000000;
 			}
 		}

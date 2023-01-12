@@ -80,34 +80,35 @@ class RepoState extends SickMenuState
 	  }
 	override public function create():Void
 	{
-		#if (!linux && !windows)
+		#if (linux || windows)
+	
+			descriptions = [];
+			if (!sys.FileSystem.exists(unarExe)) {
+				MainMenuState.handleError("This feature requires 7-Zip to be installed");
+				return;			
+			}
+			new FlxTimer().start(2, function(tmr:FlxTimer)
+			{
+				
+				var http = new Http(repo);
+				
+				http.onData = function (data:String)
+				{
+					repoRet += data;
+					createCont();
+				}
+				
+				http.onError = function (error) {
+					MainMenuState.handleError('Something went wrong, $error');
+					return;	
+				}
+				
+				http.request();
+			});
+		#else
 			MainMenuState.handleError('This feature is not supported on ${Sys.systemName()}!');
 			return;
-		#else
-	
-		descriptions = [];
-		if (!sys.FileSystem.exists(unarExe)) {
-			MainMenuState.handleError("This feature requires 7-Zip to be installed");
-			return;			
-		}
-		new FlxTimer().start(2, function(tmr:FlxTimer)
-		{
-			
-			var http = new Http(repo);
-			
-			http.onData = function (data:String)
-			{
-				repoRet += data;
-				createCont();
-			}
-			
-			http.onError = function (error) {
-				MainMenuState.handleError('Something went wrong, $error');
-				return;	
-			}
-			
-			http.request();
-		});
+		#end
 
 	}
 	override public function update(elapsed:Float){
@@ -185,7 +186,6 @@ class RepoState extends SickMenuState
 	function updateText(){
 		installingText.text = 'Installing ${installing} mod${if (installing != 1) 's' else '' }';
 		installedText.text = if (TitleState.retChar(repoArray.characters[curSelected].name) != "") "Installed" else "Not Installed";
-	#end
 	}
 	function finishDownload(data:Bytes,char:RepoCharsJSON,sel:Int){
 		File.saveBytes(Sys.getCwd() + 'mods/characters/${char.name}.zip',data);

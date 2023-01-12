@@ -749,22 +749,26 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					voices = findFileFromAssets(assets,name,'Voices.ogg');
 				}
 				if(inst == ""){ // Check more places
-					var name:Dynamic = cast Json.parse(file);
-					var songName:String = "";
-					if(name.song != null && Std.isOfType(name.song,String)){
-						songName = cast name.song;
-					}else if(name.song != null && name.song.song != null && Std.isOfType(name.song.song,String)){
-						songName = cast name.song.song;
-					}
-					if(songName != null && songName != ""){ // Try using the chart name maybe?
-						inst = findFileFromAssets(assets,name,'Inst.ogg');
-						voices = findFileFromAssets(assets,name,'Voices.ogg');
+					var content = File.getContent(file);
+					if(content != null && content != ""){
+						var name:Dynamic = cast Json.parse(File.getContent(file));
+						var songName:String = "";
+						if(name.song != null && Std.isOfType(name.song,String)){
+							songName = cast name.song;
+						}else if(name.song != null && name.song.song != null && Std.isOfType(name.song.song,String)){
+							songName = cast name.song.song;
+						}
+						if(songName != null && songName != ""){ // Try using the chart name maybe?
+							trace(songName);
+							inst = findFileFromAssets(assets,name,'Inst.ogg');
+							voices = findFileFromAssets(assets,name,'Voices.ogg');
+						}
 					}
 
 				}
 			}
 			if(inst == ""){
-				MusicBeatState.instance.showTempmessage("Unable to load chart as there is no Inst!",FlxColor.RED);
+				MusicBeatState.instance.showTempmessage('Unable to find Inst.ogg for "$json"',FlxColor.RED);
 				return;
 			}
 			gotoSong(dir,

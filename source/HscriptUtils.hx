@@ -160,7 +160,8 @@ class HscriptUtils {
 		interp.variables.set("SETools",SETools);
 		interp.variables.set("SELoader",SELoader);
 		interp.variables.set("FlxSprTrail",FlxSprTrail);
-		interp.variables.set("eval", eval.bind(Interp,_)); // Eval code 
+		// eval.bind(Interp,_)
+		interp.variables.set("eval", function(){trace('This does not work yet!');}); // Eval code 
 		// interp.variables.set("SEKeys", SEKeys);
 
 

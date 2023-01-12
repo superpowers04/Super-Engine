@@ -540,16 +540,8 @@ class ChartingState extends MusicBeatState
 		var UI_songTitle = new FlxInputText(10, 10, 200, _song.song, 8);
 		typingShit = UI_songTitle;
 
-		var check_voices = new FlxUICheckBox(10, 200, null, null, "Has voice track", 100);
-		check_voices.checked = _song.needsVoices;
-		// _song.needsVoices = check_voices.checked;
-		check_voices.callback = function()
-		{
-			_song.needsVoices = check_voices.checked;
-			vocals.volume = if (check_voices.checked) 1 else 0;
-		};
 
-		var saveButton:FlxButton = new FlxButton(110, 27, "Save", function()
+		var saveButton:FlxButton = new FlxButton(200, 10, "Save", function()
 		{
 			saveLevel();
 		});
@@ -558,7 +550,7 @@ class ChartingState extends MusicBeatState
 		// 	loadLevel_();
 		// });
 
-		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
+		var reloadSong:FlxButton = new FlxButton(saveButton.x, saveButton.y + saveButton.height + 4, "Reload Audio", function()
 		{
 			loadSong();
 			loadAudioBuffer();
@@ -576,6 +568,15 @@ class ChartingState extends MusicBeatState
 
 		// var loadAutosaveBtn:FlxButton = new FlxButton(reloadSong.x, reloadSong.y + 30, 'load autosave', loadAutosave);
 		// var fixchart:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 40, 'Reorder notes to sections', sectionRestructure);
+
+		var check_voices = new FlxUICheckBox(10, 200, null, null, "Has voice track", 100);
+		check_voices.checked = _song.needsVoices;
+		// _song.needsVoices = check_voices.checked;
+		check_voices.callback = function()
+		{
+			_song.needsVoices = check_voices.checked;
+			vocals.volume = if (check_voices.checked) 1 else 0;
+		};
 		var stepperBPMLabel = new FlxText(74,65,'BPM');
 		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 0.1, 1, 1.0, 9999.0, 3);
 		stepperBPM.value = Conductor.bpm;
