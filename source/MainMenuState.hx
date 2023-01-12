@@ -319,10 +319,10 @@ class MainMenuState extends SickMenuState
 					showTempmessage('Unable to find suitable opener!');
 				#end
 				#if(windows)
-					Sys.command('start',[FileSystem.fullpath('mods/')]);
+					Sys.command('start',[FileSystem.fullPath('mods/')]);
 				#end
 				#if(macos)
-					Sys.command('open',[FileSystem.fullpath('mods/')]);
+					Sys.command('open',[FileSystem.fullPath('mods/')]);
 				#end
 			case "scripted states":
 				FlxG.switchState(new SelectScriptableState());
