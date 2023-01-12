@@ -13,6 +13,58 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build"
+  buildMac:
+    runs-on: macos-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      - name: Cache HaxeLib
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/haxelib
+          key: Haxelib
+      # Cache to prevent 30 minute compile time for smallest of changes
+      - name: Cache FNFBRBIN
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/fnfbrbin
+          key: Bin
+      # Runs a set of commands using the runners shell
+          
+          # haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
+      - name: Install Haxelib
+        run: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > nul
+          haxelib install lime
+          haxelib install openfl
+          haxelib --never install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-ui
+          haxelib install flixel-addons
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+        shell: cmd
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: haxelib run lime build macos --app-version="4.2.5-${{ github.run_id}}" -Dghaction
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: MacBuild
+          path: ~/fnfbrbin/macos/bin      
   buildLinux:
     runs-on: ubuntu-latest
     
@@ -24,25 +76,25 @@ jobs:
         with:
           haxe-version: 4.2.5
       - name: Cache HaxeLib
-        uses: actions/cache@v3
+        uses: actions/cache@v2
         with:
           path: |
             ~/haxelib
-          key: LinHaxelib
-      #Cache to prevent 30 minute compile time for smallest of changes
+          key: HaxelibLin
+      # Cache to prevent 30 minute compile time for smallest of changes
       - name: Cache FNFBRBIN
-        uses: actions/cache@v3
+        uses: actions/cache@v2
         with:
           path: |
             ~/fnfbrbin
-          key: LinBin
+          key: BinLin
       # Runs a set of commands using the runners shell
           
           # haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
       - name: Install Haxelib
         run: |
           haxelib setup ~/haxelib
-          haxelib install hxcpp
+          haxelib install hxcpp > nul
           haxelib install lime
           haxelib install openfl
           haxelib --never install flixel
@@ -52,7 +104,6 @@ jobs:
           haxelib install flixel-ui
           haxelib install flixel-addons
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-
           haxelib install hscript
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
         shell: cmd
@@ -61,7 +112,7 @@ jobs:
       - name: Compile
         run: haxelib run lime build linux --app-version="4.2.5-${{ github.run_id}}" -Dghaction
       - name: Publish Artifact
-        uses: actions/upload-artifact
+        uses: actions/upload-artifact@v2
         with:
           name: linuxBuild
           path: ~/fnfbrbin/linux/bin      
@@ -74,61 +125,6 @@ jobs:
                 ~/fnfbrbin/linux/bin/manifest
                 ~/fnfbrbin/linux/bin/mods/readme.txt
                 ~/fnfbrbin/linux/bin/mods/docs.md
-  buildMac:
-    runs-on: macos-latest
-    
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.2.5
-      - name: Cache HaxeLib
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/haxelib
-          key: macHaxelib
-      #Cache to prevent 30 minute compile time for smallest of changes
-      - name: Cache FNFBRBIN
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/fnfbrbin
-          key: macBin
-      # Runs a set of commands using the runners shell
-          
-          # haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
-      - name: Install Haxelib
-        run: |
-          haxelib setup ~/haxelib
-          haxelib install hxcpp
-          haxelib install lime
-          haxelib install openfl
-          haxelib --never install flixel
-          haxelib run lime setup flixel
-          haxelib run lime setup
-          haxelib install flixel-tools
-          haxelib install flixel-ui
-          haxelib install flixel-addons
-          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-
-          haxelib install hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
-        shell: cmd
-      - name: Create Version Tag
-        run: echo "${{github.run_id}}" > VERSION
-      - name: Compile
-        run: haxelib run lime build mac --app-version="4.2.5-${{ github.run_id}}" -Dghaction
-
-      - name: Publish Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: macBuild
-          path: ~/fnfbrbin/macos/bin
-
-
   buildWindows:
     runs-on: windows-latest
     
@@ -140,14 +136,14 @@ jobs:
         with:
           haxe-version: 4.2.5
       - name: Cache HaxeLib
-        uses: actions/cache@v3@v2
+        uses: actions/cache@v2
         with:
           path: |
             C:/haxelib
           key: Haxelib
-      #Cache to prevent 30 minute compile time for smallest of changes
+      # Cache to prevent 30 minute compile time for smallest of changes
       - name: Cache FNFBRBIN
-        uses: actions/cache@v3
+        uses: actions/cache@v2
         with:
           path: |
             C:/fnfbrbin
@@ -168,14 +164,13 @@ jobs:
           haxelib install flixel-ui
           haxelib install flixel-addons
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-
           haxelib install hscript
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
         shell: cmd
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
-        run: haxelib run lime build windows --app-version="4.2.5-${{github.run_id}}" -Dghaction
+        run: haxelib run lime build windows --app-version="4.2.5-${{ github.run_id}}" -Dghaction
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -190,4 +185,3 @@ jobs:
                 C:/fnfbrbin/windows/bin/manifest
                 C:/fnfbrbin/windows/bin/mods/readme.txt
                 C:/fnfbrbin/windows/bin/mods/docs.md
-
