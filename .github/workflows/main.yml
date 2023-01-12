@@ -123,7 +123,7 @@ jobs:
         run: haxelib run lime build mac --app-version="4.2.5-${{ github.run_id}}" -Dghaction
 
       - name: Publish Artifact
-        uses: actions/upload-artifact
+        uses: actions/upload-artifact@v2
         with:
           name: macBuild
           path: ~/fnfbrbin/macos/bin
@@ -182,7 +182,7 @@ jobs:
           name: windowsBuild
           path: C:/fnfbrbin/windows/bin      
       - name: Publish without changed assets as Artifact
-        uses: actions/upload-artifact
+        uses: actions/upload-artifact@v2
         with:
           name: windowsBuild-Minimal
           path: |
