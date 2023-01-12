@@ -55,7 +55,7 @@ jobs:
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hscript
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
-        shell: cmd
+        shell: sh
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
@@ -106,7 +106,7 @@ jobs:
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hscript
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
-        shell: cmd
+        shell: bash
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
