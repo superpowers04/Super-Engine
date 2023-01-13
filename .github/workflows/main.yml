@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: MacBuild
-          path: ~/fnfbrbin/macos/bin      
+          path: ~/fnfbrbin/      
   buildLinux:
     runs-on: ubuntu-latest
     
@@ -115,16 +115,16 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: linuxBuild
-          path: ~/fnfbrbin/linux/bin      
-      - name: Publish without changed assets as Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: linuxBuild-Minimal
-          path: |
-                ~/fnfbrbin/linux/bin/FNF Super Engine
-                ~/fnfbrbin/linux/bin/manifest
-                ~/fnfbrbin/linux/bin/mods/readme.txt
-                ~/fnfbrbin/linux/bin/mods/docs.md
+          path: ~/fnfbrbin/      
+      # - name: Publish without changed assets as Artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: linuxBuild-Minimal
+      #     path: |
+      #           ~/fnfbrbin/linux/bin/FNF Super Engine
+      #           ~/fnfbrbin/linux/bin/manifest
+      #           ~/fnfbrbin/linux/bin/mods/readme.txt
+      #           ~/fnfbrbin/linux/bin/mods/docs.md
   buildWindows:
     runs-on: windows-latest
     
