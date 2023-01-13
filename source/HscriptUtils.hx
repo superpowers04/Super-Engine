@@ -349,6 +349,9 @@ class SESave{
 		_map[id] = value;
 		return;
 	}
+	public function toString(){
+		return '[ Super Engine Save. Contents: ' + _map.toString() + " ]";
+	}
 }
 
 // class SEType {

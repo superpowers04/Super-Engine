@@ -3236,14 +3236,10 @@ class PlayState extends MusicBeatState
 						var coolNote = possibleNotes[daNote.noteData];
 						if (coolNote != null)
 						{
-							if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7)){dumbNotes.push(daNote);continue;}
+							if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7)){notes.remove(daNote);daNote.destroy();continue;}
 							if((daNote.strumTime > coolNote.strumTime)) continue;
 						}
 						possibleNotes[daNote.noteData] = daNote;
-					};
-					while((daNote = dumbNotes.pop()) != null) {
-						notes.remove(daNote);
-						daNote.destroy();
 					}
 					if(onScreenNote) timeSinceOnscreenNote = 0.5;
 		 			var i = pressArray.length;

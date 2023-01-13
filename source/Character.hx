@@ -673,7 +673,6 @@ class CharAnimController extends FlxAnimationController{
 						if(charXml.substr(2).replace(String.fromCharCode(0),'').contains('UTF-16')){ // Flash CS6 outputs a UTF-16 xml even though no UTF-16 characters are usually used. This reformats the file to be UTF-8 *hopefully*
 							charXml = '<?' + charXml.substr(2).replace(String.fromCharCode(0),'').replace('UTF-16','utf-8');
 						}
-						File.saveContent('/tmp/test.xml',charXml);
 						tex = FlxAtlasFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
 					}
 					if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
@@ -760,7 +759,6 @@ class CharAnimController extends FlxAnimationController{
 
 		trace('Finished loading $curCharacter, Lets get funky!');
 	}
-
 
 
 	public static function newChar(x:Float, y:Float, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true):Character{
