@@ -137,19 +137,21 @@ class Alphabet extends FlxSpriteGroup
 		this.text = text;
 	}
 	inline function setup(){
-		if (text != "" && useAlphabet)
+		if (text != "")
 		{
+			if(!useAlphabet) forceFlxText = true;
 			listOAlphabets = new List<AlphaCharacter>();
 			addText();
 
-		}else if (text != "" && !useAlphabet){
-			textObj = new FlxText(0, 0, FlxG.width, text, 48);
-			textObj.scrollFactor.set();
-			textObj.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			textObj.borderSize = 3;
-			textObj.borderQuality = 1;
-			add(textObj);
 		}
+		// else if (text != "" && !useAlphabet){
+		// 	textObj = new FlxText(0, 0, FlxG.width, text, 48);
+		// 	textObj.scrollFactor.set();
+		// 	textObj.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		// 	textObj.borderSize = 3;
+		// 	textObj.borderQuality = 1;
+		// 	add(textObj);
+		// }
 	}
 
 	var xPos:Float = 0;

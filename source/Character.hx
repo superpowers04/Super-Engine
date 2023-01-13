@@ -1358,7 +1358,11 @@ class CharAnimController extends FlxAnimationController{
 	"char_pos": [],
 	"cam_pos1": [0, 300],
 	"clone": "",
-	"cam_pos2": [0, 0],
+
+	"cam_pos2" : [
+		 135,
+		246
+	],
 	"animations": [
 		{
 			"loop": false,
