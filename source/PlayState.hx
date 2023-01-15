@@ -143,7 +143,7 @@ class PlayState extends MusicBeatState
 		public var startingSong:Bool = false;
 		public var hasDied:Bool = false;
 		public static var offsetTesting:Bool = false;
-		public var canSaveScore(default,set):Bool = true;
+		public var canSaveScore(default,set):Bool = true; // Controls the ability for the game to save your score. Can be disabled but not re-enabled to prevent cheating
 		public function set_canSaveScore(val){ // Prevents being able to enable this if it's already been disabled.
 			if(!val){
 				canSaveScore = false;
@@ -160,7 +160,7 @@ class PlayState extends MusicBeatState
 
 	/* Notes & Strumline */
 		public static var noteBools:Array<Bool> = [false, false, false, false];
-		public static var p2canplay = false;//TitleState.p2canplay
+		public static var p2canplay = false;
 		public var notes:FlxTypedGroup<Note>;
 		public var eventNotes:FlxTypedGroup<Note>; // The above but doesn't need to update anything beyond the strumtime
 		public var unspawnNotes:Array<Note> = [];
@@ -3048,7 +3048,7 @@ class PlayState extends MusicBeatState
 										daNote.y += daNote.height * 0.5;
 	
 									// Only clip sustain notes when properly hit
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumNote.y + Note.swagWidth * 0.5))
+									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow && daNote.aiShouldPress) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumNote.y + Note.swagWidth * 0.5))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.frameHeight);
@@ -3074,7 +3074,7 @@ class PlayState extends MusicBeatState
 									else
 										daNote.y -= daNote.height * 0.5;
 									// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumNote.y - Note.swagWidth * 0.5))
+									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || dadShow && daNote.aiShouldPress) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumNote.y - Note.swagWidth * 0.5))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);

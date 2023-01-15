@@ -72,7 +72,7 @@ class Note extends FlxSkewedSprite
 	public var info:Array<Dynamic> = [];
 	public var rawNote:Array<Dynamic> = [];
 	
-	// public var kill:Bool = false;
+	// public var kill:Bool = false; 
 	public var rating:String = "shit";
 	public var eventNote:Bool = false;
 	public var aiShouldPress:Bool = true;
@@ -405,7 +405,7 @@ class Note extends FlxSkewedSprite
 						hit = function(?charID:Int = 0,note){if(FlxG.save.data.distractions) FlxG.camera.shake(info[0],info[1]);}; 
 						trace('BPM note processed');
 					}
-					case "camera follow pos" | "camfollowpos" | "cam follow": {
+					case "camera follow pos" | "camfollowpos" | "cam follow" | "cam follow position": {
 						try{
 							info = [Std.parseFloat(rawNote[3]),Std.parseFloat(rawNote[4])]; 
 						}catch(e){info = [0.7];}
