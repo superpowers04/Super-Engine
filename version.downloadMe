@@ -1,4 +1,4 @@
-1.0.0-U31_A;
+1.0.0-U32;
 - Port several Psych Engine note types(add camzoom, set camzoom, hey, camflash and screenshake). Their values should be the same as Psych engine to keep compatibility
 - Input optimisations
 - Stage backend now is less shit

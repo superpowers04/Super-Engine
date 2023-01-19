@@ -5,6 +5,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxObject;
+import flixel.group.FlxGroup;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -15,6 +16,7 @@ using StringTools;
 class NoteSplash extends FlxSprite
 {  
 	public var data:Int = 0;
+	public var grp:flixel.group.FlxTypedGroup<NoteSplash>;
 	override public function new()
 	{
 		try{
@@ -56,7 +58,7 @@ class NoteSplash extends FlxSprite
 
 	}
 
-	public function setupNoteSplash(?obj:FlxObject = null,?note:Int = 0)
+	public function setupNoteSplash(?obj:FlxObject = null,?note:Int = 0,grp:flixel.group.FlxTypedGroup<NoteSplash> = null)
 	{
 		try{
 			if(PlayState.instance != null){
@@ -118,11 +120,44 @@ class NoteSplash extends FlxSprite
 			if(PlayState.instance != null){
 				PlayState.instance.callInterp("setupNoteSplashAfter",[this]);
 			}
+			this.grp = grp;
 		}catch(e){MainMenuState.handleError(e,'Error while setting up a NoteSplash ${e.message}');
 		}
 		// offset.set(-0.5 * -width, 0.5 * -height);
 	}
-	function finished(name:String){
-		kill();
+
+
+	static var splashes:Array<NoteSplash> = [];
+	static var currentCount = 0;
+	public var inUse:Bool = false;
+
+	public static function newNoteSplash():NoteSplash{
+		var current = currentCount;
+		if(current > 9){
+			current = 0;
+		}
+		if(splashes[current] == null){
+			splashes[current] = new NoteSplash();
+		}else{
+			if(splashes[current].inUse){
+				splashes[current].animation.pause();
+				splashes[current].finished('hi');
+			}
+		}
+		currentCount++;
+		return splashes[current];
+	}
+	static public function unload(){
+		currentCount = 0;
+		for(splash in splashes){
+			splash.destroy();
+		}
+		while (splashes.length > 0){
+			splashes.pop();
+		}
+	}
+	dynamic public function finished(name:String){
+		currentCount--;
+		grp.remove(this);
 	}
 }

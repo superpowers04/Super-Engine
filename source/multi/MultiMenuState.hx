@@ -724,11 +724,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 	public static function fileDrop(file:String){
 		try{
+			trace('Attempting to load "$file"');
 			var voices = "";
 			var inst = "";
 			var dir = file.substr(0,file.lastIndexOf("/"));
 			var json = file.substr(file.lastIndexOf("/") + 1);
-			var name = file.substr(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
+			var name = json.substr(0,json.lastIndexOf("."));
 
 			var assets = getAssetsPathFromChart(file);
 			if(FileSystem.exists('${dir}/Inst.ogg')){ 
@@ -743,7 +744,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				inst = findFileFromAssets(assets,name,'Inst.ogg');
 				voices = findFileFromAssets(assets,name,'Voices.ogg');
 
-				if(inst == ""){ // Try without the extra - part, some songs only have a hard variant
+				if(inst == "" && name.lastIndexOf("-") != -1){ // Try without the extra - part, some songs only have a hard variant
 					var name = name.substr(0,name.lastIndexOf("-"));
 					inst = findFileFromAssets(assets,name,'Inst.ogg');
 					voices = findFileFromAssets(assets,name,'Voices.ogg');

@@ -835,6 +835,8 @@ class TitleState extends MusicBeatState
 	}
 
 	var transitioning:Bool = false;
+	var updateCheck:Bool = false;
+	var skipMM:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -874,6 +876,14 @@ class TitleState extends MusicBeatState
 			isShift = FlxG.keys.pressed.SHIFT;
 			shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else 0xFFFFFF);
 		}
+		#if !debug
+		// This is useless in debug mode since updates aren't checked for
+		if(pressedEnter && updateCheck && !skipMM){
+			updateCheck = false;
+			skipMM = true;
+			MainMenu();
+		}
+		#end
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
 
@@ -894,10 +904,11 @@ class TitleState extends MusicBeatState
 				AnimationDebug.fileDrop(Sys.args()[0]);
 			}
 			#if !debug
-			if (FlxG.keys.pressed.SHIFT || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
+			if (FlxG.keys.pressed.SHIFT || FlxG.keys.pressed.CONTROL || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
 				FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
 			else
 			{
+				new FlxTimer().start(0.5,function(_){try{updateCheck = true;}catch(e){}});
 
 				showTempmessage("Checking for updates..",FlxColor.WHITE);
 				tempMessage.screenCenter(X);
@@ -912,6 +923,7 @@ class TitleState extends MusicBeatState
 					
 					http.onData = function (data:String)
 					{
+						updateCheck = false;
 						checkedUpdate = true;
 						returnedData[0] = data.substring(0, data.indexOf(';'));
 						returnedData[1] = data.substring(data.indexOf('-'), data.length);
@@ -924,11 +936,15 @@ class TitleState extends MusicBeatState
 							outdated = true;
 							
 						}
+						if(skipMM) return;
+						skipMM = true;
 						MainMenu();
 					}
 					http.onError = function (error) {
-					  trace('error: $error');
-					  MainMenu(); // fail but we go anyway
+						trace('error: $error');
+						if(skipMM) return;
+						skipMM = true;
+						MainMenu();
 					}
 					
 					http.request();

@@ -16,10 +16,10 @@ import openfl.net.ServerSocket;
 import openfl.utils.ByteArray;
 import openfl.events.ServerSocketConnectEvent;
 
-typedef ConnectedPlayer = {
-	var nick:String;
-	var socket:Socket;
-	var receiver:Receiver;
+@:structInit class ConnectedPlayer {
+	public var nick:String;
+	public var socket:Socket;
+	public var receiver:Receiver;
 
 }
 
@@ -119,6 +119,8 @@ class OnlineHostMenu extends MusicBeatState
 			        }
 		        	trace('New connection! ${e.socket}');
 			        var socket = e.socket;
+					socket.endian = OnlinePlayMenuState.socket.endian;
+
 			        socket.addEventListener(IOErrorEvent.IO_ERROR, OnErrorSocket.bind(ID,_));
 			        socket.addEventListener(Event.CLOSE, OnCloseSock.bind(ID,_));
 			        socket.addEventListener(ProgressEvent.SOCKET_DATA, OnData.bind(ID,_));

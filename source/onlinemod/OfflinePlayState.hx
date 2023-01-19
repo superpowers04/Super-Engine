@@ -186,14 +186,10 @@ class OfflinePlayState extends PlayState
 		}
 	  }catch(e){MainMenuState.handleError(e,'Caught "create" crash: ${e.message}');}
 	}
-
-  override function startSong(?alrLoaded:Bool = false)
-  {
-	if (shouldLoadJson) FlxG.sound.playMusic(loadedInst, 1, false);
-
-	// We be good and actually just use an argument to not load the song instead of "pausing" the game
-	super.startSong(true);
-  }
+override function startCountdown(){
+	if(shouldLoadJson) FlxG.sound.playMusic(loadedInst, 1, false);
+	super.startCountdown();
+}
   override function generateSong(?dataPath:String = "")
   {
   //   // I have to code the entire code over so that I can remove the offset thing

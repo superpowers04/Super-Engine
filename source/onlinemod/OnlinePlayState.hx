@@ -164,21 +164,16 @@ class OnlinePlayState extends PlayState
 
 	override function startCountdown()
 	{
-		if (!ready)
-			return;
-
-		super.startCountdown();
-	}
-
-	override function startSong(?alrLoaded:Bool = false)
-	{
 		try{
+
+			if (!ready)
+				return;
 		FlxG.sound.playMusic(loadedInst, 1, false);
 
-		// We be good and actually just use an argument to not load the song instead of "pausing" the game
-		super.startSong(true);
-		
-	}catch(e){MainMenuState.handleError(e,'Crash in "startsong" caught: ${e.message}');}}
+		super.startCountdown();
+			
+		}catch(e){MainMenuState.handleError(e,'Crash in "startCountdown" caught: ${e.message}');}
+	}
 
 	override function generateSong(?dataPath:String = "")
 	{

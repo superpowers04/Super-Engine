@@ -37,6 +37,9 @@ class EmptyCharacter extends Character
 		this.isPlayer = isPlayer;
 		this.visible = false;
 		super(x, y,"lonely",false,0,false);
+		curCharacter = character = "lonely";
+		this.lonely = true;
+		this.visible = false;
 
 		var tex:FlxAtlasFrames = null; // Dunno why this fixed crash with BF but it did
 		tex = FlxAtlasFrames.fromSparrow(FlxGraphic.fromRectangle(2,2,0x00000000,false,'lonelyspr'), '<?xml version="1.0" encoding="utf-8"?>

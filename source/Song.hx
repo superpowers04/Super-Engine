@@ -326,8 +326,16 @@ class Song
 		try{
 		#end
 			var rawJson:Dynamic = Json.parse(rawJson.substr(0, rawJson.lastIndexOf("}") + 1));
-			var swagShit:SwagSong = cast rawJson.song;
-			swagShit.rawJSON = rawJson;
+			var swagShit:SwagSong = null;
+			if(rawJson == null || rawJson.song == null){
+				swagShit = getEmptySong();
+			}else if(rawJson.song is String){
+				swagShit = cast rawJson;
+				swagShit.rawJSON = rawJson;
+			}else if(rawJson.song.song != null){
+				swagShit = cast rawJson.song;
+				swagShit.rawJSON = rawJson;
+			}
 			swagShit.validScore = true;
 			if ((PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) && !charting) swagShit = invertChart(swagShit);
 			if(Math.isNaN(swagShit.offset)) swagShit.offset = 0;

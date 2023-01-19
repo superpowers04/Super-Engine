@@ -113,7 +113,7 @@ class DialogueBox extends FlxSpriteGroup
 
 			portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
 			portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
-			portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
+			portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 5.4));
 		}else{
 			// portraitLeft.makeGraphic(Std.int(PlayState.dad.width), Std.int(PlayState.dad.height), 0x00000000);
 			portraitLeft = new HealthIcon(PlayState.dad.curCharacter);
@@ -135,7 +135,7 @@ class DialogueBox extends FlxSpriteGroup
 
 			portraitRight.frames = Paths.getSparrowAtlas('weeb/bfPortrait');
 			portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
-			portraitRight.setGraphicSize(Std.int(portraitRight.width * PlayState.daPixelZoom * 0.9));
+			portraitRight.setGraphicSize(Std.int(portraitRight.width * 5.4));
 		}else{
 			// portraitRight.makeGraphic(Std.int(PlayState.boyfriend.width), Std.int(PlayState.boyfriend.height), 0x00000000);
 			portraitRight = new HealthIcon(PlayState.boyfriend.curCharacter,true);
@@ -155,7 +155,7 @@ class DialogueBox extends FlxSpriteGroup
 		box.animation.play('normalOpen');
 		if(pixelBox){
 
-			box.setGraphicSize(Std.int(box.width * PlayState.daPixelZoom * 0.9));
+			box.setGraphicSize(Std.int(box.width * 5.4));
 			box.updateHitbox();
 		}else{
 			box.y += Std.int(FlxG.height * 0.5);
