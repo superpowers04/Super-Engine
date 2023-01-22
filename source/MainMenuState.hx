@@ -278,8 +278,13 @@ class MainMenuState extends SickMenuState
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));
 		triedChar = false;
-		if(daChoice != "other" && daChoice != 'back'){
-			FlxTween.tween(grpControls.members[sel],{x:500},0.4,{ease:FlxEase.quadIn});
+		if(daChoice != "other" && daChoice != 'back' && daChoice != 'open mods folder'){
+			var _obj = grpControls.members[sel];
+			FlxTween.tween(_obj,{x:500},0.4,{ease:FlxEase.quadIn});
+			for (obj in grpControls.members){
+				if(obj == _obj) continue;
+				FlxTween.tween(obj,{x:-500},0.4,{ease:FlxEase.quadIn});
+			}
 		}
 		
 		switch (daChoice)

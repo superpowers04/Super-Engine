@@ -44,6 +44,7 @@ class HealthIcon extends FlxSprite
 	public function changeSprite(?char:String = 'face',?clone:String = "face",?useClone:Bool = true,?pathh:String = "mods/characters")
 	{
 		if(char == hichar) return;
+		if(char == "lonely") char = "face";
 		var chars:Array<String> = ["bf","gf","face",'EVENTNOTE'];
 		var relAnims:Bool = true;
 

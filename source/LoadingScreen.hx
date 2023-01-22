@@ -41,22 +41,22 @@ class LoadingScreen extends Sprite{
 		var loadingText = new Alphabet(0,0,txt,true);
 		loadingText.isMenuItem = false;
 		loadingText.visible = true;
-		// if(FlxG.save.data.doCoolLoading){
-		// 	loadingIcon = new Sprite();
-		// 	loadingIcon.x = 1240;
-		// 	loadingIcon.y = 550;
-		// 	addChild(loadingIcon);
-		// 	var note = new Note(0, 0, null,false,false);
-		// 	note.useFramePixels = true;
-		// 	note.draw();
-		// 	loadingIcon.graphics.beginBitmapFill(note.framePixels,false,true);
-		// 	loadingIcon.graphics.moveTo(0,0);
-		// 	// note.framePixels.width * -0.5,note.framePixels.height * -0.5
-		// 	loadingIcon.graphics.drawRect(0,0, note.framePixels.width, note.framePixels.height);
-		// 	loadingIcon.graphics.endFill();
-		// 	loadingIcon.scaleX = loadingIcon.scaleY= 0.25;
+		if(FlxG.save.data.doCoolLoading){
+			loadingIcon = new Sprite();
+			loadingIcon.x = 640;
+			loadingIcon.y = 300;
+			addChild(loadingIcon);
+			var note = new Note(0, 0, null,false,false);
+			note.useFramePixels = true;
+			note.draw();
+			loadingIcon.graphics.beginBitmapFill(note.framePixels,false,true);
+			// loadingIcon.graphics.moveTo();
+			// 
+			loadingIcon.graphics.drawRect(0,0, note.framePixels.width, note.framePixels.height);
+			loadingIcon.graphics.endFill();
+			loadingIcon.scaleX = loadingIcon.scaleY= 0.5;
 			
-		// }
+		}
 
 		var funniBitmap = new BitmapData(1290,730,false,0x100010);
 		var x = 1200;
@@ -135,6 +135,7 @@ class LoadingScreen extends Sprite{
 			if(FlxG.save.data.doCoolLoading){
 				if(loadingIcon != null){
 					loadingIcon.rotation += e * 0.05;
+					loadingIcon.rotation = loadingIcon.rotation % 360;
 				}
 				if(object.funni && alpha < 1){
 					alpha += e * 0.003;

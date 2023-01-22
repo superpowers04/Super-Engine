@@ -337,7 +337,7 @@ class Note extends FlxSkewedSprite
 						hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
 						trace('BPM note processed');
 					}
-					case /*"changecharacter" | "change character" | "changechar" | "change char"*/null: {
+					case "changecharacter" | "change character" | "changechar" | "change char": {
 						try{
 							info = [Std.string(rawNote[3]),rawNote[4]];
 							var _char = PlayState.getCharFromID(info[0]);
@@ -360,13 +360,18 @@ class Note extends FlxSkewedSprite
 									if(_char == null){return;}
 									// PlayState.charSet(charID,"visible",false);
 									PlayState.instance.members[PlayState.instance.members.indexOf(PlayState.getCharFromID(info[0]))] = _char;
+									var _oldChar = PlayState.getCharFromID(id);
 									Reflect.setProperty(PlayState,PlayState.getCharVariName(info[0]),_char);
+									_char.callInterp('changeChar',[_oldChar]); // Allows the character to play an animation or something upon change
+									PlayState.instance.callInterp('changeChar',[_char,_oldChar,id]);
 									// PlayState.instance.add(_char);
 								};
 
 							}
 							
-						}catch(e){}
+						}catch(e){
+							trace('Error trying to add char change note for ${rawNote[4]} -> ${rawNote[3]}:${e.message}');
+						}
 						// Replaces hit func
 					}
 					case "camflash" | "cameraflash" | "camera flash": {

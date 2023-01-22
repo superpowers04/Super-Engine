@@ -34,7 +34,6 @@ class SongScores {
 		}catch(e){
 			MusicBeatState.instance.showTempmessage('Unable to save scores! ${e.message}',0xFF0000);
 		}
-		trace("This is a save momentum");
 	}
 	public function exists(song:String):Bool{
 		return songNames.indexOf(song) != -1;

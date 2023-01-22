@@ -865,13 +865,15 @@ class PlayState extends MusicBeatState
 		var player2CharInfo = null;
 		callInterp("afterStage",[]);
 
+		if(!(SONG.forceCharacters || PlayState.isStoryMode || ChartingState.charting || isStoryMode)){
 
-		if (PlayState.player2 == "bf" || !FlxG.save.data.charAuto && !(PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode)){
-			PlayState.player2 = FlxG.save.data.opponent;
-    	}
-    	
-		if((PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || !FlxG.save.data.charAutoBF || !(PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode) ){
-			PlayState.player1 = FlxG.save.data.playerChar;
+			if (PlayState.player2 == "bf" || !FlxG.save.data.charAuto){
+				PlayState.player2 = FlxG.save.data.opponent;
+	    	}
+	    	
+			if((PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || !FlxG.save.data.charAutoBF ){
+				PlayState.player1 = FlxG.save.data.playerChar;
+			}
 		}
 		{
 			var p1List:Array<String> = [FlxG.save.data.playerChar];
@@ -2399,22 +2401,13 @@ class PlayState extends MusicBeatState
 		if(eventNotes.members.length > 0){
 			var i = 0;
 			var note:Note;
-			var noteKill:Array<Note> = [];
 			while (i < eventNotes.members.length){
 				note = eventNotes.members[i];
 				i++;
-				if(note != null){
-					if(note.strumTime <= Conductor.songPosition){
-						note.hit(note);
-						note.destroy();
-						noteKill.push(note);
-					}
-				}
-			}
-			while(noteKill.length > 0){
-				var n = noteKill.pop();
-				eventNotes.remove(n);
-
+				if(note == null || note.strumTime > Conductor.songPosition) continue;
+				note.hit(note);
+				eventNotes.remove(note);
+				note.destroy();
 			}
 		}
 

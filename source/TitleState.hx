@@ -243,11 +243,11 @@ class TitleState extends MusicBeatState
 		return (if(path == null || path.path == null) "" else path.path);
 	}
 	public static function checkCharacters(){
-
 		LoadingScreen.loadingText = 'Updating character list';
 		characters = [
-			{id:"bf",folderName:"bf",path:"assets/",internal:true,internalAtlas:"characters/BOYFRIEND",internalJSON:Character.BFJSON,description:"Base Character; Boyfriend, the funny rap guy"},
-			{id:"gf",folderName:"gf",path:"assets/",internal:true,internalAtlas:"characters/GF_assets",internalJSON:Character.GFJSON,description:"Base Character; Girlfriend, the funny boombox girl"}
+			{id:"bf",folderName:"bf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/BOYFRIEND",internalJSON:Character.BFJSON,description:"Base Character; Boyfriend, the funny rap guy"},
+			{id:"gf",folderName:"gf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/GF_assets",internalJSON:Character.GFJSON,description:"Base Character; Girlfriend, the funny boombox girl"},
+			{id:"lonely",folderName:"lonely",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"onlinemod/lonely",internalJSON:Character.BFJSON,description:"Base Character; Lonely, Not much is known about them besides their ability to mimic any voice, they're invisible and very shy"},
 		];
 		invalidCharacters = [];
 		#if sys

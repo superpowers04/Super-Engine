@@ -27,7 +27,7 @@ class Ratings
 		{name:"actual bot moment",accuracy:-100}
 	];
 	public static function getLetterRankFromAcc(?accuracy:Float = 0) // generate a letter ranking
-	{
+	{ 
 		var ranking = "N/A";
 		for (ranking in rankings){
 			if(accuracy >= ranking.accuracy){
@@ -62,8 +62,6 @@ class Ratings
 
 		if (accuracy == 0)
 			ranking = "N/A";
-		else if(FlxG.save.data.botplay)
-			ranking = "BotPlay";
 
 		return ranking;
 	}
