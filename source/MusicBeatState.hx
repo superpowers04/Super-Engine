@@ -123,10 +123,11 @@ class MusicBeatState extends FlxUIState
 			uiMap[i] = null;
 		}
 	}
+	var oldBeat:Int = -10000;
+	var oldStep:Int = -10000;
 	override function update(elapsed:Float)
 	{
 		//everyStep();
-		var oldStep:Int = curStep;
 
 		updateCurStep();
 		updateBeat();
@@ -139,8 +140,10 @@ class MusicBeatState extends FlxUIState
 			throw("Manually triggered error");
 		}
 
-		if (oldStep != curStep && curStep > 0)
+		if (oldStep != curStep && curStep > 0){
+			oldStep = curStep;
 			stepHit();
+		}
 		if(FlxG.mouse.justPressed && checkInputFocus && FlxG.mouse.visible){
 			var hasPressed = false;
 
@@ -202,11 +205,14 @@ class MusicBeatState extends FlxUIState
 			songTime: 0,
 			bpm: 0
 		}
-		for (i in 0...Conductor.bpmChangeMap.length)
-		{
-			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime){
-				lastChange = Conductor.bpmChangeMap[i];
-			}else break;
+		if(Conductor.bpmChangeMap != null){
+			
+			for (i in 0...Conductor.bpmChangeMap.length)
+			{
+				if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime){
+					lastChange = Conductor.bpmChangeMap[i];
+				}else break;
+			}
 		}
 
 		var prog = (Conductor.offset + Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet;
@@ -216,8 +222,11 @@ class MusicBeatState extends FlxUIState
 
 	public function stepHit():Void
 	{
-		if (curStep % 4 == 0)
+		if (curStep % 4 == 0 && oldBeat != curBeat){
+			oldBeat = curBeat;
 			beatHit();
+
+		}
 	}
 
 	public function beatHit():Void
