@@ -99,7 +99,18 @@ class SearchMenuState extends MusicBeatState
 		if(Note.noteDirections[0] == null){Note.noteDirections = ["LEFT","DOWN","UP",'RIGHT','NONE'];}
 		Conductor.offset = 0;
 		onlinemod.OfflinePlayState.nameSpace = "";
-
+		if(FlxG.save.data.persistBF == null && PlayState.boyfriend != null){
+			try{PlayState.boyfriend.destroy();}catch(e){}
+			PlayState.boyfriend = null;
+		} 
+		if(FlxG.save.data.persistGF == null && PlayState.gf != null){
+			try{PlayState.gf.destroy();}catch(e){}
+			PlayState.gf = null;
+		} 
+		if(/*FlxG.save.data.persistOpp == null &&*/ PlayState.dad != null){
+			try{PlayState.dad.destroy();}catch(e){}
+			PlayState.dad = null;
+		} 
 		#if discord_rpc
 			DiscordClient.changePresence('Admiring the menus',"Probably configurin something or choosing a song");
 		#end
@@ -256,7 +267,7 @@ class SearchMenuState extends MusicBeatState
 			
 			grpSongs.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();
-			curTween = FlxTween.tween(grpSongs.members[curSelected],{"scale.x":1,"scale.y":1},(60 / Conductor.bpm),{ease:FlxEase.circOut});
+			curTween = FlxTween.tween(grpSongs.members[curSelected],{"scale.x":1,"scale.y":1},Conductor.stepCrochet * 0.003,{ease:FlxEase.circOut});
 		}
 	}
 	function ret(){

@@ -95,35 +95,16 @@ class HSBrTools {
 			handleError('${id}: SparrowFrame XML "${path}${pngPath}.xml" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
-		if(spriteArray[pngPath + ".png"] == null){ 
-			cacheGraphic('${pngPath}.png');
-		}
-		if(xmlArray[pngPath + ".xml"] == null) xmlArray[pngPath + ".xml"] = File.getContent('${path}${pngPath}.xml');
 
-		return FlxAtlasFrames.fromSparrow(spriteArray[pngPath + ".png"],xmlArray[pngPath + ".xml"]);
+		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath + ".png"),loadXML(pngPath + ".xml"));
 	}
 	public function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
-
-		if(!FileSystem.exists('${path}${pngPath}.png')){
-			handleError('${id}: SparrowSprite PNG "${path}${pngPath}.png" doesn\'t exist!');
-			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
-		}
-		if(!FileSystem.exists('${path}${pngPath}.xml')){
-			handleError('${id}: SparrowSprite XML "${path}${pngPath}.xml" doesn\'t exist!');
-			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
-		}
-		if(spriteArray[pngPath + ".png"] == null){ 
-			cacheGraphic('${pngPath}.png');
-		}
 		var spr = new FlxSprite(x, y);
-		if(xmlArray[pngPath + ".xml"] == null) xmlArray[pngPath + ".xml"] = File.getContent('${path}${pngPath}.xml');
-
-		spr.frames= FlxAtlasFrames.fromSparrow(spriteArray[pngPath + ".png"],xmlArray[pngPath + ".xml"]);
+		spr.frames= loadSparrowFrames(pngPath);
 		if (anim != ""){
 			spr.animation.addByPrefix(anim,anim,fps,loop);
 			spr.animation.play(anim);
 		}
-
 		return spr;
 	}
 	public function reset(){
@@ -136,6 +117,11 @@ class HSBrTools {
 	public function loadText(textPath:String):String{
 		if(textArray[textPath] == null) textArray[textPath] = File.getContent('${path}${textPath}');
 		return textArray[textPath];
+	}
+	// The above but hits the xml cache instead
+	public function loadXML(textPath:String):String{
+		if(xmlArray[textPath] == null) xmlArray[textPath] = File.getContent('${path}${textPath}');
+		return xmlArray[textPath];
 	}
 	public function loadShader(textPath:String,?glslVersion:Int = 120):Null<FlxRuntimeShader>{
 		if(textArray[textPath + ".vert"] == null && FileSystem.exists('${path}${textPath}.vert')) textArray[textPath + ".vert"] = File.getContent('${path}${textPath}.vert');
@@ -167,8 +153,7 @@ class HSBrTools {
 
 	public function playSound(soundPath:String,?volume:Float = 0.662121):FlxSound{
 		if(volume == 0.662121) volume = FlxG.save.data.otherVol;
-		if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
-		return FlxG.sound.play(soundArray[soundPath],volume);
+		return FlxG.sound.play(loadSound(soundPath),volume);
 	}
 
 	public function unloadSound(soundPath:String){
@@ -199,9 +184,8 @@ class HSBrTools {
 	}
 	public function cacheGraphic(pngPath:String,?dumpGraphic:Bool = false){ // DOES NOT CHECK IF FILE IS VALID!
 		
-		if(bitmapArray[pngPath] == null){
-			bitmapArray[pngPath] = BitmapData.fromFile('${path}${pngPath}');
-		}
+		if(bitmapArray[pngPath] == null) bitmapArray[pngPath] = BitmapData.fromFile('${path}${pngPath}');
+		
 		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(bitmapArray[pngPath]);
 		if(spriteArray[pngPath] == null) handleError('${id} : cacheGraphic: Unable to load $pngPath into a FlxGraphic!');
 		// if(dumpGraphic || dumpGraphics) spriteArray[pngPath].dump();

@@ -256,6 +256,7 @@ class ChartingState extends MusicBeatState
 		if (FlxG.save.data.showHelp == null)
 			FlxG.save.data.showHelp = true;
 
+		LoadingScreen.loadingText = "Adding objects";
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, GRID_SIZE * 16);
 		add(gridBG);
 		gridBGAbove = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, GRID_SIZE * 16);
@@ -287,12 +288,14 @@ class ChartingState extends MusicBeatState
 
 		updateGrid();
 
+		LoadingScreen.loadingText = "Loading song";
 		loadSong();
 		loadAudioBuffer();
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 		Conductor.songPosition = time;
 
+		LoadingScreen.loadingText = "Loading objects part 2";
 		evNote = new Note(0,-1,null,false,true,"PLACEHOLDERICON",[0,-1,"PLACEHOLDERICON"]);
 		// evNote = new HealthIcon("EVENTNOTE");
 		leftIcon = new HealthIcon(_song.player1,true);
@@ -386,6 +389,7 @@ class ChartingState extends MusicBeatState
 		gridBGAbove.alpha = 0.7;
 		gridBGBelow.alpha = 0.7;
 
+		LoadingScreen.loadingText = "Finishing up";
 		super.create();
 		if(time != 0){
 			Conductor.songPosition = time;
@@ -541,7 +545,7 @@ class ChartingState extends MusicBeatState
 		typingShit = UI_songTitle;
 
 
-		var saveButton:FlxButton = new FlxButton(200, 10, "Save", function()
+		var saveButton:FlxButton = new FlxButton(220, 10, "Save", function()
 		{
 			saveLevel();
 		});
@@ -557,7 +561,7 @@ class ChartingState extends MusicBeatState
 		});
 
 		
-		var restart = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y + 40,"Reset Chart", function()
+		var restart = new FlxButton(saveButton.x, saveButton.y + 40,"Reset Chart", function()
             {
                 for (ii in 0..._song.notes.length)
                 {
@@ -582,10 +586,10 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var stepperBPMOffsetLabel = new FlxText(74,80,'BPM Offset');
-		var stepperBPMOffset:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0, 1, -9999, 9999, 0);
-		stepperBPMOffset.value = Conductor.offset;
-		stepperBPMOffset.name = 'song_offset';
+		// var stepperBPMOffsetLabel = new FlxText(74,80,'BPM Offset');
+		// var stepperBPMOffset:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0, 1, -9999, 9999, 0);
+		// stepperBPMOffset.value = Conductor.offset;
+		// stepperBPMOffset.name = 'song_offset';
 		
 		var stepperSpeedLabel = new FlxText(74,95,'Scroll Speed');
 		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 95, 0.1, 1, 0.1, 10, 3);

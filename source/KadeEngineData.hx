@@ -184,6 +184,11 @@ class KadeEngineData
 		if(FlxG.save.data.doCoolLoading == null) FlxG.save.data.doCoolLoading = false;
 		if(FlxG.save.data.fullscreen == null) FlxG.save.data.fullscreen = false;
 
+
+		if(FlxG.save.data.persistBF == null) FlxG.save.data.persistBF = false;
+		if(FlxG.save.data.persistGF == null) FlxG.save.data.persistGF = false;
+		// if(FlxG.save.data.persistOpp == null) FlxG.save.data.persistOpp = false;
+
 		// if(FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
 
 		// if(FlxG.save.data.playStateObjectLocations == null) FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();

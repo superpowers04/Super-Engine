@@ -258,7 +258,7 @@ class SickMenuState extends MusicBeatState
 			
 			grpControls.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();
-			curTween = FlxTween.tween(grpControls.members[curSelected].scale,{x:1,y:1},(60 / Conductor.bpm),{ease:FlxEase.circOut});
+			curTween = FlxTween.tween(grpControls.members[curSelected].scale,{x:1,y:1},Conductor.stepCrochet * 0.003,{ease:FlxEase.circOut});
 		}
 	}
 	function select(sel:Int){

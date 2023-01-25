@@ -340,6 +340,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				#if windows
 				selSong = selSong.replace("\\","/"); // Who decided this was a good idea?
 				#end
+				LoadingScreen.loadingText = "Setting up variables";
 				onlinemod.OfflinePlayState.chartFile = '${selSong}/${songJSON}';
 				PlayState.isStoryMode = false;
 				// Set difficulty
@@ -366,6 +367,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}else{
 					onlinemod.OfflinePlayState.voicesFile = voicesFile;
 				}
+				LoadingScreen.loadingText = "Finding scripts";
 				for (file in FileSystem.readDirectory(selSong)) {
 					if((file.endsWith(".hscript") || file.endsWith(".hx")) && !FileSystem.isDirectory(file)){
 						PlayState.scripts.push('${selSong}/$file');
@@ -388,12 +390,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						}
 					}
 				}
-				
 				// if (FileSystem.exists('${selSong}/script.hscript')) {
 				// 	trace("Song has script!");
 				// 	MultiPlayState.scriptLoc = '${selSong}/script.hscript';
 					
 				// }else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
+				LoadingScreen.loadingText = "Creating PlayState";
+
 				PlayState.nameSpace = selSong;
 				PlayState.stateType = 4;
 				FlxG.sound.music.fadeOut(0.4);

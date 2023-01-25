@@ -117,6 +117,7 @@ class OfflinePlayState extends PlayState
   function loadJSON(){
 	try{
 
+		LoadingScreen.loadingText = "Loading chart JSON";
 		if (!ChartingState.charting) {
 				if(chartFile.endsWith(".sm")){
 					PlayState.SONG = smTools.SMFile.loadFile(chartFile).convertToFNF();

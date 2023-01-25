@@ -69,6 +69,9 @@ class CharAnimController extends FlxAnimationController{
 
 @:structInit class Character extends FlxSprite
 {
+
+
+
 	/* Animations */
 		public var animationList:Array<CharJsonAnimation> = [];
 		public var animOffsets:Map<String, Array<Float>> = ["all" => [0.0,0.0]];
@@ -86,6 +89,47 @@ class CharAnimController extends FlxAnimationController{
 		// 10 is used for any sing animations, like dodge, hurt, sing or attack animations
 		// 15 is used for missing notes
 		// 100  
+		static var animCaseInsensitive:Map<String,String> = [
+			"singleft-alt" => "singLEFT-alt",
+			"singdown-alt" => "singDOWN-alt",
+			"singup-alt" => "singUP-alt",
+			"singright-alt" => "singRIGHT-alt",
+			"idle-alt" => "idle-alt",
+			"singleft" => "singLEFT",
+			"singdown" => "singDOWN",
+			"singup" => "singUP",
+			"singright" => "singRIGHT",
+			"singleftmiss" => "singLEFTmiss",
+			"singdownmiss" => "singDOWNmiss",
+			"singupmiss" => "singUPmiss",
+			"singrightmiss" => "singRIGHTmiss",
+			"idle" => "idle",
+			"danceright" => "danceRight",
+			"danceleft" => "danceLeft",
+			"hey" => "hey",
+			"cheer" => "cheer",
+			"scared" => "scared",
+			"win" => "win",
+			"lose" => "lose",
+			"hurt" => "hurt",
+			"hit" => "hit",
+			"attack" => "attack",
+			"shoot" => "shoot",
+			"attackleft" => "attackLeft",
+			"attackup" => "attackUp",
+			"attackdown" => "attackDown",
+			"attackright" => "attackRight",
+			"shootleft" => "shootLeft",
+			"shootright" => "shootRight",
+			"shootup" => "shootUp",
+			"shootdown" => "shootDown",
+			"dodge" => "dodge",
+			"dodgeleft" => "dodgeLeft",
+			"dodgeright" => "dodgeRight",
+			"dodgeup" => "dodgeUp",
+			"dodgedown" => "dodgeDown",
+			"songstart" => "songStart"
+		];
 		public var animationPriorities:Map<String,Int> = [
 			"singLEFT-alt" => 10,
 			"singDOWN-alt" => 10,
@@ -125,10 +169,18 @@ class CharAnimController extends FlxAnimationController{
 			"scared" => 13,
 			"win" => 100,
 			"lose" => 100,
-			"hurt" => 10,
-			"hit" => 10,
-			"attack" => 10,
-			"shoot" => 10,
+			"hurt" => 20,
+			"hit" => 20,
+			"attack" => 20,
+			"shoot" => 20,
+			"attackLeft" => 20,
+			"shootLeft" => 20,
+			"attackRight" => 20,
+			"shootRight" => 20,
+			"attackUp" => 20,
+			"shootUp" => 20,
+			"attackDown" => 20,
+			"shootDown" => 20,
 			"dodge" => 10,
 			"dodgeLeft" => 10,
 			"dodgeRight" => 10,
@@ -365,6 +417,7 @@ class CharAnimController extends FlxAnimationController{
 				try{if (anima.anim.substr(-4) == "-alt"){hasAlts=true;} // Alt Checking
 				if (anima.stage != "" && anima.stage != null){if(PlayState.curStage.toLowerCase() != anima.stage.toLowerCase()){continue;}} // Check if animation specifies stage, skip if it doesn't match PlayState's stage
 				if (anima.song != "" && anima.song != null){if(PlayState.SONG.song.toLowerCase() != anima.song.toLowerCase()){continue;}} // Check if animation specifies song, skip if it doesn't match PlayState's song
+				if (animCaseInsensitive[anima.anim] != null) anima.anim = animCaseInsensitive[anima.anim];
 				if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
 				if (anima.char_side != null && anima.char_side != 3 && anima.char_side == charType){continue;} // This if statement hurts my brain
 				if (anima.ifstate != null){
@@ -516,9 +569,6 @@ class CharAnimController extends FlxAnimationController{
 
 		if(charProperties.flip != null) flip = charProperties.flip;
 		clonedChar = charProperties.clone;
-		// if (clonedChar != null && clonedChar != "") {
-		// 	addOffsets(clonedChar);
-		// }
 		if (charProperties.like != null && charProperties.like != "") clonedChar = charProperties.like;
 		loadOffsetsFromJSON(charProperties);
 	}
@@ -530,16 +580,6 @@ class CharAnimController extends FlxAnimationController{
 		}
 	}
 	function loadCustomChar(){
-		// if(amPreview){
-		// 	charLoc = TitleState.findInvalidChar(curCharacter);
-		// 	if(charLoc == null){
-		// 		if(charInfo == null) charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
-		// 		curCharacter = charInfo.folderName; // Make sure you're grabbing the right character
-		// 		charLoc = charInfo.path;
-		// 		namespace = charInfo.nameSpace;
-		// 		trace(charInfo);
-		// 	}
-		// }else{
 		if(charInfo == null) charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
 		curCharacter = charInfo.folderName;
 		charLoc = charInfo.path;
@@ -648,8 +688,7 @@ class CharAnimController extends FlxAnimationController{
 							if (tagsMatched == 0) continue;
 						}
 						
-						if (forced == 0 || tagsMatched == forced)
-							selAssets = i;
+						if (forced == 0 || tagsMatched == forced) selAssets = i;
 					}
 					if (selAssets != -10){
 						if (charProperties.asset_files[selAssets].png != null )pngName=charProperties.asset_files[selAssets].png;
@@ -860,15 +899,9 @@ class CharAnimController extends FlxAnimationController{
 			}
 		}
 
-		if (charType == 2 && !curCharacter.startsWith("gf")){ // Checks if GF is not girlfriend
-			if(animation.getByName('danceRight') == null){ // Convert sing animations into dance animations for when put as GF
-				cloneAnimation('danceRight',animation.getByName('singRIGHT'));
-				cloneAnimation('danceLeft',animation.getByName('singLEFT'));
-				
-			}	
-			if (!clonedChar.startsWith("gf")){ // Force offset if clone is not GF
-				charY+=200;
-			}
+		if (charType == 2 && !curCharacter.startsWith("gf") && !clonedChar.startsWith("gf")){ // Checks if GF is not girlfriend, Force offset if clone is not GF
+			charY+=200;
+			
 		}
 		this.y += charY;
 		this.x += charX;

@@ -907,21 +907,37 @@ class PlayState extends MusicBeatState
 			}
 			if (FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
 			gfChar = player3;
-			gf = (if (FlxG.save.data.gfShow && loadChars && gfShow) new Character(400, 100, player3,false,2) else new EmptyCharacter(400, 100));
+			if(gf== null || !FlxG.save.data.persistGF || (!FlxG.save.data.gfShow && !Std.isOfType(gf,EmptyCharacter)) || gf.getNamespacedName() != player2){
+				gf = (if (FlxG.save.data.gfShow && gfShow) new Character(400, 100, player3,false,2) else new EmptyCharacter(400, 100));
+			}else{
+				gf.x = 400;
+				gf.y = 100;
+			}
 			gf.scrollFactor.set(0.95, 0.95);
 			
 			LoadingScreen.loadingText = "Loading opponent";
 			if (!ChartingState.charting && SONG.player1.startsWith("gf") && FlxG.save.data.charAuto) player1 = FlxG.save.data.gfChar;
 			if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
 
-			dad = (if (dadShow && FlxG.save.data.dadShow && loadChars && !(player3 == player2 && player1 != player2))
+			// if(dad == null || !FlxG.save.data.persistOpp || (!(dadShow || FlxG.save.data.dadShow) && !Std.isOfType(dad,EmptyCharacter)) || dad.getNamespacedName() != player2){
+				dad = (if (dadShow && FlxG.save.data.dadShow && !(player3 == player2 && player1 != player2))
 			      {x:100, y:100, charInfo:player2CharInfo,isPlayer:false,charType:1}
 			      else new EmptyCharacter(100, 100));
+			// }else{
+				// dad.x = 100;
+				// dad.y = 100;
+			// }
 
 			LoadingScreen.loadingText = "Loading BF";
-			boyfriend = (if (FlxG.save.data.bfShow && loadChars) 
-			             {x:770, y:100, charInfo:player1CharInfo,isPlayer:true,charType:0} 
-			             else new EmptyCharacter(770,100));
+			if(boyfriend == null || !FlxG.save.data.persistBF || (!FlxG.save.data.bfShow && !Std.isOfType(boyfriend,EmptyCharacter)) || boyfriend.getNamespacedName() != player1){
+				boyfriend = (if (FlxG.save.data.bfShow)
+				             {x:770, y:100, charInfo:player1CharInfo,isPlayer:true,charType:0} 
+				             else new EmptyCharacter(770,100));
+			}else{
+				boyfriend.x = 770;
+				boyfriend.y = 100;
+				boyfriend.playAnim('songStart');
+			}
 		}else{
 			dad = new EmptyCharacter(100, 100);
 			boyfriend = new EmptyCharacter(400,100);
@@ -1017,8 +1033,8 @@ class PlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<StrumArrow>();
 		add(strumLineNotes);
 		// Note splashes
-		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
-		var noteSplash0:NoteSplash = NoteSplash.newNoteSplash();
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>(10);
+		var noteSplash0:NoteSplash = new NoteSplash();
 		noteSplash0.setupNoteSplash(boyfriend, 0);
 		// noteSplash0.cameras = [camHUD];
 
@@ -2699,8 +2715,8 @@ class PlayState extends MusicBeatState
 						totalNotesHit += 1;
 					sicks++;
 					if (FlxG.save.data.noteSplash){
-						var a:NoteSplash = NoteSplash.newNoteSplash();
-						a.setupNoteSplash(playerStrums.members[daNote.noteData], daNote.noteData,grpNoteSplashes);
+						var a:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
+						a.setupNoteSplash(playerStrums.members[daNote.noteData], daNote.noteData);
 						lastNoteSplash = a;
 						grpNoteSplashes.add(a);
 						callInterp('spawnNoteSplash',[a]);
@@ -3194,14 +3210,12 @@ class PlayState extends MusicBeatState
 		 			pressArray = _pressArray;
 		 		}
 				// HOLDS, check for sustain notes
-				if (generatedMusic && (holdArray.contains(true) || releaseArray.contains(true)))
-				{
+				if (generatedMusic && (holdArray.contains(true) || releaseArray.contains(true))) {
 
 		 			var daNote:Note;
 		 			var i:Int = 0;
 					
-					while(i < notes.members.length)
-					{
+					while(i < notes.members.length){
 						daNote = notes.members[i];
 						i++;
 						if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.canBeHit) continue;
@@ -3222,12 +3236,10 @@ class PlayState extends MusicBeatState
 					boyfriend.holdTimer = 0;
 		 
 					var possibleNotes:Array<Note> = [null,null,null,null]; // notes that can be hit
-					var dumbNotes:Array<Note> = []; // notes to kill later
 		 			var onScreenNote:Bool = false;
 		 			var i = notes.members.length;
 		 			var daNote:Note;
-		 			while (i >= 0)
-					{
+		 			while (i >= 0) {
 						daNote = notes.members[i];
 						i--;
 						if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) continue;
@@ -3263,22 +3275,18 @@ class PlayState extends MusicBeatState
 		 		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);
 		 		charCall("keyShitAfter",[pressArray,holdArray,hitArray]);
 				boyfriend.isPressingNote = holdArray.contains(true);
-				if (boyfriend.currentAnimationPriority == 10 && (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 || boyfriend.isDonePlayingAnim()) && !boyfriend.isPressingNote)
-				{
+				if (boyfriend.currentAnimationPriority == 10 && (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 || boyfriend.isDonePlayingAnim()) && !boyfriend.isPressingNote) {
 					boyfriend.dance(true,curBeat % 2 == 1);
 				}
 
 		 
 	 			var i = playerStrums.members.length - 1;
 	 			var spr:StrumArrow;
-	 			while (i >= 0)
-				{
+	 			while (i >= 0){
 					spr = playerStrums.members[i];
 					i--;
-					if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
-						spr.press();
-					if (!holdArray[spr.ID])
-						spr.playStatic();
+					if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm') spr.press();
+					if (!holdArray[spr.ID]) spr.playStatic();
 				}
 
 			}
@@ -4090,7 +4098,6 @@ class PlayState extends MusicBeatState
 		
 	// }
 	override function destroy(){
-		NoteSplash.unload();
 		callInterp("destroy",[]);
 		super.destroy();
 	}

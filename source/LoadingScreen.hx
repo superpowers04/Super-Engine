@@ -8,6 +8,7 @@ import flixel.tweens.FlxTween;
 import flash.display.BitmapData;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+import flixel.math.FlxMath;
 import flixel.text.FlxText;
 
 class LoadingScreen extends Sprite{
@@ -26,6 +27,7 @@ class LoadingScreen extends Sprite{
 	var textField:TextField;
 	// var loadingText:Alphabet;
 	var loadingIcon:Sprite;
+	var vel:Float = 0;
 
 	public override function new(?txt = "loading"){
 		super();
@@ -134,8 +136,9 @@ class LoadingScreen extends Sprite{
 			}
 			if(FlxG.save.data.doCoolLoading){
 				if(loadingIcon != null){
-					loadingIcon.rotation += e * 0.05;
+					loadingIcon.rotation += e * vel;
 					loadingIcon.rotation = loadingIcon.rotation % 360;
+					vel = FlxMath.lerp(0.02,vel,e * 0.001); // This is shit but I don't care, it's funny
 				}
 				if(object.funni && alpha < 1){
 					alpha += e * 0.003;
@@ -163,6 +166,7 @@ class LoadingScreen extends Sprite{
 	} 
 	function updateText(){
 		textField.htmlText = loadingText;
+		if(loadingIcon != null) vel += 0.15;
 		// textField.x = (1280 * 0.5) - textField.width;
 	}
 	public static var tween:FlxTween;

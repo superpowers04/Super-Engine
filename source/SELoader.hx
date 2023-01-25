@@ -406,8 +406,7 @@ class InternalCache{
 			handleError('${id}: Image "${pngPath}" doesn\'t exist!');
 			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
 		}
-		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${pngPath}'));
-		return new FlxSprite(x, y).loadGraphic(spriteArray[pngPath]);
+		return new FlxSprite(x, y).loadGraphic(loadGraphic(pngPath));
 	}
 	public function loadGraphic(pngPath:String):FlxGraphic{
 		if(!FileSystem.exists('${pngPath}')){

@@ -412,10 +412,17 @@ class Note extends FlxSkewedSprite
 					}
 					case "camera follow pos" | "camfollowpos" | "cam follow" | "cam follow position": {
 						try{
-							info = [Std.parseFloat(rawNote[3]),Std.parseFloat(rawNote[4])]; 
-						}catch(e){info = [0.7];}
+							info = [Std.parseFloat(rawNote[3]),Std.parseFloat(rawNote[4])];
+							if(Math.isNaN(info[0])) info[0] = 0; 
+							if(Math.isNaN(info[1])) info[1] = 0; 
+						}catch(e){info = [0,0];}
 						// Replaces hit func
-						hit = function(?charID:Int = 0,note){PlayState.instance.moveCamera = false; PlayState.instance.camFollow.x = info[0];PlayState.instance.camFollow.y = info[1];}; 
+						hit = function(?charID:Int = 0,note){
+							
+							PlayState.instance.moveCamera = (info[0] == 0 && info[1] == 0);
+							if(info[0] != 0 )PlayState.instance.camFollow.x = info[0];
+							if(info[1] != 0 )PlayState.instance.camFollow.y = info[1];
+						}; 
 
 					}
 					case "changescrollspeed": {

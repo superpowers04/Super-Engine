@@ -281,6 +281,7 @@ class MainMenuState extends SickMenuState
 		if(daChoice != "other" && daChoice != 'back' && daChoice != 'open mods folder'){
 			var _obj = grpControls.members[sel];
 			FlxTween.tween(_obj,{x:500},0.4,{ease:FlxEase.quadIn});
+			FlxTween.tween(_obj,{x:500},0.4,{ease:FlxEase.quadIn});
 			for (obj in grpControls.members){
 				if(obj == _obj) continue;
 				FlxTween.tween(obj,{x:-500},0.4,{ease:FlxEase.quadIn});
