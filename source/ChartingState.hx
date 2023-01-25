@@ -669,8 +669,8 @@ class ChartingState extends MusicBeatState
 		// tab_group_song.add(fixchart);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperBPMLabel);
-		tab_group_song.add(stepperBPMOffset);
-		tab_group_song.add(stepperBPMOffsetLabel);
+		// tab_group_song.add(stepperBPMOffset);
+		// tab_group_song.add(stepperBPMOffsetLabel);
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(stepperSpeedLabel);
 		tab_group_song.add(stepperVocalVol);
@@ -693,8 +693,8 @@ class ChartingState extends MusicBeatState
 		// uiMap["fixchart"] = fixchart;
 		uiMap["stepperBPM"] = stepperBPM;
 		uiMap["stepperBPMLabel"] = stepperBPMLabel;
-		uiMap["stepperBPMOffset"] = stepperBPMOffset;
-		uiMap["stepperBPMOffsetLabel"] = stepperBPMOffsetLabel;
+		// uiMap["stepperBPMOffset"] = stepperBPMOffset;
+		// uiMap["stepperBPMOffsetLabel"] = stepperBPMOffsetLabel;
 		uiMap["stepperSpeed"] = stepperSpeed;
 		uiMap["stepperSpeedLabel"] = stepperSpeedLabel;
 		uiMap["stepperVocalVol"] = stepperVocalVol;
@@ -758,7 +758,7 @@ class ChartingState extends MusicBeatState
 		forceChars.checked = _song.forceCharacters;
 		forceChars.callback = function()
 		{
-			_song.forceCharacters = !forceChars.checked;
+			_song.forceCharacters = forceChars.checked;
 		};
 		waveformUseInstrumental = new FlxUICheckBox(waveformEnabled.x + 140, waveformEnabled.y, null, null, "Waveform for Instrumental", 100);
 		waveformUseInstrumental.checked = !_song.needsVoices;

@@ -858,9 +858,13 @@ class PlayState extends MusicBeatState
 				parseHScript(onlinemod.OnlinePlayMenuState.rawScripts[i][1],hsBrTools,onlinemod.OnlinePlayMenuState.rawScripts[i][0],'onlineScript:$i');
 			}
 		}
+		var bfShow = FlxG.save.data.bfShow;
 		if(PlayState.player1 == "")PlayState.player1 = SONG.player1;
 		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
+		if(PlayState.player1 == "" || PlayState.player1 == "lonely") bfShow = false;
+		if(PlayState.player2 == "" || PlayState.player2 == "lonely") dadShow = false;
+		if(PlayState.player3 == "" || PlayState.player3 == "lonely") gfShow = false;
 		var player1CharInfo = null;
 		var player2CharInfo = null;
 		callInterp("afterStage",[]);
@@ -920,6 +924,7 @@ class PlayState extends MusicBeatState
 			if (!ChartingState.charting && SONG.player2.startsWith("gf") && FlxG.save.data.charAuto) player2 = FlxG.save.data.gfChar;
 
 			// if(dad == null || !FlxG.save.data.persistOpp || (!(dadShow || FlxG.save.data.dadShow) && !Std.isOfType(dad,EmptyCharacter)) || dad.getNamespacedName() != player2){
+			
 				dad = (if (dadShow && FlxG.save.data.dadShow && !(player3 == player2 && player1 != player2))
 			      {x:100, y:100, charInfo:player2CharInfo,isPlayer:false,charType:1}
 			      else new EmptyCharacter(100, 100));
@@ -930,7 +935,7 @@ class PlayState extends MusicBeatState
 
 			LoadingScreen.loadingText = "Loading BF";
 			if(boyfriend == null || !FlxG.save.data.persistBF || (!FlxG.save.data.bfShow && !Std.isOfType(boyfriend,EmptyCharacter)) || boyfriend.getNamespacedName() != player1){
-				boyfriend = (if (FlxG.save.data.bfShow)
+				boyfriend = (if (bfShow)
 				             {x:770, y:100, charInfo:player1CharInfo,isPlayer:true,charType:0} 
 				             else new EmptyCharacter(770,100));
 			}else{
