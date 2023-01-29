@@ -157,6 +157,9 @@ class PauseSubState extends MusicBeatSubstate
 		FlxTween.tween(FlxG.sound.music,{volume:0.2},0.5);
 		FlxG.sound.music.looped = true;
 		new FlxTimer().start(0.9,function(_){updateJumpTo();});
+		#if android
+			changeSelection(2);
+		#end
 	}
 	inline function getJumpTo(){
 
@@ -243,55 +246,18 @@ class PauseSubState extends MusicBeatSubstate
 					}
 				}
 			}
-			if (accepted)
-			{
-
-				switch (daSelected)
-				{
-					case "Resume":
-						countdown();
-					case "Restart Song":
-						disappearMenu();
-						new FlxTimer().start(0.3,function(tmr:FlxTimer){
-							Main.game.funniLoad = true;
-							FlxG.resetState();
-						},1);
-					case 'Back to chart editor':
-						disappearMenu();
-						new FlxTimer().start(0.3,function(tmr:FlxTimer){
-							ChartingState.gotoCharter();
-						},1);
-					case "Exit Charting Mode":
-						disappearMenu();
-						new FlxTimer().start(0.3,function(tmr:FlxTimer){
-							ChartingState.charting = false;
-							FlxG.resetState();
-						},1);
-					case "Options Menu":
-						disappearMenu();
-						new FlxTimer().start(0.3,function(tmr:FlxTimer){
-							SearchMenuState.doReset = false;
-							OptionsMenu.lastState = PlayState.stateType + 10;
-							FlxG.switchState(new OptionsMenu());
-						},1);
-
-					case "Exit to menu":
-						disappearMenu();
-						new FlxTimer().start(0.3,function(tmr:FlxTimer){
-							FlxTween.globalManager.clear();
-							quit();
-						},1);
-					default:
-						if(daSelected.startsWith('Jump to')){
-							Conductor.songPosition = FlxG.sound.music.time = time = jumpToTime;
-
-							PlayState.instance.generateNotes();
-							countdown();
-						}else{
-							callInterp("pauseSelect",[]);
+			if (accepted) select(curSelected);
+			#if android
+				if(FlxG.mouse.justPressed){
+					for(i in 0...grpMenuShit.members.length){
+						var obj = grpMenuShit.members[i];
+						if(	FlxG.mouse.screenX > obj.x - 10 && FlxG.mouse.screenX < obj.x + 600 &&
+							FlxG.mouse.screenY > obj.y && FlxG.mouse.screenY < obj.y + obj.members[0].height){
+							select(i);
 						}
+					}
 				}
-			}
+			#end
 
 		}else{
 			if (controls.ACCEPT && menuItems[curSelected] == "Exit to menu")
@@ -330,6 +296,54 @@ class PauseSubState extends MusicBeatSubstate
 		}
 		shouldveLeft = true;
 		return;
+	}
+	function select(sel:Int){
+				var sel =menuItems[sel];
+				switch (sel)
+				{
+					case "Resume":
+						countdown();
+					case "Restart Song":
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							Main.game.funniLoad = true;
+							FlxG.resetState();
+						},1);
+					case 'Back to chart editor':
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							ChartingState.gotoCharter();
+						},1);
+					case "Exit Charting Mode":
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							ChartingState.charting = false;
+							FlxG.resetState();
+						},1);
+					case "Options Menu":
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							SearchMenuState.doReset = false;
+							OptionsMenu.lastState = PlayState.stateType + 10;
+							FlxG.switchState(new OptionsMenu());
+						},1);
+
+					case "Exit to menu":
+						disappearMenu();
+						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							FlxTween.globalManager.clear();
+							quit();
+						},1);
+					default:
+						if(sel.startsWith('Jump to')){
+							Conductor.songPosition = FlxG.sound.music.time = time = jumpToTime;
+
+							PlayState.instance.generateNotes();
+							countdown();
+						}else{
+							callInterp("pauseSelect",[sel]);
+						}
+				}
 	}
 	var _tween:FlxTween;
 	function countdown(){try{

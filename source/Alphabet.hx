@@ -121,11 +121,11 @@ class Alphabet extends FlxSpriteGroup
 		this.moveX = !dontMoveX;
 		this.useAlphabet = useAlphabet;
 		if(sprite == null || Frames == null){
-			sprite = new FlxSprite();
+			if(sprite == null) sprite = new FlxSprite();
 			trace('Loading alphabet sprites');
-			if(FileSystem.exists("mods/alphabet.png") && FileSystem.exists("mods/alphabet.xml")){
+			if(SELoader.exists("mods/alphabet.png") && SELoader.exists("mods/alphabet.xml")){
 				try{
-					Frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('mods/alphabet.png')),File.getContent('mods/alphabet.xml'));
+					Frames = SELoader.loadSparrowFrames('mods/alphabet');
 				}catch(e){
 					Frames = Paths.getSparrowAtlas('alphabet');
 				}

@@ -1314,7 +1314,7 @@ class ChartingState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
-		if (FlxG.keys.justPressed.F1)
+		if (FlxG.keys.justPressed.F2)
 			FlxG.save.data.showHelp = !FlxG.save.data.showHelp;
 
 		var delete = false;
@@ -1715,7 +1715,7 @@ class ChartingState extends MusicBeatState
 			+ '\n${if(playBeatClaps)"Play clap on beat; " else ""}${if(playClaps)"Play snap on note" else ""}'
 			+ "\n"
 			+ (doSnapShit ? "Snap enabled" : "Snap disabled")
-			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right : Change playback speed\nCTRL-Left/Right : Change Snap\nHold Shift : Disable SnapShift+Escape : Exit to main menu\n Enter/Escape : Preview chart\n F1 : hide/show this' : "");
+			+ (FlxG.save.data.showHelp ? '\n\nShift-Left/Right : Change playback speed\nCTRL-Left/Right : Change Snap\nHold Shift : Disable Snap\nShift+Escape : Exit to main menu\n Enter/Escape : Preview chart\n F2 : hide/show this' : "");
 		super.update(elapsed);
 		if(requestMusicPlay){
 			vocals.play();

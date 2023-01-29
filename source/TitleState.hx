@@ -121,7 +121,7 @@ class TitleState extends MusicBeatState
 	var wackyImage:FlxSprite;
 	public static function loadNoteAssets(?forced:Bool = false,?forced2:Bool = false){
 		if (NoteAssets == null || NoteAssets.name != FlxG.save.data.noteAsset || forced){
-			if (!FileSystem.exists('mods/noteassets/${FlxG.save.data.noteAsset}.png') || !FileSystem.exists('mods/noteassets/${FlxG.save.data.noteAsset}.xml')){
+			if (!SELoader.exists('mods/noteassets/${FlxG.save.data.noteAsset}.png') || !SELoader.exists('mods/noteassets/${FlxG.save.data.noteAsset}.xml')){
 				FlxG.save.data.noteAsset = "default";
 			} // Hey, requiring an entire reset of the game's settings when noteasset goes missing is not a good idea
 			new NoteAssets(FlxG.save.data.noteAsset,forced2);
@@ -184,18 +184,7 @@ class TitleState extends MusicBeatState
 		return findChar(char);
 	}
 	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
-	public static function findCharByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
-		if(char == ""){
-			trace('Empty character search, returning BF');
-			if(retBF) return characters[0];
-			return null;
-		}
-		if(char.contains('|')){
-			var _e = char.split('|');
-			namespace = _e[0];
-			char = _e[1];
-		}
-		if(namespace == "") return findChar(char,retBF,true);
+	public static function findCharNS(char,?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true){
 		if(namespace == "INVALID"){
 			return findInvalidChar(char);
 		}
@@ -220,6 +209,20 @@ class TitleState extends MusicBeatState
 			return null;
 		}
 		return currentChar;
+	}
+	public static function findCharByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
+		if(char == ""){
+			trace('Empty character search, returning BF');
+			if(retBF) return characters[0];
+			return null;
+		}
+		if(char.contains('|')){
+			var _e = char.split('|');
+			namespace = _e[0];
+			char = _e[1];
+		}
+		if(namespace == "") return findChar(char,retBF,true);
+		return findCharNS(char,namespace,nameSpaceType,retBF);
 
 	}
 	public static function retChar(char:String):String{
@@ -231,7 +234,7 @@ class TitleState extends MusicBeatState
 		while (list.length > 0){
 			var char = list.pop();
 			if(char == "" ){continue;}
-			var charInfo = findCharByNamespace(char,nameSpace,false);
+			var charInfo = findCharNS(char,nameSpace,false);
 			if(charInfo != null){
 				return charInfo;
 			}
@@ -255,19 +258,19 @@ class TitleState extends MusicBeatState
 		var dataDir:String = "mods/characters/";
 		var customCharacters:Array<String> = [];
 
-		if (FileSystem.exists("assets/characters/"))
+		if (SELoader.exists("assets/characters/"))
 		{
 			var dir = "assets/characters";
 			trace('Checking ${dir} for characters');
-			for (char in FileSystem.readDirectory(dir))
+			for (char in SELoader.readDirectory(dir))
 			{
-				if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
-				if (FileSystem.exists(dir+"/"+char+"/config.json"))
+				if (!SELoader.isDirectory(dir+"/"+char)){continue;}
+				if (SELoader.exists(dir+"/"+char+"/config.json"))
 				{
 					customCharacters.push(char);
 					var desc = 'Assets character';
 					if (FileSystem.exists('${dir}/${char}/description.txt'))
-						desc += ";" +File.getContent('${dir}/${char}/description.txt');
+						desc += ";" + SELoader.getContent('${dir}/${char}/description.txt');
 					characters.push({
 						id:char.replace(' ','-').replace('_','-').toLowerCase(),
 						folderName:char,
@@ -275,7 +278,7 @@ class TitleState extends MusicBeatState
 						description:desc
 					});
 
-				}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
+				}else if (SELoader.exists(dir+"/"+char+"/character.png") && (SELoader.exists(dir+"/"+char+"/character.xml") || SELoader.exists(dir+"/"+char+"/character.json"))){
 					// invalidCharacters.push([char,dir]);
 					invalidCharacters.push({
 						id:char.replace(' ','-').replace('_','-').toLowerCase(),
@@ -286,27 +289,27 @@ class TitleState extends MusicBeatState
 			}
 		}
 
-		if (FileSystem.exists(dataDir))
+		if (SELoader.exists(dataDir))
 		{
-		  for (directory in FileSystem.readDirectory(dataDir))
+		  for (directory in SELoader.readDirectory(dataDir))
 		  {
-			if (!FileSystem.isDirectory(dataDir+"/"+directory)){continue;}
-			if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/config.json"))
+			if (!SELoader.isDirectory(dataDir+"/"+directory)){continue;}
+			if (SELoader.exists(dataDir+"/"+directory+"/config.json"))
 			{
 				var desc = null;
-				if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/description.txt"))
-					desc = File.getContent('${dataDir}/${directory}/description.txt');
+				if (SELoader.exists(dataDir+"/"+directory+"/description.txt"))
+					desc = SELoader.getContent('${dataDir}/${directory}/description.txt');
 
 				characters.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
 					folderName:directory,
 					description:desc
 				});
-			}else if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/script.hscript"))
+			}else if (SELoader.exists(dataDir+"/"+directory+"/script.hscript"))
 			{
 				var desc = null;
-				if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/description.txt"))
-					desc = File.getContent('${dataDir}/${directory}/description.txt');
+				if (SELoader.exists(dataDir+"/"+directory+"/description.txt"))
+					desc = SELoader.getContent('${dataDir}/${directory}/description.txt');
 
 				characters.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
@@ -314,7 +317,7 @@ class TitleState extends MusicBeatState
 					description:desc,
 					type:1
 				});
-			}else if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/character.png") && (FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.xml") || FileSystem.exists(Sys.getCwd() + "mods/characters/"+directory+"/character.json"))){
+			}else if (SELoader.exists(dataDir+"/"+directory+"/character.png") && (SELoader.exists("mods/characters/"+directory+"/character.xml") || SELoader.exists("mods/characters/"+directory+"/character.json"))){
 				// invalidCharacters.push([directory,'mods/characters']);
 				invalidCharacters.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
@@ -329,24 +332,24 @@ class TitleState extends MusicBeatState
 
 		for (ID => dataDir in ['mods/weeks/','mods/packs/']) {
 			
-			if (FileSystem.exists(dataDir))
+			if (SELoader.exists(dataDir))
 			{
-			  for (_dir in FileSystem.readDirectory(dataDir))
+			  for (_dir in SELoader.readDirectory(dataDir))
 			  {
-				if (!FileSystem.isDirectory(dataDir + _dir)){continue;}
+				if (!SELoader.isDirectory(dataDir + _dir)){continue;}
 				// trace(_dir);
-				if (FileSystem.exists(dataDir + _dir + "/characters/"))
+				if (SELoader.exists(dataDir + _dir + "/characters/"))
 				{
 					var dir = dataDir + _dir + "/characters/";
 					// trace('Checking ${dir} for characters');
 					for (char in FileSystem.readDirectory(dir))
 					{
-						if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
-						if (FileSystem.exists(dir+"/"+char+"/config.json"))
+						if (!SELoader.isDirectory(dir+"/"+char)){continue;}
+						if (SELoader.exists(dir+"/"+char+"/config.json"))
 						{
 							var desc = 'Provided by ' + _dir;
-							if (FileSystem.exists('${dir}/${char}/description.txt'))
-								desc += ";" +File.getContent('${dir}/${char}/description.txt');
+							if (SELoader.exists('${dir}/${char}/description.txt'))
+								desc += ";" +SELoader.getContent('${dir}/${char}/description.txt');
 							characters.push({
 								id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
 								folderName:char,
@@ -356,11 +359,11 @@ class TitleState extends MusicBeatState
 								nameSpace:_dir
 							});
 
-						}else if (FileSystem.exists(dir+"/"+char+"/script.hscript"))
+						}else if (SELoader.exists(dir+"/"+char+"/script.hscript"))
 						{
 							var desc = 'Provided by ' + _dir;
-							if (FileSystem.exists('${dir}/${char}/description.txt'))
-								desc += ";" +File.getContent('${dir}/${char}/description.txt');
+							if (SELoader.exists('${dir}/${char}/description.txt'))
+								desc += ";" +SELoader.getContent('${dir}/${char}/description.txt');
 							characters.push({
 								id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
 								folderName:char,
@@ -371,7 +374,7 @@ class TitleState extends MusicBeatState
 								nameSpace:_dir
 							});
 
-						}else if (FileSystem.exists(dir+"/"+char+"/character.png") && (FileSystem.exists(dir+"/"+char+"/character.xml") || FileSystem.exists(dir+"/"+char+"/character.json"))){
+						}else if (SELoader.exists(dir+"/"+char+"/character.png") && (SELoader.exists(dir+"/"+char+"/character.xml") || SELoader.exists(dir+"/"+char+"/character.json"))){
 							invalidCharacters.push({
 								id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
 								folderName:char,
@@ -411,7 +414,7 @@ class TitleState extends MusicBeatState
 		if(FlxG.save.data.scripts != null){
 			for (i in 0 ... FlxG.save.data.scripts.length) {
 				var v = FlxG.save.data.scripts[i];
-				if(!FileSystem.exists('mods/scripts/${v}/')){
+				if(!SELoader.exists('mods/scripts/${v}/')){
 					FlxG.save.data.scripts.remove(v);
 					trace('Script $v doesn\'t exist! Disabling');
 				}
@@ -431,7 +434,7 @@ class TitleState extends MusicBeatState
 		}
 		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
 		if(char.contains('|') && !ignoreNSCheck){
-			return findStageByNamespace(char,retStage);
+			return inline findStageByNamespace(char,retStage);
 		}
 		if(char == ""){
 			trace('Tried to get a blank stage!');
@@ -460,7 +463,7 @@ class TitleState extends MusicBeatState
 		if(retStage) return stages[1];
 		return null;
 	}
-	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
+	// This prioritises stages from a specific namespace, if it finds one outside of the namespace and the namespace doesn't have one, then they'll be used instead
 	public static function findStageByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retStage:Bool = true):Null<StageInfo>{ 
 		if(char == ""){
 			trace('Empty stage search, returning stage');
@@ -507,12 +510,12 @@ class TitleState extends MusicBeatState
 		// Loading like this is probably not a good idea
 		var dataDir:String = "mods/stages/";
 
-		if (FileSystem.exists(dataDir))
+		if (SELoader.exists(dataDir))
 		{
-		  for (directory in FileSystem.readDirectory(dataDir))
+		  for (directory in SELoader.readDirectory(dataDir))
 		  {
-			if (!FileSystem.isDirectory(Sys.getCwd() +dataDir+"/"+directory)){continue;}
-			if (FileSystem.exists(Sys.getCwd() + dataDir+"/"+directory+"/"))
+			if (!SELoader.isDirectory(dataDir+"/"+directory)){continue;}
+			if (SELoader.exists(dataDir+"/"+directory+"/"))
 			{
 				stages.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
@@ -526,19 +529,19 @@ class TitleState extends MusicBeatState
 
 		for (ID => dataDir in ['mods/weeks/','mods/packs/']) {
 			
-			if (FileSystem.exists(dataDir))
+			if (SELoader.exists(dataDir))
 			{
-			  for (_dir in FileSystem.readDirectory(dataDir))
+			  for (_dir in SELoader.readDirectory(dataDir))
 			  {
-				if (!FileSystem.isDirectory(dataDir + _dir)){continue;}
+				if (!SELoader.isDirectory(dataDir + _dir)){continue;}
 				// trace(_dir);
-				if (FileSystem.exists(dataDir + _dir + "/stages/"))
+				if (SELoader.exists(dataDir + _dir + "/stages/"))
 				{
 					var dir = dataDir + _dir + "/stages/";
 					// trace('Checking ${dir} for characters');
-					for (char in FileSystem.readDirectory(dir))
+					for (char in SELoader.readDirectory(dir))
 					{
-						if (!FileSystem.isDirectory(dir+"/"+char)){continue;}
+						if (!SELoader.isDirectory(dir+"/"+char)){continue;}
 						stages.push({
 							id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
 							folderName:char,
@@ -555,6 +558,7 @@ class TitleState extends MusicBeatState
 		#end
 
 	}
+	#if !android
 	public static function findosuBeatmaps(){
 		var loc = "";
 		#if windows
@@ -567,7 +571,7 @@ class TitleState extends MusicBeatState
 
 		osuBeatmapLoc = loc;
 	}
-
+	#end
 
 	override public function create():Void
 	{
@@ -586,34 +590,16 @@ class TitleState extends MusicBeatState
 
 		curWacky = getIntroTextShit();
 		
-		// DEBUG BULLSHIT
 
 		super.create();
 
 		
 		if(CoolUtil.font != Paths.font("vcr.ttf")) flixel.system.FlxAssets.FONT_DEFAULT = CoolUtil.font;
-		KadeEngineData.initSave();
-
-		Highscore.load();
-
-		checkCharacters();			
-
-
-		if (FlxG.save.data.weekUnlocked != null)
-		{
-			// FIX LATER!!!
-			// WEEK UNLOCK PROGRESSION!!
-			// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
-
-			if (StoryMenuState.weekUnlocked.length < 4)
-				StoryMenuState.weekUnlocked.insert(0, true);
-
-			// QUICK PATCH OOPS!
-			if (!StoryMenuState.weekUnlocked[0])
-				StoryMenuState.weekUnlocked[0] = true;
-		}
-		// loadScores();
-		// pauseMenuMusic = Sound.fromFile((if (FileSystem.exists('mods/pauseMenu.ogg')) 'mods/pauseMenu.ogg' else if (FileSystem.exists('assets/music/breakfast.ogg')) 'assets/music/breakfast.ogg' else "assets/shared/music/breakfast.ogg"));
+		#if !android
+			KadeEngineData.initSave();
+			Highscore.load();
+			checkCharacters();
+		#end
 
 		#if discord_rpc
 			DiscordClient.initialize();
@@ -667,7 +653,89 @@ class TitleState extends MusicBeatState
 			FlxG.sound.music.pause();
 			// LoadingState.loadingText = new FlxText(FlxG.width * 0.8,FlxG.height * 0.8,"Loading...");
 			// LoadingState.loadingText.setFormat();
-			findosuBeatmaps();
+			
+			#if android
+				// trace(lime.system.System.applicationStorageDirectory);
+				// var reason = 0;
+				// if(!FileSystem.exists(lime.system.System.applicationStorageDirectory + '/path.txt')){
+				// 	reason = 1;
+				// }else if(!FileSystem.exists(sys.io.File.getContent(FileSystem.exists(lime.system.System.applicationStorageDirectory + '/path.txt')))){
+				// 	reason = 2;
+				// }
+				// if(reason != 0){
+
+				// }
+				var grantedPerms = Main.grantedPerms = android.Permissions.getGrantedPermissions();
+				if(!grantedPerms.contains('android.permission.WRITE_EXTERNAL_STORAGE')){
+					android.Permissions.requestPermissions(['android.permission.WRITE_EXTERNAL_STORAGE','android.permission.INTERNET'],1);
+					throw('Please reload. Permissions are required for the mods folder.\nIf you do not see a dialogue asking for accessing files then please add it manually in your settings');
+				}else{
+
+					if(!grantedPerms.contains('android.permission.INTERNET')){
+						android.Permissions.requestPermissions(['android.permission.INTERNET'],1);
+					}
+					if(!FileSystem.exists('${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/')){
+						try{
+							android.widget.Toast.makeText('Attempting to create mods folder',20);
+							FileSystem.createDirectory('${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/');
+							FileSystem.createDirectory('${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/');
+							Sys.setCwd('${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/');
+
+							android.widget.Toast.makeText('Finished!',20);
+						}catch(e){
+							FuckState.FATAL = true;
+							throw('Unable to create directory "${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/"! ${e.message}');
+
+						}
+					}
+				}
+				Sys.setCwd('${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/');
+				if(!FileSystem.exists('mods')){
+					try{
+						var _dir = lime.system.System.applicationStorageDirectory;
+						function recurse(directory:String){
+							directory = directory.replace('//','/');
+							FileSystem.createDirectory(directory);
+							for(file in FileSystem.readDirectory(_dir + "/" + directory)){
+								android.widget.Toast.makeText('Copying $file',5);
+								file = "/" + directory + "/" + file;
+								file = file.replace('//','/');
+								if(FileSystem.isDirectory(_dir + file)){ recurse(file); continue;}
+								sys.io.File.copy(_dir + file,file);
+							}
+						}
+						trace('Copying files from $_dir');
+						for(file in FileSystem.readDirectory(_dir)){
+							trace('Copying $file');
+							FileSystem.createDirectory(file);
+							if(FileSystem.isDirectory(_dir + file)){ recurse(file); continue;}
+							sys.io.File.copy(_dir + file,file);
+							android.widget.Toast.makeText('Copying $file',5);
+
+						}
+
+					}catch(e){
+						FuckState.FATAL = true;
+						throw('Unable to copy files! ${e.message}');
+
+					}
+				}
+				SELoader.PATH = '${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/';
+				android.widget.Toast.makeText('Your mods and stuff will be located at "Superpowers04/SuperEngine"',5);
+				
+				trace('Loading files from ${SELoader.PATH}');
+				// Moved the init to here since settings aren't accessable yet
+				KadeEngineData.initSave();
+				Highscore.load();
+				checkCharacters();
+				Alphabet.Frames = null;
+				LoadingScreen.initScreen();
+				if((CoolUtil.font = if(SELoader.exists('mods/font.ttf')) SELoader.getPath('mods/font.ttf') else Paths.font(CoolUtil.fontName)
+					) != Paths.font("vcr.ttf")) flixel.system.FlxAssets.FONT_DEFAULT = CoolUtil.font;
+			#end
+			#if !android
+				findosuBeatmaps();
+			#end
 			MainMenuState.firstStart = true;
 			Conductor.changeBPM(140);
 			persistentUpdate = true;
@@ -675,11 +743,35 @@ class TitleState extends MusicBeatState
 			FlxG.fixedTimestep = false; // Makes the game not be based on FPS for things, thank you Forever Engine for doing this
 			FlxG.mouse.useSystemCursor = true; // Uses system cursor, did not know this was a thing until Forever Engine
 			CoolUtil.volKeys = [FlxG.sound.muteKeys,FlxG.sound.volumeUpKeys,FlxG.sound.volumeDownKeys];
-			if(!FileSystem.exists("mods/menuTimes.json")){ // Causes crashes if done while game is running, unknown why
-				File.saveContent("mods/menuTimes.json",Json.stringify(SickMenuState.musicList));
+			if(!SELoader.exists("mods/menuTimes.json")){ // Causes crashes if done while game is running, unknown why
+				try{
+					SELoader.saveContent("mods/menuTimes.json",Json.stringify([
+																			{
+																				file: "mods/title-morning.ogg or assets/music/breakfast.ogg",
+																				begin:6,end:10,wrapAround:false,color:"0xdd9911",bpm:160
+																			},
+																			{
+																				file: "mods/title-day.ogg or assets/music/freakyMenu.ogg",
+																				// Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
+																				wrapAround:false,end:100,begin:101,color:"0xECD77F",bpm:204 
+																			},
+																			{
+																				file: "mods/title-evening.ogg or assets/music/GiveaLilBitBack.ogg",
+																				begin:17,end:19,wrapAround:false,color:"0xdd9911",bpm:125
+																			},
+																			{
+																				file: "mods/title-night.ogg or assets/music/freshChillMix.ogg",
+																				begin:20,end:5,wrapAround:true,color:"0x113355",bpm:117
+																			},
+																		]));
+				}catch(e){
+					FuckState.FATAL = true;
+					throw('Unable to write to "${FileSystem.absolutePath('mods/menuTimes.json')}"!' + " Common causes:\n* You didn't extract the zip\n* You don't have permission to write to the mods folder\nThis isn't an error you can ignore, as something is really wrong with your setup!");
+					return;
+				}
 			}else{
 				try{
-					var musicList:Array<MusicTime> = Json.parse(File.getContent("mods/menuTimes.json"));
+					var musicList:Array<MusicTime> = Json.parse(SELoader.getContent("mods/menuTimes.json"));
 					SickMenuState.musicList = musicList;
 				}catch(e){
 					MusicBeatState.instance.showTempmessage("Unable to load Music Timing: " + e.message,FlxColor.RED);
@@ -699,6 +791,7 @@ class TitleState extends MusicBeatState
 
 		logoBl = new FlxSprite(-150, -100);
 		logoBl.loadGraphic(Paths.image('logoBumpin'));
+		// Paths.image('logoBumpin')
 		logoBl.antialiasing = true;
 
 		// logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
@@ -876,7 +969,7 @@ class TitleState extends MusicBeatState
 			isShift = FlxG.keys.pressed.SHIFT;
 			shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else 0xFFFFFF);
 		}
-		#if !debug
+		#if !(debug)
 		// This is useless in debug mode since updates aren't checked for
 		if(pressedEnter && updateCheck && !skipMM){
 			updateCheck = false;
@@ -903,18 +996,24 @@ class TitleState extends MusicBeatState
 			if(Sys.args()[0] != null && FileSystem.exists(Sys.args()[0])){
 				AnimationDebug.fileDrop(Sys.args()[0]);
 			}
-			#if !debug
-			if (FlxG.keys.pressed.SHIFT || FlxG.keys.pressed.CONTROL || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck)
+			// haxe.Http doesn't work on android for some reason
+			#if !(debug)
+			if (
+			    #if(android) !Main.grantedPerms.contains('android.permission.INTERNET') || #end 
+			    FlxG.keys.pressed.SHIFT || FlxG.keys.pressed.CONTROL || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck){
+				#if(android)
+				if(!Main.grantedPerms.contains('android.permission.INTERNET')){
+					android.widget.Toast.makeText('Update check skipped due to lack of internet permissions',20);
+				}
+				#end
 				FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
-			else
-			{
+			}else{
 				new FlxTimer().start(0.5,function(_){try{updateCheck = true;}catch(e){}});
 
 				showTempmessage("Checking for updates..",FlxColor.WHITE);
 				tempMessage.screenCenter(X);
 				#if (target.threaded)
-				Thread.create(function()
-				{
+				Thread.create(function(){
 				#end
 					// Get current version of FNFBR, Uses kade's update checker 
 	
@@ -958,10 +1057,7 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
-		if (pressedEnter && !skippedIntro && initialized && (!forcedText || FlxG.save.data.seenForcedText))
-		{
-			skipIntro();
-		}
+		if (pressedEnter && !skippedIntro && initialized && (!forcedText || FlxG.save.data.seenForcedText)) skipIntro();
 
 		super.update(elapsed);
 	}

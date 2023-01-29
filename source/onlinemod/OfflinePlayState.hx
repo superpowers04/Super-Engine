@@ -122,7 +122,7 @@ class OfflinePlayState extends PlayState
 				if(chartFile.endsWith(".sm")){
 					PlayState.SONG = smTools.SMFile.loadFile(chartFile).convertToFNF();
 				}else{
-					PlayState.SONG = Song.parseJSONshit(File.getContent(chartFile));
+					PlayState.SONG = Song.parseJSONshit(SELoader.getContent(chartFile));
 
 				}
 				// if(nameSpace != ""){
@@ -146,21 +146,9 @@ class OfflinePlayState extends PlayState
 	try{
 		instanc = this;
 		if (shouldLoadJson) loadJSON();
-		// PlayState.player1 = FlxG.save.data.playerChar;
-		// if ((FlxG.save.data.charAuto) && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
-		// 	PlayState.player2 = TitleState.retChar(PlayState.player2);
-		// }else{
-		// 	PlayState.player2 = FlxG.save.data.opponent;
-		// }
+
 		PlayState.stateType=stateType;
-		// var voicesFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg'
-		// if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg')){
-		// 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg';
-		// }
-		// var instFile = 'assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg'
-		// if (!FileSystem.exists('${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg')){
-		// 	voicesFile = '${FileSystem.exists(Sys.getCwd()}/assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg';
-		// }
+
 		if (shouldLoadSongs) loadSongs();
 
 		var oldScripts:Bool = false;
@@ -172,7 +160,7 @@ class OfflinePlayState extends PlayState
 
 
 		// Add XieneDev watermark
-		var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.1 - 50, FlxG.width, "SuperEngine" + stateNames[stateType] + " " + MainMenuState.ver, 16);
+		var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.1 - 50, FlxG.width, 'SuperEngine${stateNames[stateType]} ${MainMenuState.ver}(${MainMenuState.compileType})', 16);
 			xieneDevWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 			xieneDevWatermark.scrollFactor.set();
 			add(xieneDevWatermark);

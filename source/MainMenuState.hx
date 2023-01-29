@@ -39,25 +39,28 @@ class MainMenuState extends SickMenuState
 
 	public static var compileType(default,never):String =
 	#if ghaction
-		"Github action build"
+		"Github action"
 	#elseif debug
 		"Manual debug build"
 	#else
 		"Manual build"
 	#end;
-	public static var buildType:String = Sys.systemName();
+	public static var buildType:String = #if(android) "android" #else Sys.systemName() #end ;
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
 	public static var char:Character = null;
 	static var hasWarnedInvalid:Bool = false;
 	static var hasWarnedNightly:Bool = (nightly == "");
 	public static var triedChar:Bool = false;
+	public static var lastError = "";
 	
 	public static function handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
 		// if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
 		ScriptableStateManager.lastState = "";
 		ScriptableStateManager.goToLastState = false;
-		if(MainMenuState.errorMessage.contains(error)) return; // Prevents the same error from showing twice
+		if(MainMenuState.errorMessage == error || lastError == error) return; // Prevents the same error from showing twice
+
+		lastError = error;
 		MainMenuState.errorMessage += "\n" + error;
 		if(details != "") trace(details);
 		if (onlinemod.OnlinePlayMenuState.socket != null){
@@ -96,100 +99,109 @@ class MainMenuState extends SickMenuState
 	// }
 	override function create()
 	{
+		try{
 		// forceQuit = true;
-		if (Main.errorMessage != ""){
-			errorMessage = Main.errorMessage;
-			Main.errorMessage = "";
-			trace(errorMessage);
-		}
-		mmSwitch(false);
+			if (Main.errorMessage != ""){
+				errorMessage = Main.errorMessage;
+				Main.errorMessage = "";
+				trace(errorMessage);
+			}
+			mmSwitch(false);
 
-		persistentUpdate = persistentDraw = true;
-		bgImage = 'menuDesat';
-		controls.setKeyboardScheme(KeyboardScheme.Solo, true);
-		loading = false;
-		isMainMenu = true;
-		super.create();
-		if(MainMenuState.errorMessage == "" && ScriptableStateManager.goToLastState && ScriptableStateManager.lastState != ""){
-			SelectScriptableState.selectState(ScriptableStateManager.lastState);
-		}
-		bg.scrollFactor.set(0.1,0.1);
-		bg.color = MainMenuState.bgcolor;
-		if (onlinemod.OnlinePlayMenuState.socket != null){
-			try{
-				QuickOptionsSubState.setSetting("Song hscripts",true);
-				onlinemod.OnlinePlayMenuState.socket.close();
-				onlinemod.OnlinePlayMenuState.socket=null;
-			}catch(e){trace('Error closing socket? ${e.message}');}
-		}
+			persistentUpdate = persistentDraw = true;
+			bgImage = 'menuDesat';
+			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
+			loading = false;
+			isMainMenu = true;
+			super.create();
+			if(MainMenuState.errorMessage == "" && ScriptableStateManager.goToLastState && ScriptableStateManager.lastState != ""){
+				SelectScriptableState.selectState(ScriptableStateManager.lastState);
+			}
+			bg.scrollFactor.set(0.1,0.1);
+			bg.color = MainMenuState.bgcolor;
+			if (onlinemod.OnlinePlayMenuState.socket != null){
+				try{
+					QuickOptionsSubState.setSetting("Song hscripts",true);
+					onlinemod.OnlinePlayMenuState.socket.close();
+					onlinemod.OnlinePlayMenuState.socket=null;
+				}catch(e){trace('Error closing socket? ${e.message}');}
+			}
 
-		if (TitleState.outdated){
+			if (TitleState.outdated){
 
-			var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,(if(nightly == "") 'SE is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info' else 'Latest nightly: ${TitleState.updatedVer}. You are on ${ver}'), 32);
-			outdatedLMAO.setFormat(CoolUtil.font, 32, if(nightly == "") FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			outdatedLMAO.scrollFactor.set();
- 			outdatedLMAO.screenCenter(FlxAxes.X);
-			add(outdatedLMAO);
-		}
-		//  Whole bunch of checks to prevent crashing
-		if (TitleState.retChar(FlxG.save.data.playerChar) == "" && FlxG.save.data.playerChar != "automatic"){
-			errorMessage += '\n${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
-			FlxG.save.data.playerChar = "bf";
-		}
-		if (TitleState.retChar(FlxG.save.data.opponent) == null){
-			errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to BF!';
-			FlxG.save.data.opponent = "bf";
-		}
-		if (TitleState.retChar(FlxG.save.data.gfChar) == null){
-			errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
-			FlxG.save.data.gfChar = "gf";
-		}
-		// if(MainMenuState.errorMessage == "" && !triedChar && FlxG.save.data.mainMenuChar && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
-		// 	triedChar = true;
-		// 	try{
-		// 		char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0,true);
-		// 		if(char != null) add(char);
-		// 	}catch(e){MainMenuState.lastStack = e.stack;trace(e);char = null;}
-		// }
-		if(firstStart){
-			// FlxG.sound.volumeHandler = function(volume:Float){
-			// 	FlxG.save.data.masterVol = volume;
-			// 	FlxG.save.data.flush();
-			// };
-			FlxG.camera.scroll.y -= 100;
-			FlxTween.tween(FlxG.camera.scroll,{y:0},1,{ease:FlxEase.cubeOut});
-			firstStart = false;
-		}
+				var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,(if(nightly == "") 'SE is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info' else 'Latest nightly: ${TitleState.updatedVer}. You are on ${ver}'), 32);
+				outdatedLMAO.setFormat(CoolUtil.font, 32, if(nightly == "") FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				outdatedLMAO.scrollFactor.set();
+	 			outdatedLMAO.screenCenter(FlxAxes.X);
+				add(outdatedLMAO);
+			}
+			//  Whole bunch of checks to prevent crashing
+			if (TitleState.retChar(FlxG.save.data.playerChar) == "" && FlxG.save.data.playerChar != "automatic"){
+				errorMessage += '\n${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
+				FlxG.save.data.playerChar = "bf";
+			}
+			if (TitleState.retChar(FlxG.save.data.opponent) == null){
+				errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to BF!';
+				FlxG.save.data.opponent = "bf";
+			}
+			if (TitleState.retChar(FlxG.save.data.gfChar) == null){
+				errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
+				FlxG.save.data.gfChar = "gf";
+			}
+			// if(MainMenuState.errorMessage == "" && !triedChar && FlxG.save.data.mainMenuChar && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
+			// 	triedChar = true;
+			// 	try{
+			// 		char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0,true);
+			// 		if(char != null) add(char);
+			// 	}catch(e){MainMenuState.lastStack = e.stack;trace(e);char = null;}
+			// }
+			if(firstStart){
+				// FlxG.sound.volumeHandler = function(volume:Float){
+				// 	FlxG.save.data.masterVol = volume;
+				// 	FlxG.save.data.flush();
+				// };
+				FlxG.camera.scroll.y -= 100;
+				FlxTween.tween(FlxG.camera.scroll,{y:0},1,{ease:FlxEase.cubeOut});
+				firstStart = false;
+			}
 
 
-		if (MainMenuState.errorMessage == "" && TitleState.invalidCharacters.length > 0 && !hasWarnedInvalid) {
-			errorMessage += "You have some characters missing config.json files.";
-			hasWarnedInvalid = true;
-		} 
-		if (!hasWarnedNightly) {
-			errorMessage += "This is a nightly build for " + ver.substring(0,ver.length - (1 + nightly.length) ) +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
-			// ver+=nightly;
-			hasWarnedNightly = true;
-		} 
+			if (MainMenuState.errorMessage == "" && TitleState.invalidCharacters.length > 0 && !hasWarnedInvalid) {
+				errorMessage += "You have some characters missing config.json files.";
+				hasWarnedInvalid = true;
+			} 
+			if (!hasWarnedNightly) {
+				errorMessage += "This is a nightly build for " + ver.substring(0,ver.length - (1 + nightly.length) ) +", expect bugs and things changing without warning!\nBasing a fork off of this is not advised!";
+				// ver+=nightly;
+				hasWarnedNightly = true;
+			} 
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF 0.2.7.1/Kade 1.5.2/Super-Engine ${ver} ${buildType} ${compileType}', 12);
-		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		versionShit.borderSize = 2;
-		versionShit.scrollFactor.set();
-		add(versionShit);
-		if (MainMenuState.errorMessage != ""){
+			var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, 'FNF 0.2.7.1/Kade 1.5.2/Super-Engine ${ver} ${buildType} ${compileType}', 12);
+			versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			versionShit.borderSize = 2;
+			versionShit.scrollFactor.set();
+			add(versionShit);
+			if (MainMenuState.errorMessage != ""){
 
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.play(Paths.sound('cancelMenu'));
 
-			var errorText =  new FlxText(2, 64, 0, MainMenuState.errorMessage, 12);
-		    errorText.scrollFactor.set();
-		    errorText.wordWrap = true;
-		    errorText.fieldWidth = 1200;
-		    errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		    add(errorText);
+				var errorText =  new FlxText(2, 64, 0, MainMenuState.errorMessage, 12);
+			    errorText.scrollFactor.set();
+			    errorText.wordWrap = true;
+			    errorText.fieldWidth = 1200;
+			    errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			    add(errorText);
+			}
+			FlxG.bitmap.clearCache();
+			eventColors(Date.now());
+
+			lastError = "";
+			#if mobile
+			changeSelection(1); // Scrolls down enough so you can press all of the buttons without needing to scroll
+			#end
+		}catch(e){
+			FuckState.FUCK(e,'MainMenuState.create');
 		}
-		FlxG.bitmap.clearCache();
-		eventColors(Date.now());
 	}
 
 	public function eventColors(date:Date){
@@ -206,7 +218,13 @@ class MainMenuState extends SickMenuState
 	}
 
 	override function goBack(){
-		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;} else{selected = false;}
+		#if mobile
+			selected = false;
+		#else
+		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;} else{
+			selected = false;
+		}
+		#end
 		// FlxG.switchState(new TitleState());
 		// do nothing
 	}
@@ -236,9 +254,14 @@ class MainMenuState extends SickMenuState
 		if(MainMenuState.errorMessage != "")MainMenuState.errorMessage = "";
 		super.changeSelection(change);
 	}
+	#if(android)
+		
+		inline static var otherMenu:Bool = false;
+	#else
 
-	var otherMenu:Bool = false;
-
+		var otherMenu:Bool = false;
+	#end
+	#if !mobile
 	function otherSwitch(){
 		options = ["freeplay","download charts","download characters","import charts from mods"];
 		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine",'Convert charts from other mods to work here. Will put them in Modded Songs'];
@@ -251,23 +274,31 @@ class MainMenuState extends SickMenuState
 		selected = false;
 		changeSelection();
 	}
+	#end
 	function mmSwitch(regen:Bool = false){
-		options = ['modded songs','join BR compatible server',
-		#if !ghaction
-			'host br server',
+		#if android
+			//Damn, talk about a huge difference from 9 options down to 3
+			options = ['modded songs',"scripted states",'options'];
+			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state",'Customise your experience to fit you'];
+		#else
+			options = ['modded songs','join BR compatible server',
+			#if !ghaction
+				'host br server',
+			#end
+				'online songs',"story mode",'other',"scripted states","changelog", 'open mods folder','options'];
+			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.",
+			#if !ghaction
+			'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
+			#end
+			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Open your mods folder in your File Manager','Customise your experience to fit you'];
 		#end
-			'online songs',"story mode",'other',"scripted states","changelog", 'open mods folder','options'];
-		descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.",
-		#if !ghaction
-		'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
-		#end
-		"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Open your mods folder in your File Manager','Customise your experience to fit you'];
 		if(regen)generateList();
 		curSelected = 0;
 		if(regen)changeSelection();
 		selected = false;
-		otherMenu = false;
-
+		#if(!mobile)
+			otherMenu = false;
+		#end
 	}
 
   override function select(sel:Int){
@@ -290,66 +321,76 @@ class MainMenuState extends SickMenuState
 		
 		switch (daChoice)
 		{
-			case 'other':
-				// FlxG.switchState(new OtherMenuState());
-				otherSwitch();
-			case 'join BR compatible server':
-				FlxG.switchState(new onlinemod.OnlinePlayMenuState());
-			#if !ghaction
-			// Unstable,this'll be removed when I actually make it work
-			case 'host br server':
-				FlxG.switchState(new onlinemod.OnlineHostMenu());
-			#end
+
 			case 'modded songs':
 				loading = true;
 				FlxG.switchState(new multi.MultiMenuState());
-			case 'online songs':
-				loading = true;
-				FlxG.switchState(new onlinemod.OfflineMenuState());
-			case 'changelog':
-				FlxG.switchState(new OutdatedSubState());
-			case 'options':
-				FlxG.switchState(new OptionsMenu());
-			// case "Setup characters":
-			// 	FlxG.switchState(new SetupCharactersList());
-			case 'open mods folder':
-				selected = false;
-				changeSelection(0);
-				#if(linux)
-					var _path = FileSystem.fullPath('mods/');
-					for(i in ['exo-open','xdg-open','nemo','dolphin','nautilus','pcmanfm']){
-						if(Sys.command(i,[_path]) != 127){
-							return;
-						}
-					}
-					showTempmessage('Unable to find suitable opener!');
-				#end
-				#if(windows)
-					Sys.command('start',[FileSystem.fullPath('mods/')]);
-				#end
-				#if(macos)
-					Sys.command('open',[FileSystem.fullPath('mods/')]);
-				#end
 			case "scripted states":
 				FlxG.switchState(new SelectScriptableState());
-			case "download charts":
-				FlxG.switchState(new ChartRepoState());
-			case 'story mode':
-				loading = true;
-				FlxG.switchState(new StoryMenuState());
-			case 'freeplay':
-				loading = true;
-				FlxG.switchState(new FreeplayState());
-			case 'osu beatmaps':
-				loading = true;
-				FlxG.switchState(new osu.OsuMenuState());
-			case "import charts from mods":
-				FlxG.switchState(new ImportMod());
-			case 'download characters':
-				FlxG.switchState(new RepoState());
-			
-			case "back":
-				mmSwitch(true);
+			case 'options':
+				FlxG.switchState(new OptionsMenu());
+			#if !mobile
+				case 'join BR compatible server':
+					#if android
+					if(!Main.grantedPerms.contains('android.permission.INTERNET')){
+						selected = false;
+						MainMenuState.handleError('Unable to play online, You need to give internet access to the game!');
+						return;
+					}
+					#end
+					FlxG.switchState(new onlinemod.OnlinePlayMenuState());
+				case 'other':
+					// FlxG.switchState(new OtherMenuState());
+					otherSwitch();
+				#if !ghaction
+				// Unstable,this'll be removed when I actually make it work
+				case 'host br server':
+					FlxG.switchState(new onlinemod.OnlineHostMenu());
+				#end
+				case 'online songs':
+					loading = true;
+					FlxG.switchState(new onlinemod.OfflineMenuState());
+				case 'changelog':
+					FlxG.switchState(new OutdatedSubState());
+				// case "Setup characters":
+				// 	FlxG.switchState(new SetupCharactersList());
+				case 'open mods folder':
+					selected = false;
+					changeSelection(0);
+					#if(linux)
+						var _path = SELoader.fullPath('mods/');
+						for(i in ['exo-open','xdg-open','nemo','dolphin','nautilus','pcmanfm']){
+							if(Sys.command(i,[_path]) != 127){
+								return;
+							}
+						}
+						showTempmessage('Unable to find suitable opener!');
+					#end
+					#if(windows)
+						Sys.command('start',[SELoader.fullPath('mods/')]);
+					#end
+					#if(macos)
+						Sys.command('open',[SELoader.fullPath('mods/')]);
+					#end
+				case "download charts":
+					FlxG.switchState(new ChartRepoState());
+				case 'story mode':
+					loading = true;
+					FlxG.switchState(new StoryMenuState());
+				case 'freeplay':
+					loading = true;
+					FlxG.switchState(new FreeplayState());
+				case 'osu beatmaps':
+					loading = true;
+					FlxG.switchState(new osu.OsuMenuState());
+				case "import charts from mods":
+					FlxG.switchState(new ImportMod());
+				case 'download characters':
+					FlxG.switchState(new RepoState());
+				
+				case "back":
+					mmSwitch(true);
+			#end
 		}
 	}
 }

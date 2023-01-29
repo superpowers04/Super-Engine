@@ -22,6 +22,7 @@ class FuckState extends FlxUIState
 	public var err:String = "";
 	public var info:String = "";
 	public static var currentStateName:String = "";
+	public static var FATAL:Bool = false;
 	public static var jokes:Array<String> = [
 		"Hey look, mom! I'm on a crash report!",
 		"This wasn't supposed to go down like this...",
@@ -64,16 +65,18 @@ class FuckState extends FlxUIState
 		}
 		var saved = false;
 		var dateNow:String = "";
+		var err = "";
 		// Crash log 
+
 		try{
 			var funnyQuip = "insert funny line here";
 			var _date = Date.now();
 			try{
 				funnyQuip = jokes[Std.int(Math.random() * jokes.length - 1) ]; // I know, this isn't random but fuck you the game just crashed
 			}
-			var err = '# Super Engine Crash Report: \n# $funnyQuip\n${exception}\nThis happened in ${info}';
-			if(!sys.FileSystem.exists('crashReports/')){
-				sys.FileSystem.createDirectory('crashReports/');
+			err = '# Super Engine Crash Report: \n# $funnyQuip\n${exception}\nThis happened in ${info}';
+			if(!SELoader.exists('crashReports/')){
+				SELoader.createDirectory('crashReports/');
 			}
 
 			dateNow = _date.toString();
@@ -85,27 +88,35 @@ class FuckState extends FlxUIState
 			}catch(e){}
 			try{
 				err += "\n\n# ---------- SYSTEM INFORMATION ----------";
-				err += ''
-				+'\n Operating System: ${Sys.systemName()}'
-				+'\n Working Path: ${sys.FileSystem.absolutePath('./')}'
-				+'\n Current Working Directory: ${Sys.getCwd()}'
-				+'\n Executable path: ${Sys.programPath()}'
-				+'\n Arguments: ${Sys.args()}'
-				// +'\n Environment: ${Sys.environment()}'
-				+"\n # ---------- GAME INFORMATION ----------"
-				+'\n Version: ${MainMenuState.ver}'
-				+'\n Buildtype: ${MainMenuState.compileType}'
-				+'\n Debug: ${FlxG.save.data.animDebug}'
-				+'\n Registered character count: ${TitleState.characters.length}'
-				// +'\n Registered stage count: ${TitleState.stages.length}'
-				+'\n Scripts: ${FlxG.save.data.scripts}'
-				+'\n State: ${currentStateName}'
-				+'\n Save: ${FlxG.save.data}'
-				+'\n# -------------------';
-			}catch(e){}
+				
+				err +='\n Operating System: ${Sys.systemName()}';
+				err +='\n Working Path: ${SELoader.absolutePath('')}';
+				err +='\n Current Working Directory: ${Sys.getCwd()}';
+				err +='\n Executable path: ${Sys.programPath()}';
+				err +='\n Arguments: ${Sys.args()}';
+				err +="\n # ---------- GAME INFORMATION ----------";
+				err +='\n Version: ${MainMenuState.ver}';
+				err +='\n Buildtype: ${MainMenuState.compileType}';
+				err +='\n Debug: ${FlxG.save.data.animDebug}';
+				err +='\n Registered character count: ${TitleState.characters.length}';
+				err +='\n Scripts: ${FlxG.save.data.scripts}';
+				err +='\n State: ${currentStateName}';
+				err +='\n Save: ${FlxG.save.data}';
+				err +='\n# -------------------';
+				
+			}catch(e){
+				trace('Unable to get system information! ${e.message}');
+			}
 			sys.io.File.saveContent('crashReports/SUPERENGINE_CRASH-${dateNow}.log',err);
 			saved = true;
-		}catch(e){}
+			trace('Wrote a crash report to ./crashReports/SUPERENGINE_CRASH-${dateNow}.log!');
+		}catch(e){
+			trace('Unable to write a crash report!');
+			if(err != null && err.indexOf('SYSTEM INFORMATION') != -1){
+				trace('Here is generated crash report:\n$err');
+
+			}
+		}
 		// This'll cause a crash on linux for some reason, while it's still using a try/catch, no fucking around with crashes
 		#if !linux
 			if(limeWindow){
@@ -139,7 +150,7 @@ class FuckState extends FlxUIState
 		// kadeLogo.y -= 180;
 		// kadeLogo.alpha = 0.8;
 		// add(kadeLogo);
-		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'Potentially fatal error caught' , 32);
+		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,(if(FATAL) 'F' else 'Potentially f') + 'atal error caught' , 32);
 		outdatedLMAO.setFormat(CoolUtil.font, 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		outdatedLMAO.scrollFactor.set();
 		outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
@@ -158,7 +169,7 @@ class FuckState extends FlxUIState
 		txt.screenCenter();
 		add(txt);
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Please take a screenshot and report this, Press enter to attempt to soft-restart the game or press Escape to close the game",32);
+			"Please take a screenshot and report this, " +(if(FATAL)"P" else "Press enter to attempt to soft-restart the game or")+ "ress Escape to close the game",32);
 		
 		txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
 		txt.borderColor = FlxColor.BLACK;
@@ -181,7 +192,7 @@ class FuckState extends FlxUIState
 	{	
 		try{
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (FlxG.keys.justPressed.ENTER && !FATAL)
 		{
 			// var _main = Main.instance;
 			LoadingScreen.show();

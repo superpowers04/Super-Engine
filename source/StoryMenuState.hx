@@ -145,7 +145,7 @@ class StoryMenuState extends MusicBeatState
 			  	curDir = directory;
 				if (FileSystem.exists(Sys.getCwd() + "mods/weeks/"+directory+"/config.json"))
 				{
-					var json:WeekJSON = Json.parse(File.getContent("mods/weeks/"+directory+"/config.json"));
+					var json:WeekJSON = Json.parse(SELoader.loadText("mods/weeks/"+directory+"/config.json"));
 					var songList:Array<String> = [];
 					var chartList:Array<String> = [];
 					var si = 0;
@@ -256,23 +256,23 @@ class StoryMenuState extends MusicBeatState
 			PlayState.isStoryMode = true;
 			PlayState.hsBrTools = new HSBrTools('${selSong}');
 
-			if (FileSystem.exists('${selSong}/Voices.ogg')) onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';
-			if (FileSystem.exists('${selSong}/script.hscript')) {
-				trace("Song has script!");
-				MultiPlayState.scriptLoc = '${selSong}/script.hscript';
-				// PlayState.songScript = File.getContent('${selSong}/script.hscript');
-			}else {PlayState.hsBrTools = null;MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
-			if (FileSystem.exists('${selSong}/dialogue.txt')) {
+			if (SELoader.exists('${selSong}/Voices.ogg')) onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';
+			// if (FileSystem.exists('${selSong}/script.hscript')) {
+			// 	trace("Song has script!");
+			// 	MultiPlayState.scriptLoc = '${selSong}/script.hscript';
+			// 	// PlayState.songScript = File.getContent('${selSong}/script.hscript');
+			// }else {PlayState.hsBrTools = null;MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
+			if (SELoader.exists('${selSong}/dialogue.txt')) {
 				trace("Song has dialogue!");
-				PlayState.dialogue = CoolUtil.coolFormat(File.getContent('${selSong}/dialogue.txt'));
+				PlayState.dialogue = CoolUtil.coolFormat(SELoader.loadText('${selSong}/dialogue.txt'));
 			}else {PlayState.dialogue = [];}
 
-			if (FileSystem.exists('${selSong}/enddialogue.txt')) {
+			if (SELoader.exists('${selSong}/enddialogue.txt')) {
 				trace("Song has endDialogue!");
-				PlayState.endDialogue = CoolUtil.coolFormat(File.getContent('${selSong}/enddialogue.txt'));
-			}else if (FileSystem.exists('${selSong}/end-dialogue.txt')) {
+				PlayState.endDialogue = CoolUtil.coolFormat(SELoader.loadText('${selSong}/enddialogue.txt'));
+			}else if (SELoader.exists('${selSong}/end-dialogue.txt')) {
 				trace("Song has endDialogue!");
-				PlayState.endDialogue = CoolUtil.coolFormat(File.getContent('${selSong}/end-dialogue.txt'));
+				PlayState.endDialogue = CoolUtil.coolFormat(SELoader.loadText('${selSong}/end-dialogue.txt'));
 			}else {PlayState.endDialogue = [];}
 			onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
 			onlinemod.OfflinePlayState.nameSpace = weekNames[curWeek];

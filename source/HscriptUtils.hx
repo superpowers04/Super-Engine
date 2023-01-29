@@ -333,8 +333,8 @@ class SESave{
 	public function new(scope:String,save:String){
 		_path = 'mods/scriptOptions/saves/$scope/';
 		_fileName = '$save.json';
-		if(FileSystem.exists(_path + _fileName)){
-			_map = loadOptions(File.getContent(_path + _fileName));
+		if(SELoader.exists(_path + _fileName)){
+			_map = loadOptions(SELoader.loadText(_path + _fileName));
 			isNew = false;
 		}else{
 			_map = new Map<String,Dynamic>();
@@ -417,31 +417,31 @@ class SEJson {
 
 class FReplica{
 	static public function stat(P:String){
-		return FileSystem.stat(P);
+		return FileSystem.stat(SELoader.getPath(P));
 	}
 	static public function isDirectory(P:String){
-		return FileSystem.isDirectory(P);
+		return SELoader.isDirectory(P);
 	}
 	static public function exists(P:String){
-		return FileSystem.exists(P);
+		return SELoader.exists(P);
 	}
 	static public function absolutePath(P:String){
-		return FileSystem.absolutePath(P);
+		return SELoader.absolutePath(P);
 	}
 	static public function fullPath(P:String){
-		return FileSystem.fullPath(P);
+		return SELoader.fullPath(P);
 	}
 	static public function readDirectory(P:String){
-		return FileSystem.readDirectory(P);
+		return SELoader.readDirectory(P);
 	}
 	static public function getContent(P:String){
-		return File.getContent(P);
+		return SELoader.getContent(P);
 	}
 	static public function saveContent(P:String,con:String){
-		return File.saveContent(P,con);
+		return SELoader.saveContent(P,con);
 	}
 	static public function getBytes(P:String):haxe.io.Bytes{
-		return File.getBytes(P);
+		return SELoader.getBytes(P);
 	}
 }
 // class BRTween extends FlxTween{ // Make sure errors are caught whenever a timer is used

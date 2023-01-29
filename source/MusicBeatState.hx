@@ -123,11 +123,11 @@ class MusicBeatState extends FlxUIState
 			uiMap[i] = null;
 		}
 	}
+	// Have to keep track of steps, else they'll try to hit multiple times
 	var oldBeat:Int = -10000;
 	var oldStep:Int = -10000;
 	override function update(elapsed:Float)
 	{
-		//everyStep();
 
 		updateCurStep();
 		updateBeat();

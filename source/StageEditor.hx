@@ -73,7 +73,7 @@ class StageEditor extends MusicBeatState{
 			};
 		}
 		try{
-			var stagePropJson:String = File.getContent(json);
+			var stagePropJson:String = SELoader.getContent(json);
 			var stageProperties:StageJSON = cast haxe.Json.parse(CoolUtil.cleanJSON(json));
 			var stagePath = json.substr(0,json.lastIndexOf("/") + 1); 
 			if (stageProperties == null || stageProperties.layers == null || stageProperties.layers[0] == null){throw('No layers?');} // Boot to main menu if character's JSON can't be loaded
@@ -82,7 +82,7 @@ class StageEditor extends MusicBeatState{
 				// if(layer.song != null && layer.song != "" && layer.song.toLowerCase() != SONG.song.toLowerCase()){continue;}
 				var curLayer:FlxSprite = new FlxSprite(0,0);
 				if(layer.animated){
-					var xml:String = File.getContent('$stagePath/${layer.name}.xml');
+					var xml:String = SELoader.loadText('$stagePath/${layer.name}.xml');
 					if (xml == null || xml == "")throw('$stagePath/${layer.name}.xml is invalid!');
 					curLayer.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('$stagePath/${layer.name}.png')), xml);
 					curLayer.animation.addByPrefix(layer.animation_name,layer.animation_name,layer.fps,false);

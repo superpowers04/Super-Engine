@@ -153,7 +153,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
-		if (FileSystem.exists(dataDir))
+		if (SELoader.exists(dataDir))
 		{
 			var dirs = orderList(FileSystem.readDirectory(dataDir));
 			addCategory("charts folder",i);
@@ -164,9 +164,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			{
 				if (search == "" || query.match(directory.toLowerCase())) // Handles searching
 				{
-					if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
+					if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
 						modes[i] = [];
-						for (file in FileSystem.readDirectory(dataDir + directory))
+						for (file in SELoader.readDirectory(dataDir + directory))
 						{
 								if (isValidFile(file)){
 									modes[i].push(file);
@@ -187,15 +187,15 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			}
 		}
 		var _packCount:Int = 0;
-		if (FileSystem.exists("mods/weeks"))
+		if (SELoader.exists("mods/weeks"))
 		{
-			for (name in FileSystem.readDirectory("mods/weeks"))
+			for (name in SELoader.readDirectory("mods/weeks"))
 			{
 
 				var dataDir = "mods/weeks/" + name + "/charts/";
-				if(!FileSystem.exists(dataDir)){continue;}
+				if(!SELoader.exists(dataDir)){continue;}
 				var catMatch = query.match(name.toLowerCase());
-				var dirs = orderList(FileSystem.readDirectory(dataDir));
+				var dirs = orderList(SELoader.readDirectory(dataDir));
 				addCategory(name + "(Week)",i);
 				i++;
 				_packCount++;
@@ -203,11 +203,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				LoadingScreen.loadingText = 'Scanning mods/weeks/$name';
 				for (directory in dirs)
 				{
-					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
+					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && SELoader.isDirectory('${dataDir}${directory}')) // Handles searching
 					{
-						if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
+						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
 							modes[i] = [];
-							for (file in FileSystem.readDirectory(dataDir + directory))
+							for (file in SELoader.readDirectory(dataDir + directory))
 							{
 									if (isValidFile(file)){
 										modes[i].push(file);
@@ -234,29 +234,29 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			}
 		}
 		var emptyCats:Array<String> = [];
-		if (FileSystem.exists("mods/packs"))
+		if (SELoader.exists("mods/packs"))
 		{
-			for (name in FileSystem.readDirectory("mods/packs"))
+			for (name in SELoader.readDirectory("mods/packs"))
 			{
 				// dataDir = "mods/packs/" + dataDir + "/charts/";
 				var catMatch = query.match(name.toLowerCase());
 				var dataDir = "mods/packs/" + name + "/charts/";
-				if(!FileSystem.exists(dataDir)){continue;}
+				if(!SELoader.exists(dataDir)){continue;}
 				var containsSong = false;
-				var dirs = orderList(FileSystem.readDirectory(dataDir));
+				var dirs = orderList(SELoader.readDirectory(dataDir));
 				LoadingScreen.loadingText = 'Scanning mods/packs/$name/charts/';
 				for (directory in dirs)
 				{
-					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && FileSystem.isDirectory('${dataDir}${directory}')) // Handles searching
+					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && SELoader.isDirectory('${dataDir}${directory}')) // Handles searching
 					{
-						if (FileSystem.exists('${dataDir}${directory}/Inst.ogg') ){
+						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
 							if(!containsSong){
 								containsSong = true;
 								addCategory(name,i);
 								i++;
 							}
 							modes[i] = [];
-							for (file in FileSystem.readDirectory(dataDir + directory))
+							for (file in SELoader.readDirectory(dataDir + directory))
 							{
 									if (isValidFile(file)){
 										modes[i].push(file);
@@ -348,9 +348,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.storyDifficulty = switch(songJSON){case '${songName}-easy.json': 0; case '${songName}-hard.json': 2; default: 1;};
 				PlayState.actualSongName = songJSON;
 				onlinemod.OfflinePlayState.voicesFile = '';
-				PlayState.hsBrTools = new HSBrTools('${selSong}');
+				PlayState.hsBrTools = new HSBrTools(selSong);
 				PlayState.scripts = [];
-				PlayState.songScript = "";
 
 
 				if(instFile == "" ){
@@ -368,12 +367,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					onlinemod.OfflinePlayState.voicesFile = voicesFile;
 				}
 				LoadingScreen.loadingText = "Finding scripts";
-				for (file in FileSystem.readDirectory(selSong)) {
-					if((file.endsWith(".hscript") || file.endsWith(".hx")) && !FileSystem.isDirectory(file)){
-						PlayState.scripts.push('${selSong}/$file');
-					}
-					
-				}
 				if(FlxG.save.data.packScripts && (selSong.contains("mods/packs") || selSong.contains("mods/weeks"))){
 					var packDirL = selSong.split("/"); // Holy shit this is shit but using substr won't work for some reason :<
 					if(packDirL[packDirL.length] == "")packDirL.pop(); // There might be an extra slash at the end, remove it
@@ -381,10 +374,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					if(packDirL.contains("packs")) packDirL.pop(); // Packs have a sub charts folder, weeks do not
 
 					var packDir = packDirL.join("/");
-					if(FileSystem.exists('${packDir}/scripts') && FileSystem.isDirectory('${packDir}/scripts')){
+					if(SELoader.exists('${packDir}/scripts') && SELoader.isDirectory('${packDir}/scripts')){
 
-						for (file in FileSystem.readDirectory('${packDir}/scripts')) {
-							if((file.endsWith(".hscript") || file.endsWith(".hx")) && !FileSystem.isDirectory('${packDir}/scripts/$file')){
+						for (file in SELoader.readDirectory('${packDir}/scripts')) {
+							if((file.endsWith(".hscript") || file.endsWith(".hx")) && !SELoader.isDirectory('${packDir}/scripts/$file')){
 								PlayState.scripts.push('${packDir}/scripts/$file');
 							}
 						}
@@ -419,7 +412,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
 				var song = cast Song.getEmptySong();
 				song.song = songName;
-				File.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:song}));
+				SELoader.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:song}));
 				
 				reloadList(true,searchField.text);
 				curSelected = sel;
@@ -431,20 +424,15 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 			}else{
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${chart}';
-				PlayState.SONG = Song.parseJSONshit(File.getContent(onlinemod.OfflinePlayState.chartFile),true);
+				PlayState.SONG = Song.parseJSONshit(SELoader.loadText(onlinemod.OfflinePlayState.chartFile),true);
 			}
-			if (FileSystem.exists('${songLoc}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${songLoc}/Voices.ogg';}
+			if (SELoader.exists('${songLoc}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${songLoc}/Voices.ogg';}
 			PlayState.hsBrTools = new HSBrTools('${songLoc}');
-			if (FileSystem.exists('${songLoc}/script.hscript')) {
-				trace("Song has script!");
-				MultiPlayState.scriptLoc = '${songLoc}/script.hscript';
-				
-			}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
 			onlinemod.OfflinePlayState.instFile = '${songLoc}/Inst.ogg';
-			if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Inst.ogg")){
+			if(SELoader.exists(onlinemod.OfflinePlayState.chartFile + "-Inst.ogg")){
 				onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.chartFile + "-Inst.ogg";
 			}
-			if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Voices.ogg")){
+			if(SELoader.exists(onlinemod.OfflinePlayState.chartFile + "-Voices.ogg")){
 				onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
 			}
 			PlayState.stateType = 4;
@@ -528,10 +516,21 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		{
 			selSong(curSelected,true);
 		}
-		if(!FlxG.mouse.overlaps(blackBorder) && (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)){
-			for (i in -2 ... 2) {
-				if(grpSongs.members[curSelected + i] != null && FlxG.mouse.overlaps(grpSongs.members[curSelected + i])){
-					selSong(curSelected + i,FlxG.mouse.justPressedRight);
+		if((FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)){
+			if(FlxG.mouse.screenY < 35 && FlxG.mouse.screenX < 1115){
+				changeDiff(if(FlxG.mouse.screenX > 640) 1 else -1);
+			}
+			else if(!FlxG.mouse.overlaps(blackBorder)){
+				var curSel = grpSongs.members[curSelected];
+				for (i in -2 ... 2) {
+					var member = grpSongs.members[curSelected + i];
+					if(member != null && FlxG.mouse.overlaps(member)){
+						if(curSel == member){
+							selSong(curSelected,FlxG.mouse.justPressedRight);
+						}else{
+							changeSelection(i);
+						}
+					}
 				}
 			}
 		}
@@ -728,6 +727,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	public static function fileDrop(file:String){
 		try{
 			trace('Attempting to load "$file"');
+			try{
+
+				var json:FuckingSong = cast Json.parse(File.getContent(file));
+				var name = json.song.song;
+
+			}catch(e){
+				MainMenuState.handleError('This chart isn\'t a FNF format chart!(Unable to parse and grab the song name from JSON.song.song)');
+			}
 			var voices = "";
 			var inst = "";
 			var dir = file.substr(0,file.lastIndexOf("/"));
@@ -794,5 +801,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 }
 typedef FuckingSong = {
-	var song:Song;
+	var song:FSong;
+}
+typedef FSong = {
+	var song:String;
 }

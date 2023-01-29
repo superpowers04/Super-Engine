@@ -2,7 +2,6 @@ package;
 
 import flixel.FlxG;
 import sys.io.File;
-import sys.FileSystem;
 import tjson.Json;
 class SongScores {
 
@@ -19,18 +18,18 @@ class SongScores {
 			songNames:["Bopeebo"],
 			scores:[[1]]
 		}
-		if(FileSystem.exists(path)){
-			json = cast try{Json.parse(File.getContent(path));}catch(e){ {songNames:["Bopeebo"],scores:[1]}; };
+		if(SELoader.exists(path)){
+			json = cast try{Json.parse(SELoader.loadText(path));}catch(e){ {songNames:["Bopeebo"],scores:[1]}; };
 		}
 		songNames = json.songNames;
 		scores = json.scores;
 	}
 	public function save(){
 		try{
-			if(!FileSystem.exists(path)){
-				FileSystem.createDirectory(path.substr(0,path.lastIndexOf("/")));
+			if(!SELoader.exists(path)){
+				SELoader.createDirectory(path.substr(0,path.lastIndexOf("/")));
 			}
-			File.saveContent(path,Json.stringify({songNames:songNames,scores:scores}));
+			SELoader.saveContent(path,Json.stringify({songNames:songNames,scores:scores}));
 		}catch(e){
 			MusicBeatState.instance.showTempmessage('Unable to save scores! ${e.message}',0xFF0000);
 		}
@@ -94,7 +93,7 @@ class Highscore
 			if (Sys.getEnv("HOME") != null ) return '${Sys.getEnv("HOME")}/.local/share/superpowers04/FNF Super Engine/scores.json'; // Unix path
 		#end
 		else 
-			return "./superpowers04/FNF Super Engine/scores.json"; // If this gets returned, fucking run
+			return "superpowers04/FNF Super Engine/scores.json"; // If this gets returned, fucking run
 	}
 
 	public static var scorePath:String = GETSCOREPATH();

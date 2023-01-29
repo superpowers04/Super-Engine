@@ -15,7 +15,7 @@ class SMFile
 {
 	public static function loadFile(path):SMFile
 	{
-		return new SMFile(File.getContent(path).split('\n'));
+		return new SMFile(SELoader.getContent(path).split('\n'));
 	}
 	
 	private var _fileData:Array<String>;

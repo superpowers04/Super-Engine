@@ -5,7 +5,6 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 // import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-import sys.FileSystem;
 import flixel.math.FlxPoint;
 import flixel.graphics.FlxGraphic;
 import flash.display.BitmapData;
@@ -41,14 +40,14 @@ class StrumArrow extends FlxSprite{
 						}catch(e){
 							noteJSON = null;
 						}
-					}else if (name == 'default' || (!FileSystem.exists('${path_}/${name}.png') || !FileSystem.exists('${path_}/${name}.xml'))){
-						frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png')),File.getContent("assets/shared/images/NOTE_assets.xml"));
+					}else if (name == 'default' || (!SELoader.exists('${path_}/${name}.png') || !SELoader.exists('${path_}/${name}.xml'))){
+						frames = SELoader.loadSparrowFrames('assets/shared/images/NOTE_assets.png');
 					}else{
-						frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path_}/${name}.png')),File.getContent('${path_}/${name}.xml'));
+						frames = SELoader.loadSparrowFrames('${path_}/${name}.png');
 						
-						if(FileSystem.exists('${path}/${name}.json')){
+						if(SELoader.exists('${path}/${name}.json')){
 							try{
-								this.noteJSON = cast Json.parse('${path}/${name}.json').notes[id];
+								this.noteJSON = cast Json.parse(SELoader.loadText('${path}/${name}.json')).notes[id];
 							}catch(e){
 								this.noteJSON = null;
 							}

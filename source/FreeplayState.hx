@@ -53,14 +53,14 @@ class FreeplayState extends MusicBeatState
 		// var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 		super.create();
 		
-		if (FileSystem.exists("assets/data"))
+		if (SELoader.exists("assets/data"))
 		{
-			for (dir in FileSystem.readDirectory("assets/data"))
+			for (dir in SELoader.readDirectory("assets/data"))
 			{
-				if(FileSystem.exists('assets/data/${dir}/${dir}.json') && FileSystem.exists('assets/songs/${dir}/Inst.ogg')){
+				if(SELoader.exists('assets/data/${dir}/${dir}.json') && SELoader.exists('assets/songs/${dir}/Inst.ogg')){
 					try{
 
-						var song = Json.parse(File.getContent('assets/data/${dir}/${dir}.json')).song;
+						var song = Json.parse(SELoader.loadText('assets/data/${dir}/${dir}.json')).song;
 						var head = "head";
 						if (song.player2 != null){
 							head = song.player2;
@@ -251,11 +251,6 @@ class FreeplayState extends MusicBeatState
 
 				if (FileSystem.exists('assets/songs/${songs[curSelected].songName}/Voices.ogg')) onlinemod.OfflinePlayState.voicesFile = 'assets/songs/${songs[curSelected].songName}/Voices.ogg';
 				PlayState.hsBrTools = new HSBrTools('assets/data/${songs[curSelected].songName}/');
-				if (FileSystem.exists('assets/data/${songs[curSelected].songName}/script.hscript')) {
-					trace("Song has script!");
-					MultiPlayState.scriptLoc = 'assets/data/${songs[curSelected].songName}/script.hscript';
-					
-				}else {MultiPlayState.scriptLoc = "";PlayState.songScript = "";}
 				onlinemod.OfflinePlayState.instFile = 'assets/songs/${songs[curSelected].songName}/Inst.ogg';
 				PlayState.stateType = 0;
 				FlxG.sound.music.fadeOut(0.4);

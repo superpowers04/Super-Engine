@@ -12,7 +12,7 @@ using StringTools;
 class CoolUtil
 {
 	public static var fontName:String = "vcr.ttf";
-	public static var font:String = if(FileSystem.exists('mods/font.ttf')) 'mods/font.ttf' else Paths.font(fontName);
+	public static var font:String = if(SELoader.exists('mods/font.ttf')) 'mods/font.ttf' else Paths.font(fontName);
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 	public static var volKeys:Array<Array<Int>> = [];
 	public static var volKeysEnabled = true;

@@ -178,55 +178,55 @@ class NoteAssets{
 			noteJSON = defNoteJSON;
 			name = name_;
 			if (name == 'default'){
-				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets_bad.png'));
-				badXml = File.getContent("assets/shared/images/NOTE_assets_bad.xml");
+				badImage = SELoader.loadGraphic('assets/shared/images/NOTE_assets_bad.png');
+				badXml = SELoader.loadText("assets/shared/images/NOTE_assets_bad.xml");
 				// genSplashes();
-				image = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png'));
-				xml = File.getContent("assets/shared/images/NOTE_assets.xml");
-				splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/noteSplashes.png'));
-				splashXml = File.getContent("assets/shared/images/noteSplashes.xml");
+				image = SELoader.loadGraphic('assets/shared/images/NOTE_assets.png');
+				xml = SELoader.loadText("assets/shared/images/NOTE_assets.xml");
+				splashImage = SELoader.loadGraphic('assets/shared/images/noteSplashes.png');
+				splashXml = SELoader.loadText("assets/shared/images/noteSplashes.xml");
 				return;
 			} // Default arrows
 		
 
-			if (FileSystem.exists('${path}/${name}-splash.png') && FileSystem.exists('${path}/${name}-splash.xml')){ // Splashes
-				splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}-splash.png'));
-				splashXml = File.getContent('${path}/${name}-splash.xml');
-				if(FileSystem.exists('${path}/${name}-splashType.json')){
-					var _Type = File.getContent('${path}/${name}-splash.xml').toLowerCase();
+			if (SELoader.exists('${path}/${name}-splash.png') && SELoader.exists('${path}/${name}-splash.xml')){ // Splashes
+				splashImage = SELoader.loadGraphic('${path}/${name}-splash.png');
+				splashXml = SELoader.loadText('${path}/${name}-splash.xml');
+				if(SELoader.exists('${path}/${name}-splashType.json')){
+					var _Type = SELoader.loadText('${path}/${name}-splash.xml').toLowerCase();
 					if(splTypes.contains(_Type)){
 						splashType = _Type;
 					}
 				}
 			}else{
-				splashImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/noteSplashes.png'));
-				splashXml = File.getContent("assets/shared/images/noteSplashes.xml");
+				splashImage = SELoader.loadGraphic('assets/shared/images/noteSplashes.png');
+				splashXml = SELoader.loadText("assets/shared/images/noteSplashes.xml");
 			}
-			if(FileSystem.exists('${path}/${name}.json')){
+			if(SELoader.exists('${path}/${name}.json')){
 				try{
-					noteJSON = cast Json.parse('${path}/${name}.json');
+					noteJSON = cast Json.parse(SELoader.loadText('${path}/${name}.json'));
 				}catch(e){
 					noteJSON = defNoteJSON;
 				}
 			}
 
-			if (FileSystem.exists('${path}/${name}-bad.png') && FileSystem.exists('${path}/${name}-bad.xml')){ // Hurt notes
-				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}-bad.png'));
-				badXml = File.getContent('${path}/${name}-bad.xml');
+			if (SELoader.exists('${path}/${name}-bad.png') && SELoader.exists('${path}/${name}-bad.xml')){ // Hurt notes
+				badImage = SELoader.loadGraphic('${path}/${name}-bad.png');
+				badXml = SELoader.loadText('${path}/${name}-bad.xml');
 			}else{
-				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets_bad.png'));
-				badXml = File.getContent("assets/shared/images/NOTE_assets_bad.xml");
+				badImage = SELoader.loadGraphic('assets/shared/images/NOTE_assets_bad.png');
+				badXml = SELoader.loadText("assets/shared/images/NOTE_assets_bad.xml");
 			}
 
 				
-			if (!FileSystem.exists('${path}/${name}.png') || !FileSystem.exists('${path}/${name}.xml')) MainMenuState.handleError('${name} isn\'t a valid note asset!');
-			image = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}/${name}.png'));
-			xml = File.getContent('${path}/${name}.xml');
+			if (!SELoader.exists('${path}/${name}.png') || !SELoader.exists('${path}/${name}.xml')) MainMenuState.handleError('${name} isn\'t a valid note asset!');
+			image = SELoader.loadGraphic('${path}/${name}.png');
+			xml = SELoader.loadText('${path}/${name}.xml');
 
 
 			if (badImage == null) {
-				badImage = FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets_bad.png'));
-				badXml = File.getContent("assets/shared/images/NOTE_assets_bad.xml");
+				badImage = SELoader.loadGraphic('assets/shared/images/NOTE_assets_bad.png');
+				badXml = SELoader.loadText("assets/shared/images/NOTE_assets_bad.xml");
 			}
 			return;
 

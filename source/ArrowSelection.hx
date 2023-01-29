@@ -10,7 +10,6 @@ import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
 
 import sys.io.File;
-import sys.FileSystem; 
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
@@ -50,13 +49,13 @@ class ArrowSelection extends SearchMenuState
 			searchList = ["default"];
 			var dataDir:String = Sys.getCwd() + "mods/noteassets/";
 			var customArrows:Array<String> = [];
-			if (FileSystem.exists(dataDir))
+			if (SELoader.exists(dataDir))
 			{
-				for (file in FileSystem.readDirectory(dataDir))
+				for (file in SELoader.readDirectory(dataDir))
 				{
 					if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("-splash.png")){
 						var name = file.substr(0,-4);
-						if (FileSystem.exists('${dataDir}${name}.xml'))
+						if (SELoader.exists('${dataDir}${name}.xml'))
 						{
 							customArrows.push(name);
 
@@ -66,16 +65,16 @@ class ArrowSelection extends SearchMenuState
 			}else{MainMenuState.handleError('mods/noteassets is not a folder. You need to create it to use custom arrow skins!');}
 			{
 				var dataDir = "mods/packs/";
-				for (_dir in FileSystem.readDirectory(dataDir))
+				for (_dir in SELoader.readDirectory(dataDir))
 				{
 					var dataDir = 'mods/packs/$_dir/noteassets/';
-					if(FileSystem.exists(dataDir)){
+					if(SELoader.exists(dataDir)){
 
-						for (file in FileSystem.readDirectory(dataDir))
+						for (file in SELoader.readDirectory(dataDir))
 						{
 							if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("-splash.png")){
 								var name = file.substr(0,-4);
-								if (FileSystem.exists('${dataDir}${name}.xml'))
+								if (SELoader.exists('${dataDir}${name}.xml'))
 								{
 									// Really shit but it works
 									customArrows.push('../packs/$_dir/noteassets/$name');

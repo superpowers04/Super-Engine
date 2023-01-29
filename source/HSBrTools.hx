@@ -24,7 +24,7 @@ using StringTools;
 // A class that handles IO for scripts. Allowing easy loading of sprites, sounds and text without having to keep track of where the script actually is 
 
 class HSBrTools {
-	var path:String;
+	public var path:String;
 	public var spriteArray:Map<String,FlxGraphic> = [];
 	public var bitmapArray:Map<String,BitmapData> = [];
 	public var xmlArray:Map<String,String> = [];
@@ -42,7 +42,7 @@ class HSBrTools {
 	public function new(_path:String,?id:String = ""){
 		path = _path;
 		if (!path.endsWith('/')) path = path + "/";
-		if(id != "" && sys.FileSystem.exists('mods/scriptOptions/$id.json')){
+		if(id != "" && SELoader.exists('mods/scriptOptions/$id.json')){
 			hasSettings = true;
 			var scriptJson:Map<String,Dynamic> = OptionsMenu.loadScriptOptions('mods/scriptOptions/$id.json');
 			if(scriptJson != null) optionsMap = scriptJson;
@@ -67,31 +67,30 @@ class HSBrTools {
 
 
 	public function getPath(?str:String = ""){
-		return path + str;
+		return SELoader.getPath(path + str);
 	}
 	public function loadFlxSprite(x:Int,y:Int,pngPath:String):FlxSprite{
-		if(!FileSystem.exists('${path}${pngPath}')){
-			handleError('${id}: Image "${path}${pngPath}" doesn\'t exist!');
-			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
-		}
-		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
-		return new FlxSprite(x, y).loadGraphic(spriteArray[pngPath]);
+		// if(!SELoader.exists('${path}${pngPath}')){
+		// 	handleError('${id}: Image "${path}${pngPath}" doesn\'t exist!');
+		// 	return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
+		// }
+		return new FlxSprite(x, y).loadGraphic(loadGraphic(pngPath));
 	}
 	public function loadGraphic(pngPath:String):FlxGraphic{
-		if(!FileSystem.exists('${path}${pngPath}')){
+		if(!SELoader.exists('${path}${pngPath}')){
 			handleError('${id}: "${path}${pngPath}" doesn\'t exist!');
 			return FlxGraphic.fromRectangle(0,0,0); // Prevents the script from throwing a null error or something
 		}
-		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(BitmapData.fromFile('${path}${pngPath}'));
+		if(spriteArray[pngPath] == null) cacheGraphic('${pngPath}');
 		return spriteArray[pngPath];
 	}
 
 	public function loadSparrowFrames(pngPath:String):FlxAtlasFrames{
-		if(!FileSystem.exists('${path}${pngPath}.png')){
+		if(!SELoader.exists('${path}${pngPath}.png')){
 			handleError('${id}: SparrowFrame PNG "${path}${pngPath}.png" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
-		if(!FileSystem.exists('${path}${pngPath}.xml')){
+		if(!SELoader.exists('${path}${pngPath}.xml')){
 			handleError('${id}: SparrowFrame XML "${path}${pngPath}.xml" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
@@ -108,24 +107,31 @@ class HSBrTools {
 		return spr;
 	}
 	public function reset(){
+		for(graphic in spriteArray){
+			try{
+				graphic.destroy();
+			}catch(e){
+
+			}
+		}
 		spriteArray = new Map<String,FlxGraphic>();
 	}
 
 	public function exists(textPath:String):Bool{
-		return FileSystem.exists('${path}${textPath}');
+		return SELoader.exists('${path}${textPath}');
 	}
 	public function loadText(textPath:String):String{
-		if(textArray[textPath] == null) textArray[textPath] = File.getContent('${path}${textPath}');
+		if(textArray[textPath] == null) textArray[textPath] = SELoader.loadText('${path}${textPath}');
 		return textArray[textPath];
 	}
 	// The above but hits the xml cache instead
 	public function loadXML(textPath:String):String{
-		if(xmlArray[textPath] == null) xmlArray[textPath] = File.getContent('${path}${textPath}');
+		if(xmlArray[textPath] == null) xmlArray[textPath] = SELoader.loadText('${path}${textPath}');
 		return xmlArray[textPath];
 	}
 	public function loadShader(textPath:String,?glslVersion:Int = 120):Null<FlxRuntimeShader>{
-		if(textArray[textPath + ".vert"] == null && FileSystem.exists('${path}${textPath}.vert')) textArray[textPath + ".vert"] = File.getContent('${path}${textPath}.vert');
-		if(textArray[textPath + ".frag"] == null && FileSystem.exists('${path}${textPath}.frag')) textArray[textPath + ".frag"] = File.getContent('${path}${textPath}.frag');
+		if(textArray[textPath + ".vert"] == null && SELoader.exists('${path}${textPath}.vert')) textArray[textPath + ".vert"] = SELoader.loadText('${path}${textPath}.vert');
+		if(textArray[textPath + ".frag"] == null && SELoader.exists('${path}${textPath}.frag')) textArray[textPath + ".frag"] = SELoader.loadText('${path}${textPath}.frag');
 		try{
 			var shader = new FlxRuntimeShader(textArray[textPath + ".vert"],textArray[textPath + ".frag"],glslVersion);
 			// if(init) shader.initialise(); // If the shader uses custom variables, this can prevent loading a broken shader
@@ -147,7 +153,7 @@ class HSBrTools {
 
 
 	public function loadSound(soundPath:String):Sound{
-		if(soundArray[soundPath] == null) soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
+		if(soundArray[soundPath] == null) soundArray[soundPath] = SELoader.loadSound('${path}${soundPath}');
 		return soundArray[soundPath];
 	}
 
@@ -175,16 +181,16 @@ class HSBrTools {
 
 	public function cacheSound(soundPath:String){
 		if(soundArray[soundPath] == null) {
-			if(!FileSystem.exists('${path}${soundPath}')){
+			if(!SELoader.exists('${path}${soundPath}')){
 				trace('${id} : CacheSound: "${path}${soundPath}" doesn\'t exist!');
 				return;
 			}
-			soundArray[soundPath] = Sound.fromFile('${path}${soundPath}');
+			soundArray[soundPath] = SELoader.loadSound('${path}${soundPath}');
 		}
 	}
 	public function cacheGraphic(pngPath:String,?dumpGraphic:Bool = false){ // DOES NOT CHECK IF FILE IS VALID!
 		
-		if(bitmapArray[pngPath] == null) bitmapArray[pngPath] = BitmapData.fromFile('${path}${pngPath}');
+		if(bitmapArray[pngPath] == null) bitmapArray[pngPath] = SELoader.loadBitmap('${path}${pngPath}');
 		
 		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(bitmapArray[pngPath]);
 		if(spriteArray[pngPath] == null) handleError('${id} : cacheGraphic: Unable to load $pngPath into a FlxGraphic!');
@@ -194,7 +200,7 @@ class HSBrTools {
 	public function cacheSprite(pngPath:String,?dump:Bool = false){
 
 		if(spriteArray[pngPath] == null) {
-			if(!FileSystem.exists('${path}${pngPath}.png')){
+			if(!SELoader.exists('${path}${pngPath}.png')){
 				handleError('${id} : CacheSprite: "${path}${pngPath}.png" doesn\'t exist!');
 				return;
 			}

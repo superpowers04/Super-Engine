@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project>
+<project
+	xmlns="http://lime.openfl.org/project/1.0.4"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/xsd/project-1.0.4.xsd">
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin' Super Engine" file="FNF Super Engine" packageName="com.super.fnfsuperengine" package="com.super.fnfsuperengine" main="Main" version="0.2.7.1" company="superpowers04" />
+	<app title="Friday Night Funkin' Super Engine" file="FNF Super Engine" packageName="com.super04.fnfsuperengine" package="com.super04.fnfsuperengine" main="Main" version="0.2.7.1" company="superpowers04" if="android"/>
+	<app title="Friday Night Funkin' Super Engine" file="FNF Super Engine" packageName="com.super.fnfsuperengine" package="com.super.fnfsuperengine" main="Main" version="0.2.7.1" company="superpowers04" unless="android" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -28,6 +32,7 @@
 
 	<!--Mobile-specific-->
 	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false"/>
+
 
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" resizable="true" />
@@ -116,6 +121,8 @@
 
 	<haxelib name="discord_rpc" if="desktop cpp"/>
 
+	<haxelib name="extension-androidtools" if="android" /> <!-- I am not reimplementing this shit myself -->
+
 	<!-- <haxelib name="hxCodec" if="desktop || android"/> -->
 
 	<!--In case you want to use the ui package-->
@@ -166,6 +173,7 @@
 	<haxedef name="HXCPP_M64"/> 
 	<haxedef name="HXCPP_CHECK_POINTER"/>
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
+	<define name="SCRIPTABLE" if="release" />
 
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
@@ -182,7 +190,13 @@
 	<icon path="art/icon128.png" size='128'/>
 	<icon path="art/icon256.png" size='256'/>
 	<icon path="art/icon512.png" size='512'/>
+	<icon path="art/icon1024.png" size='1024'/>
 	<icon path="art/iconOG.png" />
+
+	<android permission="android.permission.INTERNET"/>
+	<android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
+
 
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->

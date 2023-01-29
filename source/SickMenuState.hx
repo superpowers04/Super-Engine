@@ -127,7 +127,7 @@ class SickMenuState extends MusicBeatState
 				if(mt.file.contains(" or ")){
 					SickMenuState.musicFileLoc = "assets/music/freakyMenu.ogg"; // Safety net to prevent a null song or something
 					for (file in mt.file.split(" or ")) {
-						if(FileSystem.exists(file)){
+						if(SELoader.exists(file)){
 							SickMenuState.musicFileLoc = file;
 							break;
 						}
@@ -157,53 +157,59 @@ class SickMenuState extends MusicBeatState
 
 	override function create()
 	{
-		// if (ChartingState.charting) ChartingState.charting = false;
-		SearchMenuState.resetVars();
-		// if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;}
-		// PlayState.songScript = "";PlayState.hsBrTools = null;
-		if(SearchMenuState.background == null){
-			SearchMenuState.background = if(FileSystem.exists("mods/bg.png")) SELoader.loadGraphic("mods/bg.png",true); else SELoader.loadGraphic("assets/images/menuDesat.png",true);
-			SearchMenuState.backgroundOver = if(FileSystem.exists("mods/fg.png")) SELoader.loadGraphic("mods/fg.png",true); else FlxGraphic.fromRectangle(0,0,0x00000000);
-			SearchMenuState.background.persist = SearchMenuState.backgroundOver.persist = true;
-			SearchMenuState.background.destroyOnNoUse = SearchMenuState.backgroundOver.destroyOnNoUse = false;
-		}
+
+			// if (ChartingState.charting) ChartingState.charting = false;
+			SearchMenuState.resetVars();
+			trace('Loading new menu state!');
+			// if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;}
+			// PlayState.songScript = "";PlayState.hsBrTools = null;
+			if(SearchMenuState.background == null){
+				SearchMenuState.background = if(SELoader.exists("mods/bg.png")) SELoader.loadGraphic("mods/bg.png",true); else SELoader.loadGraphic("assets/images/menuDesat.png",true);
+				SearchMenuState.backgroundOver = if(SELoader.exists("mods/fg.png")) SELoader.loadGraphic("mods/fg.png",true); else FlxGraphic.fromRectangle(0,0,0x00000000);
+				if(SearchMenuState.background == null){
+					SearchMenuState.background = FlxGraphic.fromRectangle(0,0,0xff110015);
+				}
+					SearchMenuState.background.persist = SearchMenuState.backgroundOver.persist = true;
+					SearchMenuState.background.destroyOnNoUse = SearchMenuState.backgroundOver.destroyOnNoUse = false;
+			}
 
 
-		if(bg == null){
-			
-			bg = new FlxSprite().loadGraphic(SearchMenuState.background); 
-			bg.color = 0xFFFF6E6E;
-		}
+			if(bg == null){
+				
+				bg = new FlxSprite().loadGraphic(SearchMenuState.background); 
+				bg.color = 0xFFFF6E6E;
+			}
 
-		bg.scrollFactor.set(0.01,0.01);
-		add(bg);
-		var bgOver = new FlxSprite().loadGraphic(SearchMenuState.backgroundOver);
-		bgOver.scrollFactor.set(0.01,0.01);
-		add(bgOver);
-		musicHandle(isMainMenu,bg);
-
-
-
-		generateList(true);
-
-		descriptionText = new FlxText(5, FlxG.height - 28, 0, descriptions[0], 12);
-		descriptionText.scrollFactor.set();
-		descriptionText.setFormat(CoolUtil.font, 22, FlxColor.WHITE, LEFT, NONE, FlxColor.BLACK);
-		descriptionText.borderSize = 2;
-		var blackBorder:FlxSprite = new FlxSprite(-30,FlxG.height - 30).makeGraphic((FlxG.width),40,FlxColor.fromString("0x220011"));
-		blackBorder.alpha = 0.8;
-
-		add(blackBorder);
-
-		add(descriptionText);
+			bg.scrollFactor.set(0.01,0.01);
+			add(bg);
+			if(SearchMenuState.backgroundOver != null){
+				var bgOver = new FlxSprite().loadGraphic(SearchMenuState.backgroundOver);
+				bgOver.scrollFactor.set(0.01,0.01);
+				add(bgOver);
+			}
+			musicHandle(isMainMenu,bg);
 
 
+			generateList(true);
 
-		FlxG.autoPause = true;
+			descriptionText = new FlxText(5, FlxG.height - 28, 0, descriptions[0], 12);
+			descriptionText.scrollFactor.set();
+			descriptionText.setFormat(CoolUtil.font, 22, FlxColor.WHITE, LEFT, NONE, FlxColor.BLACK);
+			descriptionText.borderSize = 2;
+			var blackBorder:FlxSprite = new FlxSprite(-30,FlxG.height - 30).makeGraphic((FlxG.width),40,FlxColor.fromString("0x220011"));
+			blackBorder.alpha = 0.8;
+
+			add(blackBorder);
+
+			add(descriptionText);
 
 
-		super.create();
-		FlxG.mouse.visible = true;
+
+			FlxG.autoPause = true;
+
+
+			super.create();
+			FlxG.mouse.visible = true;
 	}
 	var doResize:Bool = true;
 	override function update(elapsed:Float)
@@ -230,8 +236,9 @@ class SickMenuState extends MusicBeatState
 			}
 			select(curSelected);
 		}
+		#if !mobile
 		if(supportMouse){
-
+		#end
 			if(FlxG.mouse.justPressed){
 				for (i in -2 ... 2) {
 					if(grpControls.members[curSelected + i] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + i])){
@@ -243,7 +250,9 @@ class SickMenuState extends MusicBeatState
 				var move = -FlxG.mouse.wheel;
 				changeSelection(Std.int(move));
 			}
+		#if !mobile
 		}
+		#end
 	}
 
 	public var supportMouse(get,default):Bool = true;

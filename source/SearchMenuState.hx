@@ -60,6 +60,9 @@ class SearchMenuState extends MusicBeatState
 	function addTitleText(str:String = ""){
 		if (titleText != null) titleText.destroy();
 		if (str == "") return;
+		#if android
+			str = str + " - Tap here to go back";
+		#end
 		titleText = new FlxText(FlxG.width * 0.5, 20, 0, str, 12);
 		titleText.scrollFactor.set();
 		titleText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -91,7 +94,7 @@ class SearchMenuState extends MusicBeatState
 		LoadingScreen.loadingText = "Resetting Variables";
 		if (ChartingState.charting) ChartingState.charting = false;
 		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
-		multi.MultiPlayState.scriptLoc = "";PlayState.nameSpace = "";PlayState.scripts = [];PlayState.songScript = "";PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
+		PlayState.nameSpace = "";PlayState.scripts = [];PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
 		HSBrTools.shared = [];
 		SickMenuState.chgTime = true;
 		if(Note.noteNames[0] == null){Note.noteNames = ["purple","blue","green",'red'];}
@@ -243,14 +246,31 @@ class SearchMenuState extends MusicBeatState
 				if(retAfter) ret();
 			}
 			if(supportMouse){
-				
-				if(!FlxG.mouse.overlaps(blackBorder) && FlxG.mouse.justPressed){
-					for (i in -2 ... 2) {
-						if(grpSongs.members[curSelected + i] != null && FlxG.mouse.overlaps(grpSongs.members[curSelected + i])){
-							select(curSelected + i);
+				if(FlxG.mouse.justPressed){
+					if(titleText != null || FlxG.mouse.overlaps(titleText)){
+						ret();
+					}
+					if(!FlxG.mouse.overlaps(blackBorder) ){
+						var curSel= grpSongs.members[curSelected];
+						for (i in -2 ... 2) {
+							var member = grpSongs.members[curSelected + i];
+							if(member != null && FlxG.mouse.overlaps(member)){
+								if(member == curSel){
+									select(curSelected);
+								}else{
+									changeSelection(i);
+								}
+							}
 						}
 					}
 				}
+				#if android
+					for(swipe in FlxG.swipes){
+						var distance = (swipe.startPosition.y - swipe.endPosition.y) / 10;
+						var speed = Math.max(swipe.duration - 1,0.1);
+						changeSelection(Std.int(distance * speed));
+					}
+				#end
 				if(FlxG.mouse.wheel != 0){
 					var move = -FlxG.mouse.wheel;
 					changeSelection(Std.int(move));

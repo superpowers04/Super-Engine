@@ -12,7 +12,6 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
 import sys.io.File;
-import sys.FileSystem;
 import TitleState;
 
 using StringTools;

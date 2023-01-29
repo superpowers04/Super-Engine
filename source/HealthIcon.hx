@@ -2,7 +2,6 @@ package;
 
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
-import sys.FileSystem;
 import flash.display.BitmapData;
 import flixel.tweens.FlxTween;
 
@@ -55,9 +54,9 @@ class HealthIcon extends FlxSprite
 			char = _char.folderName;
 		}
 		
-		if (!chars.contains(char) &&FileSystem.exists(imgPath+char+"/healthicon.png")){
+		if (!chars.contains(char) && SELoader.exists(imgPath+char+"/healthicon.png")){
 			// trace('Custom character with custom icon! Loading custom icon.');
-			var bitmapData = BitmapData.fromFile('${imgPath}$char/healthicon.png');
+			var bitmapData = SELoader.loadBitmap('${imgPath}$char/healthicon.png');
 			var height:Int = 150;
 			var width:Int = 150;
 			frameCount = 1; // Has to be 1 instead of 2 due to how compooters handle numbers
@@ -82,9 +81,9 @@ class HealthIcon extends FlxSprite
 			vanIcon = false;
 			frameCount = frameCount + 1;
 			animation.add('bf', if(frameCount > 1)[for (i in 0 ... frameCount) i] else [0,1], 0, false, isPlayer);
-		}else if ((chars.contains(char) || chars.contains(clone)) && FileSystem.exists(imgPath+char+"/icongrid.png")){
+		}else if ((chars.contains(char) || chars.contains(clone)) && SELoader.exists(imgPath+char+"/icongrid.png")){
 			// trace('Custom character with custom icongrid! Loading custom icon.');
-			loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('${imgPath}$char/icongrid.png')), true, 150, 150);
+			loadGraphic(SELoader.loadGraphic('${imgPath}$char/icongrid.png'), true, 150, 150);
 			if (clone != "") char = clone;
 			vanIcon = false;
 			animation.add('bf', [0, 1], 0, false, isPlayer);
@@ -129,7 +128,10 @@ class HealthIcon extends FlxSprite
 				}
 			}
 			animation.play(char.toLowerCase());
-		}else{trace('Invalid character icon $char, Using BF!');animation.play("bf");}
+		}else{
+			trace('Invalid character icon $char, Using BF!');
+			animation.play("bf");
+		}
 		switch(char)
 		{
 			case 'bf-pixel' | 'senpai' | 'senpai-angry' | 'spirit' | 'gf-pixel':

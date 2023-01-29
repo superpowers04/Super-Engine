@@ -179,6 +179,7 @@ class FinishSubState extends MusicBeatSubstate
 	var shownResults:Bool = false;
 	public var contText:FlxText;
 	public function finishNew(?name:String = ""){
+			// FlxG.mouse.visible = true;
 			// var timer = new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;FlxTween.tween(FinishSubState.instance.contText,{alpha:1},0.5);});
 			Conductor.changeBPM(70);
 			if(name != "FORCEDMOMENT.MP4efdhseuifghbehu"){
@@ -242,7 +243,12 @@ class FinishSubState extends MusicBeatSubstate
 				errText.screenCenter(X);
 				var _errText_X = errText.x;
 				errText.x = FlxG.width;
-				contText = new FlxText(FlxG.width * 0.5,FlxG.height + 100,0,'Press ENTER to exit, R to reload or O to open options.');
+				contText = new FlxText(FlxG.width * 0.5,FlxG.height + 100,0,
+				#if android
+					'Tap the left of the screen to exit or the right of the screen to restart'
+				#else
+					'Press ENTER to exit, R to reload or O to open options.'
+				#end );
 				contText.size = 24;
 				// contText.x -= contText.width * 0.5;
 				contText.screenCenter(X);
@@ -312,7 +318,12 @@ class FinishSubState extends MusicBeatSubstate
 				settingsText.color = FlxColor.WHITE;
 				settingsText.scrollFactor.set();
 
-				contText = new FlxText(FlxG.width - FlxG.save.data.guiGap,FlxG.height + 100,0,'Press ENTER to continue or R to restart.');
+				contText = new FlxText(FlxG.width - FlxG.save.data.guiGap,FlxG.height + 100,0,
+				#if android
+					'Tap the left of the screen to exit or the right of the screen to restart'
+				#else
+				'Press ENTER to continue or R to restart.'
+				#end );
 				
 				contText.size = 28;
 				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
@@ -387,16 +398,16 @@ class FinishSubState extends MusicBeatSubstate
 						}
 						var eventsjson:String = haxe.Json.stringify(eventLog);
 						events += '\n---\nLog generated at ${Date.now()}, Assumed Note Count: ${noteCount}. USE THE JSON FOR AUTOMATION';
-						if(!FileSystem.exists("songLogs/"))
-							FileSystem.createDirectory("songLogs/");
+						if(!SELoader.exists("songLogs/"))
+							SELoader.createDirectory("songLogs/");
 						var curDate = Date.now();
 						var songName = if(PlayState.isStoryMode) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}';
 						songName.replace(".json","");
 						if(PlayState.invertedChart) songName = songName + "-inverted";
-						if(!FileSystem.exists('songLogs/${songName}/'))
-							FileSystem.createDirectory('songLogs/${songName}/');
-						File.saveContent('songLogs/${songName}/${curDate.getDate()}-${curDate.getMonth()}-${curDate.getFullYear()}_AT_${curDate.getHours()}-${curDate.getMinutes()}-${curDate.getSeconds()}.log',events);
-						File.saveContent('songLogs/${songName}/${curDate.getTime()}.json',eventsjson);
+						if(!SELoader.exists('songLogs/${songName}/'))
+							SELoader.createDirectory('songLogs/${songName}/');
+						SELoader.saveContent('songLogs/${songName}/${curDate.getDate()}-${curDate.getMonth()}-${curDate.getFullYear()}_AT_${curDate.getHours()}-${curDate.getMinutes()}-${curDate.getSeconds()}.log',events);
+						SELoader.saveContent('songLogs/${songName}/${curDate.getTime()}.json',eventsjson);
 					}catch(e){trace("Something went wrong when trying to output event log! " + e.message);}
 				}
 				// try{TitleState.saveScore(PlayState.accuracy);}catch(e){trace("e");}
@@ -446,6 +457,16 @@ class FinishSubState extends MusicBeatSubstate
 			{
 				retMenu();
 			}
+			#if android
+				if(FlxG.mouse.justPressed){
+					trace(FlxG.mouse.screenX / FlxG.width);
+					if((FlxG.mouse.screenX / FlxG.width) <= .5){
+						retMenu();
+					}else{
+						if(win){FlxG.resetState();}else{restart();}
+					}
+				}
+			#end
 
 			if (FlxG.keys.justPressed.R){if(win){FlxG.resetState();}else{restart();}}
 			if (FlxG.keys.justPressed.O && optionsisyes){

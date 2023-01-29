@@ -38,15 +38,15 @@ class ScriptSel extends SearchMenuState
 	{try{
 		searchList = [];
 		retAfter = false;
-		if(FileSystem.exists('mods/scripts'))
+		if(SELoader.exists('mods/scripts'))
 			{
-				for (directory in orderList(FileSystem.readDirectory('mods/scripts/')))
+				for (directory in orderList(SELoader.readDirectory('mods/scripts/')))
 				{
 					if (FileSystem.exists("mods/scripts/"+directory+"/script.hscript") && !FileSystem.exists("mods/scripts/"+directory+"/isLibrary"))
 					{
 						searchList.push(directory);
-						if (FileSystem.exists("mods/scripts/"+directory+"/description.txt")){
-							descriptions[directory] = File.getContent('mods/scripts/${directory}/description.txt');
+						if (SELoader.exists("mods/scripts/"+directory+"/description.txt")){
+							descriptions[directory] = SELoader.loadText('mods/scripts/${directory}/description.txt');
 						}
 					}
 				}

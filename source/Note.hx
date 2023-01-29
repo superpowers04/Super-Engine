@@ -153,13 +153,14 @@ class Note extends FlxSkewedSprite
 							noteJSON = null;
 						}
 					}else if (name == 'default' || (!FileSystem.exists('${path_}/${name}.png') || !FileSystem.exists('${path_}/${name}.xml'))){
-						frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png')),File.getContent("assets/shared/images/NOTE_assets.xml"));
+						frames = SELoader.loadSparrowFrames('assets/shared/images/NOTE_assets');
+						// FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png')),File.getContent("assets/shared/images/NOTE_assets.xml"));
 					}else{
-						frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('${path_}/${name}.png')),File.getContent('${path_}/${name}.xml'));
+						frames = SELoader.loadSparrowFrames('${path_}/${name}');
 						
-						if(FileSystem.exists('${path}/${name}.json')){
+						if(SELoader.exists('${path}/${name}.json')){
 							try{
-								this.noteJSON = cast Json.parse('${path}/${name}.json').notes[noteData];
+								this.noteJSON = cast Json.parse(SELoader.loadText('${path}/${name}.json')).notes[noteData];
 							}catch(e){
 								this.noteJSON = null;
 							}

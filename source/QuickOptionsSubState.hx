@@ -132,7 +132,12 @@ class QuickOptionsSubState extends MusicBeatSubstate
 		}
 		
 		if (FlxG.keys.pressed.ESCAPE){saveSettings();close();} 
-
+		#if(mobile)
+		if(FlxG.mouse.pressed && FlxG.mouse.screenX < 30){
+			saveSettings();close();
+		}
+		// TODO, ADD TOUCH SUPPORT
+		#end
 		if (accepted && settings[menuItems[curSelected]].type != 1) changeSetting(curSelected);
 		if (leftP || rightP) changeSetting(curSelected,rightP);
 	}

@@ -1954,7 +1954,7 @@ class ImportOption extends Option
 	public override function press():Bool
 	{
 		try{
-			var optionsFile = Json.parse(sys.io.File.getContent('SEOPTIONS.json'));
+			var optionsFile = Json.parse(SELoader.loadText('SEOPTIONS.json'));
 			for (_ => v in Reflect.fields(optionsFile)) {
 				if(v.toLowerCase() == "songScores"){continue;} // Importing scores is probably not the best of ideas
 				Reflect.setProperty(FlxG.save.data,v,Reflect.getProperty(optionsFile,v));
@@ -1998,7 +1998,7 @@ class EraseOption extends Option
 	{
 		try{
 			var e:String = Json.stringify(FlxG.save.data,"fancy");
-			sys.io.File.saveContent('SEOPTIONS-BACKUP.json',e);
+			SELoader.saveText('SEOPTIONS-BACKUP.json',e);
 			FlxG.save.erase();
 			KadeEngineData.initSave();
 			OptionsMenu.instance.showTempmessage('Reset options back to defaults and backed them up to SEOPTIONS-BACKUP.json',FlxColor.GREEN,10);
@@ -2038,7 +2038,7 @@ class ExportOption extends Option
 	{
 		try{
 			var e:String = Json.stringify(FlxG.save.data,"fancy");
-			sys.io.File.saveContent('SEOPTIONS.json',e);
+			SELoader.saveText('SEOPTIONS.json',e);
 			OptionsMenu.instance.showTempmessage('Exported options successfully!',FlxColor.GREEN,10);
 		}catch(e){
 			OptionsMenu.instance.showTempmessage('Unable to export options! ${e.message}',FlxColor.RED,10);

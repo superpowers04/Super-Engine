@@ -61,6 +61,11 @@ class OptionsMenu extends MusicBeatState
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
+			#if android
+
+			new HCBoolOption("Toggle the built-in taps for hitting notes","Native tapping support","useTouch"),
+			new HCBoolOption("Whether to split the screen into 4 buttons or use strums as buttons(Requires native Touch)","Strum Buttons","useStrumsAsButtons"),
+			#end
 			new DownscrollOption("Change the layout of the strumline."),
 			new MiddlescrollOption("Move the strumline to the middle of the screen"),
 
@@ -102,7 +107,9 @@ class OptionsMenu extends MusicBeatState
 			new GUIGapOption("Change the distance between the end of the screen and text(Not used everywhere)"),
 		],"Toggle flashing lights, camera movement, song info, etc "),
 		new OptionCategory("Misc", [
+			#if !mobile
 			new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
+			#end
 			#if discord_rpc
 			new HCBoolOption("Toggle Discord Rich Presence(Requires restart)","Discord Rich Presence","discordDRP"),
 			#end
@@ -112,8 +119,8 @@ class OptionsMenu extends MusicBeatState
 			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
 			new LogGameplayOption("Logs your game to a text file"),
 			new EraseOption("Backs up your options to SEOPTIONS-BACKUP.json and then resets them"),
-			new ImportOption("Import your options from SEOPTIONS.json"),
-			new ExportOption("Export your options to SEOPTIONS.json to backup or to share with a bug report"),
+			// new ImportOption("Import your options from SEOPTIONS.json"),
+			// new ExportOption("Export your options to SEOPTIONS.json to backup or to share with a bug report"),
 		],"Misc things"),
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your FPS"),
@@ -127,7 +134,8 @@ class OptionsMenu extends MusicBeatState
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
 		],"Disable some features for better performance"),
 		new OptionCategory("Visibility", [
-            new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),new BackTransOption("Change underlay opacity"),new BackgroundSizeOption("Change underlay size"),
+            new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),
+            new BackTransOption("Change underlay opacity"),new BackgroundSizeOption("Change underlay size"),
 			new FPSOption("Toggle the FPS Counter"),
 			new BeatBouncingOption("Toggle certain animations like text beating on the main menu. Useful if text is hard to read"),
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
@@ -165,7 +173,13 @@ class OptionsMenu extends MusicBeatState
 	var currentSelectedCat:OptionCategory;
 	var blackBorder:FlxSprite;
 	var titleText:FlxText;
-	function addTitleText(str:String = "Options"){
+	function addTitleText(str:String = 
+							#if android
+							"Options - Tap here to go back"
+							#else
+							"< Options"
+							#end
+	                      ){
 		if (titleText != null) titleText.destroy();
 		titleText = new FlxText(FlxG.width * 0.5 - (str.length * 10), 20, 0, str, 12);
 		titleText.scrollFactor.set();
@@ -175,6 +189,7 @@ class OptionsMenu extends MusicBeatState
 	override function create()
 	{
 		loading = false;
+		FlxG.mouse.visible = true;
 		instance = this;
 		FlxG.save.data.masterVol = FlxG.sound.volume;
 		if(onlinemod.OnlinePlayMenuState.socket == null){
@@ -219,6 +234,7 @@ class OptionsMenu extends MusicBeatState
 		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
 
 		super.create();
+		changeSelection(0);
 	}
 
 	var isCat:Bool = false;
@@ -242,39 +258,77 @@ class OptionsMenu extends MusicBeatState
 		}else
 			FlxG.switchState(new MainMenuState());
 	}
+	function isHovering(obj1:Dynamic,obj2:Dynamic):Bool{
+		if(obj1 == null || obj2 == null) return false;
+		var width:Float = obj2.width;
+		var height:Float = obj2.height;
+		var x:Float = obj2.x;
+		var y:Float = obj2.y;
+			
+			
+			
+			
+
+		return (obj1.x > x && obj1.x < x + width) && (obj1.y > y && obj1.y < y + height);
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		if (acceptInput)
-		{
-			if (controls.BACK && !isCat){
+		{	
+			var _back = controls.BACK;
+			var _up = controls.UP_P;
+			var _down = controls.DOWN_P;
+			var _left = controls.LEFT_P;
+			var _right = controls.RIGHT_P;
+			var _accept = controls.ACCEPT;
 
-				saveChanges(); // Save when exiting, not every fucking frame
-				goBack();
+			if(FlxG.mouse.justPressed){
+				if(isHovering(FlxG.mouse,titleText)){
+					_back = true;
+				}
+				if(FlxG.mouse.overlaps(grpControls.members[curSelected])){
+					_accept = true;
+				}
+				if(grpControls.members[curSelected + 1] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + 1])){
+					_down = true;
+				}
+				if(grpControls.members[curSelected - 1] != null && FlxG.mouse.overlaps(grpControls.members[curSelected - 1])){
+					_up = true;
+				}
+				// TODO Add left and right arrows onscreen for changing options
 			}
-				
-			else if (controls.BACK)
-			{
-				isCat = false;
+			if (_back){
+				if(isCat){
 
-				CoolUtil.clearFlxGroup(grpControls);
-				for (i in 0...options.length)
-					{
-						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
-						controlLabel.isMenuItem = true;
-						controlLabel.targetY = i;
-						controlLabel.x = -2000;
-						grpControls.add(controlLabel);
-						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-					}
-				curSelected = selCat;
-				changeSelection(0);
-				addTitleText();
-				updateOffsetText();
+					isCat = false;
+
+					CoolUtil.clearFlxGroup(grpControls);
+					for (i in 0...options.length)
+						{
+							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
+							controlLabel.isMenuItem = true;
+							controlLabel.targetY = i;
+							controlLabel.x = -2000;
+							grpControls.add(controlLabel);
+							// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+						}
+					curSelected = selCat;
+					changeSelection(0);
+					addTitleText();
+					updateOffsetText();
+				}else{
+					saveChanges(); // Save when exiting, not every fucking frame
+					goBack();
+				}
 			}
-			if (controls.UP_P || FlxG.keys.justPressed.UP) changeSelection(-1);
-			if (controls.DOWN_P || FlxG.keys.justPressed.DOWN) changeSelection(1);
+			if (_up) changeSelection(-1);
+			if (_down) changeSelection(1);
+			if(FlxG.mouse.wheel != 0){
+				var move = -FlxG.mouse.wheel;
+				changeSelection(Std.int(move));
+			}
 			
 			if (isCat)
 			{
@@ -282,11 +336,11 @@ class OptionsMenu extends MusicBeatState
 				if (currentSelectedCat.getOptions()[curSelected].getAccept())
 				{
 
-					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.RIGHT || FlxG.keys.justPressed.RIGHT ){
+					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.RIGHT || _right ){
 						if(currentSelectedCat.getOptions()[curSelected].right()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].getDisplay());
 
 					}
-					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.LEFT || FlxG.keys.justPressed.LEFT ){
+					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.LEFT || _left ){
 						if(currentSelectedCat.getOptions()[curSelected].left()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].getDisplay());
 					}
 
@@ -309,7 +363,7 @@ class OptionsMenu extends MusicBeatState
 			if (controls.RESET)
 				FlxG.save.data.offset = 0;
 
-			if (controls.ACCEPT)
+			if (_accept)
 			{
 				if (isCat)
 				{
@@ -424,17 +478,17 @@ class OptionsMenu extends MusicBeatState
 	function initOptions(){
 		trace('Initializing script options');
 		if(FlxG.save.data.scripts.length < 1) return;
-		try{FileSystem.createDirectory('mods/scriptOptions/');}catch(e){trace('Unable to create dir! ${e}');}
+		try{SELoader.createDirectory('mods/scriptOptions/');}catch(e){trace('Unable to create dir! ${e}');}
 		for (si in 0 ... FlxG.save.data.scripts.length) {
 			var script = FlxG.save.data.scripts[si];
-			if(!FileSystem.exists('mods/scripts/$script/options.json')) {
+			if(!SELoader.exists('mods/scripts/$script/options.json')) {
 				continue;
 			}
 			try{
-				var sOptions:OptionsFileDef = Json.parse(CoolUtil.cleanJSON(File.getContent('mods/scripts/$script/options.json')));
+				var sOptions:OptionsFileDef = Json.parse(CoolUtil.cleanJSON(SELoader.getContent('mods/scripts/$script/options.json')));
 				// var curOptions:Map<String,Dynamic> = new Map<String,Dynamic>();
 				modOptions[script] = new Map<String,Dynamic>();
-				if(FileSystem.exists('mods/scriptOptions/$script.json')){
+				if(SELoader.exists('mods/scriptOptions/$script.json')){
 					var scriptJson:Map<String,Dynamic> = loadScriptOptions('mods/scriptOptions/$script.json');
 					if(scriptJson != null) {
 						// modOptions[script] = scriptJson;
@@ -509,7 +563,7 @@ class OptionsMenu extends MusicBeatState
 	public static function loadScriptOptions(path:String):Null<Map<String,Dynamic>>{ // Holy shit this is terrible but whatever
 		
 		var ret:Map<String,Dynamic> = new Map<String,Dynamic>();
-		var obj:Array<OptionF> = Json.parse(CoolUtil.cleanJSON(File.getContent(path)));
+		var obj:Array<OptionF> = Json.parse(CoolUtil.cleanJSON(SELoader.getContent(path)));
 		if(obj == null) return null;
 		for (i in obj) {
 			ret[i.name] = i.value;
@@ -519,7 +573,8 @@ class OptionsMenu extends MusicBeatState
 
 	function saveChanges(){
 		try{
-			FlxG.save.flush();
+			// FlxG.save.flush();
+			SEFlxSaveWrapper.save();
 		}catch(e){MainMenuState.errorMessage += '\nUnable to save options! ${e.message}';}
 		// File.saveContent('SEOPTIONS.json',Json.stringify(FlxG.save.data));
 		for (i => v in modOptions) {

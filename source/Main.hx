@@ -35,6 +35,10 @@ class Main extends Sprite
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets 
 
+	#if android
+		public static var grantedPerms:Array<String> = [];
+	#end
+
 	public static var watermarks = true; // Whether to put Kade Engine liteartly anywhere
 
 	public static var game:FlxGameEnhanced;
@@ -99,7 +103,6 @@ class Main extends Sprite
 		
 		addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
 		funniSprite = new Sprite();
-
 		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
 		addChild(funniSprite);
 		funniSprite.addChild(game);

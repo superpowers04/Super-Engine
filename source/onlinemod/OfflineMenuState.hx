@@ -25,6 +25,7 @@ class OfflineMenuState extends SearchMenuState
   var songDirs:Array<String> = [];
   var dataDir:String = "assets/onlinedata/data/";
   var optionsButton:FlxUIButton;
+  var goBackButton:FlxUIButton;
   var invertedChart:Bool = false;
 
   function goOptions(){
@@ -39,18 +40,32 @@ class OfflineMenuState extends SearchMenuState
   override function create()
   {
 
-    optionsButton = new FlxUIButton(1120, 30, "Options", goOptions);
-    optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-    optionsButton.resize(150, 30);
-    sideButton = new FlxUIButton(1020, 65, "Chart Options", chartOptions);
-    sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-    sideButton.resize(250, 30);
+    goBackButton = new FlxUIButton(1120, 5, "Go back", ret);
+    goBackButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+    goBackButton.resize(150, 30);
+    optionsButton = new FlxUIButton(1120, 37, "Options", goOptions);
+    optionsButton.setLabelFormat(22, FlxColor.BLACK, CENTER);
+    optionsButton.resize(150, 26);
+    sideButton = new FlxUIButton(1020, 65, "Chart Options", chartOptions); 
+    // This is just so I don't have to remove any references to this button, else I'd remove it on android targets 
+    #if !android
+	    sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+	    sideButton.resize(250, 30);
+    #end
+    #if android
+    	goBackButton.y = 30;
+    	optionsButton.y = 65;
+    	optionsButton.resize(150,30);
+    #end
 
 
     super.create();
     try{
     add(optionsButton);
-    add(sideButton);
+    add(goBackButton);
+    #if !android
+		add(sideButton);
+    #end
     }catch(e){
     	if(attempted){
     		MainMenuState.handleError(e,"Error while trying to create state, " + e.message);
@@ -73,12 +88,12 @@ class OfflineMenuState extends SearchMenuState
     var i:Int = 0;
 
     var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
-    if (FileSystem.exists(dataDir))
+    if (SELoader.exists(dataDir))
     {
-      var dirs = orderList(FileSystem.readDirectory(dataDir));
+      var dirs = orderList(SELoader.readDirectory(dataDir));
       for (directory in dirs)
       {
-        for (file in FileSystem.readDirectory(dataDir + directory))
+        for (file in SELoader.readDirectory(dataDir + directory))
         {
           if ( StringTools.endsWith(file, '.json') && (search == "" || query.match(file.toLowerCase())) ) // Handles searching
           {
@@ -121,7 +136,6 @@ class OfflineMenuState extends SearchMenuState
   }
   override function select(sel:Int = 0){
       OfflinePlayState.chartFile = songs[curSelected];
-      PlayState.songScript = "";
       PlayState.isStoryMode = false;
       var songName = songFiles[curSelected];
       PlayState.songDir = songDirs[curSelected];

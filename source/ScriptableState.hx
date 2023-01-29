@@ -58,7 +58,7 @@ class ScriptableStateManager {
 		if(scriptFolder){
 			path = interps["main"].variables.get("BRtools").path + "/" + path;
 		}
-		var interp = interps[id] = SelectScriptableState.parseHScript(File.getContent(path), new HSBrTools(path.substr(0,path.lastIndexOf("/"))), id);
+		var interp = interps[id] = SelectScriptableState.parseHScript(SELoader.loadText(path), new HSBrTools(path.substr(0,path.lastIndexOf("/"))), id);
 		if(interp == null){
 			return [false,null,""];
 		}else{
@@ -192,17 +192,17 @@ class SelectScriptableState extends SearchMenuState{
 	{try{
 		searchList = [];
 		retAfter = false;
-		if(FileSystem.exists('mods/scripts'))
+		if(SELoader.exists('mods/scripts'))
 			{
-				for (directory in orderList(FileSystem.readDirectory('mods/scripts/')))
+				for (directory in orderList(SELoader.readDirectory('mods/scripts/')))
 				{
-					var _dir:Bool = FileSystem.isDirectory("mods/scripts/"+directory);
-					if (_dir && FileSystem.exists("mods/scripts/"+directory+"/state/state.hscript"))
+					var _dir:Bool = SELoader.isDirectory("mods/scripts/"+directory);
+					if (_dir && SELoader.exists("mods/scripts/"+directory+"/state/state.hscript"))
 					{
 						unusableList[searchList.length] = false;
 						searchList.push(directory);
-						if (FileSystem.exists("mods/scripts/"+directory+"/description.txt")){
-							descriptions[directory] = File.getContent('mods/scripts/${directory}/description.txt');
+						if (SELoader.exists("mods/scripts/"+directory+"/description.txt")){
+							descriptions[directory] = SELoader.loadText('mods/scripts/${directory}/description.txt');
 						}
 					}
 					// else if (_dir){
@@ -236,7 +236,7 @@ class SelectScriptableState extends SearchMenuState{
 
 	override function select(sel:Int = 0){
 		// FlxG.save.data.selStage = songs[sel];
-		if(songs[sel] != 'No scripts found!' && FileSystem.exists("mods/scripts/" + songs[sel] + "/state/state.hscript")){
+		if(songs[sel] != 'No scripts found!' && SELoader.exists("mods/scripts/" + songs[sel] + "/state/state.hscript")){
 			selectState(songs[sel]);
 		}
 	}
@@ -260,7 +260,7 @@ class SelectScriptableState extends SearchMenuState{
 			}
 			if(state == null){MusicBeatState.instance.showTempmessage('Script is trying to use class "${stateType}" but that isn\'t a valid state!',FlxColor.RED); return;}
 
-			var _interp = parseHScript(File.getContent("mods/scripts/" + scriptName + "/state/state.hscript"), new HSBrTools("mods/scripts/" + scriptName),"main");
+			var _interp = parseHScript(SELoader.loadText("mods/scripts/" + scriptName + "/state/state.hscript"), new HSBrTools("mods/scripts/" + scriptName),"main");
 			if(_interp == null){
 				// showTempmessage("");
 				return;

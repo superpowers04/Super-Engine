@@ -23,9 +23,9 @@ class StageSelection extends SearchMenuState
 		// 		_addToList(char,i);
 		// 	}
 		// }
-
+		_addToList("default",0,"default");
 		var i = TitleState.stages.length;
-		var itemIndex = 0;
+		var itemIndex = 1;
 		var stage:StageInfo = null;
 		while (i > 0){
 			i--;

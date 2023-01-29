@@ -1,6 +1,5 @@
 import openfl.Lib;
 import flixel.FlxG;
-import sys.FileSystem;
 
 typedef ObjectInfo = {
 	var x:Float;
@@ -15,10 +14,9 @@ class KadeEngineData
     public static function initSave()
     {
 
-    	// if(FileSystem.exists('SEOPTIONS.json')){ // JSON file
-    	// 	FlxG.save.data = haxe.Json.parse('SEOPTIONS.json');
-    	// }
+    	
     	FlxG.save.bind('superengine', 'superpowers04');
+    	SEFlxSaveWrapper.load();
 
 		if (FlxG.save.data.downscroll == null)
 			FlxG.save.data.downscroll = false;
@@ -112,10 +110,8 @@ class KadeEngineData
 		if (FlxG.save.data.preformance == null)
 			FlxG.save.data.preformance = false;
 		// View Character on Character Select
-		if (FlxG.save.data.charAuto == null)
-			FlxG.save.data.charAuto  = false;
-		if (FlxG.save.data.charAutoBF == null)
-			FlxG.save.data.charAutoBF= false;
+		if (FlxG.save.data.charAuto == null) FlxG.save.data.charAuto = true;
+		if (FlxG.save.data.charAutoBF == null) FlxG.save.data.charAutoBF= false;
 
 		if (FlxG.save.data.lastServer == null)
 			FlxG.save.data.lastServer = "";
@@ -138,13 +134,12 @@ class KadeEngineData
 		if (FlxG.save.data.dadShow == null) FlxG.save.data.dadShow = true;
 		if (FlxG.save.data.bfShow == null) FlxG.save.data.bfShow = true;
 		if (FlxG.save.data.gfShow == null) FlxG.save.data.gfShow = true;
-		if (FlxG.save.data.bfShow == null) FlxG.save.data.bfShow = true;
 
 		if (FlxG.save.data.playVoices == null) FlxG.save.data.playVoices = false;
 		if (FlxG.save.data.updateCheck == null) FlxG.save.data.updateCheck = true;
 		if (FlxG.save.data.songUnload == null) FlxG.save.data.songUnload = true;
 		if (FlxG.save.data.useBadArrowTex == null) FlxG.save.data.useBadArrowTex = true;
-		if (FlxG.save.data.middleScroll == null) FlxG.save.data.middleScroll = false;
+		if (FlxG.save.data.middleScroll == null) FlxG.save.data.middleScroll = #if(android) true #else false #end ;
 		if (FlxG.save.data.oppStrumLine == null) FlxG.save.data.oppStrumLine = true;
 		if (FlxG.save.data.playMisses == null) FlxG.save.data.playMisses = true;
 		if (FlxG.save.data.scripts == null) FlxG.save.data.scripts = [];
@@ -180,13 +175,20 @@ class KadeEngineData
 
 		if(FlxG.save.data.vlcSound == null) FlxG.save.data.vlcSound = true;
 
+		#if discord_rpc
 		if(FlxG.save.data.discordDRP == null) FlxG.save.data.discordDRP = true;
+		#end
 		if(FlxG.save.data.doCoolLoading == null) FlxG.save.data.doCoolLoading = false;
 		if(FlxG.save.data.fullscreen == null) FlxG.save.data.fullscreen = false;
 
 
 		if(FlxG.save.data.persistBF == null) FlxG.save.data.persistBF = false;
 		if(FlxG.save.data.persistGF == null) FlxG.save.data.persistGF = false;
+
+		#if android
+			if(FlxG.save.data.useTouch == null) FlxG.save.data.useTouch = true;
+			if(FlxG.save.data.useStrumsAsButtons == null) FlxG.save.data.useStrumsAsButtons = true;
+		#end
 		// if(FlxG.save.data.persistOpp == null) FlxG.save.data.persistOpp = false;
 
 		// if(FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;
