@@ -54,6 +54,7 @@ typedef Scorekillme = {
 	public var internalAtlas:String = "";
 	public var internalJSON:String = "";
 	public var type:Int = 0; // 0: PNG/XML based, 1: Script based
+	public var hidden = false;
 
 	public function toString(){
 		return 'Character $nameSpace/$id, Raw folder name:$folderName, path:$path';
@@ -135,7 +136,9 @@ class TitleState extends MusicBeatState
 		}
 		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
 		if(char.contains('|') && !ignoreNSCheck){
-			return findCharByNamespace(char,retBF);
+
+			var _e = char.split('|');
+			return findCharNS(_e[1],_e[0],-1,retBF);
 		}
 		if(char == "" || char == "automatic"){
 			trace('Tried to get a blank character!');
@@ -221,7 +224,7 @@ class TitleState extends MusicBeatState
 			namespace = _e[0];
 			char = _e[1];
 		}
-		if(namespace == "") return findChar(char,retBF,true);
+		if(namespace == "" || namespace.toLowerCase() == "null") return findChar(char,retBF,true);
 		return findCharNS(char,namespace,nameSpaceType,retBF);
 
 	}
@@ -234,7 +237,7 @@ class TitleState extends MusicBeatState
 		while (list.length > 0){
 			var char = list.pop();
 			if(char == "" ){continue;}
-			var charInfo = findCharNS(char,nameSpace,false);
+			var charInfo = findCharByNamespace(char,nameSpace,false);
 			if(charInfo != null){
 				return charInfo;
 			}
@@ -464,39 +467,39 @@ class TitleState extends MusicBeatState
 		return null;
 	}
 	// This prioritises stages from a specific namespace, if it finds one outside of the namespace and the namespace doesn't have one, then they'll be used instead
-	public static function findStageByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retStage:Bool = true):Null<StageInfo>{ 
-		if(char == ""){
+	public static function findStageByNamespace(stage:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retStage:Bool = true):Null<StageInfo>{ 
+		if(stage == ""){
 			trace('Empty stage search, returning stage');
 			if(retStage) return stages[1];
 			return null;
 		}
-		if(char.contains('|')){
-			var _e = char.split('|');
+		if(stage.contains('|')){
+			var _e = stage.split('|');
 			namespace = _e[0];
-			char = _e[1];
+			stage = _e[1];
 		}
-		if(namespace == "") return findStage(char,retStage,true);
-		if(char == ""){
-			trace('Tried to get a blank character!');
+		if(namespace == "") return findStage(stage,retStage,true);
+		if(stage == ""){
+			trace('Tried to get a blank stageacter!');
 			if(retStage) return stages[1];
 			return null;
 		}
-		var currentChar:StageInfo = null;
-		char = char.replace(' ',"-").replace('_',"-");
+		var currentstage:StageInfo = null;
+		stage = stage.replace(' ',"-").replace('_',"-");
 		for (i in stages){
-			if(i.id == char.toLowerCase()){
+			if(i.id == stage.toLowerCase()){
 				if(i.nameSpace == namespace && (nameSpaceType == -1 || i.nameSpaceType == nameSpaceType)){
 					return i;
 				}
-				currentChar = i;
+				currentstage = i;
 			}
 		}
-		if(currentChar == null){
-			trace('Unable to find $char!');
+		if(currentstage == null){
+			trace('Unable to find $stage!');
 			if(retStage) return stages[1];
 			return null;
 		}
-		return currentChar;
+		return currentstage;
 
 	}
 	public static function checkStages(){
@@ -729,6 +732,7 @@ class TitleState extends MusicBeatState
 				Highscore.load();
 				checkCharacters();
 				Alphabet.Frames = null;
+				LoadingScreen.forceHide();
 				LoadingScreen.initScreen();
 				if((CoolUtil.font = if(SELoader.exists('mods/font.ttf')) SELoader.getPath('mods/font.ttf') else Paths.font(CoolUtil.fontName)
 					) != Paths.font("vcr.ttf")) flixel.system.FlxAssets.FONT_DEFAULT = CoolUtil.font;
@@ -815,6 +819,7 @@ class TitleState extends MusicBeatState
 		// titleText.screenCenter(X);
 		add(titleText);
 
+
 		// var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
 		// logo.screenCenter();
 		// logo.antialiasing = true;
@@ -858,6 +863,7 @@ class TitleState extends MusicBeatState
 		add(shiftSkip);
 		CoolUtil.setFramerate(true);
 		FlxG.sound.volume = FlxG.save.data.masterVol;
+		(cast (Lib.current.getChildAt(0), Main)).toggleFPS(FlxG.save.data.fps);
 		if(initialized)
 			skipIntro();
 		else{

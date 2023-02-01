@@ -16,7 +16,7 @@ class Receiver
   var packet:Packet; // The packet type being analyzed. Contains the Data Types, size, variable-length arguments, etc.
   public var packetId:Int; // The ID of the packet being received.
   var endedPacket:Bool = true; // Whether the current packet is done being analyzed and we can move on to the next one.
-  var w:Int = 0; // Index of the current variable data being analyzed and stuff.
+  var currentVarDataIndex:Int = 0; // Index of the current variable data being analyzed and stuff.
   public var varLength:Int = 0; // The amount of extra bytes taken up by variable-length datatypes.
   var varSize:Int; // The byte-size of the size-specificator of the current variable-length datatype being analyzed.
 
@@ -66,17 +66,17 @@ class Receiver
       }
 
       // If there's still variable arguments left, and there's enough bytes received to complete it, then handle it.
-      while (bufferedBytes >= packet.varSpaces[w] + varLength + varSize && w < packet.varLengths.length)
+      while (bufferedBytes >= packet.varSpaces[currentVarDataIndex] + varLength + varSize && currentVarDataIndex < packet.varLengths.length)
       {
         // Under some cases this code fails but I'm too lazy to fix it. There shouldn't be any issues with the packets I implemented.
-        varLength += readBuffer(packet.varSpaces[w] + varLength, varSize);
-        w++;
-        varSize = packet.varLengths[w];
+        varLength += readBuffer(packet.varSpaces[currentVarDataIndex] + varLength, varSize);
+        currentVarDataIndex++;
+        varSize = packet.varLengths[currentVarDataIndex];
         continue;
       }
 
       // If this is the last variable argument (or if there were none), and there's enough bytes received to complete it, then handle it.
-      if (bufferedBytes >= packet.varSpaces[w] + varLength && w == packet.varLengths.length)
+      if (bufferedBytes == packet.varSpaces[currentVarDataIndex] + varLength && currentVarDataIndex == packet.varLengths.length)
       {
         // Handle the whole packet.
       	var _data:Array<Dynamic> = packet.handle(consume(packet.size + varLength));
@@ -89,7 +89,7 @@ class Receiver
         	trace('Handling $pktName with data $_data');
         }
         HandleData(packetId, _data);
-        w = 0;
+        currentVarDataIndex = 0;
         varLength = 0;
         endedPacket = true;
         continue;
@@ -103,7 +103,7 @@ class Receiver
 	}
   }
 
-  public function readBuffer(n:Int, bytes:Int)
+  public function readBuffer(n:Int, bytes:Int):Int
   {
     // Reads 'bytes' number of bytes starting at position n from the buffered bytes.
 		// Similar behaviour to 'consume', but this function doesn't consume the bytes.
@@ -121,6 +121,7 @@ class Receiver
         else
           result = buf.readUnsignedInt();
         buf.position = 0;
+        trace(result);
 
         return result;
       }
@@ -130,7 +131,7 @@ class Receiver
     return -1;
   }
 
-  public function consume(n:Int)
+  public function consume(n:Int):ByteArray
   {
     // This function returns a Buffer from the n bytes that were received longest ago, and clears and updates the buffers accordingly.
     if (n == 0)

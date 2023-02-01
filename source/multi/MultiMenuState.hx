@@ -348,7 +348,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.storyDifficulty = switch(songJSON){case '${songName}-easy.json': 0; case '${songName}-hard.json': 2; default: 1;};
 				PlayState.actualSongName = songJSON;
 				onlinemod.OfflinePlayState.voicesFile = '';
-				PlayState.hsBrTools = new HSBrTools(selSong);
+				PlayState.hsBrToolsPath = selSong;
 				PlayState.scripts = [];
 
 

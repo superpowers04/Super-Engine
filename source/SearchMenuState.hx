@@ -247,7 +247,7 @@ class SearchMenuState extends MusicBeatState
 			}
 			if(supportMouse){
 				if(FlxG.mouse.justPressed){
-					if(titleText != null || FlxG.mouse.overlaps(titleText)){
+					if(titleText != null && FlxG.mouse.overlaps(titleText)){
 						ret();
 					}
 					if(!FlxG.mouse.overlaps(blackBorder) ){

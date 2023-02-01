@@ -84,7 +84,9 @@ class CharSelection extends SearchMenuState
 			}
 		}
 		for (i => v in TitleState.characters) {
-			chars.push([v.id,0,i,v.description,v]);
+			if(!v.hidden){
+				chars.push([v.id,0,i,v.description,v]);
+			}
 		}
 
 		
@@ -100,6 +102,7 @@ class CharSelection extends SearchMenuState
 
 
 		if (title != "") addTitleText(title);
+		titleText.screenCenter(X);
 		if (onlinemod.OnlinePlayMenuState.socket == null) defText = "Use shift to scroll faster, Animation Debug keys: 1=bf,2=dad,3=gf";
 		uiIcon = new HealthIcon("bf",Options.PlayerOption.playerEdit == 0);
 		uiIcon.x = FlxG.width * 0.8;
@@ -181,6 +184,11 @@ class CharSelection extends SearchMenuState
 			FlxG.save.data.opponent = _char;
 		case 2:
 			FlxG.save.data.gfChar = _char;
+		}
+		for(i in 0...grpSongs.members.length){
+			if(i == curSelected){
+				grpSongs.members[i].color = FlxColor.GREEN;
+			}else if(grpSongs.members[i].color == FlxColor.GREEN)grpSongs.members[i].color = FlxColor.WHITE;
 		}
 	}
 }

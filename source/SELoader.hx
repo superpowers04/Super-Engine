@@ -50,6 +50,17 @@ class SELoader {
 			}
 	}
 
+	public static function loadText(textPath:String,?useCache:Bool = false):String{
+		if(cache.textArray[textPath] != null || useCache){
+			return cache.loadText(textPath);
+		}
+		if(!exists(textPath)){
+			handleError('${id}: Text "${textPath}" doesn\'t exist!');
+			return "";
+		}
+		return File.getContent(getPath(textPath));
+	}
+
 
 	public static function loadFlxSprite(x:Int,y:Int,pngPath:String,?useCache:Bool = false):FlxSprite{
 		if(!FileSystem.exists('${pngPath}')){
@@ -109,17 +120,6 @@ class SELoader {
 	public static function reset(){
 		cache.clear();
 		cache = new InternalCache();
-	}
-
-	public static function loadText(textPath:String,?useCache:Bool = false):String{
-		if(cache.textArray[textPath] != null || useCache){
-			return cache.loadText(textPath);
-		}
-		if(!exists(textPath)){
-			handleError('${id}: Text "${textPath}" doesn\'t exist!');
-			return "";
-		}
-		return File.getContent(getPath(textPath));
 	}
 	@:keep inline public static function getContent(textPath:String):String{return loadText(textPath,false);}
 	@:keep inline public static function saveContent(textPath:String,content:String):String{return saveText(textPath,content,false);}

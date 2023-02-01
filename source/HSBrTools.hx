@@ -114,7 +114,16 @@ class HSBrTools {
 
 			}
 		}
-		spriteArray = new Map<String,FlxGraphic>();
+		spriteArray.clear();
+		bitmapArray.clear();
+		// spriteArray = [];
+		xmlArray.clear();
+		// bitmapArray = [];
+		textArray.clear();
+		// xmlArray = [];
+		soundArray.clear();
+		// textArray = [];
+		// soundArray = [];
 	}
 
 	public function exists(textPath:String):Bool{
@@ -193,7 +202,8 @@ class HSBrTools {
 		if(bitmapArray[pngPath] == null) bitmapArray[pngPath] = SELoader.loadBitmap('${path}${pngPath}');
 		
 		if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(bitmapArray[pngPath]);
-		if(spriteArray[pngPath] == null) handleError('${id} : cacheGraphic: Unable to load $pngPath into a FlxGraphic!');
+		if(spriteArray[pngPath] == null) return handleError('${id} : cacheGraphic: Unable to load $pngPath into a FlxGraphic!');
+		spriteArray[pngPath].destroyOnNoUse = false;
 		// if(dumpGraphic || dumpGraphics) spriteArray[pngPath].dump();
 
 	}

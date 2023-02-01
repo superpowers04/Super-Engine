@@ -835,7 +835,7 @@ class CharAnimController extends FlxAnimationController{
 		if(charJson != null) charProperties = charJson;
 		if(!amPreview) switch(charType){case 1:definingColor = FlxColor.RED;default:definingColor = FlxColor.GREEN;} else definingColor = FlxColor.WHITE;
 		
-		if (exitex != null) tex = exitex;
+		if (exitex != null) frames = tex = exitex;
 		antialiasing = true;
 		loadChar();
 		

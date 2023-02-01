@@ -161,6 +161,7 @@ class PlayState extends MusicBeatState
 	/* Notes & Strumline */
 		public static var noteBools:Array<Bool> = [false, false, false, false];
 		public static var p2canplay = false;
+		public static var logGameplay:Bool = false;
 		public var notes:FlxTypedGroup<Note>;
 		public var eventNotes:FlxTypedGroup<Note>; // The above but doesn't need to update anything beyond the strumtime
 		public var unspawnNotes:Array<Note> = [];
@@ -169,9 +170,9 @@ class PlayState extends MusicBeatState
 		public var playerStrums:FlxTypedGroup<StrumArrow> = null;
 		public var cpuStrums:FlxTypedGroup<StrumArrow> = null;
 		public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
-		var notesHitArray:Array<Float> = [];
 		public var eventLog:Array<OutNote> = [];
-		public static var logGameplay:Bool = false;
+		var notesHitArray:Array<Float> = [];
+
 
 	/* Audio */
 		public static var hitSoundEff:Sound;
@@ -186,6 +187,7 @@ class PlayState extends MusicBeatState
 		public static var dialogue:Array<String> = [];
 		public static var endDialogue:Array<String> = [];
 		public static var hsBrTools:HSBrTools;
+		public static var hsBrToolsPath:String = 'assets/';
 		public static var nameSpace:String = "";
 		public static var nsType:String = "";
 		public static var stageTags:Array<String> = [];
@@ -228,8 +230,6 @@ class PlayState extends MusicBeatState
 			private static var prevCamFollow:FlxObject;
 
 		/* UI */
-			public var songPosBG_:FlxSprite;
-			public var songPosBar_:FlxBar;
 
 			public static var songPosBG(get,set):FlxSprite; // WHY IS THIS STATIC?
 			public static function get_songPosBG(){return PlayState.instance.songPosBG_;}
@@ -238,8 +238,10 @@ class PlayState extends MusicBeatState
 			public static function get_songPosBar(){return PlayState.instance.songPosBar_;}
 			public static function set_songPosBar(vari){return PlayState.instance.songPosBar_ = vari;}
 
-			public var kadeEngineWatermark:FlxText;
 			public static var underlay:FlxSprite;
+			public var songPosBG_:FlxSprite;
+			public var songPosBar_:FlxBar;
+			public var kadeEngineWatermark:FlxText;
 			public var healthBarBG:FlxSprite;
 			public var healthBar:FlxBar;
 			public var practiceText:FlxText;
@@ -250,6 +252,9 @@ class PlayState extends MusicBeatState
 			public var scoreTxt:FlxText;
 			var scoreTxtX:Float;
 			var rating:FlxSprite;
+			#if android
+			public var noteButtons:Array<FlxSprite>;
+			#end
 
 		/* Stage Shite */
 
@@ -696,6 +701,16 @@ class PlayState extends MusicBeatState
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
+		if(hsBrToolsPath == "" || !SELoader.exists(hsBrToolsPath)){
+			hsBrToolsPath = 'assets/';
+		}
+		hsBrTools = getBRTools(hsBrToolsPath,'SONG');
+		if(QuickOptionsSubState.getSetting("Song hscripts")){
+			if(SELoader.exists(hsBrTools.path)){
+				LoadingScreen.loadingText = 'Loading song scripts';
+				loadScript(hsBrTools.path,'','SONG',hsBrTools);
+			}
+		}
 		
 		//dialogue shit
 		loadDialog();
@@ -840,10 +855,6 @@ class PlayState extends MusicBeatState
 		LoadingScreen.loadingText = "Loading scripts";
 		
 		if(QuickOptionsSubState.getSetting("Song hscripts")){
-			if(SELoader.exists(hsBrTools.path)){
-				LoadingScreen.loadingText = 'Loading song scripts';
-				loadScript(hsBrTools.path,'','SONG',hsBrTools);
-			}
 			if(FlxG.save.data.scripts != null){
 				for (i in 0 ... FlxG.save.data.scripts.length) {
 					var v = FlxG.save.data.scripts[i];
@@ -879,9 +890,9 @@ class PlayState extends MusicBeatState
 		if(PlayState.player1 == "")PlayState.player1 = SONG.player1;
 		if(PlayState.player2 == "")PlayState.player2 = SONG.player2;
 		if(PlayState.player3 == "")PlayState.player3 = SONG.gfVersion;
-		if(PlayState.player1 == "" || PlayState.player1 == "lonely") bfShow = false;
-		if(PlayState.player2 == "" || PlayState.player2 == "lonely") _dadShow = false;
-		if(PlayState.player3 == "" || PlayState.player3 == "lonely") gfShow = false;
+		if(PlayState.player1 == "" || PlayState.player1.toLowerCase() == "lonely" || PlayState.player1.toLowerCase() == "hidden" || PlayState.player1.toLowerCase() == "nothing") bfShow = false;
+		if(PlayState.player2 == "" || PlayState.player2.toLowerCase() == "lonely" || PlayState.player2.toLowerCase() == "hidden" || PlayState.player2.toLowerCase() == "nothing") _dadShow = false;
+		if(PlayState.player3 == "" || PlayState.player3.toLowerCase() == "lonely" || PlayState.player3.toLowerCase() == "hidden" || PlayState.player3.toLowerCase() == "nothing") gfShow = false;
 		var player1CharInfo = null;
 		var player2CharInfo = null;
 		callInterp("afterStage",[]);
@@ -933,8 +944,14 @@ class PlayState extends MusicBeatState
 					gf = new Character(400, 100, player3,false,2);
 				else gf =  new EmptyCharacter(400, 100);
 			}else{
-				gf.x = 400;
-				gf.y = 100;
+				try{
+					gf.x = 400;
+					gf.y = 100;
+					gf.playAnim('songStart');
+				}catch(e){
+					handleError((if(FlxG.save.data.persistGF) 'Crashed while setting up GF, maybe try disabling persistant GF in your options? ' else 'Crash while trying to setup GF:') + '${e.message}\n${e.stack}');
+					gf = new EmptyCharacter(770,100);
+				}
 			}
 			gf.scrollFactor.set(0.95, 0.95);
 			
@@ -957,9 +974,15 @@ class PlayState extends MusicBeatState
 					boyfriend = {x:770, y:100, charInfo:player1CharInfo,isPlayer:true,charType:0} ;
 				else boyfriend =  new EmptyCharacter(770,100);
 			}else{
-				boyfriend.x = 770;
-				boyfriend.y = 100;
-				boyfriend.playAnim('songStart');
+				try{
+
+					boyfriend.x = 770;
+					boyfriend.y = 100;
+					boyfriend.playAnim('songStart');
+				}catch(e){
+					handleError((if(FlxG.save.data.persistBF) 'Crashed while setting up BF, maybe try disabling persistantBF in your options? ' else 'Crash while trying to setup BF:') + '${e.message}\n${e.stack}');
+					boyfriend = new EmptyCharacter(770,100);
+				}
 			}
 		}else{
 			dad = new EmptyCharacter(100, 100);
@@ -1990,7 +2013,9 @@ class PlayState extends MusicBeatState
 				(Note.swagWidth + (Note.swagWidth * ( #if(android) if(FlxG.save.data.useStrumsAsButtons) 1 else #end 0.5) ));
 				#if android
 				if(FlxG.save.data.useStrumsAsButtons){
-					babyArrow.setGraphicSize(1);
+					// babyArrow.setGraphicSize(1);
+					babyArrow.scale.set(1,1);
+					babyArrow.updateHitbox();
 				}
 				#end
 				// babyArrow.x += 2 + (Note.swagWidth * i + 1);
@@ -2055,6 +2080,24 @@ class PlayState extends MusicBeatState
 			}
 		}
 		if(player == 1){add(grpNoteSplashes);}
+		#if android
+		if(FlxG.save.data.useTouch && !FlxG.save.data.useStrumsAsButtons && player == 0){
+			var _width = Std.int(FlxG.width * 0.25 - 1);
+			var _height = Std.int(FlxG.height + 100);
+			noteButtons = [
+				new FlxSprite(0,-50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0xc24b99)),
+				new FlxSprite(FlxG.width * 0.25,-50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0x00ffff)),
+				new FlxSprite(FlxG.width * 0.50,-50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0x12fa05)),
+				new FlxSprite(FlxG.width * 0.75,-50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0xf9393f)),
+			];
+			for(spr in noteButtons){
+				spr.alpha = 0.2;
+				spr.cameras = [camHUD];
+				spr.scrollFactor.set();
+				add(spr);
+			}
+		}
+		#end
 
 	}
 
@@ -2138,7 +2181,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.volume = 0;
 		this.vocals.volume = 0;
 
-		openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,win));
+		openSubState(new FinishSubState(0, 0,win));
 		
 	}
 
@@ -2188,7 +2231,7 @@ class PlayState extends MusicBeatState
 
 		// if(FlxG.save.data.songInfo == 0) scoreTxt.x = scoreTxtX - scoreTxt.text.length;
 		if (updateTime) songTimeTxt.text = FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + songLengthTxt;
-		if(FlxG.mouse.justPressed) trace(FlxG.mouse);
+		
 		if ((FlxG.keys.justPressed.ENTER 
 		     #if(android) || FlxG.mouse.justPressed && FlxG.mouse.screenY < 50 || FlxG.swipes[0] != null && FlxG.swipes[0].startPosition.y - FlxG.swipes[0].endPosition.y > 100 #end )
 		     // #if(android) || FlxG.swipes[0] #end ) 
@@ -3098,7 +3141,7 @@ class PlayState extends MusicBeatState
 										daNote.y += daNote.height * 0.5;
 	
 									// Only clip sustain notes when properly hit
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumNote.y + Note.swagWidth * 0.5))
+									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && (daNote.y - (daNote.offset.y * daNote.scale.y) + daNote.height) >= (strumNote.y + Note.swagWidth * 0.5))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.frameHeight);
@@ -3124,7 +3167,7 @@ class PlayState extends MusicBeatState
 									else
 										daNote.y -= daNote.height * 0.5;
 									// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumNote.y - Note.swagWidth * 0.5))
+									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && (daNote.y + (daNote.offset.y * daNote.scale.y)) <= (strumNote.y - Note.swagWidth * 0.5))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
@@ -3235,7 +3278,6 @@ class PlayState extends MusicBeatState
 				#if android
 					if(FlxG.save.data.useTouch){
 						if(FlxG.save.data.useStrumsAsButtons){
-							
 							for(touch in FlxG.touches.list){
 								for(i in 0...playerStrums.members.length){
 									if(touch.overlaps(playerStrums.members[i])){
@@ -3251,11 +3293,17 @@ class PlayState extends MusicBeatState
 
 						}else{
 
+							for(spr in noteButtons){
+								spr.alpha = 0.4;
+							}
 							for(touch in FlxG.touches.list){
 								if(touch.screenX < FlxG.width && touch.screenY > 30){
 									var pos = Std.int(touch.screenX / (FlxG.width / 4));
 									pressArray[pos] = touch.justPressed;
 									holdArray[pos] = touch.pressed;
+									if(noteButtons[pos] != null){
+										noteButtons[pos].alpha = (if(touch.justPressed) 0.7 else 0.2);
+									}
 								}
 							}
 						}
@@ -4161,6 +4209,9 @@ class PlayState extends MusicBeatState
 	// }
 	override function destroy(){
 		callInterp("destroy",[]);
+		try{
+			hsBrTools.reset();
+		}catch(e){}
 		super.destroy();
 	}
 
