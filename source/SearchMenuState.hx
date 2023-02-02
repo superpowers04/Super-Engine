@@ -246,7 +246,7 @@ class SearchMenuState extends MusicBeatState
 				if(retAfter) ret();
 			}
 			if(supportMouse){
-				if(FlxG.mouse.justPressed){
+				if(FlxG.mouse.justReleased){
 					if(titleText != null && FlxG.mouse.overlaps(titleText)){
 						ret();
 					}
@@ -265,10 +265,12 @@ class SearchMenuState extends MusicBeatState
 					}
 				}
 				#if android
-					for(swipe in FlxG.swipes){
-						var distance = (swipe.startPosition.y - swipe.endPosition.y) / 10;
-						var speed = Math.max(swipe.duration - 1,0.1);
-						changeSelection(Std.int(distance * speed));
+					if(FlxG.swipes[0] != null){
+						var swipe = FlxG.swipes[0];
+						var distance = (swipe.startPosition.y - swipe.endPosition.y) / 100;
+						// var speed = Math.max(swipe.duration - 1,0.1);
+						trace(distance);
+						changeSelection(Std.int(distance));
 					}
 				#end
 				if(FlxG.mouse.wheel != 0){

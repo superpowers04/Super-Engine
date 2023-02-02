@@ -284,7 +284,7 @@ class OptionsMenu extends MusicBeatState
 			var _right = controls.RIGHT_P;
 			var _accept = controls.ACCEPT;
 
-			if(FlxG.mouse.justPressed){
+			if(FlxG.mouse.justReleased){
 				if(isHovering(FlxG.mouse,titleText)){
 					_back = true;
 				}
@@ -296,6 +296,16 @@ class OptionsMenu extends MusicBeatState
 				}
 				if(grpControls.members[curSelected - 1] != null && FlxG.mouse.overlaps(grpControls.members[curSelected - 1])){
 					_up = true;
+				}
+
+				if(FlxG.swipes[0] != null){
+					var swipe = FlxG.swipes[0];
+					var distance = (swipe.startPosition.x - swipe.endPosition.x);
+					
+					if(swipe.duration < 0.5 && (distance > 100 || distance < -100)){
+						_left = (distance < -100);
+						_right = (distance > 100);
+					}
 				}
 				// TODO Add left and right arrows onscreen for changing options
 			}

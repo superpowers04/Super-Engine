@@ -2082,16 +2082,20 @@ class PlayState extends MusicBeatState
 		if(player == 1){add(grpNoteSplashes);}
 		#if android
 		if(FlxG.save.data.useTouch && !FlxG.save.data.useStrumsAsButtons && player == 0){
-			var _width = Std.int(FlxG.width * 0.25 - 1);
+			var _width = Std.int((FlxG.width / 4) - 1);
 			var _height = Std.int(FlxG.height + 100);
 			noteButtons = [
-				new FlxSprite(0,-50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0xc24b99)),
-				new FlxSprite(FlxG.width * 0.25,-50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0x00ffff)),
-				new FlxSprite(FlxG.width * 0.50,-50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0x12fa05)),
-				new FlxSprite(FlxG.width * 0.75,-50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0xf9393f)),
+				// 
+				new FlxSprite(0,50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0xffc24b99)),
+				// 0x00ffff
+				new FlxSprite(_width * 1,50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0xff00ffff)),
+				// 0x12fa05
+				new FlxSprite(_width * 2,50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0xff12fa05)),
+				// 0xf9393f
+				new FlxSprite(_width * 3,50).loadGraphic(FlxGraphic.fromRectangle(_width,_height,0xfff9393f)),
 			];
 			for(spr in noteButtons){
-				spr.alpha = 0.2;
+				FlxTween.tween(spr,{alpha:0.2},1);
 				spr.cameras = [camHUD];
 				spr.scrollFactor.set();
 				add(spr);
@@ -2233,14 +2237,16 @@ class PlayState extends MusicBeatState
 		if (updateTime) songTimeTxt.text = FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + songLengthTxt;
 		
 		if ((FlxG.keys.justPressed.ENTER 
-		     #if(android) || FlxG.mouse.justPressed && FlxG.mouse.screenY < 50 || FlxG.swipes[0] != null && FlxG.swipes[0].startPosition.y - FlxG.swipes[0].endPosition.y > 100 #end )
+		     #if(android) || FlxG.mouse.justReleased && FlxG.mouse.screenY < 50 || FlxG.swipes[0] != null && FlxG.swipes[0].duration < 1 && FlxG.swipes[0].startPosition.y - FlxG.swipes[0].endPosition.y < -100 #end )
 		     // #if(android) || FlxG.swipes[0] #end ) 
 			&& startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
 			paused = true;
-			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			openSubState(new PauseSubState(boyfriend.x, boyfriend.y));
+			followChar(0);
+			camGame.zoom = 1;
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
@@ -3294,15 +3300,15 @@ class PlayState extends MusicBeatState
 						}else{
 
 							for(spr in noteButtons){
-								spr.alpha = 0.4;
+								spr.alpha = 0.1;
 							}
 							for(touch in FlxG.touches.list){
 								if(touch.screenX < FlxG.width && touch.screenY > 30){
-									var pos = Std.int(touch.screenX / (FlxG.width / 4));
+									var pos = Std.int((touch.screenX / FlxG.width) * 4);
 									pressArray[pos] = touch.justPressed;
 									holdArray[pos] = touch.pressed;
 									if(noteButtons[pos] != null){
-										noteButtons[pos].alpha = (if(touch.justPressed) 0.7 else 0.2);
+										noteButtons[pos].alpha = (if(touch.justPressed) 0.25 else 0.2);
 									}
 								}
 							}

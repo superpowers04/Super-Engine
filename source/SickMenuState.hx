@@ -239,7 +239,7 @@ class SickMenuState extends MusicBeatState
 		#if !mobile
 		if(supportMouse){
 		#end
-			if(FlxG.mouse.justPressed){
+			if(FlxG.mouse.justReleased){
 				for (i in -2 ... 2) {
 					if(grpControls.members[curSelected + i] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + i])){
 						select(curSelected + i);
