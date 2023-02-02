@@ -656,6 +656,7 @@ class TitleState extends MusicBeatState
 			FlxG.sound.music.pause();
 			// LoadingState.loadingText = new FlxText(FlxG.width * 0.8,FlxG.height * 0.8,"Loading...");
 			// LoadingState.loadingText.setFormat();
+
 			
 			#if android
 				// trace(lime.system.System.applicationStorageDirectory);
@@ -725,9 +726,7 @@ class TitleState extends MusicBeatState
 				}
 				SELoader.PATH = '${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/';
 				android.widget.Toast.makeText('Your mods and stuff will be located at "Superpowers04/SuperEngine"',5);
-				
-				trace('Loading files from ${SELoader.PATH}');
-				// Moved the init to here since settings aren't accessable yet
+								// Moved the init to here since settings aren't accessable yet
 				KadeEngineData.initSave();
 				Highscore.load();
 				checkCharacters();
@@ -740,6 +739,10 @@ class TitleState extends MusicBeatState
 			#if !android
 				findosuBeatmaps();
 			#end
+			if(SELoader.exists('path.txt')){
+				SELoader.path = SELoader.loadText('path.txt');
+				trace('Loading files from ${SELoader.PATH}');
+			}
 			MainMenuState.firstStart = true;
 			Conductor.changeBPM(140);
 			persistentUpdate = true;
