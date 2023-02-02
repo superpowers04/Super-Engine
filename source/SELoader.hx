@@ -24,8 +24,13 @@ using StringTools;
 class SELoader {
 
  	static public var cache:InternalCache = new InternalCache();
- 	public static var PATH:String = '';
-	// if(Sys.getCwd() != "/" && Sys.getCwd() != "C:/") Sys.getCwd() else lime.system.System.applicationDirectory
+ 	public static var PATH(default,set):String = '';
+ 	public static function set_PATH(_path:String):String{
+ 		if(!_path.endsWith('/')) _path = _path + "/"; // SELoader expects the main path to have a / at the end
+ 		_path = _path.replace('\\',"/"); // Unix styled paths, Windows \\ paths are weird and fucky and i hate it
+ 		
+ 		return PATH = _path.replace('//','/'); // Fixes paths having //'s in them 
+ 	}
 
 	public static var id = "Internal";
 
@@ -207,6 +212,19 @@ class SELoader {
 	}
 	public static function createDirectory(path:String){
 		return FileSystem.createDirectory(getPath(path));
+	}
+
+	
+	public static function copy(from:String,to:String){
+		return File.copy(getPath(from),getPath(to));
+	}
+
+
+	public static function importFile(from:String,to:String){
+		return File.copy(from,getPath(to));
+	}
+	public static function exportFile(from:String,to:String){
+		return File.copy(getPath(from),to);
 	}
 
 

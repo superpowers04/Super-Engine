@@ -738,10 +738,22 @@ class TitleState extends MusicBeatState
 			#end
 			#if !android
 				findosuBeatmaps();
+
 			#end
 			if(SELoader.exists('path.txt')){
-				SELoader.path = SELoader.loadText('path.txt');
+				SELoader.PATH = SELoader.loadText('path.txt');
 				trace('Loading files from ${SELoader.PATH}');
+			}
+			if(!SELoader.exists('assets')){
+				FuckState.FATAL = true;
+				FuckState.FUCK('It seems "${SELoader.absolutePath('./')}" has no assets folder'
+				#if(android) 
+				+ "\nDue to android weirdness, you'll have to manually copy your Assets, Manifest and Mods folder to the folder listed above\nYou can get these from a Desktop build of the game" 
+				#else
+				+"\nDid you uncompress the game's assets to this folder before setting up path.txt?"
+				#end
+				,"VALIDPATHCHECK");
+				return;
 			}
 			MainMenuState.firstStart = true;
 			Conductor.changeBPM(140);

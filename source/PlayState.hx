@@ -3147,7 +3147,7 @@ class PlayState extends MusicBeatState
 										daNote.y += daNote.height * 0.5;
 	
 									// Only clip sustain notes when properly hit
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && (daNote.y - (daNote.offset.y * daNote.scale.y) + daNote.height) >= (strumNote.y + Note.swagWidth * 0.5))
+									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && (daNote.y - (daNote.offset.y * daNote.scale.y) + daNote.height) >= (strumNote.y + Note.swagWidth * 0.5) && (!daNote.isSustainNote || (daNote.isSustainNoteEnd && daNote.strumTime - 30 < Conductor.songPosition) ))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.frameHeight);

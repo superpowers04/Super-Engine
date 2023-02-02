@@ -393,7 +393,6 @@
 ##MainMenuState.hx##
 
 | 	public static function | handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void |
-| 	public function | eventColors(date:Date) |
 
 ##Main.hx##
 
@@ -402,6 +401,7 @@
 | 	public var | blockDraw:Bool  |
 | 	public var | blockEnterFrame:Bool  |
 | 	public var | funniLoad:Bool  |
+|  public var | queuedState:Bool  |
 
 ##ArrowSelection.hx##
 
@@ -766,12 +766,11 @@
 ##Alphabet.hx##
 
 | 	public function | set_text(repl:String = ""):String |
-### CachedSprite ### 
+### AlphaCharacter ###
+ extends FlxSprite   
 | Type | Name |
 |------------------|------|
-| 	public static function | cacheAlphaChars() |
-| 	public var | row:Int  |
-| 	public function | new(x:Float, y:Float,?allowDashes:Bool = false,?forcedFlxText:Bool = false)	 |
+| 	public function | new(x:Float, y:Float,?allowDashes:Bool = false)	 |
 | 	public function | createBold(letter:String)	 |
 | 	public function | createLetter(letter:String):Void	 |
 | 	public function | createNumber(letter:String,bold:Bool = false):Void	 |
