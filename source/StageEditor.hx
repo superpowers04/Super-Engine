@@ -84,11 +84,11 @@ class StageEditor extends MusicBeatState{
 				if(layer.animated){
 					var xml:String = SELoader.loadText('$stagePath/${layer.name}.xml');
 					if (xml == null || xml == "")throw('$stagePath/${layer.name}.xml is invalid!');
-					curLayer.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('$stagePath/${layer.name}.png')), xml);
+					curLayer.frames = SELoader.loadSparrowFrames('$stagePath/${layer.name}');
 					curLayer.animation.addByPrefix(layer.animation_name,layer.animation_name,layer.fps,false);
 					curLayer.animation.play(layer.animation_name);
 				}else{
-					var png:BitmapData = BitmapData.fromFile('$stagePath/${layer.name}.png');
+					var png:BitmapData = SELoader.loadBitmap('$stagePath/${layer.name}.png');
 					if (png == null) MainMenuState.handleError('$stagePath/${layer.name}.png is invalid!');
 					curLayer.loadGraphic(png);
 				}

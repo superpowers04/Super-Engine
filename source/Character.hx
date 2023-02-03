@@ -282,6 +282,7 @@ class CharAnimController extends FlxAnimationController{
 			interp.variables.set("charProperties", charProperties);
 			interp.variables.set("PlayState", PlayState );
 			interp.variables.set("state", cast FlxG.state );
+			interp.variables.set("game", cast FlxG.state );
 			interp.variables.set("animation", animation );
 			interp.variables.set("BRtools",new HSBrTools('${charLoc}/$curCharacter/'));
 			interp.execute(program);
@@ -400,14 +401,9 @@ class CharAnimController extends FlxAnimationController{
 		dadVar = charProperties.sing_duration; // As the varname implies
 		flipX=charProperties.flip_x; // Flip for BF clones
 		antialiasing = !charProperties.no_antialiasing; 
-		// dance_idle = charProperties.dance_idle; // Handles if the character uses Spooky/GF's dancing animation
 
 		if (charProperties.flip_notes) flipNotes = charProperties.flip_notes;
 
-		// if(!customColor && charProperties.color != null){
-		// 	definingColor = FlxColor.fromRGB(isValidInt(charProperties.color[0]),isValidInt(charProperties.color[1]),isValidInt(charProperties.color[2],255));
-		// 	customColor = true;
-		// }
 		getDefColor(charProperties);
 		
 		var animCount = 0;
@@ -579,7 +575,7 @@ class CharAnimController extends FlxAnimationController{
 			case 2: return FlxG.save.data.gfChar == curCharacter;
 		}
 	}
-	function loadCustomChar(){
+	public function loadCustomChar(){
 		if(charInfo == null) charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
 		curCharacter = charInfo.folderName;
 		charLoc = charInfo.path;
@@ -608,7 +604,7 @@ class CharAnimController extends FlxAnimationController{
 		var charPropJson:String = "";
 		if(charInfo.internal){
 			charXml = Paths.xml(charInfo.internalAtlas);
-			frames=tex=Paths.getSparrowAtlas(charInfo.internalAtlas);
+			if(frames == null) frames=tex=Paths.getSparrowAtlas(charInfo.internalAtlas);
 			charPropJson = charInfo.internalJSON;
 			try{
 				charProperties = Json.parse(CoolUtil.cleanJSON(charPropJson));
@@ -703,7 +699,7 @@ class CharAnimController extends FlxAnimationController{
 
 				if (tex == null){
 					var charJsonF:String = ('${charLoc}/$curCharacter/${xmlName}').substr(0,-3) + "json";
-					if (FileSystem.exists(charJsonF)){
+					if (SELoader.exists(charJsonF)){
 						charXml = SELoader.loadText(charJsonF); 				
 						if (charXml == null){handleError('$curCharacter is missing their sprite JSON?');} // Boot to main menu if character's XML can't be loaded
 
@@ -1059,7 +1055,6 @@ class CharAnimController extends FlxAnimationController{
 		callInterp("playAnimBefore",[AnimName]);
 		animation.play(AnimName, Force, Reversed, Std.int(Frame));
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
-		
 			setOffsets(AnimName,offsetX,offsetY);
 		} // Skip if already playing, no need to calculate offsets and such
 
@@ -1082,7 +1077,6 @@ class CharAnimController extends FlxAnimationController{
 		for (i in animList) {
 			if(animation.getByName(i) != null){
 				if(playAnim(i,forced,reversed,frame)) return true;
-				
 			}
 		}
 		return false;
@@ -1113,8 +1107,6 @@ class CharAnimController extends FlxAnimationController{
 
 	// Handles adding animations
 	public function addAnimation(anim:String,?prefix:String = "",?indices:Array<Int>,?frameNames:Array<String>,?postFix:String = "",?fps:Int = 24,?loop:Bool = false,?flipx:Bool = false){
-		// animGraphics[anim.toLowerCase()] = ((xmlMap[prefix.toLowerCase()] != null) ? xmlMap[prefix.toLowerCase()] : 0);
-		// setSprite(animGraphics[anim.toLowerCase()]);
 		if(amPreview){
 			animationList.push({
 				anim : anim,

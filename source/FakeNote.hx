@@ -11,7 +11,6 @@ import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import tjson.Json;
-import sys.FileSystem;
 import flash.display.BitmapData;
 import flixel.math.FlxPoint;
 import sys.io.File;

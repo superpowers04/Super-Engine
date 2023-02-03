@@ -729,16 +729,18 @@ class HscriptGlobals {
 	// no log
 	public static var maxElapsed(get, set):Float;
 	public static var mouse(get,never):flixel.input.mouse.FlxMouse;
-	// no plugins
+	public static var plugins:flixel.system.frontEnds.PluginFrontEnd;
 	public static var random(default,never):SERandom = new SERandom();
 	public static var renderBlit(get, never):Bool;
 	public static var renderMethod(get, never):FlxRenderMethod;
 	public static var renderTile(get, never):Bool;
 	public static var stage(get, never):Stage;
 	public static var state(get, never):FlxState;
-	// no swipes because no mobile : )
+	public static var swipes(get,never):Array<flixel.input.FlxSwipe>;
+	public static var touches(get,never):flixel.input.touch.FlxTouchManager;
+
 	public static var timeScale(get, set):Float;
-	// no touch because no mobile : )
+
 	public static var updateFramerate(get,set):Int;
 	// no vcr : )
 	// no watch : )
@@ -748,6 +750,15 @@ class HscriptGlobals {
 
 	public static var sound(get,never):SoundFrontEnd;
 	public static function init() {
+	}
+	static function get_swipes(){
+		return FlxG.swipes;
+	}
+	static function get_touches(){
+		return FlxG.touches;
+	}
+	static function get_plugins(){
+		return FlxG.plugins;
 	}
 	static function get_sound(){
 		return FlxG.sound;

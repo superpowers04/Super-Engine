@@ -36,6 +36,7 @@ class PauseSubState extends MusicBeatSubstate
 	var offsetChanged:Bool = false;
 	var levelInfo:FlxText;
 	var levelDifficulty:FlxText;
+	var restarts:FlxText;
 	var startTimer:FlxTimer;
 	var quitHeld:Int = 0;
 	var quitHeldBar:FlxBar;
@@ -89,29 +90,41 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		levelInfo = new FlxText(20, 15, 0, "", 32);
-		levelInfo.text = PlayState.SONG.song;
+		levelInfo = new FlxText(20, -15, 0, "", 32);
+		levelInfo.text = CoolUtil.formatChartName(PlayState.SONG.song);
 		levelInfo.scrollFactor.set();
-		levelInfo.setFormat(CoolUtil.font, 32);
+		levelInfo.setFormat(CoolUtil.font, 32,OUTLINE,0xff000000);
+		levelInfo.borderSize = 2;
 		levelInfo.updateHitbox();
 		add(levelInfo);
 
-		levelDifficulty = new FlxText(20, 15 + 32, 0, "", 32);
+		levelDifficulty = new FlxText(20, -47, 0, "", 24);
 		levelDifficulty.text = CoolUtil.difficultyString();
 		levelDifficulty.scrollFactor.set();
-		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
+		levelDifficulty.setFormat(CoolUtil.font, 24,OUTLINE,0xff000000);
+		levelDifficulty.borderSize = 2;
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
+
+		restarts = new FlxText(20, -75, 0, 'Restart count: ${PlayState.restartTimes}', 20);
+		restarts.scrollFactor.set();
+		restarts.setFormat(CoolUtil.font, 20,OUTLINE,0xff000000);
+		restarts.borderSize = 2;
+		restarts.updateHitbox();
+		
+		add(restarts);
 
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
 
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+		restarts.x = FlxG.width - (restarts.width + 20);
 
-		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
-		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
-		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
+		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartIn});
+		FlxTween.tween(levelInfo, {alpha: 1, y: -levelInfo.y}, 0.4, {ease: FlxEase.bounceOut, startDelay: 0.3});
+		FlxTween.tween(levelDifficulty, {alpha: 1, y: -levelDifficulty.y}, 0.4, {ease: FlxEase.bounceOut, startDelay: 0.5});
+		FlxTween.tween(restarts, {alpha: 1, y: -restarts.y}, 0.4, {ease: FlxEase.bounceOut, startDelay: 0.6});
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
@@ -134,7 +147,7 @@ class PauseSubState extends MusicBeatSubstate
 			songText.screenCenter(X);
 			var sX = songText.x;
 			songText.x = 100 - songText.width * 0.5;
-			FlxTween.tween(songText,{x : sX},0.9,{ease:FlxEase.bounceOut});
+			FlxTween.tween(songText,{x : sX},0.9,{ease:FlxEase.quartOut});
 		}
 		changeSelection();
 
@@ -270,7 +283,7 @@ class PauseSubState extends MusicBeatSubstate
 		for (_ => v in grpMenuShit.members)
 		{
 			ready = false;
-			FlxTween.tween(v,{x : -(100 + v.width),alpha : 0},time,{ease:FlxEase.cubeIn});
+			FlxTween.tween(v,{x : -(100 + v.width),alpha : 0},time,{ease:FlxEase.quartIn});
 		}
 	}
 	function quit(){
@@ -352,15 +365,19 @@ class PauseSubState extends MusicBeatSubstate
 		try{
 			_tween = FlxTween.tween(FlxG.sound.music,{volume:0},0.5);
 		}catch(e){}
-		for (i in [levelDifficulty,levelInfo,perSongOffset]) {
+		if(perSongOffset != null)perSongOffset.destroy();
+		for (i in [levelDifficulty,levelInfo,restarts]) {
 			if(i != null){
-				i.destroy();
+				FlxTween.tween(i,{x:FlxG.width + 10},0.3,{ease:FlxEase.quartIn,
+					onComplete:function(_){i.destroy();}
+				});
 			}
 		}
 		FlxG.sound.music.pause();
 		Conductor.songPosition = FlxG.sound.music.time = time;
 		disappearMenu(0.4);
 		callInterp("pauseResume",[]);
+		FlxTween.tween(bg,{alpha:0},2.5,{ease:FlxEase.quartOut});
 
 
 
@@ -378,11 +395,10 @@ class PauseSubState extends MusicBeatSubstate
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 					ready.scrollFactor.set();
 					ready.updateHitbox();
-
-
 					ready.screenCenter();
+
 					add(ready);
-					FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+					FlxTween.tween(ready, {y: ready.y + 100, alpha: 0}, Conductor.crochet / 1000, {
 						ease: FlxEase.cubeInOut,
 						onComplete: function(twn:FlxTween)
 						{
@@ -398,7 +414,7 @@ class PauseSubState extends MusicBeatSubstate
 
 					set.screenCenter();
 					add(set);
-					FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+					FlxTween.tween(set, {y: set.y + 100, alpha: 0}, Conductor.crochet / 1000, {
 						ease: FlxEase.cubeInOut,
 						onComplete: function(twn:FlxTween)
 						{
@@ -415,7 +431,7 @@ class PauseSubState extends MusicBeatSubstate
 
 					go.screenCenter();
 					add(go);
-					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+					FlxTween.tween(go, {y: go.y + 100, alpha: 0}, Conductor.crochet / 1000, {
 						ease: FlxEase.cubeInOut,
 						onComplete: function(twn:FlxTween)
 						{

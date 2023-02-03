@@ -39,7 +39,7 @@ class OptionsMenu extends MusicBeatState
 	public static var ScriptOptions:Map<String,OptionsFileDef> = new Map<String,OptionsFileDef>();
 
 	var options:Array<OptionCategory> = [
-		new OptionCategory("Quick Options", [
+		new OptionCategory("Session/Temp Options", [
 			for (name => setting in QuickOptionsSubState.normalSettings)
 			{
 				new QuickOption(name);

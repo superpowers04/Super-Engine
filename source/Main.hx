@@ -289,15 +289,68 @@ class FlxGameEnhanced extends FlxGame{
 		}
 	}
 	override function draw(){
-		try{
-			if(blockDraw)
-				return;
-			else{
-				super.draw();
+			if (blockDraw || _state == null || !_state.visible || !_state.exists) return;
+			#if FLX_DEBUG
+			if (FlxG.debugger.visible)
+				ticks = getTicks();
+			#end
+			try{
+				FlxG.signals.preDraw.dispatch();
+			}catch(e){
+				FuckState.FUCK(e,"FlxGame.Draw:preDraw"); return;
 			}
-		}catch(e){
-			FuckState.FUCK(e,"FlxGame.Draw");
-		}
+			if (FlxG.renderTile)
+				flixel.graphics.tile.FlxDrawBaseItem.drawCalls = 0;
+
+
+			#if FLX_POST_PROCESS
+			try{
+			if (postProcesses[0] != null)
+				postProcesses[0].capture();
+			}catch(e){
+				FuckState.FUCK(e,"FlxGame.Draw:postProcess"); return;
+			}
+			#end
+			try{
+
+				FlxG.cameras.lock();
+			}catch(e){
+				FuckState.FUCK(e,"FlxGame.Draw:camerasLock"); return;
+			}
+			try{
+				FlxG.plugins.draw();
+			}catch(e){
+				FuckState.FUCK(e,"FlxGame.Draw:pluginDraw"); return;
+			}
+			try{
+				_state.draw();
+			}catch(e){
+				FuckState.FUCK(e,"FlxGame.Draw:stateDraw"); return;
+			}
+			if (FlxG.renderTile)
+			{
+				try{
+					FlxG.cameras.render();
+				}catch(e){
+					FuckState.FUCK(e,"FlxGame.Draw:cameraRender"); return;
+				}
+				#if FLX_DEBUG
+				debugger.stats.drawCalls(FlxDrawBaseItem.drawCalls);
+				#end
+			}
+			try{
+				FlxG.cameras.unlock();
+			}catch(e){
+				FuckState.FUCK(e,"FlxGame.Draw:cameraUnlock"); return;
+			}
+			try{
+				FlxG.signals.postDraw.dispatch();
+			}catch(e){
+				FuckState.FUCK(e,"FlxGame.Draw:postDraw"); return;
+			}
+			#if FLX_DEBUG
+			debugger.stats.flixelDraw(getTicks() - ticks);
+			#end
 	}
 	var _lostFocusWhileLoading:flash.events.Event = null;
 	override function onFocus(_){

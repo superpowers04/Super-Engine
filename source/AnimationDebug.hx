@@ -393,26 +393,43 @@ class AnimationDebug extends MusicBeatState
 			animList = [];
 			charAnims = ["**Unbind"];
 			if (dad.charXml != null){
-				var regTP:EReg = (~/<SubTexture name="([A-z0-9\-_ !?:;\(\)\[\]'\/\{\}+@#$%^&*~`.,\\\|]+)[0-9][0-9][0-9][0-9]"/gm);
-				var input:String = dad.charXml;
-				while (regTP.match(input)) {
-					input=regTP.matchedRight();
-					if (!charAnims.contains(regTP.matched(1))){
-						charAnims.push(regTP.matched(1));
+				if(dad.charXml.trim().substring(0,1) == "{"){ // Probably a sprite atlas
+					var obj:flixel.graphics.frames.FlxAtlasFrames.TexturePackerObject = Json.parse(dad.charXml);
+					inline function addAnim(name:String){
+						if(name.lastIndexOf('-') != -1 ) name = name.substring(0,name.lastIndexOf('-') - 1);
+						else if(name.lastIndexOf('0') != -1)name = name.substring(0,name.lastIndexOf('0') - 1);
+						if(!charAnims.contains(name))charAnims.push(name);
+					}
+					// yes I stole this from flxatlasframes, fight me
+					if ((obj.frames is Array)){
+						for (frame in Lambda.array(obj.frames))
+						{
+							addAnim(frame.frameName);
+						}
+					}else{
+						for (frameName in Reflect.fields(obj.frames)){
+							addAnim(frameName);
+						}
+					}
+				}else{
+
+					var regTP:EReg = (~/<SubTexture name="([A-z0-9\-_ !?:;\(\)\[\]'\/\{\}+@#$%^&*~`.,\\\|]+)[0-9][0-9][0-9][0-9]"/gm);
+					var input:String = dad.charXml;
+					while (regTP.match(input)) {
+						input=regTP.matchedRight();
+						if (!charAnims.contains(regTP.matched(1))){
+							charAnims.push(regTP.matched(1));
+						}
 					}
 				}
 			}
 			try{
-				if(charJson == null || dad.loadedFrom == "")
-				   canEditJson = false; 
-				else {
-					canEditJson = true;
-					if(charJson.animations != null && charJson.animations[0] != null){
-
-						for (i => v in charJson.animations) {animList.push(v.anim);}
-						if(charJson.animations_offsets != null) {for (i => v in charJson.animations) {animationList.push(v.name);}}
-					}
+				canEditJson = (charJson == null || dad.loadedFrom == "");
+				if(charJson.animations != null && charJson.animations[0] != null){
+					for (i => v in charJson.animations) {animList.push(v.anim);}
+					if(charJson.animations_offsets != null) {for (i => v in charJson.animations) {animationList.push(v.name);}}
 				}
+				
 				animDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animList, true));
 			}catch(e){showTempmessage("Unable to load animation list",FlxColor.RED);}
 

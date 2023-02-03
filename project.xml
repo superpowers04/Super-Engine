@@ -152,8 +152,6 @@
 	<!-- <haxedef name="FLX_NO_MOUSE" if="mobile" /> -->
 	<!-- <haxedef name="FLX_NO_KEYBOARD" if="mobile" /> -->
 
-	<!-- This engine is not optimised for mobile, so this is disabled. If you do make a mobile port, contact Superpowers04#3887 on Discord and I might help/merge it to main   -->
-	<haxedef name="FLX_NO_TOUCH" unless="mobile"/>
 	
 	<haxedef name="FLX_NO_GAMEPAD" />
 
@@ -173,7 +171,7 @@
 	<haxedef name="HXCPP_M64"/> 
 	<haxedef name="HXCPP_CHECK_POINTER"/>
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
-	<define name="SCRIPTABLE" if="release" />
+	<define name="SCRIPTABLE"/>
 
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->

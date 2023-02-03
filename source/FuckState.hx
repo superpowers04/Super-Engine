@@ -55,8 +55,13 @@ class FuckState extends FlxUIState
 		var exception = "Unable to grab exception!";
 		if(e != null && e.message != null){
 			try{
-				exception = '${e.message}\n${e.stack}';
-			}catch(e){exception = 'I tried to grab the exception but got another exception, ${e}';}
+				exception = '${e.details()}';
+			}catch(e){
+				try{
+					exception = '${e.message}\n${e.stack}';
+				}catch(e){exception = 'I tried to grab the exception but got another exception, ${e}';
+			}
+		}
 		}else{
 			try{
 

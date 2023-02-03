@@ -466,7 +466,7 @@ class Note extends FlxSkewedSprite
 			
 		y = 1300; // Prevents the note from being seen when it first gets added to PlayState.notes 
 
-		if (this.strumTime < 0 )
+		if (this.strumTime < 0 && !eventNote)
 			this.strumTime = 0;
 		if(shouldntBeHit && PlayState.SONG != null && PlayState.SONG.inverthurtnotes) mustPress=!mustPress;
 

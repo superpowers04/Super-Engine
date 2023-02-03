@@ -98,6 +98,15 @@ class CoolUtil
 
 		return daList;
 	}
+	public static function formatChartName(str:String):String{
+		str = (~/[-_ ]/g).replace(str,' ');
+		var e = str.split(' ');
+		str = "";
+		for (item in e){
+			str+=' ' + item.substring(0,1).toUpperCase() + item.substring(1);
+		}
+		return str.trim();
+	}
 	// static var songNames:Map<String,String> = [
 	// 	'dad-battle'=> "Dad Battle",
 	// 	'dadbattle'=> "Dad Battle",
