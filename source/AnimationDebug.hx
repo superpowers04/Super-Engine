@@ -121,13 +121,13 @@ class AnimationDebug extends MusicBeatState
 	var quitHeldBG:FlxSprite;
 	var bf:Character;
 	public static function fileDrop(file:String){
-		if(MusicBeatState.instance.onFileDrop(file) == null || !FileSystem.exists(file)){
-			return;
-		}
 
 		#if windows
 		file = file.replace("\\","/"); // Windows uses \ at times but we use / around here
 		#end
+		if(MusicBeatState.instance.onFileDrop(file) == null || !FileSystem.exists(file)){
+			return;
+		}
 		file = FileSystem.absolutePath(file);
 		if(FileSystem.isDirectory(file)){
 			if(file.substring(-1) != "/") file +="/";
@@ -159,16 +159,29 @@ class AnimationDebug extends MusicBeatState
 		FlxG.state.openSubState(new QuickNameSubState(function(name:String,file:String,validFile:String,ending1:String,ending2:String){
 			var _file = file.substr(file.lastIndexOf("/") + 1);
 			var _validFile = validFile.substr(file.lastIndexOf("/") + 1);
-			if(FileSystem.exists('mods/characters/$name/')){name = '${name}DRAGDROP-${FlxG.random.int(0,999999)}';}
-			FileSystem.createDirectory('mods/characters/$name');
-			File.copy(file,'mods/characters/$name/character.$ending1');
-			File.copy(validFile,'mods/characters/$name/character.$ending2');
+			if(SELoader.exists('mods/characters/$name/')){name = '${name}DRAGDROP-${FlxG.random.int(0,999999)}';}
+			SELoader.createDirectory('mods/characters/$name');
+			SELoader.importFile(file,'mods/characters/$name/character.$ending1');
+			SELoader.importFile(validFile,'mods/characters/$name/character.$ending2');
 			LoadingState.loadAndSwitchState(new AnimationDebug("INVALID|" + name,false,1,false,true));
 
 		},[file,validFile,ending1,ending2],"Type a name for the character\n",name,function(name:String){return (if(TitleState.retChar(name) != "") "This character already exists! Please use a different name" else "");}));
 	} 
 
-
+	override public function onFileDrop(file){
+		file = FileSystem.absolutePath(file);
+		if(file.endsWith(".png")){
+			try{
+				SELoader.importFile(file,'${dad.loadedFrom.substring(0,dad.loadedFrom.lastIndexOf('/'))}/healthicon.png');
+				showTempmessage('Imported health icon!');
+			}catch(e){
+				trace('Unable to import health icon! ${e.message}');
+				showTempmessage('Unable to import health icon! ${e.message}',FlxColor.RED);
+			}
+			return null;
+		}
+		return null;
+	}
 	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false,?dragDrop:Bool = false)
 	{
 		super();
@@ -367,6 +380,7 @@ class AnimationDebug extends MusicBeatState
 			dadBG.alpha = 0.75;
 			dadBG.color = 0xFF000000;
 			dadBG.cameras = [camGame];
+			dadBG.scrollFactor.set(dad.scrollFactor.x,dad.scrollFactor.y);
 			// offsetTopText.text = offsetTopTextList[0];
 			toggleOffsetText(showOffsets);
 			isAbsoluteOffsets = false;
