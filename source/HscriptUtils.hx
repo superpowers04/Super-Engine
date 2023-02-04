@@ -196,7 +196,7 @@ class HscriptUtils {
 		interp.variables.set("FlxTrail", FlxTrail);
 		interp.variables.set("FlxTrailArea", FlxTrailArea);
 		interp.variables.set("FlxPoint", FlxBasePoint);
-		interp.variables.set("FlxTrail", FlxTrail);
+		
 		interp.variables.set("FlxEase", FlxEase);
 		interp.variables.set("FlxCamera",FlxCamera);
 		interp.variables.set("FlxTween", FlxTween);

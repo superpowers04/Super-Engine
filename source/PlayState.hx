@@ -131,6 +131,11 @@ class PlayState extends MusicBeatState
 		public var flippy:Bool = false;
 
 	/* Gameplay Vari's */
+		public static var restartTimes:Int = -1;
+		public static var offsetTesting:Bool = false;
+		public static var timeCurrently:Float = 0;
+		public static var timeCurrentlyR:Float = 0;
+		public static var jumpTo:Float = 0;
 		public var health:Float = 1;
 		public var healthPercent(get,set):Int;
 		public function get_healthPercent() return Std.int(health * 50);
@@ -142,7 +147,6 @@ class PlayState extends MusicBeatState
 		public var generatedMusic:Bool = false;
 		public var startingSong:Bool = false;
 		public var hasDied:Bool = false;
-		public static var offsetTesting:Bool = false;
 		public var canSaveScore(default,set):Bool = true; // Controls the ability for the game to save your score. Can be disabled but not re-enabled to prevent cheating
 		public function set_canSaveScore(val){ // Prevents being able to enable this if it's already been disabled.
 			if(!val){
@@ -150,9 +154,6 @@ class PlayState extends MusicBeatState
 			}
 			return canSaveScore;
 		}
-		public static var timeCurrently:Float = 0;
-		public static var timeCurrentlyR:Float = 0;
-		public static var jumpTo:Float = 0;
 		var inCutscene:Bool = false;
 		public var canPause:Bool = true;
 		public var camZooming:Bool = false;
@@ -326,7 +327,7 @@ class PlayState extends MusicBeatState
 	public function addObject(object:FlxBasic) { add(object); }
 	public function removeObject(object:FlxBasic) { remove(object); }
 
-	public static function resetScore(){
+	@:keep inline public static function resetScore(){
 		sicks = 0;
 		bads = 0;
 		shits = 0;
@@ -353,7 +354,6 @@ class PlayState extends MusicBeatState
 			songScore = StoryMenuState.weekScore;
 			accuracy = StoryMenuState.weekAccuracy;
 		}
-
 
 	}
 
@@ -643,6 +643,8 @@ class PlayState extends MusicBeatState
 	}
 	override public function new(){
 		LoadingScreen.loadingText = "Starting Playstate";
+		// this.restartTimes = restartTimes;
+		restartTimes++;
 		super();
 		checkInputFocus = false;
 		PlayState.player1 = "";

@@ -256,6 +256,7 @@ class FlxGameEnhanced extends FlxGame{
 		filters = filtersEnabled ? _filters : null;
 	}
 	var _oldAutoPause:Bool = false;
+	var hasUpdated = false;
 
 	override function update(){
 		
@@ -267,9 +268,9 @@ class FlxGameEnhanced extends FlxGame{
 					_oldAutoPause = FlxG.autoPause;
 					FlxG.autoPause = false;
 					visible = false;
+					hasUpdated = false;
 					sys.thread.Thread.create(() -> { 
 						switchState();
-						
 						requestAdd = true;
 						visible = true;
 					});
@@ -277,6 +278,7 @@ class FlxGameEnhanced extends FlxGame{
 				}
 			#end
 			if(blockUpdate) _update(); else {
+				hasUpdated = true;
 				super.update();
 
 				if (FlxG.keys.justPressed.F11)
@@ -289,7 +291,7 @@ class FlxGameEnhanced extends FlxGame{
 		}
 	}
 	override function draw(){
-			if (blockDraw || _state == null || !_state.visible || !_state.exists) return;
+			if (blockDraw || _state == null || !_state.visible || !_state.exists || !hasUpdated) return;
 			#if FLX_DEBUG
 			if (FlxG.debugger.visible)
 				ticks = getTicks();

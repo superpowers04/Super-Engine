@@ -117,6 +117,7 @@ class SearchMenuState extends MusicBeatState
 		#if discord_rpc
 			DiscordClient.changePresence('Admiring the menus',"Probably configurin something or choosing a song");
 		#end
+		PlayState.restartTimes = 0;
 	}
 	public static var doReset:Bool = true;
 	public var blackBorder:FlxSprite;
@@ -135,7 +136,7 @@ class SearchMenuState extends MusicBeatState
 			bg.color = bgColor;
 		}
 		bg.scrollFactor.set(0.01,0.01);
-		SickMenuState.musicHandle(bg);
+		if(doReset) SickMenuState.musicHandle(bg);
 
 		add(bg);
 		var bgOver = new FlxSprite().loadGraphic(SearchMenuState.backgroundOver);

@@ -924,7 +924,7 @@ class AnimDebugOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Anim Debug " + (!FlxG.save.data.animDebug ? "off" : "on");
+		return "Content Creation Mode " + (!FlxG.save.data.animDebug ? "off" : "on");
 	}
 }
 class NoteSplashOption extends Option

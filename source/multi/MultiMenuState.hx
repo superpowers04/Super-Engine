@@ -560,7 +560,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						voices.destroy();
 					}
 					voices = null;
-					FlxG.sound.playMusic(Sound.fromFile('${songs[curSelected]}/Inst.ogg'),FlxG.save.data.instVol,true);
+					try{
+						FlxG.sound.playMusic(SELoader.loadSound('${songs[curSelected]}/Inst.ogg'),FlxG.save.data.instVol,true);
+					}
+					catch(e){
+
+						showTempmessage('Unable to play instrumental! ${e.message}',FlxColor.RED);
+					}
 					if (FlxG.sound.music.playing){
 						if(modes[curSelected][selMode] != "No charts for this song!" && FileSystem.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
 							try{
@@ -589,7 +595,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 						if(voices == null){
 							voices = new FlxSound();
-							voices.loadEmbedded(Sound.fromFile('${songs[curSelected]}/Voices.ogg'),true);
+							voices.loadEmbedded(SELoader.loadSound('${songs[curSelected]}/Voices.ogg'),true);
 							voices.volume = FlxG.save.data.voicesVol;
 							voices.looped = true;
 							voices.play(FlxG.sound.music.time);

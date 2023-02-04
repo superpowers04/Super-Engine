@@ -57,6 +57,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Toggle the ability for packs to provide scripts","Pack scripts","packScripts"),
 			// new HCBoolOption("Show your player character on the main menu, MAY CAUSE CRASHES!","Show player on main menu","mainMenuChar"),
 			new AllowServerScriptsOption("Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS"),
+			new AnimDebugOption("Enables the Character/chart editor, F10 console, displays some extra info in the FPS Counter, and some other debug stuff"),
 			new ReloadCharlist("Refreshes list of stages, characters and scripts"),
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Gameplay", [
@@ -114,9 +115,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Toggle Discord Rich Presence(Requires restart)","Discord Rich Presence","discordDRP"),
 			#end
 			new FullscreenOption("Toggle fullscreen mode. Press F11 to toggle fullscreen ingame"),
-			new ResetButtonOption("Toggle pressing R to gameover."),
-			new AnimDebugOption("Access animation debug in a offline session, 1=BF,2=Dad,3=GF. Also shows extra information and allows you to use the chart editor"),
-			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
+			new ResetButtonOption("Toggle pressing R to gameover."),			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
 			new LogGameplayOption("Logs your game to a text file"),
 			new EraseOption("Backs up your options to SEOPTIONS-BACKUP.json and then resets them"),
 			// new ImportOption("Import your options from SEOPTIONS.json"),

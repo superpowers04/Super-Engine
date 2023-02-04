@@ -50,6 +50,7 @@ class PauseSubState extends MusicBeatSubstate
 	var timers:Array<FlxTimer> = [];
 	var tweens:Array<FlxTween> = [];
 	var jumpToTime:Float = 0;
+	var bg:FlxSprite;
 	public static var charts:Array<String> = [];
 	public function new(x:Float, y:Float){
 		if(FlxG.sound.music != null ) songLengthTxt = FlxStringUtil.formatTime(Math.floor((FlxG.sound.music.length) / 1000), false);
@@ -85,7 +86,7 @@ class PauseSubState extends MusicBeatSubstate
 		FlxG.sound.music.looped = true;
 		// FlxG.sound.list.add(pauseMusic);
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
 		bg.scrollFactor.set();
 		add(bg);

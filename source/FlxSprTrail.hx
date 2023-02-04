@@ -77,6 +77,8 @@ class FlxSprTrail extends FlxSpriteGroup {
 		end = spriteAmount;
 		offsetX = spriteOffsetX;
 		offsetY = spriteOffsetY;
+		cameras = parent.cameras;
+		copyScrollFactor();
 		generateSprites();
 	}
 	public function generateSprites(){
@@ -153,6 +155,9 @@ class FlxSprTrail extends FlxSpriteGroup {
 			}
 		}
 
+	}
+	@:keep inline public function copyScrollFactor(){
+		scrollFactor.set(parent.scrollFactor.x,parent.scrollFactor.y);
 	}
 	public function updateFrames(?color:FlxColor = 0xFFFFFFF,?changeFrame:Bool = true){
 		var i = end;
