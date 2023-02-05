@@ -45,7 +45,11 @@ typedef Scorekillme = {
 }
 @:structInit class CharInfo{
 	public var id:String = "";
-	public var path:String = 'mods/characters/';
+	public var path(get,default):String = null;
+	public function get_path(){
+		if(path == "" || path == null) return "mods/characters/";
+		return path;
+	}
 	public var folderName:String = "";
 	public var description:String = null;
 	public var nameSpace:String = null;
@@ -53,7 +57,7 @@ typedef Scorekillme = {
 	public var internal:Bool = false;
 	public var internalAtlas:String = "";
 	public var internalJSON:String = "";
-	public var type:Int = 0; // 0: PNG/XML based, 1: Script based
+	public var type:Int = 0x0; // 0: PNG/XML based, 1: Script based
 	public var hidden = false;
 
 	public function toString(){
@@ -65,7 +69,11 @@ typedef Scorekillme = {
 }
 @:structInit class StageInfo{
 	public var id:String = "";
-	public var path:String = 'mods/stages/';
+	public var path(get,default):String = null;
+	public function get_path(){
+		if(path == "" || path == null) return "mods/stages/";
+		return path;
+	}
 	public var folderName:String = "";
 	public var nameSpace:String = null;
 	public var nameSpaceType:Int = 0; // 0: mods/stages, 1: mods/weeks, 2: mods/packs 
@@ -251,9 +259,9 @@ class TitleState extends MusicBeatState
 	public static function checkCharacters(){
 		LoadingScreen.loadingText = 'Updating character list';
 		characters = [
-			{id:"bf",folderName:"bf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/BOYFRIEND",internalJSON:Character.BFJSON,description:"Base Character; Boyfriend, the funny rap guy"},
-			{id:"gf",folderName:"gf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/GF_assets",internalJSON:Character.GFJSON,description:"Base Character; Girlfriend, the funny boombox girl"},
-			{id:"lonely",folderName:"lonely",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"onlinemod/lonely",internalJSON:Character.BFJSON,description:"Base Character; Lonely, Not much is known about them besides their ability to mimic any voice, they're invisible and very shy"},
+			{id:"bf",folderName:"bf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/BOYFRIEND",internalJSON:Character.BFJSON,description:"The funny rap guy"},
+			{id:"gf",folderName:"gf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/GF_assets",internalJSON:Character.GFJSON,description:"The funny boombox girl"},
+			{id:"lonely",folderName:"lonely",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"onlinemod/lonely",internalJSON:Character.BFJSON,description:"Not much is known about them besides their ability to mimic any voice, they're invisible and very shy"},
 		];
 		invalidCharacters = [];
 		#if sys
@@ -350,7 +358,7 @@ class TitleState extends MusicBeatState
 						if (!SELoader.isDirectory(dir+"/"+char)){continue;}
 						if (SELoader.exists(dir+"/"+char+"/config.json"))
 						{
-							var desc = 'Provided by ' + _dir;
+							var desc = "";
 							if (SELoader.exists('${dir}/${char}/description.txt'))
 								desc += ";" +SELoader.getContent('${dir}/${char}/description.txt');
 							characters.push({
@@ -364,7 +372,7 @@ class TitleState extends MusicBeatState
 
 						}else if (SELoader.exists(dir+"/"+char+"/script.hscript"))
 						{
-							var desc = 'Provided by ' + _dir;
+							var desc = "";
 							if (SELoader.exists('${dir}/${char}/description.txt'))
 								desc += ";" +SELoader.getContent('${dir}/${char}/description.txt');
 							characters.push({

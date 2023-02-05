@@ -1674,7 +1674,7 @@ class AnimSwitchMode extends MusicBeatSubstate
 				AnimationDebug.instance.editMode = 1;
 				AnimationDebug.instance.toggleOffsetText(false);
 			},description:"Edit the position of the camera"},
-			{name:"Animation Binder",value:function(){
+			{name:"Animation Binder/Config editor",value:function(){
 				AnimationDebug.instance.editMode = 2;
 				AnimationDebug.instance.setupUI(false);
 				AnimationDebug.instance.toggleOffsetText(false);
@@ -1682,7 +1682,7 @@ class AnimSwitchMode extends MusicBeatSubstate
 			{name:"Per frame offsetting",value:function(){
 				AnimationDebug.instance.editMode = 3;
 				AnimationDebug.instance.toggleOffsetText(false);
-			},description:"Move character per animation frame to fix broken XML frame positions"},
+			},description:"Move character per animation frame to help with fixing broken XML frame positions"},
 		];
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);

@@ -93,6 +93,30 @@ class Alphabet extends FlxSpriteGroup
 	public var persist:Bool = false;
 	public var removeDashes = true;
 	public var forceFlxText:Bool = false;
+	public var cutOff(default,set):Int = 0;
+	public function set_cutOff(value:Int){
+		cutOff = value;
+		if(members.length > 0){
+			var e:FlxSprite;
+			while (members.length > 0){
+				e = remove(members[0],true);
+				if(e != null) e.destroy();
+			}
+		}
+		if(listOAlphabets != null && listOAlphabets.length > 0){
+			var e:FlxSprite;
+			while (listOAlphabets.length > 0){
+				e = listOAlphabets.pop();
+				if(e != null && e.destroy != null) e.destroy();
+			}
+		}
+		xPos = 0;
+		lastSprite = null;
+		lastWasSpace = false;
+		
+		addText(false,(if(value == 0 || text.length <= value + 3) text else text.substring(0,value) + '...'));
+		return cutOff;
+	}
 	// public var bounce=true;
 	public var bounceTween:FlxTween;
 	public function bounce(){
@@ -137,13 +161,11 @@ class Alphabet extends FlxSpriteGroup
 		this.text = text;
 	}
 	inline function setup(){
-		if (text != "")
-		{
-			if(!useAlphabet) forceFlxText = true;
-			listOAlphabets = new List<AlphaCharacter>();
-			addText();
+		if(text == "") return;
+		if(!useAlphabet) forceFlxText = true;
+		listOAlphabets = new List<AlphaCharacter>();
+		addText();
 
-		}
 		// else if (text != "" && !useAlphabet){
 		// 	textObj = new FlxText(0, 0, FlxG.width, text, 48);
 		// 	textObj.scrollFactor.set();
@@ -155,9 +177,12 @@ class Alphabet extends FlxSpriteGroup
 	}
 
 	var xPos:Float = 0;
-	public function addText(bounce:Bool = false)
+	public function addText(bounce:Bool = false,?finalText:String = "")
 	{
-		splitWords = _finalText.split("");
+		if(finalText == ""){
+			finalText = _finalText;
+		}
+		splitWords = finalText.split("");
 		var _X = -xOffset;
 		var _Y = y;
 		x = y = 0;

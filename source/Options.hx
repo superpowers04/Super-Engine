@@ -111,7 +111,7 @@ class DFJKOption extends Option
 	}
 	private override function updateDisplay():String
 	{
-		return "Key Bindings";
+		return "Key Bindings >";
 	}
 }
 
@@ -795,7 +795,7 @@ class PlayerOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Player Character";
+		return "Player Character >";
 	}
 
 	override function getValue():String {
@@ -827,7 +827,7 @@ class GFOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "GF Character";
+		return "GF Character >";
 	}
 
 	override function getValue():String {
@@ -858,7 +858,7 @@ class OpponentOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Opponent Character";
+		return "Opponent Character >";
 	}
 
 	override function getValue():String {
@@ -1047,7 +1047,7 @@ class SelStageOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Selected Stage";
+		return "Selected Stage >";
 	}
 
 	override function getValue():String {
@@ -1149,7 +1149,7 @@ class NoteSelOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Note Style Selection";
+		return "Note Style Selection >";
 	}
 
 	override function getValue():String {
@@ -1528,7 +1528,7 @@ class SelScriptOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Toggle scripts";
+		return "Toggle scripts >";
 	}
 
 	override function getValue():String {
@@ -2011,7 +2011,7 @@ class EraseOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "reset Options to defaults";
+		return "Reset Options to defaults";
 	}
 
 	override function right():Bool {

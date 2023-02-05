@@ -121,6 +121,7 @@ class SearchMenuState extends MusicBeatState
 	}
 	public static var doReset:Bool = true;
 	public var blackBorder:FlxSprite;
+	public var infoTextBorder:FlxSprite;
 	override function create()
 	{try{
 		if(doReset)resetVars();
@@ -162,14 +163,13 @@ class SearchMenuState extends MusicBeatState
 				add(searchButton);
 			}
 
-		var infotexttxt:String = "Hold shift to scroll faster";
-		infotext = new FlxText(5, FlxG.height - (20 * infoTextBoxSize ), FlxG.width - 5, infotexttxt, 16);
+		infotext = new FlxText(5, FlxG.height - (20 * infoTextBoxSize ), FlxG.width - 5, "Hold shift to scroll faster", 16);
 		infotext.wordWrap = true;
 		infotext.scrollFactor.set();
-		infotext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		var blackBorder = new FlxSprite(-30,FlxG.height - (20 * infoTextBoxSize )).makeGraphic((Std.int(FlxG.width + 40)),(20 * infoTextBoxSize),FlxColor.BLACK);
-		blackBorder.alpha = 0.5;
-		overLay.add(blackBorder);
+		infotext.setFormat(CoolUtil.font, 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		infoTextBorder = new FlxSprite(-30,FlxG.height - (20 * infoTextBoxSize )).makeGraphic((Std.int(FlxG.width + 40)),(20 * infoTextBoxSize),FlxColor.BLACK);
+		infoTextBorder.alpha = 0.5;
+		overLay.add(infoTextBorder);
 		overLay.add(infotext);
 		// add(overLay);
 		FlxG.autoPause = true;

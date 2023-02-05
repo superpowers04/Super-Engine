@@ -32,11 +32,12 @@ class SELoader {
  		return PATH = _path.replace('//','/'); // Fixes paths having //'s in them 
  	}
 
-	public static var id = "Internal";
+	public static var id = "SELoader";
 
-	inline static function handleError(e:String){
-		trace(e);
-		if(PlayState.instance != null) PlayState.instance.handleError(e); else MainMenuState.handleError(e);
+	inline public static function handleError(e:String){
+		throw(e);
+		// if((cast (FlxG.state)).handleError != null) (cast (FlxG.state)).handleError(e); else MainMenuState.handleError(e);
+		
 	}
 	// Basically clenses paths and returns the base path with the requested one. Used heavily for the Android port
 	@:keep inline public static function getPath(path:String):String{
@@ -172,12 +173,13 @@ class SELoader {
 	// 	#end
 	// }
 
-	public static function loadSound(soundPath:String,?useCache:Bool = false):Sound{
+	public static function loadSound(soundPath:String,?useCache:Bool = false):Null<Sound>{
 		if(cache.soundArray[soundPath] != null || useCache){
 			return cache.loadSound(soundPath);
 		}
 		if(!exists(soundPath)){
 			handleError('${id}: Sound "${getPath(soundPath)}" doesn\'t exist!');
+			// return null;
 		}
 		return Sound.fromFile(getPath(soundPath));
 		
@@ -468,8 +470,7 @@ class InternalCache{
 		openfl.system.System.gc();
 	}
 	inline function handleError(e:String){
-		trace(e);
-		if(MusicBeatState.instance != null) MusicBeatState.instance.showTempmessage(e); else MainMenuState.handleError(e);
+		SELoader.handleError(e);
 	}
 
 

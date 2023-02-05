@@ -594,13 +594,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					try{
 
 						if(voices == null){
-							voices = new FlxSound();
-							voices.loadEmbedded(SELoader.loadSound('${songs[curSelected]}/Voices.ogg'),true);
-							voices.volume = FlxG.save.data.voicesVol;
-							voices.looped = true;
-							voices.play(FlxG.sound.music.time);
-							FlxG.sound.list.add(voices);
-
+							if(SELoader.exists('${songs[curSelected]}/Voices.ogg')){
+								voices = new FlxSound();
+								voices.loadEmbedded(SELoader.loadSound('${songs[curSelected]}/Voices.ogg'),true);
+								voices.volume = FlxG.save.data.voicesVol;
+								voices.looped = true;
+								voices.play(FlxG.sound.music.time);
+								FlxG.sound.list.add(voices);
+							}
 						}else{
 							if(!voices.playing){
 								voices.play(FlxG.sound.music.time);
