@@ -544,6 +544,9 @@ class Note extends FlxSkewedSprite
 			}
 			offset.x = frameWidth * 0.5;
 			if (FlxG.save.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
+			if(shouldntBeHit && noteAnimation == ""){
+				noteAnimationMiss = noteAnimation = 'hurt${noteDirections[noteData]}/hurt/sing${noteDirections[noteData]}miss';
+			}
 		}
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 

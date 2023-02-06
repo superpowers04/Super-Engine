@@ -1016,6 +1016,9 @@ class CharAnimController extends FlxAnimationController{
 	public dynamic function playAnim(AnimName:String = "idle", ?Force:Bool = false, ?Reversed:Bool = false, ?Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool
 	{
 		var lastAnim = "";
+		if(AnimName.contains('/')){
+			return playAnimAvailable(AnimName.split('/'),Force,Reversed,Frame);
+		}
 		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
 
 		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
@@ -1073,7 +1076,7 @@ class CharAnimController extends FlxAnimationController{
 		callInterp("playAnimAfter",[AnimName,animation.curAnim]);
 		return true;
 	}
-	public function playAnimAvailable(animList:Array<String>,forced:Bool = false,reversed:Bool = false,frame:Int = 0):Bool{
+	public function playAnimAvailable(animList:Array<String>,forced:Bool = false,reversed:Bool = false,frame:Float = 0):Bool{
 		for (i in animList) {
 			if(animation.getByName(i) != null){
 				if(playAnim(i,forced,reversed,frame)) return true;

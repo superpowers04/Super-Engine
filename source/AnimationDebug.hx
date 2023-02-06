@@ -57,7 +57,7 @@ using StringTools;
 class AnimationDebug extends MusicBeatState
 {
 	static var INTERNALANIMATIONLIST:Array<String> = ["idle","danceLeft","danceRight","singLEFT","singDOWN","singUP","singRIGHT","singLEFTmiss","singDOWNmiss","singUPmiss","singRIGHTmiss","idle-alt","singLEFT-alt","singDOWN-alt","singUP-alt","singRIGHT-alt","songStart","hey",
-	"scared","win","cheer","lose","dodge","hurt","dodgeLeft","dodgeRight","dodgeUp","dodgeDown"]; // Why is this yelling you ask? Because yes
+	"scared","win","cheer","lose","dodge","hurt","hurtLEFT","hurtRIGHT","hurtUP","hurtDOWN","dodgeLeft","dodgeRight","dodgeUp","dodgeDown"]; // Why is this yelling you ask? Because yes
 	public static var instance:AnimationDebug;
 	var gf:Character;
 	public var dad:Character;
