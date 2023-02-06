@@ -36,6 +36,7 @@ class Note extends FlxSkewedSprite
 	public var updateAngle:Bool = true;
 	public var updateScrollFactor:Bool = true;
 	public var updateCam:Bool = true;
+	public var clipSustain:Bool = true;
 	public var lockToStrum:Bool = true;
 
 	public var hitDistance:Float = 0;
@@ -152,7 +153,7 @@ class Note extends FlxSkewedSprite
 						}catch(e){
 							noteJSON = null;
 						}
-					}else if (name == 'default' || (!FileSystem.exists('${path_}/${name}.png') || !FileSystem.exists('${path_}/${name}.xml'))){
+					}else if (name == 'default' || (!SELoader.exists('${path_}/${name}.png') || !SELoader.exists('${path_}/${name}.xml'))){
 						frames = SELoader.loadSparrowFrames('assets/shared/images/NOTE_assets');
 						// FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/NOTE_assets.png')),File.getContent("assets/shared/images/NOTE_assets.xml"));
 					}else{

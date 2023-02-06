@@ -41,9 +41,9 @@ class StrumArrow extends FlxSprite{
 							noteJSON = null;
 						}
 					}else if (name == 'default' || (!SELoader.exists('${path_}/${name}.png') || !SELoader.exists('${path_}/${name}.xml'))){
-						frames = SELoader.loadSparrowFrames('assets/shared/images/NOTE_assets.png');
+						frames = SELoader.loadSparrowFrames('assets/shared/images/NOTE_assets');
 					}else{
-						frames = SELoader.loadSparrowFrames('${path_}/${name}.png');
+						frames = SELoader.loadSparrowFrames('${path_}/${name}');
 						
 						if(SELoader.exists('${path}/${name}.json')){
 							try{

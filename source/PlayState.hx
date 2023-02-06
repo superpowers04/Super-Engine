@@ -3149,14 +3149,12 @@ class PlayState extends MusicBeatState
 										daNote.y += daNote.height * 0.5;
 	
 									// Only clip sustain notes when properly hit
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && (daNote.y - (daNote.offset.y * daNote.scale.y) + daNote.height) >= (strumNote.y + Note.swagWidth * 0.5) && (!daNote.isSustainNote || (daNote.isSustainNoteEnd && daNote.strumTime - 30 < Conductor.songPosition) ))
+									if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote))
 									{
 										// Clip to strumline
-										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.frameHeight);
-										// swagRect.height = (strumNote.y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
-										// swagRect.y = daNote.frameHeight - swagRect.height;
-										swagRect.height = ((strumNote.y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y);
-										swagRect.y -= swagRect.height;
+										var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
+										swagRect.height = (strumNote.y + (Note.swagWidth / 2) - daNote.y) / daNote.scale.y;
+										swagRect.y = daNote.frameHeight - swagRect.height;
 
 
 										daNote.clipRect = swagRect;
@@ -3175,11 +3173,11 @@ class PlayState extends MusicBeatState
 									else
 										daNote.y -= daNote.height * 0.5;
 									// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
-									if((daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && (daNote.y + (daNote.offset.y * daNote.scale.y)) <= (strumNote.y - Note.swagWidth * 0.5))
+									if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote))
 									{
 										// Clip to strumline
 										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-										swagRect.y = (strumNote.y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+										swagRect.y = (strumNote.y + (Note.swagWidth / 2) - daNote.y) / daNote.scale.y;
 										swagRect.height -= swagRect.y;
 
 										daNote.clipRect = swagRect;

@@ -246,7 +246,7 @@ class SearchMenuState extends MusicBeatState
 				select(curSelected);
 				if(retAfter) ret();
 			}
-			if(supportMouse){
+			// if(supportMouse){
 				if(FlxG.mouse.justReleased){
 					if(titleText != null && FlxG.mouse.overlaps(titleText)){
 						ret();
@@ -258,6 +258,7 @@ class SearchMenuState extends MusicBeatState
 							if(member != null && FlxG.mouse.overlaps(member)){
 								if(member == curSel){
 									select(curSelected);
+									if(retAfter) ret();
 								}else{
 									changeSelection(i);
 								}
@@ -278,7 +279,7 @@ class SearchMenuState extends MusicBeatState
 					var move = -FlxG.mouse.wheel;
 					changeSelection(Std.int(move));
 				}
-			}
+			// }
 	}
 	function extraKeys(){
 		return;
