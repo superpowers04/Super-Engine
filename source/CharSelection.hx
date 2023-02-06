@@ -30,23 +30,23 @@ class CharSelection extends SearchMenuState
 	// 1 = invalid
 	var chars:Array<Array<Dynamic>> = []; // [NAME,TYPE,ID,DESCRIPTION,OBJ]
 	var charIDList:Array<Int> = [];
+	override function reloadList(?reload:Bool = false,?search:String=""){try{
+			curSelected = 0;
+			if(reload){CoolUtil.clearFlxGroup(grpSongs);}
+			songs = [];
+			charIDList = [];
+			charIDList[-1] = -1;
+			searchList = songs;
 
-	override function reloadList(?reload = false,?search=""){try{
-		curSelected = 0;
-		if(reload){CoolUtil.clearFlxGroup(grpSongs);}
-		songs = [];
-		charIDList = [];
-		charIDList[-1] = -1;
-		searchList = songs;
-
-		var i:Int = 0;
-		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i');
-		for (i => char in chars){
-			if(search == "" || query.match(char[0].toLowerCase()) ){
-				_addToList(char,i);
+			var i:Int = 0;
+			var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i');
+			for (i => char in chars){
+				if(search == "" || query.match(char[0].toLowerCase()) ){
+					_addToList(char,i);
+				}
 			}
-		}
-	}catch(e) MainMenuState.handleError('Error with loading stage list ${e.message}');}
+		}catch(e) MainMenuState.handleError('Error with loading stage list ${e.message}');
+	}
 	function _addToList(char:Array<Dynamic>,i:Int = 0){
 		songs.push(char[0]);
 		charIDList.push(i);
@@ -109,11 +109,15 @@ class CharSelection extends SearchMenuState
 		if (title != "") addTitleText(title);
 		titleText.screenCenter(X);
 		if (onlinemod.OnlinePlayMenuState.socket == null) defText = "Use shift to scroll faster;\nCharacter Editor keys: 1=bf, 2=dad, 3=gf;\n";
-		uiIcon = new HealthIcon("face",Options.PlayerOption.playerEdit == 0);
-		uiIcon.x = infoTextBorder.x + (infoTextBorder.width * 0.5) - (uiIcon.width * 0.5);
-		uiIcon.y = infoTextBorder.y + 50;
-		uiIcon.centerOffsets();
-		overLay.add(uiIcon);
+		if(!FlxG.save.data.performance){
+
+			uiIcon = new HealthIcon("face",Options.PlayerOption.playerEdit == 0);
+			uiIcon.updateAnim(100);
+			uiIcon.x = infoTextBorder.x + (infoTextBorder.width * 0.5) - (uiIcon.width * 0.5);
+			uiIcon.y = infoTextBorder.y + 50;
+			uiIcon.centerOffsets();
+			overLay.add(uiIcon);
+		}
 
 		// exampleImage = new FlxSprite();
 		// exampleImage.scrollFactor.set();
@@ -211,11 +215,12 @@ class CharSelection extends SearchMenuState
 		}
 		updateInfoText(text);
 		updateName((if(char == null || char[0] == null) "Unknown?!?!?" else char[0]));
-
-		uiIcon.changeSprite(formatChar(chars[curSelected]),'face',false,(if(char == null || char[4] == null )null else chars[curSelected][4].path));
-		uiIcon.x = infoTextBorder.x + (infoTextBorder.width * 0.5) - (uiIcon.width * 0.5);
-		uiIcon.y = infoTextBorder.y + 50;
-		uiIcon.centerOffsets();
+		if(!FlxG.save.data.performance){
+			uiIcon.changeSprite(formatChar(chars[curSelected]),'face',false,(if(char == null || char[4] == null )null else chars[curSelected][4].path));
+			uiIcon.x = infoTextBorder.x + (infoTextBorder.width * 0.5) - (uiIcon.width * 0.5);
+			uiIcon.y = infoTextBorder.y + 50;
+			uiIcon.centerOffsets();
+		}
 
 	}
 
