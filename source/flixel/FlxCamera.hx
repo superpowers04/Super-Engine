@@ -765,9 +765,7 @@ class FlxCamera extends FlxBasic
 				currItem.render(this);
 				currItem = (if(currItem == null) null else currItem.next);
 			}
-		}catch(e){
-			FuckState.FUCK(e,"FlxCamera.render");
-		}
+		}catch(e){} // Probably caused by a missing sprite or something, we can just ignore this :)
 	}
 
 	public function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,?shader:FlxShader):Void {

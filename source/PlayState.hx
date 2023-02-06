@@ -771,7 +771,7 @@ class PlayState extends MusicBeatState
 							stageTags = ["empty"];
 							defaultCamZoom = 0.9;
 							curStage = 'nothing';
-						}else if(stage == "" || !FileSystem.exists('${stageInfo.path}/${stageInfo.folderName}')){
+						}else if(stage == "" || !SELoader.exists('${stageInfo.path}/${stageInfo.folderName}')){
 							trace('"${stage}" not found, using "Stage"!');
 							stageTags = ["inside"];
 							defaultCamZoom = 0.9;
@@ -3371,8 +3371,8 @@ class PlayState extends MusicBeatState
 						possibleNotes[daNote.noteData] = daNote;
 					}
 					if(onScreenNote) timeSinceOnscreenNote = 0.5;
-		 			var i = pressArray.length;
-		 			var daNote:Note;
+		 			i = pressArray.length;
+		 			daNote = null;
 					while(i > 0) {
 						i--;
 						daNote = possibleNotes[i];
@@ -3401,8 +3401,8 @@ class PlayState extends MusicBeatState
 	 			while (i >= 0){
 					spr = playerStrums.members[i];
 					i--;
-					if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm') spr.press();
-					if (!holdArray[spr.ID]) spr.playStatic();
+					if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm') spr.press(); 
+					else if (!holdArray[spr.ID]) spr.playStatic();
 				}
 
 			}
@@ -3453,9 +3453,9 @@ class PlayState extends MusicBeatState
 				
 				note.wasGoodHit = true;
 				if (boyfriend.useVoices){boyfriend.voiceSounds[note.noteData].play(1);boyfriend.voiceSounds[note.noteData].time = 0;vocals.volume = 0;}else vocals.volume = FlxG.save.data.voicesVol;
+				notes.remove(note, true);
 				note.skipNote = true;
 				note.kill();
-				notes.remove(note, true);
 				note.destroy();
 				
 				updateAccuracy();

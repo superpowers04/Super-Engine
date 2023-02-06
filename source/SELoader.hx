@@ -260,16 +260,19 @@ class InternalCache{
 	}
 
 	public function loadSparrowFrames(pngPath:String):FlxAtlasFrames{
-		if(!exists('${pngPath}.png')){
-			handleError('${id}: SparrowFrame PNG "${pngPath}.png" doesn\'t exist!');
-			return FlxAtlasFrames.fromSparrow(FlxGraphic.fromRectangle(1,1,0),""); // Prevents the script from throwing a null error or something
-		}
-		if(!exists('${pngPath}.xml')){
+		// if(!exists('${pngPath}.png')){
+		// 	handleError('${id}: SparrowFrame PNG "${pngPath}.png" doesn\'t exist!');
+		// 	return FlxAtlasFrames.fromSparrow(FlxGraphic.fromRectangle(1,1,0),""); // Prevents the script from throwing a null error or something
+		// }
+		var _txt = "";
+		if(exists('${pngPath}.xml')){
+			_txt = loadText(pngPath + ".xml");
+		}else{
 			handleError('${id}: SparrowFrame XML "${pngPath}.xml" doesn\'t exist!');
-			return FlxAtlasFrames.fromSparrow(FlxGraphic.fromRectangle(1,1,0),""); // Prevents the script from throwing a null error or something
+			// return FlxAtlasFrames.fromSparrow(FlxGraphic.fromRectangle(1,1,0),""); // Prevents the script from throwing a null error or something
 		}
 
-		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath + ".png"),loadText(pngPath + ".xml"));
+		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath + ".png"),_txt);
 	}
 	public function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
 		var spr = new FlxSprite(x, y);
