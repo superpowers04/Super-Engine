@@ -34,7 +34,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly(default,never):String = "U32";
+	public static var nightly(default,never):String = "U33";
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 
 	public static var compileType(default,never):String =

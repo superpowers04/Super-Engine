@@ -1,14 +1,1 @@
-1.0.0-U32;
-- Android port
-- Input optimisations
-- Stage backend now is less shit
-- Fix some bugs regarding scrolling
-- Finally fix sustain issues on downscroll
-- An internal overhaul to how most assets are loaded
-- Finally fix FinishSubState not waiting for win/lose animation to play
-- Move the animation debug option to Modifications and call it Content Creation Mode
-- Fix the game hitting beats multiple times(how did i let this bug exist for 2 years what)
-- Finally add a fullscreen option and make F11 work game-wide instead of just on titlestate
-- Port several Psych Engine note types(add camzoom, set camzoom, hey, camflash and screenshake). Their values should be the same as Psych engine to keep compatibility
-- You can now specify multiple character options in a chart by including a slash, so `bf/dad/pico` would attempt to choose pico, dad and then bf depending on who is valid
-- You can now pass multiple animations to a character using /'s, for example `bf.playAnim("hurtLEFT/hurt/singLEFTmiss")` will attempt to play hurtLEFT, if not found then hurt, and if still not found then finally singLEFTmiss
+1.0.0-U33;
