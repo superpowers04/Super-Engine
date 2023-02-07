@@ -279,6 +279,7 @@ class Note extends FlxSkewedSprite
 
 
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
+		callInterp("noteCheckType",[this,rawNote]);
 
 
 		this.noteData = _noteData % Note.noteAnims.length; 
@@ -291,7 +292,9 @@ class Note extends FlxSkewedSprite
 
 			showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
 			if((rawNote[1] == -1 || rawNote[2] == "eventNote")){ // Psych event notes, These should not be shown, and should not appear on the player's side
+				
 				if(rawNote[2] == "eventNote")rawNote.remove(2);
+				callInterp("eventNoteCheckType",[this,rawNote]);
 				shouldntBeHit = false; // Make sure it doesn't become a hurt note
 				showNote = false; // Don't show the note
 				this.noteData = 1; // Set it to 0, to prevent issues

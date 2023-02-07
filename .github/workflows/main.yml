@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: MacBuild
-          path: /tmp/fnfbrbin/      
+          path: /tmp/fnfbrbin/bin/      
   buildLinux:
     runs-on: ubuntu-latest
     
@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: linuxBuild
-          path: /tmp/fnfbrbin/      
+          path: /tmp/fnfbrbin/bin/      
       - name: Publish without changed assets as Artifact
         uses: actions/upload-artifact@v2
         with:
