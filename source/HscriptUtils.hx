@@ -60,6 +60,8 @@ import hscript.Expr;
 import hscriptfork.InterpSE;
 
 import flixel.util.FlxAxes;
+import flxanimate.FlxAnimate;
+import flxanimate.frames.FlxAnimateFrames;
 
 #if cpp
 using cpp.NativeString;
@@ -208,6 +210,8 @@ class HscriptUtils {
 		interp.variables.set("FlxTextBorderStyle",FlxTextBorderStyle);
 		interp.variables.set("FlxAxes",SEAxes);
 
+		interp.variables.set("FlxAnimate", FlxAnimate);
+		interp.variables.set("FlxAnimateFrames", FlxAnimateFrames);
 
 		// Normal Haxe
 		interp.variables.set("Math", Math);

@@ -501,6 +501,7 @@ class Note extends FlxSkewedSprite
 				animation.play(if(noteJSON == null) noteName + "holdend" else "holdend");
 				isSustainNoteEnd = true;
 				updateHitbox();
+				
 
 
 				parentNoteWidth = prevNote.width;

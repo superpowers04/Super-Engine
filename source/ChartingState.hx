@@ -863,7 +863,8 @@ class ChartingState extends MusicBeatState
 			}
 			if(sectionBuffer[0] == null){
 				pasteButton.alpha = 0.7;
-				return showTempmessage("No notes to copy!",FlxColor.RED);
+				showTempmessage("No notes to copy!",FlxColor.RED);
+				return;
 			}
 			pasteButton.alpha = 1;
 		});
@@ -871,7 +872,8 @@ class ChartingState extends MusicBeatState
 		{
 			if(sectionBuffer[0] == null){
 				pasteButton.alpha = 0.7;
-				return showTempmessage("No notes to paste!",FlxColor.RED);
+				showTempmessage("No notes to paste!",FlxColor.RED);
+				return;
 			}
 			var timing = Conductor.songPosition;
 			lastCopiedNotes = [];
@@ -2447,7 +2449,7 @@ class ChartingState extends MusicBeatState
 			trace("Saving song...");
 			var _raw = _song.rawJSON;
 			_song.rawJSON = null; // It's a good idea to not include 2 copies of the json
-			var data:String = Json.encode(_song,"fancy",true);
+			var data:String = Json.stringify(_song);
 			_song.rawJSON = _raw; // It's a good idea to not include 2 copies of the json
 			if ((data != null) && (data.length > 0))
 			{// Not copied from FunkinVortex, dunno what you mean

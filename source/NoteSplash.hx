@@ -55,6 +55,8 @@ class NoteSplash extends FlxSprite
 		
 
 	}
+	var targetX:Float = 0;
+	var targetY:Float = 0;
 
 	public function setupNoteSplash(?obj:FlxObject = null,?note:Int = 0)
 	{
@@ -83,10 +85,12 @@ class NoteSplash extends FlxSprite
 
 			}
 			animation.curAnim.frameRate = 24;
-			data = note;
+
 			updateHitbox();
 			centerOffsets();
 			centerOrigin();
+
+			data = note;
 
 			if(obj != null){
 				@:privateAccess
@@ -95,25 +99,27 @@ class NoteSplash extends FlxSprite
 
 				}
 				scrollFactor.set(obj.scrollFactor.x,obj.scrollFactor.y);
-				x=(obj.x);
-				y=(obj.y);
+				screenCenter();
+				targetX=(obj.x);
+				targetY=(obj.y + (obj.height * 0.5));
 
 
 
 			}
 			// animation.play(anim, true);
-			switch (NoteAssets.splashType.toLowerCase()) {
-				case "psych":
-					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-					offset.set(10, 10);
-				case "vanilla": // From DotEngine
-					offset.set(width * 0.3, height * 0.3);
-				case "custom":
-					// Do nothing
-				default:
-					setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-					offset.set(-40, -40);
-			}
+			// switch (NoteAssets.splashType.toLowerCase()) {
+			// 	case "psych":
+			// 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+			// 		offset.set(10, 10);
+			// 	case "vanilla": // From DotEngine
+			// 		offset.set(width * 0.3, height * 0.3);
+			// 	case "custom":
+			// 		// Do nothing
+			// 	default:
+			// 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+			// 		offset.set(-40, -40);
+			// }
+
 
 			if(PlayState.instance != null){
 				PlayState.instance.callInterp("setupNoteSplashAfter",[this]);
@@ -121,6 +127,11 @@ class NoteSplash extends FlxSprite
 		}catch(e){MainMenuState.handleError(e,'Error while setting up a NoteSplash ${e.message}');
 		}
 		// offset.set(-0.5 * -width, 0.5 * -height);
+	}
+	override function draw(){
+		x = targetX - frameWidth * 0.5;
+		y = targetY - frameHeight * 0.5;
+		super.draw();
 	}
 	function finished(name:String){
 		kill();

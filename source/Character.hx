@@ -730,15 +730,19 @@ class CharAnimController extends FlxAnimationController{
 			switch(charProperties.custom_misses){
 				case 1: // Custom misses using FNF Multi custom sounds
 					useMisses = true;
-					missSounds = [Sound.fromFile('${charLoc}/$curCharacter/custom_left.ogg'), Sound.fromFile('${charLoc}/$curCharacter/custom_down.ogg'), Sound.fromFile('${charLoc}/$curCharacter/custom_up.ogg'),Sound.fromFile('${charLoc}/$curCharacter/custom_right.ogg')];
+					missSounds = [SELoader.loadSound('${charLoc}/$curCharacter/custom_left.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/custom_down.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/custom_up.ogg'),SELoader.loadSound('${charLoc}/$curCharacter/custom_right.ogg')];
 				case 2: // Custom misses using Predefined sound names
 					useMisses = true;
-					missSounds = [Sound.fromFile('${charLoc}/$curCharacter/miss_left.ogg'), Sound.fromFile('${charLoc}/$curCharacter/miss_down.ogg'), Sound.fromFile('${charLoc}/$curCharacter/miss_up.ogg'),Sound.fromFile('${charLoc}/$curCharacter/miss_right.ogg')];
+					missSounds = [SELoader.loadSound('${charLoc}/$curCharacter/miss_left.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/miss_down.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/miss_up.ogg'),SELoader.loadSound('${charLoc}/$curCharacter/miss_right.ogg')];
 			}
 		}
 		if (FlxG.save.data.playVoices && charProperties.voices == "custom") {
 			useVoices = true;
-			voiceSounds = [new FlxSound().loadEmbedded(Sound.fromFile('${charLoc}/$curCharacter/custom_left.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('${charLoc}/$curCharacter/custom_down.ogg')), new FlxSound().loadEmbedded(Sound.fromFile('${charLoc}/$curCharacter/custom_up.ogg')),new FlxSound().loadEmbedded(Sound.fromFile('${charLoc}/$curCharacter/custom_right.ogg'))];
+			voiceSounds = [	SELoader.loadFlxSound('${charLoc}/$curCharacter/custom_left.ogg'),
+							SELoader.loadFlxSound('${charLoc}/$curCharacter/custom_down.ogg'),
+							SELoader.loadFlxSound('${charLoc}/$curCharacter/custom_up.ogg'),
+							SELoader.loadFlxSound('${charLoc}/$curCharacter/custom_right.ogg')
+							];
 
 		}
 		callInterp("initScript",[]);

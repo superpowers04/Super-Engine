@@ -59,8 +59,6 @@ class StrumArrow extends FlxSprite{
 			}
 			frames = frames.addBorder(new FlxPoint(1,1));
 			antialiasing = true;
-			setGraphicSize(Std.int(width * 0.7));
-			updateHitbox();
 
 			if(noteJSON != null){
 				animation.addByPrefix('static', noteJSON.staticanimname);
@@ -72,6 +70,8 @@ class StrumArrow extends FlxSprite{
 				animation.addByPrefix('confirm', arrowIDs[id].toLowerCase() + ' confirm', 24, false);
 			}
 			animation.play(curAnim);
+			setGraphicSize(Std.int(width * 0.7));
+			updateHitbox();
 			centerOffsets();
 			if(noteJSON != null){
 				flipX=noteJSON.flipx;

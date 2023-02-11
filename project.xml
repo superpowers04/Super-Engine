@@ -117,6 +117,7 @@
 	<haxelib name="flixel-addons" />
 	<haxelib name="hscript" />
 	<haxelib name="hscript-ex"/>
+	<haxelib name="flxanimate" />
 	<haxedef name="hscriptPos" />
 
 	<haxelib name="discord_rpc" if="desktop cpp"/>

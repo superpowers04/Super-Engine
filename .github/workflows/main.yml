@@ -45,8 +45,8 @@ jobs:
           haxelib setup /tmp/haxelib
           haxelib install hxcpp > nul
           haxelib install lime
-          haxelib install openfl
-          haxelib --never install flixel
+          haxelib git openfl https://github.com/EliteMasterEric/openFl
+          haxelib --never git flixel https://github.com/EliteMasterEric/flixel
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib install flixel-tools
@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: linuxBuild
-          path: /tmp/fnfbrbin/bin/      
+          path: /tmp/fnfbrbin/linux/bin/      
       - name: Publish without changed assets as Artifact
         uses: actions/upload-artifact@v2
         with:

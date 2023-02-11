@@ -596,7 +596,6 @@ class TitleState extends MusicBeatState
 			trace("Loaded " + (openfl.Assets.list().length) + " assets");
 		}
 		
-		PlayerSettings.init();
 
 
 		curWacky = getIntroTextShit();
@@ -793,7 +792,7 @@ class TitleState extends MusicBeatState
 																		]));
 				}catch(e){
 					FuckState.FATAL = true;
-					throw('Unable to write to "${FileSystem.absolutePath('mods/menuTimes.json')}"!' + " Common causes:\n* You didn't extract the zip\n* You don't have permission to write to the mods folder\nThis isn't an error you can ignore, as something is really wrong with your setup!");
+					throw('Unable to write to "${FileSystem.absolutePath('mods/menuTimes.json')}"!' + " Common causes:\n* You didn't extract the zip\n* You don't have permission to write to the mods folder\nThis isn't an error you can ignore, as something is really wrong with your setup!\n" + e.details());
 					return;
 				}
 			}else{

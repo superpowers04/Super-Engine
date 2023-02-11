@@ -15,6 +15,8 @@ import sys.FileSystem;
 import flixel.addons.display.FlxRuntimeShader;
 import flixel.system.FlxAssets;
 
+import flxanimate.FlxAnimate;
+
 // Made specifically for Super Engine
 
 
@@ -97,6 +99,15 @@ class HSBrTools {
 
 		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath + ".png"),loadXML(pngPath + ".xml"));
 	}
+	public function loadAtlasSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
+		var spr = new FlxSprite(x, y);
+		spr.frames= loadSparrowFrames(pngPath);
+		if (anim != ""){
+			spr.animation.addByPrefix(anim,anim,fps,loop);
+			spr.animation.play(anim);
+		}
+		return spr;
+	}
 	public function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
 		var spr = new FlxSprite(x, y);
 		spr.frames= loadSparrowFrames(pngPath);
@@ -138,11 +149,11 @@ class HSBrTools {
 		if(xmlArray[textPath] == null) xmlArray[textPath] = SELoader.loadText('${path}${textPath}');
 		return xmlArray[textPath];
 	}
-	public function loadShader(textPath:String,?glslVersion:Int = 120):Null<FlxRuntimeShader>{
+	public function loadShader(textPath:String,?glslVersion:Dynamic = 120):Null<FlxRuntimeShader>{
 		if(textArray[textPath + ".vert"] == null && SELoader.exists('${path}${textPath}.vert')) textArray[textPath + ".vert"] = SELoader.loadText('${path}${textPath}.vert');
 		if(textArray[textPath + ".frag"] == null && SELoader.exists('${path}${textPath}.frag')) textArray[textPath + ".frag"] = SELoader.loadText('${path}${textPath}.frag');
 		try{
-			var shader = new FlxRuntimeShader(textArray[textPath + ".vert"],textArray[textPath + ".frag"],glslVersion);
+			var shader = new FlxRuntimeShader(textArray[textPath + ".vert"],textArray[textPath + ".frag"],Std.string(glslVersion));
 			// if(init) shader.initialise(); // If the shader uses custom variables, this can prevent loading a broken shader
 			return shader;
 

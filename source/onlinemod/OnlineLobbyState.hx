@@ -311,9 +311,9 @@ class OnlineLobbyState extends MusicBeatState
 				args.splice(0,3);
 				var script = args.join(" ");
 				Chat.CLIENT_MESSAGE('Installing hscript of ${script.length} characters');
-				FileSystem.createDirectory('mods/scripts/${scriptName}/');
-				File.saveContent('mods/scripts/${scriptName}/script.hscript',script);
-				if(!FileSystem.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script couldn't be downloaded!",true);return;}
+				SELoader.createDirectory('mods/scripts/${scriptName}/');
+				SELoader.saveContent('mods/scripts/${scriptName}/script.hscript',script);
+				if(!SELoader.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script couldn't be downloaded!",true);return;}
 
 				OnlinePlayMenuState.scripts.push(scriptName);
 				sendResponse('Script "${scriptName}" installed and enabled!',true);

@@ -39,7 +39,7 @@ class HealthIcon extends FlxSprite
 		if(bounceTween != null) bounceTween.cancel();
 		bounceTween = FlxTween.tween(this.scale,{x:1,y:1},time);
 	}
-	var imgPath:String = "mods/characters";
+	var imgPath:String = "mods/characters/";
 	public function changeSprite(?char:String = 'face',?clone:String = "face",?useClone:Bool = true,?pathh:String = "mods/characters")
 	{
 		if(char == hichar) return;
@@ -52,6 +52,10 @@ class HealthIcon extends FlxSprite
 		if(_char != null){
 			imgPath = _char.path + "/";
 			char = _char.folderName;
+		}else{
+			char = 'bf';
+			imgPath = "mods/characters/";
+
 		}
 		
 		if (!chars.contains(char) && SELoader.exists(imgPath+char+"/healthicon.png")){
@@ -77,10 +81,10 @@ class HealthIcon extends FlxSprite
 				if(frameCount > 1) updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(animation.curAnim.numFrames * (health / 150));};
 			}
 			loadGraphic(FlxGraphic.fromBitmapData(bitmapData), true, bitmapData.height, bitmapData.height);
-			char = "bf";
+			// char = "customChar";
 			vanIcon = false;
 			frameCount = frameCount + 1;
-			animation.add('bf', if(frameCount > 1)[for (i in 0 ... frameCount) i] else [0,1], 0, false, isPlayer);
+			animation.add(char, if(frameCount > 1)[for (i in 0 ... frameCount) i] else [0,1], 0, false, isPlayer);
 		}else if ((chars.contains(char) || chars.contains(clone)) && SELoader.exists(imgPath+char+"/icongrid.png")){
 			// trace('Custom character with custom icongrid! Loading custom icon.');
 			loadGraphic(SELoader.loadGraphic('${imgPath}$char/icongrid.png'), true, 150, 150);
@@ -88,8 +92,9 @@ class HealthIcon extends FlxSprite
 			vanIcon = false;
 			animation.add('bf', [0, 1], 0, false, isPlayer);
 		}else{
-			if (clone != "" && (useClone || !chars.contains(char))) char = clone;
-			if (!vanIcon) loadGraphic(Paths.image('iconGrid'), true, 150, 150); else relAnims = false;
+			if (clone != "" && (useClone || !chars.contains(char))) char = clone; else if(!chars.contains(char.toLowerCase())) char = "bf";
+
+			if (!vanIcon) loadGraphic(SELoader.loadGraphic('assets/images/iconGrid.png',true), true, 150, 150); else relAnims = false;
 			vanIcon = true;
 			animation.add('bf', [0, 1], 0, false, isPlayer);
 		}
@@ -129,8 +134,9 @@ class HealthIcon extends FlxSprite
 			}
 			animation.play(char.toLowerCase());
 		}else{
-			trace('Invalid character icon $char, Using BF!');
-			animation.play("bf");
+			if(char == "bf") trace('Invalid character icon $char, Using BF!');
+			// animation.play('bf');
+			animation.play(char);
 		}
 		switch(char)
 		{

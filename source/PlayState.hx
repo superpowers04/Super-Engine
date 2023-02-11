@@ -997,6 +997,12 @@ class PlayState extends MusicBeatState
 		cachedChars[0][bf.curCharacter] = bf;
 		cachedChars[1][dad.curCharacter] = dad;
 		cachedChars[2][gf.curCharacter] = gf;
+		cachedChars[0]['default'] = bf;
+		cachedChars[1]['default'] = dad;
+		cachedChars[2]['default'] = gf;
+		cachedChars[0]['_song'] = bf;
+		cachedChars[1]['_song'] = dad;
+		cachedChars[2]['_song'] = gf;
 		
 		LoadingScreen.loadingText = "Adding characters";
 
@@ -1768,12 +1774,7 @@ class PlayState extends MusicBeatState
 		add(notes);
 		Note.lastNoteID = -1;
 
-		var noteData:Array<SwagSection>;
-
-		// NEW SHIT
-		noteData = songData.notes;
-
-		var playerCounter:Int = 0;
+		var noteData:Array<SwagSection> = songData.notes;
 
 		// Per song offset check
 		
@@ -1874,21 +1875,6 @@ class PlayState extends MusicBeatState
 
 			daBeats += 1;
 		}
-		// try{
-
-		// if(SONG.eventObjects != null && SONG.eventObjects[0] != null){
-		// 	for (i in SONG.eventObjects)
-		// 	{
-		// 		var swagNote:Note = new Note(i.position, -1, null,null,null,i.type,[i.position,-1,i.type],false);
-		// 		swagNote.eventNote = true;
-		// 		unspawnNotes.push(swagNote);
-
-		// 	}
-
-		// }
-		// }catch(e){trace('Unable to load Kade event: ${e.message}');}
-		// trace(unspawnNotes.length);
-		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
 
@@ -2800,7 +2786,7 @@ class PlayState extends MusicBeatState
 					sicks++;
 					if (FlxG.save.data.noteSplash){
 						var a:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-						a.setupNoteSplash(playerStrums.members[daNote.noteData], daNote.noteData);
+						a.setupNoteSplash(daNote, daNote.noteData);
 						lastNoteSplash = a;
 						grpNoteSplashes.add(a);
 						callInterp('spawnNoteSplash',[a]);

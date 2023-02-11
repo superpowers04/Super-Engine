@@ -185,6 +185,8 @@ class FinishSubState extends MusicBeatSubstate
 			if(name != "FORCEDMOMENT.MP4efdhseuifghbehu"){
 
 				FlxG.camera.alpha = PlayState.instance.camHUD.alpha = 1;
+				FlxG.camera.visible = PlayState.instance.camHUD.visible  = PlayState.instance.camTOP.visible = true;
+				FlxG.camera.zoom = PlayState.instance.camTOP.zoom = PlayState.instance.camHUD.zoom = 1;
 				// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
 				PlayState.instance.generatedMusic = false;
 				var camPos = PlayState.instance.getDefaultCamPos();

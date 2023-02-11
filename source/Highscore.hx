@@ -3,6 +3,12 @@ package;
 import flixel.FlxG;
 import sys.io.File;
 import tjson.Json;
+
+typedef ScoreJson = {
+	var songNames:Array<String>;
+	var scores:Array<Array<Dynamic>>;
+}
+
 class SongScores {
 
 	var songNames:Array<String> = [];
@@ -72,10 +78,6 @@ class SongScores {
 		save();
 		trace("");
 	}
-}
-typedef ScoreJson = {
-	var songNames:Array<String>;
-	var scores:Array<Array<Dynamic>>;
 }
 class Highscore
 {
