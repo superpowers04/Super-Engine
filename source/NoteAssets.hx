@@ -115,8 +115,8 @@ class NoteAssets{
 				animname:"blue0",
 				holdanimname:"blue hold piece",
 				endanimname:"blue hold end",
-				offsetHold:[10,0],
-				offsetHoldEnd:[10,0],
+				offsetHold:[3,0],
+				offsetHoldEnd:[3,0],
 			},
 			{ // Up
 				flipx:false,
@@ -130,8 +130,8 @@ class NoteAssets{
 				animname:"green0",
 				holdanimname:"green hold piece",
 				endanimname:"green hold end",
-				offsetHold:[-2,2],
-				offsetHoldEnd:[-2,2],
+				offsetHold:[0,2],
+				offsetHoldEnd:[0,-2],
 			},
 			{ // Right
 				flipx:false,

@@ -116,6 +116,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	function addListing(name:String,i:Int):Alphabet{
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false);
 		controlLabel.yOffset = 20;
+		controlLabel.cutOff = 25;
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
 		if (i != 0)
@@ -129,14 +130,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
 		controlLabel.adjustAlpha = false;
 		controlLabel.screenCenter(X);
-		var blackBorder = new FlxSprite(-FlxG.width,-10).makeGraphic((Std.int(FlxG.width * 2)),Std.int(controlLabel.height) + 20,FlxColor.BLACK);
-		blackBorder.alpha = 0.35;
+		// blackBorder.alpha = 0.35;
 		// blackBorder.screenCenter(X);
-		controlLabel.insert(0,blackBorder);
+		controlLabel.border.alpha = 0.35;
 		controlLabel.yOffset = 20;
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
 		controlLabel.alpha = 1;
+		// controlLabel.screenCentX = true;
 		grpSongs.add(controlLabel);
 		return controlLabel;
 	}
@@ -698,7 +699,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
 
 	}
-	public static function findFileFromAssets(path:String,name:String,file:String):String{
+	@:keep inline public static function findFileFromAssets(path:String,name:String,file:String):String{
 		if(FileSystem.exists('${path}/songs/${name}/$file')){
 			return '${path}/songs/${name}/$file';
 		}
@@ -719,14 +720,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	inline static function upToString(str:String,ending:String){
 		return str.substr(0,str.lastIndexOf(ending) + ending.length);
 	}
-	public static function getAssetsPathFromChart(path:String):String{
-		if(path.contains('data/')){
+	@:keep inline public static function getAssetsPathFromChart(path:String,attempt:Int = 0):String{
+		if(path.contains('data/') && attempt < 1){
 			return path.substr(0,path.lastIndexOf('data/'));
 		}
-		if(path.contains('assets/')){
+		if(path.contains('assets/')  && attempt < 2){
 			return upToString(path,'assets/');
 		}
-		if(path.contains('mods/')){
+		if(path.contains('mods/')  && attempt < 3){
 			return upToString(path,'mods/');
 		}
 		return "";
@@ -748,15 +749,17 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var json = file.substr(file.lastIndexOf("/") + 1);
 			var name = json.substr(0,json.lastIndexOf("."));
 
-			var assets = getAssetsPathFromChart(file);
+			var attempts = 0;
 			if(FileSystem.exists('${dir}/Inst.ogg')){ 
 				inst = '${dir}/Inst.ogg';
 				if(FileSystem.exists('${dir}/Voices.ogg')){
 					voices = '${dir}/Voices.ogg';
 				}
 			}
-			else if(assets != ""){
-				// Attempt 1 at finding the song files
+			while(inst == "" && attempts < 99){ // If this reaches 99 attempts, fucking run
+				attempts++;
+				var assets = getAssetsPathFromChart(file,attempts);
+				if(assets == "") break; // Nothing else to search!
 
 				inst = findFileFromAssets(assets,name,'Inst.ogg');
 				voices = findFileFromAssets(assets,name,'Voices.ogg');
@@ -784,6 +787,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					}
 
 				}
+				
 			}
 			if(inst == ""){
 				MusicBeatState.instance.showTempmessage('Unable to find Inst.ogg for "$json"',FlxColor.RED);

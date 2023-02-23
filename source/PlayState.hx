@@ -429,15 +429,16 @@ class PlayState extends MusicBeatState
 				}else if(func_name == "noteHit"){
 					charCall("noteHitSelf",[args[1]],0);
 					charCall("noteHitOpponent",[args[1]],1);
+				}else if(func_name == "susHitDad"){
+					charCall("susHitSelf",[args[1]],1);
+					charCall("susHitOpponent",[args[1]],0);
+				}else if(func_name == "susHit"){
+					charCall("susHitSelf",[args[1]],0);
+					charCall("susHitOpponent",[args[1]],1);
 				}
-				// if(func_name != "update") trace('Called $func_name for ${(if(id != "")id else "Global")}');
 				args.insert(0,this);
 				if (id == "") {
 					for (name in interps.keys()) {
-						// var ag:Array<Dynamic> = [];
-						// for (i => v in args) { // Recreates the array
-						// 	ag[i] = v;
-						// }
 						callSingleInterp(func_name,args,name);
 					}
 				}else callSingleInterp(func_name,args,id);
@@ -3152,10 +3153,8 @@ class PlayState extends MusicBeatState
 						daNote.y = strumNote.y - daNote.distanceToSprite;
 						if(daNote.isSustainNote)
 						{
-							if(daNote.isSustainNoteEnd && daNote.prevNote != null)
-								daNote.y = daNote.prevNote.y + (daNote.prevNote.height - 10); // why
-							else
-								daNote.y -= daNote.height * 0.5;
+
+							daNote.y -= (if(daNote.isSustainNoteEnd)daNote.height else daNote.height * 0.5);
 							// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
 							if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote))
 							{

@@ -94,6 +94,7 @@ class Alphabet extends FlxSpriteGroup
 	public var removeDashes = true;
 	public var forceFlxText:Bool = false;
 	public var cutOff(default,set):Int = 0;
+	public var border:FlxSprite = null;
 	public function set_cutOff(value:Int){
 		cutOff = value;
 		if(members.length > 0){
@@ -179,6 +180,10 @@ class Alphabet extends FlxSpriteGroup
 	var xPos:Float = 0;
 	public function addText(bounce:Bool = false,?finalText:String = "")
 	{
+		if(border != null){
+			remove(border);
+			border.destroy();
+		}
 		if(finalText == ""){
 			finalText = _finalText;
 		}
@@ -191,6 +196,14 @@ class Alphabet extends FlxSpriteGroup
 
 		x=_X;
 		y=_Y;
+
+		border = new FlxSprite(-10,-10).makeGraphic((Std.int(width) + 20),Std.int(height) + 20,FlxColor.BLACK);
+		#if android
+		border.alpha = 0.1;
+		#else
+		border.alpha = 0;
+		#end
+		insert(0,border);
 	}
 	var currentLetter = 0;
 	var timer:FlxTimer;
@@ -249,6 +262,8 @@ class Alphabet extends FlxSpriteGroup
 
 
 	public var personTalking:String = 'gf';
+	public var screenCentX:Bool = false;
+	public var screenCentY:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -260,6 +275,8 @@ class Alphabet extends FlxSpriteGroup
 			if(moveX)x = FlxMath.lerp(x, xOffset, 10 * elapsed);
 		}
 		if(visible) super.update(elapsed);
+		if(screenCentX) screenCenter(X);
+		if(screenCentY) screenCenter(Y);
 
 	}
 }
