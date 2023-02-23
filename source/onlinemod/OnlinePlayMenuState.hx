@@ -101,7 +101,7 @@ class OnlinePlayMenuState extends MusicBeatState
 		super.create();
 	}
 
-	function HandleData(packetId:Int, data:Array<Dynamic>)
+	public function HandleData(packetId:Int, data:Array<Dynamic>)
 	{
 		switch (packetId)
 		{
