@@ -361,12 +361,15 @@ class Note extends FlxSkewedSprite
 									trace('Finished caching $name');
 								}
 								hit = function(?charID:Int = 0,note){
-									var _char = PlayState.instance.cachedChars[info[0]][info[1]];
+									var _char:Character = PlayState.instance.cachedChars[info[0]][info[1]];
 									if(_char == null){return;}
 									// PlayState.charSet(charID,"visible",false);
 									PlayState.instance.members[PlayState.instance.members.indexOf(PlayState.getCharFromID(info[0]))] = _char;
-									var _oldChar = PlayState.getCharFromID(id);
+									var _oldChar:Character = PlayState.getCharFromID(id);
 									Reflect.setProperty(PlayState,PlayState.getCharVariName(info[0]),_char);
+									try{
+										_char.playAnim(_oldChar.animName,_oldChar.animation.curAnim.curFrame / _oldChar.animation.curAnim.frames.length);
+									}catch(e){}
 									_char.callInterp('changeChar',[_oldChar]); // Allows the character to play an animation or something upon change
 									PlayState.instance.callInterp('changeChar',[_char,_oldChar,id]);
 									// PlayState.instance.add(_char);
@@ -536,17 +539,22 @@ class Note extends FlxSkewedSprite
 		if(!eventNote){
 			updateHitbox();
 			// centerOrigin();
-			// centerOffsets();
+			
 			// offset.y = 0;
 			// origin.y=0;
+			offset.x = frameWidth * 0.5;
 			if(noteJSON != null){
 				flipX=noteJSON.flipx;
 				flipY=noteJSON.flipy;
 				antialiasing=noteJSON.antialiasing;
 				scale.x*=noteJSON.scale[0];
 				scale.y*=noteJSON.scale[1];
+				if(noteJSON.offset != null){offset.x+=noteJSON.offset[0];offset.y+=noteJSON.offset[1];}
+				if(noteJSON.offsetNote != null){offset.x+=noteJSON.offsetNote[0];offset.y+=noteJSON.offsetNote[1];}
+				if(isSustainNoteEnd) if(noteJSON.offsetHoldEnd != null){offset.x+=noteJSON.offsetHoldEnd[0];offset.y+=noteJSON.offsetHoldEnd[1];}
+				else if(isSustainNote) if(noteJSON.offsetHold != null){offset.x+=noteJSON.offsetHold[0];offset.y+=noteJSON.offsetHold[1];}
+				else if(noteJSON.offsetScroll != null){offset.x+=noteJSON.offsetStatic[0];offset.y+=noteJSON.offsetStatic[1];}
 			}
-			offset.x = frameWidth * 0.5;
 			if (FlxG.save.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
 			if(shouldntBeHit && noteAnimation == ""){
 				noteAnimationMiss = noteAnimation = 'hurt${noteDirections[noteData]}/hurt/sing${noteDirections[noteData]}miss';

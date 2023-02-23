@@ -97,7 +97,7 @@ class Song
 		this.notes = notes;
 		this.bpm = bpm;
 	}
-	public static function getEmptySong():SwagSong{
+	@:keep inline public static function getEmptySong():SwagSong{
 		return cast Json.parse(getEmptySongJSON()).song;
 	}
 	public static function getEmptySongJSON():String{
@@ -134,7 +134,7 @@ class Song
 				"needsVoices": false,
 				"bpm": 150,
 				"speed": 2.0,
-				"chartType":"SUPER ENGINE"
+				"chartType":"FNF/Super"
 			}
 		}';
 	}

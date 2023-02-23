@@ -488,14 +488,13 @@ class PsychDropDown extends FlxUIGroup implements IFlxUIWidget implements IFlxUI
 
 	private function onDropdown():Void
 	{
-		(dropPanel.visible) ? showList(false) : showList(true);
+		showList(!dropPanel.visible);
 	}
 
 	private function onClickItem(i:Int):Void
 	{
 		var item:FlxUIButton = list[i];
 		selectSomething(item.name, item.label.text);
-		showList(false);
 
 		if (callback != null)
 		{
@@ -506,6 +505,7 @@ class PsychDropDown extends FlxUIGroup implements IFlxUIWidget implements IFlxUI
 		{
 			FlxUI.event(CLICK_EVENT, this, item.name, params);
 		}
+		showList(false);
 	}
 
 	/**

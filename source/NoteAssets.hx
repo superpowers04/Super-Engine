@@ -51,7 +51,18 @@ typedef NoteAssetConfig = {
 	var animname:String;
 	var holdanimname:String;
 	var endanimname:String;
+	// Everything
 	var ?offset:Array<Float>;
+	// StrumNotes
+	var ?offsetStrum:Array<Float>;
+	var ?offsetStatic:Array<Float>;
+	var ?offsetConfirm:Array<Float>;
+	var ?offsetPress:Array<Float>;
+	// Notes
+	var ?offsetNote:Array<Float>;
+	var ?offsetScroll:Array<Float>;
+	var ?offsetHold:Array<Float>;
+	var ?offsetHoldEnd:Array<Float>;
 
 }
 
@@ -104,6 +115,8 @@ class NoteAssets{
 				animname:"blue0",
 				holdanimname:"blue hold piece",
 				endanimname:"blue hold end",
+				offsetHold:[10,0],
+				offsetHoldEnd:[10,0],
 			},
 			{ // Up
 				flipx:false,
@@ -117,6 +130,8 @@ class NoteAssets{
 				animname:"green0",
 				holdanimname:"green hold piece",
 				endanimname:"green hold end",
+				offsetHold:[-2,2],
+				offsetHoldEnd:[-2,2],
 			},
 			{ // Right
 				flipx:false,

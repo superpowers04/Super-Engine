@@ -127,7 +127,7 @@ class OnlinePlayMenuState extends MusicBeatState
 				FlxG.save.data.lastServerPort = portField.text;
 				socket.connect(ipField.text, Std.parseInt(portField.text));
 			}catch (e: Dynamic){
-				trace(e);
+				SetErrorText(e);
 			}
 		});
 		if (socket != null && socket.connected) socket.close();
@@ -276,6 +276,10 @@ class OnlinePlayMenuState extends MusicBeatState
 
 	static function SetErrorText(text:String, color:FlxColor=FlxColor.RED)
 	{
+		if (Type.getClass(FlxG.state) == OnlinePlayMenuState){
+			showTempmessage(text,color);
+			return;
+		}
 		OnlinePlayMenuState.errorText.text = text;
 		OnlinePlayMenuState.errorText.setFormat(32, color);
 		OnlinePlayMenuState.errorText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);

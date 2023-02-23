@@ -56,9 +56,13 @@ class OptionsMenu extends MusicBeatState
 			new CharAutoBFOption("Force the player you've selected or allow the song to choose the player if you have them installed"),
 			new HCBoolOption("Toggle the ability for packs to provide scripts","Pack scripts","packScripts"),
 			// new HCBoolOption("Show your player character on the main menu, MAY CAUSE CRASHES!","Show player on main menu","mainMenuChar"),
-			new AllowServerScriptsOption("Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS"),
+			
 			new AnimDebugOption("Enables the Character/chart editor, F10 console, displays some extra info in the FPS Counter, and some other debug stuff"),
 			new ReloadCharlist("Refreshes list of stages, characters and scripts"),
+		],"Settings relating to Characters, scripts, etc"),
+		new OptionCategory("Online", [
+			// new HCBoolOption("Saves charts to disk whenever you recieve one","Save charts from servers","onlineSaveChart"),
+			new AllowServerScriptsOption("Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS"),
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
@@ -562,14 +566,14 @@ class OptionsMenu extends MusicBeatState
 			}
 		}
 	}
-	static function saveScriptOptions(path:String,obj:Map<String,Dynamic>){
+	static function saveScriptOptions(path:String,obj:Map<String,Dynamic>){// TJSON gets fucky with maps, this'll save them using a typedef instead
 		var _obj:Array<OptionF> = [];
 		for (i => v in obj) {
 			_obj.push({name:i,value:v});
 		}
 		File.saveContent(path,Json.stringify(_obj));
 	}
-	public static function loadScriptOptions(path:String):Null<Map<String,Dynamic>>{ // Holy shit this is terrible but whatever
+	public static function loadScriptOptions(path:String):Null<Map<String,Dynamic>>{ // TJSON gets fucky with maps, this'll load them using a typedef instead
 		
 		var ret:Map<String,Dynamic> = new Map<String,Dynamic>();
 		var obj:Array<OptionF> = Json.parse(CoolUtil.cleanJSON(SELoader.getContent(path)));

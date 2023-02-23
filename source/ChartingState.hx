@@ -194,39 +194,7 @@ class ChartingState extends MusicBeatState
 			_song = PlayState.SONG;
 		else
 		{
-			_song = {
-				song: 'Test',
-				notes: [
-					{
-						lengthInSteps : 16,
-						altAnim : false,
-						typeOfSection : 0,
-						sectionNotes : [],
-						bpm: 150,
-						changeBPM : false,
-						mustHitSection : true
-					},
-					{
-						lengthInSteps : 16,
-						altAnim : false,
-						typeOfSection : 0,
-						sectionNotes : [],
-						bpm: 150,
-						changeBPM : false,
-						mustHitSection : true
-					}
-				],
-				bpm: 150,
-				needsVoices: false,
-				player1: 'bf',
-				player2: 'dad',
-				gfVersion: 'gf',
-				noteStyle: 'normal',
-				stage: 'stage',
-				speed: 2,
-				validScore: false,
-				chartType:"SUPER ENGINE"
-			};
+			_song = Song.getEmptySong();
 		}
 		if(_song.player1 == ""){
 			_song.player1 = "bf";
@@ -469,9 +437,9 @@ class ChartingState extends MusicBeatState
 			}
 		}
 		notes.sort(function(o:Array<Dynamic>,o2:Array<Dynamic>){
-				if(o[0] < o2[0]) return -1;
-				else if(o[0] > o2[0]) return 1;
-				else return 0;
+			if(o[0] < o2[0]) return -1;
+			else if(o[0] > o2[0]) return 1;
+			else return 0;
 		});
 
 		Conductor.songPosition = 0;
@@ -624,14 +592,14 @@ class ChartingState extends MusicBeatState
 		};
 
 		
-		var shiftNoteDialLabel = new FlxText(10, 275, 'Shift Note by Section');
-		var stepperShiftNoteDial:FlxUINumericStepper = new FlxUINumericStepper(10, 290, 1, 0, -1000, 1000, 0);
+		var shiftNoteDialLabel = new FlxText(10, 235, 'Shift Note by Section');
+		var stepperShiftNoteDial:FlxUINumericStepper = new FlxUINumericStepper(10, 250, 1, 0, -1000, 1000, 0);
 		stepperShiftNoteDial.name = 'song_shiftnote';
-		var shiftNoteDialLabel2 = new FlxText(10, 305, 'Shift Note by Step');
-		var stepperShiftNoteDialstep:FlxUINumericStepper = new FlxUINumericStepper(10, 320, 1, 0, -1000, 1000, 0);
+		var shiftNoteDialLabel2 = new FlxText(10, 275, 'Shift Note by Step');
+		var stepperShiftNoteDialstep:FlxUINumericStepper = new FlxUINumericStepper(10, 290, 1, 0, -1000, 1000, 0);
 		stepperShiftNoteDialstep.name = 'song_shiftnotems';
-		var shiftNoteDialLabel3 = new FlxText(100, 305, 'Shift Note by MS');
-		var stepperShiftNoteDialms:FlxUINumericStepper = new FlxUINumericStepper(100, 320, 1, 0, -1000, 1000, 2);
+		var shiftNoteDialLabel3 = new FlxText(10, 305, 'Shift Note by MS');
+		var stepperShiftNoteDialms:FlxUINumericStepper = new FlxUINumericStepper(10, 320, 1, 0, -1000, 1000, 2);
 		stepperShiftNoteDialms.name = 'song_shiftnotems';
 
 		var shiftNoteButton:FlxButton = new FlxButton(10, 345, "Shift", function()
@@ -710,7 +678,7 @@ class ChartingState extends MusicBeatState
 		uiMap["shiftNoteButton"] = shiftNoteButton;
 		uiMap["beatcheck"] = beatcheck;
 
-        var invertChartButton:FlxButton = new FlxButton(100, 335, "Invert chart", function()
+        var invertChartButton:FlxButton = new FlxButton(100, 345, "Invert chart", function()
 		{
 			for (i in 0 ... _song.notes.length){
 				for (ni in 0..._song.notes[i].sectionNotes.length){
@@ -724,7 +692,7 @@ class ChartingState extends MusicBeatState
 			
 		});
 
-        var invertSectionsButton:FlxButton = new FlxButton(210, 335, "Invert all sections", function()
+        var invertSectionsButton:FlxButton = new FlxButton(210, 345, "Invert all sections", function()
 		{
 			for (i in 0 ... _song.notes.length){
 				_song.notes[i].mustHitSection = !_song.notes[i].mustHitSection;

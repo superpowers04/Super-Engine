@@ -48,14 +48,13 @@ class OfflineMenuState extends SearchMenuState
     optionsButton.resize(150, 26);
     sideButton = new FlxUIButton(1020, 65, "Chart Options", chartOptions); 
     // This is just so I don't have to remove any references to this button, else I'd remove it on android targets 
-    #if !android
-	    sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-	    sideButton.resize(250, 30);
-    #end
     #if android
     	goBackButton.y = 30;
     	optionsButton.y = 65;
     	optionsButton.resize(150,30);
+    #else
+	    sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+	    sideButton.resize(250, 30);
     #end
 
 

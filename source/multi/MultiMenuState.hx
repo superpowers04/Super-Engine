@@ -155,7 +155,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
 		if (SELoader.exists(dataDir))
 		{
-			var dirs = orderList(FileSystem.readDirectory(dataDir));
+			var dirs = orderList(SELoader.readDirectory(dataDir));
 			addCategory("charts folder",i);
 			i++;
 
@@ -166,7 +166,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				{
 					if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
 						modes[i] = [];
-						for (file in SELoader.readDirectory(dataDir + directory))
+						for (file in orderList(SELoader.readDirectory(dataDir + directory)))
 						{
 								if (isValidFile(file)){
 									modes[i].push(file);
@@ -189,7 +189,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		var _packCount:Int = 0;
 		if (SELoader.exists("mods/weeks"))
 		{
-			for (name in SELoader.readDirectory("mods/weeks"))
+			for (name in orderList(SELoader.readDirectory("mods/weeks")))
 			{
 
 				var dataDir = "mods/weeks/" + name + "/charts/";
@@ -207,7 +207,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					{
 						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
 							modes[i] = [];
-							for (file in SELoader.readDirectory(dataDir + directory))
+							for (file in orderList(SELoader.readDirectory(dataDir + directory)))
 							{
 									if (isValidFile(file)){
 										modes[i].push(file);
@@ -236,7 +236,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		var emptyCats:Array<String> = [];
 		if (SELoader.exists("mods/packs"))
 		{
-			for (name in SELoader.readDirectory("mods/packs"))
+			for (name in orderList(SELoader.readDirectory("mods/packs")))
 			{
 				// dataDir = "mods/packs/" + dataDir + "/charts/";
 				var catMatch = query.match(name.toLowerCase());
@@ -256,7 +256,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 								i++;
 							}
 							modes[i] = [];
-							for (file in SELoader.readDirectory(dataDir + directory))
+							for (file in orderList(SELoader.readDirectory(dataDir + directory)))
 							{
 									if (isValidFile(file)){
 										modes[i].push(file);

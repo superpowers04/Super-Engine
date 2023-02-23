@@ -57,6 +57,11 @@ class Packets
   public static var SEND_CURRENT_INFO(default, never) = new Packet("SEND_CURRENT_INFO",[DataTypes.INT, DataTypes.INT, DataTypes.INT]).id;
   public static var BROADCAST_CURRENT_INFO(default, never) = new Packet("BROADCAST_CURRENT_INFO",[DataTypes.UBYTE, DataTypes.INT, DataTypes.INT, DataTypes.INT]).id;
   public static var KEYPRESS(default, never) = new Packet("KEYPRESS",[DataTypes.INT,DataTypes.INT,DataTypes.INT,DataTypes.INT]).id;
+  public static var VERSION(default, never) = new Packet("VERSION",[DataTypes.INT]).id;
+
+  // [PacketName, PacketContents]
+  public static var CUSTOMPACKETSTRING(default, never) = new Packet("CUSTOMPACKETSTRING",[DataTypes.STRING,DataTypes.STRING]).id;
+  public static var CUSTOMPACKETINT(default, never) = new Packet("CUSTOMPACKETINT",[DataTypes.STRING,DataTypes.INT]).id;
 }
 
 
