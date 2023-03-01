@@ -512,6 +512,7 @@ class Note extends FlxSkewedSprite
 				if (prevNote.isSustainNote)
 				{
 					parentNoteWidth = prevNote.parentNoteWidth;
+					var _offset:Float = prevNote.offset.x;
 					prevNote.animation.play(if(prevNote.noteJSON == null) noteName + "hold" else "hold");
 					if (prevNote.parentNote != null){
 						prevNote.parentNote.childNotes.push(this);
@@ -522,10 +523,10 @@ class Note extends FlxSkewedSprite
 					}
 					prevNote.isSustainNoteEnd = false;
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (if(FlxG.save.data.scrollSpeed != 1) FlxG.save.data.scrollSpeed else PlayState.SONG.speed);
-					
 					prevNote.updateHitbox();
+					prevNote.offset.x = _offset;
 
-					prevNote.offset.x = prevNote.frameWidth * 0.5;
+					// prevNote.offset.x = prevNote.frameWidth * 0.5;
 					// prevNote.setGraphicSize();
 				}
 			}else{

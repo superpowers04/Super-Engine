@@ -419,7 +419,7 @@ class CharAnimController extends FlxAnimationController{
 				if (anima.ifstate != null){
 					anima.ifstate.isFunc = false; //Force because funni
 					if (anima.ifstate.check == 1 ){ // Do on step or beat
-						if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.stepAnimEvents[charType][anima.anim] = anima.ifstate;
+						if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate];
 					} else {
 						if (PlayState.beatAnimEvents[charType] == null) PlayState.beatAnimEvents[charType] = [anima.anim => anima.ifstate]; else PlayState.beatAnimEvents[charType][anima.anim] = anima.ifstate;
 					}
@@ -442,14 +442,13 @@ class CharAnimController extends FlxAnimationController{
 					addAnimation(anima.anim, anima.name,anima.frameNames,"", anima.fps, anima.loop,anima.flipx);
 				}else{addAnimation(anima.anim, anima.name, anima.fps, anima.loop,anima.flipx);}
 
-				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
 				if(anima.priority != null && -1 < anima.priority ){
 					animationPriorities[anima.name] = anima.priority;
 				}
 				if(animationPriorities[anima.name] == null){
 					animationPriorities[anima.name] = 1;
-
 				}
+				}catch(e){handleError('${curCharacter} had an animation error ${e.message}');break;}
 				animCount++;
 			}
 		}
@@ -729,14 +728,18 @@ class CharAnimController extends FlxAnimationController{
 		if (charType == 0 && !amPreview && !debugMode){
 			switch(charProperties.custom_misses){
 				case 1: // Custom misses using FNF Multi custom sounds
-					useMisses = true;
-					missSounds = [SELoader.loadSound('${charLoc}/$curCharacter/custom_left.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/custom_down.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/custom_up.ogg'),SELoader.loadSound('${charLoc}/$curCharacter/custom_right.ogg')];
+					if(SELoader.exists('${charLoc}/$curCharacter/miss_left.ogg')){
+						useMisses = true;
+						missSounds = [SELoader.loadSound('${charLoc}/$curCharacter/custom_left.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/custom_down.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/custom_up.ogg'),SELoader.loadSound('${charLoc}/$curCharacter/custom_right.ogg')];
+					}
 				case 2: // Custom misses using Predefined sound names
-					useMisses = true;
-					missSounds = [SELoader.loadSound('${charLoc}/$curCharacter/miss_left.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/miss_down.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/miss_up.ogg'),SELoader.loadSound('${charLoc}/$curCharacter/miss_right.ogg')];
+					if(SELoader.exists('${charLoc}/$curCharacter/miss_left.ogg')){
+						useMisses = true;
+						missSounds = [SELoader.loadSound('${charLoc}/$curCharacter/miss_left.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/miss_down.ogg'), SELoader.loadSound('${charLoc}/$curCharacter/miss_up.ogg'),SELoader.loadSound('${charLoc}/$curCharacter/miss_right.ogg')];
+					}
 			}
 		}
-		if (FlxG.save.data.playVoices && charProperties.voices == "custom") {
+		if (FlxG.save.data.playVoices && charProperties.voices == "custom" && SELoader.exists('${charLoc}/$curCharacter/custom_left.ogg')) {
 			useVoices = true;
 			voiceSounds = [	SELoader.loadFlxSound('${charLoc}/$curCharacter/custom_left.ogg'),
 							SELoader.loadFlxSound('${charLoc}/$curCharacter/custom_down.ogg'),
@@ -746,7 +749,6 @@ class CharAnimController extends FlxAnimationController{
 
 		}
 		callInterp("initScript",[]);
-		 // Checks which animation to play, if dance_idle is true, play GF/Spooky dance animation, otherwise play normal idle
 
 		trace('Finished loading $curCharacter, Lets get funky!');
 	}
@@ -1017,6 +1019,7 @@ class CharAnimController extends FlxAnimationController{
 		super.draw();
 	} 
 	public var currentAnimationPriority:Int = -100;
+	public var forceNextAnim:Bool = false;
 	public dynamic function playAnim(AnimName:String = "idle", ?Force:Bool = false, ?Reversed:Bool = false, ?Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool
 	{
 		var lastAnim = "";
@@ -1038,13 +1041,25 @@ class CharAnimController extends FlxAnimationController{
 		}
 		if (animation.curAnim != null){
 			lastAnim = animName;
-			if(lastAnim == AnimName && replayAnims.contains(AnimName)){
-				if(!animLoops[AnimName] || !isDonePlayingAnim() )return false;
-			}else if(animation.curAnim.name != AnimName && !isDonePlayingAnim()){
-				if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return false;} // Skip if current animation has a higher priority
-				if (animationPriorities[animation.curAnim.name] == null && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return false;} // Don't do anything if the current animation is oneShot
-			}
+			if(!forceNextAnim){
+				if(lastAnim == AnimName && replayAnims.contains(AnimName)){
+					if(!animLoops[AnimName] || !isDonePlayingAnim() )return false;
+				}else if(animation.curAnim.name != AnimName && !isDonePlayingAnim()){
+					if (animationPriorities[animation.curAnim.name] != null && currentAnimationPriority > animationPriorities[AnimName] ){return false;} // Skip if current animation has a higher priority
+					if (animationPriorities[animation.curAnim.name] == null && oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName)){return false;} // Don't do anything if the current animation is oneShot
+				}
+			} 
 		}
+		// if (animation.curAnim != null){
+		// 	lastAnim = animName;
+		// 	if(forceNextAnim){
+
+		// 	}else if(lastAnim == AnimName){
+		// 		if(replayAnims.contains(AnimName) && (!animLoops[AnimName] || !isDonePlayingAnim()))return false;
+		// 	}else if(!isDonePlayingAnim()){
+		// 		if (currentAnimationPriority > animationPriorities[AnimName] || oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName) ){return false;} // Skip if current animation has a higher priority or if it's oneshot
+		// 	}
+		// }
 		// setSprite(animGraphics[AnimName.toLowerCase()]);
 
 		if (animation.getByName(AnimName) == null) return false;
@@ -1054,13 +1069,15 @@ class CharAnimController extends FlxAnimationController{
 			}
 			Frame = loopAnimFrames[AnimName];
 		}
-		if (animationPriorities[AnimName] != null) currentAnimationPriority = animationPriorities[AnimName];
 		animHasFinished = false;
 		if(Frame > 0 && Frame < 1 && Frame % 1 == Frame){
 			Frame = animation.getByName(AnimName).frames.length * Frame;
 		}
 		callInterp("playAnimBefore",[AnimName]);
+		forceNextAnim = false;
 		animation.play(AnimName, Force, Reversed, Std.int(Frame));
+		AnimName = animName;
+		currentAnimationPriority = (if (animationPriorities[AnimName] != null) animationPriorities[AnimName] else 1);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
 			setOffsets(AnimName,offsetX,offsetY);
 		} // Skip if already playing, no need to calculate offsets and such
@@ -1138,83 +1155,55 @@ class CharAnimController extends FlxAnimationController{
 
 
 	// Shortcut functions
-	public static function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
-	public function isDonePlayingAnim(){return animation.finished || animation.curAnim.finished || animHasFinished || animation.curAnim.curFrame >= numFrames;}
+	@:keep inline public static function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
+	@:keep inline public function isDonePlayingAnim(){return animation.finished || animation.curAnim.finished || animHasFinished || animation.curAnim.curFrame >= numFrames;}
 	public function getScriptOption(path:String = ""):Dynamic{
-		if(charProperties.scriptOptions == null){
-			return null;
-		}
-		if(charProperties.scriptOptions[path] == null){
-			return null;
-		}
+		if(charProperties.scriptOptions == null || charProperties.scriptOptions[path] == null) return null;
 		return charProperties.scriptOptions[path];
 	}
 	function getDefColor(e:CharacterJson,?apply:Bool = true):FlxColor{
-		if(!customColor && e.color != null){
-			// switch(Type.typeof(e.color)){
-				if(Std.isOfType(e.color,String)){
-					if(apply) return FlxColor.fromString(e.color);
-					definingColor = FlxColor.fromString(e.color);
-					customColor = true;
-				}else if (Std.isOfType(e.color,Int)){
-					if(apply) return FlxColor.fromInt(e.color);
-					definingColor = FlxColor.fromInt(e.color);
-					customColor = true;
-				}else{
-					if(e.color[0] != null){
-						if(apply) return FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
-						definingColor = FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
-						customColor = true;
-					}
-					else
-						if(apply) return 0x000000;
-						customColor = false;
-				}
-			// }
-		}/*else if(charType != 3){
-
-			var hi = new HealthIcon(curCharacter, false,clonedChar);
-			var colors:Map<Int,Int> = [];
-			var max:Int = 0;
-			var maxColor:Int = 0;
-			for(X in 0 ...hi.pixels.width){
-				for(Y in 0...hi.pixels.height){
-					var curColor:Int = hi.pixels.getPixel(X,Y);
-					if(curColor == 0) continue;
-					colors[curColor] = (colors.exists(curColor) ? 0 : colors[curColor] + 1);
-					if(colors[curColor] > max){maxColor = curColor;max=colors[curColor];}
-				}
+		if(customColor || e.color == null) return 0x000000;
+		if(Std.isOfType(e.color,String)){
+			if(apply) return FlxColor.fromString(e.color);
+			definingColor = FlxColor.fromString(e.color);
+			customColor = true;
+		}else if (Std.isOfType(e.color,Int)){
+			if(apply) return FlxColor.fromInt(e.color);
+			definingColor = FlxColor.fromInt(e.color);
+			customColor = true;
+		}else{
+			if(e.color[0] != null){
+				if(apply) return FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
+				definingColor = FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
+				customColor = true;
 			}
-			trace(maxColor);
-			definingColor = maxColor;
-			hi.destroy();
-		}*/
+			else
+				if(apply) return 0x000000;
+				customColor = false;
+		}
 		return 0x000000;
 	}
 	public static function getDefColorFromJson(e:CharacterJson):FlxColor{
-		if(e.color != null){
-			if(Std.isOfType(e.color,String)){ return FlxColor.fromString(e.color);
-			}else if (Std.isOfType(e.color,Int)){return FlxColor.fromInt(e.color);
-			}else{
-				if(e.color[0] != null) return FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
-				return 0x00000000;
-			}
-		}
+		if(e.color == null) return 0x00000000;
+
+		if(Std.isOfType(e.color,String)) return FlxColor.fromString(e.color);
+		if(Std.isOfType(e.color,Int))return FlxColor.fromInt(e.color);
+		if(e.color[0] != null) return FlxColor.fromRGB(isValidInt(e.color[0]),isValidInt(e.color[1]),isValidInt(e.color[2],255));
 		return 0x00000000;
 	}
 
 
 	public var animName(get,set):String; // Shorthand for either playing an animation or grabbing the name
-	public function get_animName():Null<String>{ // Instead of erroring due to curAnim being shit, just return null
+	@:keep inline public function get_animName():Null<String>{ // Instead of erroring due to curAnim being shit, just return null
 		return if(animation.curAnim != null && animation.curAnim.name != null) animation.curAnim.name else null;
 	}
-	public function set_animName(str:String):String{
+	@:keep inline public function set_animName(str:String):String{
 		playAnim(str,true);
 		return animName;
 	}
 
 
-	public function toJson(){
+	@:keep inline public function toJson(){
 		return Json.stringify({
 			type:"Character",
 			charType:charType,

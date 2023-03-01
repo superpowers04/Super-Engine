@@ -74,6 +74,8 @@ class OnlinePlayMenuState extends MusicBeatState
 		SetErrorText(errorMessage, errorColor);
 
 
+
+
 		var ipText:FlxText = new FlxText(FlxG.width/2 - 350, FlxG.height * 0.3 - 40, "IP Address:");
 		ipText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(ipText);
@@ -277,7 +279,7 @@ class OnlinePlayMenuState extends MusicBeatState
 	static function SetErrorText(text:String, color:FlxColor=FlxColor.RED)
 	{
 		if (Type.getClass(FlxG.state) == OnlinePlayMenuState){
-			showTempmessage(text,color);
+			MusicBeatState.instance.showTempmessage(text,color);
 			return;
 		}
 		OnlinePlayMenuState.errorText.text = text;

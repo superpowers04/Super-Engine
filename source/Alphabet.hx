@@ -201,7 +201,7 @@ class Alphabet extends FlxSpriteGroup
 		#if android
 		border.alpha = 0.1;
 		#else
-		border.alpha = 0;
+		border.alpha = 0.001;
 		#end
 		insert(0,border);
 	}

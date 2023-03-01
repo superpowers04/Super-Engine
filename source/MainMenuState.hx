@@ -254,13 +254,7 @@ class MainMenuState extends SickMenuState
 		if(MainMenuState.errorMessage != "")MainMenuState.errorMessage = "";
 		super.changeSelection(change);
 	}
-	#if(android)
-		
-		inline static var otherMenu:Bool = false;
-	#else
-
-		var otherMenu:Bool = false;
-	#end
+	#if(android) inline static #end var otherMenu:Bool = false;
 	#if !mobile
 	function otherSwitch(){
 		options = ["freeplay","download charts","download characters","import charts from mods"];
@@ -304,7 +298,6 @@ class MainMenuState extends SickMenuState
   override function select(sel:Int){
 		MainMenuState.errorMessage="";
 		if (selected){return;}
-		// if(char != null) {char.playAnimAvailable(["win","singUP"],true);}
 		selected = true;
 		var daChoice:String = options[sel];
 		FlxG.sound.play(Paths.sound('confirmMenu'));
@@ -365,11 +358,9 @@ class MainMenuState extends SickMenuState
 							}
 						}
 						showTempmessage('Unable to find suitable opener!');
-					#end
-					#if(windows)
+					#elseif(windows)
 						Sys.command('start',[SELoader.fullPath('mods/')]);
-					#end
-					#if(macos)
+					#elseif(macos)
 						Sys.command('open',[SELoader.fullPath('mods/')]);
 					#end
 				case "download charts":
@@ -387,7 +378,6 @@ class MainMenuState extends SickMenuState
 					FlxG.switchState(new ImportMod());
 				case 'download characters':
 					FlxG.switchState(new RepoState());
-				
 				case "back":
 					mmSwitch(true);
 			#end

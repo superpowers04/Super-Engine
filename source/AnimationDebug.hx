@@ -54,6 +54,8 @@ using StringTools;
 
 
 
+// Todo, add buttons to go through animations without needing to use shitty text box
+
 class AnimationDebug extends MusicBeatState
 {
 	static var INTERNALANIMATIONLIST:Array<String> = ["idle","danceLeft","danceRight","singLEFT","singDOWN","singUP","singRIGHT","singLEFTmiss","singDOWNmiss","singUPmiss","singRIGHTmiss","idle-alt","singLEFT-alt","singDOWN-alt","singUP-alt","singRIGHT-alt","songStart","hey",
@@ -119,8 +121,10 @@ class AnimationDebug extends MusicBeatState
 	var quitHeld:Int = 0;
 	var quitHeldBar:FlxBar;
 	var quitHeldBG:FlxSprite;
+	var animDropDown:PsychDropDown;
 	var bf:Character;
 	public static function fileDrop(file:String){
+		// Normal filesystem/file is used here because we aren't working within the game's folder. We need absolute paths
 
 		#if windows
 		file = file.replace("\\","/"); // Windows uses \ at times but we use / around here
@@ -177,8 +181,8 @@ class AnimationDebug extends MusicBeatState
 			}catch(e){
 				trace('Unable to import health icon! ${e.message}');
 				showTempmessage('Unable to import health icon! ${e.message}',FlxColor.RED);
+				return null;
 			}
-			return null;
 		}
 		return null;
 	}
@@ -614,8 +618,8 @@ class AnimationDebug extends MusicBeatState
 			charJson.genBy = 'FNFSE ${MainMenuState.ver}; Animation Debug';
 			errorStage = 6; // Saving
 			var backed = false;
-			if (FileSystem.exists(dad.loadedFrom)) {backed=true;File.copy(dad.loadedFrom,dad.loadedFrom + "-bak.json");}
-			File.saveContent(dad.loadedFrom,Json.stringify(charJson, "fancy"));
+			if (SELoader.exists(dad.loadedFrom)) {backed=true;SELoader.copy(dad.loadedFrom,dad.loadedFrom + "-bak.json");}
+			SELoader.saveContent(dad.loadedFrom,Json.stringify(charJson, "fancy"));
 			showTempmessage('Saved to ${if (dad.loadedFrom.length > 20) '...' + dad.loadedFrom.substring(-20) else dad.loadedFrom} successfully.' + (if(backed) "Old json was backed up to -bak.json." else ""));
 			FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 			spawnChar(true);
@@ -720,6 +724,7 @@ class AnimationDebug extends MusicBeatState
 		if(offset[animName] != null) localOffsets = offset[animName];
 		dad.playAnim(animName, true, false, 0, localOffsets[0], localOffsets[1]);
 		animToPlay = "";
+		if(animDropDown != null) animDropDown.selectedLabel = animName;
 	}
 
 	function updateCameraPos(?modify:Bool = true,?x:Float=0,?y:Float=0,?shiftPress:Bool = false,?ctrlPress:Bool = false){
@@ -761,13 +766,23 @@ class AnimationDebug extends MusicBeatState
 	
 	var _colText:FlxUIText;
 	var uiBox:FlxUITabMenu;
-	var animDropDown:PsychDropDown;
 	var charAnims:Array<String> = [];
 	var animUICurAnim:String = "idle";
 	var animUICurName:String = "";
 	function playTempAnim(name:String){
-		dad.addAnimation("ANIMATIONDEBUG_tempAnim",name,24);
+		if(uiMap['animFPS'] != null){
+
+			dad.addAnimation("ANIMATIONDEBUG_tempAnim",name,Std.int(uiMap['animFPS'].value),uiMap['loop'].checked,uiMap['flipanim'].checked);
+		}else{
+
+			dad.addAnimation("ANIMATIONDEBUG_tempAnim",name,24);
+		}
 		dad.playAnim("ANIMATIONDEBUG_tempAnim");
+	}
+	function updateTempAnim(){
+		if(animUICurName != "**Unbind"){
+			inline playTempAnim(animUICurName);
+		}
 	}
 
 	inline function updateColorBox(){
@@ -875,6 +890,7 @@ class AnimationDebug extends MusicBeatState
 
 		var looped = new FlxUICheckBox(10, 30, null, null, "Loop animation");
 		looped.checked = false;
+		looped.callback = function(){ updateTempAnim();};
 		uiMap["loop"] = looped;
 		uiBox.add(looped);
 		var restplay = new FlxUICheckBox(10, 50, null, null, "Restart Anim when played");
@@ -883,6 +899,7 @@ class AnimationDebug extends MusicBeatState
 		var flipanim = new FlxUICheckBox(10, 70, null, null, "FlipX");
 		flipanim.checked = false;
 		uiMap["flipanim"] = flipanim;
+		uiMap["flipanim"].callback = function(){ updateTempAnim();};
 		uiBox.add(flipanim);
 		// var oneshot = new FlxUICheckBox(30, 40, null, null, "Oneshot/High priority");
 		// oneshot.checked = false;
@@ -899,6 +916,7 @@ class AnimationDebug extends MusicBeatState
 
 		uiBox.add(uiMap["animtxt"] = new FlxText(10, 110,0,"Animation FPS"));
 		uiMap["animFPS"] = new FlxUINumericStepper(140, 110, 1, 24);
+		uiMap["animFPS"].callback = function(value,_){ updateTempAnim();};
 		uiBox.add(uiMap["animFPS"]);
 
 		uiBox.add(uiMap["looptxt"] = new FlxText(10, 130,0,"Loop start frame"));
@@ -1315,7 +1333,23 @@ class AnimationDebug extends MusicBeatState
 				}
 				if(FlxG.keys.justPressed.ONE){resetOffsets(); updateCameraPos(false,720, 500);}// Unload character offsets
 				if(FlxG.keys.justPressed.THREE || ctrlPress && shiftPress && FlxG.keys.justPressed.S){outputChar();} // Saving
-				if(FlxG.keys.pressed.V){dad.dance();}
+				if(FlxG.keys.pressed.V){animToPlay = 'idle';}
+				if(FlxG.keys.pressed.LBRACKET){
+					var id:Int = animationList.indexOf(dad.animName);
+					if(id == -1){
+						animToPlay = animationList[0];
+					}else{
+						animToPlay = animationList[Std.int(Math.abs((id - 1) % animationList.length))];
+					}
+				}
+				if(FlxG.keys.pressed.RBRACKET){
+					var id:Int = animationList.indexOf(dad.animName);
+					if(id == -1){
+						animToPlay = animationList[0];
+					}else{
+						animToPlay = animationList[Std.int(Math.abs((id + 1) % animationList.length))];
+					}
+				}
 				// if(FlxG.keys.justPressed.M){editMode = 1; toggleOffsetText(false);} // Switch modes
 				// if(FlxG.keys.justPressed.TWO){outputCharOffsets();}
 				// if(FlxG.keys.justPressed.FOUR){
