@@ -331,7 +331,10 @@ class MainMenuState extends SickMenuState
 						return;
 					}
 					#end
-					FlxG.switchState(new onlinemod.OnlinePlayMenuState());
+					if(FlxG.save.data.Server.length == 0)
+						FlxG.switchState(new onlinemod.OnlineAddServer());
+					else
+						FlxG.switchState(new onlinemod.OnlinePlayMenuState());
 				case 'other':
 					// FlxG.switchState(new OtherMenuState());
 					otherSwitch();

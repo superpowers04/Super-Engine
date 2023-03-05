@@ -167,6 +167,7 @@ class CharAnimController extends FlxAnimationController{
 			"hey" => 13,
 			"cheer" => 13,
 			"scared" => 13,
+			"sad" => 13,
 			"win" => 100,
 			"lose" => 100,
 			"hurt" => 20,
