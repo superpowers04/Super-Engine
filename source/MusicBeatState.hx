@@ -65,19 +65,15 @@ class MusicBeatState extends FlxUIState
 	var tempMessage:FlxText;
 	var tempMessTimer:FlxTimer;
 	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true,?trac:Bool = true){
-		if (tempMessage != null){
-			remove(tempMessage);
-			tempMessage.destroy();
-
+		var moveDown = false;
+		var lastBacking = null;
+		if (tempMessage != null && tempMessBacking != null){
+			moveDown = true;
+			lastBacking = tempMessBacking;
 		}
-		if (tempMessage != null && tempMessTimer != null){
-			tempMessTimer.cancel();}
-		if(tempMessBacking != null){
-			remove(tempMessBacking);
-			tempMessBacking.destroy();
-		}
+		
 		if(trac) trace(str);
-		tempMessage = new FlxText(40,60,1000,str,24);
+		var _tmpMsg = tempMessage = new FlxText(40,60,1000,str,24);
 		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		tempMessage.scrollFactor.set();
 		tempMessage.autoSize = false;
@@ -90,17 +86,21 @@ class MusicBeatState extends FlxUIState
 			tempMessage.screenCenter(X);
 		}
 		// tempMessage.wordWrap = false;
-		tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
+		var _tmpMsgB = tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
 		tempMessBacking.scrollFactor.set();
 		if(FlxG.cameras.list[FlxG.cameras.list.length - 1] != null){
 			tempMessBacking.cameras = tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		}
 		add(tempMessBacking);
 		add(tempMessage);
+		if(moveDown){
+			tempMessBacking.y = lastBacking.y + lastBacking.height;
+			tempMessage.y = tempMessBacking.y + 2;
+		}
 		tempMessTimer = new FlxTimer().start(time, function(tmr:FlxTimer)
 		{
-			if (tempMessage != null) tempMessage.destroy();
-			if (tempMessBacking != null) tempMessBacking.destroy();
+			if (_tmpMsg  != null) _tmpMsg.destroy();
+			if (_tmpMsgB != null) _tmpMsgB.destroy();
 		},1);
 	}
 

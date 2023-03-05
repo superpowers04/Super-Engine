@@ -117,6 +117,9 @@ class SearchMenuState extends MusicBeatState
 		#if discord_rpc
 			DiscordClient.changePresence('Admiring the menus',"Probably configurin something or choosing a song");
 		#end
+		#if linc_luajit
+			llua.Convert.cleanFunctionRefs();
+		#end
 		PlayState.restartTimes = 0;
 	}
 	public static var doReset:Bool = true;

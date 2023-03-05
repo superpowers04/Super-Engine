@@ -18,6 +18,7 @@ import flash.display.BitmapData;
 
 using StringTools; 
 
+
 /**
  * Loosley based on FlxTypeText lolol
  */
@@ -94,7 +95,7 @@ class Alphabet extends FlxSpriteGroup
 	public var removeDashes = true;
 	public var forceFlxText:Bool = false;
 	public var cutOff(default,set):Int = 0;
-	public var border:FlxSprite = null;
+	public var border:FlxSpriteLockScale = null;
 	public function set_cutOff(value:Int){
 		cutOff = value;
 		if(members.length > 0){
@@ -197,7 +198,9 @@ class Alphabet extends FlxSpriteGroup
 		x=_X;
 		y=_Y;
 
-		border = new FlxSprite(-10,-10).makeGraphic((Std.int(width) + 20),Std.int(height) + 20,FlxColor.BLACK);
+		border = new FlxSpriteLockScale(-10,-10);
+		border.makeGraphic(1,1,FlxColor.BLACK);
+		border.lockGraphicSize((Std.int(width) + 20),Std.int(height) + 20);
 		#if android
 		border.alpha = 0.1;
 		#else
@@ -510,5 +513,31 @@ class AlphaCharacter extends FlxSprite
 					useFLXTEXT(letter);
 				};
 		}
+	}
+}
+class FlxSpriteLockScale extends FlxSprite{
+	public var graphicWidth:Int = 0;
+	public var graphicHeight:Int = 0;
+	var _lockedSX:Float = 0;
+	var _lockedSY:Float = 0;
+	public var lockSize:Bool = false;
+	public function lockGraphicSize(w:Int,h:Int){
+		graphicWidth = w;
+		graphicHeight = h;
+		lockSize = true;
+		setGraphicSize(graphicWidth,graphicHeight);
+		updateHitbox();
+		_lockedSX = scale.x;
+		_lockedSY = scale.y;
+	}
+	public override function draw(){
+		if(_lockedSY != scale.y || _lockedSX != scale.x){
+
+			setGraphicSize(graphicWidth,graphicHeight);
+			updateHitbox();
+			scale.x = _lockedSX;
+			scale.y = _lockedSY;
+		}
+		super.draw();
 	}
 }

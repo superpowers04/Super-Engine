@@ -704,11 +704,11 @@ class CharAnimController extends FlxAnimationController{
 
 						tex = FlxAtlasFrames.fromTexturePackerJson(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
 					} else {
-						charXml = SELoader.loadText('${charLoc}/$curCharacter/${xmlName}').replace("UTF-16","utf-8"); // Loads the XML as a string. 
+						charXml = SELoader.loadXML('${charLoc}/$curCharacter/${xmlName}'); // Loads the XML as a string. 
 						if (charXml == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-						if(charXml.substr(2).replace(String.fromCharCode(0),'').contains('UTF-16')){ // Flash CS6 outputs a UTF-16 xml even though no UTF-16 characters are usually used. This reformats the file to be UTF-8 *hopefully*
-							charXml = '<?' + charXml.substr(2).replace(String.fromCharCode(0),'').replace('UTF-16','utf-8');
-						}
+						// if(charXml.substr(2).replace(String.fromCharCode(0),'').contains('UTF-16')){ // Flash CS6 outputs a UTF-16 xml even though no UTF-16 characters are usually used. This reformats the file to be UTF-8 *hopefully*
+						// 	charXml = '<?' + charXml.substr(2).replace(String.fromCharCode(0),'').replace('UTF-16','utf-8');
+						// }
 						tex = FlxAtlasFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
 					}
 					if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded

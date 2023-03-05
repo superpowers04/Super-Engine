@@ -32,7 +32,7 @@ class CoolUtil
 				Framerate = FlxG.save.data.fpsCap = 300;
 			}
 		}
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(Framerate);
+		Main.instance.setFPSCap(Framerate);
 		FlxG.drawFramerate = Framerate;
 		FlxG.updateFramerate = Framerate * 2;
 	}

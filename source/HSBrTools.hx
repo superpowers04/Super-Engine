@@ -146,7 +146,7 @@ class HSBrTools {
 	}
 	// The above but hits the xml cache instead
 	public function loadXML(textPath:String):String{
-		if(xmlArray[textPath] == null) xmlArray[textPath] = SELoader.loadText('${path}${textPath}');
+		if(xmlArray[textPath] == null) xmlArray[textPath] = SELoader.loadXML('${path}${textPath}');
 		return xmlArray[textPath];
 	}
 	public function loadShader(textPath:String,?glslVersion:Dynamic = 120):Null<FlxRuntimeShader>{

@@ -65,6 +65,10 @@ import hscript.Expr;
 import hscript.Interp;
 import hscript.InterpEx;
 
+#if linc_luajit
+import selua.SELua;
+#end
+
 import CharacterJson;
 import StageJson;
 import TitleState;
@@ -204,7 +208,8 @@ class PlayState extends MusicBeatState
 		public var realtimeCharCam:Bool = !FlxG.save.data.performance;
 		public var inputMode:Int = 0;
 		public var camBeat:Bool = true;
-		public var interps:Map<String,Interp> = new Map();
+		// Interp or SELua
+		public var interps:Map<String,Dynamic> = new Map(); 
 		public var brtools:Map<String,HSBrTools> = new Map();
 		public var cachedChars:Array<Map<String,Character>> = [[],[],[]];
 		public var moveCamera(default,set):Bool = true;
@@ -334,13 +339,14 @@ class PlayState extends MusicBeatState
 
 
 
-	public function handleError(?error:String = "Unknown error!",?forced:Bool = false){
+	public function handleError(?error:String = "No error passed!",?forced:Bool = false){
 		try{
 
 			resetInterps();
-			trace('Error! ${error}');
+			trace('Error!\n ${error}');
 			if(!songStarted && !forced && playCountdown){
-				if(errorMsg == "") errorMsg = error; else trace(error);
+				if(errorMsg == "") errorMsg = error; 
+				// else trace(error);
 				startedCountdown = true;
 				// updateTime = true;
 				// new FlxTimer().start(0.5,function(_){
@@ -379,19 +385,34 @@ class PlayState extends MusicBeatState
 	}
 
 	public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String){
+		var _interp = interps[id];
 		try{
-			if (interps[id] == null) {trace('No Interp ${id}!');return;}
-			var method = interps[id].variables.get(func_name);
-			if (method == null) {return;}
-			// trace('$func_name:$id $args');
-			
-			Reflect.callMethod(interps[id],method,args);
-		}catch(e:hscript.Expr.Error){
-			var line = '';
-			try{
-				line = ':"${interps[id].variables.get('scriptContents').split('\n')[e.line - 1]}"';
-			}catch(e){line="";trace(e.message);}
-			handleError(HscriptUtils.genErrorMessage(e,func_name,id));
+			if (_interp == null) {throw('Interpter ${id} doesn\'t exist!');return;}
+			if(_interp is Interp){
+
+				var method = _interp.variables.get(func_name);
+				if (method == null) {return;}
+				// trace('$func_name:$id $args');
+				
+				Reflect.callMethod(_interp,method,args);
+				return;
+			}
+			#if linc_luajit
+			if(_interp is SELua){
+				_interp.call(func_name,args);
+				return;
+			}
+			#end
+		}catch(e:Dynamic){
+			if(e is hscript.Expr.Error){
+				var line = '';
+				try{
+					line = ':"${_interp.variables.get('scriptContents').split('\n')[Std.int(e.line) - 1]}"';
+				}catch(e){line="";trace(e.message);}
+				handleError(HscriptUtils.genErrorMessage(e,func_name,id));
+			}else{
+				handleError(e.message);
+			}
 		}
 	}
 
@@ -439,6 +460,57 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
+	#if linc_luajit
+	public function parseLua(?songScript:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"):SELua{
+		// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled or during online play
+		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return null;}
+
+		if(songScript == "") return null;
+		if (brTools == null && hsBrTools != null) brTools = hsBrTools;
+		try{
+
+			// parser.parseModule(songScript);
+
+			var interp:SELua = new SELua(songScript);
+			if (brTools != null) {
+				interp.variables.set("BRtools",brTools,true); 
+				interp.variables.set("BRtoolsRef",brTools); 
+				// brTools.reset();
+			}else {
+				interp.variables.set("BRtools", getBRTools("assets/"),true);
+				interp.variables.set("BRtoolsRef",getBRTools("assets/")); 
+			}
+			interp.exec();
+			if(!interp.getBool('isSE') && interp.get('initScript') == null){
+				interp.stop();
+				showTempmessage('${id}/${file} isn\'t a valid SE Script!',FlxColor.RED);
+				return null;
+			}
+			// Access current state without needing to be inside of a function with ps as an argument
+			interp.variables.set("state",this); 
+			interp.variables.set("game",this);
+			interp.variables.set("scriptContents",songScript);
+
+			interp.variables.set("charGet",charGet); 
+			interp.variables.set("charSet",charSet);
+			interp.variables.set("charAnim",charAnim);
+			interp.variables.set("scriptName",id);
+			// interp.variables.set("require",require);
+			interp.variables.set("close",function(id:String){PlayState.instance.unloadInterp(id);}); // Closes a script
+
+			interps[id] = interp;
+			if(brTools != null) brTools.reset();
+			callInterp("initScript",[],id);
+			interpCount++;
+			trace('Loaded lua script ${id} from "$file"!');
+			return interp;
+		}catch(e){
+			handleError('Error parsing ${id} lua script\n ${e.message}');
+			return null;
+			// interp = null;
+		}
+	}
+	#end
 	public function parseHScript(?songScript:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"):Interp{
 		// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled or during online play
 		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return null;}
@@ -624,7 +696,12 @@ class PlayState extends MusicBeatState
 		var parentDir = path.substr(0,path.lastIndexOf("/"));
 		parentDir = parentDir.substr(parentDir.lastIndexOf("/"));
 
-		parseHScript(SELoader.loadText(scriptPath),getBRTools(path),'${parentDir}:${scriptName}',scriptPath);
+		#if linc_luajit
+		if(scriptPath.endsWith('.lua')) parseLua(SELoader.loadText(scriptPath),getBRTools(path),'${parentDir}:${scriptName}',scriptPath);
+		else
+		#end
+			parseHScript(SELoader.loadText(scriptPath),getBRTools(path),'${parentDir}:${scriptName}',scriptPath);
+		
 	}
 
 	public function loadScript(v:String,?path:String = "mods/scripts/",?nameSpace:String="global",?brtool:HSBrTools = null){
@@ -634,13 +711,21 @@ class PlayState extends MusicBeatState
 			
 			if(brtool == null) brtool = getBRTools(_path,v);
 			for (i in CoolUtil.orderList(SELoader.readDirectory(_path))) {
-				if(i.endsWith(".hscript") || i.endsWith(".hx")){
+				if(i.endsWith(".hscript") ||
+				#if linc_luajit
+				i.endsWith(".lua") ||
+				#end i.endsWith(".hx")){
 					var cont = false;
 					for (i in ignoreScripts) {
 						if(v.contains(i)) cont = true;
 					}
 					if(cont) continue;
-					parseHScript(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
+					#if linc_luajit
+					if(i.endsWith(".lua")) parseLua(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
+					else 
+					#end
+						parseHScript(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
+					
 				}
 			}
 			// parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'global-${v}');
@@ -3404,7 +3489,7 @@ class PlayState extends MusicBeatState
 
 
 
-	@:keep inline public function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void
+	public function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void
 	{
 		noteMissdyn(direction,daNote,forced,calcStats);
 	}

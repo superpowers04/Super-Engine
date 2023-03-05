@@ -885,7 +885,8 @@ class TitleState extends MusicBeatState
 		add(shiftSkip);
 		CoolUtil.setFramerate(true);
 		FlxG.sound.volume = FlxG.save.data.masterVol;
-		(cast (Lib.current.getChildAt(0), Main)).toggleFPS(FlxG.save.data.fps);
+		Main.instance.toggleFPS(FlxG.save.data.fps);
+
 		if(initialized)
 			skipIntro();
 		else{

@@ -304,8 +304,7 @@ class OnlinePlayState extends PlayState
 
 	override function resyncVocals()
 	{
-		if (inPause)
-			return;
+		if (inPause) return;
 
 		super.resyncVocals();
 	}
@@ -555,6 +554,7 @@ class OnlinePlayState extends PlayState
 								}
 							}
 						}
+						
 					}catch(e){
 						showTempmessage('Error with KEYPRESS: $data',FlxColor.RED);
 						// Reset animations

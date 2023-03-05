@@ -66,6 +66,13 @@ class SELoader {
 		}
 		return File.getContent(getPath(textPath));
 	}
+	public static function loadXML(textPath:String,?useCache:Bool = false):String{ // Automatically fixes UTF-16 encoded files
+		var text = loadText(textPath,useCache).replace("UTF-16","utf-8");
+		if(text.substr(2).replace(String.fromCharCode(0),'').contains('UTF-16')){ // Flash CS6 outputs a UTF-16 xml even though no UTF-16 characters are usually used. This reformats the file to be UTF-8 *hopefully*
+			text = '<?' + text.substr(2).replace(String.fromCharCode(0),'').replace('UTF-16','utf-8');
+		}
+		return text;
+	}
 
 
 	public static function loadFlxSprite(x:Int,y:Int,pngPath:String,?useCache:Bool = false):FlxSprite{
@@ -102,7 +109,7 @@ class SELoader {
 			handleError('${id}: SparrowFrame XML "${pngPath}.xml" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
-		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath ),loadText('${pngPath}.xml'));
+		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath ),loadXML('${pngPath}.xml'));
 	}
 	public static function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24,?useCache:Bool = false):FlxSprite{
 		
