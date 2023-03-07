@@ -19,7 +19,7 @@ import flixel.math.FlxMath;
 
 using StringTools;
 
-class SearchMenuState extends MusicBeatState
+class SearchMenuState extends ScriptMusicBeatState
 {
 	var curSelected:Int = 0;
 
@@ -188,6 +188,8 @@ class SearchMenuState extends MusicBeatState
 	}catch(e) MainMenuState.handleError(e,'Error with searchmenu "create" ${e.message}');}
 
 	function addToList(char:String,i:Int = 0){
+		callInterp('addToList',[char,i]);
+		if(cancelCurrentFunction) return;
 		songs.push(char);
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false,false,useAlphabet);
 
@@ -233,6 +235,7 @@ class SearchMenuState extends MusicBeatState
 	}
 	var hoverColor = 0xffffff;
 	function handleInput(){
+			callInterp('handleInput',[]);
 			if (controls.BACK || FlxG.keys.justPressed.ESCAPE)
 			{
 				ret();
@@ -307,6 +310,8 @@ class SearchMenuState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{try{
 		if (change != 0) FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+		callInterp('changeSelection',[change]);
+		if(cancelCurrentFunction) return;
 		// if (grpSongs.length < 2){
 		// 	return;
 		// }
@@ -344,6 +349,8 @@ class SearchMenuState extends MusicBeatState
 				}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
 				bullShit++;
 			}
+		callInterp('changeSelectionAfter',[change]);
+		if(cancelCurrentFunction) return;
 	}catch(e) MainMenuState.handleError('Error with searchmenu "chgsel" ${e.message}');}
 	function SetVolumeControls(enabled:Bool)
 	{

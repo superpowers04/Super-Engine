@@ -531,13 +531,18 @@ class FlxSpriteLockScale extends FlxSprite{
 		_lockedSY = scale.y;
 	}
 	public override function draw(){
-		if(_lockedSY != scale.y || _lockedSX != scale.x){
+		try{
 
-			setGraphicSize(graphicWidth,graphicHeight);
-			updateHitbox();
-			scale.x = _lockedSX;
-			scale.y = _lockedSY;
-		}
-		super.draw();
+			if(_lockedSY != scale.y || _lockedSX != scale.x){
+
+				setGraphicSize(graphicWidth,graphicHeight);
+				updateHitbox();
+				scale.x = _lockedSX;
+				scale.y = _lockedSY;
+			}
+		}catch(e){}
+		try{
+			super.draw();
+		}catch(e){}
 	}
 }

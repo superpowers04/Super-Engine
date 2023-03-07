@@ -88,7 +88,7 @@ class MainMenuState extends SickMenuState
 			trace("bruhh");
 		}
 		if(forced)
-			Main.game.forceStateSwitch(new MainMenuState());
+			Main.game.forceStateSwitch(new MainMenuState(true));
 		else
 			FlxG.switchState(new MainMenuState());
 		
@@ -97,6 +97,12 @@ class MainMenuState extends SickMenuState
 	// 	var time = Date.now();
 	// 	return '${time.getDay()}/${time.getMonth}/${time.getYear() - 2000} ${time.getHours()}:${time.getMinutes()}';
 	// }
+	var important:Bool = false;
+	override public function new(important:Bool = false){
+		this.important = important;
+		super();
+		scriptSubDirectory = "/mainmenu/";
+	}
 	override function create()
 	{
 		try{
@@ -114,8 +120,11 @@ class MainMenuState extends SickMenuState
 			loading = false;
 			isMainMenu = true;
 			super.create();
+
 			if(MainMenuState.errorMessage == "" && ScriptableStateManager.goToLastState && ScriptableStateManager.lastState != ""){
 				SelectScriptableState.selectState(ScriptableStateManager.lastState);
+			}else{
+				if(!important) loadScripts(true);
 			}
 			bg.scrollFactor.set(0.1,0.1);
 			bg.color = MainMenuState.bgcolor;
@@ -162,6 +171,7 @@ class MainMenuState extends SickMenuState
 				// };
 				FlxG.camera.scroll.y -= 100;
 				FlxTween.tween(FlxG.camera.scroll,{y:0},1,{ease:FlxEase.cubeOut});
+				callInterp('firstStart',[]);
 				firstStart = false;
 			}
 
@@ -199,6 +209,8 @@ class MainMenuState extends SickMenuState
 			#if mobile
 			changeSelection(1); // Scrolls down enough so you can press all of the buttons without needing to scroll
 			#end
+			callInterp('createAfter',[]);
+
 		}catch(e){
 			FuckState.FUCK(e,'MainMenuState.create');
 		}
@@ -262,10 +274,12 @@ class MainMenuState extends SickMenuState
 		
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
-		generateList();
 		curSelected = 0;
 		otherMenu = true;
 		selected = false;
+		callInterp('otherSwitch',[]);
+		if(cancelCurrentFunction) return;
+		generateList();
 		changeSelection();
 	}
 	#end
@@ -275,7 +289,7 @@ class MainMenuState extends SickMenuState
 			options = ['modded songs',"scripted states",'options'];
 			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state",'Customise your experience to fit you'];
 		#else
-			options = ['modded songs','join BR compatible server',
+			options = ['modded songs','join FNF\'br server',
 			#if !ghaction
 				'host br server',
 			#end
@@ -286,8 +300,10 @@ class MainMenuState extends SickMenuState
 			#end
 			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Open your mods folder in your File Manager','Customise your experience to fit you'];
 		#end
-		if(regen)generateList();
 		curSelected = 0;
+		if(regen)generateList();
+		callInterp('mmSwitch',[]);
+		if(cancelCurrentFunction) return;
 		if(regen)changeSelection();
 		selected = false;
 		#if(!mobile)
@@ -323,7 +339,7 @@ class MainMenuState extends SickMenuState
 			case 'options':
 				FlxG.switchState(new OptionsMenu());
 			#if !mobile
-				case 'join BR compatible server':
+				case 'join FNF\'br server':
 					#if android
 					if(!Main.grantedPerms.contains('android.permission.INTERNET')){
 						selected = false;
@@ -331,10 +347,7 @@ class MainMenuState extends SickMenuState
 						return;
 					}
 					#end
-					if(FlxG.save.data.Server.length == 0)
-						FlxG.switchState(new onlinemod.OnlineAddServer());
-					else
-						FlxG.switchState(new onlinemod.OnlinePlayMenuState());
+					FlxG.switchState(new onlinemod.OnlinePlayMenuState());
 				case 'other':
 					// FlxG.switchState(new OtherMenuState());
 					otherSwitch();
@@ -384,6 +397,8 @@ class MainMenuState extends SickMenuState
 				case "back":
 					mmSwitch(true);
 			#end
+			default:
+				callInterp('select',[sel,daChoice]);
 		}
 	}
 }

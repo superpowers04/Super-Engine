@@ -388,7 +388,7 @@ class OnlinePlayState extends PlayState
 			return;
 		}
 
-		super.openSubState(SubState);
+		return super.openSubState(SubState);
 	}
 
 	override function closeSubState()

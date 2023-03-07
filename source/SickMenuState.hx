@@ -25,7 +25,7 @@ typedef MusicTime ={
 	var bpm:Float;
 }
 
-class SickMenuState extends MusicBeatState
+class SickMenuState extends ScriptMusicBeatState
 {
 	var curSelected:Int = 0;
 
@@ -74,15 +74,23 @@ class SickMenuState extends MusicBeatState
 			add(grpControls);
 		}
 		grpControls.clear();
+		callInterp('generateList',[]);
+		if(cancelCurrentFunction) return;
 		for (i in 0...options.length)
 		{
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i], true, false);
-			controlLabel.isMenuItem = true;
-			controlLabel.targetY = i;
-			if (i != 0)
-				controlLabel.alpha = 0.6;
-			grpControls.add(controlLabel);
+			addListing(i);
 		}
+		callInterp('generateListAfter',[grpControls]);
+	}
+	function addListing(i:Int){
+		callInterp('addListing',[i,options[i]]);
+		if(cancelCurrentFunction) return;
+		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i], true, false);
+		controlLabel.isMenuItem = true;
+		controlLabel.targetY = i;
+		if (i != 0) controlLabel.alpha = 0.6;
+		grpControls.add(controlLabel);
+
 	}
 	public static var reloadMusic = true;
 	public static function musicHandle(?isMainMenu:Bool = false,?_bg:FlxSprite = null,?recolor:Bool = false){
@@ -166,11 +174,9 @@ class SickMenuState extends MusicBeatState
 			if(SearchMenuState.background == null){
 				SearchMenuState.background = if(SELoader.exists("mods/bg.png")) SELoader.loadGraphic("mods/bg.png",true); else SELoader.loadGraphic("assets/images/menuDesat.png",true);
 				SearchMenuState.backgroundOver = if(SELoader.exists("mods/fg.png")) SELoader.loadGraphic("mods/fg.png",true); else FlxGraphic.fromRectangle(0,0,0x00000000);
-				if(SearchMenuState.background == null){
-					SearchMenuState.background = FlxGraphic.fromRectangle(0,0,0xff110015);
-				}
-					SearchMenuState.background.persist = SearchMenuState.backgroundOver.persist = true;
-					SearchMenuState.background.destroyOnNoUse = SearchMenuState.backgroundOver.destroyOnNoUse = false;
+				if(SearchMenuState.background == null) SearchMenuState.background = FlxGraphic.fromRectangle(0,0,0xff110015);
+				SearchMenuState.background.persist = SearchMenuState.backgroundOver.persist = true;
+				SearchMenuState.background.destroyOnNoUse = SearchMenuState.backgroundOver.destroyOnNoUse = false;
 			}
 
 

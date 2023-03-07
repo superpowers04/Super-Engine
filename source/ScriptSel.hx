@@ -42,7 +42,7 @@ class ScriptSel extends SearchMenuState
 			{
 				for (directory in orderList(SELoader.readDirectory('mods/scripts/')))
 				{
-					if (FileSystem.exists("mods/scripts/"+directory+"/script.hscript") && !FileSystem.exists("mods/scripts/"+directory+"/isLibrary"))
+					if (!FileSystem.exists("mods/scripts/"+directory+"/isLibrary"))
 					{
 						searchList.push(directory);
 						if (SELoader.exists("mods/scripts/"+directory+"/description.txt")){

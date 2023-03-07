@@ -58,7 +58,7 @@ class RepoState extends SickMenuState
 	var installingText:FlxText;
 	var installedText:FlxText;
 
-	public static function unzip(from:String,to:String):Void{
+	@:keep inline public static function unzip(from:String,to:String):Void{
 		Sys.command(unarExe,['x','-y',from,'-o${to}']);
 	}
 	override function goBack(){

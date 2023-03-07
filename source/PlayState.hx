@@ -87,7 +87,7 @@ typedef OutNote = {
 }
 
 
-class PlayState extends MusicBeatState
+class PlayState extends ScriptMusicBeatState
 {
 	public static var instance:PlayState = null;
 
@@ -208,9 +208,6 @@ class PlayState extends MusicBeatState
 		public var realtimeCharCam:Bool = !FlxG.save.data.performance;
 		public var inputMode:Int = 0;
 		public var camBeat:Bool = true;
-		// Interp or SELua
-		public var interps:Map<String,Dynamic> = new Map(); 
-		public var brtools:Map<String,HSBrTools> = new Map();
 		public var cachedChars:Array<Map<String,Character>> = [[],[],[]];
 		public var moveCamera(default,set):Bool = true;
 		public function set_moveCamera(v):Bool{
@@ -335,15 +332,59 @@ class PlayState extends MusicBeatState
 
 	public function addObject(object:FlxBasic) { add(object); }
 	public function removeObject(object:FlxBasic) { remove(object); }
+	/*Interpeter shit*/
+		public override function addVariablesToHScript(interp:Interp){
+			interp.variables.set("state",cast (this)); 
+			interp.variables.set("game",cast (this));
+			interp.variables.set("require",require);
+			interp.variables.set("charGet",charGet); 
+			interp.variables.set("charSet",charSet);
+			interp.variables.set("charAnim",charAnim);
+		}
+		#if linc_luajit
+		public override function addVariablesToLua(interp:SELua){
+			interp.variables.set("state",cast (this)); 
+			interp.variables.set("game",cast (this));
+			interp.variables.set("charGet",charGet); 
+			interp.variables.set("charSet",charSet);
+			interp.variables.set("charAnim",charAnim);
+			interp.variables.set("require",require);
+		}
+		#end
 
 
+		public override function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
+				try{
+					if(func_name == "noteHitDad"){
+						charCall("noteHitSelf",[args[1]],1);
+						charCall("noteHitOpponent",[args[1]],0);
+					}else if(func_name == "noteHit"){
+						charCall("noteHitSelf",[args[1]],0);
+						charCall("noteHitOpponent",[args[1]],1);
+					}else if(func_name == "susHitDad"){
+						charCall("susHitSelf",[args[1]],1);
+						charCall("susHitOpponent",[args[1]],0);
+					}else if(func_name == "susHit"){
+						charCall("susHitSelf",[args[1]],0);
+						charCall("susHitOpponent",[args[1]],1);
+					}
+					args.insert(0,this);
+					if (id == "") {
+						for (name in interps.keys()) {
+							callSingleInterp(func_name,args,name);
+						}
+					}else callSingleInterp(func_name,args,id);
+				}catch(e:hscript.Expr.Error){handleError('${func_name} for "${id}":\n ${e.toString()}');}
 
+			}
 
+	public override function errorHandle(?error:String = "No error passed!",?forced:Bool = false) handleError(error,forced);
 	public function handleError(?error:String = "No error passed!",?forced:Bool = false){
 		try{
 
 			resetInterps();
 			trace('Error!\n ${error}');
+			parseMoreInterps = false;
 			if(!songStarted && !forced && playCountdown){
 				if(errorMsg == "") errorMsg = error; 
 				// else trace(error);
@@ -352,6 +393,7 @@ class PlayState extends MusicBeatState
 				// new FlxTimer().start(0.5,function(_){
 				// 	handleError(error,true);
 				// });
+				LoadingScreen.loadingText = 'ERROR!';
 				return;
 			}
 			errorMsg = "";
@@ -363,7 +405,7 @@ class PlayState extends MusicBeatState
 			generatedMusic = false;
 			persistentUpdate = false;
 			persistentDraw = true;
-			if(FinishSubState != null){
+			if(FinishSubState.instance != null){
 				showTempmessage('Error! ${error}',FlxColor.RED);
 			}
 
@@ -372,194 +414,7 @@ class PlayState extends MusicBeatState
 		}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
 		}
 	}
-	public function revealToInterp(value:Dynamic,name:String,id:String){
-		if ((interps[id] == null )) {return;}
-		interps[id].variables.set(name,value); 
 
-	}
-	public function getFromInterp(name:String,id:String,?remove:Bool = false,?defVal:Dynamic = null):Dynamic{
-		if ((interps[id] == null )) {return defVal;}
-		var e = interps[id].variables.get(name); 
-		if(remove) interps[id].variables.set(name,null);
-		return e;
-	}
-
-	public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String){
-		var _interp = interps[id];
-		try{
-			if (_interp == null) {throw('Interpter ${id} doesn\'t exist!');return;}
-			if(_interp is Interp){
-
-				var method = _interp.variables.get(func_name);
-				if (method == null) {return;}
-				// trace('$func_name:$id $args');
-				
-				Reflect.callMethod(_interp,method,args);
-				return;
-			}
-			#if linc_luajit
-			if(_interp is SELua){
-				_interp.call(func_name,args);
-				return;
-			}
-			#end
-		}catch(e:Dynamic){
-			if(e is hscript.Expr.Error){
-				var line = '';
-				try{
-					line = ':"${_interp.variables.get('scriptContents').split('\n')[Std.int(e.line) - 1]}"';
-				}catch(e){line="";trace(e.message);}
-				handleError(HscriptUtils.genErrorMessage(e,func_name,id));
-			}else{
-				handleError(e.message);
-			}
-		}
-	}
-
-	public function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
-			try{
-				if(func_name == "noteHitDad"){
-					charCall("noteHitSelf",[args[1]],1);
-					charCall("noteHitOpponent",[args[1]],0);
-				}else if(func_name == "noteHit"){
-					charCall("noteHitSelf",[args[1]],0);
-					charCall("noteHitOpponent",[args[1]],1);
-				}else if(func_name == "susHitDad"){
-					charCall("susHitSelf",[args[1]],1);
-					charCall("susHitOpponent",[args[1]],0);
-				}else if(func_name == "susHit"){
-					charCall("susHitSelf",[args[1]],0);
-					charCall("susHitOpponent",[args[1]],1);
-				}
-				args.insert(0,this);
-				if (id == "") {
-					for (name in interps.keys()) {
-						callSingleInterp(func_name,args,name);
-					}
-				}else callSingleInterp(func_name,args,id);
-			}catch(e:hscript.Expr.Error){handleError('${func_name} for "${id}":\n ${e.toString()}');}
-
-		}
-	@:keep inline public function resetInterps() {interps = new Map();interpCount=0;HSBrTools.shared.clear();}
-	@:keep inline public function unloadInterp(?id:String){
-		interpCount--;interps.remove(id);
-	}
-	
-	public function parseRun(?script:String = "",?id:String = "song"){
-		if(script == ""){return;}
-		if(interps[id] == null){
-			parseHScript(script,null,id,"eval");
-		}else{
-			var parser = new hscript.Parser();
-			try{
-				parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
-				interps[id].execute(parser.parseString(script));
-			}catch(e){
-				handleError('Error parsing ${id} runtime hscript, Line:${parser.line};\n Error:${e.message}');
-				// interp = null;
-			}
-		}
-	}
-	#if linc_luajit
-	public function parseLua(?songScript:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"):SELua{
-		// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled or during online play
-		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return null;}
-
-		if(songScript == "") return null;
-		if (brTools == null && hsBrTools != null) brTools = hsBrTools;
-		try{
-
-			// parser.parseModule(songScript);
-
-			var interp:SELua = new SELua(songScript);
-			if (brTools != null) {
-				interp.variables.set("BRtools",brTools,true); 
-				interp.variables.set("BRtoolsRef",brTools); 
-				// brTools.reset();
-			}else {
-				interp.variables.set("BRtools", getBRTools("assets/"),true);
-				interp.variables.set("BRtoolsRef",getBRTools("assets/")); 
-			}
-			interp.exec();
-			if(!interp.getBool('isSE') && interp.get('initScript') == null){
-				interp.stop();
-				showTempmessage('${id}/${file} isn\'t a valid SE Script!',FlxColor.RED);
-				return null;
-			}
-			// Access current state without needing to be inside of a function with ps as an argument
-			interp.variables.set("state",this); 
-			interp.variables.set("game",this);
-			interp.variables.set("scriptContents",songScript);
-
-			interp.variables.set("charGet",charGet); 
-			interp.variables.set("charSet",charSet);
-			interp.variables.set("charAnim",charAnim);
-			interp.variables.set("scriptName",id);
-			// interp.variables.set("require",require);
-			interp.variables.set("close",function(id:String){PlayState.instance.unloadInterp(id);}); // Closes a script
-
-			interps[id] = interp;
-			if(brTools != null) brTools.reset();
-			callInterp("initScript",[],id);
-			interpCount++;
-			trace('Loaded lua script ${id} from "$file"!');
-			return interp;
-		}catch(e){
-			handleError('Error parsing ${id} lua script\n ${e.message}');
-			return null;
-			// interp = null;
-		}
-	}
-	#end
-	public function parseHScript(?songScript:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"):Interp{
-		// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled or during online play
-		if (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode) {resetInterps();return null;}
-
-		if(songScript == "") return null;
-		if (brTools == null && hsBrTools != null) brTools = hsBrTools;
-		var parser:hscript.Parser = HscriptUtils.createSimpleParser();
-		var interp:Interp = HscriptUtils.createSimpleInterp();
-		try{
-
-			// parser.parseModule(songScript);
-			var program = parser.parseString(songScript,file);
-
-			if (brTools != null) {
-				interp.variables.set("BRtools",brTools); 
-				// brTools.reset();
-			}else {
-				interp.variables.set("BRtools", getBRTools("assets/"));
-			}
-			// Access current state without needing to be inside of a function with ps as an argument
-			interp.variables.set("state",this); 
-			interp.variables.set("game",this);
-			interp.variables.set("scriptContents",songScript);
-
-			interp.variables.set("charGet",charGet); 
-			interp.variables.set("charSet",charSet);
-			interp.variables.set("charAnim",charAnim);
-			interp.variables.set("scriptName",id);
-			interp.variables.set("require",require);
-			interp.variables.set("close",function(id:String){PlayState.instance.unloadInterp(id);}); // Closes a script
-
-			interp.execute(program);
-			interps[id] = interp;
-			if(brTools != null)brTools.reset();
-			callInterp("initScript",[],id);
-			interpCount++;
-		}catch(e){
-			var _line = '${parser.line}';
-			try{
-				var _split = songScript.split('\n');
-				_line = '${parser.line};"${_split[parser.line - 1]}"';
-			}catch(e){_line = '${parser.line}';}
-			handleError('Error parsing ${id} hscript\nLine:${_line}\n ${e.message}');
-			return null;
-			// interp = null;
-		}
-		trace('Loaded hscript ${id} from "$file"!');
-		return interp;
-	}
 	static function charGet(charId:Dynamic,field:String):Dynamic{
 		return Reflect.field(getCharFromID(charId),field);
 	}
@@ -642,97 +497,10 @@ class PlayState extends MusicBeatState
 		songStarted = false;
 	}
 	public static var hasStarted = false;
-	public static var ignoreScripts:Array<String> = [
-		"state",
-		"options"
-	];
-	@:keep inline public function getBRTools(path:String,?id:String = ""):HSBrTools{
-		if(brtools[path] == null) brtools[path] = new HSBrTools(path,id);
-		return brtools[path];
-	}
-	public function requireScript(v:String,?important:Bool = false,?nameSpace:String = "requirement",?script:String = ""):Bool{
-		// if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null){return false;}
-		if(interps['${nameSpace}-${v}'] != null || interps['global-${v}'] != null) return true; // Don't load the same script twice
-		trace('Checking for ${v}');
-		if (SELoader.exists('mods/scripts/${v}/script.hscript')){
-			parseHScript(SELoader.loadText('mods/scripts/${v}/script.hscript'),getBRTools('mods/scripts/${v}',v),'${nameSpace}-${v}','mods/scripts/${v}/script.hscript');
-		// }else if (FileSystem.exists('mods/dependancies/${v}/script.hscript')){
-		// 	parseHScript(File.getContent('mods/dependancies/${v}/script.hscript'),new HSBrTools('mods/dependancies/${v}',v),'${nameSpace}-${v}');
-		}else{showTempmessage('Script \'${v}\'' + (if(script == "") "" else ' required by \'${script}\'') + ' doesn\'t exist!');}
-		if(important && interps['${nameSpace}-${v}'] == null){handleError('$script is missing a script: $v!');}
-		return ((interps['${nameSpace}-${v}'] == null));
-	}
-	public function require(v:String,nameSpace:String):Bool{
-		// if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null){return false;}
-		trace('Checking for ${v}');
-		if(interps[nameSpace] == null) {
-			trace('Unable to load $v: $nameSpace doesn\'t exist!');
-			return false;
-		}
-		if (SELoader.exists('mods/${v}') || SELoader.exists('mods/scripts/${v}/script.hscript')){
-			var parser = new hscript.Parser();
-			try{
-				parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
-
-				var program;
-				// parser.parseModule(songScript);
-				program = parser.parseString(SELoader.loadText('mods/scripts/${v}/script.hscript'));
-				interps[nameSpace].execute(program);
-			}catch(e){
-				handleError('Unable to load $v for $nameSpace:${e.message}');
-				return false;
-			}
-			// parseHScript(,new HSBrTools('mods/scripts/${v}',v),'${nameSpace}-${v}');
-		}else{showTempmessage('Unable to load $v for $nameSpace: Script doesn\'t exist');}
-		return ((interps['${nameSpace}-${v}'] == null));
-	}
-	public function loadSingleScript(scriptPath:String){
-
-		for (i in ignoreScripts) {
-			if(scriptPath.contains(i)) return;
-		}
-		var path = scriptPath.substr(0,scriptPath.lastIndexOf("/"));
-		var scriptName = scriptPath.substr(scriptPath.lastIndexOf("/"));
-		var parentDir = path.substr(0,path.lastIndexOf("/"));
-		parentDir = parentDir.substr(parentDir.lastIndexOf("/"));
-
-		#if linc_luajit
-		if(scriptPath.endsWith('.lua')) parseLua(SELoader.loadText(scriptPath),getBRTools(path),'${parentDir}:${scriptName}',scriptPath);
-		else
-		#end
-			parseHScript(SELoader.loadText(scriptPath),getBRTools(path),'${parentDir}:${scriptName}',scriptPath);
-		
-	}
-
-	public function loadScript(v:String,?path:String = "mods/scripts/",?nameSpace:String="global",?brtool:HSBrTools = null){
-		var _path = '${path}${v}';
-		trace(_path);
-		if (SELoader.exists(_path)){
-			
-			if(brtool == null) brtool = getBRTools(_path,v);
-			for (i in CoolUtil.orderList(SELoader.readDirectory(_path))) {
-				if(i.endsWith(".hscript") ||
-				#if linc_luajit
-				i.endsWith(".lua") ||
-				#end i.endsWith(".hx")){
-					var cont = false;
-					for (i in ignoreScripts) {
-						if(v.contains(i)) cont = true;
-					}
-					if(cont) continue;
-					#if linc_luajit
-					if(i.endsWith(".lua")) parseLua(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
-					else 
-					#end
-						parseHScript(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
-					
-				}
-			}
-			// parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'global-${v}');
-		}else{showTempmessage('$nameSpace script \'${v}\' doesn\'t exist!');}
-	}
 	override public function new(){
 		LoadingScreen.loadingText = "Starting Playstate";
+		parseMoreInterps = (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode);
+		useNormalCallbacks = false;
 		// this.restartTimes = restartTimes;
 		restartTimes++;
 		super();
@@ -748,6 +516,7 @@ class PlayState extends MusicBeatState
 		try{
 		#end
 		LoadingScreen.loadingText = 'Loading playstate variables';
+		parseMoreInterps = (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode);
 		if (instance != null) instance.destroy();
 		downscroll = FlxG.save.data.downscroll;
 		middlescroll = FlxG.save.data.middleScroll;
@@ -948,15 +717,7 @@ class PlayState extends MusicBeatState
 		
 		if(QuickOptionsSubState.getSetting("Song hscripts")){
 			if(FlxG.save.data.scripts != null){
-				for (i in 0 ... FlxG.save.data.scripts.length) {
-					var v = FlxG.save.data.scripts[i];
-					LoadingScreen.loadingText = 'Loading scripts: $v';
-					var _v = v.substr(v.lastIndexOf('/'));
-					if(v.lastIndexOf('/') > v.length - 2){
-						_v = v.substring(0,v.lastIndexOf('/') - 1).substring(_v.lastIndexOf('/'));
-					}
-					loadScript(v,null,'USER/' + _v);
-				}
+				loadScripts();
 			}
 			for (i in 0 ... scripts.length) {
 				var v = scripts[i];
@@ -2203,7 +1964,7 @@ class PlayState extends MusicBeatState
 				startTimer.active = false;
 		}
 
-		super.openSubState(SubState);
+		return super.openSubState(SubState);
 	}
 
 	override function closeSubState()
@@ -2223,7 +1984,7 @@ class PlayState extends MusicBeatState
 
 		}
 
-		super.closeSubState();
+		return super.closeSubState();
 	}
 	
 	var resyncCount:Int = 0;
@@ -2269,7 +2030,6 @@ class PlayState extends MusicBeatState
 
 	public var songLengthTxt = "N/A";
 
-	public var interpCount:Int = 0;
 	public var lastFrameTime:Float = 0;
 	var currentSpeed:Float = 1;
 	override public function update(elapsed:Float)
@@ -4144,6 +3904,7 @@ class PlayState extends MusicBeatState
 		callInterp("destroy",[]);
 		try{
 			hsBrTools.reset();
+			instance = null;
 		}catch(e){}
 		super.destroy();
 	}

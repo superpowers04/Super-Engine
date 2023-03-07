@@ -172,7 +172,7 @@ class KadeEngineData
 		if(FlxG.save.data.skipToFirst == null) FlxG.save.data.skipToFirst = true;
 		if(FlxG.save.data.debounce == null) FlxG.save.data.debounce = false;
 		if(FlxG.save.data.legacyCharter == null) FlxG.save.data.legacyCharter = false;
-		if(FlxG.save.data.Server == null) FlxG.save.data.Server = [];
+		if(FlxG.save.data.savedServers == null) FlxG.save.data.savedServers = [];
 
 		if(FlxG.save.data.vlcSound == null) FlxG.save.data.vlcSound = true;
 

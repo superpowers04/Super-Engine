@@ -58,7 +58,7 @@ class ScriptableStateManager {
 		if(scriptFolder){
 			path = interps["main"].variables.get("BRtools").path + "/" + path;
 		}
-		var interp = interps[id] = SelectScriptableState.parseHScript(SELoader.loadText(path), new HSBrTools(path.substr(0,path.lastIndexOf("/"))), id);
+		var interp = interps[id] = SelectScriptableState.parseHS(SELoader.loadText(path), new HSBrTools(path.substr(0,path.lastIndexOf("/"))), id);
 		if(interp == null){
 			return [false,null,""];
 		}else{
@@ -98,7 +98,7 @@ class ScriptableStateManager {
 }
 
 class SelectScriptableState extends SearchMenuState{
-	public static function callInterp(func_name:String, args:Array<Dynamic>,interp:Interp){
+	@:keep inline public static function callInterpet(func_name:String, args:Array<Dynamic>,interp:Interp){
 		try{
 			if (!interp.variables.exists(func_name)) {return;}
 			// trace('$func_name:$id $args');
@@ -107,7 +107,7 @@ class SelectScriptableState extends SearchMenuState{
 			Reflect.callMethod(interp,method,args);
 		}catch(e:hscript.Expr.Error){handleError('${func_name}:\n ${e.toString()}');}
 	}
-	public static function parseHScript(?script:String = "",?brTools:HSBrTools = null,?id:String = ""):Null<Interp>{
+	public static function parseHS(?script:String = "",?brTools:HSBrTools = null,?id:String = ""):Null<Interp>{
 		if (script == "") {handleError("Script has no contents!");return null;}
 		var interp = HscriptUtils.createSimpleInterp();
 		var parser = new hscript.Parser();
@@ -133,7 +133,7 @@ class SelectScriptableState extends SearchMenuState{
 			interp.variables.set("state",null);
 			interp.execute(program);
 			if(brTools != null)brTools.reset();
-			callInterp("initScript",[],interp);
+			callInterpet("initScript",[],interp);
 			return interp;
 		}catch(e){
 			handleError('Error parsing ${id} hscript, Line:${parser.line};\n Error:${e.message}');
@@ -260,7 +260,7 @@ class SelectScriptableState extends SearchMenuState{
 			}
 			if(state == null){MusicBeatState.instance.showTempmessage('Script is trying to use class "${stateType}" but that isn\'t a valid state!',FlxColor.RED); return;}
 
-			var _interp = parseHScript(SELoader.loadText("mods/scripts/" + scriptName + "/state/state.hscript"), new HSBrTools("mods/scripts/" + scriptName),"main");
+			var _interp = parseHS(SELoader.loadText("mods/scripts/" + scriptName + "/state/state.hscript"), new HSBrTools("mods/scripts/" + scriptName),"main");
 			if(_interp == null){
 				// showTempmessage("");
 				return;
@@ -278,59 +278,7 @@ class SelectScriptableState extends SearchMenuState{
 	}
 }
 
-// class ScriptableMusicBeatState extends MusicBeatState{
-// 	/* Base Functions */
-// 		/* Zero Args */
-// 			override function new(){
-// 				ScriptableStateManager.callInterp('new',[]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super();
-// 			}
-// 			override function create(){
-// 				ScriptableStateManager.callInterp('create',[]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super.create();
-// 			}
-// 			override function draw(){
-// 				ScriptableStateManager.callInterp('draw',[]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super.draw();
-// 			}
-// 			override function destroy(){
-// 				ScriptableStateManager.callInterp('destroy',[]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super.destroy();
-// 			}
-// 			override function beatHit(){
-// 				ScriptableStateManager.callInterp('beatHit',[]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super.beatHit();
-// 			}
-// 			override function stepHit(){
-// 				ScriptableStateManager.callInterp('stepHit',[]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super.stepHit();
-// 			}
 
-// 		/* One Arg*/
-// 			override function update(e:Float){
-// 				ScriptableStateManager.callInterp('update',[e]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super.update(e);
-// 			}
-// 			override public function openSubState(s:FlxSubState){
-// 				ScriptableStateManager.callInterp('openSubState',[s]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super.openSubState(s);
-// 			}
-// 			override public function switchTo(s:FlxSubState){
-// 				ScriptableStateManager.callInterp('switchTo',[s]);
-// 				if(ScriptableStateManager.cancelCurrentFunction) return;
-// 				super.switchTo(s);
-// 			}
-
-// 	/* End of base functions */
-// }
 
 /*  Generated thanks to lua lmoa  */
 

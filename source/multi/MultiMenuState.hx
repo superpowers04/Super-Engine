@@ -73,6 +73,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 		retAfter = false;
 		SearchMenuState.doReset = true;
+		scriptSubDirectory = "/multilist/";
 		dataDir = "mods/charts/";
 		PlayState.scripts = [];
 		bgColor = 0x00661E;
@@ -87,7 +88,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		scoreText.screenCenter(X);
 		add(scoreText);
 
+
 		searchField.text = lastSearch;
+		loadScripts(true);
 		if(lastSearch != "") reloadList(true,lastSearch);
 
 		lastSearch = "";
@@ -122,6 +125,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if (i != 0)
 			controlLabel.alpha = 0.6;
 		grpSongs.add(controlLabel);
+		callInterp('addListing',[controlLabel,name,i]);
 		return controlLabel;
 	}
 	function addCategory(name:String,i:Int):Alphabet{
@@ -139,6 +143,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		controlLabel.alpha = 1;
 		// controlLabel.screenCentX = true;
 		grpSongs.add(controlLabel);
+		callInterp('addCategory',[controlLabel,name,i]);
 		return controlLabel;
 	}
 	inline function isValidFile(file) {return (!blockedFiles.contains(file.toLowerCase()) && (StringTools.endsWith(file, '.json') || StringTools.endsWith(file, '.sm')));}
@@ -154,57 +159,18 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
-		if (SELoader.exists(dataDir))
-		{
-			var dirs = orderList(SELoader.readDirectory(dataDir));
-			addCategory("charts folder",i);
-			i++;
-
-			LoadingScreen.loadingText = 'Scanning mods/charts';
-			for (directory in dirs)
+		callInterp('reloadList',[reload,search,query]);
+		if(!cancelCurrentFunction){
+			if (SELoader.exists(dataDir))
 			{
-				if (search == "" || query.match(directory.toLowerCase())) // Handles searching
-				{
-					if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
-						modes[i] = [];
-						for (file in orderList(SELoader.readDirectory(dataDir + directory)))
-						{
-								if (isValidFile(file)){
-									modes[i].push(file);
-								}
-						}
-						if (modes[i][0] == null){ // No charts to load!
-							modes[i][0] = "No charts for this song!";
-						}
-						songs[i] = dataDir + directory;
-						songNames[i] =directory;
-
-						addListing(directory,i);
-						if(_goToSong == 0)_goToSong = i;
-						i++;
-
-					}
-				}
-			}
-		}
-		var _packCount:Int = 0;
-		if (SELoader.exists("mods/weeks"))
-		{
-			for (name in orderList(SELoader.readDirectory("mods/weeks")))
-			{
-
-				var dataDir = "mods/weeks/" + name + "/charts/";
-				if(!SELoader.exists(dataDir)){continue;}
-				var catMatch = query.match(name.toLowerCase());
 				var dirs = orderList(SELoader.readDirectory(dataDir));
-				addCategory(name + "(Week)",i);
+				addCategory("charts folder",i);
 				i++;
-				_packCount++;
-				var containsSong = false;
-				LoadingScreen.loadingText = 'Scanning mods/weeks/$name';
+
+				LoadingScreen.loadingText = 'Scanning mods/charts';
 				for (directory in dirs)
 				{
-					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && SELoader.isDirectory('${dataDir}${directory}')) // Handles searching
+					if (search == "" || query.match(directory.toLowerCase())) // Handles searching
 					{
 						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
 							modes[i] = [];
@@ -217,83 +183,125 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							if (modes[i][0] == null){ // No charts to load!
 								modes[i][0] = "No charts for this song!";
 							}
-							songs[i] = dataDir + directory;
-							songNames[i] = directory;
-
-							
-							addListing(directory,i);
-							nameSpaces[i] = dataDir;
-							if(_goToSong == 0)_goToSong = i;
-							containsSong = true;
-							i++;
-						}
-					}
-				}
-				if(!containsSong){
-					grpSongs.members[i - 1].color = FlxColor.RED;
-				}
-			}
-		}
-		var emptyCats:Array<String> = [];
-		if (SELoader.exists("mods/packs"))
-		{
-			for (name in orderList(SELoader.readDirectory("mods/packs")))
-			{
-				// dataDir = "mods/packs/" + dataDir + "/charts/";
-				var catMatch = query.match(name.toLowerCase());
-				var dataDir = "mods/packs/" + name + "/charts/";
-				if(!SELoader.exists(dataDir)){continue;}
-				var containsSong = false;
-				var dirs = orderList(SELoader.readDirectory(dataDir));
-				LoadingScreen.loadingText = 'Scanning mods/packs/$name/charts/';
-				for (directory in dirs)
-				{
-					if ((search == "" || catMatch || query.match(directory.toLowerCase())) && SELoader.isDirectory('${dataDir}${directory}')) // Handles searching
-					{
-						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
-							if(!containsSong){
-								containsSong = true;
-								addCategory(name,i);
-								i++;
-							}
-							modes[i] = [];
-							for (file in orderList(SELoader.readDirectory(dataDir + directory)))
-							{
-									if (isValidFile(file)){
-										modes[i].push(file);
-									}
-							}
-							if (modes[i][0] == null){ // No charts to load!
-								modes[i][0] = "No charts for this song!";
-							}
-
 							songs[i] = dataDir + directory;
 							songNames[i] =directory;
 
-							
 							addListing(directory,i);
 							if(_goToSong == 0)_goToSong = i;
-							nameSpaces[i] = dataDir;
 							i++;
+
 						}
 					}
 				}
-				if(!containsSong){
-					// grpSongs.members[i - 1].color = FlxColor.RED;
-					emptyCats.push(name);
+			}
+			var _packCount:Int = 0;
+			if (SELoader.exists("mods/weeks"))
+			{
+				for (name in orderList(SELoader.readDirectory("mods/weeks")))
+				{
+
+					var dataDir = "mods/weeks/" + name + "/charts/";
+					if(!SELoader.exists(dataDir)){continue;}
+					var catMatch = query.match(name.toLowerCase());
+					var dirs = orderList(SELoader.readDirectory(dataDir));
+					addCategory(name + "(Week)",i);
+					i++;
+					_packCount++;
+					var containsSong = false;
+					LoadingScreen.loadingText = 'Scanning mods/weeks/$name';
+					for (directory in dirs)
+					{
+						if ((search == "" || catMatch || query.match(directory.toLowerCase())) && SELoader.isDirectory('${dataDir}${directory}')) // Handles searching
+						{
+							if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
+								modes[i] = [];
+								for (file in orderList(SELoader.readDirectory(dataDir + directory)))
+								{
+										if (isValidFile(file)){
+											modes[i].push(file);
+										}
+								}
+								if (modes[i][0] == null){ // No charts to load!
+									modes[i][0] = "No charts for this song!";
+								}
+								songs[i] = dataDir + directory;
+								songNames[i] = directory;
+
+								
+								addListing(directory,i);
+								nameSpaces[i] = dataDir;
+								if(_goToSong == 0)_goToSong = i;
+								containsSong = true;
+								i++;
+							}
+						}
+					}
+					if(!containsSong){
+						grpSongs.members[i - 1].color = FlxColor.RED;
+					}
 				}
 			}
-		}
-		while(emptyCats.length > 0){
-			var e = emptyCats.shift();
-			addCategory(e,i).color = FlxColor.RED;
-			i++;
+			var emptyCats:Array<String> = [];
+			if (SELoader.exists("mods/packs"))
+			{
+				for (name in orderList(SELoader.readDirectory("mods/packs")))
+				{
+					// dataDir = "mods/packs/" + dataDir + "/charts/";
+					var catMatch = query.match(name.toLowerCase());
+					var dataDir = "mods/packs/" + name + "/charts/";
+					if(!SELoader.exists(dataDir)){continue;}
+					var containsSong = false;
+					var dirs = orderList(SELoader.readDirectory(dataDir));
+					LoadingScreen.loadingText = 'Scanning mods/packs/$name/charts/';
+					for (directory in dirs)
+					{
+						if ((search == "" || catMatch || query.match(directory.toLowerCase())) && SELoader.isDirectory('${dataDir}${directory}')) // Handles searching
+						{
+							if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
+								if(!containsSong){
+									containsSong = true;
+									addCategory(name,i);
+									i++;
+								}
+								modes[i] = [];
+								for (file in orderList(SELoader.readDirectory(dataDir + directory)))
+								{
+										if (isValidFile(file)){
+											modes[i].push(file);
+										}
+								}
+								if (modes[i][0] == null){ // No charts to load!
+									modes[i][0] = "No charts for this song!";
+								}
+
+								songs[i] = dataDir + directory;
+								songNames[i] =directory;
+
+								
+								addListing(directory,i);
+								if(_goToSong == 0)_goToSong = i;
+								nameSpaces[i] = dataDir;
+								i++;
+							}
+						}
+					}
+					if(!containsSong){
+						// grpSongs.members[i - 1].color = FlxColor.RED;
+						emptyCats.push(name);
+					}
+				}
+			}
+			while(emptyCats.length > 0){
+				var e = emptyCats.shift();
+				addCategory(e,i).color = FlxColor.RED;
+				i++;
+			}
 		}
 		// if(_packCount == 0){
 		// 	addCategory("No packs or weeks to show",i);
 		// 	grpSongs.members[i - 1].color = FlxColor.RED;
 		// }
-		if(reload && lastSel == 1)changeSelection(_goToSong);
+		if(reload && lastSel == 1) changeSelection(_goToSong);
 		updateInfoText('Use shift to scroll faster; Shift+F7 to erase the score of the current chart. Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
 	}
 	// function checkSong(dataDir:String,directory:String){

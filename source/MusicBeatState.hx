@@ -33,6 +33,22 @@ class MusicBeatState extends FlxUIState
 	var forceQuit = true;
 	public static var instance:MusicBeatState;
 
+	public function errorHandle(?error:String = "No error passed!",?forced:Bool = false){
+			try{
+
+				trace('Error!\n ${error}');
+				FlxTimer.globalManager.clear();
+				FlxTween.globalManager.clear();
+				// updateTime = false;
+				persistentUpdate = false;
+				persistentDraw = true;
+
+				Main.game.blockUpdate = Main.game.blockDraw = false;
+				openSubState(new ErrorSubState(0,0,error));
+			}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
+			}
+		}
+
 	var loading = true;
 	public function onFileDrop(file:String):Null<Bool>{
 		return true;
@@ -375,6 +391,7 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 	}
 	override function destroy(){
 		FlxG.mouse.visible = mouseEnabled;
+
 		super.destroy();
 		MusicBeatState.instance.showTempmessage('Exited Debug mode');
 	}

@@ -745,7 +745,6 @@ class TitleState extends MusicBeatState
 			#end
 			#if !android
 				findosuBeatmaps();
-
 			#end
 			if(SELoader.exists('path.txt')){
 				SELoader.PATH = SELoader.loadText('path.txt');
