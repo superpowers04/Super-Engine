@@ -471,9 +471,8 @@ class OnlinePlayState extends PlayState
 					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Accuracy(${data[3]}) ');
 					return;
 				}
-				if(accuracy > 100){
-					accuracy /= 100;
-				}
+				if(accuracy > 100) accuracy /= 100;
+				
 				clientScores[id] = score;
 				clientText[id] = "S:" + score+ " M:" + misses+ " A:" + accuracy;
 				clientsGroup.members[clientTexts[id]].text = OnlineLobbyState.clients[id] + " Score:" + score+ " Misses:" + misses+ " Accuracy:" + accuracy;
