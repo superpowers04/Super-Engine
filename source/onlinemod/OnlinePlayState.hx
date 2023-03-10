@@ -453,7 +453,7 @@ class OnlinePlayState extends PlayState
 				var id:Int = data[0];
 				var score:Int = data[1];
 				var misses:Int = data[2];
-				var accuracy:Int = data[3];
+				var accuracy:Float = data[3];
 				if(Math.isNaN(id)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
 					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
