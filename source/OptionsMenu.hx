@@ -55,6 +55,7 @@ class OptionsMenu extends MusicBeatState
 			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
 			new CharAutoBFOption("Force the player you've selected or allow the song to choose the player if you have them installed"),
 			new HCBoolOption("Toggle the ability for packs to provide scripts","Pack scripts","packScripts"),
+			new HCBoolOption("Toggle the ability for scripts to run in menus","Menu Scripts","menuScripts"),
 			// new HCBoolOption("Show your player character on the main menu, MAY CAUSE CRASHES!","Show player on main menu","mainMenuChar"),
 			
 			new AnimDebugOption("Enables the Character/chart editor, F10 console, displays some extra info in the FPS Counter, and some other debug stuff"),
@@ -92,13 +93,14 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Show skip beginning prompt","Jump to first note prompt","skipToFirst"),
 			new HCBoolOption("Enables some simple debounce detection. Forces presses to be missed from one frame to another. ","Debounce detection","debounce"),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
+			
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new ScrollSpeedOSUOption("Change your scroll speed on OSU charts"),
 
-			new AccurateNoteHoldOption("Whether note sustains/holds are more accurate. If off then they act like vanilla/early kade"),
-			new ShittyMissesOption("Whether you'll get a miss/combobreak when getting a shit"),
-			new BadMissesOption("Whether you'll get a miss/combobreak when getting a bad"),
-			new GoodMissesOption("Whether you'll get a miss/combobreak when getting a good"),
+			new AccurateNoteHoldOption("Whether note sustains/holds are more accurate. If off then they act like early kade"),
+			new HCBoolOption("Whether you'll get a miss from getting a shit","Shitty Misses","shittyMiss"),
+			new HCBoolOption("Whether you'll get a miss from getting a bad","Bad Misses","badMiss"),
+			new HCBoolOption("Whether you'll get a miss from getting a good","Good Misses","goodMiss"),
 		],"Toggle Practice mode, Ghost Tapping, etc"),
 
 		new OptionCategory("Appearance", [

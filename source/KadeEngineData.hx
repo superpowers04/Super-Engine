@@ -185,6 +185,7 @@ class KadeEngineData
 
 		if(FlxG.save.data.persistBF == null) FlxG.save.data.persistBF = false;
 		if(FlxG.save.data.persistGF == null) FlxG.save.data.persistGF = false;
+		if(FlxG.save.data.menuScripts == null) FlxG.save.data.menuScripts = false;
 
 		#if android
 			if(FlxG.save.data.useTouch == null) FlxG.save.data.useTouch = true;

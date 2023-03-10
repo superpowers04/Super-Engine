@@ -49,6 +49,8 @@ package;
 
 typedef CharacterJson =
 {
+	var ?sprite_type:String; // TODO add more format support using FlxAnimate
+
 	var flip_x:Bool;
 	var flip:Dynamic; // Controls if the character should be flipped when on the player's side
 	var offset_flip:Dynamic; // Flips the offsets on the left, 0/not specififed = off completely, 1 = use player2, 2 = flip left, 3 = flip right  
@@ -102,7 +104,7 @@ typedef CharJsonAnimation ={
 	var ?song:Null<String>; // Set on specific songname
 	var ?char_side:Null<Int>; // Set song specific side, 0 for BF, 1 for Dad, 2 for GF, 3 for disabled
 	var ?oneshot:Null<Bool>; // Should animation overlap everything?
-	var ?priority:Null<Int>; // Animation priority, 0 is idle, 10 is sing, 5 is hey, and the rest is up to you. The engine will handle the rest
+	var ?priority:Null<Int>; // Animation priority, 0 is idle, 10 is sing, 5 is hey, and the rest are up to you. The engine will handle the rest
 	
 	var ?offsets:Array<Array<Float>>;
 	var ?ifstates:Array<IfStatement>;

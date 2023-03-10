@@ -1326,7 +1326,7 @@ class TitleState extends MusicBeatState
 		
 		if(textGroup.members[1] == null) textGroup.members[0].color = _colors[_curPart]; else {textGroup.members[1].color = _colors[_curPart];textGroup.members[0].color = 0xFFFFFF;}
 		
-		cast(_sprite.filters[0],flash.filters.GlowFilter).color = _colors[_curPart];
+		if(_sprite.filters[0] != null) cast(_sprite.filters[0],flash.filters.GlowFilter).color = _colors[_curPart];
 		if (_curPart == 6)
 		{
 			// Make the logo a tad bit longer, so our users fully appreciate our hard work :D

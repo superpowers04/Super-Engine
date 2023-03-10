@@ -54,15 +54,18 @@ class MainMenuState extends SickMenuState
 	public static var triedChar:Bool = false;
 	public static var lastError = "";
 	
-	public static function handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
-		// if (MainMenuState.errorMessage != "") return; // Prevents it from trying to switch states multiple times
+	@:keep inline public static function handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true):Void{
+
 		ScriptableStateManager.lastState = "";
 		ScriptableStateManager.goToLastState = false;
 		if(MainMenuState.errorMessage == error || lastError == error) return; // Prevents the same error from showing twice
 
 		lastError = error;
 		MainMenuState.errorMessage += "\n" + error;
-		if(details != "") trace(details);
+		trace('${error}:${details}');
+		if(exception != null)
+			try{trace('${exception.message}\n${exception.stack}');}catch(e){}
+		
 		if (onlinemod.OnlinePlayMenuState.socket != null){
 			try{
 				onlinemod.OnlinePlayMenuState.socket.close();
@@ -70,23 +73,9 @@ class MainMenuState extends SickMenuState
 				QuickOptionsSubState.setSetting("Song hscripts",true);
 			}catch(e){trace('You just got an exception in yo exception ${e.message}');}
 		}
-		try{
-			LoadingScreen.hide();
-		}catch(e){
-			trace("Unable to hide loading screen, forcing it hidden");
-		}
-		if(exception != null){
-			try{
-				trace('${exception.message}\n${exception.stack}');
-			}catch(e){}
-		}
+		try{LoadingScreen.hide();}catch(e){}
+		if(LoadingScreen.object != null) LoadingScreen.object.alpha = 0;
 
-		try{
-			LoadingScreen.object.alpha = 0;
-			
-		}catch(e){
-			trace("bruhh");
-		}
 		if(forced)
 			Main.game.forceStateSwitch(new MainMenuState(true));
 		else

@@ -48,9 +48,12 @@ class FuckState extends FlxUIState
 		"L + Ratio + Skill Issue",
 		"Now with more crashes",
 		"I'm out of ideas.",
+		"me when null object reference",
+		'',
 	];
-	// This function has a lot of try statements. The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
-	public static function FUCK(e:Dynamic,?info:String = "unknown",?limeWindow:Bool = false){
+	// This function has a lot of try statements.
+	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
+	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown",?limeWindow:Bool = false){
 		try{LoadingScreen.hide();}catch(e){}
 		var exception = "Unable to grab exception!";
 		if(e != null && e.message != null){
@@ -59,12 +62,10 @@ class FuckState extends FlxUIState
 			}catch(e){
 				try{
 					exception = '${e.message}\n${e.stack}';
-				}catch(e){exception = 'I tried to grab the exception but got another exception, ${e}';
+				}catch(e){exception = 'I tried to grab the exception but got another exception, ${e}';}
 			}
-		}
 		}else{
 			try{
-
 				exception = '${e}';
 			}catch(e){}
 		}
@@ -115,6 +116,7 @@ class FuckState extends FlxUIState
 			sys.io.File.saveContent('crashReports/SUPERENGINE_CRASH-${dateNow}.log',err);
 			saved = true;
 			trace('Wrote a crash report to ./crashReports/SUPERENGINE_CRASH-${dateNow}.log!');
+			trace('Crash Report:\n$err');
 		}catch(e){
 			trace('Unable to write a crash report!');
 			if(err != null && err.indexOf('SYSTEM INFORMATION') != -1){
@@ -122,14 +124,6 @@ class FuckState extends FlxUIState
 
 			}
 		}
-		// This'll cause a crash on linux for some reason, while it's still using a try/catch, no fucking around with crashes
-		#if !linux
-			if(limeWindow){
-				try{
-					Application.current.window.alert(exception + (if(saved) '\nA crash log has been saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log"' else ""), "Uncaught error!");
-				}catch(e){}
-			}
-		#end
 		Main.game.forceStateSwitch(new FuckState(exception,info,saved));
 	}
 	var saved:Bool = false;

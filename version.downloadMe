@@ -1,1 +1,8 @@
 1.0.0-U33;
+- Add basic lua script support
+- Scriptable menus
+- A list where you can save your servers(Thanks to NayToons)
+- Add a bounding box to all alphabets so they can be clicked without needing to precisely click on the individual characters
+- FlxAnimate and FlxRuntimeShader
+- Some fixes to drag'n drop chart loading *again*
+- loadXML now automatically converts utf-16 xmls to utf-8

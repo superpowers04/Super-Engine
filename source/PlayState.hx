@@ -717,7 +717,7 @@ class PlayState extends ScriptMusicBeatState
 		
 		if(QuickOptionsSubState.getSetting("Song hscripts")){
 			if(FlxG.save.data.scripts != null){
-				loadScripts();
+				loadScripts(null,null,true);
 			}
 			for (i in 0 ... scripts.length) {
 				var v = scripts[i];
