@@ -316,7 +316,7 @@ class OnlinePlayState extends PlayState
 	{
 		clients[-1] = OnlineNickState.nickname;
 		clientScores[-1] = PlayState.songScore;
-		clientText[-1] = "S:" + PlayState.songScore+ " M:" + PlayState.misses+ " A:" + Std.int(PlayState.accuracy);
+		clientText[-1] = "S:" + PlayState.songScore+ " M:" + PlayState.misses+ " A:" + HelperFunctions.parseFloat(PlayState.accuracy,2);
 
 		canPause = false;
 		FlxG.sound.playMusic(loadedInst, FlxG.save.data.instVol, true);
@@ -454,7 +454,8 @@ class OnlinePlayState extends PlayState
 				var id:Int = data[0];
 				var score:Int = data[1];
 				var misses:Int = data[2];
-				var accuracy:Int = data[3];
+				var accuracy:Float = data[3];
+				if(accuracy > 100) accuracy /= 100;
 				if(Math.isNaN(id)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
 					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
@@ -618,7 +619,7 @@ class OnlinePlayState extends PlayState
 	function SendScore()
 	{
 		if (TitleState.supported){
-			Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy)], OnlinePlayMenuState.socket);
+			Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy * 100)], OnlinePlayMenuState.socket);
 		}else{Sender.SendPacket(Packets.SEND_SCORE, [PlayState.songScore], OnlinePlayMenuState.socket);}
 
 	}
