@@ -38,6 +38,8 @@ import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 import flash.media.Sound;
+import flixel.group.FlxSpriteGroup;
+import flixel.graphics.FlxGraphic;
 import sys.FileSystem;
 import sys.io.File;
 import lime.media.AudioBuffer;
@@ -91,6 +93,7 @@ class ChartingState extends MusicBeatState
 	var waveformSprite:FlxSprite;
 	var waveformEnabled:FlxUICheckBox;
 	var waveformUseInstrumental:FlxUICheckBox;
+	var visualiser:FlxSpriteGroup;
 
 	var gridBG:FlxSprite;
 	var gridBGEvent:FlxSprite;
@@ -327,6 +330,19 @@ class ChartingState extends MusicBeatState
 		add(check_voices);
 
 
+		visualiser = new FlxSpriteGroup(UI_box.x + UI_box.width + 10, UI_box.y);
+		visualiser.scrollFactor.set();
+		add(visualiser);
+		{
+			var vBack:FlxSprite = new FlxSprite().loadGraphic(FlxGraphic.fromRectangle(100,26,0xff000000));
+			vBack.scrollFactor.set();
+			visualiser.add(vBack);
+			var v:FlxSprite = new FlxSprite(3,3).loadGraphic(FlxGraphic.fromRectangle(94,20,0xffffffff));
+			v.origin.x = 0;
+			v.origin.y = 0;
+			v.scrollFactor.set();
+			visualiser.add(v);
+		}
 		var musicPlay:FlxButton = new FlxButton(UI_box.x, UI_box.y + UI_box.height + 100, "Play/Pause", function()
 		{
 			if (FlxG.sound.music.playing)
@@ -982,11 +998,12 @@ class ChartingState extends MusicBeatState
 
 	}
 
-	function loadAudioBuffer() {
+	inline function loadAudioBuffer() {
 
-		audioBuffers[0] = AudioBuffer.fromFile(if(onlinemod.OfflinePlayState.instFile != "") onlinemod.OfflinePlayState.instFile else ('assets/songs/' + _song.song.toLowerCase() + "/Inst.ogg"));
-		audioBuffers[1] = AudioBuffer.fromFile(if(onlinemod.OfflinePlayState.voicesFile != "") onlinemod.OfflinePlayState.voicesFile else ('assets/songs/' + _song.song.toLowerCase() + "/Voices.ogg"));
-		
+		audioBuffers[0] = AudioBuffer.fromFile(SELoader.getPath(if(onlinemod.OfflinePlayState.instFile != "") onlinemod.OfflinePlayState.instFile else ('assets/songs/' + _song.song.toLowerCase() + "/Inst.ogg")));
+		audioBuffers[1] = AudioBuffer.fromFile(SELoader.getPath(if(onlinemod.OfflinePlayState.voicesFile != "") onlinemod.OfflinePlayState.voicesFile else ('assets/songs/' + _song.song.toLowerCase() + "/Voices.ogg")));
+		// audioBytes[0] = audioBuffers[0].data.toBytes();
+		// audioBytes[1] = audioBuffers[1].data.toBytes();
 	}
 	var noVocals:Bool = false;
 	function loadSong():Void
@@ -1358,7 +1375,7 @@ class ChartingState extends MusicBeatState
 		// }
 
 		updateSection();
-
+		updateVisualiser(elapsed);
 
 
 		if(FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.R){
@@ -1709,6 +1726,23 @@ class ChartingState extends MusicBeatState
 
 	var waveformPrinted:Bool = true;
 	var audioBuffers:Array<AudioBuffer> = [null, null];
+	var audioBytes:Array<Bytes> = [null, null];
+	function updateVisualiser(e:Float){
+		var checkForVoices:Int = (if(waveformUseInstrumental.checked) 0 else 1);
+		if(!waveformEnabled.checked || audioBuffers[checkForVoices] == null) {
+			return;
+		}
+		var vol = .0;
+		if(FlxG.sound.music.playing){
+
+			var sampleMult:Float = audioBuffers[checkForVoices].sampleRate / 44100;
+			var index:Int = Std.int(FlxG.sound.music.time * 44.100 * sampleMult);
+			vol = audioBuffers[checkForVoices].data.toBytes().getUInt16(index * 4) / 65535;
+		}
+
+		visualiser.members[1].scale.x = FlxMath.lerp(visualiser.members[1].scale.x,vol,e * 2.5);
+		// visualiser.members[0].scale.x = (audioBuffers[checkForVoices].data.toBytes().getUInt16(index * 4) / 65535 );
+	}
 	function updateWaveform() {
 		if(waveformPrinted) {
 			waveformSprite.makeGraphic(Std.int(GRID_SIZE * 9), Std.int(gridBG.height), 0x00FFFFFF);
@@ -1716,8 +1750,7 @@ class ChartingState extends MusicBeatState
 		}
 		waveformPrinted = false;
 
-		var checkForVoices:Int = 1;
-		if(waveformUseInstrumental.checked) checkForVoices = 0;
+		var checkForVoices:Int = (if(waveformUseInstrumental.checked) 0 else 1);
 
 		if(!waveformEnabled.checked || audioBuffers[checkForVoices] == null) {
 			return;
