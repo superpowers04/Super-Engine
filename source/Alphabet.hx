@@ -197,16 +197,18 @@ class Alphabet extends FlxSpriteGroup
 
 		x=_X;
 		y=_Y;
-
-		border = new FlxSpriteLockScale(-10,-10);
-		border.makeGraphic(1,1,FlxColor.BLACK);
-		border.lockGraphicSize((Std.int(width) + 20),Std.int(height) + 20);
-		#if android
-		border.alpha = 0.1;
-		#else
-		border.alpha = 0.001;
-		#end
-		insert(0,border);
+		try{
+			border = new FlxSpriteLockScale(-10,-10);
+			border.makeGraphic(1,1,FlxColor.BLACK);
+			border.lockGraphicSize((Std.int(width) + 20),Std.int(height) + 20);
+			#if android
+			border.alpha = 0.1;
+			#else
+			border.alpha = 0.001;
+			#end
+			insert(0,border);
+		}catch(e){}
+		
 	}
 	var currentLetter = 0;
 	var timer:FlxTimer;
@@ -218,11 +220,11 @@ class Alphabet extends FlxSpriteGroup
 			// trace(secsBetweenLetters);
 		}
 		timer = new FlxTimer().start(secsBetweenLetters,function(_){
-			var mem:AlphaCharacter = cast (members[currentLetter],AlphaCharacter);
-			if(mem != null){
-				mem.visible = true;
-				if(callback != null){
-					callback(cast mem);
+			var spr:FlxSprite = cast members[currentLetter];
+			if(spr != null){
+				spr.visible = true;
+				if(callback != null && spr is AlphaCharacter){
+					callback(cast (spr,AlphaCharacter));
 				}
 			}
 			currentLetter++;

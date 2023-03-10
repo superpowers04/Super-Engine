@@ -437,12 +437,12 @@ class OnlinePlayState extends PlayState
 				var id:Int = data[0];
 				var score:Int = data[1];
 				if(Math.isNaN(id)){
-					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
-					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
+					trace('Error for Packet BROADCAST_SCORE: Invalid ID(${data[0]}) ');
+					showTempmessage('Error for Packet BROADCAST_SCORE: Invalid ID(${data[0]}) ');
 					return;
 				}
 				if(Math.isNaN(score)){
-					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score(${data[1]}) ');
+					trace('Error for Packet BROADCAST_SCORE, ID($id): Invalid Score(${data[1]}) ');
 					return;
 				}
 
@@ -471,7 +471,9 @@ class OnlinePlayState extends PlayState
 					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Accuracy(${data[3]}) ');
 					return;
 				}
-
+				if(accuracy > 100){
+					accuracy /= 100;
+				}
 				clientScores[id] = score;
 				clientText[id] = "S:" + score+ " M:" + misses+ " A:" + accuracy;
 				clientsGroup.members[clientTexts[id]].text = OnlineLobbyState.clients[id] + " Score:" + score+ " Misses:" + misses+ " Accuracy:" + accuracy;
@@ -618,7 +620,7 @@ class OnlinePlayState extends PlayState
 	function SendScore()
 	{
 		if (TitleState.supported){
-			Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy)], OnlinePlayMenuState.socket);
+			Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy * 100)], OnlinePlayMenuState.socket);
 		}else{Sender.SendPacket(Packets.SEND_SCORE, [PlayState.songScore], OnlinePlayMenuState.socket);}
 
 	}
