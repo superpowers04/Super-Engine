@@ -223,11 +223,16 @@ class OnlinePlayState extends PlayState
 
 			if (!ready)
 				return;
-		FlxG.sound.playMusic(loadedInst, 1, false);
 
 		super.startCountdown();
 			
 		}catch(e){MainMenuState.handleError(e,'Crash in "startCountdown" caught: ${e.message}');}
+	}
+
+	override function startSong(?alrLoaded:Bool = false)
+	{
+		FlxG.sound.playMusic(loadedInst, 1, false);
+		super.startSong(true);
 	}
 
 	override function generateSong(?dataPath:String = "")
@@ -254,8 +259,6 @@ class OnlinePlayState extends PlayState
 				noteData[_note.noteID] = [_note,_note.noteData % 4];
 			}
 		}
-
-
 	}
 
 	override function popUpScore(daNote:Note):Void
@@ -436,7 +439,7 @@ class OnlinePlayState extends PlayState
 
 				clientScores[id] = score;
 				clientText[id] = "S:" + score+ " M:" + misses+ " A:" + accuracy;
-				clientsGroup.members[clientTexts[id]].text = OnlineLobbyState.clients[id] + " Score:" + score + " Misses:" + misses+ " Accuracy:" + accuracy;
+				clientsGroup.members[clientTexts[id]].text = score + "\n" + accuracy + "%  " + misses;
 
 			case Packets.PLAYER_LEFT:
 				var id:Int = data[0];
