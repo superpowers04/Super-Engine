@@ -48,10 +48,6 @@ class OnlinePlayState extends PlayState
 	var inPause:Bool = false;
 
 	var originalSafeFrames:Int = FlxG.save.data.frames;
-	var p2Int:Int = 0;
-	var p1Int:Int = 0;
-	var p2presses:Array<Bool> = [false,false,false,false,false,false,false,false]; // 0 = not pressed, 1 = pressed, 2 = hold, 3 = miss
-	var p1presses:Array<Bool> = [false, false, false, false];
 
 	public function new(customSong:Bool, voices:FlxSound, inst:Sound)
 	{
@@ -98,7 +94,7 @@ class OnlinePlayState extends PlayState
 					count++;
 					if(count > 1){break;}
 				}
-				PlayState.dadShow = (count == 1);
+				// PlayState.dadShow = (count == 1);
 		}
 
 		super.create();
@@ -110,6 +106,7 @@ class OnlinePlayState extends PlayState
 		CoolLeaderBoard.push([]);
 		var Box1 = new FlxSprite().makeGraphic(275, 50, 0x7FFF7F00); // #FF7F00
 		Box1.screenCenter(Y);
+		scoreY = Box1.y;
 		CoolLeaderBoard[0].push(Box1);
 		Box1.cameras = [camHUD];
 		add(Box1);
@@ -138,7 +135,6 @@ class OnlinePlayState extends PlayState
 			CoolLeaderBoard.push([]);
 			var Box1 = new FlxSprite().makeGraphic(275, 50, 0x7F0000FF); // #0000FF
 			Box1.screenCenter(Y);
-			scoreY = Box1.y;
 			CoolLeaderBoard[CoolLeaderBoard.length - 1].push(Box1);
 			Box1.cameras = [camHUD];
 			add(Box1);
@@ -159,10 +155,11 @@ class OnlinePlayState extends PlayState
 			clientTexts[i] = clientsGroup.length;
 			clientsGroup.add(scoretext);
 		}
+		scoreY -= scoreY/2;
 		for(i in 0...CoolLeaderBoard.length){
 				// Long Box
-				CoolLeaderBoard[i][0].y += (CoolLeaderBoard[i][0].height * i) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5)));
-				if(FlxG.save.data.JudgementCounter)CoolLeaderBoard[i][0].x = 125;
+				CoolLeaderBoard[i][0].y = scoreY + (CoolLeaderBoard[i][0].height * i) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5)));
+				CoolLeaderBoard[i][0].x = (!PlayState.invertedChart ? 125 - (Math.abs(0 - i) * 10) : FlxG.width - 625 + (Math.abs(0 - i) * 10));
 				// Name Box
 				CoolLeaderBoard[i][1].y = CoolLeaderBoard[i][0].y;
 				CoolLeaderBoard[i][1].x = CoolLeaderBoard[i][0].x + 10;
@@ -295,13 +292,16 @@ class OnlinePlayState extends PlayState
 			else
 				WhereME++;
 		}
-		for(i in 0...CoolLeaderBoard.length){
-				var YMove = scoreY + ((CoolLeaderBoard[i][0].height * (i - (WhereME - (CoolLeaderBoard.length * 0.5)))) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5))));
-				if(YMove - CoolLeaderBoard[i][0].y >= 20 || YMove - CoolLeaderBoard[i][0].y <= -20 || YMove - CoolLeaderBoard[i][1].y >= 20 || YMove - CoolLeaderBoard[i][1].y <= -20){
-					FlxTween.tween(CoolLeaderBoard[i][0],{y: YMove},0.1,{ease: FlxEase.quadInOut});
-					FlxTween.tween(CoolLeaderBoard[i][1],{y: YMove},0.1,{ease: FlxEase.quadInOut});
-					FlxTween.tween(CoolLeaderBoard[i][2],{y: YMove + 12.5},0.1,{ease: FlxEase.quadInOut});
-					FlxTween.tween(CoolLeaderBoard[i][3],{y: YMove + 5},0.1,{ease: FlxEase.quadInOut});
+		if(CoolLeaderBoard.length > 1){
+			for(i in 0...CoolLeaderBoard.length){
+					var YMove = scoreY + ((CoolLeaderBoard[i][0].height * (i - (WhereME - (CoolLeaderBoard.length * 0.5)))) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5))));
+					var XMove = (!PlayState.invertedChart ? 125 - (Math.abs((WhereME - 1) - i) * 10) : FlxG.width - 625 + (Math.abs((WhereME - 1) - i) * 10));
+					if(YMove - CoolLeaderBoard[i][0].y >= 20 || YMove - CoolLeaderBoard[i][0].y <= -20 || YMove - CoolLeaderBoard[i][1].y >= 20 || YMove - CoolLeaderBoard[i][1].y <= -20){
+						FlxTween.tween(CoolLeaderBoard[i][0],{y: YMove,x: XMove},0.1,{ease: FlxEase.quadInOut});
+						FlxTween.tween(CoolLeaderBoard[i][1],{y: YMove,x: XMove + 10},0.1,{ease: FlxEase.quadInOut});
+						FlxTween.tween(CoolLeaderBoard[i][2],{y: YMove + 12.5,x: XMove + 10},0.1,{ease: FlxEase.quadInOut});
+						FlxTween.tween(CoolLeaderBoard[i][3],{y: YMove + 5,x: XMove + CoolLeaderBoard[i][1].width + 20},0.1,{ease: FlxEase.quadInOut});
+					}
 				}
 			}
 	}
@@ -464,6 +464,7 @@ class OnlinePlayState extends PlayState
 						Array[1] = Box2;
 						Array[2].setFormat(CoolUtil.font, 16, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 						remove(Array[2]); add(Array[2]);
+						remove(Array[3]); add(Array[3]);
 						break;
 					}
 				}
