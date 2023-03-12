@@ -1039,7 +1039,6 @@ class TitleState extends MusicBeatState
 				new FlxTimer().start(0.5,function(_){try{updateCheck = true;}catch(e){}});
 
 				showTempmessage("Checking for updates..",FlxColor.WHITE);
-				tempMessage.screenCenter(X);
 				#if (target.threaded)
 				Thread.create(function(){
 				#end

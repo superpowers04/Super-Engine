@@ -496,6 +496,32 @@ class PlayState extends ScriptMusicBeatState
 		];
 		songStarted = false;
 	}
+
+	override public function softReloadState(){
+		if(!parseMoreInterps){
+			showTempmessage('You are currently unable to reload interpeters!',FlxColor.RED);
+			return;
+		}
+		callInterp('reload',[false]);
+		callInterp('unload',[]);
+		FlxTimer.globalManager.clear();
+		FlxTween.globalManager.clear();
+		resetInterps();
+		loadScripts();
+		generateSong();
+		addNotes();
+		callInterp('reloadDone',[]);
+		showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
+	}
+	override public function loadScripts(?enableScripts:Bool = false,?enableCallbacks:Bool = false,?force:Bool = false){
+		if((!enableScripts && !parseMoreInterps) || (!FlxG.save.data.menuScripts && !force)) return;
+		super.loadScripts(enableScripts,enableCallbacks,force);
+		for (i in 0 ... scripts.length) {
+			var v = scripts[i];
+			LoadingScreen.loadingText = 'Loading scripts: $v';
+			loadSingleScript(v);
+		}
+	}
 	public static var hasStarted = false;
 	override public function new(){
 		LoadingScreen.loadingText = "Starting Playstate";
@@ -516,7 +542,7 @@ class PlayState extends ScriptMusicBeatState
 		try{
 		#end
 		LoadingScreen.loadingText = 'Loading playstate variables';
-		parseMoreInterps = (!QuickOptionsSubState.getSetting("Song hscripts") && !isStoryMode);
+		parseMoreInterps = (QuickOptionsSubState.getSetting("Song hscripts") || isStoryMode);
 		if (instance != null) instance.destroy();
 		downscroll = FlxG.save.data.downscroll;
 		middlescroll = FlxG.save.data.middleScroll;
@@ -717,13 +743,9 @@ class PlayState extends ScriptMusicBeatState
 		
 		if(QuickOptionsSubState.getSetting("Song hscripts")){
 			if(FlxG.save.data.scripts != null){
-				loadScripts(null,null,true);
+				loadScripts(null,null);
 			}
-			for (i in 0 ... scripts.length) {
-				var v = scripts[i];
-				LoadingScreen.loadingText = 'Loading scripts: $v';
-				loadSingleScript(v);
-			}
+
 		}
 		if(onlinemod.OnlinePlayMenuState.socket != null){
 			for (i in 0 ... onlinemod.OnlinePlayMenuState.scripts.length) {
@@ -2263,20 +2285,7 @@ class PlayState extends ScriptMusicBeatState
 				finishSong(false);
 		}
 		try{
-			if(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500){
-				while(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
-				{
-					var dunceNote:Note = unspawnNotes.shift();
-					callInterp('noteSpawn',[dunceNote]);
-					if(!dunceNote.eventNote && dunceNote.strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms before the current time
-						dunceNote.destroy();
-					}else if(dunceNote.eventNote){ // eventNote
-						eventNotes.add(dunceNote);
-					}else{ // we add note lmao
-						notes.add(dunceNote);
-					}
-				}
-			}
+			addNotes();
 		}catch(e){trace('Error adding notes to pool? ${e.message}');}
 
 		if(realtimeCharCam){
@@ -2357,7 +2366,22 @@ class PlayState extends ScriptMusicBeatState
 	}
 	#end
 }
-
+	@:keep inline function addNotes(){
+		if(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500){
+			while(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
+			{
+				var dunceNote:Note = unspawnNotes.shift();
+				callInterp('noteSpawn',[dunceNote]);
+				if(!dunceNote.eventNote && dunceNote.strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms before the current time
+					dunceNote.destroy();
+				}else if(dunceNote.eventNote){ // eventNote
+					eventNotes.add(dunceNote);
+				}else{ // we add note lmao
+					notes.add(dunceNote);
+				}
+			}
+		}
+	}
 	override function draw(){
 		try{noteShit();}catch(e){handleError('Error during noteShit: ${e.message}\n ${e.stack}}');}
 		callInterp("draw",[]);

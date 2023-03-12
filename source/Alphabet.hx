@@ -98,18 +98,17 @@ class Alphabet extends FlxSpriteGroup
 	public var border:FlxSpriteLockScale = null;
 	public function set_cutOff(value:Int){
 		cutOff = value;
+		var spr:FlxSprite;
 		if(members.length > 0){
-			var e:FlxSprite;
 			while (members.length > 0){
-				e = remove(members[0],true);
-				if(e != null) e.destroy();
+				spr = remove(members[0],true);
+				if(spr != null && spr.destroy != null) spr.destroy();
 			}
 		}
 		if(listOAlphabets != null && listOAlphabets.length > 0){
-			var e:FlxSprite;
 			while (listOAlphabets.length > 0){
-				e = listOAlphabets.pop();
-				if(e != null && e.destroy != null) e.destroy();
+				spr = listOAlphabets.pop();
+				if(spr != null && spr.destroy != null) spr.destroy();
 			}
 		}
 		xPos = 0;
@@ -167,15 +166,6 @@ class Alphabet extends FlxSpriteGroup
 		if(!useAlphabet) forceFlxText = true;
 		listOAlphabets = new List<AlphaCharacter>();
 		addText();
-
-		// else if (text != "" && !useAlphabet){
-		// 	textObj = new FlxText(0, 0, FlxG.width, text, 48);
-		// 	textObj.scrollFactor.set();
-		// 	textObj.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// 	textObj.borderSize = 3;
-		// 	textObj.borderQuality = 1;
-		// 	add(textObj);
-		// }
 	}
 
 	var xPos:Float = 0;

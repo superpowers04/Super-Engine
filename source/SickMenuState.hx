@@ -223,11 +223,9 @@ class SickMenuState extends ScriptMusicBeatState
 		super.update(elapsed);
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
-		if (controls.BACK)
-		{
-			goBack();
-		}
-		
+		callInterp('handleInput',[]);
+		if(cancelCurrentFunction) return;
+		if (controls.BACK) goBack();
 		if (selected || grpControls.members.length == 0) return;
 		if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
 		if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
@@ -281,15 +279,16 @@ class SickMenuState extends ScriptMusicBeatState
 	}
 	function changeSelection(change:Int = 0)
 	{
-
+		callInterp('changeSelection',[change]);
+		if(cancelCurrentFunction) return;
 		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 
 		curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = grpControls.length - 1;
-		if (curSelected >= grpControls.length)
-			curSelected = 0;
+		if (curSelected < 0) curSelected = grpControls.length - 1;
+		if (curSelected >= grpControls.length) curSelected = 0;
+
+		FlxG.camera.scroll.y = (bg.height / 720) * (curSelected / grpControls.length);
 
 
 		descriptionText.text = descriptions[curSelected];
@@ -310,6 +309,7 @@ class SickMenuState extends ScriptMusicBeatState
 				item.color = 0xffffff;
 			}
 		}
+		callInterp('changeSelectionAfter',[change]);
 
 	}
 }

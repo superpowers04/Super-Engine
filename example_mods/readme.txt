@@ -1,4 +1,5 @@
-This was last updated as of 1.0.0-U33.
+This was last updated as of 1.0.0-U33. 
+Note that lua is not yet enabled due to some issues
 
 This file might look weird inside of Notepad, I highly recommend using Sublime Text, Notepad++ or Visual Studio Code for editing and reading text files
 
@@ -106,6 +107,10 @@ MAKING SCRIPTS:
 		Make a new folder inside of your mods/scripts folder named what you want the script to be named
 		Put a script.hx, script.hscript or if you're using lua, a script.lua file in the folder you just created and edit that
 
+	NOTE ABOUT lua SCRIPTS:
+		To allow songs from other engines to load without any tinkering, a lua file has to contain `isSE = true` or `function initScript` somewhere in the file. 
+		If you do not have this, the file will be ignored
+
 	Some recommended practices:
 		* Use a proper text editor with syntax highlighting instead of notepad. 
 			Examples: Sublime Text, Notepad++, Visual Studio Code, Visual Studio, or Atom
@@ -153,6 +158,12 @@ MAKING STAGES:
 		This will load the sprite but we need to actually add it to the state, for that we can use `state.add(background);`
 		
  
+SCRIPTABLE MENUS:
+	A few menus can be modified using hscript, Currently, those are the Main Menu and the Modded Songs page.
+		To add scripts to menus you can make a new folder in a normal script called one of the below names and then pop your hscript files into that
+		* 'mainmenu' - MainMenuState
+		* 'multilist' - MultiMenuState
+
 OLDER README:
  Characters work like FNF Multi, Check BF-faceanim for an example. You can also make custom animations using IfStates
  Heres an example that adds Garcellos "tight bars, little man" animation into Release:

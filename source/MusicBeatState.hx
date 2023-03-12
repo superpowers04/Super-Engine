@@ -77,19 +77,20 @@ class MusicBeatState extends FlxUIState
 		tranIn();
 	}
 	
-	var tempMessBacking:FlxSprite;
-	var tempMessage:FlxText;
-	var tempMessTimer:FlxTimer;
-	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time = 5,?center:Bool = true,?trac:Bool = true){
+	// var tempMessBacking:FlxSprite;
+	// var tempMessage:FlxText;
+	// var tempMessTimer:FlxTimer;
+	var tempMessages:Array<Array<Dynamic>> = [];
+	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time:Float = 5,?center:Bool = true,?trac:Bool = true){
 		var moveDown = false;
 		var lastBacking = null;
-		if (tempMessage != null && tempMessBacking != null){
+		if (tempMessages.length > 0){
 			moveDown = true;
-			lastBacking = tempMessBacking;
+			lastBacking = tempMessages[tempMessages.length - 1][2];
 		}
 		
 		if(trac) trace(str);
-		var _tmpMsg = tempMessage = new FlxText(40,60,1000,str,24);
+		var tempMessage = new FlxText(40,60,1000,str,24);
 		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		tempMessage.scrollFactor.set();
 		tempMessage.autoSize = false;
@@ -102,7 +103,7 @@ class MusicBeatState extends FlxUIState
 			tempMessage.screenCenter(X);
 		}
 		// tempMessage.wordWrap = false;
-		var _tmpMsgB = tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
+		var tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
 		tempMessBacking.scrollFactor.set();
 		if(FlxG.cameras.list[FlxG.cameras.list.length - 1] != null){
 			tempMessBacking.cameras = tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
@@ -112,12 +113,8 @@ class MusicBeatState extends FlxUIState
 		if(moveDown){
 			tempMessBacking.y = lastBacking.y + lastBacking.height;
 			tempMessage.y = tempMessBacking.y + 2;
-		}
-		tempMessTimer = new FlxTimer().start(time, function(tmr:FlxTimer)
-		{
-			if (_tmpMsg  != null) _tmpMsg.destroy();
-			if (_tmpMsgB != null) _tmpMsgB.destroy();
-		},1);
+		};
+		tempMessages.push([time,tempMessage,tempMessBacking]);
 	}
 
 	var skippedFrames = 0;
@@ -145,6 +142,19 @@ class MusicBeatState extends FlxUIState
 	override function update(elapsed:Float)
 	{
 
+		if(tempMessages[0] != null && (tempMessages[0][0] -= elapsed) < 0){
+			try{
+				remove(tempMessages[0][1]);remove(tempMessages[0][2]);
+				tempMessages[0][1].destroy();tempMessages[0][2].destroy();
+				tempMessages.shift();
+				if(tempMessages[0] != null){
+					for (_ => msg in tempMessages){
+						msg[0][1].y -= Std.int(msg[0][2].height);
+						msg[0][2].y -= Std.int(msg[0][2].height);
+					}
+				}
+			}catch(e){}
+		}
 		updateCurStep();
 		updateBeat();
 		if(FlxG.keys.justPressed.F3){

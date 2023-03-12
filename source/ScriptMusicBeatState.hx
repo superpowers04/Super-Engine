@@ -150,12 +150,11 @@ class ScriptMusicBeatState extends MusicBeatState{
 			// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled
 			if(!parseMoreInterps) return null;
 
-			if(songScript == "") return null;
+			if(songScript == "" || !songScript.contains('isSE = true') && !songScript.contains('function initScript')) return null;
 			// if (brTools == null) brTools = hsBrTools;
 			try{
 
 				// parser.parseModule(songScript);
-
 				var interp:SELua = new SELua(songScript);
 				if (brTools != null) {
 					// interp.variables.set("BRtools",brTools,true); 
@@ -165,11 +164,11 @@ class ScriptMusicBeatState extends MusicBeatState{
 					// interp.variables.set("BRtools", getBRTools("assets/"),true);
 					interp.variables.set("BRtoolsRef",getBRTools("assets/")); 
 				}
-				if(interp.get('isSE') == null && interp.get('initScript') == null){
-					interp.stop();
-					showTempmessage('${id}/${file} isn\'t a valid SE Script!',FlxColor.RED);
-					return null;
-				}
+				// if(interp.get('isSE') == null && interp.get('initScript') == null){
+				// 	interp.stop();
+				// 	showTempmessage('${id}/${file} isn\'t a valid SE Script!',FlxColor.RED);
+				// 	return null;
+				// }
 				// Access current state without needing to be inside of a function with ps as an argument
 				interp.variables.set("scriptContents",songScript);
 				addVariablesToLua(interp);
@@ -344,6 +343,23 @@ class ScriptMusicBeatState extends MusicBeatState{
 			}catch(e){errorHandle('Error while trying to parse scripts: ${e.message}');}
 		}
 
+		/*Soft reloads a state, i.e reloading scripts. This will not reload hsbrtools as to prevent crashes. Use a normal reset for that
+		*/
+		public function softReloadState(){
+			if(!parseMoreInterps){
+				showTempmessage('You are currently unable to reload interpeters!',FlxColor.RED);
+				return;
+			}
+			callInterp('reload',[false]);
+			callInterp('unload',[]);
+			FlxTimer.globalManager.clear();
+			FlxTween.globalManager.clear();
+			resetInterps();
+			loadScripts();
+			callInterp('reloadDone',[]);
+			showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
+		}
+
 	/* Base Functions */
 		/* Zero Args */
 			override public function new(){
@@ -353,6 +369,8 @@ class ScriptMusicBeatState extends MusicBeatState{
 			override public function create(){
 				super.create();
 				instance = this;
+				callInterp('reloadDone',[]);
+				callInterp('createAfter',[]);
 			}
 			override public function draw(){
 				if(useNormalCallbacks){
@@ -385,7 +403,22 @@ class ScriptMusicBeatState extends MusicBeatState{
 			}
 
 		/* One Arg*/
+
 			override public function update(e:Float){
+				if(FlxG.save.data.animDebug && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F5){
+					if(FlxG.keys.pressed.SHIFT){
+						callInterp('unload',[]);
+						callInterp('reload',[true]);
+						FlxG.resetState();
+					}else{
+						softReloadState();
+					}
+				}
+				if(FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F6){
+					callInterp('unload',[]);
+					resetInterps();
+					showTempmessage('Unloaded interpeters!');
+				}
 				if(useNormalCallbacks){
 					callInterp('update',[e]);
 					if(cancelCurrentFunction) return;

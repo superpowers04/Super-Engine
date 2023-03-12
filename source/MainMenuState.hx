@@ -275,19 +275,19 @@ class MainMenuState extends SickMenuState
 	function mmSwitch(regen:Bool = false){
 		#if android
 			//Damn, talk about a huge difference from 9 options down to 3
-			options = ['modded songs',"scripted states",'options'];
-			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state",'Customise your experience to fit you'];
+			options = ['modded songs',"scripted states","credits",'options'];
+			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state","Check out the awesome people who helped with this engine in some way",'Customise your experience to fit you'];
 		#else
 			options = ['modded songs','join FNF\'br server',
 			#if !ghaction
 				'host br server',
 			#end
-				'online songs',"story mode",'other',"scripted states","changelog", 'open mods folder','options'];
+				'online songs',"story mode",'other',"scripted states","changelog", 'credits', 'open mods folder','options'];
 			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.",
 			#if !ghaction
 			'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
 			#end
-			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Open your mods folder in your File Manager','Customise your experience to fit you'];
+			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Open your mods folder in your File Manager',"Check out the awesome people who helped with this engine in some way",'Customise your experience to fit you'];
 		#end
 		curSelected = 0;
 		if(regen)generateList();
@@ -325,6 +325,8 @@ class MainMenuState extends SickMenuState
 				FlxG.switchState(new multi.MultiMenuState());
 			case "scripted states":
 				FlxG.switchState(new SelectScriptableState());
+			case "credits":
+				FlxG.switchState(new se.states.Credits());
 			case 'options':
 				FlxG.switchState(new OptionsMenu());
 			#if !mobile

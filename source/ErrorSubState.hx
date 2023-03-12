@@ -48,7 +48,6 @@ class ErrorSubState extends MusicBeatSubstate
 			// PlayState.instance.paused = true;
 
 		FlxG.state.persistentUpdate = false;
-		FlxG.sound.pause();
 		if(PlayState.instance != null){
 			PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
 			PlayState.instance.camHUD.alpha = PlayState.instance.camTOP.alpha = 1;

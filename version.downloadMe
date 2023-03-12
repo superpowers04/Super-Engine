@@ -1,5 +1,4 @@
 1.0.0-U33;
-- Add basic lua script support
 - Scriptable menus
 - A list where you can save your servers(Thanks to NayToons)
 - Add a bounding box to all alphabets so they can be clicked without needing to precisely click on the individual characters
