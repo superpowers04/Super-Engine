@@ -606,7 +606,7 @@ class OnlinePlayState extends PlayState
 	function SendScore()
 	{
 		if (TitleState.supported)
-			Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Std.int(PlayState.accuracy * 100)], OnlinePlayMenuState.socket);
+			Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Math.ceil(PlayState.accuracy * 100)], OnlinePlayMenuState.socket);
 		else
 			Sender.SendPacket(Packets.SEND_SCORE, [PlayState.songScore], OnlinePlayMenuState.socket);
 
