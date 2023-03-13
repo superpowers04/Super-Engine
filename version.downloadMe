@@ -1,7 +1,8 @@
 1.0.0-U33;
 - Scriptable menus
-- A list where you can save your servers(Thanks to NayToons)
-- Add a bounding box to all alphabets so they can be clicked without needing to precisely click on the individual characters
 - FlxAnimate and FlxRuntimeShader
+- An actual credits page after 2 years
 - Some fixes to drag'n drop chart loading *again*
 - loadXML now automatically converts utf-16 xmls to utf-8
+- A list where you can save your servers and some multiplayer improvements(Thanks to NayToons)
+- Add a bounding box to all alphabets so they can be clicked without needing to precisely click on the individual characters
