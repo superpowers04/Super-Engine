@@ -90,7 +90,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 
 		searchField.text = lastSearch;
-		loadScripts(true);
 		if(lastSearch != "") reloadList(true,lastSearch);
 
 		lastSearch = "";
@@ -117,18 +116,21 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 	}
 	function addListing(name:String,i:Int):Alphabet{
+		callInterp('addListing',[name,i]);
+		if(cancelCurrentFunction) return null;
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false);
 		controlLabel.yOffset = 20;
 		controlLabel.cutOff = 25;
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
-		if (i != 0)
-			controlLabel.alpha = 0.6;
+		if (i != 0) controlLabel.alpha = 0.6;
 		grpSongs.add(controlLabel);
-		callInterp('addListing',[controlLabel,name,i]);
+		callInterp('addListingAfter',[controlLabel,name,i]);
 		return controlLabel;
 	}
 	function addCategory(name:String,i:Int):Alphabet{
+		callInterp('addCategory',[name,i]);
+		if(cancelCurrentFunction) return null;
 		songs[i] = name;
 		modes[i] = [CATEGORYNAME];
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
@@ -143,7 +145,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		controlLabel.alpha = 1;
 		// controlLabel.screenCentX = true;
 		grpSongs.add(controlLabel);
-		callInterp('addCategory',[controlLabel,name,i]);
+		callInterp('addCategoryAfter',[controlLabel,name,i]);
 		return controlLabel;
 	}
 	inline function isValidFile(file) {return (!blockedFiles.contains(file.toLowerCase()) && (StringTools.endsWith(file, '.json') || StringTools.endsWith(file, '.sm')));}

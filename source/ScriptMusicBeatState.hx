@@ -22,14 +22,14 @@ class ScriptMusicBeatState extends MusicBeatState{
 	/*Interpeter stuff*/
 
 	
-		
+		var created = false;
+		var lastErr = "";
 		public override function errorHandle(?error:String = "No error passed!",?forced:Bool = false){
 			try{
 
 				resetInterps();
-				trace('Error!\n ${error}');
 				parseMoreInterps = false;
-				// if(!songStarted && !forced && playCountdown){
+				if(!created && !forced){
 				// 	if(errorMsg == "") errorMsg = error; 
 				// 	// else trace(error);
 				// 	startedCountdown = true;
@@ -37,9 +37,11 @@ class ScriptMusicBeatState extends MusicBeatState{
 				// 	// new FlxTimer().start(0.5,function(_){
 				// 	// 	errorHandle(error,true);
 				// 	// });
-				// 	LoadingScreen.loadingText = 'ERROR!';
-				// 	return;
-				// }
+					lastErr = error;
+					LoadingScreen.loadingText = 'ERROR!';
+					return;
+				}
+				trace('Error!\n ${error}');
 				// errorMsg = "";
 				FlxTimer.globalManager.clear();
 				FlxTween.globalManager.clear();
@@ -51,6 +53,10 @@ class ScriptMusicBeatState extends MusicBeatState{
 				persistentDraw = true;
 
 				Main.game.blockUpdate = Main.game.blockDraw = false;
+				if(forced){
+					MainMenuState.handleError(error,true);
+					return;
+				}
 				openSubState(new ErrorSubState(0,0,error));
 			}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
 			}
@@ -68,6 +74,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 		];
 
 		public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String){
+			cancelCurrentFunction = false;
 			var _interp = interps[id];
 			try{
 				if (_interp == null) {throw('Interpter ${id} doesn\'t exist!');return;}
@@ -369,6 +376,13 @@ class ScriptMusicBeatState extends MusicBeatState{
 			override public function create(){
 				super.create();
 				instance = this;
+
+				created = true;
+				if(lastErr != ""){
+					errorHandle(lastErr);
+					lastErr = "";
+					return;
+				}
 				callInterp('reloadDone',[]);
 				callInterp('createAfter',[]);
 			}

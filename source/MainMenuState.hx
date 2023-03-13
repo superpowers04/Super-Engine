@@ -108,13 +108,15 @@ class MainMenuState extends SickMenuState
 			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
 			loading = false;
 			isMainMenu = true;
+			if(!important){
+				useNormalCallbacks = true;
+				loadScripts(true);
+			}
 			super.create();
 
 			if(MainMenuState.errorMessage == "" && ScriptableStateManager.goToLastState && ScriptableStateManager.lastState != ""){
 				SelectScriptableState.selectState(ScriptableStateManager.lastState);
-			}else{
-				if(!important) loadScripts(true);
-			}
+			}else 
 			bg.scrollFactor.set(0.1,0.1);
 			bg.color = MainMenuState.bgcolor;
 			if (onlinemod.OnlinePlayMenuState.socket != null){
@@ -264,7 +266,10 @@ class MainMenuState extends SickMenuState
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
 		curSelected = 0;
-		otherMenu = true;
+
+		#if(!mobile)
+			otherMenu = true;
+		#end
 		selected = false;
 		callInterp('otherSwitch',[]);
 		if(cancelCurrentFunction) return;
@@ -290,14 +295,14 @@ class MainMenuState extends SickMenuState
 			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Open your mods folder in your File Manager',"Check out the awesome people who helped with this engine in some way",'Customise your experience to fit you'];
 		#end
 		curSelected = 0;
+		#if(!mobile)
+			otherMenu = false;
+		#end
 		if(regen)generateList();
 		callInterp('mmSwitch',[]);
 		if(cancelCurrentFunction) return;
 		if(regen)changeSelection();
 		selected = false;
-		#if(!mobile)
-			otherMenu = false;
-		#end
 	}
 
   override function select(sel:Int){

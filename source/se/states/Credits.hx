@@ -18,19 +18,48 @@ class Credits extends SearchMenuState
 	var exampleImage:FlxSprite;
 	var uiIcon:HealthIcon;
 	var charNameText:FlxText;
-	var descriptions:Map<String,String> = [
-		"Super Engine" => "
-fuck
-",
-	];
+	var descriptions:Array<Array<String>> = [
+		["Super Engine" , "Super Engine, The engine you're using right now.
+
+* Superpowers04 - Pretty much everything specific to Super Engine
+* NayToon - Many fixes, multiplayer improvements, providing early Windows builds, etc.
+* BeastlyGabi/BeastlyGhost - Some general help
+* XieneDev - Made Battle Royale. This engine actually wouldn't exist if it wasn't for this pog FNF mod
+"],["Funkin' Team" , "The base game!
+
+* ninjamuffin99 - Programming
+* PhantomArcade3K - Art
+* Evilsk8r - Art
+* Kawai Sprite - Music
+"],["Kade Engine 1.4.2" , "The original engine. 
+
+* KadeDeveloper - Maintainer and lead programmer
+"], ["Modding Plus" , "Several improvements and the original base for HScript
+
+* BulbyVR-Gamer) - Owner/Programmer
+* DJ Popsicle/1780306) - Co-Owner/Additional Programmer
+* Matheus L/Mlops, AndreDoodles, riko, Raf, ElBartSinsoJaJa, and plum - Artist & Animation
+* ThePinkPhantom/JuliettePink - Portrait Artist
+* Alex Director - Icon Fixer
+* TrafficKid - GitHub Wikipedia
+* GwebDev - Edited WebM code
+* Axy - Poggers help
+"], ["TJSON","Library used for parsing JSON's quickly
+
+* JWambaugh - Making the library 
+"],["Shoutouts" , "Some general shoutouts
+
+* V.S. Ex Tabi - The arrow examples are from here
+* ShadowMario - A huge inspiration. Both Psych Engine and FNF Multi 3.2 were massive inspirations for Super Engine"
+]];
 	override function reloadList(?reload:Bool = false,?search:String=""){try{
 			curSelected = 0;
 			if(reload){CoolUtil.clearFlxGroup(grpSongs);}
 			songs = [];
 
 			var i:Int = 0;
-			for (name in descriptions){
-				_addToList(name,i);
+			for (_ => name in descriptions){
+				_addToList(name[0],i);
 				i++;
 			}
 		}catch(e) MainMenuState.handleError('Error with loading credits list ${e.message}');
@@ -88,7 +117,7 @@ fuck
 		var _oldSel = curSelected;
 		super.changeSelection(change);
 		retAfter = true;
-		updateInfoText(descriptions[songs[curSelected]]);
+		updateInfoText(descriptions[curSelected][1]);
 		updateName(songs[curSelected]);
 
 	}

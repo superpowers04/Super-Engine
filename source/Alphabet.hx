@@ -90,6 +90,7 @@ class Alphabet extends FlxSpriteGroup
 	public var useAlphabet:Bool = true;
 	public var selected:Bool = false;
 	public var moveX:Bool = true;
+	public var moveY:Bool = true;
 	public var adjustAlpha:Bool = true;
 	public var persist:Bool = false;
 	public var removeDashes = true;
@@ -262,12 +263,9 @@ class Alphabet extends FlxSpriteGroup
 
 	override function update(elapsed:Float)
 	{
-		if (isMenuItem)
-		{
-			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
-
-			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48) + yOffset,10 * elapsed);
-			if(moveX)x = FlxMath.lerp(x, xOffset, 10 * elapsed);
+		if (isMenuItem){
+			if(moveY) y = FlxMath.lerp(y, (FlxMath.remapToRange(targetY, 0, 1, 0, 1.3) * 120) + (FlxG.height * 0.48) + yOffset,10 * elapsed);
+			if(moveX) x = FlxMath.lerp(x, xOffset, 10 * elapsed);
 		}
 		if(visible) super.update(elapsed);
 		if(screenCentX) screenCenter(X);

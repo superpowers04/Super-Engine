@@ -3130,7 +3130,7 @@ class PlayState extends ScriptMusicBeatState
 		callInterp("keyShit",[pressArray,holdArray]);
 		charCall("keyShit",[pressArray,holdArray]);
 
-		if (!acceptInput) {lastPressArray = holdArray = pressArray = releaseArray = [false,false,false,false];}
+		if (!acceptInput || boyfriend.isStunned) {lastPressArray = holdArray = pressArray = releaseArray = [false,false,false,false];}
 
 		if(FlxG.save.data.debounce && lastPressArray.contains(true)){
 			pressArray = [for (i => v in lastPressArray) if(v) false else pressArray[i] ];
@@ -3650,7 +3650,7 @@ class PlayState extends ScriptMusicBeatState
 				];
 		 		callInterp("keyShit",[pressArray,holdArray]);
 		 		charCall("keyShit",[pressArray,holdArray]);
-		 		if (!acceptInput) {holdArray = pressArray = releaseArray = [false,false,false,false];}
+		 		if (!acceptInput || boyfriend.isStunned) {holdArray = pressArray = releaseArray = [false,false,false,false];}
 				// HOLDS, check for sustain notes
 				if (generatedMusic && holdArray.contains(true))
 				{

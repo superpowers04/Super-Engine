@@ -245,6 +245,7 @@ class CharAnimController extends FlxAnimationController{
 		public var loadedFrom:String = "";
 		public var isCustom:Bool = false;
 		public var charXml:String;
+		public var isStunned:Bool = false;
 		public var isPressingNote:Bool = false; // Only used for the player. True if the player is currently pressing any notes keys
 
 	// public var spriteArr:Array<FlxSprite> = [];

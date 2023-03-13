@@ -630,7 +630,7 @@ class Note extends FlxSkewedSprite
 							}
 						}
 					}
-					else if (aiShouldPress && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
+					else if (aiShouldPress && (PlayState.dad == null || !PlayState.dad.isStunned) && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
 					{
 						hit(1,this);
 						callInterp("noteHitDad",[PlayState.dad,this]);

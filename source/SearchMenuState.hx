@@ -196,9 +196,10 @@ class SearchMenuState extends ScriptMusicBeatState
 		controlLabel.cutOff = 24;
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
-		if (i != 0)
-			controlLabel.alpha = 0.6;
+		if (i != 0) controlLabel.alpha = 0.6;
+
 		grpSongs.add(controlLabel);
+		callInterp('addToListAfter',[controlLabel,char,i]);
 	}
 	override function draw(){
 		super.draw();
@@ -323,6 +324,7 @@ class SearchMenuState extends ScriptMusicBeatState
 			curSelected = 0;
 
 		var bullShit:Int = 0;
+		if(bg.height > 720) FlxG.camera.scroll.y = (curSelected / grpSongs.length) * (bg.height - 720);
 
 
 			for (item in grpSongs.members)

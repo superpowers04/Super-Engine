@@ -76,22 +76,21 @@ class SickMenuState extends ScriptMusicBeatState
 		grpControls.clear();
 		callInterp('generateList',[]);
 		if(cancelCurrentFunction) return;
-		for (i in 0...options.length)
-		{
-			addListing(i);
-		}
+		for (i in 0...options.length) addListing(i);
 		callInterp('generateListAfter',[grpControls]);
 	}
 	function addListing(i:Int){
-		callInterp('addListing',[i,options[i]]);
+		callInterp('addToList',[i,options[i]]);
 		if(cancelCurrentFunction) return;
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i], true, false);
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
 		if (i != 0) controlLabel.alpha = 0.6;
 		grpControls.add(controlLabel);
+		callInterp('addToListAfter',[controlLabel,i,options[i]]);
 
 	}
+
 	public static var reloadMusic = true;
 	public static function musicHandle(?isMainMenu:Bool = false,?_bg:FlxSprite = null,?recolor:Bool = false){
 		try{
@@ -185,8 +184,8 @@ class SickMenuState extends ScriptMusicBeatState
 				bg = new FlxSprite().loadGraphic(SearchMenuState.background); 
 				bg.color = 0xFFFF6E6E;
 			}
-
 			bg.scrollFactor.set(0.01,0.01);
+
 			add(bg);
 			if(SearchMenuState.backgroundOver != null){
 				var bgOver = new FlxSprite().loadGraphic(SearchMenuState.backgroundOver);
@@ -288,7 +287,7 @@ class SickMenuState extends ScriptMusicBeatState
 		if (curSelected < 0) curSelected = grpControls.length - 1;
 		if (curSelected >= grpControls.length) curSelected = 0;
 
-		FlxG.camera.scroll.y = (bg.height / 720) * (curSelected / grpControls.length);
+		if(bg.height > 720) FlxG.camera.scroll.y = (curSelected / grpControls.length) * (bg.height - 720);
 
 
 		descriptionText.text = descriptions[curSelected];
