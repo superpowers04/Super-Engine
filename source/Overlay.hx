@@ -14,6 +14,7 @@ class Overlay extends TextField
 		The current frame rate, expressed using frames-per-second
 	**/
 	public var currentFPS(default, null):Int;
+	static public var instance:Overlay = null;
 
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
@@ -23,6 +24,7 @@ class Overlay extends TextField
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
 	{
 		super();
+		instance = this;
 
 		this.x = x;
 		this.y = y;
@@ -52,6 +54,7 @@ class Overlay extends TextField
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
+		if(!visible) return;
 		currentTime += flixel.FlxG.elapsed;
 		times.push(currentTime);
 

@@ -1090,10 +1090,12 @@ class PlayState extends ScriptMusicBeatState
 
 		iconP1 = new HealthIcon(bf.getNamespacedName(), true,boyfriend.clonedChar,boyfriend.charLoc);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
+		iconP1.trackedSprite = healthBar;
 		add(iconP1);
 
 		iconP2 = new HealthIcon(dad.getNamespacedName(), false,dad.clonedChar,dad.charLoc);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
+		iconP2.trackedSprite = healthBar;
 		// iconP2.offset.set(0,iconP2.width);
 
 		add(iconP2);
@@ -1106,6 +1108,7 @@ class PlayState extends ScriptMusicBeatState
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
+		iconP1.isTracked = iconP2.isTracked = !practiceMode;
 		if(practiceMode){
 			// if(practiceMode ){
 			practiceText = new FlxText(0,healthBar.y - 64,(if(flippy)"Flippy Mode" else if(ChartingState.charting) "Testing Chart" else "Practice mode"),16);
@@ -2117,20 +2120,15 @@ class PlayState extends ScriptMusicBeatState
 
 		// iconP1.updateHitbox();
 		// iconP2.updateHitbox();
-
-		if(!practiceMode){
-			var iconOffset:Int = 26;
-			if(healthBar.fillDirection == LEFT_TO_RIGHT){
-				iconP1.x = (healthBar.x + healthBar.width - iconOffset) - (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01));
-				iconP2.x = (healthBar.x + healthBar.width - (iconP2.width - iconOffset)) - (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01));
-
-			}else{
-				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - (iconOffset));
-				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - (iconP2.width - iconOffset));
-
-
-			}
+		if(iconP1.isTracked){
+			iconP1.trackingOffset = -26;
+			iconP1.updateTracking(if(healthBar.fillDirection == LEFT_TO_RIGHT) health * 0.5 else 1 - (health * 0.5));
 		}
+		if(iconP2.isTracked){
+			iconP2.trackingOffset = -(iconP2.width - 26);
+			iconP2.updateTracking(if(healthBar.fillDirection == LEFT_TO_RIGHT) health * 0.5 else 1 - (health * 0.5));
+		}
+
 		// else{
 		// 	iconP1.y = playerStrums.members[0].y - (iconP1.height / 2);
 		// 	iconP2.y = playerStrums.members[0].y - (iconP2.height / 2);

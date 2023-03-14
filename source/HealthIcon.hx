@@ -16,6 +16,9 @@ class HealthIcon extends FlxSprite
 	var isMenuIcon:Bool = false;
 	var frameCount:Int = 2;
 	var hichar:String = "";
+	public var trackedSprite:FlxSprite = null;
+	public var isTracked:Bool = false;
+	public var trackingOffset:Float = 0;
 	// public var pathh = "mods/characters";
 
 	public function new(?char:String = 'bf', ?isPlayer:Bool = false,?clone:String = "",?isMenuIcon:Bool = false,?path:String = "mods/characters")
@@ -24,6 +27,10 @@ class HealthIcon extends FlxSprite
 		this.isPlayer = isPlayer;
 		this.isMenuIcon = isMenuIcon;
 		changeSprite(char,"",path);
+	}
+	public function updateTracking(Pos:Float = 0){
+		if(!isTracked) return;
+		x = trackedSprite.x + (trackedSprite.width * Pos) + trackingOffset;
 	}
 
 	public dynamic function updateAnim(health:Float){
