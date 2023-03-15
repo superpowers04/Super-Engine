@@ -110,7 +110,6 @@ class OnlinePauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
-					FlxG.sound.music.volume = FlxG.save.data.instVol;
 					close();
 				case "Exit to lobby":
 					if (TitleState.supported){

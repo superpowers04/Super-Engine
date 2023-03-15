@@ -21,6 +21,7 @@ using StringTools;
 
 class OnlineLobbyState extends MusicBeatState
 {
+
   var clientTexts:Map<Int, Int> = []; // Maps a player ID to the corresponding index in clientsGroup
   var clientsGroup:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
   var clientsGroupLeaderboard:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
@@ -42,10 +43,12 @@ class OnlineLobbyState extends MusicBeatState
   var keepClients:Bool;
   var showingLeaderBoard:Bool = true;
   var hasLeaderboard:Bool = false;
+  // public static var loadedScripts:Bool = false;
 
 	public function new(keepClients:Bool=false,?_hasLeaderboard:Bool = false)
 	{
 		super();
+
 		if(_hasLeaderboard){
 			showingLeaderBoard = false;
 			hasLeaderboard = true;
@@ -58,6 +61,7 @@ class OnlineLobbyState extends MusicBeatState
 
 		  Chat.chatMessages = [];
 		}
+		FlxG.mouse.visible = true;
 
 		this.keepClients = keepClients;
 	}
@@ -173,6 +177,7 @@ class OnlineLobbyState extends MusicBeatState
 
 
 	super.create();
+	FlxG.mouse.visible = true;
   }
 
   function createNamesUI()
@@ -268,6 +273,20 @@ class OnlineLobbyState extends MusicBeatState
 						PlayState.dadShow = bool;
 					case "clientscript": // CAN ALLOW CHEATING, ALLOW WITH CAUTION! Allows players to use custom scripts online!
 						QuickOptionsSubState.setSetting("Song hscripts",bool);
+						// if(bool == loadedScripts){
+						// 	Chat.SERVER_MESSAGE('Server set client scripts to $bool, however you already have ${if(bool) '' else 'no'} scripts loaded. So no actions have been performed');
+						// 	return;
+						// }
+						// if(bool){
+						// 	scriptSubDirectory = "onlinelobby";
+						// 	loadScripts();
+						// 	Chat.SERVER_MESSAGE('Server enabled client scripts. All of your scripts have been enabled');
+						// }else{
+						// 	resetInterps();
+						// 	Chat.SERVER_MESSAGE('Server disabled client scripts. All of your scripts have been disabled');
+						// }
+						// loadedScripts = bool;
+						return;
 					default:
 						throw("Invalid option");
 				}

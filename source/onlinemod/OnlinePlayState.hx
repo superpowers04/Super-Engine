@@ -370,25 +370,25 @@ class OnlinePlayState extends PlayState
 //           this.fromBool([controls.DOWN_P, controls.DOWN]),
 //           this.fromBool([controls.UP_P, controls.UP]),
 //           this.fromBool([controls.RIGHT_P, controls.RIGHT])
-	override function openSubState(SubState:FlxSubState)
-	{
-		if (Type.getClass(SubState) == PauseSubState)
-		{
-			var realPaused:Bool = paused;
-			paused = false;
 
-			super.openSubState(new OnlinePauseSubState());
-			inPause = true;
+	override public function pause(){
+		var realPaused:Bool = paused;
+		paused = false;
 
-			paused = realPaused;
-			persistentUpdate = true;
-			
-			canPause = false;
+		super.openSubState(new OnlinePauseSubState());
 
-			return;
-		}
 
-		return super.openSubState(SubState);
+		FlxTween.tween(FlxG.sound.music,{volume:(FlxG.save.data.instVol * FlxG.sound.volume) * 0.3},0.5);
+		FlxTween.tween(vocals,{volume:(FlxG.save.data.voicesVol * FlxG.sound.volume) * 0.3},0.5);
+		inPause = true;
+
+		paused = realPaused;
+		persistentUpdate = true;
+		persistentDraw = true;
+		
+		canPause = false;
+		followChar(0);
+		camGame.zoom = 1;
 	}
 
 	override function closeSubState()
@@ -398,6 +398,8 @@ class OnlinePlayState extends PlayState
 			canPause = true;
 			inPause = false;
 		}
+		FlxG.sound.music.volume = FlxG.save.data.instVol * FlxG.sound.volume;
+		vocals.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
 
 		super.closeSubState();
 	}
@@ -505,6 +507,13 @@ class OnlinePlayState extends PlayState
 						if(data[2] != null && data[2] != 0) charID = data[2];
 						// trace('packet lmao ${data}');
 
+						for (i => note in notes.members){ // Really bad but makes sure there aren't any random ass notes pressed
+							if(!note.mustPress && note.noteID == data[0] && Conductor.songPosition - note.strumTime > 1000){
+								note.kill();
+								notes.remove(note, true);
+								note.destroy();
+							}
+						}
 						if(data[0] == -1 && data[1] != null && data[1] != 0 ){
 							PlayState.charAnim(1,Note.noteAnims[Std.int(data[1] - 1)],true);
 						}else{
@@ -563,6 +572,7 @@ class OnlinePlayState extends PlayState
 						PlayState.dad.dance(true);
 						trace('Error with KEYPRESS: $data ${e.message}');
 					}
+
 					// // PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
 					// 	p2Int = data[0];
 					// 	p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1) // Holds

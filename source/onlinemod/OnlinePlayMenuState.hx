@@ -281,7 +281,7 @@ class OnlinePlayMenuState extends MusicBeatState
 						ServerIP.text = 'Server: ${serverInfo[0]}:${serverInfo[1]}\nPassword: ${(if(hide) ('').rpad('*',serverInfo[2].length) else serverInfo[2])}';
 					});
 					TogglePassword.setLabelFormat(18, FlxColor.BLACK, CENTER);
-					TogglePassword.resize(100, 50);
+					TogglePassword.resize(110, 50);
 					_Server.push(add(TogglePassword));
 					
 				}

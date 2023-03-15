@@ -2104,12 +2104,7 @@ class PlayState extends ScriptMusicBeatState
 		     // #if(android) || FlxG.swipes[0] #end ) 
 			&& startedCountdown && canPause)
 		{
-			persistentUpdate = false;
-			persistentDraw = true;
-			paused = true;
-			openSubState(new PauseSubState(boyfriend.x, boyfriend.y));
-			followChar(0);
-			camGame.zoom = 1;
+			pause();
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
@@ -2364,6 +2359,14 @@ class PlayState extends ScriptMusicBeatState
 	}
 	#end
 }
+	public function pause(){
+		persistentUpdate = false;
+		persistentDraw = true;
+		paused = true;
+		openSubState(new PauseSubState(boyfriend.x, boyfriend.y));
+		followChar(0);
+		camGame.zoom = 1;
+	}
 	@:keep inline function addNotes(){
 		if(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500){
 			while(unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
