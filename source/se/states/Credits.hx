@@ -92,11 +92,15 @@ class Credits extends SearchMenuState
 		charNameText.scrollFactor.set();
 		charNameText.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		overLay.add(charNameText);
+		retAfter = false;
 
 		// FlxTween.angle(uiIcon, -40, 40, 1.12, {ease: FlxEase.quadInOut, type: PINGPONG});  
 		changeSelection(0); 
 
 	}catch(e) MainMenuState.handleError('Error with credits "create" ${e.message}');}
+	override function ret(){
+		FlxG.switchState(new MainMenuState());
+	}
 	inline function updateName(?name = "funninameherelmaomlmaonjosn"){
 		if(name != "funninameherelmaomlmaonjosn"){
 			charNameText.text = name;

@@ -34,7 +34,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly(default,never):String = "U34";
+	public static var nightly(default,never):String = "U34A";
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 
 	public static var compileType(default,never):String =
@@ -371,7 +371,7 @@ class MainMenuState extends SickMenuState
 						}
 						showTempmessage('Unable to find suitable opener!');
 					#elseif(windows)
-						Sys.command('start',[SELoader.fullPath('mods/')]);
+						Sys.command('explorer.exe',[SELoader.fullPath('mods/')]);
 					#elseif(macos)
 						Sys.command('open',[SELoader.fullPath('mods/')]);
 					#end

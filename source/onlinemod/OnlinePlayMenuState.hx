@@ -274,7 +274,7 @@ class OnlinePlayMenuState extends MusicBeatState
 				DeleteButton.resize(100, 50);
 				_Server.push(add(DeleteButton));
 
-				if(serverInfo[i][2] != null && serverInfo[2] != ""){
+				if(serverInfo[2] != null && serverInfo[2] != ""){
 					var hide = true;
 					var TogglePassword = new FlxUIButton(DeleteButton.x + DeleteButton.width + 25, ConnectButton.y, 'Toggle Password', () -> {
 						hide = !hide;

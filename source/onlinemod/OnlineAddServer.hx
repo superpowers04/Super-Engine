@@ -43,12 +43,10 @@ class OnlineAddServer extends MusicBeatSubstate
 	}
 	inline function saveServer(){
 		FlxG.save.data.savedServers.push([ipField.text,portField.text,pwdField.text]);
+		SEFlxSaveWrapper.save();
 	}
 	override function create()
 	{
-		#if discord_rpc
-			DiscordClient.changePresence("In Server adding menu",null);
-		#end
 		TitleState.supported = false;
 		var bg:FlxSprite = new FlxSprite(0,-FlxG.height * 0.25).loadGraphic(FlxGraphic.fromRectangle(FlxG.width,Std.int(FlxG.height * 1.5),0xff000000));
 		bg.alpha = 0.7;
@@ -102,7 +100,7 @@ class OnlineAddServer extends MusicBeatSubstate
 		add(ConnectButton);
 
 		var ConnectSaveButton = new FlxUIButton(0, FlxG.height * 0.85, "Save & Connect", () -> {
-			
+			saveServer();
 			OnlinePlayMenuState.Connect(ipField.text,portField.text,pwdField.text);
 		});
 		ConnectSaveButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
@@ -112,7 +110,7 @@ class OnlineAddServer extends MusicBeatSubstate
 		add(ConnectSaveButton);
 
 		var SaveButton = new FlxUIButton(0, FlxG.height * 0.85, "Save", () -> {
-			FlxG.save.data.savedServers.push([ipField.text,portField.text,pwdField.text]);
+			saveServer();
 			close();
 		});
 		SaveButton.setLabelFormat(24, FlxColor.BLACK, CENTER);

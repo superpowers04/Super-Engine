@@ -500,6 +500,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		// Fucking flixel
 		if(voices != null && curVol != FlxG.sound.volume){ // Don't change volume unless volume changes
 			curVol = FlxG.sound.volume;
+			FlxG.sound.music.volume = FlxG.save.data.instVol * FlxG.sound.volume;
 			voices.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
 		}
 	}
