@@ -2937,10 +2937,10 @@ class PlayState extends ScriptMusicBeatState
 						if(daNote.isSustainNote)
 						{
 							// daNote.isSustainNoteEnd && 
-							if(daNote.isSustainNoteEnd && daNote.prevNote != null)
-								daNote.y = daNote.prevNote.y - (daNote.frameHeight * daNote.scale.y);
-							else
-								daNote.y += daNote.height * 0.5;
+							// if(daNote.isSustainNoteEnd && daNote.prevNote != null)
+							// 	daNote.y = daNote.prevNote.y - (daNote.frameHeight * daNote.scale.y);
+							// else
+							daNote.y += daNote.height * 0.5;
 
 							// Only clip sustain notes when properly hit
 							if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote))
