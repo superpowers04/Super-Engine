@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: MacBuild
-          path: /tmp/fnfbrbin/bin/      
+          path: /tmp/fnfbrbin/macos/      
   buildLinux:
     runs-on: ubuntu-latest
     
@@ -98,8 +98,8 @@ jobs:
           haxelib setup /tmp/haxelib
           haxelib install hxcpp > nul
           haxelib install lime
-          haxelib install openfl
-          haxelib --never install flixel
+          haxelib git openfl https://github.com/EliteMasterEric/openFl
+          haxelib --never git flixel https://github.com/EliteMasterEric/flixel
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib install flixel-tools
@@ -160,8 +160,8 @@ jobs:
           haxelib setup C:/haxelib
           haxelib install hxcpp > nul
           haxelib install lime
-          haxelib install openfl
-          haxelib --never install flixel
+          haxelib git openfl https://github.com/EliteMasterEric/openFl
+          haxelib --never git flixel https://github.com/EliteMasterEric/flixel
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib install flixel-tools

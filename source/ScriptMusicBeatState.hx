@@ -352,7 +352,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 
 		/*Soft reloads a state, i.e reloading scripts. This will not reload hsbrtools as to prevent crashes. Use a normal reset for that
 		*/
-		public function softReloadState(){
+		public function softReloadState(?showWarning:Bool = true){
 			if(!parseMoreInterps){
 				showTempmessage('You are currently unable to reload interpeters!',FlxColor.RED);
 				return;
@@ -364,7 +364,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 			resetInterps();
 			loadScripts();
 			callInterp('reloadDone',[]);
-			showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
+			if(showWarning) showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
 		}
 
 	/* Base Functions */

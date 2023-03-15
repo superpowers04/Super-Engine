@@ -141,10 +141,10 @@ class Highscore
 	/**
 	 * YOU SHOULD FORMAT SONG WITH formatSong() BEFORE TOSSING IN SONG VARIABLE
 	 */
-	public static function setScore(song:String, score:Int,?Arr:Array<Dynamic>):Bool
+	public static function setScore(song:String, score:Int,?Arr:Array<Dynamic>,?forced:Bool = false):Bool
 	{
 		// // Reminder that I don't need to format this song, it should come formatted!
-		if(songScores.get(song) < score){
+		if(songScores.get(song) < score || forced){
 			songScores.set(song, score,Arr);
 			return true;
 		}

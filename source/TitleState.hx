@@ -1148,13 +1148,13 @@ class TitleState extends MusicBeatState
 		// logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
 
+		#if discord_rpc
+			if(DiscordClient.canSend) shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
+		#end
 
 		switch (curBeat)
 		{
 			case 0:
-				#if discord_rpc
-					if(DiscordClient.canSend) shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
-				#end
 				deleteCoolText();
 				
 			// 	destHaxe();

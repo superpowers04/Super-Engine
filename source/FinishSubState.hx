@@ -178,6 +178,16 @@ class FinishSubState extends MusicBeatSubstate
 	var optionsisyes:Bool = false;
 	var shownResults:Bool = false;
 	public var contText:FlxText;
+	public function saveScore(forced:Bool = false):Bool{
+
+		if(win && !PlayState.instance.hasDied && !ChartingState.charting && PlayState.instance.canSaveScore){
+			return (Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)],forced));
+		}
+		// if(forced){
+		// 	if(!win || PlayState.instance.hasDied){showTempmessage("",FlxColor.RED);}
+		// }
+		return false;
+	}
 	public function finishNew(?name:String = ""){
 			// FlxG.mouse.visible = true;
 			// var timer = new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;FlxTween.tween(FinishSubState.instance.contText,{alpha:1},0.5);});
@@ -340,12 +350,6 @@ class FinishSubState extends MusicBeatSubstate
 				// chartInfoText.scrollFactor.set();
 				
 
-				if(win && !PlayState.instance.hasDied && !ChartingState.charting && PlayState.instance.canSaveScore){
-					if(Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)])){
-						finishedText.text+=" | New Personal Best!";
-					}
-					
-				}
 				add(bg);
 				add(finishedText);
 				add(comboText);
@@ -360,6 +364,9 @@ class FinishSubState extends MusicBeatSubstate
 				FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
 				// FlxTween.tween(chartInfoText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
 				FlxTween.tween(settingsText, {y:145},0.5,{ease: FlxEase.expoInOut});
+				if(saveScore()){
+					finishedText.text += " | New Personal Best!";
+				}
 				if(PlayState.logGameplay){
 
 					try{
@@ -470,6 +477,7 @@ class FinishSubState extends MusicBeatSubstate
 				}
 			#end
 
+			if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.S){saveScore(true);}
 			if (FlxG.keys.justPressed.R){if(win){FlxG.resetState();}else{restart();}}
 			if (FlxG.keys.justPressed.O && optionsisyes){
 				SearchMenuState.doReset = false;

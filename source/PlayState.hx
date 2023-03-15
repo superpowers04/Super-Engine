@@ -497,7 +497,7 @@ class PlayState extends ScriptMusicBeatState
 		songStarted = false;
 	}
 
-	override public function softReloadState(){
+	override public function softReloadState(?showWarning:Bool = true){
 		if(!parseMoreInterps){
 			showTempmessage('You are currently unable to reload interpeters!',FlxColor.RED);
 			return;
@@ -511,7 +511,7 @@ class PlayState extends ScriptMusicBeatState
 		generateSong();
 		addNotes();
 		callInterp('reloadDone',[]);
-		showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
+		if(showWarning) showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
 	}
 	override public function loadScripts(?enableScripts:Bool = false,?enableCallbacks:Bool = false,?force:Bool = false){
 		if((!enableScripts && !parseMoreInterps) || (!FlxG.save.data.menuScripts && !force)) return;

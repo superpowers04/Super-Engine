@@ -11,7 +11,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
+import flixel.tweens.FlxEase; 
 import flixel.tweens.FlxTween;
 // import flixel.tweens.FlxTweenManager;
 import flixel.util.FlxColor;
@@ -360,7 +360,7 @@ class PauseSubState extends MusicBeatSubstate
 				}
 	}
 	var _tween:FlxTween;
-	function countdown(){try{
+	public function countdown(){try{
 		ready = false;
 		var swagCounter:Int = 1;
 		try{
