@@ -141,7 +141,6 @@ class MusicBeatState extends FlxUIState
 	var oldStep:Int = -10000;
 	override function update(elapsed:Float)
 	{
-
 		if(tempMessages[0] != null && (tempMessages[0][0] -= elapsed) < 0){
 			try{
 				remove(tempMessages[0][1]);remove(tempMessages[0][2]);

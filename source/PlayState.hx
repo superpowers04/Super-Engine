@@ -688,37 +688,6 @@ class PlayState extends ScriptMusicBeatState
 							stageTags = [];
 							var stagePath:String = '${stageInfo.path}/${stageInfo.folderName}';
 							if (SELoader.exists('$stagePath/config.json')){
-								// var stagePropJson:String = File.getContent('$stagePath/config.json');
-								// var stageProperties:StageJSON = haxe.Json.parse(CoolUtil.cleanJSON(stagePropJson));
-								// if (stageProperties == null || stageProperties.layers == null || stageProperties.layers[0] == null){MainMenuState.handleError('$stage\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
-								// defaultCamZoom = stageProperties.camzoom;
-								// for (layer in stageProperties.layers) {
-								// 	if(layer.song != null && layer.song != "" && layer.song.toLowerCase() != SONG.song.toLowerCase()){continue;}
-								// 	var curLayer:FlxSprite = new FlxSprite(0,0);
-								// 	if(layer.animated){
-								// 		var xml:String = File.getContent('$stagePath/${layer.name}.xml');
-								// 		if (xml == null || xml == "")MainMenuState.handleError('$stage\'s XML is invalid!');
-								// 		curLayer.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(BitmapData.fromFile('$stagePath/${layer.name}.png')), xml);
-								// 		curLayer.animation.addByPrefix(layer.animation_name,layer.animation_name,layer.fps,false);
-								// 		curLayer.animation.play(layer.animation_name);
-								// 	}else{
-								// 		var png:BitmapData = BitmapData.fromFile('$stagePath/${layer.name}.png');
-								// 		if (png == null) MainMenuState.handleError('$stage\'s PNG is invalid!');
-								// 		curLayer.loadGraphic(png);
-								// 	}
-
-								// 	if (layer.centered) curLayer.screenCenter();
-								// 	if (layer.flip_x) curLayer.flipX = true;
-								// 	curLayer.setGraphicSize(Std.int(curLayer.width * layer.scale));
-								// 	curLayer.updateHitbox();
-								// 	curLayer.x += layer.pos[0];
-								// 	curLayer.y += layer.pos[1];
-								// 	curLayer.antialiasing = layer.antialiasing;
-								// 	curLayer.alpha = layer.alpha;
-								// 	curLayer.active = false;
-								// 	curLayer.scrollFactor.set(layer.scroll_factor[0],layer.scroll_factor[1]);
-								// 	add(curLayer);
-								// }
 								var stageProperties = StageEditor.loadStage(this,'$stagePath/config.json');
 								
 								 // This doesn't have to be provided, doing it this way
@@ -734,7 +703,6 @@ class PlayState extends ScriptMusicBeatState
 									parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
 								}
 							}
-							
 						}
 					}
 				}

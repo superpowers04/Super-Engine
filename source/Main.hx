@@ -261,6 +261,7 @@ class FlxGameEnhanced extends FlxGame{
 	override function update(){
 		
 		try{
+
 			#if(target.threaded)
 				if(_state != _requestedState && FlxG.save.data.doCoolLoading){
 					blockUpdate = blockEnterFrame = blockDraw = true;

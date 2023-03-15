@@ -647,4 +647,3 @@ class FancyStyle implements EncodeStyle{
 }
 
 
-

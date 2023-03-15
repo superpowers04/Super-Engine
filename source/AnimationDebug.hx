@@ -744,11 +744,14 @@ class AnimationDebug extends MusicBeatState
 	// var editorAnim:Map;
 
 
-	function editAnimation(Anim:String,charAnim:CharJsonAnimation,?unbind:Bool = false){
+	function editAnimation(Anim:String,charAnim:CharJsonAnimation,?unbind:Bool = false,?overide:Bool = true){
 		var exists:Bool = false;
 		var id:Int = 0;
 		for (i => v in charJson.animations) {
-			if (v.anim == Anim) {exists=true;id = i;break;}
+			if (v.anim == Anim) {
+				if(!overide) return;
+				exists=true;id = i;break;
+			}
 		}
 		if (unbind){
 			if (exists)
@@ -963,6 +966,60 @@ class AnimationDebug extends MusicBeatState
 			}
 		});
 		uiBox.add(uiMap["commitButton"]);
+		uiMap["autoDetAnims"] = new FlxUIButton(160,160,"Autodetect Anims",function(){
+			try{
+				var count = 0;
+				for(index => animation in charAnims){
+					
+					var _animName = "";
+					var _type = "";
+					var checkAnim = animation.toLowerCase();
+					for(anim in ['idle','cheer','songstart','win','hey','dodge','shoot','sing','attack','hit','dance','sad']){
+						if(checkAnim.contains(anim)){
+							_animName = anim;
+							break;
+						}
+					}
+					for(n in ['left','down','up','right']){
+						if(checkAnim.contains(n)){
+							if(_animName == "") _animName = "sing";
+							_animName += '${n}';
+							break;
+						}
+					}
+					if(charJson.flip_x){ // 90% of the time, this is a bf clone. Worst case scenario, the animations can be re-bound
+						if(checkAnim.contains('left')) checkAnim.replace('left','right');
+						else if(checkAnim.contains('right')) checkAnim.replace('right','left');
+					}
+					if(checkAnim.contains('miss'))_animName += 'miss';
+					if(checkAnim.contains('alt'))_animName += '-alt';
+
+
+
+					if(_animName != ""){
+						if(Character.animCaseInsensitive[_animName] != null) _animName = Character.animCaseInsensitive[_animName];
+						editAnimation(_animName,{
+							anim: _animName,
+							name: animation,
+							loop: uiMap["loop"].checked,
+							flipx:uiMap["flipanim"].checked,
+							noreplaywhencalled:!uiMap["restplay"].checked,
+							fps: Std.int(uiMap["animFPS"].value),
+							loopStart:Std.int(uiMap["loopStart"].value),
+							indices: [],
+							priority:-1
+						},false,false);
+						count++;
+					}
+				}
+				
+				spawnChar(true,false,charJson);
+				showTempmessage('Attempted to auto detect $count anims!');
+			}catch(e){
+				showTempmessage('Error while adding animation: ${e.message}',FlxColor.RED);
+			}
+		});
+		uiBox.add(uiMap["autoDetAnims"]);
 
 
 

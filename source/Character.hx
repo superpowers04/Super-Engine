@@ -89,7 +89,7 @@ class CharAnimController extends FlxAnimationController{
 		// 10 is used for any sing animations, like dodge, hurt, sing or attack animations
 		// 15 is used for missing notes
 		// 100  
-		static var animCaseInsensitive:Map<String,String> = [
+		public static var animCaseInsensitive:Map<String,String> = [
 			"singleft-alt" => "singLEFT-alt",
 			"singdown-alt" => "singDOWN-alt",
 			"singup-alt" => "singUP-alt",
@@ -665,8 +665,6 @@ class CharAnimController extends FlxAnimationController{
 			if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && !amPreview){handleError('$curCharacter\'s JSON is invalid!');} // Boot to main menu if character's JSON can't be loaded
 			// if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && amPreview){
 
-
-			// }
 			loadedFrom = '${charLoc}/$curCharacter/config.json';
 			if(frames == null){
 
@@ -857,7 +855,6 @@ class CharAnimController extends FlxAnimationController{
 
 		if (charType == 2 && !curCharacter.startsWith("gf") && !clonedChar.startsWith("gf")){ // Checks if GF is not girlfriend, Force offset if clone is not GF
 			charY+=200;
-			
 		}
 		this.y += charY;
 		this.x += charX;
