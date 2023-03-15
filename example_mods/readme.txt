@@ -61,7 +61,8 @@ MAKING CHARTS:
 
 MAKING CHARACTERS:
 	Note that Super Engine characters ARE NOT compatible with Psych Engine characters. The json format might look alike but they're completely different. 
-	Loading a Super Engine character in Psych will crash and vice versa
+	Loading a Super Engine character in Psych will crash. 
+	Some characters might load in Super Engine, however they won't have offsets and you'll probably have to edit them 
 	Psych Engine character support is not a priority since importing characters normally works perfectly fine with Psych characters 
 
 	Importing the characters:

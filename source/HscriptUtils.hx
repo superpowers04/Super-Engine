@@ -185,6 +185,8 @@ class HscriptUtils {
 
 		// Flixel Libaries
 
+
+		interp.variables.set("FlixelFlxG", FlxG); // 
 		interp.variables.set("FlxSprite", FlxSprite);
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxSound", FlxSound);

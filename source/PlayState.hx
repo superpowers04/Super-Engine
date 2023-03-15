@@ -2489,27 +2489,14 @@ class PlayState extends ScriptMusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
-		// #if !switch
-		// if (SONG.validScore && stateType != 2 && stateType != 4)
-		// {
-			
 
-		// }
-		// #end
-		// if(!ChartingState.charting ){
-		// 	Highscore.saveScore('${nameSpace}-${actualSongName}', Math.round(songScore), storyDifficulty);
-		// }
-		if (offsetTesting)
-		{
+		if (offsetTesting){
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			offsetTesting = false;
 			LoadingState.loadAndSwitchState(new OptionsMenu());
 			FlxG.save.data.offset = offsetTest;
-		}
-		else
-		{
-			if (isStoryMode)
-			{
+		}else{
+			if (isStoryMode){
 				campaignScore += Math.round(songScore);
 
 				storyPlaylist.remove(storyPlaylist[0]);
@@ -2521,8 +2508,7 @@ class PlayState extends ScriptMusicBeatState
 				StoryMenuState.weekMaxCombo = maxCombo;
 				StoryMenuState.weekScore = songScore;
 				StoryMenuState.weekAccuracy = accuracy;
-				if (storyPlaylist.length <= 0)
-				{
+				if (storyPlaylist.length <= 0){
 					// FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					trace("Song finis");
 
@@ -2564,7 +2550,6 @@ class PlayState extends ScriptMusicBeatState
 					if (storyDifficulty == 2)
 						difficulty = '-hard';
 
-					// difficulty = if (songDiff != "normal") '-${songDiff}';
 					trace('LOADING NEXT SONG');
 					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
 
@@ -2577,12 +2562,7 @@ class PlayState extends ScriptMusicBeatState
 
 					LoadingState.loadAndSwitchState(new PlayState());
 				}
-			}
-			else
-			{
-				// trace('WENT BACK TO FREEPLAY??');
-				// Switches to the win state
-				// openSubState(new FinishSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,true));
+			}else{
 				finishSong(!hasDied);
 			}
 		}
@@ -2671,24 +2651,12 @@ class PlayState extends ScriptMusicBeatState
 				practiceMode = false;
 				health = 0;
 			}
-			// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
-
 			var rating:FlxSprite = new FlxSprite(); // Todo, load sprites before song
-			
-			// if (daRating != 'shit' || daRating != 'bad')
-			// {
 	
 			
 			songScore += Math.round(score);
 			songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
 	
-			/* if (combo > 60)
-					daRating = 'sick';
-				else if (combo > 12)
-					daRating = 'good'
-				else if (combo > 4)
-					daRating = 'bad';
-			 */
 			if(!FlxG.save.data.noterating) return;
 	
 			var pixelShitPart1:String = "";
@@ -2719,8 +2687,7 @@ class PlayState extends ScriptMusicBeatState
 
 			var currentTimingShown = new FlxText(0,0,0,"0ms");
 			timeShown = 0;
-			switch(daRating)
-			{
+			switch(daRating){
 				case 'shit':
 					currentTimingShown.color = FlxColor.RED;
 				case 'bad':

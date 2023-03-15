@@ -224,8 +224,7 @@ class ChartingState extends MusicBeatState
 		deezNuts.set(48, 12);
 		deezNuts.set(64, 16);
 		chartType = detectChartType(_song);
-		if (FlxG.save.data.showHelp == null)
-			FlxG.save.data.showHelp = true;
+		if (FlxG.save.data.showHelp == null) FlxG.save.data.showHelp = true;
 
 		LoadingScreen.loadingText = "Adding objects";
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, GRID_SIZE * 16);
