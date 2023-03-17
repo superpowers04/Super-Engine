@@ -206,8 +206,9 @@ class HscriptUtils {
 		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("FlxText",FlxText);
 		interp.variables.set("FlxSort",FlxSort);
-
+		#if !mobile
 		interp.variables.set("FlxRuntimeShader",flixel.addons.display.FlxRuntimeShader);
+		#end
 		interp.variables.set("FlxShader",flixel.graphics.tile.FlxGraphicsShader);
 		interp.variables.set("FlxTextBorderStyle",FlxTextBorderStyle);
 		interp.variables.set("FlxAxes",SEAxes);
@@ -221,6 +222,7 @@ class HscriptUtils {
 		interp.variables.set("Std", Std);
 		interp.variables.set("Reflect", Reflect);
 
+		interp.variables.set("mobile",#if(mobile) true #else false #end );
 
 
 		interp.variables.set("this", interp);

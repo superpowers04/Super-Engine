@@ -1156,6 +1156,7 @@ class TitleState extends MusicBeatState
 		{
 			case 0:
 				deleteCoolText();
+				destHaxe();
 				
 			// 	destHaxe();
 			case 1:
@@ -1292,10 +1293,6 @@ class TitleState extends MusicBeatState
 		coolText.bounce();
 		add(cachingText = coolText);
 
-		_sprite.x = (FlxG.width / 2);
-		_sprite.y = (FlxG.height * 0.60) - 20 * FlxG.game.scaleY;
-		_sprite.scaleX = FlxG.game.scaleX;
-		_sprite.scaleY = FlxG.game.scaleY;
 		_sound = FlxG.sound.load(flixel.system.FlxAssets.getSound("flixel/sounds/flixel"),FlxG.save.data.instVol - 0.2); // Put the volume down by 0.2 for safety of eardrums
 		_sound.play();
 		for (time in _times)
@@ -1304,12 +1301,12 @@ class TitleState extends MusicBeatState
 		}
 	}
 	function destHaxe(){
+		flixel.util.FlxTimer.globalManager.clear();
 		if(_sprite == null) return;
 		if(_sound != null){
 			_sound.pause();
 			_sound.destroy();
 		} 
-		flixel.util.FlxTimer.globalManager.clear();
 		FlxG.stage.removeChild(_sprite);
 		_sprite = null;
 		_gfx = null;
@@ -1326,6 +1323,12 @@ class TitleState extends MusicBeatState
 		if(textGroup.members[1] == null) textGroup.members[0].color = _colors[_curPart]; else {textGroup.members[1].color = _colors[_curPart];textGroup.members[0].color = 0xFFFFFF;}
 		
 		if(_sprite.filters[0] != null) cast(_sprite.filters[0],flash.filters.GlowFilter).color = _colors[_curPart];
+		if(_sprite != null){
+			_sprite.x = (FlxG.width * 0.5);
+			_sprite.y = (FlxG.height * 0.60) - 20 * FlxG.game.scaleY;
+			_sprite.scaleX = FlxG.game.scaleX;
+			_sprite.scaleY = FlxG.game.scaleY;
+		}
 		if (_curPart == 6)
 		{
 			// Make the logo a tad bit longer, so our users fully appreciate our hard work :D

@@ -78,7 +78,12 @@ class Overlay extends TextField
 			/ 1024) / 1000);
 			if (mem > memPeak)
 				memPeak = mem;
-			text = "" + currentFPS + " FPS/" + deltaTime + " MS\nMemory/Peak: " + mem + "MB/" + memPeak + "MB" +  debugVar;
+			text = "" + currentFPS + " FPS/" + deltaTime + 
+			" MS\nMemory Usage/Peak: " + mem + "MB/" + memPeak + "MB"
+			#if cpp
+			+"\nMemory Reserved/Current: " + Math.round((cpp.NativeGc.memInfo(3) / 1024) / 1000) + "MB/" + Math.round((cpp.NativeGc.memInfo(2) / 1024) / 1000) + "MB" 
+			#end
+			+ debugVar;
 		// }
 
 		cacheCount = currentCount;
@@ -161,8 +166,8 @@ class Console extends TextField
 		if(FlxG.keys == null || FlxG.save.data == null || !FlxG.save.data.animDebug) return;
 		if(showConsole && requestUpdate){
 			text = lines.join("\n");
-			scrollV = bottomScrollV;
 			requestUpdate = false;
+			scrollV = bottomScrollV;
 		}
 		if(FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F10){
 			lines = [];

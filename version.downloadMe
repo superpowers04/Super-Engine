@@ -1,2 +1,5 @@
-1.0.0-U34A;
+1.0.0-U35;
+- PlayState.controlCamera
+- AnimationDebug now has an option to auto-detect animations
+- Add FlixelFlxG to interpeter(Base FlxG without any modifications)
 - A whole bunch of fixes

@@ -209,6 +209,7 @@ class PlayState extends ScriptMusicBeatState
 		public var inputMode:Int = 0;
 		public var camBeat:Bool = true;
 		public var cachedChars:Array<Map<String,Character>> = [[],[],[]];
+		public var controlCamera:Bool = true;
 		public var moveCamera(default,set):Bool = true;
 		public function set_moveCamera(v):Bool{
 			if(v){
@@ -3371,8 +3372,10 @@ class PlayState extends ScriptMusicBeatState
 			}
 
 			PlayState.canUseAlts = sect.altAnim;
-			var locked = (!FlxG.save.data.camMovement || camLocked || (notes.members[0] == null && unspawnNotes[0] == null || (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition > 4000)) );
-			followChar((sect.mustHitSection ? 0 : 1),locked);
+			if(controlCamera){
+				var locked = (!FlxG.save.data.camMovement || camLocked || (notes.members[0] == null && unspawnNotes[0] == null || (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition > 4000)) );
+				followChar((sect.mustHitSection ? 0 : 1),locked);
+			}
 		}
 
 		// Zoooooooom

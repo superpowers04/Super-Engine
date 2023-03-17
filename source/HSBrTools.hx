@@ -12,7 +12,9 @@ import sys.io.File;
 import flash.display.BitmapData;
 import Xml;
 import sys.FileSystem;
+#if !mobile
 import flixel.addons.display.FlxRuntimeShader;
+#end
 import flixel.system.FlxAssets;
 
 import flxanimate.FlxAnimate;
@@ -149,20 +151,25 @@ class HSBrTools {
 		if(xmlArray[textPath] == null) xmlArray[textPath] = SELoader.loadXML('${path}${textPath}');
 		return xmlArray[textPath];
 	}
-	public function loadShader(textPath:String,?glslVersion:Dynamic = 120):Null<FlxRuntimeShader>{
-		if(textArray[textPath + ".vert"] == null && SELoader.exists('${path}${textPath}.vert')) textArray[textPath + ".vert"] = SELoader.loadText('${path}${textPath}.vert');
-		if(textArray[textPath + ".frag"] == null && SELoader.exists('${path}${textPath}.frag')) textArray[textPath + ".frag"] = SELoader.loadText('${path}${textPath}.frag');
-		try{
-			var shader = new FlxRuntimeShader(textArray[textPath + ".vert"],textArray[textPath + ".frag"],Std.string(glslVersion));
-			// if(init) shader.initialise(); // If the shader uses custom variables, this can prevent loading a broken shader
-			return shader;
+	public function loadShader(textPath:String,?glslVersion:Dynamic = 120)#if(!mobile) :Null<FlxRuntimeShader> #end{
+		#if mobile
 
-		}catch(e){
-			handleError('${id}: Unable to load shader "${textPath}": ${e.message}');
-			trace(e.message);
-		}
-		return null;
+			handleError('Shaders aren\'t supported on mobile!');
+			return null;
+		#else
+			if(textArray[textPath + ".vert"] == null && SELoader.exists('${path}${textPath}.vert')) textArray[textPath + ".vert"] = SELoader.loadText('${path}${textPath}.vert');
+			if(textArray[textPath + ".frag"] == null && SELoader.exists('${path}${textPath}.frag')) textArray[textPath + ".frag"] = SELoader.loadText('${path}${textPath}.frag');
+			try{
+				var shader = new FlxRuntimeShader(textArray[textPath + ".vert"],textArray[textPath + ".frag"],Std.string(glslVersion));
+				// if(init) shader.initialise(); // If the shader uses custom variables, this can prevent loading a broken shader
+				return shader;
 
+			}catch(e){
+				handleError('${id}: Unable to load shader "${textPath}": ${e.message}');
+				trace(e.message);
+			}
+			return null;
+		#end
 	}
 	// public function saveText(textPath:String,text:String):Bool{
 	// 	File.saveContent('${path}${textPath}',text);
