@@ -283,6 +283,13 @@ class ChartingState extends MusicBeatState
 
 
 		addSection();
+		if(chartType.contains("PSYCH")){
+			trace('Convert Section Beat to Length In Steps');
+			for(section in _song.notes){
+				if(section.sectionBeats > 0)
+					section.lengthInSteps = section.sectionBeats * 4;
+			}
+		}
 
 		// sections = _song.notes;
 

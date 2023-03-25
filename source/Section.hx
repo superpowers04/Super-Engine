@@ -5,6 +5,7 @@ typedef SwagSection =
 	var sectionNotes:Array<Dynamic>;
 	var ?lengthInMS:Float; // ms better than steps, only used for restructuring a chart
 	var lengthInSteps:Int;
+	var sectionBeats:Int; // psych stuff
 	var typeOfSection:Int;
 	var mustHitSection:Bool;
 	var ?scrollSpeed:Float;
