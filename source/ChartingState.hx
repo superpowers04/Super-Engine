@@ -248,10 +248,10 @@ class ChartingState extends MusicBeatState
 		deezNuts.set(8, 2);
 		deezNuts.set(12, 3);
 		deezNuts.set(16, 4);
-		deezNuts.set(24, 6);
-		deezNuts.set(32, 8);
-		deezNuts.set(48, 12);
-		deezNuts.set(64, 16);
+		deezNuts.set(24, 5);
+		deezNuts.set(32, 6);
+		deezNuts.set(48, 7);
+		deezNuts.set(64, 8);
 		chartType = detectChartType(_song);
 		if (FlxG.save.data.showHelp == null)
 			FlxG.save.data.showHelp = true;
