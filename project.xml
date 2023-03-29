@@ -66,8 +66,8 @@
 	<section if="PRELOAD_ALL" unless="EMBED_ALL">
 		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
-		<library name="tutorial" preload="true" embed='true' />
-		<library name="week1"    preload="true" embed='true' />
+		<library name="tutorial" preload="true" />
+		<library name="week1"    preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">

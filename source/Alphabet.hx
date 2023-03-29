@@ -157,7 +157,6 @@ class Alphabet extends FlxSpriteGroup
 				}
 			}else{
 				Frames = Paths.getSparrowAtlas('alphabet');
-
 			}
 		}
 		this.text = text;
@@ -358,7 +357,7 @@ class AlphaCharacter extends FlxSprite
 		antialiasing = true;
 	}
 
-	public function createBold(letter:String)
+	@:keep inline public function createBold(letter:String)
 	{
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		// animation.play(letter);
@@ -372,7 +371,7 @@ class AlphaCharacter extends FlxSprite
 		}
 	}
 
-	public function createLetter(letter:String):Void
+	@:keep inline public function createLetter(letter:String):Void
 	{
 		var letterCase:String = (if (letter.toLowerCase() == letter) "lowercase" else 'capital');
 		if(forceFlxText){
@@ -401,12 +400,12 @@ class AlphaCharacter extends FlxSprite
 		if (alphabet.contains(letter)){y = (110 - height);y += row * 60;}
 	}
 
-	public function createNumber(letter:String,bold:Bool = false):Void
+	@:keep inline public function createNumber(letter:String,bold:Bool = false):Void
 	{
 		animation.addByPrefix(letter, letter, 24);
 		updateHitbox();
 	}
-	inline function useFLXTEXT(letter:String,bold:Bool = false){
+	@:keep inline public function useFLXTEXT(letter:String,bold:Bool = false){
 
 		var cacheID = letter + '${if(bold) '-bold' else ''}';
 		var txt = textCache[cacheID];
@@ -420,7 +419,7 @@ class AlphaCharacter extends FlxSprite
 		}
 	}
 
-	public function createSymbol(letter:String)
+	 public function createSymbol(letter:String)
 	{
 		if(alphabetMap[letter] != null){
 			animation.addByPrefix(letter, alphabetMap[letter], 24);

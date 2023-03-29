@@ -35,6 +35,9 @@ typedef SwagSong =
 		var ?artist:String;
 		var ?difficultyString:String;
 
+	// Psych
+		var ?sectionBeats:Null<Float>;
+
 	// Chart type identification
 		var ?noteStyle:String; // Psych
 		var ?splashStyle:String; // Psych
@@ -159,6 +162,12 @@ class Song
 			if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
 
 			var sN:Array<Int> = [];
+			try{
+				if(section.lengthInSteps == null || section.lengthInSteps <= 0){
+					section.lengthInSteps = Std.int(swagShit.sectionBeats * 4);
+				}
+			}
+			if(section.lengthInSteps == null || section.lengthInSteps <= 0) section.lengthInSteps = 16;
 
 			for (nid in 0 ... section.sectionNotes.length){ // Edit section
 				var note:Array<Dynamic> = section.sectionNotes[nid];

@@ -52,28 +52,28 @@ class OptionsMenu extends MusicBeatState
 			new NoteSelOption("Change the note assets used, pulled from mods/noteassets"),
 			new SelStageOption("Select the stage to use, Default will use song default"),
 			new SelScriptOption("Enable/Disable scripts that run withsongs"),
-			new CharAutoOption("Force the opponent you've selected or allow the song to choose the opponent if you have them installed"),
-			new CharAutoBFOption("Force the player you've selected or allow the song to choose the player if you have them installed"),
-			new HCBoolOption("Toggle the ability for packs to provide scripts","Pack scripts","packScripts"),
-			new HCBoolOption("Toggle the ability for scripts to run in menus","Menu Scripts","menuScripts"),
-			// new HCBoolOption("Show your player character on the main menu, MAY CAUSE CRASHES!","Show player on main menu","mainMenuChar"),
+
+			new HCBoolOption("Use Song Opponent Char","Whether to allow the song to choose the opponent if you have them installed or force the opponent you've selected",'charAuto'),
+			new HCBoolOption("Use Song Player Char","Whether to allow the song to choose the player if you have them installed or force the player you've selected",'charAutoBF'),
+			new HCBoolOption("Pack scripts","Toggle the ability for packs to provide scripts","packScripts"),
+			new HCBoolOption("Menu Scripts","Toggle the ability for scripts to run in menus","menuScripts"),
+			// new HCBoolOption("Show player on main menu","Show your player character on the main menu, MAY CAUSE CRASHES!","mainMenuChar"),
 			
-			new AnimDebugOption("Enables the Character/chart editor, F10 console, displays some extra info in the FPS Counter, and some other debug stuff"),
+			new HCBoolOption("Content Creation/Debug Mode","Enables the Character/chart editor, F10 console, displays some extra info in the FPS Counter, and some other debug stuff","animDebug"),
 			new ReloadCharlist("Refreshes list of stages, characters and scripts"),
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Online", [
 			// new HCBoolOption("Saves charts to disk whenever you recieve one","Save charts from servers","onlineSaveChart"),
-			new AllowServerScriptsOption("Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS"),
+			new HCBoolOption('Allow Scripts from Servers',"Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS",'allowServerScripts'),
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
 			#if android
-
-			new HCBoolOption("Toggle the built-in taps for hitting notes","Native tapping support","useTouch"),
-			new HCBoolOption("Whether to split the screen into 4 buttons or use strums as buttons(Requires native Touch)","Strum Buttons","useStrumsAsButtons"),
+				new HCBoolOption("Native tapping support","Toggle the built-in taps for hitting notes","useTouch"),
+				new HCBoolOption("Strum Buttons","Whether to split the screen into 4 buttons or use strums as buttons(Requires native Touch)","useStrumsAsButtons"),
 			#end
-			new DownscrollOption("Change the layout of the strumline."),
-			new MiddlescrollOption("Move the strumline to the middle of the screen"),
+			new HCBoolOption('Scroll Type',"Change the scroll direction between upscroll and downscroll",'downscroll','downscroll',"upscroll"),
+			new HCBoolOption('Center strumline',"Move the strumline to the middle of the screen",'middleScroll'),
 
 			new AccuracyDOption("Change how accuracy is calculated. ( Simple = Rating based, SE = Distance from note to time, Complex = Etterna(?) )"),
 			// new OffsetMenu("Get a note offset based off of your inputs!"),
@@ -88,73 +88,80 @@ class OptionsMenu extends MusicBeatState
 			new SEJudgement("Shit")
 		],"Edit things like Keybinds, scroll direction, etc"),
 		new OptionCategory("Modifiers", [
-		    new PracticeModeOption("Disables the ability to get a gameover. Also disables saving scores."),
-			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
-			new HCBoolOption("Show skip beginning prompt","Jump to first note prompt","skipToFirst"),
-			new HCBoolOption("Enables some simple debounce detection. Forces presses to be missed from one frame to another. ","Debounce detection","debounce"),
+			new HCBoolOption("Practice Mode","Disables the ability to get a gameover, You can still get a score unless you die","practiceMode"),
+			new HCBoolOption("Ghost Tapping","Allow tapping a direction without receiving a miss","ghost"),
+			new HCBoolOption("Jump to first note prompt","Show skip beginning prompt","skipToFirst"),
+			new HCBoolOption("Debounce detection","Enables some simple debounce detection. Forces presses to be missed from one frame to another.","debounce"),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new ScrollSpeedOSUOption("Change your scroll speed on OSU charts"),
 
 			new AccurateNoteHoldOption("Whether note sustains/holds are more accurate. If off then they act like early kade"),
-			new HCBoolOption("Whether you'll get a miss from getting a shit","Shitty Misses","shittyMiss"),
-			new HCBoolOption("Whether you'll get a miss from getting a bad","Bad Misses","badMiss"),
-			new HCBoolOption("Whether you'll get a miss from getting a good","Good Misses","goodMiss"),
+			new HCBoolOption("Shitty Misses","Whether you'll get a miss from getting a shit","shittyMiss"),
+			new HCBoolOption("Bad Misses","Whether you'll get a miss from getting a bad","badMiss"),
+			new HCBoolOption("Good Misses","Whether you'll get a miss from getting a good","goodMiss"),
 		],"Toggle Practice mode, Ghost Tapping, etc"),
 
-		new OptionCategory("Appearance", [
-			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
-			new CamMovementOption("Toggle the camera moving"),
-			new NPSDisplayOption("Shows your current Notes Per Second."),
-			new AccuracyOption("Display accuracy information."),
-			new SongPositionOption("Show the songs current position, name and length"),
-			new CpuStrums("CPU's strumline lights up when a note hits it."),
+		new OptionCategory("Appearance", [ // if(!FlxG.save.data.noterating && !FlxG.save.data.showTimings && !FlxG.save.data.showCombo)
+			new HCBoolOption('Distractions',"Toggle stage distractions that can hinder your gameplay(Handled by the stage, not the game)",'distractions'),
+			new HCBoolOption('Camera Movement',"Toggle the camera zooming and moving to current singer",'camMovement'),
+			// new NPSDisplayOption("Shows your current Notes Per Second."),
+			new HCBoolOption('Show Accuracy',"Display accuracy information.",'accuracyDisplay'),
+			new HCBoolOption('Show Song Position',"Show the songs current position, name and length",'songPosition'),
+			new HCBoolOption('CPU Strum lighting',"Light up the corrosponding CPU strum when a note is hit",'cpuStrums',"Animated CPU Strums","Static CPU Strums"),
 			new SongInfoOption("Change how your performance is displayed"),
 			new GUIGapOption("Change the distance between the end of the screen and text(Not used everywhere)"),
 		],"Toggle flashing lights, camera movement, song info, etc "),
 		new OptionCategory("Misc", [
 			#if !mobile
-			new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
+				new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
 			#end
 			#if discord_rpc
-			new HCBoolOption("Toggle Discord Rich Presence(Requires restart)","Discord Rich Presence","discordDRP"),
+				new HCBoolOption("Discord Rich Presence","Toggle Discord Rich Presence(Requires restart)","discordDRP"),
 			#end
 			new FullscreenOption("Toggle fullscreen mode. Press F11 to toggle fullscreen ingame"),
-			new ResetButtonOption("Toggle pressing R to gameover."),			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
-			new LogGameplayOption("Logs your game to a text file"),
-			new EraseOption("Backs up your options to SEOPTIONS-BACKUP.json and then resets them"),
+			new HCBoolOption('Reset Key',"Toggle pressing R to gameover","resetButton"),	
+			new HCBoolOption('Gameplay Logging',"Logs your song performance to a text file to 'DATE.log' and 'UNIXTIMECODE.log' in 'songLogs/CHARTFILE/'","logGameplay"),			
+			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
+			// new LogGameplayOption("Logs your game to a text file"),
+			new EraseOption("Backs up your options to SESETTINGS-BACK.json and then resets them"),
 			// new ImportOption("Import your options from SEOPTIONS.json"),
 			// new ExportOption("Export your options to SEOPTIONS.json to backup or to share with a bug report"),
 		],"Misc things"),
 		new OptionCategory("Performance", [
-			new FPSCapOption("Cap your FPS"),
-			new UseBadArrowsOption("Use custom arrow texture instead of coloring normal notes black"),
-			new ShitQualityOption("Disables elements not essential to gameplay like the stage"),
-			new NoteRatingOption("Toggles the rating that appears when you press a note"),
-			new HCBoolOption("Doesn't destroy the Player when you exit a song. Makes loading quicker but uses more ram and might cause issues","Persistant BF","persistBF"),
-			new HCBoolOption("Doesn't destroy GF when you exit a song. Makes loading quicker but uses more ram and might cause issues","Persistant GF","persistGF"),
+			new FPSCapOption("Cap your Frames Per Second, This controls how fast the game will update your screen"),
+			new UPSCapOption("Cap your Updates Per Second, This controls how responsive the game is"),
+			new HCBoolOption("Hurt note texture","Use custom arrow texture instead of coloring normal notes black","useBadArrowTex"),
+
+			new HCBoolOption('Performance mode',"Disables many effects to make the game run better",'performance'),
+			new HCBoolOption("Persistant BF","Doesn't destroy the Player when you exit a song. Makes loading quicker but uses more ram and might cause issues","persistBF"),
+			new HCBoolOption("Persistant GF","Doesn't destroy GF when you exit a song. Makes loading quicker but uses more ram and might cause issues","persistGF"),
 			// new HCBoolOption("Doesn't destroy the opponent when you exit a song. Makes loading quicker but uses more ram and might cause issues","Persistant Opponent","persistOpp"),
 			// new UnloadSongOption("Unload the song when exiting the game"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
 		],"Disable some features for better performance"),
 		new OptionCategory("Visibility", [
-            new FontOption("Force menus to use the built-in font or mods/font.ttf for easier reading"),
+			new HCBoolOption('Force generic Font', "Force menus to use the built-in font or mods/font.ttf for easier reading(Note, some menus will break)",'useFontEverywhere'),
+			new HCBoolOption('FPS Counter', "Show the FPS Counter",'fps'),
             new BackTransOption("Change underlay opacity"),new BackgroundSizeOption("Change underlay size"),
-			new FPSOption("Toggle the FPS Counter"),
-			new BeatBouncingOption("Toggle certain animations like text beating on the main menu. Useful if text is hard to read"),
-			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
-			new NoteSplashOption("Shows note splashes when you get a 'Sick' rating"),
-			new OpponentStrumlineOption("Whether to show the opponent's notes or not"),
-			new ShowP2Option("Show Opponent"),
-			new ShowGFOption("Show Girlfriend"),
-			new ShowP1Option("Show Player 1"),
+			new HCBoolOption('NPS Display', "Keeps track of and shows your current notes per second",'npsDisplay'),
+			new HCBoolOption('Show Note Ratings', "Shows note ratings next to the strumline",'noterating'),
+			new HCBoolOption('Show Note Timings', "Shows note timings over the strumline",'showTimings'),
+			new HCBoolOption("Show Current Combo","Shows your combo next to the strumline",'showCombo'),
+			new HCBoolOption("Beat Bouncing", "Toggle text bouncing, Useful if you can't read some text",'beatBouncing'),
+			new HCBoolOption("Flashing Lights", "Toggle flashing lights that can cause seizures and strain",'flashing'),
+			new HCBoolOption("Note Splashes", "Shows note splashes when you get a 'Sick' rating on a note",'noteSplash'),
+			new HCBoolOption("Show Opponent strumline", "Shows the opponent strumline/notes",'oppStrumline'),
+			new HCBoolOption("Show Opponent", "Toggle whether the opponent is loaded or not",'dadShow'),
+			new HCBoolOption("Show GF", "Toggle whether gf is loaded or not",'gfShow'),
+			new HCBoolOption("Show Player", "Toggle whether the player is loaded or not",'bfShow'),
 			new HCBoolOption("Makes the loading screen use threads and show loading progress but is buggy","Threaded loading screen","doCoolLoading"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
 		],"Toggle visibility of certain gameplay aspects"),
 		new OptionCategory("Auditory", [
 			#if hxCodec
-			new HCBoolOption("Whether to use Flixel or VLC for audio. VLC supports more formats but may cause issues","VLC Audio Handling","vlcSound"),
+			new HCBoolOption("VLC Audio Handling","Whether to use Flixel or VLC for audio. VLC supports more formats but may cause issues","vlcSound"),
 			#end
 			new VolumeOption("Adjust the volume of the entire game","master"),
 			new VolumeOption("Adjust the volume of the background music","inst"),
@@ -164,7 +171,7 @@ class OptionsMenu extends MusicBeatState
 			new VolumeOption("Adjust the volume of other sounds and the default script sound volume","other"),  
 			new MissSoundsOption("Play a sound when you miss"),
 			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
-			new PlayVoicesOption("Plays the voices a character has when you press a note."),
+			new HCBoolOption("Play Character Voices","Plays the voices a character has when you press a note.","playVoices"),
 		],"Toggle some sounds and change the volume of things"),
 	];
 
@@ -199,6 +206,16 @@ class OptionsMenu extends MusicBeatState
 		FlxG.save.data.masterVol = FlxG.sound.volume;
 		if(onlinemod.OnlinePlayMenuState.socket == null){
 			initOptions();
+		}else{
+			for(catIndex => cat in options){
+				var i = cat.options.length;
+				while(i > 0){
+					i--;
+					if(cat.options[i] != null && !cat.options[i].isVisible){
+						cat.options.remove(cat.options[i]);
+					}
+				}
+			}
 		}
 
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
@@ -215,7 +232,7 @@ class OptionsMenu extends MusicBeatState
 
 		for (i in 0...options.length)
 		{
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false, false);
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].name, true, false, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
 			grpControls.add(controlLabel);
@@ -320,15 +337,14 @@ class OptionsMenu extends MusicBeatState
 					isCat = false;
 
 					CoolUtil.clearFlxGroup(grpControls);
-					for (i in 0...options.length)
-						{
-							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
-							controlLabel.isMenuItem = true;
-							controlLabel.targetY = i;
-							controlLabel.x = -2000;
-							grpControls.add(controlLabel);
-							// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-						}
+					for (i in 0...options.length){
+						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].name, true, false);
+						controlLabel.isMenuItem = true;
+						controlLabel.targetY = i;
+						controlLabel.x = -2000;
+						grpControls.add(controlLabel);
+						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+					}
 					curSelected = selCat;
 					changeSelection(0);
 					addTitleText();
@@ -345,75 +361,59 @@ class OptionsMenu extends MusicBeatState
 				changeSelection(Std.int(move));
 			}
 			
-			if (isCat)
-			{
+			if (isCat){
 				
-				if (currentSelectedCat.getOptions()[curSelected].getAccept())
+				if (currentSelectedCat.getOptions()[curSelected].acceptValues)
 				{
 
 					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.RIGHT || _right ){
-						if(currentSelectedCat.getOptions()[curSelected].right()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].getDisplay());
-
+						if(currentSelectedCat.getOptions()[curSelected].right()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].display);
 					}
 					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.LEFT || _left ){
-						if(currentSelectedCat.getOptions()[curSelected].left()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].getDisplay());
+						if(currentSelectedCat.getOptions()[curSelected].left()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].display);
 					}
 
 				}
 				updateOffsetText();
-			}
-			else
-			{
+			}else{
 				if (FlxG.keys.pressed.SHIFT)
 				{
-					if (FlxG.keys.justPressed.RIGHT) FlxG.save.data.offset += 0.1;
-					else if (FlxG.keys.justPressed.LEFT) FlxG.save.data.offset -= 0.1;
+					if (FlxG.keys.pressed.RIGHT) FlxG.save.data.offset += 0.1;
+					else if (FlxG.keys.pressed.LEFT) FlxG.save.data.offset -= 0.1;
 				}
-				else if (FlxG.keys.pressed.RIGHT) FlxG.save.data.offset += 0.1;
-				else if (FlxG.keys.pressed.LEFT) FlxG.save.data.offset -= 0.1;
+				else if (FlxG.keys.justPressed.RIGHT) FlxG.save.data.offset += 0.1;
+				else if (FlxG.keys.justPressed.LEFT) FlxG.save.data.offset -= 0.1;
 				updateOffsetText();
 			}
 		
 
-			if (controls.RESET)
-				FlxG.save.data.offset = 0;
+			if (controls.RESET) FlxG.save.data.offset = 0;
 
-			if (_accept)
-			{
-				if (isCat)
-				{
-					if (currentSelectedCat.getOptions()[curSelected].press()) {
-						// var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, currentSelectedCat.getOptions()[curSelected].getDisplay(), true, false);
-						// ctrl.isMenuItem = true;
-						// grpControls.add(ctrl);
-						// grpControls.replace(
-						updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].getDisplay());
-						                    // ,ctrl);
-					}
-				}
-				else
-				{
+			if (_accept){
+				if (isCat){ 
+					if (currentSelectedCat.options[curSelected].press()) 
+						updateAlphabet(grpControls.members[curSelected],currentSelectedCat.options[curSelected].display);
+				}else{
 					selCat = curSelected;
 					currentSelectedCat = options[curSelected];
 					isCat = true;
 					var start = 0;
 					var iy = FlxG.height * 0.50;
 					CoolUtil.clearFlxGroup(grpControls);
-					for (i in start...currentSelectedCat.getOptions().length)
-						{
-							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
-							controlLabel.isMenuItem = true;
-							controlLabel.targetY = i;
-							// controlLabel.y = iy;
-							updateAlphabet(controlLabel);
-							controlLabel.y+=360;
-							controlLabel.x=1280;
-							grpControls.add(controlLabel);
-							// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-						}
+					for (i in start...currentSelectedCat.getOptions().length){
+						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].display, true, false);
+						controlLabel.isMenuItem = true;
+						controlLabel.targetY = i;
+						// controlLabel.y = iy;
+						updateAlphabet(controlLabel);
+						controlLabel.y+=360;
+						controlLabel.x=1280;
+						grpControls.add(controlLabel);
+						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+					}
 					
 					curSelected = 0;
-					addTitleText('Options > ' + options[selCat].getName());
+					addTitleText('Options > ' + options[selCat].name);
 					updateOffsetText();
 				}
 			}
@@ -437,16 +437,8 @@ class OptionsMenu extends MusicBeatState
 	function updateOffsetText(){
 		// versionShit.color = FlxColor.WHITE;
 		if (isCat)
-		{
-			if (currentSelectedCat.getOptions()[curSelected].getAccept())
-				versionShit.text =  currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
-			else
-				// if(currentDescription.substr(0,2) == "**" ){
-				// 	versionShit.color = FlxColor.RED;
-
-				// }
-				versionShit.text = "Description - " + currentDescription;
-		}
+			versionShit.text = (if(currentSelectedCat.getOptions()[curSelected].acceptValues) currentSelectedCat.getOptions()[curSelected].getValue() + " - " else "") + 
+				"Description - " + currentDescription;
 		else
 			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 	}
@@ -454,40 +446,29 @@ class OptionsMenu extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 
-		if (change != 0 )FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
+		if (change != 0 ) FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 
 		curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = grpControls.members.length - 1;
-		if (curSelected >= grpControls.members.length)
-			curSelected = 0;
+		if (curSelected < 0) curSelected = grpControls.members.length - 1;
+		if (curSelected >= grpControls.members.length) curSelected = 0;
 
 		if (isCat)
-			currentDescription = currentSelectedCat.getOptions()[curSelected].getDescription();
+			currentDescription = currentSelectedCat.options[curSelected].description;
 		// else if (currentSelectedCat.description != null)
 		// 	currentDescription = currentSelectedCat.description;
 		else
 			currentDescription = "Select a category";
 
 		updateOffsetText();
-		// selector.y = (70 * curSelected) + 30;
 
-		var bullShit:Int = 0;
-
-		for (item in grpControls.members)
-		{
+		for (bullShit => item in grpControls.members){
 			item.targetY = bullShit - curSelected;
-			bullShit++;
 
 			item.alpha = 0.6;
 			// item.setGraphicSize(Std.int(item.width * 0.8));
 
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
-			}
+			if (item.targetY == 0) item.alpha = 1;
 		}
 	}
 	function initOptions(){

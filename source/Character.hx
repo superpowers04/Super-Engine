@@ -1027,8 +1027,7 @@ class CharAnimController extends FlxAnimationController{
 		}
 		if (PlayState.instance != null) PlayState.instance.callInterp("playAnim",[AnimName,this]);
 
-		if (PlayState.canUseAlts && animation.getByName(AnimName + '-alt') != null)
-			AnimName = AnimName + '-alt'; // Alt animations
+		if (PlayState.canUseAlts && !amPreview && !debugMode && animation.getByName(AnimName + '-alt') != null) AnimName = AnimName + '-alt'; // Alt animations
 		callInterp("playAnim",[AnimName]);
 		if (skipNextAnim){
 			skipNextAnim = false;

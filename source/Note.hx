@@ -226,7 +226,12 @@ class Note extends FlxSkewedSprite
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
 		if(noteAnimation != null){
-			PlayState.charAnim(charID,(if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
+			var anim = (if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation);
+			var char = PlayState.getCharFromID(charID);
+			if(!isSustainNote && char.animName == anim){
+				char.animation.play('idle',true);
+			}
+			char.playAnim(anim,true); // Play animation
 		}
 	}
 	dynamic public function susHit(?charID:Int = 0,note:Note){ // Played every update instead of every time the strumnote is hit
@@ -269,6 +274,7 @@ class Note extends FlxSkewedSprite
 		isSustainNote = sustainNote;
 		mustPress = playerNote; 
 		type = _type;
+		x = y = 300;
 		this.inCharter = _inCharter;
 		if(_rawNote == null){
 			this.rawNote = [strumTime,_noteData,0];
@@ -587,7 +593,7 @@ class Note extends FlxSkewedSprite
 			}
 			case false:{
 				callInterp("noteUpdate",[this]);
-				if (!skipNote || isOnScreen()){ // doesn't calculate anything until they're on screen
+				if (!skipNote || y < 740 && y > -20 && x < 1300 && x > -20){ // doesn't calculate anything until they're on screen
 					visible = (!eventNote && showNote);
 					skipNote = false;
 					if(eventNote){

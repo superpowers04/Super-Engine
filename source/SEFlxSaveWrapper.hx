@@ -9,8 +9,10 @@ class SEFlxSaveWrapper{
 	public static function save(){
 		var path = SELoader.absolutePath('SESETTINGS.json');
 		File.saveContent(path,Json.stringify(FlxG.save.data));
-		
-
+	}
+	public static function saveTo(path:String = "SESETTINGS-BACK.json"){
+		var path = SELoader.absolutePath(path);
+		File.saveContent(path,Json.stringify(FlxG.save.data));
 	}
 	public static function load(){
 		if(!SELoader.exists('SESETTINGS.json')) return;

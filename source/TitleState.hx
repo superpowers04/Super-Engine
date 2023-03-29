@@ -876,13 +876,14 @@ class TitleState extends MusicBeatState
 		FlxG.mouse.visible = false;
 
 
-		shiftSkip = new FlxText(0,0,0,#if(discord_rpc) "DRP not init -" + #end "Hold shift to go to the options menu after title screen",16);
+		shiftSkip = new FlxText(0,0,0,#if(discord_rpc) "DRP not init -" + #end " Hold shift to go to the options menu after title screen",16);
 		
 		shiftSkip.y = FlxG.height - shiftSkip.height - 12;
 		shiftSkip.x = 6;
 		shiftSkip.scrollFactor.set();
 		add(shiftSkip);
 		CoolUtil.setFramerate(true);
+		CoolUtil.setUpdaterate(true);
 		FlxG.sound.volume = FlxG.save.data.masterVol;
 		Main.instance.toggleFPS(FlxG.save.data.fps);
 

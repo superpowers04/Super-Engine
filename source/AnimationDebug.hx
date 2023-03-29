@@ -754,8 +754,7 @@ class AnimationDebug extends MusicBeatState
 			}
 		}
 		if (unbind){
-			if (exists)
-				charJson.animations[id] = null;
+			if (exists) charJson.animations[id] = null;
 			return;
 		}
 		if (exists){
@@ -1685,9 +1684,9 @@ class AnimHelpScreen extends FlxUISubState{
 	}
 
 	override public function new(?canEditJson:Bool = false,?mode:Int = 0) {
-		super();
 		this.canEditJson = canEditJson;
 		this.editMode = mode;
+		super();
 	}
 	override function create(){
 		// helpShown = true;
