@@ -289,7 +289,7 @@ class Note extends FlxSkewedSprite
 
 
 		this.noteData = _noteData % Note.noteAnims.length; 
-		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurt note" || _type == "hurt" || _type == true));
+		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurtnote" || _type == "hurt note" || _type == "hurt" || _type == true));
 		if(inCharter){
 			this.strumTime = strumTime;
 			showNote = true;
@@ -346,7 +346,7 @@ class Note extends FlxSkewedSprite
 							info = [(if(rawNote[4] != "" && !Math.isNaN(Std.parseFloat(rawNote[4])))Std.parseFloat(rawNote[4]) else Std.parseFloat(rawNote[3]))]; 
 						}catch(e){info = [120,0];}
 						hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
-						trace('BPM note processed');
+					
 					}
 					case "changecharacter" | "change character" | "changechar" | "change char": {
 						try{
@@ -412,7 +412,47 @@ class Note extends FlxSkewedSprite
 						}catch(e){info = [0.05];}
 						// Replaces hit func
 						hit = function(?charID:Int = 0,note){PlayState.instance.defaultCamZoom += info[0];}; 
+					}
+					case "multcamzoom" | "multiplycamzoom" | "multiply cam zoom" | "mult cam zoom": {
+						try{
+							info = [Std.parseFloat(rawNote[3])]; 
+							if(Math.isNaN(info[0])) info[0] = 1;
+						}catch(e){info = [0.05];}
+						// Replaces hit func
+						hit = function(?charID:Int = 0,note){PlayState.instance.defaultCamZoom *= info[0];}; 
 
+					}
+					case "movecam" | "followchar" | "follow character" | 'focuschar' | 'focus character': {
+						try{
+							info = [
+								switch(Std.string(rawNote[3]).toLowerCase()){
+									case "dad","opponent","1":1;
+									case "gf","girlfriend","2":2;
+									default:0;
+								},
+								switch(Std.string(rawNote[4]).toLowerCase()){
+									case "true","t","1":true;
+									default:false;
+								},
+							]; 
+						}catch(e){info = [0.7];}
+						hit = function(?charID:Int = 0,note){if(PlayState.instance == null) return;
+							PlayState.instance.followChar(info[0],info[1]);
+						};
+					}
+					case "lockcam" | "lock camera" : {
+						try{
+							info = [
+								switch(Std.string(rawNote[3]).toLowerCase()){
+									case "t","true","1":true;
+									default:false;
+								}
+							]; 
+						}catch(e){info = [0.7];}
+						// Replaces hit func
+						hit = function(?charID:Int = 0,note){if(PlayState.instance == null) return;
+							PlayState.instance.controlCamera = info[0];
+						};
 					}
 					case "screenshake" | "screen shake" | "shake screen": {
 						try{
@@ -422,7 +462,7 @@ class Note extends FlxSkewedSprite
 						}catch(e){info = [0.7];}
 						// Replaces hit func
 						hit = function(?charID:Int = 0,note){if(FlxG.save.data.distractions) FlxG.camera.shake(info[0],info[1]);}; 
-						trace('BPM note processed');
+						
 					}
 					case "camera follow pos" | "camfollowpos" | "cam follow" | "cam follow position": {
 						try{
@@ -431,8 +471,7 @@ class Note extends FlxSkewedSprite
 							if(Math.isNaN(info[1])) info[1] = 0; 
 						}catch(e){info = [0,0];}
 						// Replaces hit func
-						hit = function(?charID:Int = 0,note){
-							
+						hit = function(?charID:Int = 0,note){if(PlayState.instance == null) return;
 							PlayState.instance.moveCamera = (info[0] == 0 && info[1] == 0);
 							if(info[0] != 0 )PlayState.instance.camFollow.x = info[0];
 							if(info[1] != 0 )PlayState.instance.camFollow.y = info[1];
@@ -445,7 +484,7 @@ class Note extends FlxSkewedSprite
 						}catch(e){info = [2,0];}
 						// Replaces hit func
 						hit = function(?charID:Int = 0,note){PlayState.SONG.speed = info[0];}; 
-						trace('BPM note processed');
+						
 					}
 					// case "hscript" | "script" | "runcode" | "haxe": {
 					// 	try{
@@ -469,6 +508,9 @@ class Note extends FlxSkewedSprite
 			switch (Std.string(rawNote[3]).toLowerCase()) {
 				case "play animation" | "playanimation" | "animation" | "anim": {
 					noteAnimation = rawNote[4];
+				}
+				case "alt" | "altanim" | "alt animation" | "altanimation": {
+					noteAnimation = getNoteAnim(noteData) + "-alt";
 				}
 				case "noanimation" | "no animation" | "noanim": {
 					noteAnimation = null;

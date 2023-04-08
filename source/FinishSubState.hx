@@ -435,15 +435,16 @@ class FinishSubState extends MusicBeatSubstate
 
 		}else{
 			FlxTween.tween(FlxG.camera.scroll,{y:-100},0.2);
-			switch (PlayState.stateType)
-			{
-				case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
-				case 4:FlxG.switchState(new multi.MultiMenuState());
-				case 5:FlxG.switchState(new osu.OsuMenuState());
+			MusicBeatState.instance.goToLastClass();
+			// switch (PlayState.stateType)
+			// {
+			// 	case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+			// 	case 4:FlxG.switchState(new multi.MultiMenuState());
+			// 	case 5:FlxG.switchState(new osu.OsuMenuState());
 					
 
-				default:FlxG.switchState(new FreeplayState());
-			}
+			// 	default:FlxG.switchState(new FreeplayState());
+			// }
 		}
 		shouldveLeft = true;
 		return;

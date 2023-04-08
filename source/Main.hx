@@ -112,6 +112,7 @@ class Main extends Sprite
 		console = new Console();
 		#if !mobile
 		addChild(console);
+		addChild(console.commandBox);
 
 		// fpsCounter.visible = false;
 		// fpsOverlay = new Overlay(0, 0);

@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
@@ -41,7 +42,7 @@ class SearchMenuState extends ScriptMusicBeatState
 	var infoTextBoxSize:Int = 2;
 	public var supportMouse(get,default):Bool = true;
 	public function get_supportMouse():Bool{
-		return supportMouse && !Overlay.Console.instance.showConsole;
+		return supportMouse && !Overlay.Console.showConsole;
 	}
 	public var allowInput:Bool = true;
 
@@ -215,8 +216,8 @@ class SearchMenuState extends ScriptMusicBeatState
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
 		for (char in searchList){
 			if(search == "" || query.match(char.toLowerCase()) ){
-					addToList(char,i);
-					i++;
+				addToList(char,i);
+				i++;
 			}
 		}
 	}catch(e) MainMenuState.handleError('Error with loading stage list ${e.message}');}
@@ -306,7 +307,10 @@ class SearchMenuState extends ScriptMusicBeatState
 	function ret(){
 		FlxG.mouse.visible = false;
 		FlxG.sound.play(Paths.sound('cancelMenu'));
-		if (onlinemod.OnlinePlayMenuState.socket != null){FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{FlxG.switchState(new OptionsMenu());}
+		// if (onlinemod.OnlinePlayMenuState.socket != null){
+		// 	FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{
+			goToLastClass();
+			// }
 	}
 	function changeSelection(change:Int = 0)
 	{try{

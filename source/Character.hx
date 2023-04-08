@@ -1,5 +1,7 @@
 package;
 
+import se.extensions.flixel.SEFlxFrames;
+
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxSprite;
@@ -45,22 +47,16 @@ class CharAnimController extends FlxAnimationController{
 		}
 		Prefix = EReg.escape(Prefix);
 		var regTP:EReg = new EReg('^${Prefix}[- ]*[0-9][0-9]?[0-9]?[0-9]?','ig'); // Fixes the game improperly registering frames from other animations
-		for (frame in _sprite.frames.frames)
+		for (index => frame in _sprite.frames.framesHash)
 		{
-			if (frame.name != null && regTP.match(frame.name))
-			{
-				AnimFrames.push(frame);
-			}
+			if (regTP.match(index)) AnimFrames.push(frame);
 		}
 	}
 	function fuckinAddAll(AnimFrames:Array<FlxFrame>):Void
 	{
-		for (frame in _sprite.frames.frames)
+		for (index => frame in _sprite.frames.framesHash)
 		{
-			if (frame.name != null)
-			{
-				AnimFrames.push(frame);
-			}
+			AnimFrames.push(frame);
 		}
 	}
 }
@@ -247,6 +243,7 @@ class CharAnimController extends FlxAnimationController{
 		public var charXml:String;
 		public var isStunned:Bool = false;
 		public var isPressingNote:Bool = false; // Only used for the player. True if the player is currently pressing any notes keys
+		public var isNew:Bool = false;
 
 	// public var spriteArr:Array<FlxSprite> = [];
 	// public var animArr:Array<FlxAnimationController> = [];
@@ -709,7 +706,7 @@ class CharAnimController extends FlxAnimationController{
 						// if(charXml.substr(2).replace(String.fromCharCode(0),'').contains('UTF-16')){ // Flash CS6 outputs a UTF-16 xml even though no UTF-16 characters are usually used. This reformats the file to be UTF-8 *hopefully*
 						// 	charXml = '<?' + charXml.substr(2).replace(String.fromCharCode(0),'').replace('UTF-16','utf-8');
 						// }
-						tex = FlxAtlasFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
+						tex = SEFlxFrames.fromSparrow(SELoader.loadGraphic('${charLoc}/$curCharacter/${pngName}'), charXml);
 					}
 					if (tex == null){handleError('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
 				}

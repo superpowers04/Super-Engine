@@ -54,7 +54,7 @@ class FuckState extends FlxUIState
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
 	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown",?limeWindow:Bool = false){
-		try{LoadingScreen.hide();}catch(e){}
+		
 		var exception = "Unable to grab exception!";
 		if(e != null && e.message != null){
 			try{
@@ -114,6 +114,7 @@ class FuckState extends FlxUIState
 				trace('Unable to get system information! ${e.message}');
 			}
 			sys.io.File.saveContent('crashReports/SUPERENGINE_CRASH-${dateNow}.log',err);
+			
 			saved = true;
 			trace('Wrote a crash report to ./crashReports/SUPERENGINE_CRASH-${dateNow}.log!');
 			trace('Crash Report:\n$err');
@@ -124,6 +125,7 @@ class FuckState extends FlxUIState
 
 			}
 		}
+		try{LoadingScreen.hide();}catch(e){}
 		Main.game.forceStateSwitch(new FuckState(exception,info,saved));
 	}
 	var saved:Bool = false;

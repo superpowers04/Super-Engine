@@ -90,6 +90,7 @@ class MainMenuState extends SickMenuState
 	override public function new(important:Bool = false){
 		this.important = important;
 		super();
+		MusicBeatState.lastClassList = [];
 		scriptSubDirectory = "/mainmenu/";
 	}
 	override function create()

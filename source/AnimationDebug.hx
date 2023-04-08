@@ -478,21 +478,24 @@ class AnimationDebug extends MusicBeatState
 			case 2: 1;
 			default: 0;
 		};
-		FlxG.switchState(new AnimationDebug(daAnim,side == 0,side,charSel));
+		var e= new AnimationDebug(daAnim,side == 0,side,charSel);
+		MusicBeatState.lastClassList.pop();
+		FlxG.switchState(e);
 	}
 	function exit(){
 		FlxG.mouse.enabled = false;
-		if (charSel){
-			FlxG.switchState(new CharSelection()); 
-		}else if(dragdrop){
-			FlxG.switchState(new MainMenuState()); 
+		goToLastClass();
+		// if (charSel){
+		// 	FlxG.switchState(new CharSelection()); 
+		// }else if(dragdrop){
+		// 	FlxG.switchState(new MainMenuState()); 
 
-		}
-		else switch(PlayState.stateType){
-			case 2: LoadingState.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
-			case 4: LoadingState.loadAndSwitchState(new multi.MultiPlayState());
-			default: LoadingState.loadAndSwitchState(new PlayState());
-		}
+		// }
+		// else switch(PlayState.stateType){
+		// 	case 2: LoadingState.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
+		// 	case 4: LoadingState.loadAndSwitchState(new multi.MultiPlayState());
+		// 	default: LoadingState.loadAndSwitchState(new PlayState());
+		// }
 	}
 
 	function outputCharOffsets(){
@@ -1007,7 +1010,7 @@ class AnimationDebug extends MusicBeatState
 							loopStart:Std.int(uiMap["loopStart"].value),
 							indices: [],
 							priority:-1
-						},false,false);
+						},false,dad.isNew);
 						count++;
 					}
 				}

@@ -1,3 +1,4 @@
+
 package openfl.display;
 
 #if !flash
@@ -428,21 +429,23 @@ class Shader
 
 			return shader;
 		}catch(e){
-			try{
-				if(PlayState.instance != null){
-					var _mess = e.message;
-					try{
-						if(_mess.indexOf('#version') > 0){
-							_mess = _mess.substring(0,_mess.indexOf('#version') -1 );
-						}
-					}catch(e){}
-					PlayState.instance.handleError('Unable to compile OpenGL shader:\n${_mess}');
-				}
-			}catch(e){
+			#if !mobile
 				try{
-					MusicBeatState.instance.showTempmessage('Unable to compile OpenGL shader. Check log for more info!',0xffff0000);
-				}catch(e){}
-			}
+					if(PlayState.instance != null){
+						var _mess = e.message;
+						try{
+							if(_mess.indexOf('#version') > 0){
+								_mess = _mess.substring(0,_mess.indexOf('#version') -1 );
+							}
+						}catch(e){}
+						PlayState.instance.handleError('Unable to compile OpenGL shader:\n${_mess}');
+					}
+				}catch(e){
+					try{
+						MusicBeatState.instance.showTempmessage('Unable to compile OpenGL shader. Check log for more info!',0xffff0000);
+					}catch(e){}
+				}
+			#end
 			trace(e.message);
 		}
 

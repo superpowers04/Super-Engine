@@ -30,9 +30,7 @@ class ImportMod extends DirectoryListing
 		infotext.text = '${infotext.text}\nPress 1 to toggle importing vanilla songs(Disabled by default to prevent clutter)\nSelect the mods root folder, Example: "games/FNF" not "games/FNF/assets"';
 		
 	}
-	override function ret(){
-			FlxG.switchState(new MainMenuState());
-	}
+
 	override function handleInput(){
 		super.handleInput();
 		if (FlxG.keys.justPressed.ONE) {

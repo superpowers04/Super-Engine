@@ -112,15 +112,21 @@ class PlayState extends ScriptMusicBeatState
 		public static var weekSong:Int = 0;
 
 	/* Scoring */
-		public static var shits:Int = 0;
-		public static var bads:Int = 0;
-		public static var goods:Int = 0;
-		public static var sicks:Int = 0;
+		public static var shits(default,set):Int = 0;
+		public static var bads(default,set):Int = 0;
+		public static var goods(default,set):Int = 0;
+		public static var sicks(default,set):Int = 0;
+		public static var misses(default,set):Int = 0;
+		public static function set_shits(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return shits = vari;} // Prevent cheating that easily lmao
+		public static function set_bads(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return bads = vari;}
+		public static function set_goods(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return goods = vari;}
+		public static function set_sicks(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return sicks = vari;}
+		public static function set_misses(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return misses = vari;}
+		public static function set_accuracy(vari:Float):Float{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return accuracy = vari;}
+		public static var accuracy(default,set):Float = 0.00;
 		public static var ghostTaps:Int = 0;
 		public static var combo:Int = 0;
 		public static var maxCombo:Int = 0;
-		public static var misses:Int = 0;
-		public static var accuracy:Float = 0.00;
 		public static var accuracyDefault:Float = 0.00;
 		
 		public var totalNotesHit:Float = 0;
@@ -277,14 +283,14 @@ class PlayState extends ScriptMusicBeatState
 		public static var gf:Character;
 		public static var boyfriend:Character;
 		public static var girlfriend(get,set):Character;
-		public static function get_girlfriend(){return gf;};
-		public static function set_girlfriend(vari){return gf = vari;};
+		@:keep inline public static function get_girlfriend(){return gf;};
+		@:keep inline public static function set_girlfriend(vari){return gf = vari;};
 		public static var bf(get,set):Character;
-		public static function get_bf(){return boyfriend;};
-		public static function set_bf(vari){return boyfriend = vari;};
+		@:keep inline public static function get_bf(){return boyfriend;};
+		@:keep inline public static function set_bf(vari){return boyfriend = vari;};
 		public static var opponent(get,set):Character;
-		public static function get_opponent(){return dad;};
-		public static function set_opponent(vari){return dad = vari;};
+		@:keep inline public static function get_opponent(){return dad;};
+		@:keep inline public static function set_opponent(vari){return dad = vari;};
 		public static var player1:String = "bf";
 		public static var player2:String = "bf";
 		public static var player3:String = "gf";
@@ -512,6 +518,16 @@ class PlayState extends ScriptMusicBeatState
 		loadScripts();
 		generateSong();
 		addNotes();
+		var oldBf:Character = bf;
+		bf = new Character(oldBf.x, oldBf.y,oldBf.isPlayer,oldBf.charType, oldBf.charInfo);
+		this.replace(oldBf,bf);
+		oldBf.destroy();
+		oldBf = dad;
+		dad = new Character(oldBf.x, oldBf.y,oldBf.isPlayer,oldBf.charType, oldBf.charInfo);
+		this.replace(oldBf,dad);
+		oldBf.destroy();
+
+
 		callInterp('reloadDone',[]);
 		if(showWarning) showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
 	}
@@ -2071,7 +2087,7 @@ class PlayState extends ScriptMusicBeatState
 		if (updateTime) songTimeTxt.text = FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + songLengthTxt;
 		
 		if ((FlxG.keys.justPressed.ENTER 
-		     #if(android) || FlxG.mouse.justReleased && FlxG.mouse.screenY < 50 || FlxG.swipes[0] != null && FlxG.swipes[0].duration < 1 && FlxG.swipes[0].startPosition.y - FlxG.swipes[0].endPosition.y < -100 #end )
+		     #if(android) || FlxG.mouse.justReleased && FlxG.mouse.screenY < 50 || FlxG.swipes[0] != null && FlxG.swipes[0].duration < 1 && FlxG.swipes[0].startPosition.y - FlxG.swipes[0].endPosition.y < -200 #end )
 		     // #if(android) || FlxG.swipes[0] #end ) 
 			&& startedCountdown && canPause)
 		{
@@ -2706,22 +2722,19 @@ class PlayState extends ScriptMusicBeatState
 
 		}
 
-	public function NearlyEquals(value1:Float, value2:Float, unimportantDifference:Float = 10):Bool
-		{
-			return Math.abs(FlxMath.roundDecimal(value1, 1) - FlxMath.roundDecimal(value2, 1)) < unimportantDifference;
-		}
+	public function NearlyEquals(value1:Float, value2:Float, unimportantDifference:Float = 10):Bool return Math.abs(FlxMath.roundDecimal(value1, 1) - FlxMath.roundDecimal(value2, 1)) < unimportantDifference;
 
-		var upHold:Bool = false;
-		var downHold:Bool = false;
-		var rightHold:Bool = false;
-		var leftHold:Bool = false;	
-		private function fromBool(input:Bool):Int{
-			if (input) return 1;
-			return 0; 
-		}
-		private function fromInt(?input:Int = 0):Bool{
-			return (input == 1);
-		}
+	var upHold:Bool = false;
+	var downHold:Bool = false;
+	var rightHold:Bool = false;
+	var leftHold:Bool = false;	
+	private function fromBool(input:Bool):Int{
+		if (input) return 1;
+		return 0; 
+	}
+	private function fromInt(?input:Int = 0):Bool{
+		return (input == 1);
+	}
 
 
 	// Custom input handling

@@ -260,7 +260,7 @@ class SickMenuState extends ScriptMusicBeatState
 
 	public var supportMouse(get,default):Bool = true;
 	public function get_supportMouse():Bool{
-		return supportMouse && !Overlay.Console.instance.showConsole;
+		return supportMouse && !Overlay.Console.showConsole;
 	}
 	var isEpicTween:Bool = false;
 	var curTween:FlxTween;

@@ -119,7 +119,7 @@ class OfflineMenuState extends SearchMenuState
 
   override function ret(){
 	FlxG.mouse.visible = false;
-	FlxG.switchState(new MainMenuState());
+	goToLastClass();
   }
   override function extraKeys(){
   		callInterp('extraKeys',[]);

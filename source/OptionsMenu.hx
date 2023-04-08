@@ -30,6 +30,20 @@ class OptionsMenu extends MusicBeatState
 	public static var instance:OptionsMenu;
 	public static var lastState:Int = 0;
 
+	function goBack(){
+		// if (lastState != 0){
+		try{
+
+			var ls = lastState;
+			lastState = 0;
+			SearchMenuState.doReset = true;
+			// if(lastStateType is PlayState) 
+			LoadingScreen.show();
+			goToLastClass();
+		}catch(e){
+			FlxG.switchState(new MainMenuState());
+		}
+	}
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var selCat:Int = 0;
@@ -260,26 +274,6 @@ class OptionsMenu extends MusicBeatState
 	}
 
 	var isCat:Bool = false;
-	public static var lastClass:Class<Dynamic>;
-	function goBack(){
-		if (lastState != 0){
-			var ls = lastState;
-			lastState = 0;
-			SearchMenuState.doReset = true;
-			LoadingScreen.show();
-			switch(ls){
-				case 3:FlxG.switchState(new onlinemod.OfflineMenuState());
-				case 4:FlxG.switchState(new multi.MultiMenuState());
-				case 5:FlxG.switchState(new osu.OsuMenuState());
-				// case 6:FlxG.switchState(new PlayListState());
-				case 12:FlxG.switchState(new onlinemod.OfflinePlayState());
-				case 14:FlxG.switchState(new multi.MultiPlayState());
-				case 15:FlxG.switchState(new osu.OsuPlayState());
-				default:FlxG.switchState((if(ls > 10) new PlayState() else new MainMenuState()));
-			}
-		}else
-			FlxG.switchState(new MainMenuState());
-	}
 	function isHovering(obj1:Dynamic,obj2:Dynamic):Bool{
 		if(obj1 == null || obj2 == null) return false;
 		var width:Float = obj2.width;
@@ -623,7 +617,6 @@ class OptionsMenu extends MusicBeatState
 	// 	}
 	// 	trace('Loaded ${id} script!');
 	// }
-
 
 
 }

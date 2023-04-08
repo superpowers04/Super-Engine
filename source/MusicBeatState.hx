@@ -18,6 +18,7 @@ import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxObject;
 import flixel.FlxBasic;
+import Overlay.Console;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
 
@@ -32,6 +33,28 @@ class MusicBeatState extends FlxUIState
 	private var controls(get, never):Controls;
 	var forceQuit = true;
 	public static var instance:MusicBeatState;
+	public static var lastClassList:Array<Class<Dynamic>> = [];
+	public static var returningFromClass:Bool = false;
+
+	public function goToLastClass(){
+		try{
+			returningFromClass = true;
+			FlxG.switchState(Type.createInstance(lastClassList.pop(),[]));
+		}catch(e){
+			FlxG.switchState(new MainMenuState());
+		}
+	}
+	public function new(){
+		if(returningFromClass){
+			returningFromClass = false;
+		}else{
+			lastClassList.push(Type.getClass(FlxG.state));
+		}
+		if(lastClassList.length > 10){
+			lastClassList.shift();
+		}
+		super();
+	}
 
 	public function errorHandle(?error:String = "No error passed!",?forced:Bool = false){
 			try{
@@ -116,6 +139,16 @@ class MusicBeatState extends FlxUIState
 		};
 		tempMessages.push([time,tempMessage,tempMessBacking]);
 	}
+	@:keep inline public function showTempBanner(str:String,?color:FlxColor = FlxColor.LIME,?time:Float = 5,?center:Bool = true,?trac:Bool = true){
+		while(tempMessages.length > 0){
+			var e = tempMessages.pop();
+			e[2].destroy();
+			e[1].destroy();
+		}
+		showTempmessage(str,color,time,center,trac);
+	}
+
+
 
 	var skippedFrames = 0;
 	var checkInputFocus:Bool = true;
@@ -303,9 +336,11 @@ class MusicBeatState extends FlxUIState
 	override function tryUpdate(elapsed:Float):Void
 	{
 		if(FlxG.keys.justPressed.F1 && forceQuit){
+			Console.showConsole = false;
 			MainMenuState.handleError("Manually triggered force exit");
 		}
-		if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F8){
+		if(Console.showConsole && onlinemod.OnlinePlayMenuState.socket == null ) return;
+		if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F8 && onlinemod.OnlinePlayMenuState.socket == null){
 			debugMode = !debugMode;
 			if(debugMode){
 				debugOverlay = new DebugOverlay();
@@ -315,9 +350,8 @@ class MusicBeatState extends FlxUIState
 		}
 		if(debugMode)
 			debugOverlay.update(elapsed);
-		else 
-			if ((persistentUpdate || subState == null))
-				update(elapsed);
+		else if ((persistentUpdate || subState == null))
+			update(elapsed);
 
 		if (_requestSubStateReset)
 		{

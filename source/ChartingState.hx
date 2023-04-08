@@ -2525,11 +2525,6 @@ class ChartingState extends MusicBeatState
 		if(jumpTo){
 			PlayState.jumpTo = Conductor.songPosition;
 		}
-		switch(PlayState.stateType){
-			case 2: LoadingState.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
-			case 4,6: LoadingState.loadAndSwitchState(new multi.MultiPlayState());
-			case 5: LoadingState.loadAndSwitchState(new osu.OsuPlayState());
-			default: LoadingState.loadAndSwitchState(new PlayState());
-		}
+		goToLastClass();
 	}
 }

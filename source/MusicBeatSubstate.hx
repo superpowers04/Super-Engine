@@ -38,6 +38,15 @@ class MusicBeatSubstate extends FlxSubState
 	public function onTextInputUnfocus(object:Dynamic){
 		if(toggleVolKeys) CoolUtil.toggleVolKeys(true);
 	}
+	override function tryUpdate(elapsed:Float):Void
+	{
+		if(FlxG.keys.justPressed.F1){
+			MainMenuState.handleError("Manually triggered force exit from substate");
+		}
+
+		if(Overlay.Console.showConsole) return; // trol
+		update(elapsed);
+	}
 	override function update(elapsed:Float)
 	{
 		//everyStep();

@@ -99,9 +99,7 @@ class Credits extends SearchMenuState
 		changeSelection(0); 
 
 	}catch(e) MainMenuState.handleError('Error with credits "create" ${e.message}');}
-	override function ret(){
-		FlxG.switchState(new MainMenuState());
-	}
+
 	inline function updateName(?name = "funninameherelmaomlmaonjosn"){
 		if(name != "funninameherelmaomlmaonjosn"){
 			charNameText.text = name;

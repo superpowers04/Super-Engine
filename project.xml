@@ -108,14 +108,18 @@
 	</section>
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<haxelib name="flixel" />
 	<haxedev set='webgl' if="web"/>
 	
 
 
 	<!--In case you want to use the addons package-->
+<!-- 	<haxelib name="openfl" if="mobile"/>
+	<haxelib name="flixel" if="mobile" /> -->
+	<!-- Eric's versions of flixel/openfl -->
+	<haxelib name="openfl" version="git"/>
+	<haxelib name="flixel" version="git"/>
 	<haxelib name="flixel-addons" />
-	<haxelib name="openfl" version="9.2.0" if="mobile"/>
+
 	<haxelib name="hscript" />
 	<haxelib name="hscript-ex"/>
 	<haxelib name="flxanimate" />
@@ -174,8 +178,8 @@
 	<!-- This is to hopefully increase preformance on x64 systems, if it's not compiling to them already for some reason -->
 	<haxedef name="HXCPP_M64"/> 
 	<haxedef name="HXCPP_CHECK_POINTER"/>
-	<haxedef name="HXCPP_STACK_LINE" if="release" />
-	<define name="SCRIPTABLE"/>
+	<haxedef name="HXCPP_STACK_LINE"/>
+	<haxedef name="HXCPP_GC_GENERATIONAL"/>
 
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->

@@ -39,6 +39,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var inTween:FlxTween;
 	var score:Int = 0;
 	var interpScore:Int = 0;
+	var shouldVoicesPlay:Bool = false;
 	override function draw(){
 		if(shouldDraw){
 			super.draw();
@@ -47,7 +48,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 	}
 	override function beatHit(){
-		if (voices != null && voices.playing && (voices.time > FlxG.sound.music.time + 20 || voices.time < FlxG.sound.music.time - 20))
+		if (voices != null && shouldVoicesPlay && (!voices.playing || (voices.time > FlxG.sound.music.time + 20 || voices.time < FlxG.sound.music.time - 20)))
 		{
 			voices.time = FlxG.sound.music.time;
 			voices.play();
@@ -617,10 +618,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						}else{
 							if(!voices.playing){
 								voices.play(FlxG.sound.music.time);
+								voices.volume = FlxG.save.data.voicesVol;
 								voices.looped = true;
 							}else
 								voices.stop();
 						}
+						shouldVoicesPlay = (voices != null && voices.playing);
 					}catch(e){
 						showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
 					}

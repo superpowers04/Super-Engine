@@ -14,7 +14,7 @@ using StringTools;
 
 class SESONG{
 	/* Note related shite */
-		public var songNotes:Array<Array<Dynamic>> = []; // [TIME:Float, DIRECTION:Int, TYPE:Dynamic, ...]
+		public var songNotes:Array<Array<Dynamic>> = []; // [TIME:Float, DIRECTION:Int, SustainLengthInMS:Float, TYPE:Dynamic, ...]
 		public var noteToRaw:Map<Note,Array<Dynamic>> = []; // Allows access to a note's raw metadata. 
 		// This is to allow the notes array to change without needing to keep track of every id or looping through the entire fucking array to get a note's raw data
 		
@@ -113,9 +113,7 @@ class SESONG{
 	public function update(el:Float){
 		var bpm:Float = cast getCurrentPast(BPMChanges,Conductor.songPosition);
 		focusPlayer = cast getCurrentPast(mustHitSwitches,Conductor.songPosition);
-		if(Conductor.BPM != bpm){
-			Conductor.changeBPM(bpm);
-		}
+		if(Conductor.BPM != bpm) Conductor.changeBPM(bpm);
 	}
 	// public function stepHit(step:Int){
 	// 	if(step / 16 == 0 ){
@@ -234,7 +232,7 @@ class SESONG{
 		}
 		return Obj.get(count);
 	}
-	public function getCurrentPast(Obj:Dynamic,time:Float):Dynamic{ // Allows you to access a value without it needing to be wiped
+	public function getCurrentPast(Obj:Dynamic,time:Float):Dynamic{ // Allows you to access a value
 		if(arrayCurrents.get(Obj) == null){
 			arrayCurrents.set(Obj,0);
 		}

@@ -299,15 +299,16 @@ class PauseSubState extends MusicBeatSubstate
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
 		if (shouldveLeft) {Main.game.forceStateSwitch(new MainMenuState());return;}
-		switch (PlayState.stateType)
-		{
-			case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
-			case 4:FlxG.switchState(new multi.MultiMenuState());
-			case 5:FlxG.switchState(new osu.OsuMenuState());
+		MusicBeatState.instance.goToLastClass();
+		// switch (PlayState.stateType)
+		// {
+		// 	case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+		// 	case 4:FlxG.switchState(new multi.MultiMenuState());
+		// 	case 5:FlxG.switchState(new osu.OsuMenuState());
 				
 
-			default:FlxG.switchState(new MainMenuState());
-		}
+		// 	default:FlxG.switchState(new MainMenuState());
+		// }
 		shouldveLeft = true;
 		return;
 	}
