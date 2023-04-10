@@ -88,8 +88,7 @@ class MusicBeatState extends FlxUIState
 		if(mouseEnabledTmr != null)mouseEnabledTmr.cancel();
 		FlxG.mouse.enabled = false;
 	}
-	inline function get_controls():Controls
-		return PlayerSettings.player1.controls;
+	@:keep inline function get_controls():Controls return PlayerSettings.player1.controls;
 	override function create()
 	{
 		CoolUtil.setFramerate(true);

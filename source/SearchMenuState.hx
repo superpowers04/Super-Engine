@@ -94,8 +94,8 @@ class SearchMenuState extends ScriptMusicBeatState
 	static public function resetVars(){
 		LoadingScreen.loadingText = "Resetting Variables";
 		if (ChartingState.charting) ChartingState.charting = false;
-		if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
-		PlayState.nameSpace = "";PlayState.scripts = [];PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
+		if (/*FlxG.save.data.songUnload && */PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
+		PlayState.songDifficulties = [];PlayState.nameSpace = "";PlayState.scripts = [];PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
 		HSBrTools.shared = [];
 		SickMenuState.chgTime = true;
 		if(Note.noteNames[0] == null){Note.noteNames = ["purple","blue","green",'red'];}

@@ -20,7 +20,7 @@ import CharacterJson;
 import TitleState;
 import flixel.util.FlxColor;
 
-import flash.media.Sound;
+import openfl.media.Sound;
 
 import sys.io.File;
 import sys.FileSystem;

@@ -31,7 +31,7 @@ import flash.display.Graphics;
 import flash.display.Sprite;
 import flash.Lib;
 import SickMenuState;
-import flash.media.Sound;
+import openfl.media.Sound;
 import flixel.FlxCamera;
 import sys.thread.Thread;
 import Alphabet;

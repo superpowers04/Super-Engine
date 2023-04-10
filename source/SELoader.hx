@@ -13,7 +13,7 @@ import sys.io.File;
 import sys.FileSystem;
 import flash.display.BitmapData;
 import Xml;
-import flash.media.Sound;
+import openfl.media.Sound;
 import flixel.FlxG;
 import flixel.system.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;

@@ -53,7 +53,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
-import flash.media.Sound;
+import openfl.media.Sound;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -104,6 +104,7 @@ class PlayState extends ScriptMusicBeatState
 		public var curSection:Int = 0;
 		public var curSong:String = "";
 		public var speed:Float = 1;
+		public static var songDifficulties:Array<String> = [];
 
 	/* Story */
 		public static var storyPlaylist:Array<String> = [];
@@ -2351,7 +2352,9 @@ class PlayState extends ScriptMusicBeatState
 		persistentDraw = true;
 		paused = true;
 		openSubState(new PauseSubState(boyfriend.x, boyfriend.y));
-		followChar(0);
+		camFollow.x = defLockedCamPos[0];
+		camFollow.y = defLockedCamPos[1];
+		// followChar(0);
 		camGame.zoom = 1;
 	}
 	@:keep inline function addNotes(){

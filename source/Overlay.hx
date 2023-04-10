@@ -172,7 +172,9 @@ class Console extends TextField
 		if(FlxG.save.data != null && !FlxG.save.data.animDebug){return;}
 		// text += "\n-" + lineCount + ": " + str;
 		lineCount++;
-		lines.push('$lineCount ~ $str');
+		var lc = Std.string(lineCount);
+		while(lc.length < 5) lc+=" ";
+		lines.push('${lc}~$str');
 		while(lines.length > 500){
 			lines.shift();
 		}
@@ -223,7 +225,7 @@ class Console extends TextField
 			commandBox.width =width;
 			if(firstOpen){
 				firstOpen = false;
-				print('Super Engine ${MainMenuState.ver} - Debug console. Type help for commands.');
+				print('Super Engine ${MainMenuState.ver} ${MainMenuState.buildType} ${MainMenuState.compileType} - Debug console. Type help for commands.\nDO NOT BLINDLY PASTE CODE INTO HERE, This console allows you to run arbitrary code.\nSuper is not held responsible for whatever you paste here');
 			}
 
 
@@ -278,11 +280,6 @@ class ConsoleInput extends TextField{
 		alpha = 0;
 		background = true;
 		backgroundColor = 0xff110011;
-		parser = HscriptUtils.createSimpleParser();
-		interp = HscriptUtils.createSimpleInterp();
-		interp.variables.set("BRtools", hsbrtools);
-		interp.variables.set("t",Console.instance.log);
-		interp.variables.set("log",Console.instance.log);
 
 		caretFormat.color = 0xFFFFAAFF;
 		updateShownText();
@@ -294,8 +291,38 @@ class ConsoleInput extends TextField{
 		#end
 	}
 
+	// public function runlua(?songScript:String = ""){
+	// 	if(interp == null){ // No need to clog memory if hscript isn't gonna be touched
+	// 		parser = HscriptUtils.createSimpleParser();
+	// 		interp = HscriptUtils.createSimpleInterp();
+	// 		interp.variables.set("BRtools", hsbrtools);
+	// 		interp.variables.set("t",Console.instance.log);
+	// 		interp.variables.set("log",Console.instance.log);
+	// 	}
+	// 	try{
+	// 		@:privateAccess
+	// 		parser.line = 0;
+	// 		interp.variables.set("state",cast (FlxG.state)); 
+	// 		interp.variables.set("game",cast (FlxG.state));
+	// 		interp.execute(parser.parseString(songScript,'CONSOLE'));
+	// 	}catch(e){
+	// 		var _line = '${parser.line}';
+	// 		try{
+	// 			var _split = songScript.split('\n');
+	// 			_line = '${parser.line};"${_split[parser.line - 1]}"';
+	// 		}catch(e){_line = '${parser.line}';}
+	// 		trace('Error parsing hscript\nLine:${_line}\n ${e.message}');
+	// 	}
+	// 	return interp;
+	// }
 	public function runHscript(?songScript:String = ""){
-
+		if(interp == null){ // No need to clog memory if hscript isn't gonna be touched
+			parser = HscriptUtils.createSimpleParser();
+			interp = HscriptUtils.createSimpleInterp();
+			interp.variables.set("BRtools", hsbrtools);
+			interp.variables.set("t",Console.instance.log);
+			interp.variables.set("log",Console.instance.log);
+		}
 		try{
 			@:privateAccess
 			parser.line = 0;
@@ -407,6 +434,9 @@ class ConsoleInput extends TextField{
 		setTextFormat(defFormat,0,text.length);
 		setTextFormat(caretFormat,caretPos,caretPos+1);
 	}
+	@:keep inline function addTextAtCaret(str:String){
+		return actualText = actualText.substring(0,caretPos) + str + actualText.substring(caretPos);
+	}
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
@@ -423,7 +453,7 @@ class ConsoleInput extends TextField{
 						char = char.toUpperCase();
 					}
 				}
-				actualText = actualText.substring(0,caretPos) + char + actualText.substring(caretPos);
+				addTextAtCaret(char);
 				caretPos++;
 				updateShownText();
 			}
@@ -497,10 +527,15 @@ class ConsoleInput extends TextField{
 		["mainmenu",'Return to the main menu'],
 		["reload",'Reloads current state'],
 		["switchstate",'Switch to a state, Case/path sensitive!'],
+		["defines",'Prints a bunch of defines, used for debugging purposes'],
 
 		['-- Scripting --'],
 		["hs (code)",'Run hscript code'],
 		["hst (code)",'Run hscript code, encased in a trace'],
+		#if(linc_luajit)
+		["lua (code)",'Run lua code'],
+
+		#end
 		["getvalue (path)",'Returns a value from an object path'],
 		["setvalue (path) (value)",'Sets a value from an object path'],
 	];
@@ -512,11 +547,23 @@ class ConsoleInput extends TextField{
 		}
 		var args:Array<String> = text.split(' ');
 		switch(args[0].toLowerCase()){
+			case 'echo' | "print":
+				text = text.substring(text.indexOf(' '));
+				Console.print(text);
+				return text;
 			case 'hs': 
-				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.print('Error: Scripts are currently disabled!');return null;}
+				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
 				return runHscript(text.substring(3));
+			case 'lua': 
+			#if linc_luajit
+				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
+				return runlua(text.substring(3));
+			#else
+				Console.error('Lua scripts aren\'t supported on this build or game was compiled without linc_luajit!');
+				return null;
+			#end
 			case 'hst' :
-				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.print('Error: Scripts are currently disabled!');return null;}
+				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
 				return runHscript("trace(" + text.substring(3) + ");");
 			case 'reload':
 				Console.showConsole = false;
@@ -533,8 +580,12 @@ class ConsoleInput extends TextField{
 					Console.error('Unable to grab value from ${args[1]}: ${e.message}');
 					return null;
 				}
+			case 'defines':
+				var defs = getDefs();
+				Console.print(defs);
+				return defs;
 			case 'setvalue':
-				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.print('Error: Scripts are currently disabled!');return null;}
+				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
 				var value:String = text.substring(text.indexOf(' ',10) + 1);
 				var path:String = args[1];
 				try{
@@ -568,6 +619,39 @@ class ConsoleInput extends TextField{
 				Console.error('Command "${args[0]}" not found, run help for a list of commands');
 		}
 		return null;
+	}
+	@:keep inline function getDefs(){
+		return "-- normal defs --"
+		#if(windows)				+"\n windows" #end
+		#if(macos)					+"\n macos" #end
+		#if(linux)					+"\n linux" #end
+		#if(android)				+"\n android" #end
+		#if(web)					+"\n web" #end
+		#if(flash)					+"\n flash" #end
+		#if(sys)					+"\n sys" #end
+		#if(target.sys)				+"\n target.sys" #end
+		#if(target.static)			+"\n target.static" #end
+		#if(target.threaded)		+"\n target.threaded" #end
+		#if(ghaction)				+"\n ghaction" #end
+		+"\n-- compiler defs --"
+		#if(HXCPP_M64)				+"\n HXCPP_M64" #end
+		#if(HXCPP_M32)				+"\n HXCPP_M32" #end
+		#if(HXCPP_CHECK_POINTER)	+"\n HXCPP_CHECK_POINTER" #end
+		#if(HXCPP_STACK_LINE)		+"\n HXCPP_STACK_LINE" #end
+		#if(HXCPP_GC_GENERATIONAL)	+"\n HXCPP_GC_GENERATIONAL" #end
+		#if(dce)					+"\n dce" #end
+		+"\n-- flixel defs --"
+		#if(FLX_DEBUG)				+"\n FLX_DEBUG" #end
+		#if(FLX_NO_DEBUG)			+"\n FLX_NO_DEBUG" #end
+		#if(FLX_NO_GAMEPAD)			+"\n FLX_NO_GAMEPAD" #end
+		#if(FLX_NO_TOUCH)			+"\n FLX_NO_TOUCH" #end
+		#if(FLX_NO_MOUSE)			+"\n FLX_NO_MOUSE" #end
+		#if(FLX_NO_KEYBOARD)		+"\n FLX_NO_KEYBOARD" #end
+		+"\n-- package defs --"
+		#if(linc_luajit)			+"\n linc_luajit" #end
+		#if(hscript)				+"\n hscript" #end
+		#if(discord_rpc)			+"\n discord_rpc" #end
+		;
 	}
 }
 

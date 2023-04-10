@@ -3,7 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.system.FlxSound;
-import flash.media.Sound;
+import openfl.media.Sound;
 import lime.media.AudioBuffer;
 import flixel.ui.FlxBar;
 import flixel.text.FlxText;

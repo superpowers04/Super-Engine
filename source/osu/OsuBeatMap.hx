@@ -2,7 +2,7 @@ package osu;
 
 import flixel.FlxG;
 import flixel.system.FlxSound;
-import flash.media.Sound;
+import openfl.media.Sound;
 import sys.FileSystem;
 import Section;
 import Song;

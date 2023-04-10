@@ -37,7 +37,7 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
-import flash.media.Sound;
+import openfl.media.Sound;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.FlxGraphic;
 import sys.FileSystem;
@@ -171,11 +171,11 @@ class ChartingState extends MusicBeatState
 	static var clapSound:Sound;
 	public static function playSnap(){
 		if(snapSound == null)snapSound= Sound.fromFile('./assets/shared/sounds/SNAP.ogg');
-		snapSound.play(new flash.media.SoundTransform(FlxG.save.data.hitvol));
+		snapSound.play(new openfl.media.SoundTransform(FlxG.save.data.hitvol));
 	}
 	public static function playClap(){
 		if(clapSound == null)clapSound= Sound.fromFile('./assets/shared/sounds/CLAP.ogg');
-		clapSound.play(new flash.media.SoundTransform(FlxG.save.data.hitvol));
+		clapSound.play(new openfl.media.SoundTransform(FlxG.save.data.hitvol));
 	}
 	public static function gotoCharter(){
 		// if(FlxG.save.data.legacyCharter){
@@ -2525,6 +2525,12 @@ class ChartingState extends MusicBeatState
 		if(jumpTo){
 			PlayState.jumpTo = Conductor.songPosition;
 		}
-		goToLastClass();
+		MusicBeatState.returningFromClass = true;
+		switch(PlayState.stateType){
+			case 2: LoadingState.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
+			case 4,6: LoadingState.loadAndSwitchState(new multi.MultiPlayState());
+			case 5: LoadingState.loadAndSwitchState(new osu.OsuPlayState());
+			default: LoadingState.loadAndSwitchState(new PlayState());
+		}
 	}
 }

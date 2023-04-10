@@ -13,7 +13,7 @@ import lime.utils.Assets;
 import lime.graphics.Image;
 import CharacterJson;
 
-import flash.media.Sound;
+import openfl.media.Sound;
 
 import sys.io.File;
 import flash.display.BitmapData;

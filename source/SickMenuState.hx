@@ -10,7 +10,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
-import flash.media.Sound;
+import openfl.media.Sound;
 import sys.FileSystem;
 import flixel.util.FlxColor;
 import flixel.system.FlxSound;

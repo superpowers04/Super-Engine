@@ -85,6 +85,9 @@ typedef CharacterJson =
 	var ?boneChar:BoneChar;
 	var ?customProperties:Array<CCProp>; // Allows the json file to edit any value about the character
 	var ?scriptOptions:Map<String,Dynamic>; // Allows characters to tell scripts to use custom settings
+
+
+	var healthIcon:String; // Psych character identification
 }
 
 typedef CharJsonAnimation ={
@@ -106,7 +109,7 @@ typedef CharJsonAnimation ={
 	var ?oneshot:Null<Bool>; // Should animation overlap everything?
 	var ?priority:Null<Int>; // Animation priority, 0 is idle, 10 is sing, 5 is hey, and the rest are up to you. The engine will handle the rest
 	
-	var ?offsets:Array<Array<Float>>;
+	var ?offsets:Array<Dynamic>;
 	var ?ifstates:Array<IfStatement>;
 }
 

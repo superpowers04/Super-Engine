@@ -466,6 +466,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		lastSel = sel;
 		lastSearch = searchField.text;
 		lastSong = songs[sel] + modes[sel][selMode] + songNames[sel];
+		{
+			var diffList:Array<String> = [];
+			for(i => v in modes[sel]){
+				diffList.push(songs[curSelected] + "/" + v);
+			}
+			PlayState.songDifficulties = diffList;
+		}
 		gotoSong(songs[sel],modes[sel][selMode],songNames[sel]);
 	}
 
@@ -581,7 +588,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						showTempmessage('Unable to play instrumental! ${e.message}',FlxColor.RED);
 					}
 					if (FlxG.sound.music.playing){
-						if(modes[curSelected][selMode] != "No charts for this song!" && FileSystem.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
+						if(modes[curSelected][selMode] != "No charts for this song!" && SELoader.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
 							try{
 
 								var e:SwagSong = cast Json.parse(File.getContent(songs[curSelected] + "/" + modes[curSelected][selMode])).song;

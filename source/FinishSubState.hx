@@ -21,7 +21,7 @@ import flixel.FlxCamera;
 import sys.FileSystem;
 import sys.io.File;
 import PlayState.OutNote;
-import flash.media.Sound;
+import openfl.media.Sound;
 
 using StringTools;
 

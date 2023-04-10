@@ -7,7 +7,7 @@ import flixel.animation.FlxBaseAnimation;
 import flixel.animation.FlxAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxG;
-import flash.media.Sound;
+import openfl.media.Sound;
 import sys.io.File;
 import flash.display.BitmapData;
 import Xml;

@@ -51,14 +51,19 @@ class PauseSubState extends MusicBeatSubstate
 	var tweens:Array<FlxTween> = [];
 	var jumpToTime:Float = 0;
 	var bg:FlxSprite;
-	public static var charts:Array<String> = [];
+	
+	var currentChart = 0;
 	public function new(x:Float, y:Float){
 		if(FlxG.sound.music != null ) songLengthTxt = FlxStringUtil.formatTime(Math.floor((FlxG.sound.music.length) / 1000), false);
 		time = jumpToTime = Conductor.songPosition;
 		menuItems = ['Resume', 'Restart Song',"Options Menu",'Exit to menu'];
-		if(ChartingState.charting && FlxG.sound.music != null) menuItems.insert(2,'Jump to');
-		if(ChartingState.charting ) menuItems.insert(3,'Back to chart editor');
-		if(ChartingState.charting ) menuItems.insert(4,'Exit Charting Mode');
+		#if !mobile
+		if(ChartingState.charting ){
+			if(FlxG.sound.music != null) menuItems.insert(2,'Jump to');
+			menuItems.insert(3,'Back to chart editor');
+			menuItems.insert(4,'Exit Charting Mode');
+		}else if (PlayState.songDifficulties.length > 0) menuItems.insert(2,'Swap Charts');
+		#end
 		// if(charts[0] != null ) menuItems.insert(3,'Change Difficulty ');
 		openfl.system.System.gc();
 		FlxTimer.globalManager.forEach(function(tmr:FlxTimer){
@@ -175,7 +180,7 @@ class PauseSubState extends MusicBeatSubstate
 			changeSelection(2);
 		#end
 	}
-	inline function getJumpTo(){
+	@:keep inline function getJumpTo(){
 
 		var time:String = FlxStringUtil.formatTime(Math.floor(Math.abs(jumpToTime / 1000)), false);
 		if(jumpToTime < 0){
@@ -183,24 +188,26 @@ class PauseSubState extends MusicBeatSubstate
 		}
 		return 'Jump to ${time} / ${songLengthTxt}';
 	} 
-	function updateJumpTo(){
-		// var i = menuItems.length;
-		// while(i > 0){
-		// 	i--;
+	@:keep inline function getChartSel(){
+		var chart = PlayState.songDifficulties[currentChart];
+		return '< ${chart.substring(chart.lastIndexOf('/') + 1,chart.lastIndexOf('.'))} >';
+	} 
+	@:keep inline function updateJumpTo(){
 		var i = menuItems.indexOf('Jump to');
 		if(i > 0){
 			grpMenuShit.members[i].removeDashes = false;
 			grpMenuShit.members[i].text = getJumpTo();
 			grpMenuShit.members[i].screenCenter(X);
-			// var old = grpMenuShit.members[i];
-			// grpMenuShit.members[i] = new Alphabet(old.x,old.y,'Jump to ${FlxStringUtil.formatTime(Math.floor(jumpToTime / 1000), false)}|${songLengthTxt}',true,false,true);
-			// grpMenuShit.members[i].targetY = old.targetY;
-			// old.destroy();
-			// grpMenuShit.members[i].scale.x = grpMenuShit.members[i].scale.y = 1.1;
-			// FlxTween.tween(grpMenuShit.members[i].scale,{x:1,y:1},0.3);
-			// break;
 		}
-		// }
+	}
+	@:keep inline function updateChartSel(){
+		if(currentChart > PlayState.songDifficulties.length - 1) currentChart = 0;
+		if(currentChart < 0) currentChart = PlayState.songDifficulties.length - 1;
+		var i = menuItems.indexOf('Swap Charts');
+		if(i > 0){
+			grpMenuShit.members[i].text = getChartSel();
+			grpMenuShit.members[i].screenCenter(X);
+		}
 	}
 	inline function callInterp(name:String,args:Array<Dynamic>){args.unshift(this); if(PlayState.instance != null) PlayState.instance.callInterp(name,args);}
 	override function update(elapsed:Float){
@@ -235,17 +242,22 @@ class PauseSubState extends MusicBeatSubstate
 			var accepted = controls.ACCEPT;
 			var oldOffset:Float = 0;
 
-			if (upP)
-			{
-				changeSelection(-1);
-	   
-			}else if (downP)
-			{
-				changeSelection(1);
-			}
+			if (upP) changeSelection(-1);
+			else if (downP) changeSelection(1);
 
 			var daSelected:String = menuItems[curSelected];
-			if(daSelected.startsWith('Jump to')){
+			#if !mobile
+			if(daSelected.startsWith('Swap Charts')){
+				if(controls.LEFT_P){
+					currentChart--;
+					updateChartSel();
+				}
+				if(controls.RIGHT_P){
+					currentChart++;
+					updateChartSel();
+				}
+
+			}else #end if(daSelected.startsWith('Jump to')){
 				if(controls.LEFT_P || controls.LEFT && FlxG.keys.pressed.SHIFT){
 					if(jumpToTime - 1000 > -5000){
 						jumpToTime -= 1000;
@@ -322,17 +334,20 @@ class PauseSubState extends MusicBeatSubstate
 						disappearMenu();
 						new FlxTimer().start(0.3,function(tmr:FlxTimer){
 							Main.game.funniLoad = true;
+							MusicBeatState.returningFromClass = true;
 							FlxG.resetState();
 						},1);
 					case 'Back to chart editor':
 						disappearMenu();
 						new FlxTimer().start(0.3,function(tmr:FlxTimer){
+							MusicBeatState.returningFromClass = true;
 							ChartingState.gotoCharter();
 						},1);
 					case "Exit Charting Mode":
 						disappearMenu();
 						new FlxTimer().start(0.3,function(tmr:FlxTimer){
 							ChartingState.charting = false;
+							MusicBeatState.returningFromClass = true;
 							FlxG.resetState();
 						},1);
 					case "Options Menu":
@@ -355,6 +370,12 @@ class PauseSubState extends MusicBeatSubstate
 
 							PlayState.instance.generateNotes();
 							countdown();
+						}else if(sel.startsWith('Swap Charts')){
+							ChartingState.charting = false;
+							MusicBeatState.returningFromClass = true;
+							onlinemod.OfflinePlayState.chartFile = PlayState.songDifficulties[currentChart];
+							FlxG.resetState();
+							
 						}else{
 							callInterp("pauseSelect",[sel]);
 						}
