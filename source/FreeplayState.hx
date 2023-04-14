@@ -246,7 +246,7 @@ class FreeplayState extends MusicBeatState
 				onlinemod.OfflinePlayState.chartFile = 'assets/data/${songs[curSelected].songName}/${poop}.json';
 				PlayState.isStoryMode = false;
 				// Set difficulty
-				PlayState.actualSongName = ${songs[curSelected].songName};
+				PlayState.actualSongName = '${songs[curSelected].songName}';
 				onlinemod.OfflinePlayState.voicesFile = '';
 
 				if (FileSystem.exists('assets/songs/${songs[curSelected].songName}/Voices.ogg')) onlinemod.OfflinePlayState.voicesFile = 'assets/songs/${songs[curSelected].songName}/Voices.ogg';

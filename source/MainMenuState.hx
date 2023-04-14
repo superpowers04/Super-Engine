@@ -261,7 +261,7 @@ class MainMenuState extends SickMenuState
 	#if(android) inline static #end var otherMenu:Bool = false;
 	#if !mobile
 	function otherSwitch(){
-		options = ["freeplay","download charts","download characters","import charts from mods"];
+		options = ["deprecated freeplay","download charts","download characters","import charts from mods"];
 		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine",'Convert charts from other mods to work here. Will put them in Modded Songs'];
 		
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
@@ -381,7 +381,7 @@ class MainMenuState extends SickMenuState
 				case 'story mode':
 					loading = true;
 					FlxG.switchState(new StoryMenuState());
-				case 'freeplay':
+				case 'deprecated freeplay':
 					loading = true;
 					FlxG.switchState(new FreeplayState());
 				case 'osu beatmaps':

@@ -242,11 +242,13 @@ class FPSCapOption extends Option
 	
 	override function right():Bool {
 		CoolUtil.setFramerate(CoolUtil.Framerate + 1);
+		CoolUtil.setUpdaterate(CoolUtil.Framerate);
 		return true;
 	}
 
 	override function left():Bool {
 		CoolUtil.setFramerate(CoolUtil.Framerate - 1);
+		CoolUtil.setUpdaterate(CoolUtil.Framerate);
 		return true;
 	}
 
@@ -639,33 +641,33 @@ class ReloadCharlist extends Option
 	}
 
 }
-class InputHandlerOption extends Option
+class InputEngineOption extends Option
 {
-	var ies:Array<String> = ["Kade","Super Engine"];
-	var iesDesc:Array<String> = ["Kade 1.5/1.4 Input","A custom input engine based off of Kade 1.4/1.5"];
+	var ies:Array<String> = ["Super Engine"#if(!mobile), "Super Engine Event" #end];
+	var iesDesc:Array<String> = ["A custom input engine based off of Kade 1.4/1.5."#if(!mobile), "A new input engine that is based off of key events" #end];
 	public function new(desc:String)
 	{
 		acceptValues = true;
 		super();
-		if (FlxG.save.data.inputHandler >= ies.length) FlxG.save.data.inputHandler = 0;
+		if (FlxG.save.data.inputEngine >= ies.length) FlxG.save.data.inputEngine = 0;
 		description = desc;
 
 		acceptValues = true;
 	}
 
 	override function getValue():String {
-		return iesDesc[FlxG.save.data.inputHandler];
+		return iesDesc[FlxG.save.data.inputEngine];
 	}
 
 	override function right():Bool {
-		FlxG.save.data.inputHandler += 1;
-		if (FlxG.save.data.inputHandler >= ies.length) FlxG.save.data.inputHandler = 0;
+		FlxG.save.data.inputEngine += 1;
+		if (FlxG.save.data.inputEngine >= ies.length) FlxG.save.data.inputEngine = 0;
 		display = updateDisplay();
 		return true;
 	}
 	override function left():Bool {
-		FlxG.save.data.inputHandler -= 1;
-		if (FlxG.save.data.inputHandler < 0) FlxG.save.data.inputHandler = ies.length - 1;
+		FlxG.save.data.inputEngine -= 1;
+		if (FlxG.save.data.inputEngine < 0) FlxG.save.data.inputEngine = ies.length - 1;
 		display = updateDisplay();
 		return true;
 	}
@@ -1132,19 +1134,15 @@ class AccurateNoteHoldOption extends Option
 
 	public override function press():Bool
 	{
-		if(FlxG.save.data.inputHandler == 1){
-
-			FlxG.save.data.accurateNoteSustain = !FlxG.save.data.accurateNoteSustain;
-			display = updateDisplay();
-			return true;
-		}else{
-			return false;
-		}
+		FlxG.save.data.accurateNoteSustain = !FlxG.save.data.accurateNoteSustain;
+		display = updateDisplay();
+		return true;
+		
 	}
 
 	override function updateDisplay():String
 	{
-		return (FlxG.save.data.inputHandler == 0 ? "Kade Note Sustain" : "Accurate Note Sustain: " + (FlxG.save.data.accurateNoteSustain ? "true" : "false"));
+		return "Accurate Note Sustain: " + (FlxG.save.data.accurateNoteSustain ? "true" : "false");
 	}
 }
 class BackTransOption extends Option

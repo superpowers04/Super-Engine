@@ -12,7 +12,7 @@ import sys.io.File;
 import flash.display.BitmapData;
 import Xml;
 import sys.FileSystem;
-#if !mobile
+#if FLXRUNTIMESHADER
 import flixel.addons.display.FlxRuntimeShader;
 #end
 import flixel.system.FlxAssets;
@@ -151,10 +151,10 @@ class HSBrTools {
 		if(xmlArray[textPath] == null) xmlArray[textPath] = SELoader.loadXML('${path}${textPath}');
 		return xmlArray[textPath];
 	}
-	public function loadShader(textPath:String,?glslVersion:Dynamic = 120)#if(!mobile) :Null<FlxRuntimeShader> #end{
-		#if mobile
+	public function loadShader(textPath:String,?glslVersion:Dynamic = 120)#if(FLXRUNTIMESHADER) :Null<FlxRuntimeShader> #end{
+		#if !FLXRUNTIMESHADER
 
-			handleError('Shaders aren\'t supported on mobile!');
+			handleError('Shaders aren\'t supported enabled on this build of the game!');
 			return null;
 		#else
 			if(textArray[textPath + ".vert"] == null && SELoader.exists('${path}${textPath}.vert')) textArray[textPath + ".vert"] = SELoader.loadText('${path}${textPath}.vert');

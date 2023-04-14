@@ -72,6 +72,7 @@ class HscriptUtils {
 	
 	public static var interp = new InterpEx();
 	public static var hscriptClasses:Array<String> = [];
+	public static var defines:Array<String> = [];
 	@:access(hscript.InterpEx)
 	public static function init() {
 		// var filelist = hscriptClasses = CoolUtil.coolTextFile("assets/scripts/plugin_classes/classes.txt");
@@ -145,6 +146,7 @@ class HscriptUtils {
 	public static function addVarsToInterp<T:Interp>(interp:T):T {
 		// // : )
 		// SE Specific
+
 		interp.variables.set("Character", Character);
 		interp.variables.set("PlayState", PlayState);
 		interp.variables.set("Note", Note);
@@ -206,7 +208,7 @@ class HscriptUtils {
 		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("FlxText",FlxText);
 		interp.variables.set("FlxSort",FlxSort);
-		#if !mobile
+		#if FLXRUNTIMESHADER
 		interp.variables.set("FlxRuntimeShader",flixel.addons.display.FlxRuntimeShader);
 		#end
 		interp.variables.set("FlxShader",flixel.graphics.tile.FlxGraphicsShader);
@@ -223,6 +225,8 @@ class HscriptUtils {
 		interp.variables.set("Reflect", Reflect);
 
 		interp.variables.set("mobile",#if(mobile) true #else false #end );
+		if(defines == null){getDefines();}
+		interp.variables.set("defines",defines );
 
 
 		interp.variables.set("this", interp);
@@ -232,6 +236,38 @@ class HscriptUtils {
 		
 		
 		return interp;
+	}
+	public static function getDefines(){
+		defines = ['haxe'
+		#if(windows)				,"windows" #end
+		#if(macos)					,"macos" #end
+		#if(linux)					,"linux" #end
+		#if(android)				,"android" #end
+		#if(web)					,"web" #end
+		#if(flash)					,"flash" #end
+		#if(sys)					,"sys" #end
+		#if(debug)					,"debug" #end
+		#if(target.sys)				,"target.sys" #end
+		#if(target.static)			,"target.static" #end
+		#if(target.threaded)		,"target.threaded" #end
+		#if(ghaction)				,"ghaction" #end
+		#if(HXCPP_M64)				,"hxcpp_m64" #end
+		#if(HXCPP_M32)				,"hxcpp_m32" #end
+		#if(HXCPP_CHECK_POINTER)	,"hxcpp_check_pointer" #end
+		#if(HXCPP_STACK_LINE)		,"hxcpp_stack_line" #end
+		#if(HXCPP_GC_GENERATIONAL)	,"hxcpp_gc_generational" #end
+		#if(dce)					,"dce" #end
+		#if(FLX_DEBUG)				,"flx_debug" #end
+		#if(FLX_NO_DEBUG)			,"flx_no_debug" #end
+		#if(FLX_NO_GAMEPAD)			,"flx_no_gamepad" #end
+		#if(FLX_NO_TOUCH)			,"flx_no_touch" #end
+		#if(FLX_NO_MOUSE)			,"flx_no_mouse" #end
+		#if(FLX_NO_KEYBOARD)		,"flx_no_keyboard" #end
+		#if(linc_luajit)			,"linc_luajit" #end
+		#if(hscript)				,"hscript" #end
+		#if(discord_rpc)			,"discord_rpc" #end
+		#if(FLXRUNTIMESHADER)			,"flxruntimeshader" #end
+		];
 	}
 }
 class SEAxes{

@@ -8,7 +8,9 @@ import openfl.text.TextFormat;
 import flixel.FlxG;
 import flixel.system.debug.watch.EditableTextField;
 import flixel.input.keyboard.FlxKey;
-
+#if linc_luajit
+import selua.SELua;
+#end
 
 import hscript.Expr;
 import hscript.Interp;
@@ -232,8 +234,8 @@ class Console extends TextField
 		}else{
 			FlxG.mouse.visible = wasMouseDisabled;
 		}
-		SetVolumeControls(showConsole);
 		commandBox.mouseEnabled =commandBox.mouseWheelEnabled = commandBox.selectable = mouseEnabled = mouseWheelEnabled = selectable = showConsole;
+		SetVolumeControls(showConsole);
 
 	}
 	function SetVolumeControls(enabled:Bool)
@@ -244,17 +246,14 @@ class Console extends TextField
 			volumeUpKeys = FlxG.sound.volumeUpKeys;
 			volumeDownKeys = FlxG.sound.volumeDownKeys;
 		}
-		if (enabled)
-		{
-			FlxG.sound.muteKeys = muteKeys;
-			FlxG.sound.volumeUpKeys = volumeUpKeys;
-			FlxG.sound.volumeDownKeys = volumeDownKeys;
-		}
-		else
-		{
+		if (enabled){
 			FlxG.sound.muteKeys = null;
 			FlxG.sound.volumeUpKeys = null;
 			FlxG.sound.volumeDownKeys = null;
+		}else{
+			FlxG.sound.muteKeys = muteKeys;
+			FlxG.sound.volumeUpKeys = volumeUpKeys;
+			FlxG.sound.volumeDownKeys = volumeDownKeys;
 		}
 	}
 }
@@ -269,6 +268,10 @@ class ConsoleInput extends TextField{
 	public inline static var CARETCHAR:String = "|";
 	public var caretFormat:TextFormat = new TextFormat();
 	public var defFormat:TextFormat = new TextFormat();
+
+	#if linc_luajit
+		var selua:SELua;
+	#end
 
 
 	public function new(x:Float = 20, y:Float = 20, color:Int = 0xFFFFFFFF)
@@ -290,31 +293,20 @@ class ConsoleInput extends TextField{
 		});
 		#end
 	}
-
-	// public function runlua(?songScript:String = ""){
-	// 	if(interp == null){ // No need to clog memory if hscript isn't gonna be touched
-	// 		parser = HscriptUtils.createSimpleParser();
-	// 		interp = HscriptUtils.createSimpleInterp();
-	// 		interp.variables.set("BRtools", hsbrtools);
-	// 		interp.variables.set("t",Console.instance.log);
-	// 		interp.variables.set("log",Console.instance.log);
-	// 	}
-	// 	try{
-	// 		@:privateAccess
-	// 		parser.line = 0;
-	// 		interp.variables.set("state",cast (FlxG.state)); 
-	// 		interp.variables.set("game",cast (FlxG.state));
-	// 		interp.execute(parser.parseString(songScript,'CONSOLE'));
-	// 	}catch(e){
-	// 		var _line = '${parser.line}';
-	// 		try{
-	// 			var _split = songScript.split('\n');
-	// 			_line = '${parser.line};"${_split[parser.line - 1]}"';
-	// 		}catch(e){_line = '${parser.line}';}
-	// 		trace('Error parsing hscript\nLine:${_line}\n ${e.message}');
-	// 	}
-	// 	return interp;
-	// }
+	#if linc_luajit
+		public function runlua(?songScript:String = ""){
+			if(selua == null){ // No need to clog memory if lua isn't gonna be touched
+				selua = new SELua();
+			}
+			if(songScript == null) return;
+			try{
+				selua.exec(songScript);
+			}catch(e){
+				trace('Lua exception: ${e.message}');
+			}
+			return;
+		}
+	#end
 	public function runHscript(?songScript:String = ""){
 		if(interp == null){ // No need to clog memory if hscript isn't gonna be touched
 			parser = HscriptUtils.createSimpleParser();
@@ -469,16 +461,14 @@ class ConsoleInput extends TextField{
 				if(CURRENTCMDHISTORY == 0 && actualText != commandHistory[commandHistory.length -1]){
 					commandHistory.unshift(actualText);
 					CURRENTCMDHISTORY++;
-				}
-				if(CURRENTCMDHISTORY < commandHistory.length){
+				}else if(CURRENTCMDHISTORY < commandHistory.length){
 					actualText = commandHistory[CURRENTCMDHISTORY++];
 				}
 				updateShownText();
 			}else if(FlxG.keys.justPressed.DOWN){
 				if(CURRENTCMDHISTORY > 0){
 					actualText = commandHistory[CURRENTCMDHISTORY--];
-				}
-				if(CURRENTCMDHISTORY == 0){
+				}else if(CURRENTCMDHISTORY == 0){
 					CURRENTCMDHISTORY--;
 					actualText = "";
 				}
@@ -497,6 +487,11 @@ class ConsoleInput extends TextField{
 
 			if(FlxG.keys.justPressed.BACKSPACE){
 				actualText = actualText.substring(0,caretPos - 1) + actualText.substring(caretPos);
+				caretPos--;
+				updateShownText();
+			}
+			if(FlxG.keys.justPressed.DELETE){
+				actualText = actualText.substring(0,caretPos) + actualText.substring(caretPos + 1);
 				caretPos--;
 				updateShownText();
 			}
@@ -534,8 +529,9 @@ class ConsoleInput extends TextField{
 		["hst (code)",'Run hscript code, encased in a trace'],
 		#if(linc_luajit)
 		["lua (code)",'Run lua code'],
-
+		["luat (code)",'Run lua code, encased in a trace statement'],
 		#end
+
 		["getvalue (path)",'Returns a value from an object path'],
 		["setvalue (path) (value)",'Sets a value from an object path'],
 	];
@@ -555,13 +551,22 @@ class ConsoleInput extends TextField{
 				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
 				return runHscript(text.substring(3));
 			case 'lua': 
-			#if linc_luajit
-				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
-				return runlua(text.substring(3));
-			#else
-				Console.error('Lua scripts aren\'t supported on this build or game was compiled without linc_luajit!');
+				#if linc_luajit
+					if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
+					runlua(text.substring(4));
+				#else
+					Console.error('Lua scripts aren\'t supported on this build or game was compiled without linc_luajit!');
+				#end
 				return null;
-			#end
+			case 'luat': 
+				#if linc_luajit
+					if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
+					runlua('trace(${text.substring(5)})');
+			
+				#else
+					Console.error('Lua scripts aren\'t supported on this build or game was compiled without linc_luajit!');
+				#end
+				return null;
 			case 'hst' :
 				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
 				return runHscript("trace(" + text.substring(3) + ");");
@@ -640,6 +645,7 @@ class ConsoleInput extends TextField{
 		#if(HXCPP_STACK_LINE)		+"\n HXCPP_STACK_LINE" #end
 		#if(HXCPP_GC_GENERATIONAL)	+"\n HXCPP_GC_GENERATIONAL" #end
 		#if(dce)					+"\n dce" #end
+		#if(debug)					+"\n debug" #end
 		+"\n-- flixel defs --"
 		#if(FLX_DEBUG)				+"\n FLX_DEBUG" #end
 		#if(FLX_NO_DEBUG)			+"\n FLX_NO_DEBUG" #end

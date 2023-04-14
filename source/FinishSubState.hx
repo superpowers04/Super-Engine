@@ -188,6 +188,10 @@ class FinishSubState extends MusicBeatSubstate
 		// }
 		return false;
 	}
+	@:keep inline public function getScore(forced:Bool = false):Int{
+
+			return (Highscore.getScoreUnformatted('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}'));
+	}
 	public function finishNew(?name:String = ""){
 			// FlxG.mouse.visible = true;
 			// var timer = new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;FlxTween.tween(FinishSubState.instance.contText,{alpha:1},0.5);});
@@ -296,6 +300,13 @@ class FinishSubState extends MusicBeatSubstate
 				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				finishedText.color = FlxColor.WHITE;
 				finishedText.scrollFactor.set();
+				var _oldScore = getScore();
+				var savedScore = saveScore();
+				if(savedScore){
+					finishedText.text += " | New Personal Best!";
+				}
+
+
 				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState.isStoryMode ? 'Song/Chart' : "Week") + ':\n'
 						+'\nSicks - ${PlayState.sicks}'
 						+'\nGoods - ${PlayState.goods}'
@@ -304,7 +315,7 @@ class FinishSubState extends MusicBeatSubstate
 						+'\nGhost Taps - ${PlayState.ghostTaps}'
 						+'\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})'
 						+'\nMisses${if(FlxG.save.data.ghost) "" else " + Ghost Taps"}${if(FlxG.save.data.shittyMiss) ' + Shits' else ''}${if(FlxG.save.data.badMiss) ' + Bads' else ''}${if(FlxG.save.data.goodMiss) ' + Goods' else ''}: ${PlayState.misses}'
-						+'\n\nScore: ${PlayState.songScore}'
+						+'\n\nScore: ${if(savedScore) '${_oldScore} > ' else ""}${PlayState.songScore}' // ' shitty haxe syntax highlighting strikes again :skull:
 						+'\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%'
 						+'\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}\n');
 				comboText.size = 28;
@@ -319,8 +330,8 @@ class FinishSubState extends MusicBeatSubstate
 				+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
 				+'\n Practice: ${FlxG.save.data.practiceMode}${if(PlayState.instance.hasDied)' - Score not saved' else ''}'
 				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}' + (QuickOptionsSubState.getSetting("Song hscripts") ? '\n  Script Count:${PlayState.instance.interpCount}' : "")
-				+(if(FlxG.save.data.inputHandler == 1) '\n Safe Frames: ${FlxG.save.data.frames}' else 
-				 '\n HitWindows: ${Ratings.ratingMS("sick")},${Ratings.ratingMS("good")},${Ratings.ratingMS("bad")},${Ratings.ratingMS("shit")} MS')
+				+'\n Safe Frames: ${FlxG.save.data.frames}' 
+				+'\n HitWindows: ${Ratings.ratingMS("sick")},${Ratings.ratingMS("good")},${Ratings.ratingMS("bad")},${Ratings.ratingMS("shit")} MS'
 				+'\n Input Engine: ${PlayState.inputEngineName}, V${MainMenuState.ver}'
 				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'
 				+'\n'
@@ -364,9 +375,7 @@ class FinishSubState extends MusicBeatSubstate
 				FlxTween.tween(contText, {y:FlxG.height - 90},0.5,{ease: FlxEase.expoInOut});
 				// FlxTween.tween(chartInfoText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
 				FlxTween.tween(settingsText, {y:145},0.5,{ease: FlxEase.expoInOut});
-				if(saveScore()){
-					finishedText.text += " | New Personal Best!";
-				}
+
 				if(PlayState.logGameplay){
 
 					try{
@@ -380,7 +389,7 @@ class FinishSubState extends MusicBeatSubstate
 							bf:PlayState.boyfriend.curCharacter,
 							opp:PlayState.dad.curCharacter,
 							gf:PlayState.gf.curCharacter,
-							ver:${MainMenuState.ver}
+							ver:MainMenuState.ver
 						};
 						var events:String = info + '\n\n--- Hits and Misses:\n
 / Example Note
@@ -427,26 +436,41 @@ class FinishSubState extends MusicBeatSubstate
 	}
 	var shouldveLeft = false;
 	function retMenu(){
+		FlxTween.globalManager.clear();
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
-		PlayState.instance.persistentUpdate = true;
-		if (shouldveLeft){
-			Main.game.forceStateSwitch(new MainMenuState());
+		if (shouldveLeft) {Main.game.forceStateSwitch(new MainMenuState());return;}
+		MusicBeatState.instance.goToLastClass();
+		// switch (PlayState.stateType)
+		// {
+		// 	case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+		// 	case 4:FlxG.switchState(new multi.MultiMenuState());
+		// 	case 5:FlxG.switchState(new osu.OsuMenuState());
+				
 
-		}else{
-			FlxTween.tween(FlxG.camera.scroll,{y:-100},0.2);
-			MusicBeatState.instance.goToLastClass();
-			// switch (PlayState.stateType)
-			// {
-			// 	case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
-			// 	case 4:FlxG.switchState(new multi.MultiMenuState());
-			// 	case 5:FlxG.switchState(new osu.OsuMenuState());
+		// 	default:FlxG.switchState(new MainMenuState());
+		// }
+		shouldveLeft = true;
+		// if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
+		// PlayState.actualSongName = ""; // Reset to prevent issues
+		// PlayState.instance.persistentUpdate = true;
+		// if (shouldveLeft){
+		// 	Main.game.forceStateSwitch(new MainMenuState());
+
+		// }else{
+		// 	FlxTween.tween(FlxG.camera.scroll,{y:-100},0.2);
+		// 	MusicBeatState.instance.goToLastClass();
+		// 	// switch (PlayState.stateType)
+		// 	// {
+		// 	// 	case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
+		// 	// 	case 4:FlxG.switchState(new multi.MultiMenuState());
+		// 	// 	case 5:FlxG.switchState(new osu.OsuMenuState());
 					
 
-			// 	default:FlxG.switchState(new FreeplayState());
-			// }
-		}
-		shouldveLeft = true;
+		// 	// 	default:FlxG.switchState(new FreeplayState());
+		// 	// }
+		// }
+		// shouldveLeft = true;
 		return;
 	}
 

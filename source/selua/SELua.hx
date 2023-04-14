@@ -5,6 +5,7 @@ import llua.LuaL;
 import llua.State;
 import llua.Convert;
 import cpp.Pointer;
+import flixel.FlxG;
 
 using StringTools;
 
@@ -14,6 +15,7 @@ class SELua{
 	public var cache:Map<String,Dynamic> = [];
 	public var variables:SELuaVaris;
 	public var helpers:SELuaHelperMethods;
+	public var peCompat:PsychLuaCompat;
 	public static var currentInstance:SELua;
 
 	public function new(?str:String = "",?doExec:Bool = true){
@@ -23,11 +25,13 @@ class SELua{
 		Lua.init_callbacks(state);
 		variables = new SELuaVaris(this);
 		helpers = new SELuaHelperMethods(this);
+		peCompat = new PsychLuaCompat(this);
 		if(!doExec) return;
 		currentInstance = this;
 		exec();
 	}
 	public function exec(?code:String = ""){
+		currentInstance = this;
 		if(code == "")code = this.code;
 		// Lua.getglobal(state, 'dostring');
 		// Lua.pushstring(state, code);
@@ -48,7 +52,6 @@ class SELua{
 			throw e;
 			return;
 		}
-		trace('Parsed lua script without issues!');
 	}
 
 
@@ -179,6 +182,7 @@ class SELuaVaris{
 	}
 	public function set(variable:String, data:Dynamic,?map:Bool = false):Bool {
 		if(parent.state == null) return false;
+		SELua.currentInstance = parent;
 		var _dataTypeOf = Type.typeof(data);
 		if(!map && variable != "FUNCTIONVAR" && Reflect.isFunction(data)){
 			Lua_helper.add_callback(parent.state,variable,data);
@@ -219,6 +223,7 @@ class SELuaVaris{
 
 	public function call(func:String, args:Array<Dynamic>) {
 		if(parent.state == null) return;
+		SELua.currentInstance = parent;
 
 		Lua.getglobal(parent.state, func);
 		var type:Int = Lua.type(parent.state, -1);
@@ -247,6 +252,7 @@ class SELuaVaris{
 	}
 	public function get(variable:String):Dynamic {
 		if(parent.state == null) return null;
+		SELua.currentInstance = parent;
 		var result:String = null;
 		Lua.getglobal(parent.state, variable);
 		var returned = Convert.fromLua(parent.state, -1);
@@ -289,7 +295,7 @@ class SELuaHelperMethods{
 		parent.set('getClass',getClass);
 		parent.set('getType',getType);
 		parent.set('printObject', printObject);
-		parent.set('trace',function(e) trace(e));
+		parent.set('trace',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
 	}
 	public function getField(ID:String,vari:String):Dynamic{
 		var obj = parent.variables.ptrToObject(ID);
@@ -356,6 +362,130 @@ class SELuaHelperMethods{
 		return map;
 	}
 }
+
+class PsychLuaCompat{
+	var parent:SELua;
+	var objects:Map<String,Dynamic> = [];
+	public function luaCompat(vari:Dynamic):Dynamic{
+		if((vari is String) || (vari is Int) || (vari is Float) || (vari is Array)  
+			|| (vari is haxe.ds.StringMap) || (vari is haxe.ds.IntMap) || (vari is haxe.ds.EnumValueMap) || (vari is haxe.ds.ObjectMap)){
+			return vari;
+		}
+		return null;
+	}
+	public function new(par:SELua){
+		parent = par;
+		// parent.set('makeLuaSprite',function(tag:String,path:String,x:Float,y:float,){
+		// 	objects[tag] = 
+		// });
+
+
+		parent.set('getProperty',getProperty);
+		parent.set('setProperty',setProperty);
+		parent.set('getPropertyFromGroup',getPropertyFromGroup);
+		parent.set('setPropertyFromGroup',setPropertyFromGroup);
+		parent.set('getPropertyFromClass',getPropertyFromClass);
+		parent.set('setPropertyFromClass',setPropertyFromClass);
+		parent.set('debugPrint',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
+	}
+	public function getValueFromPath(object:Dynamic,path:String):Dynamic{
+		var splitPath:Array<String> = path.split('.');
+
+		if(path == "" || splitPath[0] == null){
+			throw 'Path is empty!';
+			return null;
+		}
+		if(object == null){
+			var obj:String = splitPath.shift();
+			if(obj == "state"){
+				object = cast FlxG.state;
+			}else{
+
+				object = Reflect.field((cast FlxG.state),obj);
+				if(object == null) object = Type.resolveClass(obj);
+				if(object == null) object = Reflect.field(PlayState,obj);
+				if(object == null) object = objects[obj];
+				if(object == null){
+					throw 'Unable to find top-level object ${obj} from path ${path}';
+					return null;
+				}
+			}
+		}
+		var currentPath:String = "";
+		while(splitPath.length > 0){
+			currentPath = splitPath.shift();
+			object = Reflect.field(object,currentPath);
+			if(object == null){
+				
+				return null;
+			}
+		}
+		return object;
+	}
+	public function setValueFromPath(path:String = "",value:Dynamic,obj:Dynamic = null):Void{
+		var splitPath:Array<String> = path.split('.');
+		if(splitPath[0] == "state"){
+			splitPath.shift();
+			obj = cast FlxG.state;
+		}
+		if(splitPath.length > 1) obj = getValueFromPath(obj,path.substring(0,path.lastIndexOf('.')));
+		if(obj is String || obj is Int || obj is Float) throw('Object "${path}" is null!'); return;
+		if(obj == null) throw('Object "${path}" is null!'); return;
+		var type = 0;
+		if(value is String){
+			if(!Math.isNaN(Std.parseFloat(value))){
+				value = Std.parseFloat(value);
+				type = 1;
+			}else if(!Math.isNaN(Std.parseInt(value))){
+				value = Std.parseInt(value);
+				type = 1;
+			}
+		}
+		var lastPath = splitPath.pop();
+		var field = Reflect.field(obj,lastPath);
+		if(field != null){
+			if((field is Int || field is Float) && type != 1) {
+				throw('Field of type ${Type.typeof(field)} is incompatible with ${Type.typeof(value)}');
+				return;
+			}
+			if(field is Int) value = Std.int(value);
+			// if(field is String) ;
+		}
+
+		Reflect.setField(obj,lastPath,value);
+	}
+	public function getProperty(path:String):Dynamic{
+		return luaCompat(getValueFromPath(null,path));
+	}
+	public function setProperty(path:String,value:Dynamic):Void{
+		setValueFromPath(path,value);
+	}
+	public function getPropertyFromClass(classPath:String,path:String):Dynamic{
+		var classObj:Class<Any> = Type.resolveClass(classPath);
+		if(classObj == null) return null;
+		return luaCompat(getValueFromPath(classObj,path));
+	}
+	public function setPropertyFromClass(classPath:String,path:String,value:Dynamic){
+		var classObj:Class<Any> = Type.resolveClass(classPath);
+		if(classObj == null) return;
+		setValueFromPath(path,value,classObj);
+	}
+	public function getPropertyFromGroup(path:String,index:Int,path:String):Dynamic{
+		var obj:Dynamic = getValueFromPath(null,path);
+		if(obj == null || obj.members == null) return null;
+		obj = obj.members.get(index);
+		if(obj == null) return null;
+		return luaCompat(getValueFromPath(obj,path));
+	}
+	public function setPropertyFromGroup(path:String,index:Int,path:String,value:Dynamic){
+		var obj:Dynamic = getValueFromPath(null,path);
+		if(obj == null || obj.members == null) return;
+		obj = obj.members[index];
+		if(obj == null) return;
+		setValueFromPath(path,value,obj);
+	}
+}
+
 #else
 
 class SELua{}

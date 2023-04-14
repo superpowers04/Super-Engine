@@ -1,4 +1,4 @@
-#if !mobile
+#if FLXRUNTIMESHADER
 package flixel.addons.display;
 
 import flixel.system.FlxAssets.FlxShader;

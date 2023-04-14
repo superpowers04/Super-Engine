@@ -91,7 +91,7 @@ class OptionsMenu extends MusicBeatState
 
 			new AccuracyDOption("Change how accuracy is calculated. ( Simple = Rating based, SE = Distance from note to time, Complex = Etterna(?) )"),
 			// new OffsetMenu("Get a note offset based off of your inputs!"),
-			new InputHandlerOption("Change the input engine used, only works locally. Kade is considered legacy and will not be improved")
+			new InputEngineOption("Change the input engine used, only works locally.")
 		],"Edit things like Keybinds, scroll direction, etc"),
 		new OptionCategory("Judgements", [
 			new AccuracyDOption("Change how accuracy is calculated. ( Simple = Rating based, SE = Distance from note to time, Complex = Etterna(?) )"),
@@ -145,7 +145,7 @@ class OptionsMenu extends MusicBeatState
 		],"Misc things"),
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your Frames Per Second, This controls how fast the game will update your screen"),
-			new UPSCapOption("Cap your Updates Per Second, This controls how responsive the game is"),
+			// new UPSCapOption("Cap your Updates Per Second, This controls how responsive the game is"),
 			new HCBoolOption("Hurt note texture","Use custom arrow texture instead of coloring normal notes black","useBadArrowTex"),
 
 			new HCBoolOption('Performance mode',"Disables many effects to make the game run better",'performance'),

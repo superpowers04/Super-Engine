@@ -131,7 +131,7 @@ class KeyBindMenu extends FlxSubState
         if (frames <= 10)
             frames++;
 
-        infoText.text = 'Current Mode: ${KeyBinds.gamepad ? 'GAMEPAD' : 'KEYBOARD'}. Press TAB to switch\n(' + #if(mobile) 'Tap or press ' + #end'Escape to save, ${KeyBinds.gamepad ? 'LEFT Trigger' : 'Backspace'} to leave without saving. ${KeyBinds.gamepad ? 'START To change a keybind' : ''})\n${lastKey != "" ? lastKey + " is blacklisted!" : ""}';
+        infoText.text = #if(!FLX_NO_GAMEPAD) 'Current Mode: ${KeyBinds.gamepad ? 'GAMEPAD' : 'KEYBOARD'}. Press TAB to switch' + #end'\n(' + #if(mobile) 'Tap or press ' + #end'Escape to save, ${KeyBinds.gamepad ? 'LEFT Trigger' : 'Backspace'} to leave without saving. ${KeyBinds.gamepad ? 'START To change a keybind' : ''})\n${lastKey != "" ? lastKey + " is blacklisted!" : ""}';
 
         switch(state){
 
