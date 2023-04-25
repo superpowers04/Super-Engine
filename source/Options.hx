@@ -242,13 +242,11 @@ class FPSCapOption extends Option
 	
 	override function right():Bool {
 		CoolUtil.setFramerate(CoolUtil.Framerate + 1);
-		CoolUtil.setUpdaterate(CoolUtil.Framerate);
 		return true;
 	}
 
 	override function left():Bool {
 		CoolUtil.setFramerate(CoolUtil.Framerate - 1);
-		CoolUtil.setUpdaterate(CoolUtil.Framerate);
 		return true;
 	}
 
@@ -257,41 +255,41 @@ class FPSCapOption extends Option
 		return "Current FPS Cap: " + CoolUtil.Framerate + (if(CoolUtil.Framerate == Application.current.window.displayMode.refreshRate) " (Refresh Rate)" else if(CoolUtil.Framerate == Application.current.window.frameRate) " (Frame Rate)" else " (Software)");
 	}
 }
-class UPSCapOption extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-		acceptValues = true;
-	}
+// class UPSCapOption extends Option
+// {
+// 	public function new(desc:String)
+// 	{
+// 		super();
+// 		description = desc;
+// 		acceptValues = true;
+// 	}
 
-	public override function press():Bool
-	{
-		CoolUtil.setUpdaterate(Std.int(Math.max(144,CoolUtil.Framerate)));
-		return true;
-	}
+// 	public override function press():Bool
+// 	{
+// 		CoolUtil.setUpdaterate(Std.int(Math.max(144,CoolUtil.Framerate)));
+// 		return true;
+// 	}
 
-	override function updateDisplay():String
-	{
-		return "UPS Cap";
-	}
+// 	override function updateDisplay():String
+// 	{
+// 		return "UPS Cap";
+// 	}
 	
-	override function right():Bool {
-		CoolUtil.setUpdaterate(CoolUtil.updateRate + 1);
-		return true;
-	}
+// 	override function right():Bool {
+// 		CoolUtil.setUpdaterate(CoolUtil.updateRate + 1);
+// 		return true;
+// 	}
 
-	override function left():Bool {
-		CoolUtil.setUpdaterate(CoolUtil.updateRate - 1);
-		return true;
-	}
+// 	override function left():Bool {
+// 		CoolUtil.setUpdaterate(CoolUtil.updateRate - 1);
+// 		return true;
+// 	}
 
-	override function getValue():String
-	{
-		return "Current UPS Cap: " + CoolUtil.updateRate;
-	}
-}
+// 	override function getValue():String
+// 	{
+// 		return "Current UPS Cap: " + CoolUtil.updateRate;
+// 	}
+// }
 
 
 class ScrollSpeedOption extends Option

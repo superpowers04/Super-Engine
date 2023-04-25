@@ -21,7 +21,7 @@ class CoolUtil
 	public static function setFramerate(?fps:Int = 0,?update:Bool = false,?temp:Bool = false){
 		if(!temp){
 			if(fps != 0 && !update){
-				Framerate = FlxG.save.data.fpsCap = fps;
+				updateRate = (Framerate = FlxG.save.data.fpsCap = fps) * 2;
 			}
 			if(Framerate == 0 || update){
 				Framerate = cast FlxG.save.data.fpsCap;
@@ -34,25 +34,9 @@ class CoolUtil
 			}
 		}
 		Main.instance.setFPSCap(Framerate);
-		FlxG.drawFramerate = Framerate;
+		FlxG.updateFramerate = (FlxG.drawFramerate = Framerate) * 2;
 	}
-	public static function setUpdaterate(?fps:Int = 0,?update:Bool = false,?temp:Bool = false){
-		if(!temp){
-			if(fps != 0 && !update){
-				updateRate = FlxG.save.data.upsCap = fps;
-			}
-			if(Framerate == 0 || update){
-				updateRate = cast FlxG.save.data.upsCap;
-			}
-			if(Framerate < 30){
-				updateRate = FlxG.save.data.upsCap = if(Application.current.window.displayMode.refreshRate > 30 ) Application.current.window.displayMode.refreshRate else if(Application.current.window.frameRate > 30) Application.current.window.frameRate else 30;
-			}
-			if(Framerate > 300){
-				updateRate = FlxG.save.data.upsCap = 300;
-			}
-		}
-		FlxG.updateFramerate = updateRate;
-	}
+
 	public static function clearFlxGroup(obj:FlxTypedGroup<Dynamic>):FlxTypedGroup<Dynamic>{ // Destroys all objects inside of a FlxGroup
 		while (obj.members.length > 0){
 			var e = obj.members.pop();

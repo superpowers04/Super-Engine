@@ -166,6 +166,7 @@ class KadeEngineData
 		if(FlxG.save.data.beatBouncing == null) FlxG.save.data.beatBouncing = true;
 		if(FlxG.save.data.scrollOSUSpeed == null) FlxG.save.data.scrollOSUSpeed = 2;
 		if(FlxG.save.data.packScripts == null) FlxG.save.data.packScripts = true;
+		if(FlxG.save.data.luaScripts == null) FlxG.save.data.luaScripts = true;
 		
 		if(FlxG.save.data.judgeSick == null) FlxG.save.data.judgeSick = Ratings.getDefRating("sick");
 		if(FlxG.save.data.judgeGood == null) FlxG.save.data.judgeGood = Ratings.getDefRating("good");

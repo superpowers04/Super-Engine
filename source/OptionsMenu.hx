@@ -71,6 +71,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Use Song Player Char","Whether to allow the song to choose the player if you have them installed or force the player you've selected",'charAutoBF'),
 			new HCBoolOption("Pack scripts","Toggle the ability for packs to provide scripts","packScripts"),
 			new HCBoolOption("Menu Scripts","Toggle the ability for scripts to run in menus","menuScripts"),
+			new HCBoolOption("Lua Scripts","Toggle lua scripts for fixing broken compatibility with some mods","luaScripts"),
 			// new HCBoolOption("Show player on main menu","Show your player character on the main menu, MAY CAUSE CRASHES!","mainMenuChar"),
 			
 			new HCBoolOption("Content Creation/Debug Mode","Enables the Character/chart editor, F10 console, displays some extra info in the FPS Counter, and some other debug stuff","animDebug"),

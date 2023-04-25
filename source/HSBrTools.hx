@@ -52,7 +52,6 @@ class HSBrTools {
 			if(scriptJson != null) optionsMap = scriptJson;
 			this.id = id;
 		}
-		trace('HSBrTools initialised in ${path}');
 	}
 
 	public function getSetting(setting:String,?defValue:Dynamic = false):Dynamic{
@@ -85,7 +84,7 @@ class HSBrTools {
 			handleError('${id}: "${path}${pngPath}" doesn\'t exist!');
 			return FlxGraphic.fromRectangle(0,0,0); // Prevents the script from throwing a null error or something
 		}
-		if(spriteArray[pngPath] == null) cacheGraphic('${pngPath}');
+		if(spriteArray[pngPath] == null) cacheGraphic(pngPath);
 		return spriteArray[pngPath];
 	}
 
@@ -123,18 +122,16 @@ class HSBrTools {
 		for(graphic in spriteArray){
 			try{
 				graphic.destroy();
-			}catch(e){
-
-			}
+			}catch(e){}
 		}
 		spriteArray.clear();
 		bitmapArray.clear();
-		// spriteArray = [];
-		xmlArray.clear();
-		// bitmapArray = [];
-		textArray.clear();
-		// xmlArray = [];
 		soundArray.clear();
+		textArray.clear();
+		xmlArray.clear();
+		// spriteArray = [];
+		// bitmapArray = [];
+		// xmlArray = [];
 		// textArray = [];
 		// soundArray = [];
 	}

@@ -364,6 +364,7 @@ class Note extends FlxSkewedSprite
 									var psChar = PlayState.getCharFromID(id);
 									var cachingChar:Character = {x:psChar.x, y:psChar.y,character:name,isPlayer:psChar.isPlayer,charType:psChar.charType};
 									PlayState.instance.cachedChars[id][name] = cachingChar;
+									cachingChar.drawFrame();
 									trace('Finished caching $name');
 								}
 								hit = function(?charID:Int = 0,note){
@@ -372,7 +373,17 @@ class Note extends FlxSkewedSprite
 									// PlayState.charSet(charID,"visible",false);
 									PlayState.instance.members[PlayState.instance.members.indexOf(PlayState.getCharFromID(info[0]))] = _char;
 									var _oldChar:Character = PlayState.getCharFromID(id);
-									Reflect.setProperty(PlayState,PlayState.getCharVariName(info[0]),_char);
+									var _variName:String = PlayState.getCharVariName(info[0]);
+									switch(_variName){
+										case "dad":
+											PlayState.dad = _char;
+										case "gf":
+											PlayState.gf = _char;
+										case "boyfriend":
+											PlayState.boyfriend = _char;
+										default:
+											Reflect.setProperty(PlayState,_variName,_char);
+									}
 									try{
 										_char.playAnim(_oldChar.animName,_oldChar.animation.curAnim.curFrame / _oldChar.animation.curAnim.frames.length);
 									}catch(e){}

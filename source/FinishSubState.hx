@@ -421,7 +421,7 @@ class FinishSubState extends MusicBeatSubstate
 						var curDate = Date.now();
 						var songName = if(PlayState.isStoryMode) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}';
 						songName.replace(".json","");
-						if(PlayState.invertedChart) songName = songName + "-inverted";
+						if(PlayState.invertedChart || QuickOptionsSubState.getSetting('Inverted Chart')) songName = songName + "-inverted";
 						if(!SELoader.exists('songLogs/${songName}/'))
 							SELoader.createDirectory('songLogs/${songName}/');
 						SELoader.saveContent('songLogs/${songName}/${curDate.getDate()}-${curDate.getMonth()}-${curDate.getFullYear()}_AT_${curDate.getHours()}-${curDate.getMinutes()}-${curDate.getSeconds()}.log',events);

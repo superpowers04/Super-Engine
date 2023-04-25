@@ -51,9 +51,13 @@ import lime.ui.FileDialog;
 import lime.ui.FileDialogType;
 import flixel.util.FlxTimer;
 
+#if discord_rpc
+	import Discord.DiscordClient;
+#end
+
 using StringTools;
 
-class ChartingState extends MusicBeatState
+class ChartingState extends ScriptMusicBeatState
 {
 	var _file:FileReference;
 
@@ -187,34 +191,23 @@ class ChartingState extends MusicBeatState
 	var time:Float = 0;
 	override function create()
 	{try{
+		scriptSubDirectory = "/charting/";
 		TitleState.loadNoteAssets();
 		curSection = lastSection;
 		if(onlinemod.OfflinePlayState.chartFile != ""){
 			lastPath = onlinemod.OfflinePlayState.chartFile;
 		}
+		loadScripts(true,true);
 		charting = true;
-		if (PlayState.SONG != null)
-			_song = PlayState.SONG;
-		else
-		{
-			_song = Song.getEmptySong();
-		}
-		if(_song.player1 == ""){
-			_song.player1 = "bf";
-		}
-		if(_song.player2 == ""){
-			_song.player2 = "dad";
-		}
-		if (_song.notes[curSection] == null)
-		{
-			addSection();
-		}
-		if(_song.notes[curSection + 1] == null){
-			addSection();
-		}
-		if(_song.notes[curSection + 2] == null){
-			addSection();
-		}
+		if (PlayState.SONG != null) _song = PlayState.SONG;
+		else _song = Song.getEmptySong();
+
+		if(_song.player1 == "") _song.player1 = "bf";
+		if(_song.player2 == "") _song.player2 = "dad";
+		if(_song.notes[curSection] == null) addSection();
+		if(_song.notes[curSection + 1] == null) addSection();
+		if(_song.notes[curSection + 2] == null) addSection();
+		
 		deezNuts.set(4, 1);
 		deezNuts.set(8, 2);
 		deezNuts.set(12, 3);
@@ -372,8 +365,12 @@ class ChartingState extends MusicBeatState
 		gridBGAbove.alpha = 0.7;
 		gridBGBelow.alpha = 0.7;
 
-		LoadingScreen.loadingText = "Finishing up";
+
+
+
+
 		super.create();
+		LoadingScreen.loadingText = "Finishing up";
 		if(time != 0){
 			Conductor.songPosition = time;
 			updateSection();
@@ -1973,7 +1970,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
-	function updateSectionUI():Void
+	inline function updateSectionUI():Void
 	{
 		var sec = _song.notes[curSection];
 
@@ -1985,7 +1982,7 @@ class ChartingState extends MusicBeatState
 		updateHeads();
 	}
 
-	function updateHeads():Void
+	inline function updateHeads():Void
 	{
 		(if(check_mustHitSection.checked) leftIcon else rightIcon).x = 40;
 		(if(check_mustHitSection.checked) rightIcon else leftIcon).x = 207;
@@ -1997,10 +1994,9 @@ class ChartingState extends MusicBeatState
 		evNote.scrollFactor.set(1, 1);
 	}
 
-	function updateNoteUI():Void
+	inline function updateNoteUI():Void
 	{
-		if (curSelectedNote != null)
-			stepperSusLength.value = curSelectedNote[2];
+		if (curSelectedNote != null) stepperSusLength.value = curSelectedNote[2];
 	}
 	inline function regNote(note,i) {rawToNote[i] = note; return noteToRaw[note] = i;}
 	function updateNote(note,i,?sect:Int = 1){
@@ -2043,12 +2039,16 @@ class ChartingState extends MusicBeatState
 		// 		lastNote = note;
 		rawToNote[i] = note;
 		noteToRaw[note] = i;
+
+		callInterp('updateNote',[note,i]);
 		curRenderedNotes.add(note);
 	}
 	var rawToNote:Map<Array<Dynamic>,Note> = [];
 	var noteToRaw:Map<Note,Array<Dynamic>> = [];
 	function updateGrid(?updateNotes:Bool = true):Void
 	{
+
+		callInterp('updateGrid',[updateNotes]);
 		if(updateNotes){
 			rawToNote = [];
 			noteToRaw = [];
@@ -2122,23 +2122,17 @@ class ChartingState extends MusicBeatState
 				}
 			}
 		}
+		callInterp('updateGridAfter',[]);
 		updateSelected();
 	}
 
 
-	private function addSection(lengthInSteps:Int = 16):SwagSection
+	@:keep inline function addSection(lengthInSteps:Int = 16):SwagSection
 	{
-		var sec:SwagSection = {
-			lengthInSteps: lengthInSteps,
-			bpm: _song.bpm,
-			changeBPM: false,
-			mustHitSection: true,
-			sectionNotes: [],
-			typeOfSection: 0,
-			altAnim: false
-		};
+		var sec:SwagSection = newSection(lengthInSteps);
 
 		_song.notes.push(sec);
+		callInterp('addSection',[sec]);
 		return sec;
 	}
 	var currentNoteObj:Note;
@@ -2177,6 +2171,8 @@ class ChartingState extends MusicBeatState
 
 		// updateGrid();
 		updateNoteUI();
+
+		callInterp('selectNote',[currentNoteObj]);
 	}
 	function deleteNote(note:Note):Void
 		{
@@ -2197,26 +2193,28 @@ class ChartingState extends MusicBeatState
 			updateGrid(true);
 		}
 
-	function clearSection():Void
+	@:keep inline function clearSection():Void
 	{
-		_song.notes[curSection].sectionNotes = [];
-
+		var sect = _song.notes[curSection];
+		sect.sectionNotes = [];
+		callInterp('clearSection',[sect]);
 		updateGrid();
 	}
 
-	function clearSong():Void
+	@:keep inline function clearSong():Void
 	{
 		for (daSection in 0..._song.notes.length)
 		{
 			_song.notes[daSection].sectionNotes = [];
 		}
 
+		callInterp('clearSong',[currentNoteObj]);
 		updateGrid();
 	}
 
-	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false,altAnim:Bool = true):SwagSection
+	@:keep inline function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false,altAnim:Bool = true):SwagSection
 		{
-			var sec:SwagSection = {
+			return {
 				lengthInSteps: lengthInSteps,
 				bpm: _song.bpm,
 				changeBPM: false,
@@ -2225,8 +2223,6 @@ class ChartingState extends MusicBeatState
 				typeOfSection: 0,
 				altAnim: altAnim
 			};
-
-			return sec;
 		}
 
 	function shiftNotes(measure:Int=0,step:Int=0,ms:Int = 0):Void
@@ -2320,6 +2316,8 @@ class ChartingState extends MusicBeatState
 
 			curSelectedNote = thingy;
 
+			callInterp('addNote',[thingy]);
+
 			// updateGrid();
 			updateNote(null,thingy);
 			updateNoteUI();
@@ -2328,20 +2326,20 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	function getStrumTime(yPos:Float):Float
+	@:keep inline function getStrumTime(yPos:Float):Float
 	{
 		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.stepCrochet);
 	}
 
-	function getYfromStrum(strumTime:Float):Float
+	@:keep inline function getYfromStrum(strumTime:Float):Float
 	{
 		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 	}
-	function getAboveYfromStrum(strumTime:Float):Float
+	@:keep inline function getAboveYfromStrum(strumTime:Float):Float
 	{
 		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBGAbove.y, gridBGAbove.y + gridBGAbove.height);
 	}
-	function getBelowYfromStrum(strumTime:Float):Float
+	@:keep inline function getBelowYfromStrum(strumTime:Float):Float
 	{
 		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBGBelow.y, gridBGBelow.y + gridBGBelow.height);
 	}
@@ -2371,12 +2369,7 @@ class ChartingState extends MusicBeatState
 	}*/
 	private var daSpacing:Float = 0.3;
 
-	function loadLevel():Void
-	{
-		trace(_song.notes);
-	}
-
-	function getNotes():Array<Dynamic>
+	@:keep inline function getNotes():Array<Dynamic>
 	{
 		var noteData:Array<Dynamic> = [];
 
@@ -2388,13 +2381,13 @@ class ChartingState extends MusicBeatState
 		return noteData;
 	}
 
-	function loadJson(song:String):Void
+	@:keep inline function loadJson(song:String):Void
 	{
 		PlayState.SONG = Song.parseJSONshit(SELoader.loadText('assets/data/${song.toLowerCase()}/${song.toLowerCase()}.json'));
 		FlxG.resetState();
 	}
 
-	function loadAutosave():Void
+	@:keep inline function loadAutosave():Void
 	{
 		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
 		FlxG.resetState();
@@ -2429,6 +2422,7 @@ class ChartingState extends MusicBeatState
 
 
 					_song = Json.parse(sys.io.File.getContent(path));
+					callInterp('loadChart',[_song]);
 					updateGrid();
 					showTempmessage('Loaded chart from ${path}');
 				
@@ -2470,6 +2464,8 @@ class ChartingState extends MusicBeatState
 					onlinemod.OfflinePlayState.chartFile = path;}catch(e){return;}
 					//Bodgey as hell but doesn't work otherwise
 					sys.io.File.saveContent(path,'{"song":' + data + "}");
+
+					callInterp('saveChart',[path]);
 					showTempmessage('Saved chart to ${path}');
 				
 

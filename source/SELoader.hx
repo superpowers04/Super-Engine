@@ -24,6 +24,7 @@ using StringTools;
 class SELoader {
 
  	static public var cache:InternalCache = new InternalCache();
+ 	
  	public static var PATH(default,set):String = '';
  	public static function set_PATH(_path:String):String{
  		if(!_path.endsWith('/')) _path = _path + "/"; // SELoader expects the main path to have a / at the end
@@ -52,6 +53,9 @@ class SELoader {
 
 				return path.replace('//','/');
 			}else{
+
+				if(path.startsWith("assets/") && FileSystem.exists('${PATH}mods${path}')) path = 'mods/' + path;
+
 				return (PATH + path).replace('//','/'); // Fixes paths having //'s in them
 			}
 	}
@@ -236,6 +240,10 @@ class InternalCache{
 				v.destroy();
 			}
 		}
+		bitmapArray = [];
+		xmlArray = [];
+		textArray = [];
+		soundArray = [];
 		openfl.system.System.gc();
 	}
 	inline function handleError(e:String){

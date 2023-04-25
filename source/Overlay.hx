@@ -68,19 +68,26 @@ class Overlay extends TextField
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
 		if(!visible) return;
-		currentTime += flixel.FlxG.elapsed;
-		times.push(currentTime);
+		#if sys
+			currentTime = Date.now().getTime();
+			times.push(currentTime);
 
-		while (times[0] < currentTime - 1)
-		{
-			times.shift();
-		}
+			while (times[0] < currentTime - 1000) times.shift();
+		#else
+			currentTime += flixel.FlxG.elapsed;
+			times.push(currentTime);
+
+			while (times[0] < currentTime - 1)
+			{
+				times.shift();
+			}
+		#end
 
 
 		scaleX = lime.app.Application.current.window.width / 1280;
 		scaleY = lime.app.Application.current.window.height / 720;
 		var currentCount = times.length;
-		currentFPS = Math.round((currentCount + cacheCount) * 0.5) ;
+		currentFPS = Math.round(currentCount);
 
 			var mem:Float = Math.round((
 			#if cpp
@@ -429,6 +436,17 @@ class ConsoleInput extends TextField{
 	@:keep inline function addTextAtCaret(str:String){
 		return actualText = actualText.substring(0,caretPos) + str + actualText.substring(caretPos);
 	}
+	@:keep inline function cleanCommandHistory(){
+		var i:Int = commandHistory.length + 1;
+		var bef:String = "";
+		var cur:String = "";
+		while(i > 0){
+			i--;
+			bef = commandHistory[i - 1]; cur = commandHistory[i];
+			if(bef == null){break;}
+			if(bef == cur || bef == "") commandHistory.splice(i-1,1);
+		}
+	}
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
@@ -458,19 +476,13 @@ class ConsoleInput extends TextField{
 		}
 		if(FlxG.keys.pressed.SHIFT){
 			if(FlxG.keys.justPressed.UP){
-				if(CURRENTCMDHISTORY == 0 && actualText != commandHistory[commandHistory.length -1]){
-					commandHistory.unshift(actualText);
-					CURRENTCMDHISTORY++;
-				}else if(CURRENTCMDHISTORY < commandHistory.length){
+				if(CURRENTCMDHISTORY < commandHistory.length){
 					actualText = commandHistory[CURRENTCMDHISTORY++];
 				}
 				updateShownText();
 			}else if(FlxG.keys.justPressed.DOWN){
 				if(CURRENTCMDHISTORY > 0){
 					actualText = commandHistory[CURRENTCMDHISTORY--];
-				}else if(CURRENTCMDHISTORY == 0){
-					CURRENTCMDHISTORY--;
-					actualText = "";
 				}
 				updateShownText();
 			}
@@ -483,32 +495,28 @@ class ConsoleInput extends TextField{
 				updateShownText();
 			}
 		}else{
-			
-
 			if(FlxG.keys.justPressed.BACKSPACE){
 				actualText = actualText.substring(0,caretPos - 1) + actualText.substring(caretPos);
 				caretPos--;
 				updateShownText();
-			}
-			if(FlxG.keys.justPressed.DELETE){
+			}else if(FlxG.keys.justPressed.DELETE){
 				actualText = actualText.substring(0,caretPos) + actualText.substring(caretPos + 1);
 				caretPos--;
 				updateShownText();
-			}
-			if(FlxG.keys.justPressed.LEFT){
+			}else if(FlxG.keys.justPressed.LEFT){
 				caretPos--;
 				updateShownText();
-			}
-			if(FlxG.keys.justPressed.RIGHT){
+			}else if(FlxG.keys.justPressed.RIGHT){
 				caretPos++;
 				updateShownText();
-			}
-			
-			if(FlxG.keys.justPressed.ENTER){
+			}else if(FlxG.keys.justPressed.ENTER){
 				if(actualText != ""){
 					Console.print('> ${actualText}');
+					CURRENTCMDHISTORY = 0;
 					runCommand(actualText);
+					
 					commandHistory.unshift(actualText);
+					cleanCommandHistory();
 					actualText= "";
 					updateShownText();
 				}

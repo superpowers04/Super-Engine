@@ -36,6 +36,10 @@ import flixel.FlxCamera;
 import sys.thread.Thread;
 import Alphabet;
 
+#if discord_rpc
+	import Discord.DiscordClient;
+#end
+
 using StringTools;
 
 typedef Scorekillme = {
@@ -883,7 +887,7 @@ class TitleState extends MusicBeatState
 		shiftSkip.scrollFactor.set();
 		add(shiftSkip);
 		CoolUtil.setFramerate(true);
-		CoolUtil.setUpdaterate(true);
+		// CoolUtil.setUpdaterate(true);
 		FlxG.sound.volume = FlxG.save.data.masterVol;
 		Main.instance.toggleFPS(FlxG.save.data.fps);
 
@@ -1090,7 +1094,7 @@ class TitleState extends MusicBeatState
 		super.update(elapsed);
 	}
 	inline function MainMenu(){
-
+		ngSpr.graphic.destroy();
 		FlxTween.tween(FlxG.camera.scroll,{y:-300},4,{ease:FlxEase.cubeOut});
 		FlxG.switchState(if(FlxG.keys.pressed.SHIFT) new OptionsMenu() else new MainMenuState());
 	}

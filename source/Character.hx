@@ -415,8 +415,9 @@ class CharAnimController extends FlxAnimationController{
 				if (animCaseInsensitive[anima.anim] != null) anima.anim = animCaseInsensitive[anima.anim];
 				if (animation.getByName(anima.anim) != null){continue;} // Skip if animation has already been defined
 				if (anima.char_side != null && anima.char_side != 3 && anima.char_side == charType){continue;} // This if statement hurts my brain
-				if (anima.ifstate != null){
+				if (anima.ifstate != null && PlayState.instance != null){
 					anima.ifstate.isFunc = false; //Force because funni
+					// PlayState.
 					if (anima.ifstate.check == 1 ){ // Do on step or beat
 						if (PlayState.stepAnimEvents[charType] == null) PlayState.stepAnimEvents[charType] = [anima.anim => anima.ifstate];
 					} else {

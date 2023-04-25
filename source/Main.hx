@@ -60,12 +60,9 @@ class Main extends Sprite
 	{
 		super();
 
-		if (stage != null)
-		{
+		if (stage != null){
 			init();
-		}
-		else
-		{
+		}else{
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
 	}
@@ -102,6 +99,7 @@ class Main extends Sprite
 		// Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		
 		addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
+		
 		funniSprite = new Sprite();
 		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
 		addChild(funniSprite);

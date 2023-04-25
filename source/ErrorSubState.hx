@@ -42,7 +42,6 @@ class ErrorSubState extends MusicBeatSubstate
 	public function new(x:Float, y:Float,?error:String = "",force:Bool = false)
 	{
 		instance = this;
-		super();
 		endingMusic = null;
 		errorMsg = error;
 			// PlayState.instance.paused = true;

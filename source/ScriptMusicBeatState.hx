@@ -17,6 +17,32 @@ import flixel.tweens.FlxTween;
 
 using StringTools;
 
+@:publicFields class InterpInfo{
+	var name:String = "No Interp";
+	var currentFunction:String = "None";
+	var interp:Dynamic = null;
+	var isActive:Bool = false;
+	var args:Array<Dynamic> = [];
+	var type:String = 'hscript';
+	function new(){}
+	function toString():String{
+		if(!isActive) return "No Interp Active";
+		var ret = 'Name:$name\n Type:${type}\n Current Function:${currentFunction}';
+		@:privateAccess if(interp != null && interp is hscript.Interp && interp.curExpr != null){
+			ret+='\n  Line:${interp.curExpr.line}\n  Characters:${interp.curExpr.pmin} - ${interp.curExpr.pmax}';
+		}
+		ret+='\n  Args:${args}';
+		return ret;
+	}
+	function reset(){
+		name = "";
+		currentFunction = '';
+		args = [];
+		type = "";
+		isActive = false;
+	}
+}
+
 class ScriptMusicBeatState extends MusicBeatState{
 	public static var instance:ScriptMusicBeatState;
 	/*Interpeter stuff*/
@@ -24,9 +50,11 @@ class ScriptMusicBeatState extends MusicBeatState{
 	
 		var created = false;
 		var lastErr = "";
-		public override function errorHandle(?error:String = "No error passed!",?forced:Bool = false){
+		public override function errorHandle(?error:String = "",?forced:Bool = false){
 			try{
-
+				if(currentInterp.args[0] == this) currentInterp.args.shift();
+				if(error == "") error = 'No error passed!\nInterp info: ${currentInterp}';
+				if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
 				resetInterps();
 				parseMoreInterps = false;
 				if(!created && !forced){
@@ -72,24 +100,35 @@ class ScriptMusicBeatState extends MusicBeatState{
 			"state",
 			"options"
 		];
+		public var currentInterp:InterpInfo = new InterpInfo();
 
 		public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String){
 			cancelCurrentFunction = false;
 			var _interp = interps[id];
 			try{
 				if (_interp == null) {throw('Interpter ${id} doesn\'t exist!');return;}
+				currentInterp.isActive = true;
+				currentInterp.name = id;
+				currentInterp.currentFunction = func_name;
+				currentInterp.args = args;
+				currentInterp.interp = _interp;
 				if(_interp is Interp){
+					currentInterp.type = 'hscript';
 
 					var method = _interp.variables.get(func_name);
 					if (method == null) {return;}
 					// trace('$func_name:$id $args');
 					
 					Reflect.callMethod(_interp,method,args);
+					currentInterp.reset();
 					return;
 				}
 				#if linc_luajit
 				if(_interp is SELua){
+					currentInterp.type = 'lua';
 					_interp.call(func_name,args);
+
+					currentInterp.reset();
 					return;
 				}
 				#end
@@ -100,12 +139,13 @@ class ScriptMusicBeatState extends MusicBeatState{
 						line = ':"${_interp.variables.get('scriptContents').split('\n')[Std.int(e.line) - 1]}"';
 					}catch(e){line="";trace(e.message);}
 					errorHandle(HscriptUtils.genErrorMessage(e,func_name,id));
-				}else{
-					errorHandle(e.message);
-				}
+				}else if(e == "Null Object Reference"){ errorHandle('Null Object Reference');}
+				else {errorHandle('Type:${Type.typeof(e)}, native:${Type.typeof(e.native)}, $e - ${e.stack}');}
 			}
+			currentInterp.reset();
+
 		}
-		public function closeInterp(id){
+		static public function closeInterp(id){
 			instance.unloadInterp(id);
 		}
 
@@ -155,7 +195,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 		#if linc_luajit
 		public function parseLua(?songScript:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"):SELua{
 			// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled
-			if(!parseMoreInterps) return null;
+			if(!parseMoreInterps || !FlxG.save.data.luaScripts) return null;
 
 			if(songScript == "" || !songScript.contains('isSE = true') && !songScript.contains('function initScript')) return null;
 			// if (brTools == null) brTools = hsBrTools;
@@ -181,7 +221,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 				addVariablesToLua(interp);
 				interp.variables.set("scriptName",id);
 				// interp.variables.set("require",require);
-				interp.variables.set("close",closeInterp); // Closes a script
+				interp.variables.set("close",function(n) {if(n == null){n = id;} closeInterp(n);}); // Closes a script
 				interps[id] = interp;
 				if(brTools != null) brTools.reset();
 				callInterp("initScript",[],id);
@@ -220,12 +260,13 @@ class ScriptMusicBeatState extends MusicBeatState{
 				interp.variables.set("scriptContents",songScript);
 				interp.variables.set("scriptName",id);
 				addVariablesToHScript(interp);
-				interp.variables.set("close",closeInterp); // Closes a script
+				interp.variables.set("close",unloadInterp.bind(id)); // Closes a script
 
 				interp.execute(program);
 				interps[id] = interp;
 				if(brTools != null)brTools.reset();
 				callInterp("initScript",[],id);
+				if(interps[id] == null) return null; // mf unloaded itself :skull:
 				interpCount++;
 			}catch(e){
 				var _line = '${parser.line}';
@@ -343,7 +384,8 @@ class ScriptMusicBeatState extends MusicBeatState{
 					LoadingScreen.loadingText = 'Loading scripts: $v';
 					var _v = v.substr(v.lastIndexOf('/'));
 					if(v.lastIndexOf('/') > v.length - 2){
-						_v = v.substring(0,v.lastIndexOf('/') - 1).substring(_v.lastIndexOf('/'));
+						_v = v.substring(0,v.lastIndexOf('/') - 1);
+						_v = _v.substring(_v.lastIndexOf('/'));
 					}
 					loadScript(v,null,'USER/' + _v);
 				}

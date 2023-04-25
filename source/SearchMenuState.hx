@@ -14,6 +14,11 @@ import flixel.addons.ui.FlxInputText;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
+
+#if discord_rpc
+	import Discord.DiscordClient;
+#end
+
 import sys.io.File;
 import sys.FileSystem;
 import flixel.math.FlxMath;
@@ -140,12 +145,12 @@ class SearchMenuState extends ScriptMusicBeatState
 			// bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
 			bg.color = bgColor;
 		}
-		bg.scrollFactor.set(0.01,0.01);
+		bg.scrollFactor.set(0.2,0.2);
 		if(doReset) SickMenuState.musicHandle(bg);
 
 		add(bg);
 		var bgOver = new FlxSprite().loadGraphic(SearchMenuState.backgroundOver);
-		bgOver.scrollFactor.set(0.01,0.01);
+		bgOver.scrollFactor.set(0.2,0.2);
 		add(bgOver);
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		LoadingScreen.loadingText = "Loading list";
@@ -224,12 +229,12 @@ class SearchMenuState extends ScriptMusicBeatState
 	override function update(elapsed:Float)
 	{try{
 		super.update(elapsed);
-		if (FlxG.sound.music != null)
-			Conductor.songPosition = FlxG.sound.music.time;
+		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
 		if (toggleables['search'] && searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
 			SetVolumeControls(true);
 			handleInput();
 		}
+		if(bg.height > 720) bg.y = FlxMath.lerp(bg.y,(curSelected / grpSongs.length) * -(bg.height - 720),elapsed);
 
 	}catch(e) MainMenuState.handleError('Error with searchmenu "update" ${e.message}');}
 	function select(sel:Int = 0){
@@ -251,8 +256,7 @@ class SearchMenuState extends ScriptMusicBeatState
 			}
 			extraKeys();
 
-			if (controls.ACCEPT)
-			{
+			if (controls.ACCEPT){
 				select(curSelected);
 				if(retAfter) ret();
 			}
@@ -328,7 +332,7 @@ class SearchMenuState extends ScriptMusicBeatState
 			curSelected = 0;
 
 		var bullShit:Int = 0;
-		if(bg.height > 720) FlxG.camera.scroll.y = (curSelected / grpSongs.length) * (bg.height - 720);
+		
 
 
 			for (item in grpSongs.members)
@@ -349,7 +353,7 @@ class SearchMenuState extends ScriptMusicBeatState
 						{
 							item.alpha = 1;
 
-							if(!useAlphabet) item.color = 0xffffff;
+							if(!useAlphabet) item.color = hoverColor;
 						}
 					} 
 				}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded

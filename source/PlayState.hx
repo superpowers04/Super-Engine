@@ -11,6 +11,7 @@ import openfl.utils.AssetManifest;
 import openfl.utils.AssetLibrary;
 import flixel.system.FlxAssets;
 
+
 import lime.app.Application;
 import lime.media.AudioContext;
 import lime.media.AudioManager;
@@ -65,6 +66,9 @@ import openfl.events.KeyboardEvent;
 import hscript.Expr;
 import hscript.Interp;
 import hscript.InterpEx;
+#if discord_rpc
+	import Discord.DiscordClient;
+#end
 
 #if linc_luajit
 import selua.SELua;
@@ -320,7 +324,7 @@ class PlayState extends ScriptMusicBeatState
 
 	// API stuff
 
-		public static function addEvent(id:Int,name:String,check:Int,value:Int,func:Dynamic->Void,?variable:String = "def",?type:String="equals"):IfStatement{
+		public function addEvent(id:Int,name:String,check:Int,value:Int,func:Dynamic->Void,?variable:String = "def",?type:String="equals"):IfStatement{
 			var _events:Map<Int,Map<String,IfStatement>> = (switch(check){
 				case 0:
 					beatAnimEvents;
@@ -388,10 +392,12 @@ class PlayState extends ScriptMusicBeatState
 
 			}
 
-	public override function errorHandle(?error:String = "No error passed!",?forced:Bool = false) handleError(error,forced);
-	public function handleError(?error:String = "No error passed!",?forced:Bool = false){
+	public override function errorHandle(?error:String = "",?forced:Bool = false) handleError(error,forced);
+	public function handleError(?error:String = "",?forced:Bool = false){
 		try{
-
+			if(currentInterp.args[0] == this) currentInterp.args.shift();
+			if(error == "") error = 'No error passed!\nInterp info: ${currentInterp}';
+			if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
 			resetInterps();
 			trace('Error!\n ${error}');
 			parseMoreInterps = false;
@@ -1425,16 +1431,24 @@ class PlayState extends ScriptMusicBeatState
 		}, introAudio.length + 1);
 	}
 
-	function charCall(func:String,args:Array<Dynamic>,?char:Int = -1){
+	@:keep inline function charCall(func:String,args:Array<Dynamic>,?char:Int = -1){
+		currentInterp.isActive = true;
+		currentInterp.name = 'char: ${char}';
+		currentInterp.currentFunction = func;
+		currentInterp.args = args;
 		switch(char){
 			case 0: boyfriend.callInterp(func,args);
 			case 1: dad.callInterp(func,args);
 			case 2: gf.callInterp(func,args);
 			case -1:
+				currentInterp.name = 'char: 0';
 				boyfriend.callInterp(func,args);
+				currentInterp.name = 'char: 1';
 				dad.callInterp(func,args);
+				currentInterp.name = 'char: 2';
 				gf.callInterp(func,args);
 		}
+		currentInterp.reset();
 	}
 
 	var previousFrameTime:Int = 0;

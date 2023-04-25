@@ -93,7 +93,7 @@ class FuckState extends FlxUIState
 				currentStateName = haxe.rtti.Rtti.getRtti(cast FlxG.state).path;
 			}catch(e){}
 			try{
-				err += "\n\n# ---------- SYSTEM INFORMATION ----------";
+				err +="\n\n # ---------- SYSTEM INFORMATION --------";
 				
 				err +='\n Operating System: ${Sys.systemName()}';
 				err +='\n Working Path: ${SELoader.absolutePath('')}';
@@ -108,7 +108,7 @@ class FuckState extends FlxUIState
 				err +='\n Scripts: ${FlxG.save.data.scripts}';
 				err +='\n State: ${currentStateName}';
 				err +='\n Save: ${FlxG.save.data}';
-				err +='\n# -------------------';
+				err +='\n # --------------------------------------';
 				
 			}catch(e){
 				trace('Unable to get system information! ${e.message}');

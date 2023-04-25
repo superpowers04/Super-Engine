@@ -116,9 +116,11 @@
 <!-- 	<haxelib name="openfl" if="mobile"/>
 	<haxelib name="flixel" if="mobile" /> -->
 	<!-- Eric's versions of flixel/openfl -->
-	<haxelib name="openfl" version="git"/>
-	<haxelib name="flixel" version="git"/>
+	<haxelib name="openfl"/>
+	<haxelib name="flixel"/>
 	<haxelib name="flixel-addons" />
+
+	<!-- <haxedef name='FLXRUNTIMESHADER' if='desktop'> -->
 
 	<haxelib name="hscript" />
 	<haxelib name="hscript-ex"/>
@@ -126,12 +128,12 @@
 	<haxedef name="hscriptPos" />
 
 	<!-- Expects https://github.com/superpowers04/linc_luajit, Nebula's fork will not work!-->
-	<!-- <haxelib name="linc_luajit" if="cpp"/> -->
+	<haxelib name="linc_luajit" if="cpp"/>
 	<haxelib name="discord_rpc" if="desktop cpp" />
 
 	<haxelib name="extension-androidtools" if="android" /> <!-- I am not reimplementing this shit myself -->
 
-	<!-- <haxelib name="hxCodec" if="desktop || android"/> -->
+	<haxelib name="hxCodec" if="desktop || android"/>
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
