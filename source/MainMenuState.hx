@@ -398,4 +398,17 @@ class MainMenuState extends SickMenuState
 				callInterp('select',[sel,daChoice]);
 		}
 	}
+	override function addListing(i:Int){ // I'm lazy and just want to center the object
+		callInterp('addToList',[i,options[i]]);
+		if(cancelCurrentFunction) return;
+		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i], true, false);
+		controlLabel.isMenuItem = true;
+		controlLabel.targetY = i;
+		if (i != 0) controlLabel.alpha = 0.6;
+		controlLabel.moveX = false;
+		controlLabel.screenCenter(X);
+		grpControls.add(controlLabel);
+		callInterp('addToListAfter',[controlLabel,i,options[i]]);
+
+	}
 }

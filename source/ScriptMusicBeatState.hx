@@ -102,11 +102,11 @@ class ScriptMusicBeatState extends MusicBeatState{
 		];
 		public var currentInterp:InterpInfo = new InterpInfo();
 
-		public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String){
+		public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String):Dynamic{
 			cancelCurrentFunction = false;
 			var _interp = interps[id];
 			try{
-				if (_interp == null) {throw('Interpter ${id} doesn\'t exist!');return;}
+				if (_interp == null) {throw('Interpter ${id} doesn\'t exist!');return null;}
 				currentInterp.isActive = true;
 				currentInterp.name = id;
 				currentInterp.currentFunction = func_name;
@@ -116,12 +116,12 @@ class ScriptMusicBeatState extends MusicBeatState{
 					currentInterp.type = 'hscript';
 
 					var method = _interp.variables.get(func_name);
-					if (method == null) {return;}
+					if (method == null) {return null;}
 					// trace('$func_name:$id $args');
 					
-					Reflect.callMethod(_interp,method,args);
+					var _ret = Reflect.callMethod(_interp,method,args);
 					currentInterp.reset();
-					return;
+					return _ret;
 				}
 				#if linc_luajit
 				if(_interp is SELua){
@@ -129,7 +129,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 					_interp.call(func_name,args);
 
 					currentInterp.reset();
-					return;
+					return null;
 				}
 				#end
 			}catch(e:Dynamic){
@@ -143,6 +143,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 				else {errorHandle('Type:${Type.typeof(e)}, native:${Type.typeof(e.native)}, $e - ${e.stack}');}
 			}
 			currentInterp.reset();
+			return null;
 
 		}
 		static public function closeInterp(id){

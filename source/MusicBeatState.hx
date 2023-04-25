@@ -19,6 +19,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.FlxObject;
 import flixel.FlxBasic;
 import Overlay.Console;
+import se.extensions.flixel.FlxSpriteLockScale;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
 
@@ -130,15 +131,15 @@ class MusicBeatState extends FlxUIState
 		if(FlxG.cameras.list[FlxG.cameras.list.length - 1] != null){
 			tempMessBacking.cameras = tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		}
-		add(tempMessBacking);
-		add(tempMessage);
+		// add(tempMessBacking);
+		// add(tempMessage);
 		if(moveDown){
 			tempMessBacking.y = lastBacking.y + lastBacking.height;
 			tempMessage.y = tempMessBacking.y + 2;
 		};
 		tempMessages.push([time,tempMessage,tempMessBacking]);
 	}
-	@:keep inline public function showTempBanner(str:String,?color:FlxColor = FlxColor.LIME,?time:Float = 5,?center:Bool = true,?trac:Bool = true){
+	public function showTempBanner(str:String,?color:FlxColor = FlxColor.LIME,?time:Float = 5,?center:Bool = true,?trac:Bool = true){
 		while(tempMessages.length > 0){
 			var e = tempMessages.pop();
 			e[2].destroy();
@@ -342,7 +343,7 @@ class MusicBeatState extends FlxUIState
 		if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F8 && onlinemod.OnlinePlayMenuState.socket == null){
 			debugMode = !debugMode;
 			if(debugMode){
-				debugOverlay = new DebugOverlay();
+				debugOverlay = new DebugOverlay(this);
 			}else{
 				debugOverlay.destroy();
 			}
@@ -366,8 +367,15 @@ class MusicBeatState extends FlxUIState
 
 	override function draw(){
 		super.draw();
-		if(debugMode)
-			debugOverlay.draw();
+		if(debugMode) debugOverlay.draw();
+		if(tempMessages.length > 0){
+			var i = 0;
+			while (i < tempMessages.length){
+				tempMessages[i][2].draw();
+				tempMessages[i][1].draw();
+				i++;
+			}
+		}
 	}
 }
 
@@ -376,37 +384,78 @@ class MusicBeatState extends FlxUIState
 
 class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 	var bg:FlxSprite;
-	override public function new(){
+	override public function new(parent:MusicBeatState){
 		mouseEnabled = FlxG.mouse.visible;
+		this.parent = parent;
 		FlxG.mouse.visible = true;
 		super();
-		MusicBeatState.instance.showTempmessage('Entered Debug mode');
+		MusicBeatState.instance.showTempmessage('Enabled Debug overlay');
+		if(objectPosText == null){
+			objectPosText = new FlxText(0,-100,'X:2000,Y:2000');
+			objectPosText.setFormat(null, 16, 0xffffaaff, CENTER);
+			// objectPosText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,);
+			objectPosText.scrollFactor.set();
+		}
+		if(objectPosBack == null){
+			objectPosBack = new FlxSpriteLockScale(-10,-100);
+			objectPosBack.makeGraphic(1,1,FlxColor.BLACK);
+			objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
+			objectPosBack.alpha = 0.4;
+			objectPosBack.scrollFactor.set();
+		}
+		add(objectPosBack);
+		add(objectPosText);
+		objectPosBack.visible = objectPosText.visible = false;
 	}
-	
+	var parent:MusicBeatState;
 	var obj:FlxObject;
 	var ox:Float = 0;
 	var oy:Float = 0;
 	var mx:Float = 0;
 	var my:Float = 0;
 	var mouseEnabled:Bool = false;
+	var objectPosText:FlxText;
+	var objectPosBack:FlxSpriteLockScale;
+	function getTopObject():Dynamic{
+		var id = parent.members.length - 1;
+		while (id >= 0 && obj == null) {
+			try{
+				var _ob:Dynamic = parent.members[id];
+				if(_ob != null && FlxG.mouse.overlaps(_ob)){
+					if(!FlxG.keys.pressed.SHIFT && _ob.members != null){
+						var _id:Int = Std.int(_ob.members.length-1);
+						var _inob:Dynamic = null;
+						while (_id >= 0 && obj == null) {
+							try{
+								_inob = _ob.members[_id];
+								_id--;
+								if(_inob != null  && FlxG.mouse.overlaps(_inob)){
+									obj = cast (_inob,FlxSprite);
+									break;
+								}
+							}catch(e){obj = null;}
+						}
+
+						if(obj != null && !FlxG.keys.pressed.CONTROL) return obj;
+					}else{
+						obj = cast (_ob,FlxSprite);
+						if(obj != null && !FlxG.keys.pressed.CONTROL) return obj;
+					}
+					// trace('Funni click on ${obj}');
+						// break;
+				}
+
+			}catch(e){obj = null;}
+			id--;
+		}
+		return obj;
+	}
 	override function update(el:Float){
 		super.update(el);
 		if(FlxG.mouse.justPressed){
-			var id = MusicBeatState.instance.members.length - 1;
 			mx=FlxG.mouse.x;
 			my=FlxG.mouse.y;
-			while (id >= 0 && obj == null) {
-				try{
-					var _ob:Dynamic = MusicBeatState.instance.members[id];
-					if(_ob != null  && FlxG.mouse.overlaps(_ob)){
-						obj = cast (_ob,FlxSprite);
-						// trace('Funni click on ${obj}');
-							// break;
-					}
-
-				}catch(e){obj = null;}
-				id--;
-			}
+			obj = getTopObject();
 			if(obj != null){
 				ox=obj.x;
 				oy=obj.y;
@@ -416,25 +465,36 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 			// if(!FlxG.keys.pressed.SHIFT){
 			obj.x = ox - mx + FlxG.mouse.x;
 			obj.y = oy - my + FlxG.mouse.y;
+			updateObjPosText();
+			
 
 			// }
-			MusicBeatState.instance.showTempmessage('Obj pos: ${obj.x},${obj.y}');
-			if(FlxG.mouse.wheel != 0){
-				obj.angle += FlxG.mouse.wheel;
-			}
+			// MusicBeatState.instance.showTempmessage('Obj pos: ${obj.x},${obj.y}');
 
+			if(FlxG.mouse.wheel != 0) obj.angle += FlxG.mouse.wheel;
+
+		}else if( FlxG.keys.pressed.ALT #if(!windows) || FlxG.keys.pressed.MENU #end){
+			obj = getTopObject();
+			updateObjPosText();
+			
+			objectPosBack.visible = objectPosText.visible = false;
+		
 		}else if(obj != null){
-			// if(FlxG.keys.pressed.SHIFT){
-			// 	obj.velocity.x = (mx - FlxG.mouse.x) * 0.01;
-			// 	obj.velocity.y = (my - FlxG.mouse.y) * 0.01;
-			// }
 			obj = null;
+			objectPosBack.visible = objectPosText.visible = false;
 		}
+	}
+	@:keep inline function updateObjPosText(){
+		objectPosBack.visible = objectPosText.visible = true;
+		objectPosText.text = '${Std.int(obj.x * 100) * 0.001},${Std.int(obj.y * 100) * 0.001}';
+		objectPosBack.x = (objectPosText.x = FlxG.mouse.screenX + 20) - 2;
+		objectPosBack.y = (objectPosText.y = FlxG.mouse.screenY + 20) - 2;
+		objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
 	}
 	override function destroy(){
 		FlxG.mouse.visible = mouseEnabled;
 
 		super.destroy();
-		MusicBeatState.instance.showTempmessage('Exited Debug mode');
+		MusicBeatState.instance.showTempmessage('Exited Debug overlay');
 	}
 }
