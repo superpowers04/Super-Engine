@@ -175,12 +175,13 @@
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
-	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+	<haxedef name="FLX_NO_DEBUG"/>
 	<!-- <haxedef name="HXCPP_DEBUGGER"/> -->
 	<!-- This is to hopefully increase preformance on x64 systems, if it's not compiling to them already for some reason -->
 	<haxedef name="HXCPP_M64"/> 
 	<haxedef name="HXCPP_CHECK_POINTER"/>
 	<haxedef name="HXCPP_STACK_LINE"/>
+	<haxedef name="HXCPP_STACK_TRACE"/>
 	<haxedef name="HXCPP_GC_GENERATIONAL"/>
 
 
