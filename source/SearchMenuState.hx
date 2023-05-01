@@ -119,7 +119,7 @@ class SearchMenuState extends ScriptMusicBeatState
 		if(/*FlxG.save.data.persistOpp == null &&*/ PlayState.dad != null){
 			try{PlayState.dad.destroy();}catch(e){}
 			PlayState.dad = null;
-		} 
+		}
 		#if discord_rpc
 			DiscordClient.changePresence('Admiring the menus',"Probably configurin something or choosing a song");
 		#end

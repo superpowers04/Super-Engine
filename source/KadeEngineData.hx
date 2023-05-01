@@ -36,8 +36,7 @@ class KadeEngineData
 		if (FlxG.save.data.fps == null)
 			FlxG.save.data.fps = false;
 
-		if (FlxG.save.data.changedHit == null)
-		{
+		if (FlxG.save.data.changedHit == null){
 			FlxG.save.data.changedHitX = -1;
 			FlxG.save.data.changedHitY = -1;
 			FlxG.save.data.changedHit = false;
@@ -124,7 +123,7 @@ class KadeEngineData
 
 		if (FlxG.save.data.guiGap == null) FlxG.save.data.guiGap = 0;
 
-		if (FlxG.save.data.inputEngine == null) FlxG.save.data.inputEngine = 0;
+		if (FlxG.save.data.inputEngine == null) FlxG.save.data.inputEngine = 1;
 
 		if (FlxG.save.data.hitSound == null) FlxG.save.data.hitSound = false;
 
@@ -182,7 +181,7 @@ class KadeEngineData
 		#if discord_rpc
 		if(FlxG.save.data.discordDRP == null) FlxG.save.data.discordDRP = true;
 		#end
-		if(FlxG.save.data.doCoolLoading == null) FlxG.save.data.doCoolLoading = false;
+		if(FlxG.save.data.doCoolLoading == null) FlxG.save.data.doCoolLoading = true;
 		if(FlxG.save.data.fullscreen == null) FlxG.save.data.fullscreen = false;
 
 
@@ -194,6 +193,17 @@ class KadeEngineData
 			if(FlxG.save.data.useTouch == null) FlxG.save.data.useTouch = true;
 			if(FlxG.save.data.useStrumsAsButtons == null) FlxG.save.data.useStrumsAsButtons = true;
 		#end
+		if(FlxG.save.data.lastUpdateID == null) FlxG.save.data.lastUpdateID = MainMenuState.versionIdentifier;
+
+		MainMenuState.lastVersionIdentifier = FlxG.save.data.lastUpdateID;
+		FlxG.save.data.lastUpdateID = MainMenuState.versionIdentifier;
+		if(MainMenuState.lastVersionIdentifier != MainMenuState.versionIdentifier){ // This is going to be ugly but only executed every time the game's updated
+			var lastVersionIdentifier = MainMenuState.lastVersionIdentifier;
+			if(lastVersionIdentifier < 1)
+				FlxG.save.data.inputEngine = 1; // Update to new input
+			
+
+		}
 		// if(FlxG.save.data.persistOpp == null) FlxG.save.data.persistOpp = false;
 
 		// if(FlxG.save.data.mainMenuChar == null) FlxG.save.data.mainMenuChar = false;

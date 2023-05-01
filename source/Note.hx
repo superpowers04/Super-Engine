@@ -40,6 +40,7 @@ class Note extends FlxSkewedSprite
 	public var lockToStrum:Bool = true;
 
 	public var hitDistance:Float = 0;
+	public var char:Dynamic = null; // plays note anim on this character if specified
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
@@ -52,6 +53,7 @@ class Note extends FlxSkewedSprite
 	public var isPressed:Bool = false;
 	// public var playerNote:Bool = false;
 	public var type:Dynamic = 0; // Used for scriptable arrows 
+
 	public var isSustainNoteEnd:Bool = false;
 	public var parentNoteWidth:Float = 0;
 
@@ -77,7 +79,7 @@ class Note extends FlxSkewedSprite
 	public var rating:String = "shit";
 	public var eventNote:Bool = false;
 	public var aiShouldPress:Bool = true;
-	var ntText:FlxText;
+	public var ntText:FlxText;
 	public var vanillaFrames:Bool = false;
 	public var noteAnimation:Null<String> = "";
 	public var noteAnimationMiss:Null<String> = "";
@@ -227,7 +229,7 @@ class Note extends FlxSkewedSprite
 		}; // Strums
 		if(noteAnimation != null){
 			var anim = (if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation);
-			var char = PlayState.getCharFromID(charID);
+			var char = (if(char == null)PlayState.getCharFromID(charID) else char);
 			if(!isSustainNote && char.animName == anim){
 				char.animation.play('idle',true);
 			}
@@ -239,16 +241,15 @@ class Note extends FlxSkewedSprite
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
-
 		if(noteAnimation != null){
-			PlayState.charAnim(charID,(if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
+			(if(char == null) PlayState.getCharFromID(charID) else char).playAnim((if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
 		}
 	}
 	inline function getNoteAnim(noteData){return (if (noteAnims[noteData] == null) _noteAnimsBackup[noteData % 4] else noteAnims[noteData]);}
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		if(noteAnimationMiss != null){
-			PlayState.charAnim(charID,(if(noteAnimationMiss == "") getNoteAnim(noteData) + "miss" else noteAnimationMiss),true); // Play animation
+			(if(char == null) PlayState.getCharFromID(charID) else char).playAnim((if(noteAnimationMiss == "") getNoteAnim(noteData) + "miss" else noteAnimationMiss),true); // Play animation
 		}
 	}
 	// Array of animations, to be used above
@@ -282,6 +283,7 @@ class Note extends FlxSkewedSprite
 			this.rawNote = _rawNote;
 
 		}
+
 
 
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
@@ -532,8 +534,7 @@ class Note extends FlxSkewedSprite
 			
 		y = 1300; // Prevents the note from being seen when it first gets added to PlayState.notes 
 
-		if (this.strumTime < 0 && !eventNote)
-			this.strumTime = 0;
+		if (this.strumTime < 0 && !eventNote) this.strumTime = 0;
 		if(shouldntBeHit && PlayState.SONG != null && PlayState.SONG.inverthurtnotes) mustPress=!mustPress;
 
 		callInterp("noteCreate",[this,rawNote]); 
@@ -597,6 +598,7 @@ class Note extends FlxSkewedSprite
 		visible = false;
 		callInterp("noteAdd",[this,rawNote]);
 		if(!eventNote){
+	
 			updateHitbox();
 			// centerOrigin();
 			
@@ -620,11 +622,13 @@ class Note extends FlxSkewedSprite
 				noteAnimationMiss = noteAnimation = 'hurt${noteDirections[noteData]}/hurt/sing${noteDirections[noteData]}miss';
 			}
 		}
+
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
 	override function draw(){
-		if(!(eventNote && !inCharter) && showNote){
+		if(!(eventNote && !inCharter) && showNote && visible){
 			super.draw();
+			if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
 		}
 	}
 	override function update(elapsed:Float)

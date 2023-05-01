@@ -72,7 +72,7 @@ class HSBrTools {
 	public function getPath(?str:String = ""){
 		return SELoader.getPath(path + str);
 	}
-	public function loadFlxSprite(x:Int,y:Int,pngPath:String):FlxSprite{
+	public function loadFlxSprite(x:Float,y:Float,pngPath:String):FlxSprite{
 		// if(!SELoader.exists('${path}${pngPath}')){
 		// 	handleError('${id}: Image "${path}${pngPath}" doesn\'t exist!');
 		// 	return new FlxSprite(x, y); // Prevents the script from throwing a null error or something

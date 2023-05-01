@@ -9,7 +9,7 @@ import flixel.FlxG;
 import flixel.system.debug.watch.EditableTextField;
 import flixel.input.keyboard.FlxKey;
 #if linc_luajit
-import selua.SELua;
+import se.handlers.SELua;
 #end
 
 import hscript.Expr;
@@ -145,7 +145,7 @@ class Console extends TextField
 			#elseif sys
 			Sys.println(str);
 			#end
-			if(Console.instance != null)Console.instance.log(str);
+			if(Console.instance != null) Console.instance.log(str);
 		}
 
 
@@ -267,7 +267,7 @@ class Console extends TextField
 
 class ConsoleInput extends TextField{
 	public var _parent:Console = null;
-	var interp:Interp;
+	public var interp:Interp;
 	var parser:hscript.Parser;
 	var hsbrtools:HSBrTools = new HSBrTools('',"CONSOLE");
 	public var commandHistory:Array<String> = [];
@@ -277,7 +277,7 @@ class ConsoleInput extends TextField{
 	public var defFormat:TextFormat = new TextFormat();
 
 	#if linc_luajit
-		var selua:SELua;
+		public var selua:SELua;
 	#end
 
 
@@ -304,8 +304,9 @@ class ConsoleInput extends TextField{
 		public function runlua(?songScript:String = ""){
 			if(selua == null){ // No need to clog memory if lua isn't gonna be touched
 				selua = new SELua();
+				selua.BRTools = hsbrtools;
 			}
-			if(songScript == null) return;
+			if(songScript == "") return;
 			try{
 				selua.exec(songScript);
 			}catch(e){
@@ -509,7 +510,7 @@ class ConsoleInput extends TextField{
 			}else if(FlxG.keys.justPressed.RIGHT){
 				caretPos++;
 				updateShownText();
-			}else if(FlxG.keys.justPressed.ENTER){
+			}else if(FlxG.keys.pressed.ENTER){
 				if(actualText != ""){
 					Console.print('> ${actualText}');
 					CURRENTCMDHISTORY = 0;
@@ -617,6 +618,11 @@ class ConsoleInput extends TextField{
 					FlxG.switchState(Type.createInstance(state,[]));
 				}catch(e){Console.error('Unable to switch states: ${e.message}');return null;}
 				Console.showConsole = false;
+			// case 'memusage':
+			// 	// for(i =>member in FlxG.state.members){
+
+			// 		Console.print('PlayState:${cpp.Stdlib.sizeof(PlayState)}');
+				// }
 			case 'help':
 				var ret = 'Command list:';
 				for(_ => v in cmdList){

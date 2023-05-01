@@ -1030,7 +1030,7 @@ class TitleState extends MusicBeatState
 				AnimationDebug.fileDrop(Sys.args()[0]);
 			}
 			// haxe.Http doesn't work on android for some reason
-			#if !(debug)
+			#if !(debug || hl)
 			if (
 			    #if(android) !Main.grantedPerms.contains('android.permission.INTERNET') || #end 
 			    FlxG.keys.pressed.SHIFT || FlxG.keys.pressed.CONTROL || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck){
@@ -1364,6 +1364,7 @@ class TitleState extends MusicBeatState
 		destHaxe();
 		FlxG.sound.music.play();
 		FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
+
 		if(!isShift){
 			FlxG.fullscreen = FlxG.save.data.fullscreen;
 
@@ -1371,6 +1372,11 @@ class TitleState extends MusicBeatState
 		if(isShift || FlxG.keys.pressed.ENTER || (Sys.args()[0] != null && FileSystem.exists(Sys.args()[0]))){
 			skipBoth = true;
 		}
+		new FlxTimer().start(2, function(_){
+			if(MusicBeatState.instance.curStep == 0){
+				FuckState.FUCK("curStep seems to have not progressed at all.\nThis usually indicates that the game cannot play audio for whatever reason.\nRestarting should fix this.\nif you hear audio perfectly fine, you can safely ignore this and press enter");
+			}
+		});
 	}
 	function drawGreen():Void
 	{

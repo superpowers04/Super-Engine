@@ -38,7 +38,7 @@ class OptionCategory
 
 	public var name(default,null):String = "New Category";
 
-	public function new (catName:String, options:Array<Option>,?desc:String = "",?mod:Bool = false)
+	public function new(catName:String, options:Array<Option>,?desc:String = "",?mod:Bool = false)
 	{
 		description = desc;
 		name = catName;
@@ -641,8 +641,8 @@ class ReloadCharlist extends Option
 }
 class InputEngineOption extends Option
 {
-	var ies:Array<String> = ["Super Engine"#if(!mobile), "Super Engine Event" #end];
-	var iesDesc:Array<String> = ["A custom input engine based off of Kade 1.4/1.5."#if(!mobile), "A new input engine that is based off of key events" #end];
+	var ies:Array<String> = ["Super Engine Legacy"#if(!mobile), "Super Engine" #end];
+	var iesDesc:Array<String> = ["Legacy input; A custom input engine based off of Kade 1.4/1.5."#if(!mobile), "A new input engine that is based off of key events; Usually faster" #end];
 	public function new(desc:String)
 	{
 		acceptValues = true;

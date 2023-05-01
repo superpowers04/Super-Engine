@@ -55,7 +55,7 @@ class PauseSubState extends MusicBeatSubstate
 	var jumpToTime:Float = 0;
 	var bg:FlxSprite;
 	
-	var currentChart = 0;
+	var currentChart = -1;
 	public function new(x:Float, y:Float){
 		if(FlxG.sound.music != null ) songLengthTxt = FlxStringUtil.formatTime(Math.floor((FlxG.sound.music.length) / 1000), false);
 		time = jumpToTime = Conductor.songPosition;
@@ -293,7 +293,7 @@ class PauseSubState extends MusicBeatSubstate
 	function retMenu(){
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
-		if (shouldveLeft) {Main.game.forceStateSwitch(new MainMenuState());return;}
+		if (shouldveLeft || ChartingState.charting) {Main.game.forceStateSwitch(new MainMenuState());return;}
 		MusicBeatState.instance.goToLastClass();
 		shouldveLeft = true;
 		return;
@@ -343,6 +343,7 @@ class PauseSubState extends MusicBeatSubstate
 				PlayState.instance.generateNotes();
 				countdown();
 			case "Swap Charts":
+				if(currentChart < 0 || PlayState.songDifficulties[currentChart] == null) {FlxG.sound.play(Paths.sound('cancelMenu'));return;}
 				ChartingState.charting = false;
 				MusicBeatState.returningFromClass = true;
 				onlinemod.OfflinePlayState.chartFile = PlayState.songDifficulties[currentChart];

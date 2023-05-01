@@ -36,6 +36,9 @@ class MainMenuState extends SickMenuState
 
 	public static var nightly(default,never):String = "U35";
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
+	// This should be incremented every update, this'll be sequential so you can just compare it to another version identifier
+	public static var versionIdentifier:Int = 1;
+	public static var lastVersionIdentifier:Int = 0;
 
 	public static var compileType(default,never):String =
 	#if ghaction
@@ -127,15 +130,21 @@ class MainMenuState extends SickMenuState
 					onlinemod.OnlinePlayMenuState.socket=null;
 				}catch(e){trace('Error closing socket? ${e.message}');}
 			}
+			if(lastVersionIdentifier != versionIdentifier){
+				var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'Super Engine has been updated since last start. You are now on ${ver}!', 32);
+				outdatedLMAO.setFormat(CoolUtil.font, 32, if(nightly == "") FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				outdatedLMAO.scrollFactor.set();
+	 			outdatedLMAO.screenCenter(FlxAxes.X);
+				add(outdatedLMAO);
 
-			if (TitleState.outdated){
+			}else if (TitleState.outdated){
 
 				var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,(if(nightly == "") 'SE is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info' else 'Latest nightly: ${TitleState.updatedVer}. You are on ${ver}'), 32);
 				outdatedLMAO.setFormat(CoolUtil.font, 32, if(nightly == "") FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				outdatedLMAO.scrollFactor.set();
 	 			outdatedLMAO.screenCenter(FlxAxes.X);
 				add(outdatedLMAO);
-			}
+			}else 
 			//  Whole bunch of checks to prevent crashing
 			if (TitleState.retChar(FlxG.save.data.playerChar) == "" && FlxG.save.data.playerChar != "automatic"){
 				errorMessage += '\n${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
@@ -293,7 +302,7 @@ class MainMenuState extends SickMenuState
 			#if !ghaction
 			'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
 			#end
-			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes",'Open your mods folder in your File Manager',"Check out the awesome people who helped with this engine in some way",'Customise your experience to fit you'];
+			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes","Check out the awesome people who helped with this engine in some way",'Open your mods folder in your File Manager','Customise your experience to fit you'];
 		#end
 		curSelected = 0;
 		#if(!mobile)

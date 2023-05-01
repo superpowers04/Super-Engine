@@ -83,8 +83,7 @@ class Main extends Sprite
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
 
-		if (zoom == -1)
-		{
+		if (zoom == -1){
 			var ratioX:Float = stageWidth / gameWidth;
 			var ratioY:Float = stageHeight / gameHeight;
 			zoom = Math.min(ratioX, ratioY);
@@ -107,7 +106,7 @@ class Main extends Sprite
 		LoadingScreen.show();
 		fpsCounter = new Overlay(0, 0);
 		funniSprite.addChild(fpsCounter);
-		console = new Console();
+		console = Console.instance;
 		#if !mobile
 		addChild(console);
 		addChild(console.commandBox);
@@ -136,7 +135,7 @@ class Main extends Sprite
 					Sys.println(stackItem);
 			}
 		}
-		FuckState.FUCK(null,message,true);
+		FuckState.FUCK(null,message);
 	}
 	// var fpsOverlay:Overlay;
 
@@ -179,6 +178,7 @@ class FlxGameEnhanced extends FlxGame{
 	public var blockUpdate:Bool = false;
 	public var blockDraw:Bool = false;
 	public var blockEnterFrame:Bool = false;
+
 	var requestAdd = false;
 	override function create(_){
 
@@ -192,7 +192,7 @@ class FlxGameEnhanced extends FlxGame{
 		try{
 			if(requestAdd){
 				requestAdd = false;
-				Main.funniSprite.addChildAt(this,0);
+				// Main.funniSprite.addChildAt(this,0);
 				blockUpdate = blockEnterFrame = blockDraw = false;
 				FlxG.autoPause = _oldAutoPause;
 				_oldAutoPause = false;
@@ -261,10 +261,10 @@ class FlxGameEnhanced extends FlxGame{
 		
 		try{
 
-			#if(target.threaded)
+			#if(target.threaded && !hl)
 				if(_state != _requestedState && FlxG.save.data.doCoolLoading){
 					blockUpdate = blockEnterFrame = blockDraw = true;
-					Main.funniSprite.removeChild(this);
+					// Main.funniSprite.removeChild(this);
 					_oldAutoPause = FlxG.autoPause;
 					FlxG.autoPause = false;
 					visible = false;
@@ -290,8 +290,7 @@ class FlxGameEnhanced extends FlxGame{
 	override function draw(){
 			if (blockDraw || _state == null || !_state.visible || !_state.exists || !hasUpdated) return;
 			#if FLX_DEBUG
-			if (FlxG.debugger.visible)
-				ticks = getTicks();
+			if (FlxG.debugger.visible) ticks = getTicks();
 			#end
 			try{
 				FlxG.signals.preDraw.dispatch();

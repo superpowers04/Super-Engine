@@ -11,9 +11,10 @@ import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.FlxBasic;
 import flixel.util.FlxColor;
-import selua.*;
+import se.handlers.SELua;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
+import Overlay.Console;
 
 using StringTools;
 
@@ -102,9 +103,9 @@ class ScriptMusicBeatState extends MusicBeatState{
 		];
 		public var currentInterp:InterpInfo = new InterpInfo();
 
-		public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String):Dynamic{
+		public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String,?_interp:Dynamic = null):Dynamic{
 			cancelCurrentFunction = false;
-			var _interp = interps[id];
+			if(_interp == null) _interp = interps[id];
 			try{
 				if (_interp == null) {throw('Interpter ${id} doesn\'t exist!');return null;}
 				currentInterp.isActive = true;
@@ -159,6 +160,13 @@ class ScriptMusicBeatState extends MusicBeatState{
 							callSingleInterp(func_name,args,name);
 							if(cancelCurrentFunction) return;
 						}
+
+						if(Console.instance != null && Console.instance.commandBox != null){
+							if(Console.instance.commandBox.interp != null) callSingleInterp(func_name,args,'console-hx',Console.instance.commandBox.interp);
+							#if linc_luajit
+								if(Console.instance.commandBox.selua != null) callSingleInterp(func_name,args,'console-lua',Console.instance.commandBox.selua);
+							#end
+						}
 					}else callSingleInterp(func_name,args,id);
 				}catch(e:hscript.Expr.Error){errorHandle('${func_name} for "${id}":\n ${e.toString()}');}
 
@@ -205,13 +213,14 @@ class ScriptMusicBeatState extends MusicBeatState{
 				// parser.parseModule(songScript);
 				var interp:SELua = new SELua(songScript);
 				if (brTools != null) {
-					// interp.variables.set("BRtools",brTools,true); 
-					interp.variables.set("BRtoolsRef",brTools); 
+					// interp.variables.set("BRtools",brTools,true);
+					interp.BRTools = brTools; 
 					// brTools.reset();
 				}else {
 					// interp.variables.set("BRtools", getBRTools("assets/"),true);
-					interp.variables.set("BRtoolsRef",getBRTools("assets/")); 
+					interp.BRTools = getBRTools("assets/");
 				}
+				interp.variables.set("BRtoolsRef",interp.BRTools); 
 				// if(interp.get('isSE') == null && interp.get('initScript') == null){
 				// 	interp.stop();
 				// 	showTempmessage('${id}/${file} isn\'t a valid SE Script!',FlxColor.RED);
@@ -349,23 +358,20 @@ class ScriptMusicBeatState extends MusicBeatState{
 		public function loadScript(v:String,?path:String = "mods/scripts/",?nameSpace:String="global",?brtool:HSBrTools = null){
 			if(!parseMoreInterps) return;
 			var _path = '${path}${v}${scriptSubDirectory}';
-			trace(_path);
 			if (SELoader.exists(_path)){
 				
 				if(brtool == null) brtool = getBRTools(_path,v);
+				trace(_path);
 				for (i in CoolUtil.orderList(SELoader.readDirectory(_path))) {
-					if(i.endsWith(".hscript") ||
-					#if linc_luajit
-					i.endsWith(".lua") ||
-					#end i.endsWith(".hx")){
+					if(i.endsWith(".hscript") || #if linc_luajit i.endsWith(".lua") || #end i.endsWith(".hx")){
 						var cont = false;
 						for (i in ignoreScripts) {
 							if(v.contains(i)) cont = true;
 						}
 						if(cont) continue;
 						#if linc_luajit
-						if(i.endsWith(".lua")) parseLua(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
-						else 
+							if(i.endsWith(".lua")) parseLua(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
+							else 
 						#end
 							parseHScript(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
 						

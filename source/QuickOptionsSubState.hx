@@ -34,13 +34,23 @@ class QuickOptionsSubState extends MusicBeatSubstate
 			"Opponent arrows" => {type:0,value:true},
 			"Song hscripts" => {type:0,value:true},
 			"Custom Arrows" => {type:0,value:true},
-			"Scroll speed" => {type:2,value:0,min:0,max:10,lang:[0 => "Chart"]},
-			"Song Speed" => {type:2,value:1,min:0,max:10,lang:[1 => "Normal"]}, // Not a stolen idea, dunno what you mean
-			"Flippy mode" => {type:0,value:false,lang:[false => "off",true => "I love pain"]}
+			"Scroll speed" => {type:2,value:0,min:0,max:10
+				#if(!hl),lang:[0 => "Chart"] #end
+
+			},
+			"Song Speed" => {type:2,value:1,min:0,max:10
+				#if(!hl),lang:[1 => "Normal"] #end
+			}, // Not a stolen idea, dunno what you mean
+			"Flippy mode" => {type:0,value:false
+				#if(!hl) ,lang:[false => "off",true => "I love pain"] #end
+			},
+			"BotPlay" => {type:0,value:false}
 		];
 	static var defSettings:Map<String,QOSetting> = normalSettings.copy();
 	public static var osuSettings:Map<String,QOSetting> = [
-			"Scroll speed" => {type:2,value:0,min:0,max:10,lang:[0 => "User Set"]}
+			"Scroll speed" => {type:2,value:0,min:0,max:10
+				#if(!hl), lang:[0 => "User Set"] #end
+			}
 		];
 	var settings:Map<String,QOSetting> = [];
 	var menuItems:Array<String> = [];

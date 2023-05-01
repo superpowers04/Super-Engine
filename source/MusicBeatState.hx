@@ -37,9 +37,14 @@ class MusicBeatState extends FlxUIState
 	public static var lastClassList:Array<Class<Dynamic>> = [];
 	public static var returningFromClass:Bool = false;
 
-	public function goToLastClass(){
+	public function goToLastClass(?avoidType:Class<Any> = null){
 		try{
 			returningFromClass = true;
+			if(avoidType != null){
+				while(Std.isOfType(lastClassList[lastClassList.length - 1],avoidType) ){
+					lastClassList.pop();
+				}
+			}
 			FlxG.switchState(Type.createInstance(lastClassList.pop(),[]));
 		}catch(e){
 			FlxG.switchState(new MainMenuState());
@@ -56,22 +61,47 @@ class MusicBeatState extends FlxUIState
 		}
 		super();
 	}
+	public function addBelow(OldObject:FlxObject, NewObject:FlxObject):FlxObject{
+		var index:Int = members.indexOf(OldObject);
+
+		if (index < 0) return null;
+
+		members.insert(index-1,NewObject);
+
+		if (_memberAdded != null)
+			_memberAdded.dispatch(NewObject);
+
+		return NewObject;
+	}
+	public function addAfter(OldObject:FlxObject, NewObject:FlxObject):FlxObject{
+		var index:Int = members.indexOf(OldObject);
+
+		if (index < 0) return null;
+
+		members.insert(index+1,NewObject);
+
+		if (_memberAdded != null)
+			_memberAdded.dispatch(NewObject);
+
+		return NewObject;
+	}
+	public function addObject(object:FlxBasic) { add(object); }
+	public function removeObject(object:FlxBasic) { remove(object); }
 
 	public function errorHandle(?error:String = "No error passed!",?forced:Bool = false){
-			try{
+		try{
 
-				trace('Error!\n ${error}');
-				FlxTimer.globalManager.clear();
-				FlxTween.globalManager.clear();
-				// updateTime = false;
-				persistentUpdate = false;
-				persistentDraw = true;
+			trace('Error!\n ${error}');
+			FlxTimer.globalManager.clear();
+			FlxTween.globalManager.clear();
+			// updateTime = false;
+			persistentUpdate = false;
+			persistentDraw = true;
 
-				Main.game.blockUpdate = Main.game.blockDraw = false;
-				openSubState(new ErrorSubState(0,0,error));
-			}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
-			}
-		}
+			Main.game.blockUpdate = Main.game.blockDraw = false;
+			openSubState(new ErrorSubState(0,0,error));
+		}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);}
+	}
 
 	var loading = true;
 	public function onFileDrop(file:String):Null<Bool>{

@@ -53,16 +53,22 @@ class FuckState extends FlxUIState
 	];
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
-	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown",?limeWindow:Bool = false){
+	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown"){
 		
 		var exception = "Unable to grab exception!";
 		if(e != null && e.message != null){
 			try{
-				exception = '${e.details()}';
+
+				exception = 'Message:${e.message}\nStack:${e.stack}\nDetails: ${e.details()}';
 			}catch(e){
+
 				try{
-					exception = '${e.message}\n${e.stack}';
-				}catch(e){exception = 'I tried to grab the exception but got another exception, ${e}';}
+					exception = '${e.details()}';
+				}catch(e){
+					try{
+						exception = '${e.message}\n${e.stack}';
+					}catch(e){exception = 'I tried to grab the exception but got another exception, ${e}';}
+				}
 			}
 		}else{
 			try{

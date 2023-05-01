@@ -178,9 +178,12 @@ class FinishSubState extends MusicBeatSubstate
 	var optionsisyes:Bool = false;
 	var shownResults:Bool = false;
 	public var contText:FlxText;
+	inline function canSaveScore(){
+		return win && !PlayState.instance.hasDied && !ChartingState.charting && PlayState.instance.canSaveScore;
+	}
 	public function saveScore(forced:Bool = false):Bool{
 
-		if(win && !PlayState.instance.hasDied && !ChartingState.charting && PlayState.instance.canSaveScore){
+		if(canSaveScore()){
 			return (Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)],forced));
 		}
 		// if(forced){
@@ -307,7 +310,7 @@ class FinishSubState extends MusicBeatSubstate
 				}
 
 
-				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(!PlayState.isStoryMode ? 'Song/Chart' : "Week") + ':\n'
+				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,-75,0,(if(PlayState.instance.botPlay) "Botplay " else "") + (!PlayState.isStoryMode ? 'Song/Chart' : "Week") + ':\n'
 						+'\nSicks - ${PlayState.sicks}'
 						+'\nGoods - ${PlayState.goods}'
 						+'\nBads - ${PlayState.bads}'
@@ -326,7 +329,8 @@ class FinishSubState extends MusicBeatSubstate
 				(if(PlayState.isStoryMode) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
 				
 				+'\n\nSettings:'
-				+'\n\n Downscroll: ${FlxG.save.data.downscroll}'
+				+'\n\n Able To Save Score: ${canSaveScore()}'
+				// +'\n Downscroll: ${FlxG.save.data.downscroll}'
 				+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
 				+'\n Practice: ${FlxG.save.data.practiceMode}${if(PlayState.instance.hasDied)' - Score not saved' else ''}'
 				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}' + (QuickOptionsSubState.getSetting("Song hscripts") ? '\n  Script Count:${PlayState.instance.interpCount}' : "")
@@ -440,7 +444,7 @@ class FinishSubState extends MusicBeatSubstate
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
 		if (shouldveLeft) {Main.game.forceStateSwitch(new MainMenuState());return;}
-		MusicBeatState.instance.goToLastClass();
+		MusicBeatState.instance.goToLastClass(PlayState);
 		// switch (PlayState.stateType)
 		// {
 		// 	case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
@@ -487,8 +491,7 @@ class FinishSubState extends MusicBeatSubstate
 		if (ready){
 
 
-			if (controls.ACCEPT)
-			{
+			if (controls.ACCEPT){
 				retMenu();
 			}
 			#if android

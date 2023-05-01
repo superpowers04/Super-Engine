@@ -115,7 +115,7 @@ class ChartingState extends ScriptMusicBeatState
 	var noteTypeInput:FlxInputText; // cuz i'm scary something gonna break
 	var noteTypeInputcopy:FlxInputText; // cuz i'm scary something gonna break
 	var typingcharactershit:FlxInputText; // that right there a another one
-	var forcehurtnote:FlxUICheckBox;
+	var useNoteTypeBox:FlxUICheckBox;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -978,14 +978,15 @@ class ChartingState extends ScriptMusicBeatState
 		var notetype2input = new FlxInputText(notetype2txt.x , notetype2txt.y + 20, 250,"", 16);
 		noteTypeInputcopy = notetype2input;
 
-		forcehurtnote = new FlxUICheckBox(notetypeinput.x , notetypeinput.y + 20 ,null,null, 'Is hurt note, Will overwrite Note Type!');
+		useNoteTypeBox = new FlxUICheckBox(notetypeinput.x , notetypeinput.y + 20 ,null,null, 'Use note type?');
+		useNoteTypeBox.checked = true;
 
 		//tab_group_note.add(m_checkhell);
 		tab_group_note.add(notetypeinput);uiMap['notetypeinput'] = notetypeinput;
 		tab_group_note.add(notetypetxt);uiMap['notetypetxt'] = notetypetxt;
 		tab_group_note.add(notetype2input);uiMap['notetype2input'] = notetype2input;
 		tab_group_note.add(notetype2txt);uiMap['notetype2txt'] = notetype2txt;
-		tab_group_note.add(forcehurtnote);uiMap['forcehurtnote'] = forcehurtnote;
+		tab_group_note.add(useNoteTypeBox);uiMap['useNoteTypeBox'] = useNoteTypeBox;
 
 
 		UI_box.addGroup(tab_group_note);
@@ -1999,7 +2000,7 @@ class ChartingState extends ScriptMusicBeatState
 		if (curSelectedNote != null) stepperSusLength.value = curSelectedNote[2];
 	}
 	inline function regNote(note,i) {rawToNote[i] = note; return noteToRaw[note] = i;}
-	function updateNote(note,i,?sect:Int = 1){
+	function updateNote(note:Note,i:Array<Dynamic>,?sect:Int = 1){
 		if(note != null && noteToRaw[note] != null && noteToRaw[note] != i){
 			var raw = noteToRaw[note];
 			while(raw.length > 0){
@@ -2019,9 +2020,15 @@ class ChartingState extends ScriptMusicBeatState
 		}
 		var daStrumTime = i[0];
 		var daNoteInfo = i[1];
-		var daSus = i[2];
-		var daType = i[3];
+		var daSus:Dynamic = i[2];
+		var daType:Dynamic = i[3];
 		var note:Note = new Note(daStrumTime, daNoteInfo, daType, false, true, i[3], i[4]);
+
+		if(daType != 0 || !(daType is Int)){
+			note.ntText=new FlxText(0,0,('$daType').substring(0,4),16);
+			note.ntText.setBorderStyle(OUTLINE,0xff000000,2,1);
+			if(Std.isOfType(daType,Array)) note.ntText.color = 0x00FFFF; else if(Std.isOfType(daType,Int)) note.ntText.color = 0x00FF00; else note.ntText.color = 0xFFFFFF;
+		}
 		note.sustainLength = daSus;
 		note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 		note.updateHitbox();
@@ -2278,14 +2285,16 @@ class ChartingState extends ScriptMusicBeatState
 
 			var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime(curSection);
 			var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE) - 1;
-			trace(noteData);
+			
 			var noteSus = 0;
 			var type:Dynamic = null;
 			var params:Array<String> = [];
 			if(noteTypeInput.text != ""){
 
-				if(forcehurtnote.checked){type = "hurt note";} else {type = noteTypeInput.text;}
-				params = noteTypeInputcopy.text.split(",");
+				if(useNoteTypeBox.checked){
+					type = noteTypeInput.text;
+					params = noteTypeInputcopy.text.split(",");
+				}
 			}
 			if(noteData == -1){
 				if (n != null)

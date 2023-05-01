@@ -15,6 +15,7 @@ import sys.io.File;
 import sys.FileSystem;
 import flixel.graphics.FlxGraphic;
 import flash.display.BitmapData;
+import se.extensions.flixel.FlxSpriteLockScale;
 
 using StringTools; 
 
@@ -118,6 +119,12 @@ class Alphabet extends FlxSpriteGroup
 		
 		addText(false,(if(value == 0 || text.length <= value + 3) text else text.substring(0,value) + '...'));
 		return cutOff;
+	}
+
+	public function changeScale(mult:Float = 1){
+		scale.x = mult;
+		scale.y = mult;
+		text = text;
 	}
 	// public var bounce=true;
 	public var bounceTween:FlxTween;
@@ -230,14 +237,10 @@ class Alphabet extends FlxSpriteGroup
 		// if (AlphaCharacter.acceptedChars.contains(character.toLowerCase()))
 			// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 		// {
-			if (lastSprite != null)
-			{
-				xPos = lastSprite.x + lastSprite.width;
-			}
+			if (lastSprite != null) xPos = lastSprite.x + lastSprite.width;
 
-			if (lastWasSpace)
-			{
-				xPos += 40;
+			if (lastWasSpace){
+				xPos += 40 * scale.x;
 				lastWasSpace = false;
 			}
 
@@ -263,7 +266,7 @@ class Alphabet extends FlxSpriteGroup
 	override function update(elapsed:Float)
 	{
 		if (isMenuItem){
-			if(moveY) y = FlxMath.lerp(y, (FlxMath.remapToRange(targetY, 0, 1, 0, 1.3) * 120) + (FlxG.height * 0.48) + yOffset,10 * elapsed);
+			if(moveY) y = FlxMath.lerp(y, (targetY * (120 * scale.x)) + (FlxG.height * 0.48) + yOffset,10 * elapsed);
 			if(moveX) x = FlxMath.lerp(x, xOffset, 10 * elapsed);
 		}
 		if(visible) super.update(elapsed);
@@ -301,6 +304,7 @@ class AlphaCharacter extends FlxSprite
 	public static var symbols:String = "|~#$%()*+-:;<=>@[]^_.,'!? /";
 
 	public static var textCache:Map<String,FlxSprite> = [];
+
 
 	public static function cacheAlphaChars(){
 		// LoadingScreen.loadingText = "Caching text characters";
@@ -502,36 +506,5 @@ class AlphaCharacter extends FlxSprite
 					useFLXTEXT(letter);
 				};
 		}
-	}
-}
-class FlxSpriteLockScale extends FlxSprite{
-	public var graphicWidth:Int = 0;
-	public var graphicHeight:Int = 0;
-	var _lockedSX:Float = 0;
-	var _lockedSY:Float = 0;
-	public var lockSize:Bool = false;
-	public function lockGraphicSize(w:Int,h:Int){
-		graphicWidth = w;
-		graphicHeight = h;
-		lockSize = true;
-		setGraphicSize(graphicWidth,graphicHeight);
-		updateHitbox();
-		_lockedSX = scale.x;
-		_lockedSY = scale.y;
-	}
-	public override function draw(){
-		try{
-
-			if(_lockedSY != scale.y || _lockedSX != scale.x){
-
-				setGraphicSize(graphicWidth,graphicHeight);
-				updateHitbox();
-				scale.x = _lockedSX;
-				scale.y = _lockedSY;
-			}
-		}catch(e){}
-		try{
-			super.draw();
-		}catch(e){}
 	}
 }

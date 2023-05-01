@@ -247,7 +247,7 @@ class OptionsMenu extends MusicBeatState
 
 		for (i in 0...options.length)
 		{
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].name, true, false, false);
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 730, options[i].name, true, false, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
 			grpControls.add(controlLabel);
@@ -450,10 +450,11 @@ class OptionsMenu extends MusicBeatState
 
 		if (isCat)
 			currentDescription = currentSelectedCat.options[curSelected].description;
-		// else if (currentSelectedCat.description != null)
-		// 	currentDescription = currentSelectedCat.description;
+		else if (options[curSelected].description != null)
+			currentDescription = options[curSelected].description;
 		else
 			currentDescription = "Select a category";
+		
 
 		updateOffsetText();
 
@@ -529,7 +530,7 @@ class OptionsMenu extends MusicBeatState
 					throw("No options loaded!");
 				}
 				// trace('$script: Pushing to options list');
-				options.push(new OptionCategory('*${script}',category,true));
+				options.push(new OptionCategory('*${script}',category,'Custom options for ${script}',true));
 				// trace('$script: Globalising options');
 				// modOptions[script] = curOptions;
 				// trace('$script: Globalising option definitions');
