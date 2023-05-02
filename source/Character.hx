@@ -26,7 +26,7 @@ import sys.io.File;
 import sys.FileSystem;
 import flash.display.BitmapData;
 import Xml;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 
 import hscript.Expr;
 import hscript.Interp;

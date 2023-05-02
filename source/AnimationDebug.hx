@@ -38,7 +38,7 @@ import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import SENumericStepper as FlxUINumericStepper;
 import Controls.Control;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;

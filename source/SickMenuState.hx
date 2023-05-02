@@ -13,7 +13,7 @@ import flixel.util.FlxTimer;
 import openfl.media.Sound;
 import sys.FileSystem;
 import flixel.util.FlxColor;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 
 using StringTools;
 typedef MusicTime ={

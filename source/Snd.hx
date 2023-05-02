@@ -1,3 +1,4 @@
+package;
 import faxe.Faxe;
 
 import SndTV;

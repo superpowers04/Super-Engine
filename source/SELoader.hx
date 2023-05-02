@@ -15,7 +15,7 @@ import flash.display.BitmapData;
 import Xml;
 import openfl.media.Sound;
 import flixel.FlxG;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;
 import lime.media.AudioBuffer;
 // import vlc.VLCSound;

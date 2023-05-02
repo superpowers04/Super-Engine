@@ -14,7 +14,7 @@ import openfl.ui.Keyboard;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import KadeEngineData;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 
 class GameplayCustomizeState extends PlayState
 {

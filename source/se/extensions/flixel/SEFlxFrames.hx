@@ -113,8 +113,8 @@ class SEFlxFrames extends FlxAtlasFrames{
 		return frameObj;
 	}
 
-	public override function addAtlasFrame(frame:FlxRect, sourceSize:FlxPoint, offset:FlxPoint, ?name:String, angle:FlxFrameAngle = 0, flipX:Bool = false, flipY:Bool = false):FlxFrame
-	{
+	public override function addAtlasFrame(frame:FlxRect, sourceSize:FlxPoint, offset:FlxPoint, ?name:String, angle:FlxFrameAngle = 0, flipX:Bool = false, flipY:Bool = false,
+			duration = 0.0):FlxFrame{
 		frame = checkFrame(frame, name);
 		for(index => frameValue in frames){
 			if(
@@ -135,7 +135,7 @@ class SEFlxFrames extends FlxAtlasFrames{
 		if (name != null && framesHash.exists(name))
 			return framesHash.get(name);
 
-		var texFrame:FlxFrame = new FlxFrame(parent, angle, flipX, flipY);
+		var texFrame:FlxFrame = new FlxFrame(parent, angle, flipX, flipY, duration);
 		texFrame.name = name;
 		texFrame.sourceSize.set(sourceSize.x, sourceSize.y);
 		texFrame.offset.set(offset.x, offset.y);

@@ -1,7 +1,7 @@
 package osu;
 
 import flixel.FlxG;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import openfl.media.Sound;
 import sys.FileSystem;
 import Section;

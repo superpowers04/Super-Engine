@@ -10,7 +10,7 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxAxes;
 import flixel.FlxSubState;
 import flixel.tweens.FlxTween;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import openfl.media.Sound;
 import onlinemod.Packets;
 
