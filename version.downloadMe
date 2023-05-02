@@ -1,2 +1,9 @@
 1.0.0-U35;
+- Fix debug mode
+- Remove Kade input
+- Add ingame chart switching
+- Enable experimental lua support
+- Better console with commands and such
+- Some new note types
+- New input system using events instead of checking every update
 - Seperate timings, ratings and combo to be indepentantly togglable
