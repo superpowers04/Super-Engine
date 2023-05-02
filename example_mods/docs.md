@@ -42,6 +42,16 @@
 | endSong (PlayState) | Called when the current song ends |
 | spawnNoteSplash (PlayState,a) | No description provided :< |
 | popUpScore (PlayState,rating,scoreObjs,currentTimingShown) | No description provided :< |
+| holdShit (PlayState,holdArray) | No description provided :< |
+| susHit (PlayState,daNote) | Called every frame the player holds a sustain note |
+| holdShitAfter (PlayState,holdArray) | No description provided :< |
+| keyPress (PlayState,event.keyCode) | No description provided :< |
+| keyShit (PlayState,pressArray,holdArray) | No description provided :< |
+| susHit (PlayState,daNote) | Called every frame the player holds a sustain note |
+| keyShitAfter (PlayState,pressArray,holdArray,hitArray) | No description provided :< |
+| keyRelease (PlayState,event.keyCode) | No description provided :< |
+| botKeyShit (PlayState) | No description provided :< |
+| susHit (PlayState,daNote) | Called every frame the player holds a sustain note |
 | keyShit (PlayState,pressArray,holdArray) | No description provided :< |
 | susHit (PlayState,daNote) | Called every frame the player holds a sustain note |
 | keyShitAfter (PlayState,pressArray,holdArray,hitArray) | No description provided :< |
@@ -55,9 +65,6 @@
 | stepHitAfter (PlayState) | Called after every step hit |
 | beatHit (PlayState) | Called every beat hit |
 | beatHitAfter (PlayState) | Called after every beat hit |
-| keyShit (PlayState,pressArray,holdArray) | No description provided :< |
-| keyShitAfter (PlayState,pressArray,holdArray,hitArray) | No description provided :< |
-| noteHit (PlayState,boyfriend,note) | Called when the player hits a note |
 | destroy (PlayState) | Called when parent is destroyed |
 
 ##OnlinePlayState.hx##
@@ -71,6 +78,20 @@
 | chartOptions (PSInstance) | No description provided :< |
 | extraKeys (PSInstance) | No description provided :< |
 | select (PSInstance,sel) | No description provided :< |
+
+##ChartingState.hx##
+| Method | Description |
+|------------------|---------|
+| updateNote (PSInstance,note,i) | No description provided :< |
+| updateGrid (PSInstance,updateNotes) | No description provided :< |
+| updateGridAfter (PSInstance) | No description provided :< |
+| addSection (PSInstance,sec) | No description provided :< |
+| selectNote (PSInstance,currentNoteObj) | No description provided :< |
+| clearSection (PSInstance,sect) | No description provided :< |
+| clearSong (PSInstance,currentNoteObj) | No description provided :< |
+| addNote (PSInstance,thingy) | No description provided :< |
+| loadChart (PSInstance,_song) | No description provided :< |
+| saveChart (PSInstance,path) | No description provided :< |
 
 ##PauseSubState.hx##
 | Method | Description |
@@ -90,6 +111,8 @@
 | otherSwitch (PSInstance) | No description provided :< |
 | mmSwitch (PSInstance) | No description provided :< |
 | select (PSInstance,sel,daChoice) | No description provided :< |
+| addToList (PSInstance,i,options[i]) | No description provided :< |
+| addToListAfter (PSInstance,controlLabel,i,options[i]) | No description provided :< |
 
 ##SickMenuState.hx##
 | Method | Description |
@@ -267,8 +290,7 @@
 
 ##ErrorSubState.hx##
 
-| 	public function | new(x:Float, y:Float,?error:String = "",force:Bool = false)
-	 |
+| 	public function | new(x:Float, y:Float,?error:String = "",force:Bool = false)	 |
 | 	public static var | endingMusic:Sound |
 | 	public var | cam:FlxCamera |
 | 	public var | contText:FlxText |
@@ -277,7 +299,7 @@
 
 | 	public static function | init(_interp:Interp,state:Class<FlxState>):Dynamic |
 ### SelectScriptableState ###
- extends SearchMenuState
+ extends SearchMenuState  
 | Type | Name |
 |------------------|------|
 ### "$ ### 
@@ -290,26 +312,29 @@
 
 ##MusicBeatState.hx##
 
-| 	public function | errorHandle(?error:String = "No error passed!",?forced:Bool = false) |
+| 	public function | goToLastClass(?avoidType:Class<Any> = null) |
 ### DebugOverlay ###
  extends FlxTypedGroup<FlxSprite>  
 | Type | Name |
 |------------------|------|
-|  public function | new() |
+|  public function | new(parent:MusicBeatState) |
 
 ##PlayState.hx##
 
+| 	public static function | set_shits(vari:Int):Int |
+| 	public static var | accuracy(default,set):Float  |
 | 	public function | get_healthPercent() return Std.int(health * 50);		public function set_healthPercent(vari:Int) |
 | 	public function | set_canSaveScore(val) |
+| 	public function | set_botPlay(val) |
 | 	public function | set_moveCamera(v):Bool |
 | 	public static function | get_songPosBG() |
 | 	public static var | songPosBar(get,set):FlxBar |
 | 	public static var | underlay:FlxSprite |
-| 	public static function | get_girlfriend() |
+|  public static function | get_girlfriend() |
 | 	public static var | bf(get,set):Character |
 | 	public static var | opponent(get,set):Character |
 | 	public static var | player1:String  |
-| 	public static function | addEvent(id:Int,name:String,check:Int,value:Int,func:Dynamic->Void,?variable:String = "def",?type:String="equals"):IfStatement |
+| 	public function | addEvent(id:Int,name:String,check:Int,value:Int,func:Dynamic->Void,?variable:String = "def",?type:String="equals"):IfStatement |
 | 	public static var | hasStarted  |
 | 	public var | swappedChars  |
 | 	public static var | introAudio:Array<flixel.system.FlxAssets.FlxSoundAsset>  |
@@ -351,7 +376,12 @@
 
 | 	public function | new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)	 |
 | 	public function | new(x:Float = 20, y:Float = 20, color:Int = 0xFFFFFFFF)	 |
-| 	public var | showConsole  |
+| 	public var | _parent:Console  |
+### ConsoleUtils ### 
+| Type | Name |
+|------------------|------|
+| 	public static function | getValueFromPath(object:Dynamic,path:String = "",returnErrors:Bool = true):Dynamic |
+| 	public static function | setValueFromPath(path:String = "",value:Dynamic) |
 
 ##SELoader.hx##
 
@@ -398,16 +428,17 @@
 | Type | Name |
 |------------------|------|
 | 	public static function | cacheAlphaChars() |
-### FlxSpriteLockScale ###
- extends FlxSprite  
-| Type | Name |
-|------------------|------|
-| 	public function | lockGraphicSize(w:Int,h:Int) |
+| 	public var | row:Int  |
+| 	public function | new(x:Float, y:Float,?allowDashes:Bool = false,?forcedFlxText:Bool = false)	 |
+|  public function | createBold(letter:String)	 |
+|  public function | createLetter(letter:String):Void	 |
+|  public function | createNumber(letter:String,bold:Bool = false):Void	 |
+|  public function | useFLXTEXT(letter:String,bold:Bool = false) |
+|  public function | createSymbol(letter:String)	 |
 
 ##KadeEngineData.hx##
 
-|  public static function | initSave()
-     |
+|  public static function | initSave()     |
 
 ##OptionsMenu.hx##
 
@@ -493,8 +524,7 @@
 
 | 	public static function | getSetting(setting:String):Dynamic |
 | 	public static function | setSetting(setting:String,value:Dynamic) |
-| 	public function | new()
-	 |
+| 	public function | new()	 |
 
 ##PsychDropDown.hx##
 
@@ -515,8 +545,7 @@
 | Type | Name |
 |------------------|------|
 ### TitleState ###
- extends MusicBeatState
-   
+ extends MusicBeatState   
 | Type | Name |
 |------------------|------|
 ### FuckinNoDestCam ###
@@ -546,157 +575,75 @@
 
 ##Options.hx##
 
-| 	public function | new (catName:String, options:Array<Option>,?desc:String = "",?mod:Bool = false)
-	 |
+| 	public function | new(catName:String, options:Array<Option>,?desc:String = "",?mod:Bool = false)	 |
+| 	public var | description(default,null):String  |
+### DFJKOption ###
+ extends Option   
+| Type | Name |
+|------------------|------|
 | 	public static var | playerEdit:Int  |
 ### GFOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### OpponentOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### CharAutoOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### CharAutoBFOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### AnimDebugOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### NoteSplashOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### ShitQualityOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### NoteRatingOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### GUIGapOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### SelStageOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### ReloadCharlist ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
-### InputHandlerOption ###
- extends Option
-   
+### InputEngineOption ###
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### NoteSelOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### MMCharOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### HitSoundOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### CamMovementOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### PracticeModeOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### ShowP2Option ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### ShowP1Option ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### ShowGFOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### PlayVoicesOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### CheckForUpdatesOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### UnloadSongOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### UseBadArrowsOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### MiddlescrollOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### OpponentStrumlineOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### SongInfoOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### FullscreenOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### MissSoundsOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### SelScriptOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### IntOption ###
@@ -711,76 +658,43 @@
  extends Option  
 | Type | Name |
 |------------------|------|
+### HCIntOption ###
+ extends Option  
+| Type | Name |
+|------------------|------|
+### HCFloatOption ###
+ extends Option  
+| Type | Name |
+|------------------|------|
 ### HCBoolOption ###
  extends Option  
 | Type | Name |
 |------------------|------|
-### FontOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### BeatBouncingOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
 ### AccurateNoteHoldOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### AllowServerScriptsOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### LogGameplayOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### BackTransOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### BackgroundSizeOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### VolumeOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### ScriptableOption ###
- extends Option
- //   
-| Type | Name |
-|------------------|------|
-### ImportOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### EraseOption ###
- extends Option
-   
-| Type | Name |
-|------------------|------|
-### ExportOption ###
- extends Option
-   
+ extends Option   
 | Type | Name |
 |------------------|------|
 ### QuickOption ###
  extends Option  
 | Type | Name |
 |------------------|------|
-| 	public function | new(name:String)
-	 |
+| 	public function | new(name:String)	 |
 
 ##Preloader.hx##
 
@@ -857,8 +771,7 @@
 | 	public function | toJson() |
 | 	public function | addAnimations() |
 | 	public static var | noteAnims:Array<String>  |
-| 	public function | new(?strumTime:Float = 0, ?_noteData:Int = 0, ?prevNote:Note, ?sustainNote:Bool = false, ?_inCharter:Bool = false,?_type:Dynamic = 0,?_rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
-	 |
+| 	public function | new(?strumTime:Float = 0, ?_noteData:Int = 0, ?prevNote:Note, ?sustainNote:Bool = false, ?_inCharter:Bool = false,?_type:Dynamic = 0,?_rawNote:Array<Dynamic> = null,?playerNote:Bool = false)	 |
 
 ##StrumArrow.hx##
 
@@ -944,9 +857,9 @@
 
 ##FinishSubState.hx##
 
-| 	public function | new(x:Float, y:Float,?won = true,?error:String = "",force:Bool = false)
-	 |
+| 	public function | new(x:Float, y:Float,?won = true,?error:String = "",force:Bool = false)	 |
 | 	public function | saveScore(forced:Bool = false):Bool |
+|  public function | getScore(forced:Bool = false):Int |
 | 	public function | finishNew(?name:String = "") |
 
 ##FreeplayState.hx##
@@ -980,8 +893,8 @@
 
 ##ScriptMusicBeatState.hx##
 
-| 	public function | callSingleInterp(func_name:String, args:Array<Dynamic>,id:String) |
-| 	public function | closeInterp(id) |
+| 	public function | callSingleInterp(func_name:String, args:Array<Dynamic>,id:String,?_interp:Dynamic = null):Dynamic |
+| static public function | closeInterp(id) |
 | 	public function | callInterp(func_name:String, args:Array<Dynamic>,?id:String = "")  |
 |  public function | resetInterps()  |
 |  public function | unloadInterp(?id:String) |
@@ -1084,7 +997,7 @@
 | 	public function | new(_path:String,?id:String = "") |
 | 	public function | getSetting(setting:String,?defValue:Dynamic = false):Dynamic |
 | 	public function | getPath(?str:String = "") |
-| 	public function | loadFlxSprite(x:Int,y:Int,pngPath:String):FlxSprite |
+| 	public function | loadFlxSprite(x:Float,y:Float,pngPath:String):FlxSprite |
 | 	public function | loadGraphic(pngPath:String):FlxGraphic |
 | 	public function | loadSparrowFrames(pngPath:String):FlxAtlasFrames |
 | 	public function | loadAtlasSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite |
@@ -1093,7 +1006,7 @@
 | 	public function | exists(textPath:String):Bool |
 | 	public function | loadText(textPath:String):String |
 | 	public function | loadXML(textPath:String):String |
-| 	public function | loadShader(textPath:String,?glslVersion:Dynamic = 120):Null<FlxRuntimeShader> |
+| 	public function | loadShader(textPath:String,?glslVersion:Dynamic = 120)#if(FLXRUNTIMESHADER) :Null<FlxRuntimeShader> #end |
 |  public function | saveText(textPath:String,text:String):Bool |
 | 	public function | loadSound(soundPath:String):Sound |
 | 	public function | playSound(soundPath:String,?volume:Float = 0.662121):FlxSound |
