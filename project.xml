@@ -120,6 +120,8 @@
 	<haxelib name="flixel"/>
 	<haxelib name="flixel-addons" />
 
+	<haxedef name='usingcppia' if='cppia'/>
+
 	<!-- <haxedef name='FLXRUNTIMESHADER' if='desktop'> -->
 
 	<haxelib name="hscript" />
@@ -128,12 +130,12 @@
 	<haxedef name="hscriptPos" />
 
 	<!-- Expects https://github.com/superpowers04/linc_luajit, Nebula's fork will not work!-->
-	<haxelib name="linc_luajit" if="cpp"/>
+	<haxelib name="linc_luajit" if="cpp" />
 	<haxelib name="discord_rpc" if="desktop cpp" />
 
 	<haxelib name="extension-androidtools" if="android" /> <!-- I am not reimplementing this shit myself -->
 
-	<haxelib name="hxCodec" if="desktop || android"/>
+	<!-- <haxelib name="hxCodec" if="desktop || android"/> -->
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
@@ -176,6 +178,8 @@
 
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
 	<haxedef name="FLX_NO_DEBUG"/>
+
+
 	<!-- <haxedef name="HXCPP_DEBUGGER"/> -->
 	<!-- This is to hopefully increase preformance on x64 systems, if it's not compiling to them already for some reason -->
 	<haxedef name="HXCPP_M64"/> 
@@ -183,6 +187,7 @@
 	<haxedef name="HXCPP_STACK_LINE"/>
 	<haxedef name="HXCPP_STACK_TRACE"/>
 	<haxedef name="HXCPP_GC_GENERATIONAL"/>
+	<haxedef name='no_ssl' if='hl linux'/>
 
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
