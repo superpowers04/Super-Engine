@@ -34,6 +34,10 @@ EXTRA FILES:
 ENABLING DEBUG/CONTENT CREATION MODE:
 	You can find this under Modifications in Options, labeled "Content Creation".
 
+
+lua SCRIPTING SUPPORT:
+	Currently, lua scripting is kind of a mess. While it is enabled by default, you'll have to fuck around with things to find out how they work at the moment and a bunch of things are broken
+
 CONTENT CREATION MODE:
 	Enabling Content Creation Mode will allow you to access a whole bunch of developer utilities as outlined here.
 
