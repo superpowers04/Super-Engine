@@ -45,8 +45,8 @@ jobs:
           haxelib setup /tmp/haxelib
           haxelib install hxcpp > nul
           haxelib install lime
-          haxelib git openfl https://github.com/EliteMasterEric/openFl
-          haxelib --never git flixel https://github.com/EliteMasterEric/flixel
+          haxelib install openfl
+          haxelib install flixel
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib install flixel-tools
@@ -98,8 +98,8 @@ jobs:
           haxelib setup /tmp/haxelib
           haxelib install hxcpp > nul
           haxelib install lime
-          haxelib git openfl https://github.com/EliteMasterEric/openFl
-          haxelib --never git flixel https://github.com/EliteMasterEric/flixel
+          haxelib install openfl
+          haxelib install flixel
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib install flixel-tools
@@ -160,8 +160,8 @@ jobs:
           haxelib setup C:/haxelib
           haxelib install hxcpp > nul
           haxelib install lime
-          haxelib git openfl https://github.com/EliteMasterEric/openFl
-          haxelib --never git flixel https://github.com/EliteMasterEric/flixel
+          haxelib install openfl
+          haxelib install flixel
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib install flixel-tools
