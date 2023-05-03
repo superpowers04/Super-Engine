@@ -650,7 +650,7 @@ class Note extends FlxSkewedSprite
 			}
 			case false:{
 				callInterp("noteUpdate",[this]);
-				if (!skipNote || y < 740 && y > -20 && x < 1300 && x > -20){ // doesn't calculate anything until they're on screen
+				if (!skipNote || y < 780 && y > -60 && x < 1340 && x > -60){ // doesn't calculate anything until they're on screen
 					visible = (!eventNote && showNote);
 					skipNote = false;
 					if(eventNote){
