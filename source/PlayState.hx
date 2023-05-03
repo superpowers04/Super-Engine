@@ -584,7 +584,6 @@ class PlayState extends ScriptMusicBeatState
 		if (instance != null) instance.destroy();
 		downscroll = FlxG.save.data.downscroll;
 		middlescroll = FlxG.save.data.middleScroll;
-		setInputHandlers(); // Sets all of the handlers for input
 		instance = this;
 		clearVariables();
 		hasStarted = true;
@@ -599,6 +598,7 @@ class PlayState extends ScriptMusicBeatState
 
 		resetScore();
 
+		setInputHandlers(); // Sets all of the handlers for input
 		TitleState.loadNoteAssets(); // Make sure note assets are actually loaded
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -1974,10 +1974,10 @@ class PlayState extends ScriptMusicBeatState
 		// if(FlxG.save.data.songInfo == 0) scoreTxt.x = scoreTxtX - scoreTxt.text.length;
 		if (updateTime) songTimeTxt.text = FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + songLengthTxt;
 		
-		if ((FlxG.keys.justPressed.ENTER 
+		if ((FlxG.keys.justPressed.ENTER || (FlxG.keys.justPressed.F10 && FlxG.save.data.animDebug)
 		     #if(android) || FlxG.mouse.justReleased && FlxG.mouse.screenY < 50 || FlxG.swipes[0] != null && FlxG.swipes[0].duration < 1 && FlxG.swipes[0].startPosition.y - FlxG.swipes[0].endPosition.y < -200 #end )
 		     // #if(android) || FlxG.swipes[0] #end ) 
-			&& startedCountdown && canPause)
+			&& startedCountdown && canPause )
 		{
 			pause();
 		}
@@ -2536,19 +2536,19 @@ class PlayState extends ScriptMusicBeatState
 	// Custom input handling
 
 	function setInputHandlers(){
-		inputMode = FlxG.save.data.inputEngine;
-		var inputEngines = ["SE-LEGACY" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "") 
-		#if(!mobile), 'SE'+ (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")#end
-		];
 		if(botPlay){
+			inputMode = 0;
 			noteShit = SENoteShit;
 
-			doKeyShit = kadeBRKeyShit;
+			doKeyShit = BotplayKeyShit;
 			goodNoteHit = kadeBRGoodNote;
 			inputEngineName = "SE-botplay";
 			return;
 		}
-		// if (onlinemod.OnlinePlayMenuState.socket != null && inputMode != 0) {inputMode = 0;trace("Loading with non-kade in online. Forcing kade!");} // This is to prevent input differences between clients
+		inputMode = FlxG.save.data.inputEngine;
+		var inputEngines = ["SE-LEGACY" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "") 
+		#if(!mobile), 'SE'+ (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")#end
+		];
 		trace('Using ${inputMode}');
 		// noteShit handles moving notes around and opponent hitting them
 		// keyShit handles player input and hitting notes
@@ -2945,47 +2945,48 @@ class PlayState extends ScriptMusicBeatState
 
 	}
 
+	function BotplayKeyShit(){
+		if(!botPlay)return kadeBRKeyShit();
+		holdArray = [false,false,false,false];
+		pressArray = [false,false,false,false];
+		releaseArray = [false,false,false,false];
+		var i = 0;
+		var daNote:Note = null;
+		callInterp('botKeyShit',[]);
+		if(cancelCurrentFunction) return;
+		while(i < notes.members.length){
+			daNote = notes.members[i];
+			i++;
+			if(daNote == null || !daNote.mustPress || !daNote.canBeHit) continue;
+			
+			if(daNote.strumTime <= Conductor.songPosition){boyfriend.holdTimer = 0;pressArray[daNote.noteData] = true;goodNoteHit(daNote);continue;}
+			if(!daNote.isSustainNote) continue;
+			boyfriend.holdTimer = 0;
+			// hitArray[daNote.noteData] = true;
+			// Tell note to be clipped to strumline
+			daNote.isPressed = true;
+			holdArray[daNote.noteData] = true;
+			daNote.susHit(0,daNote);
+			callInterp("susHit",[daNote]);
+		}
+
+		boyfriend.isPressingNote = holdArray.contains(true);
+		if (boyfriend.currentAnimationPriority == 10 && (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 || boyfriend.isDonePlayingAnim()) && !boyfriend.isPressingNote) {
+			boyfriend.dance(true,curBeat % 2 == 1);
+		}
+		var i = playerStrums.members.length - 1;
+		var spr:StrumArrow;
+		while (i >= 0){
+			spr = playerStrums.members[i];
+			i--;
+			if(spr == null) continue;
+			if(!holdArray[spr.ID] && spr.animation.finished) spr.playStatic();
+		}
+	}
+
 	private function kadeBRKeyShit():Void{
 		if (!generatedMusic) return;
 
-		if(botPlay){
-			holdArray = [false,false,false,false];
-			pressArray = [false,false,false,false];
-			releaseArray = [false,false,false,false];
-			var i = 0;
-			var daNote:Note = null;
-			callInterp('botKeyShit',[]);
-			if(cancelCurrentFunction) return;
-			while(i < notes.members.length){
-				daNote = notes.members[i];
-				i++;
-				if(daNote == null || !daNote.mustPress || !daNote.canBeHit) continue;
-				
-				if(daNote.strumTime <= Conductor.songPosition){boyfriend.holdTimer = 0;pressArray[daNote.noteData] = true;goodNoteHit(daNote);continue;}
-				if(!daNote.isSustainNote) continue;
-				boyfriend.holdTimer = 0;
-				// hitArray[daNote.noteData] = true;
-				// Tell note to be clipped to strumline
-				daNote.isPressed = true;
-				holdArray[daNote.noteData] = true;
-				daNote.susHit(0,daNote);
-				callInterp("susHit",[daNote]);
-			}
- 
-			boyfriend.isPressingNote = holdArray.contains(true);
-			if (boyfriend.currentAnimationPriority == 10 && (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 || boyfriend.isDonePlayingAnim()) && !boyfriend.isPressingNote) {
-				boyfriend.dance(true,curBeat % 2 == 1);
-			}
-			var i = playerStrums.members.length - 1;
-			var spr:StrumArrow;
-			while (i >= 0){
-				spr = playerStrums.members[i];
-				i--;
-				if(spr == null) continue;
-				if(!holdArray[spr.ID] && spr.animation.finished) spr.playStatic();
-			}
-			return;
-		}
 
 
 		// control arrays, order L D R U
