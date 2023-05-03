@@ -2900,7 +2900,7 @@ class PlayState extends ScriptMusicBeatState
 			daNote = possibleNotes[i];
 			if(daNote == null && pressArray[i] && timeSinceOnscreenNote > 0){
 				ghostTaps += 1;
-				if(ghostTapping){
+				if(!ghostTapping){
 					noteMiss(i, null);
 				}
 				continue;
