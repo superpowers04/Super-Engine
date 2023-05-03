@@ -247,7 +247,7 @@ class Alphabet extends FlxSpriteGroup
 			// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 			var letter:AlphaCharacter = new AlphaCharacter(xPos, 0,removeDashes,forceFlxText);
 			listOAlphabets.add(letter);
-			if (isBold) letter.createBold(character);
+			if (isBold) letter.createBold(character.toUpperCase());
 			else letter.createLetter(character);
 			add(letter);
 			lastSprite = letter;
@@ -366,7 +366,7 @@ class AlphaCharacter extends FlxSprite
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		// animation.play(letter);
 
-		if(animation.exists(letter)){
+		if(animation.exists(letter) && !forceFlxText){
 			animation.play(letter);
 			updateHitbox();
 		}else{

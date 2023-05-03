@@ -1006,7 +1006,7 @@ class BoolOption extends Option{
 
 	override function updateDisplay():String
 	{
-		return name + ":" + getValue();
+		return name + ": " + getValue();
 	}
 }
 

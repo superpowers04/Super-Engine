@@ -341,9 +341,8 @@ class OptionsMenu extends MusicBeatState
 						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 					}
 					curSelected = selCat;
-					changeSelection(0);
 					addTitleText();
-					updateOffsetText();
+					changeSelection();
 				}else{
 					saveChanges(); // Save when exiting, not every fucking frame
 					goBack();
@@ -409,7 +408,8 @@ class OptionsMenu extends MusicBeatState
 					
 					curSelected = 0;
 					addTitleText('Options > ' + options[selCat].name);
-					updateOffsetText();
+					changeSelection();
+					// updateOffsetText();
 				}
 			}
 		}
