@@ -34,7 +34,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly(default,never):String = "U36-g";
+	public static var nightly(default,never):String = "U36.1";
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 	// This should be incremented every update, this'll be sequential so you can just compare it to another version identifier
 	public static var versionIdentifier:Int = 1;

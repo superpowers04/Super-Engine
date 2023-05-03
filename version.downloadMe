@@ -1,4 +1,8 @@
-1.0.0-U36-g;
+1.0.0-U36.1;
+- literally just fixed input and a few more bugs
+- SETools.keyFromString and SETools.keyToString
+
+U36 fixes:
 - Fix debug mode
 - Remove Kade input
 - Add ingame chart switching

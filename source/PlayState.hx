@@ -2822,12 +2822,12 @@ class PlayState extends ScriptMusicBeatState
 	}
 	function SEIKeyPress(event:KeyboardEvent){
 		if(this != FlxG.state){
-			Main.instance.removeEventListener(KeyboardEvent.KEY_DOWN, SEIKeyPress);
-			Main.instance.removeEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, SEIKeyPress);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
 			return;
 		}
+		// holdArray = [false,false,false,false];
 		pressArray = [false,false,false,false];
-		holdArray = [false,false,false,false];
 		releaseArray = [false,false,false,false];
 		// var keyCode:FlxKey = event.keyCode;
 		// var data:Null<Int> = SEIKeyMap[keyCode];
@@ -2838,7 +2838,7 @@ class PlayState extends ScriptMusicBeatState
 		if (SEIBlockInput || !acceptInput || boyfriend.isStunned || !generatedMusic || subState != null || paused ) return;
 		
 		for(key => data in SEIKeyMap){
-			if(FlxG.keys.checkStatus(key, JUST_PRESSED)){
+			if(FlxG.keys.checkStatus(key, JUST_PRESSED) && !holdArray[data]){
 				pressArray[data] = true;
 				holdArray[data] = true;
 				var strum = playerStrums.members[data];
@@ -2915,8 +2915,8 @@ class PlayState extends ScriptMusicBeatState
 	}
 	function SEIKeyRelease(event:KeyboardEvent){
 		if(this != FlxG.state){
-			Main.instance.removeEventListener(KeyboardEvent.KEY_DOWN, SEIKeyPress);
-			Main.instance.removeEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, SEIKeyPress);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
 			return;
 		}
 		callInterp('keyRelease',[event.keyCode]);

@@ -444,7 +444,14 @@ class FinishSubState extends MusicBeatSubstate
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
 		if (shouldveLeft) {Main.game.forceStateSwitch(new MainMenuState());return;}
-		MusicBeatState.instance.goToLastClass(PlayState);
+		while(MusicBeatState.lastClassList[MusicBeatState.lastClassList.length - 1] is PlayState ){
+			MusicBeatState.lastClassList.pop();
+		}
+		var e = MusicBeatState.lastClassList.pop();
+		if(e == null){
+			e = MainMenuState;
+		}
+		FlxG.switchState(Type.createInstance(e,[]));
 		// switch (PlayState.stateType)
 		// {
 		// 	case 2:FlxG.switchState(new onlinemod.OfflineMenuState());

@@ -1,7 +1,7 @@
 package;
 
 //More Modding Plus stuff
-
+import flixel.input.keyboard.FlxKey;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import flixel.input.gamepad.FlxGamepadManager;
@@ -280,6 +280,12 @@ class SETools{
 	public static var persistantVars:Map<String,Dynamic> = new Map<String,Dynamic>();
 	static public function areSameType(o:Dynamic,c:Dynamic):Bool{
 		return Type.typeof(o) == Type.typeof(c);
+	}
+	static public function keyFromString(key:String):FlxKey{
+		return FlxKey.fromStringMap[key];
+	}
+	static public function keyToString(key:FlxKey):String{
+		return FlxKey.toStringMap[key];
 	}
 	static public function loadSave(scope:String,save:String):SESave{
 		return new SESave(scope,save);
