@@ -508,7 +508,7 @@ class PlayState extends ScriptMusicBeatState
 		strumLineNotes = null;
 		playerStrums = null;
 		cpuStrums = null;
-		botPlay = QuickOptionsSubState.getSetting("BotPlay");
+		botPlay = QuickOptionsSubState.getSetting("BotPlay") && (onlinemod.OnlinePlayMenuState.socket == null);
 		practiceMode = (FlxG.save.data.practiceMode || ChartingState.charting || onlinemod.OnlinePlayMenuState.socket != null || botPlay);
 		introAudio = [
 			Paths.sound('intro3'),
@@ -2537,9 +2537,17 @@ class PlayState extends ScriptMusicBeatState
 
 	function setInputHandlers(){
 		inputMode = FlxG.save.data.inputEngine;
-		var inputEngines = ["SE" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "") 
-		#if(!mobile), 'SE-EV'+ (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")#end
+		var inputEngines = ["SE-LEGACY" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "") 
+		#if(!mobile), 'SE'+ (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")#end
 		];
+		if(botPlay){
+			noteShit = SENoteShit;
+
+			doKeyShit = kadeBRKeyShit;
+			goodNoteHit = kadeBRGoodNote;
+			inputEngineName = "SE-botplay";
+			return;
+		}
 		// if (onlinemod.OnlinePlayMenuState.socket != null && inputMode != 0) {inputMode = 0;trace("Loading with non-kade in online. Forcing kade!");} // This is to prevent input differences between clients
 		trace('Using ${inputMode}');
 		// noteShit handles moving notes around and opponent hitting them
@@ -2952,8 +2960,10 @@ class PlayState extends ScriptMusicBeatState
 				daNote = notes.members[i];
 				i++;
 				if(daNote == null || !daNote.mustPress || !daNote.canBeHit) continue;
-				if(daNote.strumTime <= Conductor.songPosition){pressArray[daNote.noteData] = true;goodNoteHit(daNote);continue;}
+				
+				if(daNote.strumTime <= Conductor.songPosition){boyfriend.holdTimer = 0;pressArray[daNote.noteData] = true;goodNoteHit(daNote);continue;}
 				if(!daNote.isSustainNote) continue;
+				boyfriend.holdTimer = 0;
 				// hitArray[daNote.noteData] = true;
 				// Tell note to be clipped to strumline
 				daNote.isPressed = true;
@@ -2962,6 +2972,10 @@ class PlayState extends ScriptMusicBeatState
 				callInterp("susHit",[daNote]);
 			}
  
+			boyfriend.isPressingNote = holdArray.contains(true);
+			if (boyfriend.currentAnimationPriority == 10 && (boyfriend.holdTimer > Conductor.stepCrochet * boyfriend.dadVar * 0.001 || boyfriend.isDonePlayingAnim()) && !boyfriend.isPressingNote) {
+				boyfriend.dance(true,curBeat % 2 == 1);
+			}
 			var i = playerStrums.members.length - 1;
 			var spr:StrumArrow;
 			while (i >= 0){

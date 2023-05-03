@@ -1,13 +1,2 @@
-1.0.0-U36.1;
-- literally just fixed input and a few more bugs
-- SETools.keyFromString and SETools.keyToString
-
-U36 fixes:
-- Fix debug mode
-- Remove Kade input
-- Add ingame chart switching
-- Enable experimental lua support
-- Better console with commands and such
-- Some new note types
-- New input system using events instead of checking every update
-- Seperate timings, ratings and combo to be indepentantly togglable
+1.0.0-U36.2;
+- MORE FUCKING FIXES

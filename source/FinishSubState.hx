@@ -9,7 +9,7 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
-import flixel.sound.FlxSound;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -444,23 +444,16 @@ class FinishSubState extends MusicBeatSubstate
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
 		if (shouldveLeft) {Main.game.forceStateSwitch(new MainMenuState());return;}
-		while(MusicBeatState.lastClassList[MusicBeatState.lastClassList.length - 1] is PlayState ){
-			MusicBeatState.lastClassList.pop();
-		}
-		var e = MusicBeatState.lastClassList.pop();
-		if(e == null){
-			e = MainMenuState;
-		}
-		FlxG.switchState(Type.createInstance(e,[]));
-		// switch (PlayState.stateType)
-		// {
-		// 	case 2:FlxG.switchState(new onlinemod.OfflineMenuState());
-		// 	case 4:FlxG.switchState(new multi.MultiMenuState());
-		// 	case 5:FlxG.switchState(new osu.OsuMenuState());
+		
+		switch (PlayState.stateType)
+		{
+			case 2:MusicBeatState.returningFromClass=true;FlxG.switchState(new onlinemod.OfflineMenuState());
+			case 4:MusicBeatState.returningFromClass=true;FlxG.switchState(new multi.MultiMenuState());
+			case 5:MusicBeatState.returningFromClass=true;FlxG.switchState(new osu.OsuMenuState());
 				
 
-		// 	default:FlxG.switchState(new MainMenuState());
-		// }
+			default:MusicBeatState.instance.goToLastClass(PlayState);
+		}
 		shouldveLeft = true;
 		// if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		// PlayState.actualSongName = ""; // Reset to prevent issues
