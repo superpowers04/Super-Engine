@@ -308,6 +308,21 @@ class AnimationDebug extends MusicBeatState
 			updateTxt();
 			spawnChar();
 			if(dad == null)throw("Player object is null!");
+			if(charJson.clone != "" && charJson.clone != null){
+				showTempmessage('Older character loaded. Config has been reset!',FlxColor.RED);
+				spawnChar(true,true,Json.parse('{
+						"flip_x":false,
+						"sing_duration":6.1,
+						"scale":1,
+						"dance_idle":false,
+						"voices":"",
+						"no_antialiasing":false,
+						"animations": [],
+						"animations_offsets": [{"anim":"all","player1":[0,0],"player2":[0,0],"player3":[0,0]}]
+					}'));
+
+			}
+
 			updateCharPos(0,0,false,false);
 			updateTxt();
 
@@ -499,7 +514,7 @@ class AnimationDebug extends MusicBeatState
 	}
 
 	function outputCharOffsets(){
-		var text = (if(isAbsoluteOffsets) "These are absolute, these should replace the offsets in the config.json." else 'These are not absolute, these should be added to the existing offsets in your config.json.') + (if (dad.clonedChar != dad.curCharacter) ' This character is cloning ${dad.clonedChar}' else '') +
+		var text = (if(isAbsoluteOffsets) "These are absolute, these should replace the offsets in the config.json." else 'These are not absolute, these should be added to the existing offsets in your config.json.')  +
 			'\nExported offsets for ${dad.curCharacter}/Player ${charType + 1}:\n' +
 			if(charX != 0 || charY != 0) '\ncharPos: [${charX}, ${charY}]' else ""; 
 		for (i => v in offset) {
@@ -586,8 +601,7 @@ class AnimationDebug extends MusicBeatState
 
 			charJson.char_pos = charJson.common_stage_offset = [];
 			charJson.offset_flip = 1;
-			charJson.like = charJson.clone;
-			charJson.clone = "";
+			charJson.seVersionIdentifier = MainMenuState.versionIdentifier;
 			// Compensate for the game moving the character's position
 
 			charJson.cam_pos = [0,0];
@@ -1154,32 +1168,8 @@ class AnimationDebug extends MusicBeatState
 					showTempmessage('No health icon to scan!',FlxColor.RED,10);
 					return;
 				}
-				showTempmessage('Click somewhere on the screen to grab the color from there',null,10);
-				// var icon = uiMap["hi1"].graphic.bitmap;
-				// var colors:Map<Int,Int> = [];
-				// var max:Int = 0;
-				// var maxColor:Int = 0;
-				// var maxLight:Float = 0;
-				// for(x in 0 ...icon.width){
-				// 	for(y in 0...icon.height){
-				// 		var pixel = icon.getPixel(x,y);
-				// 		if(pixel == 0 || pixel == 0xFF000000  || FlxColor.fromInt(pixel).alpha < 0.9 || FlxColor.fromInt(pixel).lightness < 0.05){continue;}
-				// 		// // trace(pixel);
-
-				// 		// var curColor:Int = icon.getPixel32(X,Y);
-				// 		// if(curColor == 0 ) continue;
-				// 		colors[pixel] = (colors.exists(pixel) ? 0 : colors[pixel] + 1);
-				// 		if(colors[pixel] > max){maxColor = pixel;max=colors[pixel];}
-				// 	}
-				// }
-				// trace(maxColor);
-				// if(maxColor == 0){
-				
-				// }
+				showTempmessage('Click somewhere on the screen to grab the color from there',null,5);
 				colorPickerMode = true;
-
-				// spawnChar(true,false,charJson);
-				// updateColorBox();
 			}catch(e){
 				showTempmessage('Unable to find color! ${e.message}',FlxColor.RED,10);
 				trace(e.stack);
@@ -1231,7 +1221,7 @@ class AnimationDebug extends MusicBeatState
 			// healthBar.createColoredFilledBar(dad.definingColor, dad.definingColor);
 			// healthBar.updateBar();
 			// healthBar.percent = 100;
-			var iconP1 = new HealthIcon(dad.curCharacter, (charType == 0),dad.clonedChar);
+			var iconP1 = new HealthIcon(dad.curCharacter, (charType == 0));
 			iconP1.y = (FlxG.height * 0.9) - (iconP1.height / 2);
 			
 			iconP1.screenCenter(X);

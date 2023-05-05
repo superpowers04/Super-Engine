@@ -206,13 +206,15 @@ class MusicBeatState extends FlxUIState
 	{
 		if(tempMessages[0] != null && (tempMessages[0][0] -= elapsed) < 0){
 			try{
-				remove(tempMessages[0][1]);remove(tempMessages[0][2]);
-				tempMessages[0][1].destroy();tempMessages[0][2].destroy();
-				tempMessages.shift();
+				var msg = tempMessages.shift();
+				remove(msg[1]);
+				remove(msg[2]);
+				msg[1].destroy();
+				msg[2].destroy();
 				if(tempMessages[0] != null){
 					for (_ => msg in tempMessages){
-						msg[0][1].y -= Std.int(msg[0][2].height);
-						msg[0][2].y -= Std.int(msg[0][2].height);
+						msg[1].y -= Std.int(msg[2].height);
+						msg[2].y -= Std.int(msg[2].height);
 					}
 				}
 			}catch(e){}
@@ -414,6 +416,10 @@ class MusicBeatState extends FlxUIState
 
 class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 	var bg:FlxSprite;
+	var oldTarget:FlxObject = null;
+	var songPos:Float = 0;
+	var songLooped:Bool = false;
+	var songFinishCallback:Dynamic = null;
 	override public function new(parent:MusicBeatState){
 		mouseEnabled = FlxG.mouse.visible;
 		this.parent = parent;
@@ -436,6 +442,14 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 		add(objectPosBack);
 		add(objectPosText);
 		objectPosBack.visible = objectPosText.visible = false;
+		oldTarget = FlxG.camera.target;
+		FlxG.camera.target = null;
+		if(FlxG.sound.music != null){
+			songPos = FlxG.sound.music.time;
+			songLooped = FlxG.sound.music.looped;
+			FlxG.sound.music.looped = true;
+			songFinishCallback = FlxG.sound.music.onComplete;
+		}
 	}
 	var parent:MusicBeatState;
 	var obj:FlxObject;
@@ -480,6 +494,9 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 		}
 		return obj;
 	}
+	var lastRMouseX:Float = 0;
+	var lastRMouseY:Float = 0;
+
 	override function update(el:Float){
 		super.update(el);
 		if(FlxG.mouse.justPressed){
@@ -507,11 +524,31 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 			obj = getTopObject();
 			updateObjPosText();
 			
-			objectPosBack.visible = objectPosText.visible = false;
 		
 		}else if(obj != null){
 			obj = null;
-			objectPosBack.visible = objectPosText.visible = false;
+		}
+
+		if(FlxG.mouse.justPressedRight){
+			lastRMouseX = Std.int(FlxG.mouse.screenX);
+			lastRMouseY = Std.int(FlxG.mouse.screenY);
+		}
+
+		if(FlxG.mouse.pressedRight){
+			if(FlxG.mouse.justMoved){
+
+				var mx = Std.int(FlxG.mouse.screenX);
+				var my = Std.int(FlxG.mouse.screenY);
+
+				FlxG.camera.scroll.x+=lastRMouseX - mx;
+				FlxG.camera.scroll.y+=lastRMouseY - my;
+				lastRMouseX = mx;
+				lastRMouseY = my;
+			}
+			if(FlxG.mouse.wheel != 0) FlxG.camera.zoom += (FlxG.mouse.wheel * 0.05);
+			if(obj == null){
+				updateObjText('CamScrollPos:${Std.int(FlxG.camera.scroll.x * 100) * 0.01},${Std.int(FlxG.camera.scroll.y * 100) * 0.01} Zoom:${Std.int(FlxG.camera.zoom * 100) * 0.01}');
+			}
 		}
 	}
 	@:keep inline function updateObjPosText(){
@@ -521,10 +558,23 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 		objectPosBack.y = (objectPosText.y = FlxG.mouse.screenY + 20) - 2;
 		objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
 	}
+	@:keep inline function updateObjText(text){
+		objectPosBack.visible = objectPosText.visible = true;
+		objectPosText.text = text;
+		objectPosBack.x = (objectPosText.x = FlxG.mouse.screenX + 20) - 2;
+		objectPosBack.y = (objectPosText.y = FlxG.mouse.screenY + 20) - 2;
+		objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
+	}
 	override function destroy(){
+		if(FlxG.sound.music != null){
+			Conductor.songPosition = FlxG.sound.music.time = songPos;
+			FlxG.sound.music.looped = songLooped;
+			FlxG.sound.music.onComplete = songFinishCallback;
+		}
 		FlxG.mouse.visible = mouseEnabled;
-
+		FlxG.camera.target = oldTarget;
 		super.destroy();
 		MusicBeatState.instance.showTempmessage('Exited Debug overlay');
+
 	}
 }

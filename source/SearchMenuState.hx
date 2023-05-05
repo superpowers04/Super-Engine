@@ -240,7 +240,8 @@ class SearchMenuState extends ScriptMusicBeatState
 	function select(sel:Int = 0){
 		trace("You forgot to replace the select function!");
 	}
-	var hoverColor = 0xffffff;
+	var hoverColor = 0xffffffff;
+	var idleColor = 0xff997799;
 	function handleInput(){
 			callInterp('handleInput',[]);
 			if (controls.BACK || FlxG.keys.justPressed.ESCAPE)
@@ -301,7 +302,7 @@ class SearchMenuState extends ScriptMusicBeatState
 	var curTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
-		if(FlxG.save.data.beatBouncing && grpSongs != null && grpSongs.members[curSelected] != null && grpSongs.members[curSelected].useAlphabet){
+		if(FlxG.save.data.beatBouncing && grpSongs != null && grpSongs.members[curSelected] != null){
 			
 			grpSongs.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();
@@ -346,9 +347,9 @@ class SearchMenuState extends ScriptMusicBeatState
 					item.targetY = bullShit - curSelected;
 
 					if(item.adjustAlpha){
-						item.alpha = 0.8;
+						item.alpha = 0.6;
 
-						if(!useAlphabet) item.color = 0xbbbbbb;
+						if(!useAlphabet) item.color = idleColor;
 						if (item.targetY == 0)
 						{
 							item.alpha = 1;

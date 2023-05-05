@@ -71,7 +71,9 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Use Song Player Char","Whether to allow the song to choose the player if you have them installed or force the player you've selected",'charAutoBF'),
 			new HCBoolOption("Pack scripts","Toggle the ability for packs to provide scripts","packScripts"),
 			new HCBoolOption("Menu Scripts","Toggle the ability for scripts to run in menus","menuScripts"),
+			#if linc_luajit
 			new HCBoolOption("Lua Scripts","Toggle lua scripts for fixing broken compatibility with some mods","luaScripts"),
+			#end
 			// new HCBoolOption("Show player on main menu","Show your player character on the main menu, MAY CAUSE CRASHES!","mainMenuChar"),
 			
 			new HCBoolOption("Content Creation/Debug Mode","Enables the Character/chart editor, F10 console, displays some extra info in the FPS Counter, and some other debug stuff","animDebug"),
@@ -109,10 +111,10 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Debounce detection","Enables some simple debounce detection. Forces presses to be missed from one frame to another.","debounce"),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			
-			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
-			new ScrollSpeedOSUOption("Change your scroll speed on OSU charts"),
-
-			new AccurateNoteHoldOption("Whether note sustains/holds are more accurate. If off then they act like early kade"),
+			new HCFloatOption('Scroll Speed',"Change your scroll speed (1 = Chart dependent)","scrollSpeed",0.1,10),
+			new HCFloatOption('Scroll Speed(OSU Chart)',"Change your scroll speed OSU charts","scrollOSUSpeed",0.1,10),
+		
+			new HCBoolOption("Accurate Note Sustain","Whether note sustains/holds are more accurate. If off then they act like early kade","accurateNoteSustain"),
 			new HCBoolOption("Shitty Misses","Whether you'll get a miss from getting a shit","shittyMiss"),
 			new HCBoolOption("Bad Misses","Whether you'll get a miss from getting a bad","badMiss"),
 			new HCBoolOption("Good Misses","Whether you'll get a miss from getting a good","goodMiss"),
@@ -130,7 +132,7 @@ class OptionsMenu extends MusicBeatState
 		],"Toggle flashing lights, camera movement, song info, etc "),
 		new OptionCategory("Misc", [
 			#if !mobile
-				new CheckForUpdatesOption("Toggle check for updates when booting the game, useful if you're in the Discord with pings on"),
+				new HCBoolOption('Check for Updates',"Toggle check for updates when booting the game, useful if you're in the Discord with pings off",'updateCheck'),
 			#end
 			#if discord_rpc
 				new HCBoolOption("Discord Rich Presence","Toggle Discord Rich Presence(Requires restart)","discordDRP"),
@@ -184,8 +186,8 @@ class OptionsMenu extends MusicBeatState
 			new VolumeOption("Adjust the volume of the hit sounds","hit"),    
 			new VolumeOption("Adjust the volume of miss sounds","miss"),       
 			new VolumeOption("Adjust the volume of other sounds and the default script sound volume","other"),  
-			new MissSoundsOption("Play a sound when you miss"),
-			new HitSoundOption("Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg"),
+			new HCBoolOption("Miss Sounds","Play a sound when you miss",'playMisses'),
+			new HCBoolOption("Hit Sounds","Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg",'hitSound'),
 			new HCBoolOption("Play Character Voices","Plays the voices a character has when you press a note.","playVoices"),
 		],"Toggle some sounds and change the volume of things"),
 	];

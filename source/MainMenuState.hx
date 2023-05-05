@@ -34,7 +34,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly(default,never):String = "U36.2";
+	public static var nightly(default,never):String = "U37";
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 	// This should be incremented every update, this'll be sequential so you can just compare it to another version identifier
 	public static var versionIdentifier:Int = 1;
@@ -292,6 +292,10 @@ class MainMenuState extends SickMenuState
 			//Damn, talk about a huge difference from 9 options down to 3
 			options = ['modded songs',"scripted states","credits",'options'];
 			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state","Check out the awesome people who helped with this engine in some way",'Customise your experience to fit you'];
+			if(ChartingState.charting){
+				options.unshift('open unfinished chart');
+				descriptions.unshift('Looks like the chart editor closed incorrectly. You can reopen it here');
+			}
 		#else
 			options = ['modded songs','join FNF\'br server',
 			#if !ghaction
@@ -335,6 +339,9 @@ class MainMenuState extends SickMenuState
 		switch (daChoice)
 		{
 
+			case 'open closed chart':
+				loading = true;
+				FlxG.switchState(new ChartingState());
 			case 'modded songs':
 				loading = true;
 				FlxG.switchState(new multi.MultiMenuState());

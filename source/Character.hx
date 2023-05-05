@@ -204,7 +204,6 @@ class CharAnimController extends FlxAnimationController{
 		public var camY:Float = 0;
 		public var useMisses:Bool = false;
 		public var useVoices:Bool = false;
-		public var clonedChar:String = "";
 		public var dadVar:Float = 4; // Singduration?
 		public var missSounds:Array<Sound> = [];
 		public var voiceSounds:Array<FlxSound> = [];
@@ -563,8 +562,6 @@ class CharAnimController extends FlxAnimationController{
 
 
 		if(charProperties.flip != null) flip = charProperties.flip;
-		clonedChar = charProperties.clone;
-		if (charProperties.like != null && charProperties.like != "") clonedChar = charProperties.like;
 		loadOffsetsFromJSON(charProperties);
 	}
 	public function isSelectedChar():Bool{
@@ -628,7 +625,6 @@ class CharAnimController extends FlxAnimationController{
 					// 	}
 					// }
 					charProperties = Json.parse('{
-						"clone":"",
 						"flip_x":false,
 						"sing_duration":6.1,
 						"scale":1,
@@ -842,17 +838,12 @@ class CharAnimController extends FlxAnimationController{
 
 		dance();
 		// var alloffset = animOffsets.get("all");
-		if (clonedChar == "")clonedChar = curCharacter;
 
 		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over miss if miss isn't present
 			if (animation.getByName('sing${i}miss') == null){
 				cloneAnimation('sing${i}miss', animation.getByName('sing$i'));
 				tintedAnims.push('sing${i}miss');
 			}
-		}
-
-		if (charType == 2 && !curCharacter.startsWith("gf") && !clonedChar.startsWith("gf")){ // Checks if GF is not girlfriend, Force offset if clone is not GF
-			charY+=200;
 		}
 		this.y += charY;
 		this.x += charX;
@@ -937,13 +928,10 @@ class CharAnimController extends FlxAnimationController{
 			if (dance_idle || charType == 2 ){
 				playAnim('danceRight');
 			}else{playAnim('idle');}
-		}
-		else
-		{
-			var frame = 0;
+		}else{
 			if(dance_idle){
-				if (animation.curAnim == null || animHasFinished)
-				{
+
+				if (animation.curAnim == null || animation.curAnim.name.startsWith("dance") || animHasFinished){
 					if(useDanced){
 						playAnim('dance${if(danced)'Right' else 'Left'}',Forced/*,beatProg*/);
 
@@ -951,7 +939,8 @@ class CharAnimController extends FlxAnimationController{
 						playAnim('dance${if(beatDouble)'Right' else 'Left'}',Forced);
 					}
 				}
-			}else{
+			}
+		else{
 				playAnim('idle'/*,frame*/);
 			}
 		}
@@ -970,16 +959,8 @@ class CharAnimController extends FlxAnimationController{
 	{
 		if (!debugMode || ignoreDebug)
 		{
-			if (dance_idle || charType == 2){
+			if (dance_idle){
 				playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
-			}else{
-				switch (curCharacter)
-				{
-					case 'gf' | 'gf-car' | 'gf-christmas' | 'gf-pixel' | "spooky":
-						playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
-					default:
-						playAnim('idle', true, false, animation.getByName('idle').numFrames - 1);
-				}
 			}
 		}
 	}
@@ -1540,13 +1521,11 @@ class CharAnimController extends FlxAnimationController{
 	"sing_duration": 4,
 	"flip_x": false,
 	"genBy": "FNFBR; Animation Editor",
-	"like": null,
 	"common_stage_offset": [],
 	"char_pos3": [0, 30],
 	"offset_flip": 1,
 	"scale": 1,
 	"char_pos": [],
-	"clone": "",
 	"animations": [
 		{
 			"loop": false,

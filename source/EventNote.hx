@@ -1,58 +1,39 @@
 package;
-#if false
-import flixel.addons.effects.FlxSkewedSprite;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.math.FlxMath;
-import flixel.util.FlxColor;
-import flixel.graphics.FlxGraphic;
-import flixel.text.FlxText;
 
+import flixel.FlxG;
 import PlayState;
 
 using StringTools; 
 
-class EventNote extends FlxObject
-{
+class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 	public var strumTime:Float = 0;
 	public var type:Dynamic = 0; // Used for scriptable arrows 
-	public static var noteNames:Array<String> = ["purple","blue","green",'red'];
 	public var info:Array<Dynamic> = [];
 	public var rawNote:Array<Dynamic> = [];
+	public var killNote:Bool = false;
 
 
-	dynamic public function hit(?charID:Int = 0,note:Note){
-		switch (charID) {
-			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
-			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
-		}; // Strums
-		if(noteAnimation != null){
-			PlayState.charAnim(charID,(if(noteAnimation == "")noteAnims[noteData] else noteAnimation),true); // Play animation
-		}
+
+	@:keep inline function callInterp(func:String,?args:Array<Dynamic>){
+		if(PlayState.instance != null) PlayState.instance.callInterp(func,args);
 	}
-	public var killNote = false;
+
+	dynamic public function hit(?charID:Int = 0,note:EventNote){
+		return;
+	}
 
 	static var psychChars:Array<Int> = [1,0,2]; // Psych uses different character ID's than SE
+	public static function applyEvent(note:Dynamic){
 
-
-	public function new(strumTime:Float,?_type:Dynamic = 0,?rawNote:Array<Dynamic> = null)
-	{try{
-		super();
-		
-
-		if(rawNote == null){
-			this.rawNote = [strumTime,_noteData,0];
-		}else{
-			this.rawNote = rawNote;
-
-		}
-
-
-		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
-
-
+		var rawNote:Array<Dynamic> = note.rawNote;
+		if(rawNote[2] == "eventNote") rawNote.remove(2);
+		note.callInterp("eventNoteCheckType",[note,rawNote]);
+		var info:Array<Dynamic> = [];
+		var hit:Dynamic = null;
 		switch (Std.string(rawNote[2]).toLowerCase()) {
+			case "charanimref": {
+				hit = function(?charID:Int = 0,note){info[0].playAnim(info[1],true);}; 
+			}
 			case "play animation" | "playanimation"| "playanim" | "animation" | "anim": {
 				try{
 					// Info can be set to anything, it's being used for storing the Animation and character
@@ -88,14 +69,14 @@ class EventNote extends FlxObject
 					info = [(if(rawNote[4] != "" && !Math.isNaN(Std.parseFloat(rawNote[4])))Std.parseFloat(rawNote[4]) else Std.parseFloat(rawNote[3]))]; 
 				}catch(e){info = [120,0];}
 				hit = function(?charID:Int = 0,note){Conductor.changeBPM(info[0]);}; 
-				trace('BPM note processed');
+			
 			}
 			case "changecharacter" | "change character" | "changechar" | "change char": {
 				try{
 					info = [Std.string(rawNote[3]),rawNote[4]];
 					var _char = PlayState.getCharFromID(info[0]);
 					if(_char == null || _char.curCharacter == "lonely" || _char.lonely){ // If this character isn't enabled, no reason to allow switching for it
-						killNote = true;
+						note.killNote = true;
 					}else{
 						var id = PlayState.getCharID(info[0]);
 						info[0]=id;
@@ -106,20 +87,39 @@ class EventNote extends FlxObject
 							var psChar = PlayState.getCharFromID(id);
 							var cachingChar:Character = {x:psChar.x, y:psChar.y,character:name,isPlayer:psChar.isPlayer,charType:psChar.charType};
 							PlayState.instance.cachedChars[id][name] = cachingChar;
+							cachingChar.drawFrame();
 							trace('Finished caching $name');
 						}
 						hit = function(?charID:Int = 0,note){
-							var _char = PlayState.instance.cachedChars[info[0]][info[1]];
+							var _char:Character = PlayState.instance.cachedChars[info[0]][info[1]];
 							if(_char == null){return;}
 							// PlayState.charSet(charID,"visible",false);
 							PlayState.instance.members[PlayState.instance.members.indexOf(PlayState.getCharFromID(info[0]))] = _char;
-							Reflect.setProperty(PlayState,PlayState.getCharVariName(info[0]),_char);
+							var _oldChar:Character = PlayState.getCharFromID(id);
+							var _variName:String = PlayState.getCharVariName(info[0]);
+							switch(_variName){
+								case "dad":
+									PlayState.dad = _char;
+								case "gf":
+									PlayState.gf = _char;
+								case "boyfriend":
+									PlayState.boyfriend = _char;
+								default:
+									Reflect.setProperty(PlayState,_variName,_char);
+							}
+							try{
+								_char.playAnim(_oldChar.animName,_oldChar.animation.curAnim.curFrame / _oldChar.animation.curAnim.frames.length);
+							}catch(e){}
+							_char.callInterp('changeChar',[_oldChar]); // Allows the character to play an animation or something upon change
+							PlayState.instance.callInterp('changeChar',[_char,_oldChar,id]);
 							// PlayState.instance.add(_char);
 						};
 
 					}
 					
-				}catch(e){}
+				}catch(e){
+					trace('Error trying to add char change note for ${rawNote[4]} -> ${rawNote[3]}:${e.message}');
+				}
 				// Replaces hit func
 			}
 			case "camflash" | "cameraflash" | "camera flash": {
@@ -145,8 +145,51 @@ class EventNote extends FlxObject
 					if(Math.isNaN(info[0])) info[0] = 0.05;
 				}catch(e){info = [0.05];}
 				// Replaces hit func
-				hit = function(?charID:Int = 0,note){PlayState.instance.defaultCamZoom += info[0];}; 
+				hit = function(?charID:Int = 0,note){
+					PlayState.instance.defaultCamZoom += info[0];
+					if(PlayState.instance.defaultCamZoom < 0.1) PlayState.instance.defaultCamZoom = 0.1;
+				}; 
+			}
+			case "multcamzoom" | "multiplycamzoom" | "multiply cam zoom" | "mult cam zoom": {
+				try{
+					info = [Std.parseFloat(rawNote[3])]; 
+					if(Math.isNaN(info[0])) info[0] = 1;
+				}catch(e){info = [0.05];}
+				// Replaces hit func
+				hit = function(?charID:Int = 0,note){PlayState.instance.defaultCamZoom *= info[0];}; 
 
+			}
+			case "movecam" | "followchar" | "follow character" | 'focuschar' | 'focus character': {
+				try{
+					info = [
+						switch(Std.string(rawNote[3]).toLowerCase()){
+							case "dad","opponent","1":1;
+							case "gf","girlfriend","2":2;
+							default:0;
+						},
+						switch(Std.string(rawNote[4]).toLowerCase()){
+							case "true","t","1":true;
+							default:false;
+						},
+					]; 
+				}catch(e){info = [0.7];}
+				hit = function(?charID:Int = 0,note){if(PlayState.instance == null) return;
+					PlayState.instance.followChar(info[0],info[1]);
+				};
+			}
+			case "lockcam" | "lock camera" : {
+				try{
+					info = [
+						switch(Std.string(rawNote[3]).toLowerCase()){
+							case "t","true","1":true;
+							default:false;
+						}
+					]; 
+				}catch(e){info = [0.7];}
+				// Replaces hit func
+				hit = function(?charID:Int = 0,note){if(PlayState.instance == null) return;
+					PlayState.instance.controlCamera = info[0];
+				};
 			}
 			case "screenshake" | "screen shake" | "shake screen": {
 				try{
@@ -156,14 +199,20 @@ class EventNote extends FlxObject
 				}catch(e){info = [0.7];}
 				// Replaces hit func
 				hit = function(?charID:Int = 0,note){if(FlxG.save.data.distractions) FlxG.camera.shake(info[0],info[1]);}; 
-				trace('BPM note processed');
+				
 			}
-			case "camera follow pos" | "camfollowpos" | "cam follow": {
+			case "camera follow pos" | "camfollowpos" | "cam follow" | "cam follow position": {
 				try{
-					info = [Std.parseFloat(rawNote[3]),Std.parseFloat(rawNote[4])]; 
-				}catch(e){info = [0.7];}
+					info = [Std.parseFloat(rawNote[3]),Std.parseFloat(rawNote[4])];
+					if(Math.isNaN(info[0])) info[0] = 0; 
+					if(Math.isNaN(info[1])) info[1] = 0; 
+				}catch(e){info = [0,0];}
 				// Replaces hit func
-				hit = function(?charID:Int = 0,note){PlayState.instance.moveCamera = false; PlayState.instance.camFollow.x = info[0];PlayState.instance.camFollow.y = info[1];}; 
+				hit = function(?charID:Int = 0,note){if(PlayState.instance == null) return;
+					PlayState.instance.moveCamera = (info[0] == 0 && info[1] == 0);
+					if(info[0] != 0 )PlayState.instance.camFollow.x = info[0];
+					if(info[1] != 0 )PlayState.instance.camFollow.y = info[1];
+				}; 
 
 			}
 			case "changescrollspeed": {
@@ -172,7 +221,7 @@ class EventNote extends FlxObject
 				}catch(e){info = [2,0];}
 				// Replaces hit func
 				hit = function(?charID:Int = 0,note){PlayState.SONG.speed = info[0];}; 
-				trace('BPM note processed');
+				
 			}
 			// case "hscript" | "script" | "runcode" | "haxe": {
 			// 	try{
@@ -190,32 +239,38 @@ class EventNote extends FlxObject
 				hit = function(?charID:Int = 0,note){trace('Hit an empty event note ${note.type}.');return;};
 			}
 		}
-		if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("noteAdd",[this,rawNote]);
-	}catch(e){MainMenuState.handleError(e,e,'Caught "Note create" crash: ${e.message}');}}
-
-	var missedNote:Bool = false;
-	override function draw(){
-		if(!eventNote && showNote){
-			super.draw();
-		}
-		// if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
+		note.info = info;
+		if(hit != null)	note.hit = hit;
 	}
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
-		if ((!skipNote || isOnScreen())){ // doesn't calculate anything until they're on screen
-			skipNote = false;
-			visible = (!eventNote && showNote);
-			PlayState.instance.callInterp("noteUpdate",[this]);
+	public function destroy(){
+		type=null;
+		info=null;
+		rawNote=null;
+		strumTime=0;
+	}
 
-			if (strumTime <= Conductor.songPosition){
+	public function new(strumTime:Float,?_type:Dynamic = 0,?rawNote:Array<Dynamic> = null){
+		this.strumTime = strumTime;
+		type = _type;
+		this.rawNote = rawNote;
+	}
+	// 	// if(rawNote == null){
+	// 	// 	this.rawNote = [strumTime,_noteData,0];
+	// 	// }else{
+	// 	// 	this.rawNote = rawNote;
 
-				this.hit(1,this);
-				this.destroy();
-			}
-			PlayState.instance.callInterp("noteUpdateAfter",[this]);
+	// 	// }
 
-		}
+
+	// 	// if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
+
+	// 	if(rawNote != null && PlayState.instance != null) PlayState.instance.callInterp("eventNoteAdd",[this,rawNote]);
+	// }catch(e){MainMenuState.handleError(e,e,'Caught "Event note create" crash: ${e.message}');}}
+
+	public static function fromNote(note:Note):EventNote{
+		var ev = new EventNote(note.strumTime,note.type,note.rawNote);
+		ev.info = note.info;
+		ev.hit = cast note.hit;
+		return ev;
 	}
 }
-#end

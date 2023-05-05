@@ -266,7 +266,7 @@ class SickMenuState extends ScriptMusicBeatState
 	var curTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
-		if(grpControls.members[curSelected] != null && grpControls.members[curSelected].useAlphabet && !isEpicTween){
+		if(grpControls.members[curSelected] != null && !isEpicTween){
 			
 			grpControls.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();

@@ -23,6 +23,7 @@ class CharSelection extends SearchMenuState
 	var uiIcon:HealthIcon;
 	var charNameText:FlxText;
 	var curChar = "";
+	var curCharNameSpaced = "";
 	var curCharID = 0;
 	// Type
 	// -1 = automatic
@@ -47,6 +48,7 @@ class CharSelection extends SearchMenuState
 			}
 		}catch(e) MainMenuState.handleError('Error with loading stage list ${e.message}');
 	}
+	var isNameSpaced:Bool = false;
 	function _addToList(char:Array<Dynamic>,i:Int = 0){
 		songs.push(char[0]);
 		charIDList.push(i);
@@ -54,12 +56,19 @@ class CharSelection extends SearchMenuState
 		controlLabel.cutOff = 12;
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
-		if (i != 0)
-			controlLabel.alpha = 0.6;
-		if(char[0] == curChar || (char[4] != null && char[4].getNamespacedName().toLowerCase() == curChar.toLowerCase())){
-			curCharID = i;
-			controlLabel.color = FlxColor.GREEN;
+		if (i != 0) controlLabel.alpha = 0.6;
+		if(!isNameSpaced){
+
+			if(char[0].toLowerCase() == curChar.toLowerCase()){
+				curCharID = i;
+				controlLabel.color = FlxColor.GREEN;
+			}else if(char[4] != null && char[4].getNamespacedName().toLowerCase() == curCharNameSpaced){
+				curCharID = i;
+				isNameSpaced = true;
+				controlLabel.color = FlxColor.GREEN;
+			}
 		}
+
 		if(char[1] == 1){
 			controlLabel.color = FlxColor.RED;
 		}
@@ -76,6 +85,8 @@ class CharSelection extends SearchMenuState
 			case 2:
 				curChar = FlxG.save.data.gfChar;
 		}
+		curChar = TitleState.findCharByNamespace(curChar).folderName;
+		curCharNameSpaced = TitleState.findCharByNamespace(curChar).getNamespacedName().toLowerCase();
 		chars = [];
 		if (Options.PlayerOption.playerEdit == 0){
 			chars.push(['automatic',-1,'Automatically choose whatever BF is suitable for the chart']);

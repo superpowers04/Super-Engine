@@ -132,19 +132,15 @@ class QuickOptionsSubState extends MusicBeatSubstate
 		var accepted = controls.ACCEPT;
 		var oldOffset:Float = 0;
 
-		if (upP)
-		{
-			changeSelection(-1);
-   
-		}else if (downP)
-		{
-			changeSelection(1);
-		}
+		if (upP) changeSelection(-1);
+  		else if (downP) changeSelection(1);
+		
 		
 		if (FlxG.keys.pressed.ESCAPE){saveSettings();close();} 
 		#if(mobile)
 		if(FlxG.mouse.pressed && FlxG.mouse.screenX < 30){
-			saveSettings();close();
+			saveSettings();
+			close();
 		}
 		// TODO, ADD TOUCH SUPPORT
 		#end
@@ -185,12 +181,10 @@ class QuickOptionsSubState extends MusicBeatSubstate
 			bullShit++;
 
 			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
 
 			if (item.targetY == 0)
 			{
 				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
 	}

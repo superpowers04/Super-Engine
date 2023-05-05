@@ -57,6 +57,15 @@ import flixel.util.FlxTimer;
 
 using StringTools;
 
+@:publicFields class CharterNoteData{
+	var type:Dynamic = "";
+	var meta:Dynamic = "";
+	public function new(type:Dynamic,meta:Dynamic){
+		this.type= type;
+		this.meta = meta;
+	}
+}
+
 class ChartingState extends ScriptMusicBeatState
 {
 	var _file:FileReference;
@@ -958,6 +967,8 @@ class ChartingState extends ScriptMusicBeatState
 
 	var tab_group_note:FlxUI;
 	inline function typingFocus() {return !disabledControls && !typingShit.hasFocus && !stageSel.hasFocus && !noteTypeInput.hasFocus && !typingcharactershit.hasFocus;} 
+	static var storedNoteData:Array<CharterNoteData> = [];
+	var storedNDButtons:Array<Array<FlxButton>> = [];
 	function addNoteUI():Void
 	{
 		var tab_group_note = new FlxUI(null, UI_box);
@@ -980,6 +991,30 @@ class ChartingState extends ScriptMusicBeatState
 
 		useNoteTypeBox = new FlxUICheckBox(notetypeinput.x , notetypeinput.y + 20 ,null,null, 'Use note type?');
 		useNoteTypeBox.checked = true;
+		var storeNoteData = function(id:Int) {
+			return function(){
+				storedNoteData[id] = new CharterNoteData(noteTypeInput.text,notetype2input.text);
+				storedNDButtons[id][1].alpha = 1;
+			}
+		}
+		var getNoteData = function(id:Int) {
+			return function(){
+				if(storedNoteData[id] == null){
+					showTempmessage('Nothing has been stored here!',FlxColor.RED);
+					return;
+				}
+				noteTypeInput.text = storedNoteData[id].type;
+				notetype2input.text = storedNoteData[id].meta;
+			}
+		}
+		inline function addNoteStore(id:Int,x:Float,y:Float){
+			var e = storedNDButtons[id] = [];
+			tab_group_note.add(e[0] = new FlxButton(x, y, 'Store notedata $id', storeNoteData(id)));
+			tab_group_note.add(e[1] = new FlxButton(x + 100, y, 'Get notedata $id', getNoteData(id)));
+			e[1].alpha = 0.5;
+		}
+
+
 
 		//tab_group_note.add(m_checkhell);
 		tab_group_note.add(notetypeinput);uiMap['notetypeinput'] = notetypeinput;
@@ -987,7 +1022,12 @@ class ChartingState extends ScriptMusicBeatState
 		tab_group_note.add(notetype2input);uiMap['notetype2input'] = notetype2input;
 		tab_group_note.add(notetype2txt);uiMap['notetype2txt'] = notetype2txt;
 		tab_group_note.add(useNoteTypeBox);uiMap['useNoteTypeBox'] = useNoteTypeBox;
-
+		addNoteStore(1,20,140);
+		addNoteStore(2,20,160);
+		addNoteStore(3,20,180);
+		addNoteStore(4,20,180);
+		addNoteStore(5,20,200);
+		addNoteStore(6,20,220);
 
 		UI_box.addGroup(tab_group_note);
 
@@ -2023,7 +2063,7 @@ class ChartingState extends ScriptMusicBeatState
 		var daSus:Dynamic = i[2];
 		var daType:Dynamic = i[3];
 		var note:Note = new Note(daStrumTime, daNoteInfo, daType, false, true, i[3], i[4]);
-
+		daType = note.type;
 		if(daType != 0 || !(daType is Int)){
 			note.ntText=new FlxText(0,0,('$daType').substring(0,4),16);
 			note.ntText.setBorderStyle(OUTLINE,0xff000000,2,1);

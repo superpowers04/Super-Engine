@@ -185,7 +185,7 @@ class PlayState extends ScriptMusicBeatState
 		public static var p2canplay = false;
 		public static var logGameplay:Bool = false;
 		public var notes:FlxTypedGroup<Note>;
-		public var eventNotes:FlxTypedGroup<Note>; // The above but doesn't need to update anything beyond the strumtime
+		public var eventNotes:Array<Note> = []; // The above but doesn't need to update anything beyond the strumtime
 		public var unspawnNotes:Array<Note> = [];
 		public var strumLine:FlxSprite;
 		public var strumLineNotes:FlxTypedGroup<StrumArrow> = null;
@@ -223,6 +223,7 @@ class PlayState extends ScriptMusicBeatState
 
 		public var handleTimes:Bool = true;
 		public var defaultCamZoom:Float = 1.05;
+		public var defaultCamHUDZoom:Float = 1;
 		public var realtimeCharCam:Bool = !FlxG.save.data.performance;
 		public var inputMode:Int = 0;
 		public var camBeat:Bool = true;
@@ -1071,13 +1072,13 @@ class PlayState extends ScriptMusicBeatState
 
 		
 
-		iconP1 = new HealthIcon(bf.getNamespacedName(), true,boyfriend.clonedChar,boyfriend.charLoc);
+		iconP1 = new HealthIcon(bf.getNamespacedName(), true,'bf',boyfriend.charLoc);
 		iconP1.antialiasing = bf.antialiasing;
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		iconP1.trackedSprite = healthBar;
 		add(iconP1);
 
-		iconP2 = new HealthIcon(dad.getNamespacedName(), false,dad.clonedChar,dad.charLoc);
+		iconP2 = new HealthIcon(dad.getNamespacedName(), false,'bf',dad.charLoc);
 		iconP2.antialiasing = dad.antialiasing;
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		iconP2.trackedSprite = healthBar;
@@ -1574,9 +1575,8 @@ class PlayState extends ScriptMusicBeatState
 		callInterp("generateNotes",[]);
 		var songData = SONG;
 		if (notes == null) notes = new FlxTypedGroup<Note>();
-		if (eventNotes == null) eventNotes = new FlxTypedGroup<Note>();
+		eventNotes = [];
 		CoolUtil.clearFlxGroup(notes);
-		CoolUtil.clearFlxGroup(eventNotes);
 		add(notes);
 		Note.lastNoteID = -1;
 
@@ -1617,8 +1617,14 @@ class PlayState extends ScriptMusicBeatState
 				if(swagNote.killNote){swagNote.destroy();continue;}
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
+				if(swagNote.eventNote){ // This is done so noteCreate doesn't get broken
+					// var e = EventNote.fromNote(swagNote);
+					// if(e.killNote) e.destroy(); else eventNotes.push(e);
+					eventNotes.push(swagNote);
+					// swagNote.destroy();
+					continue;
+				}
 				unspawnNotes.push(swagNote);
-				if(swagNote.eventNote) continue;
 
 				var susLength:Float = swagNote.sustainLength;
 
@@ -1655,10 +1661,21 @@ class PlayState extends ScriptMusicBeatState
 		}
 
 		unspawnNotes.sort(sortByShit);
+		eventNotes.sort(sortByShit);
 
 		generatedMusic = true;
 		callInterp("generateNotesAfter",[unspawnNotes]);
 
+	}
+	public function addEventNote(time:Float,type:Dynamic = "",params:Array<Dynamic>,callBack:(Int,Note)->Void){
+		if(params == null) params = [];
+		params.unshift(type);
+		params.unshift(-1);
+		params.unshift(time);
+		var swagNote:Note = new Note(time, -1, null,false,false,params[3],params,false);
+		if(swagNote.killNote){swagNote.destroy();return;}
+		eventNotes.push(swagNote);
+		eventNotes.sort(sortByShit);
 	}
 	public function generateSong(?dataPath:String = ""){
 
@@ -1974,7 +1991,7 @@ class PlayState extends ScriptMusicBeatState
 		// if(FlxG.save.data.songInfo == 0) scoreTxt.x = scoreTxtX - scoreTxt.text.length;
 		if (updateTime) songTimeTxt.text = FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + songLengthTxt;
 		
-		if ((FlxG.keys.justPressed.ENTER || (FlxG.keys.justPressed.F10 && FlxG.save.data.animDebug)
+		if ((FlxG.keys.justPressed.ENTER || (Console.showConsole && FlxG.save.data.animDebug)
 		     #if(android) || FlxG.mouse.justReleased && FlxG.mouse.screenY < 50 || FlxG.swipes[0] != null && FlxG.swipes[0].duration < 1 && FlxG.swipes[0].startPosition.y - FlxG.swipes[0].endPosition.y < -200 #end )
 		     // #if(android) || FlxG.swipes[0] #end ) 
 			&& startedCountdown && canPause )
@@ -2066,15 +2083,10 @@ class PlayState extends ScriptMusicBeatState
 				+'\nScript Count:${interpCount}'
 				+'\nChartType: ${SONG.chartType}';
 		}
-		if(controlCamera){
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-		}
-		if (camBeat){
-			if (FlxG.save.data.camMovement || !camLocked){} else FlxG.camera.zoom = defaultCamZoom;
-			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
-			// FlxG.camera.zoom = 0.95;
-			// camHUD.zoom = 1;
-		}
+		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, elapsed * 0.7);
+		camHUD.zoom = FlxMath.lerp(defaultCamHUDZoom, camHUD.zoom,  elapsed * 0.7);
+		
+
 
 		if (health <= 0 && !hasDied && checkHealth && !ChartingState.charting && onlinemod.OnlinePlayMenuState.socket == null){
 
@@ -2118,15 +2130,12 @@ class PlayState extends ScriptMusicBeatState
 				notes.remove(daNote, true);
 			});
 		}
-		if(eventNotes.members.length > 0){
-			var i = 0;
-			var note:Note;
-			while (i < eventNotes.members.length){
-				note = eventNotes.members[i];
-				i++;
-				if(note == null || note.strumTime > Conductor.songPosition) continue;
-				note.hit(note);
-				eventNotes.remove(note);
+		if(eventNotes.length > 0){
+			var note = null;
+			while (eventNotes[0] != null && eventNotes[0].strumTime < Conductor.songPosition){
+				note = eventNotes.shift();
+				trace('Hit ${note.type}!');
+				note.hit(null,note);
 				note.destroy();
 			}
 		}
@@ -2142,6 +2151,7 @@ class PlayState extends ScriptMusicBeatState
 	#end
 }
 	public function pause(){
+		currentSpeed = 1;
 		persistentUpdate = false;
 		persistentDraw = true;
 		paused = true;
@@ -2157,12 +2167,12 @@ class PlayState extends ScriptMusicBeatState
 			{
 				var dunceNote:Note = unspawnNotes.shift();
 				callInterp('noteSpawn',[dunceNote]);
-				if(!dunceNote.eventNote && dunceNote.strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms before the current time
+				if(dunceNote.strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms before the current time
 					dunceNote.destroy();
-				}else if(dunceNote.eventNote){ // eventNote
-					eventNotes.add(dunceNote);
 				}else{ // we add note lmao
 					notes.add(dunceNote);
+					var strumNote = (if (dunceNote.parentSprite != null) dunceNote.parentSprite else if (dunceNote.mustPress) playerStrums.members[Math.floor(Math.abs(dunceNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(dunceNote.noteData))] );
+					updateNotePosition(dunceNote,strumNote);
 				}
 			}
 		}
@@ -2257,6 +2267,7 @@ class PlayState extends ScriptMusicBeatState
 			add(doof);
 			return;
 		}
+
 
 		charCall("endSong",[]);
 		callInterp("endSong",[]);
@@ -2520,10 +2531,6 @@ class PlayState extends ScriptMusicBeatState
 
 	public function NearlyEquals(value1:Float, value2:Float, unimportantDifference:Float = 10):Bool return Math.abs(FlxMath.roundDecimal(value1, 1) - FlxMath.roundDecimal(value2, 1)) < unimportantDifference;
 
-	var upHold:Bool = false;
-	var downHold:Bool = false;
-	var rightHold:Bool = false;
-	var leftHold:Bool = false;	
 	private function fromBool(input:Bool):Int{
 		if (input) return 1;
 		return 0; 
@@ -2565,7 +2572,7 @@ class PlayState extends ScriptMusicBeatState
 				noteShit = SENoteShit;
 				doKeyShit = SEKeyShit;
 				goodNoteHit = kadeBRGoodNote;
-				SEIUpdateKeys();
+				SEIRegisterKeys();
 				FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, SEIKeyPress);
 				FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
 
@@ -2636,6 +2643,7 @@ class PlayState extends ScriptMusicBeatState
 	function SENoteShit(){
 		if (!generatedMusic) return;
 		var _scrollSpeed = FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2); // Probably better to calculate this beforehand
+		if(currentSpeed != 1) _scrollSpeed /= currentSpeed;
 		var strumNote:FlxSprite;
 		var i = notes.members.length - 1;
 		var daNote:Note;
@@ -2715,14 +2723,8 @@ class PlayState extends ScriptMusicBeatState
 			}
 			if (daNote.skipNote) continue;
 
-			if ((daNote.mustPress || !daNote.wasGoodHit) && daNote.lockToStrum){
-				daNote.visible = strumNote.visible;
-				if(daNote.updateX) daNote.x = strumNote.x + (strumNote.width * 0.5);
-				if(!daNote.isSustainNote && daNote.updateAngle) daNote.angle = strumNote.angle;
-				if(daNote.updateAlpha) daNote.alpha = strumNote.alpha;
-				if(daNote.updateScrollFactor) daNote.scrollFactor.set(strumNote.scrollFactor.x,strumNote.scrollFactor.y);
-				if(daNote.updateCam) daNote.cameras = [strumNote.cameras[0]];
-			}
+			updateNotePosition(daNote,strumNote);
+
 			if(daNote.mustPress && daNote.tooLate){
 				if (!daNote.shouldntBeHit)
 				{
@@ -2738,6 +2740,16 @@ class PlayState extends ScriptMusicBeatState
 
 
 			
+		}
+	}
+	inline function updateNotePosition(daNote:Note,strumNote:FlxSprite){
+		if ((daNote.mustPress || !daNote.wasGoodHit) && daNote.lockToStrum){
+			daNote.visible = strumNote.visible;
+			if(daNote.updateX) daNote.x = strumNote.x + (strumNote.width * 0.5);
+			if(!daNote.isSustainNote && daNote.updateAngle) daNote.angle = strumNote.angle;
+			if(daNote.updateAlpha) daNote.alpha = strumNote.alpha;
+			if(daNote.updateScrollFactor) daNote.scrollFactor.set(strumNote.scrollFactor.x,strumNote.scrollFactor.y);
+			if(daNote.updateCam) daNote.cameras = [strumNote.cameras[0]];
 		}
 	}
 	private function SEKeyShit():Void{ // Only used for holds, not pressing
@@ -2816,9 +2828,16 @@ class PlayState extends ScriptMusicBeatState
 
 	}
 	var SEIKeyMap:Map<Int,Int> = [];
-	var SEIHeld:Array<Bool> = [false,false,false,false];
+	var SEIKeyHeld:Map<Int,Bool> = [];
 	var SEIBlockInput:Bool = false;
-	function SEIUpdateKeys(){
+	function SEIRegisterKeys(){
+		SEIKeyMap = [];
+		callInterp('registerKeys',[SEIKeyMap]);
+		if(cancelCurrentFunction) return;
+		SEIKeyMap[FlxKey.fromStringMap['LEFT']] =	0;
+		SEIKeyMap[FlxKey.fromStringMap['DOWN']] =	1;
+		SEIKeyMap[FlxKey.fromStringMap['UP']] =		2;
+		SEIKeyMap[FlxKey.fromStringMap['RIGHT']] =	3;
 		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.leftBind]] =		0;
 		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltleftBind]] =	0;
 		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.downBind]] =		1;
@@ -2827,6 +2846,7 @@ class PlayState extends ScriptMusicBeatState
 		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltupBind]] =		2;
 		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.rightBind]] =		3;
 		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltrightBind]] =	3;
+		callInterp('registerKeysAfter',[SEIKeyMap]);
 	}
 	function SEIKeyPress(event:KeyboardEvent){
 		if(this != FlxG.state){
@@ -2834,24 +2854,27 @@ class PlayState extends ScriptMusicBeatState
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
 			return;
 		}
+	
 		// holdArray = [false,false,false,false];
-		pressArray = [false,false,false,false];
-		releaseArray = [false,false,false,false];
 		// var keyCode:FlxKey = event.keyCode;
 		// var data:Null<Int> = SEIKeyMap[keyCode];
 		// if(data == null) data = -1;
 		SEIBlockInput = false;
+		pressArray = [false,false,false,false];
+		releaseArray = [false,false,false,false];
 		callInterp('keyPress',[event.keyCode]);
 		// || SEIHeld[data]
-		if (SEIBlockInput || !acceptInput || boyfriend.isStunned || !generatedMusic || subState != null || paused ) return;
+		if (SEIBlockInput || cancelCurrentFunction || !acceptInput || boyfriend.isStunned || subState != null || paused ) return;
 		
 		for(key => data in SEIKeyMap){
-			if(FlxG.keys.checkStatus(key, JUST_PRESSED) && !holdArray[data]){
+			if(FlxG.keys.checkStatus(key, JUST_PRESSED) && !SEIKeyHeld[key]){
 				pressArray[data] = true;
 				holdArray[data] = true;
 				var strum = playerStrums.members[data];
+				SEIKeyHeld[key] = true;
 				if(strum != null) strum.press();
 			}else if(FlxG.keys.checkStatus(key, PRESSED)){
+				SEIKeyHeld[key] = true;
 				holdArray[data] = true;
 			}
 		}
@@ -2927,12 +2950,16 @@ class PlayState extends ScriptMusicBeatState
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
 			return;
 		}
-		callInterp('keyRelease',[event.keyCode]);
 		holdArray = [false,false,false,false];
 
+		callInterp('keyRelease',[event.keyCode]);
+		if (cancelCurrentFunction || subState != null || paused ) return;
+
 		for(key => data in SEIKeyMap){
-			if(FlxG.keys.checkStatus(key, PRESSED)){
+			if(FlxG.keys.checkStatus(key, PRESSED) && acceptInput && !boyfriend.isStunned){
 				holdArray[data] = true;
+			}else{
+				SEIKeyHeld[key] = false;
 			}
 		}
 		for(id => bool in holdArray){

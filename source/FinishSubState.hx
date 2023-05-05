@@ -274,7 +274,7 @@ class FinishSubState extends MusicBeatSubstate
 				contText.alpha = 0.3;
 				contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				var reportText = new FlxText(0,FlxG.height - 180,0,'Please report this to the developer of the script/chart listed above');
-				reportText.size = 24;
+				reportText.size = 20;
 				// reportText.x -= contText.width * 0.5;
 				reportText.screenCenter(X);
 				var rep_x = reportText.x;
@@ -318,7 +318,7 @@ class FinishSubState extends MusicBeatSubstate
 						+'\nGhost Taps - ${PlayState.ghostTaps}'
 						+'\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})'
 						+'\nMisses${if(FlxG.save.data.ghost) "" else " + Ghost Taps"}${if(FlxG.save.data.shittyMiss) ' + Shits' else ''}${if(FlxG.save.data.badMiss) ' + Bads' else ''}${if(FlxG.save.data.goodMiss) ' + Goods' else ''}: ${PlayState.misses}'
-						+'\n\nScore: ${if(savedScore) '${_oldScore} > ' else ""}${PlayState.songScore}' // ' shitty haxe syntax highlighting strikes again :skull:
+						+'\n\nScore: ${if(savedScore) '${_oldScore} > ${PlayState.songScore}' else '${PlayState.songScore} / ${_oldScore}'}' // ' shitty haxe syntax highlighting strikes again :skull:
 						+'\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%'
 						+'\n\n${Ratings.GenerateLetterRank(PlayState.accuracy)}\n');
 				comboText.size = 28;
@@ -340,7 +340,7 @@ class FinishSubState extends MusicBeatSubstate
 				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'
 				+'\n'
 				);
-				settingsText.size = 28;
+				settingsText.size = 20;
 				settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				settingsText.color = FlxColor.WHITE;
 				settingsText.scrollFactor.set();

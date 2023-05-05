@@ -153,18 +153,14 @@ class SELoader {
 	}
 
 	public static function saveText(textPath:String,contents:String = "",?useCache:Bool = false):Dynamic{ // If there's an error, it'll return the error, else it'll return null
-
 		try{
 			File.saveContent(getPath(textPath),contents);
-		}catch(e){
-			return e;
-		}
+		}catch(e){ return e; }
 		if(cache.textArray[textPath] != null || useCache){
 			cache.textArray[textPath] = contents;
 		}
 		return null;
 	}
-
 	public static function loadSound(soundPath:String,?useCache:Bool = false):Null<Sound>{
 		if(cache.soundArray[soundPath] != null || useCache){
 			return cache.loadSound(soundPath);
@@ -174,8 +170,6 @@ class SELoader {
 			// return null;
 		}
 		return Sound.fromFile(getPath(soundPath));
-		
-
 	}
 	@:keep inline public static function loadFlxSound(soundPath:String):FlxSound{
 		return new FlxSound().loadEmbedded(loadSound(soundPath));
@@ -225,6 +219,7 @@ class InternalCache{
 	public var xmlArray:Map<String,String> = [];
 	public var textArray:Map<String,String> = [];
 	public var soundArray:Map<String,Sound> = [];
+	public var audioBufferArray:Map<String,AudioBuffer> = [];
 	// public var dumpGraphics:Bool = false; // If true, All FlxGraphics will be dumped upon creation, trades off bitmap editability for less memory usage
  
 	@:keep inline static function getPath(path):String{return SELoader.getPath(path);}

@@ -490,15 +490,16 @@ class PauseSubState extends MusicBeatSubstate
 		{
 			item.targetY = bullShit - curSelected;
 			bullShit++;
+			#if(!mobile)
+				item.alpha = 0.6;
 
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
-			{
+				if (item.targetY == 0)
+				{
+					item.alpha = 1;
+				}
+			#else
 				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
-			}
+			#end
 		}
 	}
 }
