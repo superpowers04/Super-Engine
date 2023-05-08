@@ -444,6 +444,11 @@ class PsychLuaCompat{
 		}
 		if(object == null){
 			var obj:String = splitPath.shift();
+			if(obj.indexOf('[') > -1){
+				var _obj = obj.split('[');
+				obj = _obj[0];
+				splitPath.unshift('this'+ _obj[1].substr(0,-1));
+			}
 			if(obj == "state"){
 				object = cast FlxG.state;
 			}else{

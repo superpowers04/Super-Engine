@@ -385,6 +385,7 @@ class ChartingState extends ScriptMusicBeatState
 			updateSection();
 			time = 0;
 		}
+		updateSection();
 		saveRemind(true);
 		updateHeads();
 		#if discord_rpc
@@ -807,6 +808,7 @@ class ChartingState extends ScriptMusicBeatState
 
 	var stepperLength:FlxUINumericStepper;
 	var check_mustHitSection:FlxUICheckBox;
+	var check_centerCamera:FlxUICheckBox;
 	var check_changeBPM:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
 	var check_altAnim:FlxUICheckBox;
@@ -936,6 +938,9 @@ class ChartingState extends ScriptMusicBeatState
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Is player section", 100);
 		check_mustHitSection.name = 'check_mustHit';
 		check_mustHitSection.checked = true;
+		check_centerCamera = new FlxUICheckBox(120, 30, null, null, "Center Camera", 100);
+		check_centerCamera.name = 'check_centerCamera';
+		check_centerCamera.checked = false;
 		// _song.needsVoices = check_mustHit.checked;
 
 		check_altAnim = new FlxUICheckBox(10, 300, null, null, "Alt Animations", 100);
@@ -951,6 +956,7 @@ class ChartingState extends ScriptMusicBeatState
 		tab_group_section.add(stepperLengthLabel);uiMap['stepperLengthLabel'] = stepperLengthLabel;
 		tab_group_section.add(stepperSectionBPM);uiMap['stepperSectionBPM'] = stepperSectionBPM;
 		tab_group_section.add(check_mustHitSection);uiMap['check_mustHitSection'] = check_mustHitSection;
+		tab_group_section.add(check_centerCamera);uiMap['check_centerCamera'] = check_centerCamera;
 		tab_group_section.add(mirrorSection);uiMap['mirrorSection'] = mirrorSection;
 		tab_group_section.add(check_altAnim);uiMap['check_altAnim'] = check_altAnim;
 		tab_group_section.add(check_changeBPM);uiMap['check_changeBPM'] = check_changeBPM;
@@ -1111,6 +1117,8 @@ class ChartingState extends ScriptMusicBeatState
 			{
 				case 'Is player section':
 					_song.notes[curSection].mustHitSection = check.checked;
+				case 'Center Camera':
+					_song.notes[curSection].centerCamera = check.checked;
 				case 'Change BPM':
 					_song.notes[curSection].changeBPM = check.checked;
 					FlxG.log.add('changed bpm shit');
@@ -1961,6 +1969,7 @@ class ChartingState extends ScriptMusicBeatState
 				sectionNotes:[],
 				lengthInSteps:16,
 				mustHitSection:false,
+				centerCamera:false,
 				bpm:_song.notes[curSection].bpm,
 				typeOfSection:0,
 				changeBPM:false,
@@ -2017,6 +2026,7 @@ class ChartingState extends ScriptMusicBeatState
 
 		stepperLength.value = sec.lengthInSteps;
 		check_mustHitSection.checked = sec.mustHitSection;
+		check_centerCamera.checked = sec.centerCamera;
 		check_altAnim.checked = sec.altAnim;
 		check_changeBPM.checked = sec.changeBPM;
 		stepperSectionBPM.value = sec.bpm;

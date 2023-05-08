@@ -111,8 +111,8 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Debounce detection","Enables some simple debounce detection. Forces presses to be missed from one frame to another.","debounce"),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			
-			new HCFloatOption('Scroll Speed',"Change your scroll speed (1 = Chart dependent)","scrollSpeed",0.1,10),
-			new HCFloatOption('Scroll Speed(OSU Chart)',"Change your scroll speed OSU charts","scrollOSUSpeed",0.1,10),
+			new HCFloatOption('Scroll Speed',"Change your scroll speed (1 = Chart dependent)","scrollSpeed",0.1,10,0.1),
+			new HCFloatOption('Scroll Speed(OSU Chart)',"Change your scroll speed OSU charts","scrollOSUSpeed",0.1,10,0.1),
 		
 			new HCBoolOption("Accurate Note Sustain","Whether note sustains/holds are more accurate. If off then they act like early kade","accurateNoteSustain"),
 			new HCBoolOption("Shitty Misses","Whether you'll get a miss from getting a shit","shittyMiss"),
@@ -173,7 +173,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Show Opponent", "Toggle whether the opponent is loaded or not",'dadShow'),
 			new HCBoolOption("Show GF", "Toggle whether gf is loaded or not",'gfShow'),
 			new HCBoolOption("Show Player", "Toggle whether the player is loaded or not",'bfShow'),
-			new HCBoolOption("Makes the loading screen use threads and show loading progress but is buggy","Threaded loading screen","doCoolLoading"),
+			new HCBoolOption("Threaded loading screen","Makes the loading screen use threads and show loading progress but is buggy","doCoolLoading"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
 		],"Toggle visibility of certain gameplay aspects"),
 		new OptionCategory("Auditory", [

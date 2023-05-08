@@ -37,8 +37,8 @@ class Credits extends SearchMenuState
 * KadeDeveloper - Maintainer and lead programmer
 "], ["Modding Plus" , "Several improvements and the original base for HScript
 
-* BulbyVR-Gamer) - Owner/Programmer
-* DJ Popsicle/1780306) - Co-Owner/Additional Programmer
+* BulbyVR-Gamer - Owner/Programmer
+* DJ Popsicle - Co-Owner/Additional Programmer
 * Matheus L/Mlops, AndreDoodles, riko, Raf, ElBartSinsoJaJa, and plum - Artist & Animation
 * ThePinkPhantom/JuliettePink - Portrait Artist
 * Alex Director - Icon Fixer

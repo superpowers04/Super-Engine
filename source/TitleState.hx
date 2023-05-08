@@ -670,6 +670,8 @@ class TitleState extends MusicBeatState
 
 			
 			#if android
+
+				FlxG.android.preventDefaultKeys = [BACK];
 				// trace(lime.system.System.applicationStorageDirectory);
 				// var reason = 0;
 				// if(!FileSystem.exists(lime.system.System.applicationStorageDirectory + '/path.txt')){
@@ -704,28 +706,29 @@ class TitleState extends MusicBeatState
 						}
 					}
 				}
+				SELoader.PATH = '${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/';
 				Sys.setCwd('${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/');
-				if(!FileSystem.exists('mods')){
+				if(!SELoader.exists('mods')){
 					try{
 						var _dir = lime.system.System.applicationStorageDirectory;
 						function recurse(directory:String){
 							directory = directory.replace('//','/');
-							FileSystem.createDirectory(directory);
+							SELoader.createDirectory(directory);
 							for(file in FileSystem.readDirectory(_dir + "/" + directory)){
 								android.widget.Toast.makeText('Copying $file',5);
 								file = "/" + directory + "/" + file;
 								file = file.replace('//','/');
 								if(FileSystem.isDirectory(_dir + file)){ recurse(file); continue;}
-								sys.io.File.copy(_dir + file,file);
+								SELoader.importFile(_dir + file,file);
 							}
 						}
 						trace('Copying files from $_dir');
 						for(file in FileSystem.readDirectory(_dir)){
 							trace('Copying $file');
-							FileSystem.createDirectory(file);
+							SELoader.createDirectory(file);
 							if(FileSystem.isDirectory(_dir + file)){ recurse(file); continue;}
-							sys.io.File.copy(_dir + file,file);
 							android.widget.Toast.makeText('Copying $file',5);
+							SELoader.importFile(_dir + file,file);
 
 						}
 
@@ -735,9 +738,8 @@ class TitleState extends MusicBeatState
 
 					}
 				}
-				SELoader.PATH = '${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/';
 				android.widget.Toast.makeText('Your mods and stuff will be located at "Superpowers04/SuperEngine"',5);
-								// Moved the init to here since settings aren't accessable yet
+				// Moved the init to here since settings aren't accessable yet
 				KadeEngineData.initSave();
 				Highscore.load();
 				checkCharacters();

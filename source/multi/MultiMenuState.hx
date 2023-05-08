@@ -477,8 +477,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 
 	override function select(sel:Int = 0){
-			selSong(sel,false);
-
+		selSong(sel,false);
 	}	
 
 	var curPlaying = "";
@@ -523,8 +522,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
 			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.50 && grpSongs.members[curSelected].y < FlxG.height * 0.56) ){changeSelection(1);}
 			extraKeys();
-			if (controls.ACCEPT && songs.length > 0)
-			{
+			if (controls.ACCEPT && songs.length > 0){
 				select(curSelected);
 			}
 	}

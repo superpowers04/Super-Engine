@@ -167,6 +167,7 @@ class FinishSubState extends MusicBeatSubstate
 			if(boyfriend.playAnimAvailable(bfAnims,true) && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
 			// if (FlxG.save.data.camMovement){
 			PlayState.instance.followChar(0);
+			PlayState.instance.controlCamera = false;
 			// }
 			forceBFAnim = false;
 		}

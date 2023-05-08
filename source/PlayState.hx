@@ -217,7 +217,9 @@ class PlayState extends ScriptMusicBeatState
 		public static var stepAnimEvents:Map<Int,Map<String,IfStatement>>;
 		public static var inputEngineName:String = "Unspecified";
 		public static var scripts:Array<String> = [];
-		public static var stageObjects:Array<Dynamic<FlxObject>> = [];
+		public var stageObjects:Array<Dynamic<FlxObject>> = [];
+		public var objects:Map<String,FlxObject> = [];
+		public var eventNoteStore:Map<String,Dynamic> = [];
 		// public static var stages:Array<FlxSpriteGroup> = [];
 		public static var customDiff = "";
 
@@ -1849,7 +1851,15 @@ class PlayState extends ScriptMusicBeatState
 
 			}
 		}
-		if(player == 1){add(grpNoteSplashes);}
+		if(player == 1){
+			add(grpNoteSplashes);
+			#if !mobile
+			if(inputMode == 1){
+				FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, SEIKeyPress);
+				FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
+			}
+			#end
+		}
 		#if android
 		if(FlxG.save.data.useTouch && !FlxG.save.data.useStrumsAsButtons && player == 0){
 			var _width = Std.int((FlxG.width / 4) - 1);
@@ -2083,8 +2093,10 @@ class PlayState extends ScriptMusicBeatState
 				+'\nScript Count:${interpCount}'
 				+'\nChartType: ${SONG.chartType}';
 		}
-		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, elapsed * 0.7);
-		camHUD.zoom = FlxMath.lerp(defaultCamHUDZoom, camHUD.zoom,  elapsed * 0.7);
+		if(controlCamera){
+			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, elapsed * 0.3);
+			camHUD.zoom = FlxMath.lerp(defaultCamHUDZoom, camHUD.zoom,  elapsed * 0.7);
+		}
 		
 
 
@@ -2573,8 +2585,6 @@ class PlayState extends ScriptMusicBeatState
 				doKeyShit = SEKeyShit;
 				goodNoteHit = kadeBRGoodNote;
 				SEIRegisterKeys();
-				FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, SEIKeyPress);
-				FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
 
 			#end
 			default:
@@ -2885,7 +2895,6 @@ class PlayState extends ScriptMusicBeatState
 		boyfriend.holdTimer = 0;
 		var hitArray = [false,false,false,false];
 		if(holdArray.contains(true)){
-			
 			boyfriend.isPressingNote = true;
 			var daNote = null;
 			var i = notes.members.length;
@@ -2984,7 +2993,7 @@ class PlayState extends ScriptMusicBeatState
 		while(i < notes.members.length){
 			daNote = notes.members[i];
 			i++;
-			if(daNote == null || !daNote.mustPress || !daNote.canBeHit) continue;
+			if(daNote == null || !daNote.mustPress || !daNote.canBeHit || daNote.shouldntBeHit || !daNote.aiShouldPress) continue;
 			
 			if(daNote.strumTime <= Conductor.songPosition){boyfriend.holdTimer = 0;pressArray[daNote.noteData] = true;goodNoteHit(daNote);continue;}
 			if(!daNote.isSustainNote) continue;
@@ -3364,18 +3373,16 @@ class PlayState extends ScriptMusicBeatState
 		{
 			curSection = Std.int(curStep / 16);
 			var sect = SONG.notes[curSection];
-			if (sect.changeBPM && !Math.isNaN(sect.bpm))
-			{
+			if (sect.changeBPM && !Math.isNaN(sect.bpm)){
 				Conductor.changeBPM(sect.bpm);
 			}
-			if (sect.scrollSpeed != null && !Math.isNaN(sect.scrollSpeed))
-			{
+			if (sect.scrollSpeed != null && !Math.isNaN(sect.scrollSpeed)){
 				SONG.speed = sect.scrollSpeed;
 			}
 
 			PlayState.canUseAlts = sect.altAnim;
 			if(controlCamera){
-				var locked = (!FlxG.save.data.camMovement || camLocked || (notes.members[0] == null && unspawnNotes[0] == null || (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition > 4000)) );
+				var locked = (sect.centerCamera || !FlxG.save.data.camMovement || camLocked || (notes.members[0] == null && unspawnNotes[0] == null || (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition > 4000)) );
 				followChar((sect.mustHitSection ? 0 : 1),locked);
 			}
 		}

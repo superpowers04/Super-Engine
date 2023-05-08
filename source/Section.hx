@@ -1,12 +1,12 @@
 package;
  
-typedef SwagSection =
-{
+typedef SwagSection ={
 	var sectionNotes:Array<Dynamic>;
 	var ?lengthInMS:Float; // ms better than steps, only used for restructuring a chart
 	var ?lengthInSteps:Int;
 	var typeOfSection:Int;
 	var mustHitSection:Bool;
+	var ?centerCamera:Bool;
 	var ?scrollSpeed:Float;
 	var bpm:Float;
 	var changeBPM:Bool;

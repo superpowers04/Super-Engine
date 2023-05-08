@@ -683,18 +683,26 @@ class ConsoleUtils{
 	public static function getValueFromPath(object:Dynamic,path:String = "",returnErrors:Bool = true):Dynamic{
 		var splitPath:Array<String> = path.split('.');
 
+
 		if(path == "" || splitPath[0] == null){
 			throw 'Path is empty!';
 			return null;
 		}
 		if(object == null){
 			var obj:String = splitPath.shift();
+			if(obj.indexOf('[') > -1){
+				var _obj = obj.split('[');
+				obj = _obj[0];
+				splitPath.unshift('this'+ _obj[1].substr(0,-1));
+			}
 			if(obj == "state"){
 				object = cast FlxG.state;
 			}else{
-
 				object = Reflect.field((cast FlxG.state),obj);
 				if(object == null) object = Type.resolveClass(obj);
+				if(object == null) object = Reflect.field(PlayState,obj);
+				if(object == null) object = Reflect.getProperty(PlayState,obj);
+				if(object == null && PlayState.instance != null) object = PlayState.instance.objects[obj];
 				if(object == null){
 					throw 'Unable to find top-level object ${obj} from path ${path}';
 					return null;
@@ -704,7 +712,31 @@ class ConsoleUtils{
 		var currentPath:String = "";
 		while(splitPath.length > 0){
 			currentPath = splitPath.shift();
-			object = Reflect.field(object,currentPath);
+			var subPath:String = "";
+			if(currentPath.indexOf('[') > -1){
+				var _obj = currentPath.split('[');
+				currentPath = _obj[0];
+				subPath = _obj[1].substr(0,-1);
+			}
+			if(currentPath != "this") object = Reflect.field(object,currentPath);
+			if(object != null && subPath != ""){
+				if(object is Array){
+					object = object.get(Std.parseInt(subPath));
+				}else if(subPath.indexOf(':') != -1){
+					var _subPath = subPath.split(':');
+					switch(_subPath[0]){
+						case 'f':
+							object = object.get(Std.parseFloat(_subPath[1]));
+						case 'i':
+							object = object.get(Std.parseInt(_subPath[1]));
+						default:
+							object = object.get(_subPath[1]);
+					}
+
+				}else{
+					object = object.get(subPath);
+				}
+			}
 			if(object == null){
 				throw 'Unable to find object from path ${path}(On ${currentPath})';
 				return null;
@@ -718,10 +750,6 @@ class ConsoleUtils{
 	public static function setValueFromPath(path:String = "",value:Dynamic){
 		var splitPath:Array<String> = path.split('.');
 		var obj:Dynamic = null;
-		if(splitPath[0] == "state"){
-			splitPath.shift();
-			obj = cast FlxG.state;
-		}
 		if(splitPath.length > 1) obj = getValueFromPath(obj,path.substring(0,path.lastIndexOf('.')),false);
 		if(obj is String) return obj;
 		if(obj == null) throw('Object "${path}" is null!');

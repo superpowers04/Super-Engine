@@ -198,7 +198,7 @@ class Judgement extends Option
 	override function getValue():String {
 		return "Safe Frames: " + Conductor.safeFrames +
 		" TOTAL:" + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms" +
-		" | KADE RATINGS: SICK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
+		" | SICK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
 		"ms, GOOD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
 		"ms, BAD: " + HelperFunctions.truncateFloat(125 * Conductor.timeScale, 0) + 
 		"ms, SHIT: " + HelperFunctions.truncateFloat(156 * Conductor.timeScale, 0) +
@@ -829,6 +829,7 @@ class HCIntOption extends Option{
 		this.name = name;
 		this.id = id;
 		super();
+		acceptValues = true;
 		description = desc;
 
 	}
@@ -857,7 +858,7 @@ class HCFloatOption extends Option{
 	var name:String;
 	var max:Float = 0;
 	var min:Float = 0;
-	var inc:Float = 0;
+	var inc:Float = 0.1;
 
 	public function new(name:String,desc:String,id:String,?min:Float = 0,?max:Float = 1,?inc:Float = 0.1){
 		this.max = max;
@@ -867,6 +868,7 @@ class HCFloatOption extends Option{
 		this.name = name;
 		this.id = id;
 		super();
+		acceptValues = true;
 		description = desc;
 
 	}
@@ -874,20 +876,20 @@ class HCFloatOption extends Option{
 		return '${Reflect.getProperty(FlxG.save.data,id)}';
 	}
 	public override function left():Bool{
-		var inc = inc;
-		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) inc *= 0.01;
-		else if(FlxG.keys.pressed.SHIFT) inc *= 10;
-		else if(FlxG.keys.pressed.CONTROL) inc *= 0.1;
-		Reflect.setProperty(FlxG.save.data,id,Math.max(Reflect.getProperty(FlxG.save.data,id) - inc,min));
+		var ince = inc;
+		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) ince *= 0.01;
+		else if(FlxG.keys.pressed.SHIFT) ince *= 10;
+		else if(FlxG.keys.pressed.CONTROL) ince *= 0.1;
+		Reflect.setProperty(FlxG.save.data,id,Math.max(cast (Reflect.getProperty(FlxG.save.data,id),Float) - ince,min));
 		display = updateDisplay();
 		return true;
 	}
 	public override function right():Bool{
-		var inc = inc;
-		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) inc *= 0.01;
-		else if(FlxG.keys.pressed.SHIFT) inc *= 10;
-		else if(FlxG.keys.pressed.CONTROL) inc *= 0.1;
-		Reflect.setProperty(FlxG.save.data,id,Math.max(Reflect.getProperty(FlxG.save.data,id) + inc,max));
+		var ince = inc;
+		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) ince *= 0.01;
+		else if(FlxG.keys.pressed.SHIFT) ince *= 10;
+		else if(FlxG.keys.pressed.CONTROL) ince *= 0.1;
+		Reflect.setProperty(FlxG.save.data,id,Math.min(cast (Reflect.getProperty(FlxG.save.data,id),Float) + ince,max));
 		display = updateDisplay();
 		return true;
 	}
