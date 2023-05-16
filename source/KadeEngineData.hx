@@ -181,7 +181,7 @@ class KadeEngineData
 		#if discord_rpc
 		if(FlxG.save.data.discordDRP == null) FlxG.save.data.discordDRP = true;
 		#end
-		if(FlxG.save.data.doCoolLoading == null) FlxG.save.data.doCoolLoading = true;
+		if(FlxG.save.data.doCoolLoading == null) FlxG.save.data.doCoolLoading = false;
 		if(FlxG.save.data.fullscreen == null) FlxG.save.data.fullscreen = false;
 
 

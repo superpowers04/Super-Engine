@@ -97,6 +97,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 		public var brtools:Map<String,HSBrTools> = new Map();
 		public var cancelCurrentFunction:Bool = false;
 		public var useNormalCallbacks:Bool = false;
+
 		public var ignoreScripts:Array<String> = [
 			"state",
 			"options"
@@ -342,9 +343,13 @@ class ScriptMusicBeatState extends MusicBeatState{
 			for (i in ignoreScripts) {
 				if(scriptPath.contains(i)) return;
 			}
+			var reg = ~/([^\/]*)\/([^\/]*)$/;
 			var path = scriptPath.substr(0,scriptPath.lastIndexOf("/"));
-			var scriptName = scriptPath.substr(scriptPath.lastIndexOf("/"));
-			var parentDir = path.substr(0,path.lastIndexOf("/"));
+			reg.match(scriptPath);
+			var scriptName = reg.matched(1);
+			var parentDir = reg.matched(2);
+			// var scriptName = scriptPath.substr(scriptPath.lastIndexOf("/"));
+			// var parentDir = path.substr(0,path.lastIndexOf("/"));
 			parentDir = parentDir.substr(parentDir.lastIndexOf("/"));
 
 			#if linc_luajit
@@ -355,6 +360,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 			
 		}
 		var scriptSubDirectory:String = ""; 
+		public var scriptPaths = [];
 		public function loadScript(v:String,?path:String = "mods/scripts/",?nameSpace:String="global",?brtool:HSBrTools = null){
 			if(!parseMoreInterps) return;
 			var _path = '${path}${v}${scriptSubDirectory}';
@@ -390,7 +396,20 @@ class ScriptMusicBeatState extends MusicBeatState{
 					var v = FlxG.save.data.scripts[i];
 					LoadingScreen.loadingText = 'Loading scripts: $v';
 					var _v = v.substr(v.lastIndexOf('/'));
-					if(v.lastIndexOf('/') > v.length - 2){
+					if(_v.lastIndexOf('/') > _v.length - 2){
+						_v = v.substring(0,v.lastIndexOf('/') - 1);
+						_v = _v.substring(_v.lastIndexOf('/'));
+					}
+					loadScript(v,null,'USER/' + _v);
+				}
+				if(!parseMoreInterps) return;
+				if(scriptPaths.length < 1) return;
+				for (i in 0 ... scriptPaths.length) {
+					if(!parseMoreInterps) break;
+					var v = scriptPaths[i];
+					LoadingScreen.loadingText = 'Loading scripts: $v';
+					var _v = v.substr(v.lastIndexOf('/'));
+					if(_v.lastIndexOf('/') > _v.length - 2){
 						_v = v.substring(0,v.lastIndexOf('/') - 1);
 						_v = _v.substring(_v.lastIndexOf('/'));
 					}

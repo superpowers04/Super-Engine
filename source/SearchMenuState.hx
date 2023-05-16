@@ -302,7 +302,7 @@ class SearchMenuState extends ScriptMusicBeatState
 	var curTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
-		if(FlxG.save.data.beatBouncing && grpSongs != null && grpSongs.members[curSelected] != null && grpSongs.members[curSelected].useAlphabet){
+		if(FlxG.save.data.beatBouncing && grpSongs != null && grpSongs.members[curSelected] != null){
 			
 			grpSongs.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();

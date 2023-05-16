@@ -1,4 +1,4 @@
-// package;
+package;
 
 import flixel.addons.effects.FlxSkewedSprite;
 import flixel.FlxG;
@@ -16,7 +16,6 @@ import sys.io.File;
 import sys.FileSystem;
 import flash.display.BitmapData;
 import NoteAssets;
-
 import PlayState;
 
 using StringTools; 
@@ -429,6 +428,13 @@ class Note extends FlxSkewedSprite
 			if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
 		}
 	}
+	override function destroy(){
+		if(PlayState.instance != null){
+			callInterp('noteDestroy',[this]);
+			if(PlayState.instance.cancelCurrentFunction) return;
+		}
+		super.destroy();
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -451,15 +457,17 @@ class Note extends FlxSkewedSprite
 				if (!skipNote || y < 780 && y > -60 && x < 1340 && x > -60){ // doesn't calculate anything until they're on screen
 					visible = (!eventNote && showNote);
 					skipNote = false;
-					if(eventNote){
-						if (strumTime <= Conductor.songPosition){
-							callInterp("eventNoteHit",[this]);
-							this.hit(1,this);
-							this.destroy();
-						}
-						return;
-					}
-					else if (mustPress && !eventNote)
+					// if(eventNote){
+					// 	if (strumTime <= Conductor.songPosition){
+					// 		callInterp("eventNoteHit",[this]);
+					// 		this.hit(1,this);
+					// 		if(PlayState.instance.cancelCurrentFunction) return;
+					// 		this.destroy();
+					// 	}
+					// 	return;
+					// }
+					// else 
+					if (mustPress && !eventNote)
 					{
 						// ass
 						if (shouldntBeHit)
@@ -486,6 +494,7 @@ class Note extends FlxSkewedSprite
 								}
 								// FlxTween.tween(this,{alpha:0},0.2,{onComplete:(_)->{
 								PlayState.instance.notes.remove(this, true);
+
 								destroy();
 								// }});
 							}

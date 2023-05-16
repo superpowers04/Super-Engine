@@ -159,6 +159,7 @@ class AnimationDebug extends MusicBeatState
 			ending2 = "png";
 		}
 		if(validFile == "")return;
+		if(!FlxG.save.data.animDebug) {throw "You need to enable Content Creation Mode to work on characters!";return;}
 		var name = file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
 		FlxG.state.openSubState(new QuickNameSubState(function(name:String,file:String,validFile:String,ending1:String,ending2:String){
 			var _file = file.substr(file.lastIndexOf("/") + 1);
@@ -295,7 +296,12 @@ class AnimationDebug extends MusicBeatState
 			offsetTopText.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 			animTxt.cameras = [camHUD];
 			add(animTxt);
-
+			var switchModesButton = new FlxUIButton(20,680,"Switch modes",function(){
+				openSubState(new AnimSwitchMode());
+			});
+			switchModesButton.resize(120,20);
+			switchModesButton.cameras = [camHUD];
+			add(switchModesButton);
 			camFollow = new FlxObject(0, 0, 2, 2);
 			camFollow.screenCenter();
 			camFollow.setPosition(720, 500); 
@@ -941,21 +947,7 @@ class AnimationDebug extends MusicBeatState
 		uiBox.add(uiMap["looptxt"] = new FlxText(10, 130,0,"Loop start frame"));
 		uiMap["loopStart"] = new FlxUINumericStepper(140, 130, 1, 0,0);
 		uiBox.add(uiMap["loopStart"]);
-		// var animTxt = new FlxText(30, 60,0,"Animation FPS");
-		// uiMap["FPStxt"] = animTxt;
-		// var animFPS = new FlxUIInputText(30, 80, null, "24");
-		// animFPS.filterMode = 2;
-		// uiMap["FPS"] = animFPS;
-		// uiBox.add(animFPS);
-		// uiBox.add(animTxt);
-		// // var animTxt = new FlxText(140, 130,0,"XML Name");
-		// // uiBox.add(animTxt);
-		// var animTxt = new FlxText(30, 100,0,"Loop Start Frame");
-		// uiMap["lstxt"] = animTxt;
-		// uiBox.add(animTxt);
-		// uiMap["loopStart"] = new FlxUIInputText(30, 120, null, "0");
-		// uiMap["loopStart"].filterMode = 2;
-		// uiBox.add(animFPS);
+
 		uiMap["commitButton"] = new FlxUIButton(20,160,"Add animation",function(){
 			try{
 
@@ -1190,13 +1182,8 @@ class AnimationDebug extends MusicBeatState
 			openSubState(new AnimSwitchMode());
 		});
 		commitButton.resize(120,20);
-		uiBox2.add(commitButton);
-		var commitButton = new FlxUIButton(20,680,"Switch modes",function(){
-			openSubState(new AnimSwitchMode());
-		});
-		commitButton.resize(120,20);
-		commitButton.cameras = [camHUD];
-		add(uiMap["commit"] = commitButton);
+		uiBox2.add(uiMap["switchModes"] = commitButton);
+
 
 		if(dad.charType == 0){
 
@@ -1722,7 +1709,7 @@ class AnimSwitchMode extends MusicBeatSubstate
 	var settings:Array<AnimSetting> = [];
 	var curSelected:Int = 0;
 	var infotext:FlxText;
-
+	var toptext:FlxText;
 
 	function reloadList():Void{
 		grpMenuShit.clear();
@@ -1780,7 +1767,7 @@ class AnimSwitchMode extends MusicBeatSubstate
 		infotext.wordWrap = true;
 		infotext.scrollFactor.set();
 		infotext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		var toptext = new FlxText(5, 40, FlxG.width - 100, "Switch mode", 16);
+		toptext = new FlxText(5, 40, FlxG.width - 100, "< Switch mode", 16);
 		toptext.scrollFactor.set();
 		toptext.setFormat(CoolUtil.font, 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		toptext.screenCenter(X);
@@ -1808,13 +1795,16 @@ class AnimSwitchMode extends MusicBeatSubstate
 		var rightP = controls.RIGHT_P;
 		var accepted = controls.ACCEPT;
 		var oldOffset:Float = 0;
-
-		if (upP)
-		{
+		if(FlxG.mouse.justReleased){
+			settings[curSelected].value();
+			close();
+		}
+		if(FlxG.mouse.wheel != 0){
+			changeSelection(FlxG.mouse.wheel);
+		}
+		if (upP){
 			changeSelection(-1);
-   
-		}else if (downP)
-		{
+		}else if (downP){
 			changeSelection(1);
 		}
 		

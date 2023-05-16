@@ -1,23 +1,36 @@
 package;
 
-// import tjson.Json;
+import tjson.Json;
 
 // class CharacterJson {
 // 	@:publicFields
-// 	var asset_files:Array<CharacterAssetFiles>; // Might deprecate this, idk
+// 	var asset_files:Array<CharacterAssetFiles> = []; // Might deprecate this, idk
 // 	var sideInfo:Array<CharSideInfo> = []; // Info about sides
+// 	var embedded:Bool = false;
+// 	var path:String = "";
 // 	var animations:Array<CharJsonAnimation> = [];
 // 	var customProperties:Array<CCProp> = []; // Allows the json file to edit any value about the character
 // 	var genBy:String = "Unknown";
-// 	var formatVersion:Float = 0; // Version of the format being used
+// 	var formatVersion:Float = 1; // Version of the format being used
 
 // 	static public function import(json:String){
-// 		var charJson = new CharacterJson;
+// 		var charJson = new CharacterJson();
 // 		var jsonImport:Dynamic = Json.decode(json);
 // 		if(jsonImport.formatVersion == null){
+// 			var jsonImport = cast (jsonImport,CharacterJsonOld);
 
+// 		}else{
+// 			charJson = charJson.fromJSON(jsonImport);
 // 		}
+// 		return charJson;
 // 	} 
+// 	public function fromJSON(json:Dynamic){
+
+// 	}
+
+// 	public function new(){
+
+// 	}
 
 // }
 
@@ -55,8 +68,8 @@ typedef CharacterJson =
 	var flip:Dynamic; // Controls if the character should be flipped when on the player's side
 	var offset_flip:Dynamic; // Flips the offsets on the left, 0/not specififed = off completely, 1 = use player2, 2 = flip left, 3 = flip right  
 	var asset_files:Array<CharacterAssetFiles>;
-	var clone:String;
-	var like:String; // Clone but without stealing the offsets
+	var ?clone:String;
+	var ?like:String; // Clone but without stealing the offsets
 	var voices:String;
 	var animations:Array<CharJsonAnimation>;
 	var animations_offsets:Array<CharJsonAnimOffsets>;
@@ -64,7 +77,7 @@ typedef CharacterJson =
 	var scale:Float;
 	var no_antialiasing:Bool;
 	// var dance_idle:Bool;
-	var common_stage_offset:Array<Float>;
+	var ?common_stage_offset:Array<Float>;
 	var cam_pos:Array<Float>;
 	var char_pos:Array<Float>;
 	var cam_pos1:Array<Float>;
@@ -85,6 +98,7 @@ typedef CharacterJson =
 	var ?boneChar:BoneChar;
 	var ?customProperties:Array<CCProp>; // Allows the json file to edit any value about the character
 	var ?scriptOptions:Map<String,Dynamic>; // Allows characters to tell scripts to use custom settings
+	var ?seVersionIdentifier:Null<Int>;
 
 
 	var healthIcon:String; // Psych character identification

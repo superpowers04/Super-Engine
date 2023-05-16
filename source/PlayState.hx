@@ -410,10 +410,12 @@ class PlayState extends ScriptMusicBeatState
 	public function handleError(?error:String = "",?forced:Bool = false){
 		try{
 			if(currentInterp.args[0] == this) currentInterp.args.shift();
+
 			if(error == "") error = 'No error passed!\nInterp info: ${currentInterp}';
 			if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
-			resetInterps();
 			trace('Error!\n ${error}');
+			if(currentInterp.isActive) trace('Current Interpeter: ${currentInterp}');
+			resetInterps();
 			parseMoreInterps = false;
 			if(!songStarted && !forced && playCountdown){
 				if(errorMsg == "") errorMsg = error; 
@@ -1233,7 +1235,7 @@ class PlayState extends ScriptMusicBeatState
 			generateStaticArrows(0);
 			generateStaticArrows(1);
 		}
-		if (!playCountdown){
+		if (!playCountdown || cancelCurrentFunction){
 			playerStrums.visible = cpuStrums.visible = false;
 			playCountdown = true;
 			return;
@@ -1961,7 +1963,7 @@ class PlayState extends ScriptMusicBeatState
 	public var songLengthTxt = "N/A";
 
 	public var lastFrameTime:Float = 0;
-	var currentSpeed:Float = 1;
+	public var currentSpeed:Float = 1;
 	override public function update(elapsed:Float)
 	{
 		#if !debug

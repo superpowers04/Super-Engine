@@ -156,14 +156,19 @@ class Alphabet extends FlxSpriteGroup
 		if(sprite == null || Frames == null){
 			if(sprite == null) sprite = new FlxSprite();
 			trace('Loading alphabet sprites');
-			if(SELoader.exists("mods/alphabet.png") && SELoader.exists("mods/alphabet.xml")){
-				try{
-					Frames = SELoader.loadSparrowFrames('mods/alphabet');
-				}catch(e){
+			if(FlxG.save.data.useFontEverywhere){
+				Frames =  new flixel.graphics.frames.FlxFramesCollection(FlxGraphic.fromRectangle(1,1,0x01000000,false,"blank.mp4"));
+			}else{
+
+				if(SELoader.exists("mods/alphabet.png") && SELoader.exists("mods/alphabet.xml")){
+					try{
+						Frames = SELoader.loadSparrowFrames('mods/alphabet');
+					}catch(e){
+						Frames = Paths.getSparrowAtlas('alphabet');
+					}
+				}else{
 					Frames = Paths.getSparrowAtlas('alphabet');
 				}
-			}else{
-				Frames = Paths.getSparrowAtlas('alphabet');
 			}
 		}
 		this.text = text;
@@ -245,9 +250,10 @@ class Alphabet extends FlxSpriteGroup
 			}
 
 			// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
-			var letter:AlphaCharacter = new AlphaCharacter(xPos, 0,removeDashes,forceFlxText);
+			var letter:AlphaCharacter = new AlphaCharacter(xPos, 0,removeDashes);
 			listOAlphabets.add(letter);
-			if (isBold) letter.createBold(character.toUpperCase());
+			if (!useAlphabet) letter.useFLXTEXT((if(isBold) character.toUpperCase() else character),isBold)
+			else if (isBold) letter.createBold(character.toUpperCase());
 			else letter.createLetter(character);
 			add(letter);
 			lastSprite = letter;
@@ -353,8 +359,7 @@ class AlphaCharacter extends FlxSprite
 	public function new(x:Float, y:Float,?allowDashes:Bool = false,?forcedFlxText:Bool = false)
 	{
 		super(x, y);
-		var tex = Alphabet.Frames;
-		frames = tex;
+		frames = Alphabet.Frames;
 		showDashes = allowDashes;
 		forceFlxText = forcedFlxText;
 
@@ -366,7 +371,7 @@ class AlphaCharacter extends FlxSprite
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		// animation.play(letter);
 
-		if(animation.exists(letter) && !forceFlxText){
+		if(animation.exists(letter)){
 			animation.play(letter);
 			updateHitbox();
 		}else{

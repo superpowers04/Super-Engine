@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import PlayState;
+import Overlay.ConsoleUtils;
 
 using StringTools; 
 
@@ -26,6 +27,9 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 	public static function applyEvent(note:Dynamic){
 
 		var rawNote:Array<Dynamic> = note.rawNote;
+		for(index => value in rawNote){
+			if(value is String){rawNote[index] = (cast(value,String)).trim();}
+		}
 		if(rawNote[2] == "eventNote") rawNote.remove(2);
 		note.callInterp("eventNoteCheckType",[note,rawNote]);
 		var info:Array<Dynamic> = [];
@@ -215,6 +219,49 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 				}; 
 
 			}
+			case "setvalue",'set': {
+				try{
+					info = [rawNote[3],rawNote[4]]; // path,value,time
+				}catch(e){info = [0,0];}
+				// Replaces hit func
+				hit = function(?charID:Int = 0,note){
+					try{
+						if(info[1].startsWith("$")){
+							info[1] = PlayState.instance.eventNoteStore[info[1].substring(1)];
+						}
+						ConsoleUtils.setValueFromPath(info[0],info[1]);
+					}catch(e){
+						MusicBeatState.instance.errorHandle('Unable to set value ${info[0]} to ${info[1]} ${e.message}');
+					}
+				}; 
+			}
+			case "get": {
+				try{
+					info = [rawNote[3],rawNote[4]]; // path,variableName
+				}catch(e){info = [0,0];}
+				// Replaces hit func
+				hit = function(?charID:Int = 0,note){
+
+					PlayState.instance.eventNoteStore[info[1]] = ConsoleUtils.getValueFromPath(info[0]);
+
+				}; 
+			}
+
+			// }
+			// case "tweenfloat",'tweenf': {
+			// 	try{
+			// 		info = [rawNote[3],Std.parseFloat(rawNote[4]),Std.parseFloat(rawNote[5])]; // path,value,time
+			// 		if(Math.isNaN(info[1])) info[0] = 0;
+			// 		if(Math.isNaN(info[2])) info[1] = 0.1;
+			// 	}catch(e){info = [0,0];}
+			// 	// Replaces hit func
+			// 	hit = function(?charID:Int = 0,note){
+			// 		var path =info[0];
+
+			// 		FlxTween.tween(ConsoleUtils.getValueFromPath(path.substr(0,path.lastIndexOf('.')-1),{'${path.substr(path.lastIndexOf('.')+1)}':info[1]},info[2]);
+			// 	}; 
+
+			// }
 			case "changescrollspeed": {
 				try{
 					info = [Std.parseFloat(rawNote[4])]; 

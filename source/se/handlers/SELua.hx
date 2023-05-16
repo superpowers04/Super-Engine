@@ -9,6 +9,7 @@ import flixel.FlxG;
 
 using StringTools;
 
+
 class SELua{
 	public var state:State;
 	public var code:String = "";
@@ -18,6 +19,7 @@ class SELua{
 	public var peCompat:PsychLuaCompat;
 	public var BRTools:HSBrTools;
 	public static var currentInstance:SELua;
+	public var psychCompatMode:Bool = false; // Disables SE function calls and uses Psych ones instead.
 
 	public function new(?str:String = "",?doExec:Bool = true){
 		code = str;
@@ -30,34 +32,32 @@ class SELua{
 		if(!doExec) return;
 		currentInstance = this;
 		exec();
+		if(variables.getBool('psychCompat')){
+			psychCompatMode = true;
+			// peCompat.adaptCallbacks();
+		}
 	}
 	public function exec(?code:String = ""){
 		currentInstance = this;
-		if(code == "")code = this.code;
-		// Lua.getglobal(state, 'dostring');
-		// Lua.pushstring(state, code);
-		// trace(returnStack());
-		// var exitCode:Dynamic = LuaL.dostring(state, code);
-		// var status:Int = LuaL.loadstring(state, code);
-		// if(status != 0){
-		// 	var e = fromLuaError(status);
-		// 	trace(e);
-		// 	throw e;
-		// 	return;
-		// }
+		if(code == "") code = this.code;
 		var status:Dynamic = "Unable to init lua!";
-		try{
-
-			status = LuaL.dostring(state, code);
-		}catch(e){
-			trace(e);
-			status = '$e';
-		}
-		if(status != 0){
-			var e = fromLuaError(status);
-			trace(e);
-			throw e;
-			return;
+		variables.set('latestCode',code);
+		variables.set('INTERNALSTATUS',0);
+		LuaL.dostring(state, '
+		succ,err = pcall(function() load(latestCode)() end)
+		if(not succ) then 
+			INTERNALSTATUS = tostring(err)
+		end');
+		Lua.getglobal(state, "INTERNALSTATUS");
+		status = Convert.fromLua(state, -1);
+		Lua.pop(state, 1);
+		checkStatus(status);
+		Lua.gc(state,LUA_TFUNCTION)
+	}
+	function checkStatus(status:Dynamic){
+		if(!(status is Int) || status != 0){
+			trace(status);
+			throw status;
 		}
 	}
 
@@ -145,6 +145,7 @@ class SELua{
 }
 
 class SELuaVaris{
+
 	var parent:SELua;
 	public var strToPointer:haxe.ds.WeakMap<String,Dynamic> = new haxe.ds.WeakMap<String,Dynamic>();
 	public var pointerToStr:haxe.ds.WeakMap<Dynamic,String> = new haxe.ds.WeakMap<Dynamic,String>();
@@ -179,11 +180,12 @@ class SELuaVaris{
 	}
 	public function ptrToObject(ID:String):Dynamic {
 		if(parent.peCompat != null && parent.peCompat.objects[ID] != null) return parent.peCompat.objects[ID];
+		ID = ID.replace(pointerID,'');
 		if(ID == null || ID == "" || ID.substring(0,pointerID.length) != pointerID){
 			throw('INVALID ID: ${ID}');
 			return null;
 		}
-		return strToPointer.get(ID.substring(pointerID.length));
+		return strToPointer.get(ID);
 	}
 	inline function setGlobal(vari){
 		if(vari != "FUNCTIONVAR") Lua.setglobal(parent.state,vari);
@@ -234,10 +236,16 @@ class SELuaVaris{
 		return "unknown";
 	}
 
+
+
 	public function call(func:String, args:Array<Dynamic>) {
 		if(parent.state == null) return;
+		var psychFunc:PsychFunction = null;
 		SELua.currentInstance = parent;
-
+		if(parent.psychCompatMode && (PsychLuaCompat.funcs[func] != null)){
+			psychFunc = PsychLuaCompat.funcs[func];
+			func = psychFunc.name;
+		}
 		Lua.getglobal(parent.state, func);
 		var type:Int = Lua.type(parent.state, -1);
 
@@ -246,6 +254,10 @@ class SELuaVaris{
 			Lua.pop(parent.state, 1);
 			throw("" + func + ": attempt to call a " + typeToString(type) + " value");
 			return;
+		}
+		if(psychFunc != null){
+			if(args[0] is flixel.FlxState) args.shift();
+			if(psychFunc.convertArgs != null) args = psychFunc.convertArgs(args);
 		}
 		var count = 0;
 		for (arg in args)
@@ -262,6 +274,18 @@ class SELuaVaris{
 		if (status != Lua.LUA_OK) throw parent.fromLuaError(status);
 		
 
+	}
+	public function getRaw(variable:String):Dynamic {
+		if(parent.state == null) return null;
+		SELua.currentInstance = parent;
+		var result:String = null;
+		Lua.getglobal(parent.state, variable);
+		var returned = Convert.fromLua(parent.state, -1);
+		if(returned != null){
+			Lua.pop(parent.state, 1);
+		}
+
+		return returned;
 	}
 	public function get(variable:String):Dynamic {
 		if(parent.state == null) return null;
@@ -301,7 +325,7 @@ class SELuaHelperMethods{
 	public function new(par:SELua){
 		parent = par;
 		parent.set('getField',getField);
-		parent.set('string.getField',getField);
+		// parent.set('string.getField',getField);
 		parent.set('getFields',getFields);
 		parent.set('getFieldsTbl',getFieldsTbl);
 		parent.set('setField',setField);
@@ -378,19 +402,68 @@ class SELuaHelperMethods{
 	}
 }
 
+@:structInit @:publicFields class PsychFunction{
+	var name:String;
+	var convertArgs:Array<Dynamic>->Array<Dynamic> = null;
+}
+
 class PsychLuaCompat{
 	var parent:SELua;
+	public static var funcs:Map<String,PsychFunction> = [
+		'initScript' => {name:"onCreate"},
+		'startCountdownFirst' => {name:"onCreatePost"},
+		'startCountdown' => {name:"onStartCountdown"},
+		'miss' => {name:"noteMissPress"},
+		'noteMiss' => {name:"noteMiss",convertArgs:function(args){
+			var note = args[0];
+			return [PlayState.instance.notes.members.indexOf(note),note.noteData,note.type,note.isSustainNote];
+		}},
+		'noteCreate' => {name:"onNoteCreate",convertArgs:function(args){
+			var note = args[0];
+			return [PlayState.instance.notes.members.indexOf(note),args[1],note.type,note.isSustainNote];
+		}},
+		'noteHit' => {name:"goodNoteHit",convertArgs:function(args){
+			var note = args[0];
+			return [PlayState.instance.notes.members.indexOf(note),args[1],note.type,note.isSustainNote];
+		}},
+		'noteHitDad' => {name:"opponentNoteHit",convertArgs:function(args){
+			var note = args[0];
+			return [PlayState.instance.notes.members.indexOf(note),args[1],note.type,note.isSustainNote];
+		}},
+		'eventNoteHit' => {name:"onEvent",convertArgs:function(args){
+			var note = args[0];
+			return [note.noteType,note.rawNote[3],note.rawNote[4]];
+		}},
+		'keyPress' => {name:"onKeyPress"},
+		'keyRelease' => {name:"onKeyRelease"},
+		'stepHit' => {name:"onStepHit"},
+		'beatHit' => {name:"onBeatHit"},
+		'startSong' => {name:"onSongStart"},
+	];
 	public var objects:Map<String,Dynamic> = [];
-	public function luaCompat(vari:Dynamic):Dynamic{
+	public static function luaCompat(vari:Dynamic):Dynamic{
 		if((vari is String) || (vari is Int) || (vari is Float) || (vari is Array)  
 			|| (vari is haxe.ds.StringMap) || (vari is haxe.ds.IntMap) || (vari is haxe.ds.EnumValueMap) || (vari is haxe.ds.ObjectMap)){
 			return vari;
 		}
 		return null;
 	}
-	
+	// public function adaptCallbacks(){
+	// 	parent.exec("
+	// 	function psychCall(func) return function(_,...) func(...) end
+	// 	if(onCreate) then initScript = psychCall(onCreate) end
+	// 	if(onCreatePost) then startCountdownFirst = psychCall(onCreatePost) end
+	// 	if(onUpdate) then update = psychCall(onUpdate) end
+	// 	if(onUpdatePost) then updateAfter = psychCall(onUpdatePost) end
+	// 	if(onEvent) then eventNoteHit = function(_,note) 
+	// 		local note = getProperty(note .. '.rawNote');
+	// 		onEvent(note[2],note[3],note[4])
+	// 	end
+	// 	");
+	// }
 	public function new(par:SELua){
 		parent = par;
+		parent.set('psychCompat',false);
 		parent.set('callObjectFunction',function(path:String,func:String,Args:Array<Dynamic>){
 			var obj = getValueFromPath(null,path);
 			if(obj == null) {throw '$path is not a valid object!';return;}
@@ -433,6 +506,18 @@ class PsychLuaCompat{
 		parent.set('getPropertyFromClass',getPropertyFromClass);
 		parent.set('setPropertyFromClass',setPropertyFromClass);
 		parent.set('debugPrint',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
+		parent.set('getGlobalValue',getGlobalValue);
+		parent.set('setGlobalValue',setGlobalValue);
+		parent.exec('setmetatable(_G,{
+			__index = function(this,key)
+				return rawget(this,key) or getGlobalValue(key)
+			end,
+
+		})');
+		/*			__newindex = function(this,key,value)
+				if(setGlobalValue(key,value)) then return end
+				rawset(this,key,value)
+			end*/
 
 	}
 	public function getValueFromPath(object:Dynamic,path:String):Dynamic{
@@ -453,7 +538,7 @@ class PsychLuaCompat{
 				object = cast FlxG.state;
 			}else{
 
-				object = Reflect.field((cast FlxG.state),obj);
+				object = Reflect.field(FlxG.state,obj);
 				if(object == null) object = parent.variables.ptrToObject(obj);
 				if(object == null) object = Type.resolveClass(obj);
 				if(object == null) object = Reflect.field(PlayState,obj);
@@ -548,6 +633,45 @@ class PsychLuaCompat{
 		obj = obj.members[index];
 		if(obj == null) return;
 		setValueFromPath(path,value,obj);
+	}
+	public function getGlobalValue(vari:String):Dynamic{
+		switch(vari){
+			/*Music related*/
+			case "curStep": return MusicBeatState.instance.curStep;
+			case "curBeat": return MusicBeatState.instance.curBeat;
+			case "curDecStep": return MusicBeatState.instance.curStepProgress;
+			case "curDecBeat": return MusicBeatState.instance.curStepProgress * 0.25;
+			case "curBPM" | "curBpm": return Conductor.bpm;
+			case "bpm": return PlayState.SONG.bpm;
+			case "crochet": return Conductor.crochet;
+			case "stepCrochet": return Conductor.stepCrochet;
+			case "songLength": return FlxG.sound.music.length;
+			case "songName": return PlayState.SONG.song;
+			case "scrollSpeed": return flixel.math.FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? PlayState.SONG.speed : FlxG.save.data.scrollSpeed, 2);
+			case 'songPath': return onlinemod.OfflinePlayState.chartFile.substr(0,onlinemod.OfflinePlayState.chartFile.lastIndexOf('/'));
+
+			/* Environment shit */
+			case "curStage": return PlayState.curStage;
+			case "cameraX": return FlxG.camera.scroll.x;
+			case "cameraY": return FlxG.camera.scroll.y;
+			case "screenWidth": return FlxG.width;
+			case "screenHeight": return FlxG.height;
+
+
+
+			/* Score shit */
+			case 'score' | 'songScore': return PlayState.songScore;
+			case 'misses': return PlayState.misses;
+
+
+			/* note related*/
+			case 'unspawnNotesLength': return PlayState.instance.unspawnNotes.length;
+			case 'notesLength': return PlayState.instance.notes.length;
+		}
+		return null;
+	}
+	public function setGlobalValue(path){
+		return false;
 	}
 }
 

@@ -388,7 +388,7 @@ class MainMenuState extends SickMenuState
 						}
 						showTempmessage('Unable to find suitable opener!');
 					#elseif(windows)
-						Sys.command('explorer.exe',[SELoader.fullPath('mods/')]);
+						Sys.command('start',[SELoader.fullPath('mods/')]);
 					#elseif(macos)
 						Sys.command('open',[SELoader.fullPath('mods/')]);
 					#end
