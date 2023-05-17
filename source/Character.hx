@@ -1051,8 +1051,13 @@ class CharAnimController extends FlxAnimationController{
 			Frame = animation.getByName(AnimName).frames.length * Frame;
 		}
 		callInterp("playAnimBefore",[AnimName]);
+		if (!forceNextAnim && skipNextAnim){
+			skipNextAnim = false;
+			return false;
+		}
 		forceNextAnim = false;
 		animation.play(AnimName, Force, Reversed, Std.int(Frame));
+		try{frame = frames.frames[animation.curAnim.frames[Std.int(Frame)]];}catch(e){}
 		AnimName = animName;
 		currentAnimationPriority = (if (animationPriorities[AnimName] != null) animationPriorities[AnimName] else 1);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){
