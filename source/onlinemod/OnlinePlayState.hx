@@ -10,8 +10,9 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxAxes;
 import flixel.FlxSubState;
 import flixel.tweens.FlxTween;
-import flixel.sound.FlxSound;
-import openfl.media.Sound;
+import flixel.tweens.FlxEase;
+import flixel.system.FlxSound;
+import flash.media.Sound;
 import onlinemod.Packets;
 
 import Section.SwagSection;
@@ -29,6 +30,9 @@ class OnlinePlayState extends PlayState
 	var clientTexts:Map<Int, Int> = [];
 	var clientsGroup:FlxTypedGroup<FlxText>;
 
+	var CoolLeaderBoard:Array<Array<Dynamic>>;
+	var scoreY:Float;
+
 	var clientCount:Int = 1;
 
 	var waitingBg:FlxSprite;
@@ -39,14 +43,11 @@ class OnlinePlayState extends PlayState
 	var loadedInst:Sound;
 
 	var ready:Bool = false;
+	var waitMusic:FlxSound;
 
 	var inPause:Bool = false;
 
 	var originalSafeFrames:Int = FlxG.save.data.frames;
-	var p2Int:Int = 0;
-	var p1Int:Int = 0;
-	var p2presses:Array<Bool> = [false,false,false,false,false,false,false,false]; // 0 = not pressed, 1 = pressed, 2 = hold, 3 = miss
-	var p1presses:Array<Bool> = [false, false, false, false];
 
 	public function new(customSong:Bool, voices:FlxSound, inst:Sound)
 	{
@@ -93,13 +94,37 @@ class OnlinePlayState extends PlayState
 					count++;
 					if(count > 1){break;}
 				}
-				PlayState.dadShow = (count == 1);
+				// PlayState.dadShow = (count == 1);
 		}
 
 		super.create();
 		clientScores = [];
 		clientText = [];
 		clientsGroup = new FlxTypedGroup<FlxText>();
+		CoolLeaderBoard = [];
+
+		CoolLeaderBoard.push([]);
+		var Box1 = new FlxSprite().makeGraphic(275, 50, 0x7FFF7F00); // #FF7F00
+		Box1.screenCenter(Y);
+		scoreY = Box1.y;
+		CoolLeaderBoard[0].push(Box1);
+		Box1.cameras = [camHUD];
+		add(Box1);
+		var Box2 = new FlxSprite().makeGraphic(150, 50, 0x7FFFFF00); // #FFFF00
+		CoolLeaderBoard[0].push(Box2);
+		Box2.cameras = [camHUD];
+		add(Box2);
+		var nametext = new FlxText(Box2.x + 10, Box2.y + 12.5, OnlineNickState.nickname,16);
+		nametext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		CoolLeaderBoard[0].push(nametext);
+		nametext.cameras = [camHUD];
+		add(nametext);
+		var scoretext = new FlxText(Box2.x + Box2.width + 10, Box2.y + 5, '0\nn/a%  0x',16);
+		scoretext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		CoolLeaderBoard[0].push(scoretext);
+		scoretext.cameras = [camHUD];
+		add(scoretext);
+		clientsGroup.add(scoretext);
 
 		// Add the score UI for other players
 		for (i in clients.keys())
@@ -107,45 +132,69 @@ class OnlinePlayState extends PlayState
 			clientScores[i] = 0;
 			clientCount++;
 
-			var scoreY:Float;
-			if (FlxG.save.data.downscroll)
-				scoreY = 10 + 28*(clientsGroup.length);
-			else
-				scoreY = healthBarBG.y + 30 - 28*(clientsGroup.length + 1);
-
-			var text = new FlxText(20, scoreY, '${OnlineLobbyState.clients[i]}: 0');
-			text.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			text.scrollFactor.set(0, 0);
+			CoolLeaderBoard.push([]);
+			var Box1 = new FlxSprite().makeGraphic(275, 50, 0x7F0000FF); // #0000FF
+			Box1.screenCenter(Y);
+			CoolLeaderBoard[CoolLeaderBoard.length - 1].push(Box1);
+			Box1.cameras = [camHUD];
+			add(Box1);
+			var Box2 = new FlxSprite().makeGraphic(150, 50, 0x7F007FFF); // #007FFF
+			CoolLeaderBoard[CoolLeaderBoard.length - 1].push(Box2);
+			Box2.cameras = [camHUD];
+			add(Box2);
+			var nametext = new FlxText(Box2.x + 10, Box2.y + 12.5, OnlineLobbyState.clients[i],16);
+			nametext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			CoolLeaderBoard[CoolLeaderBoard.length - 1].push(nametext);
+			nametext.cameras = [camHUD];
+			add(nametext);
+			var scoretext = new FlxText(Box2.x + Box2.width + 10, Box2.y + 5, '0\nn/a%  0x',16);
+			scoretext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			CoolLeaderBoard[CoolLeaderBoard.length - 1].push(scoretext);
+			scoretext.cameras = [camHUD];
+			add(scoretext);
 			clientTexts[i] = clientsGroup.length;
-			clientsGroup.add(text);
-			text.cameras = [camHUD];
+			clientsGroup.add(scoretext);
 		}
-		add(clientsGroup);
+		scoreY -= scoreY/2;
+		for(i in 0...CoolLeaderBoard.length){
+				// Long Box
+				CoolLeaderBoard[i][0].y = scoreY + (CoolLeaderBoard[i][0].height * i) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5)));
+				CoolLeaderBoard[i][0].x = (!PlayState.invertedChart ? 125 - (Math.abs(0 - i) * 10) : FlxG.width - 625 + (Math.abs(0 - i) * 10));
+				// Name Box
+				CoolLeaderBoard[i][1].y = CoolLeaderBoard[i][0].y;
+				CoolLeaderBoard[i][1].x = CoolLeaderBoard[i][0].x + 10;
+				// Name Text
+				CoolLeaderBoard[i][2].y = CoolLeaderBoard[i][1].y + 5;
+				CoolLeaderBoard[i][2].x = CoolLeaderBoard[i][1].x + 10;
+				// Score Text
+				CoolLeaderBoard[i][3].y = CoolLeaderBoard[i][1].y + 5;
+				CoolLeaderBoard[i][3].x = CoolLeaderBoard[i][1].x + CoolLeaderBoard[i][1].width + 10;
+			}
 
 
 		// Add XieneDev watermark
-		var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.9 + 50, FlxG.width, "SuperEngine-BattleRoyale " + MainMenuState.ver, 16);
+		var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.9 + 50, FlxG.width, 'SuperEngine-BattleRoyale ${MainMenuState.ver}', 16);
 		xieneDevWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		xieneDevWatermark.scrollFactor.set();
-		add(xieneDevWatermark);
 		xieneDevWatermark.cameras = [camHUD];
+		add(xieneDevWatermark);
 
 
 		// The screen with 'Waiting for players (1/4)' stuff
 		waitingBg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		waitingBg.alpha = 0.5;
-		add(waitingBg);
 		waitingBg.cameras = [camHUD];
+		add(waitingBg);
 
-		waitingText = new FlxText(0, 0, 'Waiting for players (?/${clientCount})');
-		waitingText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		waitingText = new FlxText(0, 0, FlxG.width, 'Waiting for players (?/${clientCount})');
+		waitingText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		waitingText.screenCenter(FlxAxes.XY);
-		add(waitingText);
 		waitingText.cameras = [camHUD];
+		add(waitingText);
 
 
 		// Remove healthbar
-		// if (FlxG.save.data.downscroll){scoreTxt.y = 10;}
+		scoreTxt.visible = false;
 		// remove(healthBarBG);
 		// remove(healthBar);
 		// remove(iconP1);
@@ -156,11 +205,14 @@ class OnlinePlayState extends PlayState
 		OnlinePlayMenuState.receiver.HandleData = HandleData;
 		new FlxTimer().start(transIn.duration, (timer:FlxTimer) -> Sender.SendPacket(Packets.GAME_READY, [], OnlinePlayMenuState.socket));
 
-
+		waitMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+		waitMusic.volume = 0;
+		waitMusic.play(false, FlxG.random.int(0, Std.int(waitMusic.length / 2)));
+		FlxG.sound.list.add(waitMusic);
 
 		FlxG.mouse.visible = false;
 		FlxG.autoPause = false;
-	}catch(e){MainMenuState.handleError(e,'Crash in "create" caught: ${e.message}');}}
+	}catch(e){MainMenuState.handleError('Crash in "create" caught: ${e.message}');}}
 
 	override function startCountdown()
 	{
@@ -168,11 +220,16 @@ class OnlinePlayState extends PlayState
 
 			if (!ready)
 				return;
-		FlxG.sound.playMusic(loadedInst, 1, false);
 
 		super.startCountdown();
 			
 		}catch(e){MainMenuState.handleError(e,'Crash in "startCountdown" caught: ${e.message}');}
+	}
+
+	override function startSong(?alrLoaded:Bool = false)
+	{
+		FlxG.sound.playMusic(loadedInst, 1, false);
+		super.startSong(true);
 	}
 
 	override function generateSong(?dataPath:String = "")
@@ -199,123 +256,62 @@ class OnlinePlayState extends PlayState
 				noteData[_note.noteID] = [_note,_note.noteData % 4];
 			}
 		}
-
-
 	}
-
-		// FlxG.sound.list.add(vocals);
-
-		// notes = new FlxTypedGroup<Note>();
-		// add(notes);
-
-		// var noteData:Array<SwagSection>;
-
-		// // NEW SHIT
-		// noteData = songData.notes;
-
-		// var playerCounter:Int = 0;
-
-		// // Per song offset check
-		// var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
-		// for (section in noteData)
-		// {
-		// 	var coolSection:Int = Std.int(section.lengthInSteps / 4);
-
-		// 	for (songNotes in section.sectionNotes)
-		// 	{
-		// 		var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
-		// 		if (daStrumTime < 0)
-		// 			daStrumTime = 0;
-		// 		var daNoteData:Int = songNotes[1];
-
-		// 		var gottaHitNote:Bool = section.mustHitSection;
-
-		// 		if (songNotes[1] > 3)
-		// 		{
-		// 			gottaHitNote = !section.mustHitSection;
-		// 		}
-
-		// 		var oldNote:Note;
-		// 		if (unspawnNotes.length > 0)
-		// 			oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-		// 		else
-		// 			oldNote = null;
-
-
-		// 		var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,null,null,songNotes[3] == 1);
-		// 		swagNote.sustainLength = songNotes[2];
-		// 		swagNote.scrollFactor.set(0, 0);
-
-		// 		var susLength:Float = swagNote.sustainLength;
-
-		// 		susLength = susLength / Conductor.stepCrochet;
-		// 		unspawnNotes.push(swagNote);
-
-		// 		for (susNote in 0...Math.floor(susLength))
-		// 		{
-		// 			oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-
-		// 			var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,null,songNotes[3] == 1);
-		// 			sustainNote.scrollFactor.set();
-		// 			unspawnNotes.push(sustainNote);
-
-		// 			sustainNote.mustPress = gottaHitNote;
-
-		// 			if (sustainNote.mustPress)
-		// 			{
-		// 				sustainNote.x += FlxG.width / 2; // general offset
-		// 			}
-		// 		}
-
-		// 		swagNote.mustPress = gottaHitNote;
-
-		// 		if (swagNote.mustPress)
-		// 		{
-		// 			swagNote.x += FlxG.width / 2; // general offset
-		// 		}
-		// 		else
-		// 		{
-		// 		}
-		// 	}
-		// 	daBeats += 1;
-		// }
-
-		// // trace(unspawnNotes.length);
-		// // playerCounter += 1;
-
-		// unspawnNotes.sort(sortByShit);
-
-		// generatedMusic = true;
-	// }
 
 	override function popUpScore(daNote:Note):Void
 	{
 		super.popUpScore(daNote);
+		clientsGroup.members[0].text = PlayState.songScore + "\n" + HelperFunctions.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
 
 		SendScore();
 	}
 
-	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void
+	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
 	{
 		super.noteMiss(direction, daNote,forced);
+		clientsGroup.members[0].text = PlayState.songScore + "\n" + HelperFunctions.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
 
 		SendScore();
 	}
 
 	override function resyncVocals()
 	{
-		if (inPause) return;
+		if (inPause)
+			return;
 
 		super.resyncVocals();
 	}
 
+	override function beatHit(){
+		super.beatHit();
+		CoolLeaderBoard.sort((a,b) -> Std.int(b[3].text.split(' ')[0]) - Std.int(a[3].text.split(' ')[0]));
+		var WhereME = 1;
+		for(Array in CoolLeaderBoard){
+			if(Array[2].text == OnlineNickState.nickname)
+				break;
+			else
+				WhereME++;
+		}
+		if(CoolLeaderBoard.length > 1){
+			for(i in 0...CoolLeaderBoard.length){
+					var YMove = scoreY + ((CoolLeaderBoard[i][0].height * (i - (WhereME - (CoolLeaderBoard.length * 0.5)))) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5))));
+					var XMove = (!PlayState.invertedChart ? 125 - (Math.abs((WhereME - 1) - i) * 10) : FlxG.width - 625 + (Math.abs((WhereME - 1) - i) * 10));
+					if(YMove - CoolLeaderBoard[i][0].y >= 20 || YMove - CoolLeaderBoard[i][0].y <= -20 || YMove - CoolLeaderBoard[i][1].y >= 20 || YMove - CoolLeaderBoard[i][1].y <= -20){
+						FlxTween.tween(CoolLeaderBoard[i][0],{y: YMove,x: XMove},0.1,{ease: FlxEase.quadInOut});
+						FlxTween.tween(CoolLeaderBoard[i][1],{y: YMove,x: XMove + 10},0.1,{ease: FlxEase.quadInOut});
+						FlxTween.tween(CoolLeaderBoard[i][2],{y: YMove + 12.5,x: XMove + 10},0.1,{ease: FlxEase.quadInOut});
+						FlxTween.tween(CoolLeaderBoard[i][3],{y: YMove + 5,x: XMove + CoolLeaderBoard[i][1].width + 20},0.1,{ease: FlxEase.quadInOut});
+					}
+				}
+			}
+	}
 
 	override function finishSong(?win=true){}
 	override function endSong():Void
 	{
 		clients[-1] = OnlineNickState.nickname;
 		clientScores[-1] = PlayState.songScore;
-		clientText[-1] = "S:" + PlayState.songScore+ " M:" + PlayState.misses+ " A:" + Std.int(PlayState.accuracy);
+		clientText[-1] = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + HelperFunctions.truncateFloat(PlayState.accuracy,2);
 
 		canPause = false;
 		FlxG.sound.playMusic(loadedInst, FlxG.save.data.instVol, true);
@@ -336,59 +332,27 @@ class OnlinePlayState extends PlayState
 			return;
 
 		super.keyShit();
-		// if (PlayState.p2canplay){ // This ifstatement is weird, but tries to help with bandwidth
-		// 	if (lastPressed[0] != p1presses[0] || lastPressed[1] != p1presses[1] || lastPressed[2] != p1presses[2] || lastPressed[3] != p1presses[3]){
-		// 		// Sender.SendPacket(Packets.KEYPRESS, [this.fromBool(controls.LEFT), this.fromBool(controls.DOWN), this.fromBool(controls.UP), this.fromBool(controls.RIGHT)], OnlinePlayMenuState.socket);
-		// 		p1Int = getPresses();
-		// 		Sender.SendPacket(Packets.KEYPRESS, [p1Int], OnlinePlayMenuState.socket);
-		// 		lastPressed = p1presses;
-		// 	}
-		// 	p1presses = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-		// 	// Shitty animation handling
-
-		// 	cpuStrums.forEach(function(spr:FlxSprite)
-		// 	{
-		// 		// if (p2presses[spr.ID]) DadStrumPlayAnim(spr.ID); // Weird but a slight bit more efficient, possibly
-		// 		if (p2presses[spr.ID])
-		// 			spr.animation.play('pressed');
-		// 		else
-		// 			spr.animation.play('static');
-				
-		// 		spr.centerOffsets();
-	 
-		// 		// if (spr.animation.curAnim.name == 'confirm')
-		// 		// {
-		// 		// 	spr.centerOffsets();
-		// 		// 	spr.offset.x -= 13;
-		// 		// 	spr.offset.y -= 13;
-		// 		// }
-		// 		// else
-		// 	});
-		// }
 	}
-// this.fromBool([controls.LEFT_P, controls.LEFT]),
-//           this.fromBool([controls.DOWN_P, controls.DOWN]),
-//           this.fromBool([controls.UP_P, controls.UP]),
-//           this.fromBool([controls.RIGHT_P, controls.RIGHT])
 
-	override public function pause(){
-		var realPaused:Bool = paused;
-		paused = false;
+	override function openSubState(SubState:FlxSubState)
+	{
+		if (Type.getClass(SubState) == PauseSubState)
+		{
+			var realPaused:Bool = paused;
+			paused = false;
 
-		super.openSubState(new OnlinePauseSubState());
+			super.openSubState(new OnlinePauseSubState());
+			inPause = true;
 
+			paused = realPaused;
+			persistentUpdate = true;
+			
+			canPause = false;
 
-		FlxTween.tween(FlxG.sound.music,{volume:(FlxG.save.data.instVol * FlxG.sound.volume) * 0.3},0.5);
-		FlxTween.tween(vocals,{volume:(FlxG.save.data.voicesVol * FlxG.sound.volume) * 0.3},0.5);
-		inPause = true;
+			return;
+		}
 
-		paused = realPaused;
-		persistentUpdate = true;
-		persistentDraw = true;
-		
-		canPause = false;
-		followChar(0);
-		camGame.zoom = 1;
+		super.openSubState(SubState);
 	}
 
 	override function closeSubState()
@@ -398,13 +362,9 @@ class OnlinePlayState extends PlayState
 			canPause = true;
 			inPause = false;
 		}
-		FlxG.sound.music.volume = FlxG.save.data.instVol * FlxG.sound.volume;
-		vocals.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
 
 		super.closeSubState();
 	}
-	
-	function getPresses():Int {return this.fromBool(controls.LEFT) | this.fromBool(controls.DOWN) << 1 | this.fromBool(controls.UP) << 2 | this.fromBool(controls.RIGHT) << 3;}
 
 	public static var handleNextPacket = true;
 	static var noteData:Array<Array<Dynamic>> = []; // Stores notes so they can be hit by other players
@@ -414,6 +374,7 @@ class OnlinePlayState extends PlayState
 	{try{
 		lastPacketID = packetId;
 		lastPacket = data;
+
 		OnlinePlayMenuState.RespondKeepAlive(packetId);
 		callInterp("packetRecieve",[packetId,data]);
 		if(!handleNextPacket){
@@ -432,6 +393,7 @@ class OnlinePlayState extends PlayState
 				startCountdown();
 				FlxTween.tween(waitingBg, {alpha: 0}, 0.5);
 				FlxTween.tween(waitingText, {alpha: 0}, 0.5);
+				FlxTween.tween(waitMusic, {volume: 0}, 0.5);
 
 				FlxG.save.data.frames = safeFrames;
 				Conductor.recalculateTimings();
@@ -439,23 +401,24 @@ class OnlinePlayState extends PlayState
 				var id:Int = data[0];
 				var score:Int = data[1];
 				if(Math.isNaN(id)){
-					trace('Error for Packet BROADCAST_SCORE: Invalid ID(${data[0]}) ');
-					showTempmessage('Error for Packet BROADCAST_SCORE: Invalid ID(${data[0]}) ');
+					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
+					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
 					return;
 				}
 				if(Math.isNaN(score)){
-					trace('Error for Packet BROADCAST_SCORE, ID($id): Invalid Score(${data[1]}) ');
+					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score(${data[1]}) ');
 					return;
 				}
 
 				clientScores[id] = score;
 				clientText[id] = "S:" + score+ " M:n/a A:n/a";
-				clientsGroup.members[clientTexts[id]].text = OnlineLobbyState.clients[id] + ": " + score;
+				clientsGroup.members[clientTexts[id]].text = Std.string(score);
 			case Packets.BROADCAST_CURRENT_INFO:
 				var id:Int = data[0];
 				var score:Int = data[1];
 				var misses:Int = data[2];
 				var accuracy:Float = data[3];
+				if(accuracy > 100) accuracy /= 100;
 				if(Math.isNaN(id)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
 					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
@@ -473,19 +436,38 @@ class OnlinePlayState extends PlayState
 					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Accuracy(${data[3]}) ');
 					return;
 				}
-				if(accuracy > 100) accuracy /= 100;
-				
+
 				clientScores[id] = score;
 				clientText[id] = "S:" + score+ " M:" + misses+ " A:" + accuracy;
-				clientsGroup.members[clientTexts[id]].text = OnlineLobbyState.clients[id] + " Score:" + score+ " Misses:" + misses+ " Accuracy:" + accuracy;
+				clientsGroup.members[clientTexts[id]].text = score + "\n" + accuracy + "%  " + misses;
 
 			case Packets.PLAYER_LEFT:
 				var id:Int = data[0];
 				var nickname:String = OnlineLobbyState.clients[id];
 
-				clientsGroup.members[clientTexts[id]].setFormat(CoolUtil.font,24, FlxColor.RED);
-				clientsGroup.members[clientTexts[id]].setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-				if(clientScores[id] == null) clientsGroup.members[clientTexts[id]].text = '$nickname: left';
+				clientsGroup.members[clientTexts[id]].setFormat(CoolUtil.font, 16, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				if(clientScores[id] == null) clientsGroup.members[clientTexts[id]].text = 'left';
+				for(Array in CoolLeaderBoard){
+					if(Array[3] == clientsGroup.members[clientTexts[id]]){
+						var Box1 = new FlxSprite().makeGraphic(275, 50, 0x7FBF0000); // #BF0000
+						Box1.y = FlxG.height - Box1.height;
+						Box1.cameras = [camHUD];
+						Box1.setPosition(Array[0].x,Array[0].y);
+						add(Box1);
+						var Box2 = new FlxSprite().makeGraphic(150, 50, 0x7FFF0000); // #FF0000
+						Box2.cameras = [camHUD];
+						Box2.setPosition(Array[1].x,Array[1].y);
+						add(Box2);
+						remove(Array[0]); Array[0].destroy();
+						remove(Array[1]); Array[1].destroy();
+						Array[0] = Box1;
+						Array[1] = Box2;
+						Array[2].setFormat(CoolUtil.font, 16, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+						remove(Array[2]); add(Array[2]);
+						remove(Array[3]); add(Array[3]);
+						break;
+					}
+				}
 
 				OnlineLobbyState.removePlayer(id);
 				Chat.PLAYER_LEAVE(nickname);
@@ -507,13 +489,6 @@ class OnlinePlayState extends PlayState
 						if(data[2] != null && data[2] != 0) charID = data[2];
 						// trace('packet lmao ${data}');
 
-						for (i => note in notes.members){ // Really bad but makes sure there aren't any random ass notes pressed
-							if(!note.mustPress && note.noteID == data[0] && Conductor.songPosition - note.strumTime > 1000){
-								note.kill();
-								notes.remove(note, true);
-								note.destroy();
-							}
-						}
 						if(data[0] == -1 && data[1] != null && data[1] != 0 ){
 							PlayState.charAnim(1,Note.noteAnims[Std.int(data[1] - 1)],true);
 						}else{
@@ -564,7 +539,6 @@ class OnlinePlayState extends PlayState
 								}
 							}
 						}
-						
 					}catch(e){
 						showTempmessage('Error with KEYPRESS: $data',FlxColor.RED);
 						// Reset animations
@@ -572,36 +546,39 @@ class OnlinePlayState extends PlayState
 						PlayState.dad.dance(true);
 						trace('Error with KEYPRESS: $data ${e.message}');
 					}
-
-					// // PlayState.p2presses = [this.fromInt(data[0]), this.fromInt(data[1]), this.fromInt(data[2]), this.fromInt(data[3])];
-					// 	p2Int = data[0];
-					// 	p2presses = [((data[0] >> 0) & 1 == 1),((data[0] >> 1) & 1 == 1),((data[0] >> 2) & 1 == 1),((data[0] >> 3) & 1 == 1) // Holds
-					// 	];
-
-					// } 
 				}
 			case Packets.BROADCAST_NEW_PLAYER:
 				var id:Int = data[0];
 				var nickname:String = data[1];
 
-				// OnlineLobbyState.addPlayerUI(id, nickname);
 				OnlineLobbyState.addPlayer(id, nickname);
 				Chat.PLAYER_JOIN(nickname);
 				clientCount++;
-				var i:Int = id;
 
-				var scoreY:Float;
-				if (FlxG.save.data.downscroll)
-					scoreY = 10 + 28*(clientsGroup.length);
-				else
-					scoreY = healthBarBG.y + 30 - 28*(clientsGroup.length + 1);
-
-				var text = new FlxText(20, scoreY, '${nickname}: In lobby');
-				text.setFormat(CoolUtil.font, 24, FlxColor.YELLOW, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-				text.scrollFactor.set(0, 0);
-				clientTexts[i] = clientsGroup.length;
-				clientsGroup.add(text);
-				text.cameras = [camHUD];
+				CoolLeaderBoard.push([]);
+				var Box1 = new FlxSprite().makeGraphic(275, 50, 0x7F7F7F7F); // #7F7F7F
+				Box1.y = FlxG.height - Box1.height;
+				CoolLeaderBoard[CoolLeaderBoard.length - 1].push(Box1);
+				Box1.cameras = [camHUD];
+				add(Box1);
+				var Box2 = new FlxSprite().makeGraphic(150, 50, 0x7FBFBFBF); // #BFBFBF
+				CoolLeaderBoard[CoolLeaderBoard.length - 1].push(Box2);
+				Box2.cameras = [camHUD];
+				Box2.x += 10;
+				Box2.y = Box1.y;
+				add(Box2);
+				var nametext = new FlxText(Box2.x + 10, Box2.y + 12.5, '${nickname}',16);
+				nametext.setFormat(CoolUtil.font, 16, FlxColor.YELLOW, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				CoolLeaderBoard[CoolLeaderBoard.length - 1].push(nametext);
+				nametext.cameras = [camHUD];
+				add(nametext);
+				var scoretext = new FlxText(Box2.x + Box2.width + 10, Box2.y + 5, 'In lobby',16);
+				scoretext.setFormat(CoolUtil.font, 16, FlxColor.YELLOW, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				CoolLeaderBoard[CoolLeaderBoard.length - 1].push(scoretext);
+				scoretext.cameras = [camHUD];
+				add(scoretext);
+				clientTexts[id] = clientsGroup.length;
+				clientsGroup.add(scoretext);
 			case Packets.DISCONNECT:
 				FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
 
@@ -628,9 +605,10 @@ class OnlinePlayState extends PlayState
 
 	function SendScore()
 	{
-		if (TitleState.supported){
+		if (TitleState.supported)
 			Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Math.ceil(PlayState.accuracy * 100)], OnlinePlayMenuState.socket);
-		}else{Sender.SendPacket(Packets.SEND_SCORE, [PlayState.songScore], OnlinePlayMenuState.socket);}
+		else
+			Sender.SendPacket(Packets.SEND_SCORE, [PlayState.songScore], OnlinePlayMenuState.socket);
 
 	}
 
@@ -638,12 +616,15 @@ class OnlinePlayState extends PlayState
 	{
 		super.update(elapsed);
 
-		health = 1;
+		// health = 1; // if you already have practiceMode on why even set the health
 
 		if (!ready)
 		{
 			Conductor.songPosition = -5000;
 			Conductor.lastSongPos = -5000;
+			songTime = 0;
+			if (waitMusic.volume < 0.75)
+				waitMusic.volume += 0.01 * elapsed;
 		}
 		if(FlxG.save.data.animDebug){
 			Overlay.debugVar += '\nClient count:${clientCount}'
@@ -655,13 +636,6 @@ class OnlinePlayState extends PlayState
 	{
 		// This function is called when the State changes. For example, when exiting via the pause menu.
 		FlxG.sound.music.onComplete = null;
-		/*if (FlxG.sound.music != null)
-			FlxG.sound.music.pause();
-		if (vocals != null)
-		{
-			vocals.volume = 0;
-			vocals.pause();
-		}*/
 
 		FlxG.save.data.frames = originalSafeFrames;
 		Conductor.recalculateTimings();
