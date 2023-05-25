@@ -266,9 +266,9 @@ class OnlinePlayState extends PlayState
 		SendScore();
 	}
 
-	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false):Void
+	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void
 	{
-		super.noteMiss(direction, daNote,forced);
+		super.noteMiss(direction, daNote,forced,calcStats);
 		clientsGroup.members[0].text = PlayState.songScore + "\n" + HelperFunctions.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
 
 		SendScore();
@@ -622,7 +622,6 @@ class OnlinePlayState extends PlayState
 		{
 			Conductor.songPosition = -5000;
 			Conductor.lastSongPos = -5000;
-			songTime = 0;
 			if (waitMusic.volume < 0.75)
 				waitMusic.volume += 0.01 * elapsed;
 		}
