@@ -33,6 +33,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
   override function create()
   {
 	dataDir = TitleState.osuBeatmapLoc;
+	scriptSubDirectory = '/osumenu/';
 	super.create();
 	bg.color = 0x006E006E;
 	diffText = new FlxText(FlxG.width * 0.7, 5, 0, "", 24);

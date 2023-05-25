@@ -77,6 +77,7 @@ class CharSelection extends SearchMenuState
 
 	override function create()
 	{try{
+		scriptSubDirectory = "/charselect/";
 		switch (Options.PlayerOption.playerEdit){
 			case 0:
 				curChar = FlxG.save.data.playerChar;
@@ -104,6 +105,7 @@ class CharSelection extends SearchMenuState
 		}
 
 		super.create();
+		loadScripts();
 		infoTextBorder.makeGraphic(500,720,FlxColor.BLACK);
 		infoTextBorder.setPosition(1280 - infoTextBorder.width,140);
 		infotext.fieldWidth = infoTextBorder.width - 20;

@@ -52,7 +52,7 @@ class SELua{
 		status = Convert.fromLua(state, -1);
 		Lua.pop(state, 1);
 		checkStatus(status);
-		Lua.gc(state,LUA_TFUNCTION)
+		Lua.gc(state,Lua.LUA_GCCOLLECT,0);
 	}
 	function checkStatus(status:Dynamic){
 		if(!(status is Int) || status != 0){
@@ -324,18 +324,17 @@ class SELuaHelperMethods{
 	var parent:SELua;
 	public function new(par:SELua){
 		parent = par;
-		parent.set('getField',getField);
-		// parent.set('string.getField',getField);
-		parent.set('getFields',getFields);
-		parent.set('getFieldsTbl',getFieldsTbl);
-		parent.set('setField',setField);
-		parent.set('toLuaTbl',toLuaTbl);
-		parent.set('getClass',getClass);
-		parent.set('getClass',getClass);
-		parent.set('getType',getType);
-		parent.set('printObject', printObject);
+		// parent.set('getField',getField);
+		// parent.set('getFields',getFields);
+		// parent.set('getFieldsTbl',getFieldsTbl);
+		// parent.set('setField',setField);
+		// parent.set('toLuaTbl',toLuaTbl);
+		// parent.set('getClass',getClass);
+		// parent.set('getType',getType);
+		// parent.set('printObject', printObject);
 		parent.set('trace',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
 	}
+	#if false
 	public function getField(ID:String,vari:String):Dynamic{
 		var obj = parent.variables.ptrToObject(ID);
 		if(obj == null) return null;
@@ -400,6 +399,7 @@ class SELuaHelperMethods{
 		}
 		return map;
 	}
+	#end
 }
 
 @:structInit @:publicFields class PsychFunction{
@@ -508,7 +508,7 @@ class PsychLuaCompat{
 		parent.set('debugPrint',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
 		parent.set('getGlobalValue',getGlobalValue);
 		parent.set('setGlobalValue',setGlobalValue);
-		parent.exec('setmetatable(_G,{
+		LuaL.dostring(parent.state,'setmetatable(_G,{
 			__index = function(this,key)
 				return rawget(this,key) or getGlobalValue(key)
 			end,
@@ -572,9 +572,10 @@ class PsychLuaCompat{
 		var splitPath:Array<String> = path.split('.');
 		if(splitPath[0] == "state"){
 			splitPath.shift();
-			obj = cast FlxG.state;
+			obj = FlxG.state;
 		}
-		if(splitPath.length > 1) obj = getValueFromPath(obj,path.substring(0,path.lastIndexOf('.')));
+		var lastPath = splitPath.pop();
+		if(splitPath.length > 0) obj = getValueFromPath(obj,splitPath.join('.')); else obj = FlxG.state;
 		if(obj is String || obj is Int || obj is Float) throw('Object "${path}" is null!'); return;
 		if(obj == null) throw('Object "${path}" is null!'); return;
 		var type = 0;
@@ -587,7 +588,6 @@ class PsychLuaCompat{
 				type = 1;
 			}
 		}
-		var lastPath = splitPath.pop();
 		var field = Reflect.field(obj,lastPath);
 		if(field != null){
 			if((value is String) && value.substring(0,SELuaVaris.pointerID.length) == SELuaVaris.pointerID){

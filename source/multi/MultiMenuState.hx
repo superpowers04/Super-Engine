@@ -9,14 +9,17 @@ import flixel.util.FlxStringUtil;
 import flixel.addons.ui.FlxUIButton;
 import openfl.media.Sound;
 import flixel.math.FlxMath;
+
 import Song;
 import sys.io.File;
 import sys.FileSystem;
 import tjson.Json;
 import flixel.sound.FlxSound;
 import Discord.DiscordClient;
+import flixel.ui.FlxBar;
 
 import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 using StringTools;
 
@@ -40,6 +43,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var score:Int = 0;
 	var interpScore:Int = 0;
 	var shouldVoicesPlay:Bool = false;
+
+
+	var songProgress:FlxBar = new FlxBar();
+	var songProgressParent:Alphabet;
+	var songProgressText:FlxText = new FlxText(0,0,"00:00/00:00. Playing voices",12);
 	override function draw(){
 		if(shouldDraw){
 			super.draw();
@@ -74,7 +82,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 		retAfter = false;
 		SearchMenuState.doReset = true;
-		scriptSubDirectory = "/multilist/";
+		if(scriptSubDirectory == "") scriptSubDirectory = "/multilist/";
 		dataDir = "mods/charts/";
 		PlayState.scripts = [];
 		bgColor = 0x00661E;
@@ -88,6 +96,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		scoreText.borderSize = 2;
 		scoreText.screenCenter(X);
 		add(scoreText);
+		songProgress.height = 18;
+		songProgress.width = 180;
+		songProgress.createFilledBar(0xff000000,0xffffaaff,true,0xff000000);
 
 
 		searchField.text = lastSearch;
@@ -521,6 +532,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
 			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
 			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.50 && grpSongs.members[curSelected].y < FlxG.height * 0.56) ){changeSelection(1);}
+			handleScroll();
 			extraKeys();
 			if (controls.ACCEPT && songs.length > 0){
 				select(curSelected);
@@ -571,7 +583,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			sys.thread.Thread.create(() -> {
 			#end
 				if(curPlaying != songs[curSelected]){
+					if(songProgressParent != null){
+						try{
+							songProgressParent.remove(songProgress);
+							songProgressParent.remove(songProgressText);
+						}catch(e){}
+					}
 					FlxG.sound.music.fadeOut(0.4);
+
 					curPlaying = songs[curSelected];
 					if(voices != null){
 						voices.stop();
@@ -580,12 +599,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					voices = null;
 					try{
 						FlxG.sound.playMusic(SELoader.loadSound('${songs[curSelected]}/Inst.ogg'),FlxG.save.data.instVol,true);
-					}
-					catch(e){
+					}catch(e){
 
 						showTempmessage('Unable to play instrumental! ${e.message}',FlxColor.RED);
 					}
 					if (FlxG.sound.music.playing){
+
 						if(modes[curSelected][selMode] != "No charts for this song!" && SELoader.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
 							try{
 
@@ -598,6 +617,25 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							}
 							FlxG.sound.music.pause();
 						}
+						try{
+							songProgressParent = grpSongs.members[curSelected];
+							songProgressParent.add(songProgress);
+							songProgressParent.add(songProgressText);
+							songProgress.revive();
+							songProgressText.revive();
+							songProgress.setParent(FlxG.sound.music,'time');
+							songProgress.setRange(0,FlxG.sound.music.length);
+							try{FlxTween.cancelTweensOf(songProgress);}catch(e){}
+							try{FlxTween.cancelTweensOf(songProgressText);}catch(e){}
+							songProgressText.alpha = songProgress.alpha = 0;
+							songProgressText.y = songProgress.y = 0;
+							songProgressText.x = (songProgress.x = songProgressParent.x + 20) ;
+							songProgressText.y = (songProgress.y = songProgressParent.y + 60) - 5;
+							FlxTween.tween(songProgress,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
+							FlxTween.tween(songProgressText,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
+							FlxTween.tween(songProgressText,{x:songProgress.x + songProgress.width + 10},0.7,{ease:FlxEase.expoOut});
+							songProgressText.text = "Playing Inst";
+						}catch(e){}
 
 						#if discord_rpc
 							if(listeningTime == 0)listeningTime = Date.now().getTime();
@@ -619,14 +657,20 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 								voices.looped = true;
 								voices.play(FlxG.sound.music.time);
 								FlxG.sound.list.add(voices);
+								songProgressText.text = "Playing Inst and Voices";
+							}else{
+								songProgressText.text = "Playing Inst. No Voices available";
 							}
 						}else{
 							if(!voices.playing){
+								songProgressText.text = "Playing Inst and Voices";
 								voices.play(FlxG.sound.music.time);
 								voices.volume = FlxG.save.data.voicesVol;
 								voices.looped = true;
-							}else
+							}else{
+								songProgressText.text = "Playing Inst";
 								voices.stop();
+							}
 						}
 						shouldVoicesPlay = (voices != null && voices.playing);
 					}catch(e){

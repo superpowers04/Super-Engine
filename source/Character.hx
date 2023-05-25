@@ -139,23 +139,9 @@ class CharAnimController extends FlxAnimationController{
 			"singDOWNmiss" => 10,
 			"singUPmiss" => 10,
 			"singRIGHTmiss" => 10,
-			// Copy of the above but lower case because it's funny and I'm dumb
-			"singleft-alt" => 10,
-			"singdown-alt" => 10,
-			"singup-alt" => 10,
-			"singright-alt" => 10,
-			"singleft" => 10,
-			"singdown" => 10,
-			"singup" => 10,
-			"singright" => 10,
-			"singleftmiss" => 15,
-			"singdownmiss" => 15,
-			"singupmiss" => 15,
-			"singrightmiss" => 15,
 
 			"idle" => 0,
 			"idle-alt" => 0,
-			"Idle" => 0,// Can never remember if it's idle or Idle
 			"danceRight" => 0,
 			"danceLeft" => 0,
 			"danceright" => 0,
@@ -1057,7 +1043,6 @@ class CharAnimController extends FlxAnimationController{
 		}
 		forceNextAnim = false;
 		animation.play(AnimName, Force, Reversed, Std.int(Frame));
-		try{frame = frames.frames[animation.curAnim.frames[Std.int(Frame)]];}catch(e){}
 		AnimName = animName;
 		currentAnimationPriority = (if (animationPriorities[AnimName] != null) animationPriorities[AnimName] else 1);
 		if ((debugMode || amPreview) || animation.curAnim != null && AnimName != lastAnim){

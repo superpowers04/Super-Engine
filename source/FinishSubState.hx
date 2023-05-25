@@ -513,6 +513,7 @@ class FinishSubState extends MusicBeatSubstate
 				OptionsMenu.lastState = PlayState.stateType + 10;
 				FlxG.switchState(new OptionsMenu());
 			}
+			if(PlayState.instance != null)PlayState.instance.testanimdebug();
 		}else if (!shownResults){
 			if(FlxG.keys.justPressed.ANY){
 				PlayState.boyfriend.animation.finishCallback = null;

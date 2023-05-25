@@ -270,8 +270,8 @@ class MainMenuState extends SickMenuState
 	#if(android) inline static #end var otherMenu:Bool = false;
 	#if !mobile
 	function otherSwitch(){
-		options = ["deprecated freeplay","download charts","download characters","import charts from mods"];
-		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine",'Convert charts from other mods to work here. Will put them in Modded Songs'];
+		options = ["deprecated freeplay","download charts","download characters","import charts from mods","changelog", 'credits'];
+		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine",'Convert charts from other mods to work here. Will put them in Modded Songs',"Read the latest changes for the engine","Check out the awesome people who helped with this engine in some way"];
 		
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
@@ -291,7 +291,7 @@ class MainMenuState extends SickMenuState
 		#if android
 			//Damn, talk about a huge difference from 9 options down to 3
 			options = ['modded songs',"scripted states","credits",'options'];
-			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state","Check out the awesome people who helped with this engine in some way",'Customise your experience to fit you'];
+			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state",'Customise your experience to fit you'];
 			if(ChartingState.charting){
 				options.unshift('open unfinished chart');
 				descriptions.unshift('Looks like the chart editor closed incorrectly. You can reopen it here');
@@ -301,12 +301,12 @@ class MainMenuState extends SickMenuState
 			#if !ghaction
 				'host br server',
 			#end
-				'online songs',"story mode",'other',"scripted states","changelog", 'credits', 'open mods folder','options'];
+				'online songs',"story mode",'other',"scripted states", 'open mods folder','options'];
 			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.",
 			#if !ghaction
 			'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
 			#end
-			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state","Check the latest update and it's changes","Check out the awesome people who helped with this engine in some way",'Open your mods folder in your File Manager','Customise your experience to fit you'];
+			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state",'Open your mods folder in your File Manager','Customise your experience to fit you'];
 		#end
 		curSelected = 0;
 		#if(!mobile)

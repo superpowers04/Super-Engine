@@ -176,7 +176,7 @@ class FuckState extends FlxUIState
 		txt.screenCenter();
 		add(txt);
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Please take a screenshot and report this, " +(if(FATAL)"P" else "Press enter to attempt to soft-restart the game or")+ "ress Escape to close the game",32);
+			"Please take a screenshot and report this, " +(if(FATAL)"P" else "Press enter to attempt to return to the main menu or")+ "ress Escape to close the game",32);
 		
 		txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
 		txt.borderColor = FlxColor.BLACK;
@@ -199,18 +199,18 @@ class FuckState extends FlxUIState
 	{	
 		try{
 
-		if (FlxG.keys.justPressed.ENTER && !FATAL)
-		{
-			// var _main = Main.instance;
-			LoadingScreen.show();
-			// TitleState.initialized = false;
-			MainMenuState.firstStart = true;
-			FlxG.switchState(new TitleState());
-		}
-		if (FlxG.keys.justPressed.ESCAPE)
-		{
-			Sys.exit(1);
-		}
+			if (FlxG.keys.justPressed.ENTER && !FATAL)
+			{
+				// var _main = Main.instance;
+				LoadingScreen.show();
+				// TitleState.initialized = false;
+				MainMenuState.firstStart = true;
+				FlxG.switchState(new MainMenuState());
+			}
+			if (FlxG.keys.justPressed.ESCAPE)
+			{
+				Sys.exit(1);
+			}
 		}catch(e){}
 		super.update(elapsed);
 	}

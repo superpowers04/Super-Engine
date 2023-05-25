@@ -700,9 +700,11 @@ class ConsoleUtils{
 			}else{
 				object = Reflect.field((cast FlxG.state),obj);
 				if(object == null) object = Type.resolveClass(obj);
+				// if(object == null) object = getStaticObject(object);
+				if(object == null && PlayState.instance != null) object = PlayState.instance.objects[obj];
 				if(object == null) object = Reflect.field(PlayState,obj);
 				if(object == null) object = Reflect.getProperty(PlayState,obj);
-				if(object == null && PlayState.instance != null) object = PlayState.instance.objects[obj];
+
 				if(object == null){
 					throw 'Unable to find top-level object ${obj} from path ${path}';
 					return null;

@@ -130,6 +130,7 @@ class SearchMenuState extends ScriptMusicBeatState
 	}
 	public static var doReset:Bool = true;
 	public var blackBorder:FlxSprite;
+	public var scrollBar:FlxSprite;
 	public var infoTextBorder:FlxSprite;
 	override function create()
 	{try{
@@ -180,6 +181,10 @@ class SearchMenuState extends ScriptMusicBeatState
 		infoTextBorder.alpha = 0.5;
 		overLay.add(infoTextBorder);
 		overLay.add(infotext);
+		scrollBar = new FlxSprite(FlxG.width - 19,0).makeGraphic(18,24,FlxColor.WHITE);
+		scrollBar.alpha = 0.8;
+		scrollBar.scrollFactor.set();
+		overLay.add(scrollBar);
 		// add(overLay);
 		FlxG.autoPause = true;
 		try{if(onlinemod.OnlinePlayMenuState.socket != null) onlinemod.OnlinePlayMenuState.receiver.HandleData = HandleData;}catch(e){}
@@ -242,58 +247,81 @@ class SearchMenuState extends ScriptMusicBeatState
 	}
 	var hoverColor = 0xffffffff;
 	var idleColor = 0xff997799;
+	var scrollHover:Bool = false;
+	var scrollOffsetY:Float = 0;
+	@:keep inline function handleScroll(){
+		if(FlxG.mouse.x > scrollBar.x){
+			scrollBar.alpha = 1;
+			if(FlxG.mouse.pressed){
+				scrollBar.y = FlxG.mouse.screenY - 5;
+				if(scrollBar.y < 140) scrollBar.y = 140;
+				if(scrollBar.y > FlxG.height - 20) scrollBar.y = FlxG.height - 20;
+				var sel = Std.int((songs.length * ((scrollBar.y - 140) / (FlxG.height - 160)) ));
+				if(curSelected != sel && sel > 0 && sel < songs.length){
+					curSelected = 0;
+					changeSelection(sel);
+				}
+			}
+		}else{
+			scrollBar.alpha = 0.8;
+			scrollHover = false;
+		}
+		scrollBar.y = Std.int(140 + ((FlxG.height - 160) * (curSelected / songs.length)));
+	}
 	function handleInput(){
-			callInterp('handleInput',[]);
-			if (controls.BACK || FlxG.keys.justPressed.ESCAPE)
-			{
-				ret();
-			}
-			if(songs.length <= 0 || !allowInput) return;
-			if(songs.length > 1){
-				if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
-				else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
-				if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
-				else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(1);}
-			}
-			extraKeys();
+		callInterp('handleInput',[]);
+		if (controls.BACK || FlxG.keys.justPressed.ESCAPE){
+			ret();
+		}
+		if(songs.length <= 0 || !allowInput || cancelCurrentFunction) return;
+		if(songs.length > 1){
+			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
+			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
+			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
+			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(1);}
+			handleScroll();
 
-			if (controls.ACCEPT){
-				select(curSelected);
-				if(retAfter) ret();
-			}
-			// if(supportMouse){
-				if(FlxG.mouse.justReleased){
-					if(titleText != null && FlxG.mouse.overlaps(titleText)){
-						ret();
-					}
-					if(!FlxG.mouse.overlaps(blackBorder) ){
-						var curSel= grpSongs.members[curSelected];
-						for (i in -2 ... 2) {
-							var member = grpSongs.members[curSelected + i];
-							if(member != null && FlxG.mouse.overlaps(member)){
-								if(member == curSel){
-									select(curSelected);
-									if(retAfter) ret();
-								}else{
-									changeSelection(i);
-								}
+		}
+
+		extraKeys();
+
+		if (controls.ACCEPT){
+			select(curSelected);
+			if(retAfter) ret();
+		}
+		// if(supportMouse){
+			if(!scrollHover && FlxG.mouse.justReleased){
+				if(titleText != null && FlxG.mouse.overlaps(titleText)){
+					ret();
+				}
+				if(blackBorder == null || !FlxG.mouse.overlaps(blackBorder) ){
+					var curSel= grpSongs.members[curSelected];
+					for (i in -2 ... 2) {
+						var member = grpSongs.members[curSelected + i];
+						if(member != null && FlxG.mouse.overlaps(member)){
+							if(member == curSel){
+								select(curSelected);
+								if(retAfter) ret();
+							}else{
+								changeSelection(i);
 							}
 						}
 					}
 				}
-				#if android
-					if(FlxG.swipes[0] != null){
-						var swipe = FlxG.swipes[0];
-						var distance = (swipe.startPosition.y - swipe.endPosition.y) / 100;
-						// var speed = Math.max(swipe.duration - 1,0.1);
-						trace(distance);
-						changeSelection(Std.int(distance));
-					}
-				#end
-				if(FlxG.mouse.wheel != 0){
-					var move = -FlxG.mouse.wheel;
-					changeSelection(Std.int(move));
+			}
+			#if android
+				if(FlxG.swipes[0] != null){
+					var swipe = FlxG.swipes[0];
+					var distance = (swipe.startPosition.y - swipe.endPosition.y) / 100;
+					// var speed = Math.max(swipe.duration - 1,0.1);
+					trace(distance);
+					changeSelection(Std.int(distance));
 				}
+			#end
+			if(FlxG.mouse.wheel != 0){
+				var move = -FlxG.mouse.wheel;
+				changeSelection(Std.int(move));
+			}
 			// }
 	}
 	function extraKeys(){

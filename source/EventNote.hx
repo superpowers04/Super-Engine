@@ -221,29 +221,27 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 			}
 			case "setvalue",'set': {
 				try{
-					info = [rawNote[3],rawNote[4]]; // path,value,time
+					info = [Std.string(rawNote[3]).trim(),Std.string(rawNote[4]).trim()]; // path,value
 				}catch(e){info = [0,0];}
 				// Replaces hit func
 				hit = function(?charID:Int = 0,note){
 					try{
-						if(info[1].startsWith("$")){
+						if(StringTools.startsWith(info[1],"$")){
 							info[1] = PlayState.instance.eventNoteStore[info[1].substring(1)];
 						}
 						ConsoleUtils.setValueFromPath(info[0],info[1]);
 					}catch(e){
-						MusicBeatState.instance.errorHandle('Unable to set value ${info[0]} to ${info[1]} ${e.message}');
+						MusicBeatState.instance.errorHandle('Unable to set value ${info[0]} to ${info[1]}: ${e.message}');
 					}
 				}; 
 			}
 			case "get": {
 				try{
-					info = [rawNote[3],rawNote[4]]; // path,variableName
+					info = [Std.string(rawNote[3]).trim(),Std.string(rawNote[4]).trim()]; // path,variableName
 				}catch(e){info = [0,0];}
 				// Replaces hit func
 				hit = function(?charID:Int = 0,note){
-
 					PlayState.instance.eventNoteStore[info[1]] = ConsoleUtils.getValueFromPath(info[0]);
-
 				}; 
 			}
 

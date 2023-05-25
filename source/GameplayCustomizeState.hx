@@ -55,7 +55,7 @@ class GameplayCustomizeState extends PlayState
 
 	];
 	var objClicks:Map<FlxSprite,String> = [];
-
+	var rating:FlxSprite;
 	public override function create() {
 		SAVDATA = cast FlxG.save.data.playStateObjectLocations;
 		PlayState.SONG = {
