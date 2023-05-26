@@ -36,6 +36,7 @@ class MusicBeatState extends FlxUIState
 	public static var instance:MusicBeatState;
 	public static var lastClassList:Array<Class<Dynamic>> = [];
 	public static var returningFromClass:Bool = false;
+	public static var tooltip:se.objects.SETooltip;
 
 	public function goToLastClass(?avoidType:Class<Any> = null){
 		try{
@@ -51,6 +52,8 @@ class MusicBeatState extends FlxUIState
 		}
 	}
 	public function new(){
+		if(tooltip == null)tooltip = new se.objects.SETooltip();
+		tooltip.visible = false;
 		if(returningFromClass){
 			returningFromClass = false;
 		}else{
@@ -279,6 +282,7 @@ class MusicBeatState extends FlxUIState
 		}
 
 		super.update(elapsed);
+		if(tooltip.visible) tooltip.update(elapsed);
 	}
 
 	private function updateBeat():Void
@@ -385,13 +389,11 @@ class MusicBeatState extends FlxUIState
 		else if ((persistentUpdate || subState == null))
 			update(elapsed);
 
-		if (_requestSubStateReset)
-		{
+		if (_requestSubStateReset){
 			_requestSubStateReset = false;
 			resetSubState();
 		}
-		if (subState != null)
-		{
+		if (subState != null){
 			subState.tryUpdate(elapsed);
 		}
 	}
@@ -400,6 +402,7 @@ class MusicBeatState extends FlxUIState
 	override function draw(){
 		super.draw();
 		if(debugMode) debugOverlay.draw();
+		if(tooltip.visible) tooltip.draw();
 		if(tempMessages.length > 0){
 			var i = 0;
 			while (i < tempMessages.length){
@@ -426,22 +429,23 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 		FlxG.mouse.visible = true;
 		super();
 		MusicBeatState.instance.showTempmessage('Enabled Debug overlay');
-		if(objectPosText == null){
-			objectPosText = new FlxText(0,-100,'X:2000,Y:2000');
-			objectPosText.setFormat(null, 16, 0xffffaaff, CENTER);
-			// objectPosText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,);
-			objectPosText.scrollFactor.set();
-		}
-		if(objectPosBack == null){
-			objectPosBack = new FlxSpriteLockScale(-10,-100);
-			objectPosBack.makeGraphic(1,1,FlxColor.BLACK);
-			objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
-			objectPosBack.alpha = 0.4;
-			objectPosBack.scrollFactor.set();
-		}
-		add(objectPosBack);
-		add(objectPosText);
-		objectPosBack.visible = objectPosText.visible = false;
+		// if(objectPosText == null){
+		// 	objectPosText = new FlxText(0,-100,'X:2000,Y:2000');
+		// 	objectPosText.setFormat(null, 16, 0xffffaaff, CENTER);
+		// 	// objectPosText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,);
+		// 	objectPosText.scrollFactor.set();
+		// }
+		// if(objectPosBack == null){
+		// 	objectPosBack = new FlxSpriteLockScale(-10,-100);
+		// 	objectPosBack.makeGraphic(1,1,FlxColor.BLACK);
+		// 	objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
+		// 	objectPosBack.alpha = 0.4;
+		// 	objectPosBack.scrollFactor.set();
+		// }
+		MusicBeatState.tooltip.visible = false;
+		// add(objectPosBack);
+		// add(objectPosText);
+		// objectPosBack.visible = objectPosText.visible = false;
 		oldTarget = FlxG.camera.target;
 		FlxG.camera.target = null;
 		if(FlxG.sound.music != null){
@@ -498,7 +502,9 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 	var lastRMouseY:Float = 0;
 
 	override function update(el:Float){
+
 		super.update(el);
+		if(MusicBeatState.tooltip.visible) MusicBeatState.tooltip.update(el);
 		if(FlxG.mouse.justPressed){
 			mx=FlxG.mouse.x;
 			my=FlxG.mouse.y;
@@ -552,18 +558,21 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 		}
 	}
 	@:keep inline function updateObjPosText(){
-		objectPosBack.visible = objectPosText.visible = true;
-		objectPosText.text = '${Std.int(obj.x * 100) * 0.001},${Std.int(obj.y * 100) * 0.001}';
-		objectPosBack.x = (objectPosText.x = FlxG.mouse.screenX + 20) - 2;
-		objectPosBack.y = (objectPosText.y = FlxG.mouse.screenY + 20) - 2;
-		objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
+		// objectPosBack.visible = objectPosText.visible = true;
+		MusicBeatState.tooltip.visible = true;
+		MusicBeatState.tooltip.text = '${Std.int(obj.x * 100) * 0.001},${Std.int(obj.y * 100) * 0.001}';
+		// objectPosBack.x = (objectPosText.x = FlxG.mouse.screenX + 20) - 2;
+		// objectPosBack.y = (objectPosText.y = FlxG.mouse.screenY + 20) - 2;
+		// objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
 	}
 	@:keep inline function updateObjText(text){
-		objectPosBack.visible = objectPosText.visible = true;
-		objectPosText.text = text;
-		objectPosBack.x = (objectPosText.x = FlxG.mouse.screenX + 20) - 2;
-		objectPosBack.y = (objectPosText.y = FlxG.mouse.screenY + 20) - 2;
-		objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
+		MusicBeatState.tooltip.visible = true;
+		MusicBeatState.tooltip.text = text;
+		// objectPosBack.visible = objectPosText.visible = true;
+		// objectPosText.text = text;
+		// objectPosBack.x = (objectPosText.x = FlxG.mouse.screenX + 20) - 2;
+		// objectPosBack.y = (objectPosText.y = FlxG.mouse.screenY + 20) - 2;
+		// objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
 	}
 	override function destroy(){
 		if(FlxG.sound.music != null){

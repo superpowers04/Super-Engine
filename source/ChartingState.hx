@@ -1493,11 +1493,23 @@ class ChartingState extends ScriptMusicBeatState
 					{
 						deselectNotes();
 						addNote();
+
 					}else if (!(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) && FlxG.mouse.x > gridBG.x
 						&& FlxG.mouse.x < gridBG.x + gridBG.width
 						&& FlxG.mouse.y > gridBG.y
 						&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps)){deselectNotes();}
-				
+
+			}else if(FlxG.mouse.overlaps(curRenderedNotes)){
+
+					curRenderedNotes.forEach(function(note:Note){
+						if (FlxG.mouse.overlaps(note)){
+							MusicBeatState.tooltip.text = 'Time: ${note.strumTime} Data: ${note.noteData}\nType:${note.type}';
+							MusicBeatState.tooltip.visible = true;
+							return;
+						}
+					});
+			}else{
+				MusicBeatState.tooltip.visible = false;
 			}
 			if(FlxG.mouse.pressed)
 			{
