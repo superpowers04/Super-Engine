@@ -263,15 +263,14 @@ class Note extends FlxSkewedSprite
 
 
 	@:keep inline function callInterp(func:String,?args:Array<Dynamic>){
-		if(!inCharter && PlayState.instance != null) PlayState.instance.callInterp(func,args);
+		if(ScriptMusicBeatState.instance != null) ScriptMusicBeatState.instance.callInterp(func,args);
 	}
 
 	public function new(?strumTime:Float = 0, ?_noteData:Int = 0, ?prevNote:Note, ?sustainNote:Bool = false, ?_inCharter:Bool = false,?_type:Dynamic = 0,?_rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
 		super();
 		
-		if (prevNote == null)
-			prevNote = this;
+		if (prevNote == null) prevNote = this;
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		mustPress = playerNote; 
@@ -296,6 +295,12 @@ class Note extends FlxSkewedSprite
 		if(inCharter){
 			this.strumTime = strumTime;
 			showNote = true;
+			if((rawNote[1] < 0 || rawNote[2] == "eventNote")){
+				type =rawNote[2];
+				eventNote = true; // Just an identifier
+				EventNote.applyEvent(this);
+				
+			}
 		}else{
 			this.strumTime = Math.round(strumTime);
 

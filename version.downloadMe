@@ -1,2 +1,7 @@
 1.0.0-U37;
-- MORE FUCKING FIXES
+- Botplay fixes
+- Input fixes
+- Fix the type not showing on event notes
+- Char selection now scrolls to the selected character after 2 fuckin years
+- character.clonedChar, like and clone are now deceased
+- Event notes are more efficient

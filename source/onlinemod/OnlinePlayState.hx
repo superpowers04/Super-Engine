@@ -11,7 +11,7 @@ import flixel.util.FlxAxes;
 import flixel.FlxSubState;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flash.media.Sound;
 import onlinemod.Packets;
 

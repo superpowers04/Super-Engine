@@ -31,10 +31,12 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 			if(value is String){rawNote[index] = (cast(value,String)).trim();}
 		}
 		if(rawNote[2] == "eventNote") rawNote.remove(2);
+		note.type = rawNote[2];
+		if(note.inCharter) return;
 		note.callInterp("eventNoteCheckType",[note,rawNote]);
 		var info:Array<Dynamic> = [];
 		var hit:Dynamic = null;
-		switch (Std.string(rawNote[2]).toLowerCase()) {
+		switch (Std.string(note.type).toLowerCase()) {
 			case "charanimref": {
 				hit = function(?charID:Int = 0,note){info[0].playAnim(info[1],true);}; 
 			}

@@ -1097,7 +1097,6 @@ class PlayState extends ScriptMusicBeatState
 			}else{
 				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01) - iconOffset);
-
 			}
 			var y = (downscroll ? FlxG.height * 0.9 : FlxG.height * 0.1);
 			iconP2.y = iconP1.y = y - (iconP1.height * 0.5);
@@ -1108,6 +1107,8 @@ class PlayState extends ScriptMusicBeatState
 		scoreTxt.alpha = 0;
 		iconP1.y = healthBarBG.y - (iconP1.height / 2);
 		iconP2.y = healthBarBG.y - (iconP2.height / 2);
+		if(boyfriend.lonely) iconP1.visible = false;
+		if(dad.lonely) iconP2.visible = false;
 		kadeEngineWatermark.cameras = [camHUD];
 
 		hitSound = FlxG.save.data.hitSound;
@@ -3184,7 +3185,7 @@ class PlayState extends ScriptMusicBeatState
 			FlxG.sound.play(char.missSounds[direction], FlxG.save.data.missVol);
 			return;
 		}
-		FlxG.sound.play(vanillaHurtSounds[Math.round(Math.random() * vanillaHurtSounds.length)], FlxG.save.data.missVol);
+		FlxG.sound.play(vanillaHurtSounds[Math.round(Math.random() * (vanillaHurtSounds.length - 1))], FlxG.save.data.missVol);
 	}
 	dynamic function noteMissdyn(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void
 	{
