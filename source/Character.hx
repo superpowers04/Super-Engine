@@ -596,7 +596,7 @@ class CharAnimController extends FlxAnimationController{
 			}
 		}else{
 
-			if(charProperties == null && !FileSystem.exists('${charLoc}/$curCharacter/config.json') || (amPreview && FlxG.keys.pressed.SHIFT)){
+			if(charProperties == null && !SELoader.exists('${charLoc}/$curCharacter/config.json') || (amPreview && FlxG.keys.pressed.SHIFT)){
 				if(amPreview){
 					// if(FlxG.keys.pressed.SHIFT) MusicBeatState.instance.showTempmessage("Forcing new JSON due to shift being held");
 					var idleName:String = "";
@@ -629,6 +629,7 @@ class CharAnimController extends FlxAnimationController{
 					}
 					MusicBeatState.instance.showTempmessage('Character ${curCharacter} is missing a config.json!("${charLoc}/$curCharacter/config.json" is non-existant) You need to set them up in character selection. Using BF',FlxColor.RED);
 					curCharacter = "bf";
+					charInfo = null;
 					loadChar();
 					return;
 				}
