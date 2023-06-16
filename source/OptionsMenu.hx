@@ -139,6 +139,7 @@ class OptionsMenu extends MusicBeatState
 			#end
 			new FullscreenOption("Toggle fullscreen mode. Press F11 to toggle fullscreen ingame"),
 			new HCBoolOption('Reset Key',"Toggle pressing R to gameover","resetButton"),	
+			new HCBoolOption('Easter Eggs',"Toggle easter eggs","easterEggs"),	
 			new HCBoolOption('Gameplay Logging',"Logs your song performance to a text file to 'DATE.log' and 'UNIXTIMECODE.log' in 'songLogs/CHARTFILE/'","logGameplay"),			
 			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
 			// new LogGameplayOption("Logs your game to a text file"),

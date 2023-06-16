@@ -110,33 +110,35 @@ class FinishSubState extends MusicBeatSubstate
 		iconP2 = PlayState.instance.iconP2;
 
 
-		if(win){
-			for (g in [PlayState.instance.cpuStrums,PlayState.instance.playerStrums]) {
-				g.forEach(function(i){
-					FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
-				});
-			}
-			if (FlxG.save.data.songPosition)
-			{
-				for (i in [PlayState.songPosBar,PlayState.songPosBG,PlayState.instance.songName,PlayState.instance.songTimeTxt]) {
-					FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
-				}
-			}
 
-			FlxTween.tween(healthBar, {y:Std.int(FlxG.height * 0.10)},1,{ease: FlxEase.expoIn});
-			FlxTween.tween(healthBarBG, {y:Std.int(FlxG.height * 0.10 - 4)},1,{ease: FlxEase.expoIn});
-			FlxTween.tween(iconP1, {y:Std.int(FlxG.height * 0.10 - (iconP1.height * 0.5))},1,{ease: FlxEase.expoIn});
-			FlxTween.tween(iconP2, {y:Std.int(FlxG.height * 0.10 - (iconP2.height * 0.5))},1,{ease: FlxEase.expoIn});
+		if(isError){
+			finishNew();
+		}else{
+			var bfAnims = [];
 
-
-
-
-			FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
-			FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
-		}
-		var bfAnims = [];
-		if(!isError){
 			if(win){
+				for (g in [PlayState.instance.cpuStrums,PlayState.instance.playerStrums]) {
+					g.forEach(function(i){
+						FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
+					});
+				}
+				if (FlxG.save.data.songPosition)
+				{
+					for (i in [PlayState.songPosBar,PlayState.songPosBG,PlayState.instance.songName,PlayState.instance.songTimeTxt]) {
+						FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
+					}
+				}
+
+				FlxTween.tween(healthBar, {y:Std.int(FlxG.height * 0.10)},1,{ease: FlxEase.expoIn});
+				FlxTween.tween(healthBarBG, {y:Std.int(FlxG.height * 0.10 - 4)},1,{ease: FlxEase.expoIn});
+				FlxTween.tween(iconP1, {y:Std.int(FlxG.height * 0.10 - (iconP1.height * 0.5))},1,{ease: FlxEase.expoIn});
+				FlxTween.tween(iconP2, {y:Std.int(FlxG.height * 0.10 - (iconP2.height * 0.5))},1,{ease: FlxEase.expoIn});
+
+
+
+
+				FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
+				FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
 				bfAnims = ['win','hey','singUP'];
 				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('cheer',true); else {dad.playAnimAvailable(['lose'],true);}
 				PlayState.gf.playAnim('cheer',true);
@@ -151,25 +153,19 @@ class FinishSubState extends MusicBeatSubstate
 				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('sad',true); else dad.playAnim("hey",true);
 				PlayState.gf.playAnim('sad',true);
 			}
-		}
+		
+			if(autoEnd){
 
-		// if(fadeOut){
-		// 	FlxTween.tween(PlayState.instance.camGame,{alpha:0},0.5);
-		// 	// FlxTween.tween(FlxG.boyfriend,{x:FlxG.width - (boyfriend.width * 0.5),y:FlxG.height - (boyfriend.height * 0.5)},0.5);
-		// 	PlayState.instance.camTOP.target = boyfriend;
-		// 	boyfriend.cameras = [PlayState.instance.camTOP];
-		// }
-		if(autoEnd){
+				// FlxG.camera.zoom = 1;
+				// PlayState.instance.camHUD.zoom = 1;
 
-			// FlxG.camera.zoom = 1;
-			// PlayState.instance.camHUD.zoom = 1;
-
-			if(boyfriend.playAnimAvailable(bfAnims,true) && !isError) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
-			// if (FlxG.save.data.camMovement){
-			PlayState.instance.followChar(0);
-			PlayState.instance.controlCamera = false;
-			// }
-			forceBFAnim = false;
+				if(boyfriend.playAnimAvailable(bfAnims,true)) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
+				// if (FlxG.save.data.camMovement){
+				PlayState.instance.followChar(0);
+				PlayState.instance.controlCamera = false;
+				// }
+				forceBFAnim = false;
+			}
 		}
 
 	}

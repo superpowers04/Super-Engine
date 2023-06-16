@@ -217,13 +217,17 @@ class Console extends TextField
 	function updateConsoleVisibility(){
 		isShowingConsole = showConsole;
 		commandBox.alpha = alpha = (if(showConsole) 1 else 0);
+		#if linc_luajit
+			if(commandBox.selua != null){ // Stack overflow if this isn't done
+				commandBox.selua.stop();
+				print('lua closed');
+				commandBox.selua = null;
+			}
+		#end
 		if(showConsole){
 			wasMouseDisabled = FlxG.mouse.visible;
 			FlxG.mouse.visible = true;
-			// FlxG.mouse.enabled = false;
 			requestUpdate = true;
-			// commandBox.scaleX = scaleX = lime.app.Application.current.window.width / 1280;
-			// commandBox.scaleY = scaleY = lime.app.Application.current.window.height / 720;
 			var _SY = (lime.app.Application.current.window.height / 720);
 			var _SX = (lime.app.Application.current.window.width / 1280);
 			width = 1240 * _SY;
@@ -236,6 +240,7 @@ class Console extends TextField
 				firstOpen = false;
 				print('Super Engine ${MainMenuState.ver} ${MainMenuState.buildType} ${MainMenuState.compileType} - Debug console. Type help for commands.\nDO NOT BLINDLY PASTE CODE INTO HERE, This console allows you to run arbitrary code.\nSuper is not held responsible for whatever you paste here');
 			}
+
 
 
 		}else{
@@ -695,21 +700,19 @@ class ConsoleUtils{
 				obj = _obj[0];
 				splitPath.unshift('this'+ _obj[1].substr(0,-1));
 			}
-			if(obj == "state"){
-				object = cast FlxG.state;
-			}else{
-				object = Reflect.field((cast FlxG.state),obj);
-				if(object == null) object = Type.resolveClass(obj);
-				// if(object == null) object = getStaticObject(object);
-				if(object == null && PlayState.instance != null) object = PlayState.instance.objects[obj];
-				if(object == null) object = Reflect.field(PlayState,obj);
-				if(object == null) object = Reflect.getProperty(PlayState,obj);
+			object = ConsoleUtils.quickObject(obj);
+			if(object == null) object = Reflect.field((cast FlxG.state),obj);
+			if(object == null) object = Type.resolveClass(obj);
+			// if(object == null) object = getStaticObject(object);
+			if(object == null && PlayState.instance != null) object = PlayState.instance.objects[obj];
+			if(object == null) object = Reflect.field(PlayState,obj);
+			if(object == null) object = Reflect.getProperty(PlayState,obj);
 
-				if(object == null){
-					throw 'Unable to find top-level object ${obj} from path ${path}';
-					return null;
-				}
+			if(object == null){
+				throw 'Unable to find top-level object ${obj} from path ${path}';
+				return null;
 			}
+			
 		}
 		var currentPath:String = "";
 		while(splitPath.length > 0){
@@ -748,6 +751,24 @@ class ConsoleUtils{
 			return '[[$object]]';
 		}
 		return object;
+	}
+
+	public static function quickObject(vari:String):Dynamic{
+		switch(vari){
+			case "boyfriend" | "bf": return PlayState.boyfriend;
+			case "opponent" | "dad": return PlayState.dad;
+			case "girlfriend" | "gf": return PlayState.gf;
+			case "song" | "SONG": return PlayState.SONG;
+			case "PlayState": return PlayState;
+			case "Note": return Note;
+			case "Character": return Character;
+			case "TitleState": return TitleState;
+			case "MainMenuState": return MainMenuState;
+			case "MusicBeatState": return MusicBeatState;
+			case "state" | "State" | "game" | "Game": return cast FlxG.state; 
+		}
+
+		return null;
 	}
 	public static function setValueFromPath(path:String = "",value:Dynamic){
 		var splitPath:Array<String> = path.split('.');

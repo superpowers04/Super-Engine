@@ -11,6 +11,7 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import flixel.addons.ui.FlxUIState;
 import lime.app.Application as LimeApp;
+import haxe.CallStack;
 
 import openfl.Lib;
 
@@ -23,38 +24,28 @@ class FuckState extends FlxUIState
 	public var info:String = "";
 	public static var currentStateName:String = "";
 	public static var FATAL:Bool = false;
-	public static var jokes:Array<String> = [
-		"Hey look, mom! I'm on a crash report!",
-		"This wasn't supposed to go down like this...",
-		"Don't look at me that way.. I tried",
-		"Ow, that really hurt :(",
-		"missingno",
-		"Did I ask for your opinion?",
-		"Oh lawd he crashing",
-		"get stickbugged lmao",
-		"Mom? Come pick me up. I'm scared...",
-		"It's just standing there... Menacingly.",
-		"Are you having fun? I'm having fun.",
-		"That crash though",
-		"I'm out of ideas.",
-		"Where do we go from here?",
-		"Coded in Haxe.",
-		"Oh what the hell?",
-		"I just wanted to have fun.. :(",
-		"Oh no, not this again",
-		"null object reference is real and haunts us",
-		'What is a error exactly?',
-		"I just got ratioed :(",
-		"L + Ratio + Skill Issue",
-		"Now with more crashes",
-		"I'm out of ideas.",
-		"me when null object reference",
-		'',
-	];
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
 	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown"){
-		
+		var _stack:String = "";
+		try{
+			var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+
+			var errMsg:String = "";
+			if(callStack.length > 0){
+				_stack+='haxe Stack:\n';
+				for (stackItem in callStack)
+				{
+					switch (stackItem)
+					{
+						case FilePos(s, file, line, column):
+							_stack += '\n$file:${line}:${column}';
+						default:
+							_stack += '$stackItem';
+					}
+				}
+			}
+		}catch(e){}
 		var exception = "Unable to grab exception!";
 		if(e != null && e.message != null){
 			try{
@@ -67,7 +58,9 @@ class FuckState extends FlxUIState
 				}catch(e){
 					try{
 						exception = '${e.message}\n${e.stack}';
-					}catch(e){exception = 'I tried to grab the exception but got another exception, ${e}';}
+					}catch(e){
+						exception = 'I tried to grab the exception but got another exception, ${e}';
+					}
 				}
 			}
 		}else{
@@ -78,14 +71,49 @@ class FuckState extends FlxUIState
 		var saved = false;
 		var dateNow:String = "";
 		var err = "";
+		exception += _stack;
 		// Crash log 
 
 		try{
 			var funnyQuip = "insert funny line here";
 			var _date = Date.now();
 			try{
-				funnyQuip = jokes[Std.int(Math.random() * jokes.length - 1) ]; // I know, this isn't random but fuck you the game just crashed
-			}
+				var jokes = [
+					"Hey look, mom! I'm on a crash report!",
+					"This wasn't supposed to go down like this...",
+					"Don't look at me that way.. I tried",
+					"Ow, that really hurt :(",
+					"missingno",
+					"Did I ask for your opinion?",
+					"Oh lawd he crashing",
+					"get stickbugged lmao",
+					"Mom? Come pick me up. I'm scared...",
+					"It's just standing there... Menacingly.",
+					"Are you having fun? I'm having fun.",
+					"That crash though",
+					"I'm out of ideas.",
+					"Where do we go from here?",
+					"Coded in Haxe.",
+					"Oh what the hell?",
+					"I just wanted to have fun.. :(",
+					"Oh no, not this again",
+					"null object reference is real and haunts us",
+					'What is a error exactly?',
+					"I just got ratioed :(",
+					"L + Ratio + Skill Issue",
+					"Now with more crashes",
+					"I'm out of ideas.",
+					"me when null object reference",
+					'you looked at me funny :(',
+					'Hey VSauce, Michael here. What is an error?',
+					'AAAHHHHHHHHHHHHHH! Don\'t mind me, I\'m practicing my screaming',
+					'crash% speedrun less goooo!',
+					'hey look, the consequences of my actions are coming to haunt me',
+					'time to go to stack overflow for a solution',
+					
+				];
+				funnyQuip = jokes[Std.int(Math.random() * jokes.length - 1) ]; // I know, this isn't FlxG.random but fuck you the game just crashed
+			}catch(e){}
 			err = '# Super Engine Crash Report: \n# $funnyQuip\n${exception}\nThis happened in ${info}';
 			if(!SELoader.exists('crashReports/')){
 				SELoader.createDirectory('crashReports/');

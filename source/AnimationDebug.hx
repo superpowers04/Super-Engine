@@ -331,6 +331,7 @@ class AnimationDebug extends MusicBeatState
 
 			updateCharPos(0,0,false,false);
 			updateTxt();
+			
 
 
 
@@ -872,14 +873,9 @@ class AnimationDebug extends MusicBeatState
 		uiBox.scrollFactor.set();
 		add(uiBox);
 		uiMap["animSel"] = new FlxInputTextUpdatable(5, 232, 100, 'idle');
-
-		// animSel.text = "idle";
-
 		var animDropDown2 = new PsychDropDown(5, 230, FlxUIDropDownMenu.makeStrIdLabelArray(INTERNALANIMATIONLIST, true), function(anim:String)
-		{			// animUICurAnim = INTERNALANIMATIONLIST[Std.parseInt(anim)];
-
+		{
 			uiMap["animSel"].updateText(INTERNALANIMATIONLIST[Std.parseInt(anim)]);
-			// uiMap["animSel"].textField.text = INTERNALANIMATIONLIST[Std.parseInt(anim)];
 		});
 		animDropDown2.header.background.visible = animDropDown2.header.text.visible = false;
 		animDropDown2.cameras = [camHUD];

@@ -91,14 +91,14 @@ class ImportModFromFolder extends MusicBeatState
 
 		super.create();
 		folder = FileSystem.absolutePath(folder);
-		var assets = '${folder}assets/'; // For easy access
+		var assets = ('${folder}assets/').replace('//','/'); // For easy access
 			// done = selectedLength = true;
 			// changedText = '${folder} doesn\'t have a assets folder!';
 			// loadingText.color = FlxColor.RED;
 			// FlxG.sound.play(Paths.sound('cancelMenu'));
 			// return;
 		
-		if (folder == Sys.getCwd()) {//This folder is the same folder that FNFBR is running in!
+		if (folder == Sys.getCwd() || folder == SELoader.getPath('')) {//This folder is the same folder that FNFBR is running in!
 			done = selectedLength = true;
 			changedText = 'You\'re trying to import songs from me!';
 			loadingText.color = FlxColor.RED;
@@ -129,22 +129,22 @@ class ImportModFromFolder extends MusicBeatState
 		}
 		if(FileSystem.exists('${folder}songs/')){ // Check if the selected directory just has a songs folder
 			for (directory in FileSystem.readDirectory('${folder}songs/')) {
+				directory = directory.replace('//','/');
 				if(!FileSystem.isDirectory('${folder}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
-				var dir:String = '${folder}/songs/${directory}/';
+				var dir:String = ('${folder}/songs/${directory}/').replace('//','/');
 				if(!FileSystem.exists('${dir}Inst.ogg') || (!FileSystem.isDirectory('${assets}data/${directory}/') && !FileSystem.isDirectory('${assets}data/songs/${directory}/')) ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
-				folderList.push('mods/');
+				folderList.push('${folder}');
 				break;
 			}
 		}
 		if(FileSystem.exists('${folder}mods/')){ // Psych Engine mods folder
-
 			if(FileSystem.exists('${folder}mods/songs') && FileSystem.isDirectory('${folder}mods/songs')){
 				// folderList.push('${folder}mods/');
 				var dir:String = '${folder}mods/';
 				trace(dir);
 				for (directory in FileSystem.readDirectory('${dir}songs/')) {
 					if(!FileSystem.isDirectory('${dir}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
-					var _dir:String = '${dir}songs/${directory}/';
+					var _dir:String = ('${dir}songs/${directory}/').replace('//','/');
 					trace(_dir);
 					if(!FileSystem.exists('${_dir}Inst.ogg') || (!FileSystem.isDirectory('${dir}data/${directory}/') )) {trace('"${dir}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 					folderList.push('${folder}mods/');
@@ -159,7 +159,7 @@ class ImportModFromFolder extends MusicBeatState
 				if(!FileSystem.exists('${dir}songs/')){continue;}
 				for (directory in FileSystem.readDirectory('${dir}songs/')) {
 					if(!FileSystem.isDirectory('${dir}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
-					var _dir:String = '${dir}songs/${directory}/';
+					var _dir:String = ('${dir}songs/${directory}/').replace('//','/');
 					if(!FileSystem.exists('${_dir}Inst.ogg') || (!FileSystem.isDirectory('${dir}data/${directory}/') )) {trace('"${dir}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 					folderList.push('${folder}mods/${directory}/');
 					break;
@@ -196,21 +196,21 @@ class ImportModFromFolder extends MusicBeatState
 					var dir:String = '${assets}songs/${directory}/';
 					if(!FileSystem.exists('${dir}Inst.ogg') || !FileSystem.isDirectory('${inCharts}${directory}/') ) {trace('"${inCharts}${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 
-					var outDir:String = Sys.getCwd() + 'mods/packs/${chartPrefix}/charts/${directory}/';
+					var outDir:String = 'mods/packs/${chartPrefix}/charts/${directory}/';
 					try{FileSystem.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
 					
 					for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg','${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
 						try{
 							changedText = 'Copying ${i}...';// Just display this text
 					
-							File.copy(i,v);
+							SELoader.importFile(i,v);
 						}catch(e) trace('$i caused ${e.message}');
 					}
 					for (file in FileSystem.readDirectory('${inCharts}${directory}/')) {
 						try{
 							changedText = 'Copying ${file}...';// Just display this text
 					
-							File.copy('${inCharts}${directory}/${file}','${outDir}${file}');
+							SELoader.importFile('${inCharts}${directory}/${file}','${outDir}${file}');
 						}catch(e) trace('$file caused ${e.message}');
 
 				}songsImported++;}
@@ -225,22 +225,22 @@ class ImportModFromFolder extends MusicBeatState
 				var dir:String = '${folder}assets/music/${directory}-';
 				if(!FileSystem.isDirectory('${assets}data/${directory}/') ) {trace('"${assets}data/${directory}/" doesnt exist');continue;}
 
-				var outDir:String = Sys.getCwd() + 'mods/packs/${chartPrefix}/charts/${directory}/';
-				try{FileSystem.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
+				var outDir:String = 'mods/packs/${chartPrefix}/charts/${directory}/';
+				try{SELoader.createDirectory(outDir);}catch(e) MainMenuState.handleError('Error while creating folder, ${e.message}');
 				
 				for (i => v in ['${dir}Inst.ogg' => '${outDir}Inst.ogg',
 									'${dir}Voices.ogg' => '${outDir}Voices.ogg']) {
 					try{
 						changedText = 'Copying ${i}...';// Just display this text
 				
-						File.copy(i,v);
+						SELoader.importFile(i,v);
 					}catch(e) trace('$i caused ${e.message}');
 				}
 				for (file in FileSystem.readDirectory('${assets}data/${directory}/')) {
 					try{
 						changedText = 'Copying ${file}...';// Just display this text
 				
-						File.copy('${assets}data/${directory}/${file}','${outDir}${file}');
+						SELoader.importFile('${assets}data/${directory}/${file}','${outDir}${file}');
 					}catch(e) trace('$file caused ${e.message}');
 
 			}
@@ -259,6 +259,7 @@ class ImportModFromFolder extends MusicBeatState
 	override function draw(){
 		if(changedText != ""){
 			loadingText.text = changedText;
+			loadingText.screenCenter(X);
 			changedText = "";
 		}
 		super.draw();

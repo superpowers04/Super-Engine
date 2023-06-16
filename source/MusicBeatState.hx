@@ -25,6 +25,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 
 class MusicBeatState extends FlxUIState
 {
+	public static var instance:MusicBeatState;
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
@@ -33,7 +34,6 @@ class MusicBeatState extends FlxUIState
 	public var curBeat:Int = 0;
 	private var controls(get, never):Controls;
 	var forceQuit = true;
-	public static var instance:MusicBeatState;
 	public static var lastClassList:Array<Class<Dynamic>> = [];
 	public static var returningFromClass:Bool = false;
 

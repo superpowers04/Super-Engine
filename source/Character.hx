@@ -63,11 +63,7 @@ class CharAnimController extends FlxAnimationController{
 
 
 
-@:structInit class Character extends FlxSprite
-{
-
-
-
+@:structInit class Character extends FlxSprite{
 	/* Animations */
 		public var animationList:Array<CharJsonAnimation> = [];
 		public var animOffsets:Map<String, Array<Float>> = ["all" => [0.0,0.0]];

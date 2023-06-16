@@ -280,6 +280,16 @@ class Alphabet extends FlxSpriteGroup
 		if(screenCentY) screenCenter(Y);
 
 	}
+	override function revive(){
+		super.revive();
+		if (isMenuItem){
+			if(moveY) y = (targetY * (120 * scale.x)) + (FlxG.height * 0.48) + yOffset;
+			if(moveX) x = xOffset;
+		}
+		if(screenCentX) screenCenter(X);
+		if(screenCentY) screenCenter(Y);
+
+	}
 }
 
 @:structInit class CachedSprite{

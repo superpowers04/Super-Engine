@@ -106,13 +106,16 @@ class TitleState extends MusicBeatState
 	// public static var choosableStagesLower:Map<String,String> = [];
 
 	public static var characters:Array<CharInfo> = [];
+	static var defaultChar:CharInfo;
 	public static var stages:Array<StageInfo> = [];
 
-	// public static var choosableCharacters:Array<String> = [];
-	// public static var choosableCharactersLower:Map<String,String> = [];
-	// public static var weekChars:Map<String,Array<String>> = [];
-	// public static var characterDescriptions:Map<String,String> = [];
-	// public static var characterPaths:Map<String,String> = [];
+
+	public static var easterEgg(default,set):Int = 0x00;
+	public static function set_easterEgg(val:Int){
+		if(FlxG.save.data.easterEggs) return easterEgg = val;
+		return 0x00;
+	}
+
 	public static var invalidCharacters:Array<CharInfo> = []; // This is a seperate array because the character doesn't need metadata beyond it being invalid
 
 
@@ -143,7 +146,7 @@ class TitleState extends MusicBeatState
 	public static function findChar(char:String,?retBF:Bool = true,?ignoreNSCheck:Bool = false):Null<CharInfo>{
 		if(char == ""){
 			trace('Empty character search, returning BF');
-			if(retBF) return characters[0];
+			if(retBF) return defaultChar;
 			return null;
 		}
 		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
@@ -154,7 +157,7 @@ class TitleState extends MusicBeatState
 		}
 		if(char == "" || char == "automatic"){
 			trace('Tried to get a blank character!');
-			if(retBF) return characters[0];
+			if(retBF) return defaultChar;
 			return null;
 		}
 		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
@@ -165,7 +168,7 @@ class TitleState extends MusicBeatState
 				return characters[e];
 			}else{
 				trace('Invalid ID $e, out of range 0-${characters.length}');
-				if(retBF) return characters[0];
+				if(retBF) return defaultChar;
 				return null;
 			}
 		}
@@ -176,7 +179,7 @@ class TitleState extends MusicBeatState
 			}
 		}
 		trace('Unable to find $char!');
-		if(retBF) return characters[0];
+		if(retBF) return defaultChar;
 		return null;
 	}
 	public static function findInvalidChar(char:String):CharInfo{
@@ -205,7 +208,7 @@ class TitleState extends MusicBeatState
 		}
 		if(char == "" || char == "automatic"){
 			trace('Tried to get a blank character!');
-			if(retBF) return characters[0];
+			if(retBF) return defaultChar;
 			return null;
 		}
 		var currentChar:CharInfo = null;
@@ -220,7 +223,7 @@ class TitleState extends MusicBeatState
 		}
 		if(currentChar == null){
 			trace('Unable to find $char!');
-			if(retBF) return characters[0];
+			if(retBF) return defaultChar;
 			return null;
 		}
 		return currentChar;
@@ -228,7 +231,7 @@ class TitleState extends MusicBeatState
 	public static function findCharByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
 		if(char == ""){
 			trace('Empty character search, returning BF');
-			if(retBF) return characters[0];
+			if(retBF) return defaultChar;
 			return null;
 		}
 		if(char.contains('|')){
@@ -254,7 +257,7 @@ class TitleState extends MusicBeatState
 				return charInfo;
 			}
 		}
-		return characters[0];
+		return defaultChar;
 	}
 	public static function retCharPath(char:String):String{
 		var path = findChar(char,false);
@@ -267,11 +270,13 @@ class TitleState extends MusicBeatState
 			{id:"gf",folderName:"gf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/GF_assets",internalJSON:Character.GFJSON,description:"The funny boombox girl"},
 			{id:"lonely",folderName:"lonely",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"onlinemod/lonely",internalJSON:Character.BFJSON,description:"Not much is known about them besides their ability to mimic any voice, they're invisible and very shy"},
 		];
+		defaultChar = characters[0];
 		invalidCharacters = [];
 		#if sys
 		// Loading like this is probably not a good idea
 		var dataDir:String = "mods/characters/";
 		var customCharacters:Array<String> = [];
+
 
 		if (SELoader.exists("assets/characters/"))
 		{
@@ -403,7 +408,10 @@ class TitleState extends MusicBeatState
 			  }
 			}
 		}
-
+		if(easterEgg == 0x1){
+			characters[0] = defaultChar = findChar('bf-girlfriendmode');
+			trace('${characters[0]} lesbian mode hopefully?');
+		}
 		trace('Found ${characters.length} characters');
 		// try{
 
@@ -593,6 +601,12 @@ class TitleState extends MusicBeatState
 
 		forceQuit = false; // You can't force quit to something that hasn't been loaded
 
+		var now = Date.now();
+		if(now.getMonth() == 5){
+			easterEgg = 0x1;
+			lime.app.Application.current.window.title = "Friday Night Funkin' Lesbian Engine";
+		}
+
 		LoadingScreen.loadingText = 'Loading "shared" library';
 		Assets.loadLibrary("shared");
 		@:privateAccess
@@ -606,7 +620,6 @@ class TitleState extends MusicBeatState
 		
 
 		super.create();
-
 		
 		if(CoolUtil.font != Paths.font("vcr.ttf")) flixel.system.FlxAssets.FONT_DEFAULT = CoolUtil.font;
 		#if !android
@@ -638,8 +651,8 @@ class TitleState extends MusicBeatState
 		
 		AlphaCharacter.cacheAlphaChars();
 		LoadingScreen.loadingText = 'Loading TitleState';
-		if (!initialized)
-		{
+		if (!initialized){
+			
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
@@ -925,6 +938,22 @@ class TitleState extends MusicBeatState
 		4 => [
 			11 => [["Hey look","an idiot was born"],['its supers birthday?','whos that?']],
 		],
+		5 =>[
+			-1 => [
+				['trans rights','are human rights'],
+				['yeah I\'m straight','straight up gay'],
+				['be gay','do crime'],
+				['Respect my trans homies','or im going to identify','as a fuckin problem'],
+				['pride month','less goo'],
+				['garlic bread','garlic bread'],
+				['omg','blahaj'],
+				['I put the l','in lesbian'],
+				["you're talkin mad valid",'for someone in','cuddling distance'],
+				['women','based'],
+				['skirt go speeen','still cis though'],
+				['i want to wear a dress and makeup','still cis though'],
+			],
+		],
 		6 => [
 			1 => technoAnni,
 			30 => technoAnni
@@ -953,6 +982,10 @@ class TitleState extends MusicBeatState
 			// FlxG.save.data.seenText = false;
 			forcedText = true;
 			return FlxG.random.getObject(hardcodedDays[now.getMonth()][now.getDate()]);
+		}else if(hardcodedDays[now.getMonth()] != null && hardcodedDays[now.getMonth()][-1] != null){
+			// FlxG.save.data.seenText = false;
+			forcedText = true;
+			return FlxG.random.getObject(hardcodedDays[now.getMonth()][-1]);
 		}
 		if(FlxG.save.data.seenForcedText) FlxG.save.data.seenForcedText = false;
 		var fullText:String = Assets.getText(Paths.txt('introText'));
@@ -1002,7 +1035,7 @@ class TitleState extends MusicBeatState
 		#end
 		if(shiftSkip != null && isShift != FlxG.keys.pressed.SHIFT){
 			isShift = FlxG.keys.pressed.SHIFT;
-			shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else 0xFFFFFF);
+			shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else if(DiscordClient.canSend) 0x5865F2 else 0xFFFFFF);
 		}
 		#if !(debug)
 		// This is useless in debug mode since updates aren't checked for
@@ -1138,6 +1171,7 @@ class TitleState extends MusicBeatState
 	var tweeny:FlxTween;
 	var ttBounce:FlxTween;
 	var cachingText:Alphabet;
+	var drpcansend:Bool = false;
 	override function beatHit()
 	{
 		super.beatHit();
@@ -1156,7 +1190,13 @@ class TitleState extends MusicBeatState
 		danceLeft = !danceLeft;
 
 		#if discord_rpc
-			if(DiscordClient.canSend) shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
+			if(drpcansend != DiscordClient.canSend){
+				drpcansend = DiscordClient.canSend;
+				shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else 0x5865F2);
+				shiftSkip.x = shiftSkip.x + 10;
+				FlxTween.tween(shiftSkip,{x:shiftSkip.x - 10},0.5,{ease:FlxEase.bounceInOut});
+				shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
+			}
 		#end
 
 		switch (curBeat)

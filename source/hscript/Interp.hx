@@ -96,7 +96,17 @@ class Interp {
 		#else
 		binops = new Hash();
 		#end
-		binops.set("+",function(e1,e2) return me.expr(e1) + me.expr(e2));
+		binops.set("+",function(e1,e2) {
+			// var e1 = me.expr(e1);
+			// var e2 = me.expr(e2);
+			// if(e1 is String) e2 = Std.string(e2);
+			// if(!Std.isOfType(e1,e2) && !(((e1 is Int) || (e1 is Float)) && ((e2 is Int) || (e2 is Float)))){
+			// 	throw ECustom('Unable to add ${Type.typeof(e1)} with ${Type.typeof(e2)}!');
+			// }
+			// return e1 + e2;
+			return me.expr(e1) + me.expr(e2);
+		}
+		);
 		binops.set("-",function(e1,e2) return me.expr(e1) - me.expr(e2));
 		binops.set("*",function(e1,e2) return me.expr(e1) * me.expr(e2));
 		binops.set("/",function(e1,e2) return me.expr(e1) / me.expr(e2));

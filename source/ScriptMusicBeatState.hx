@@ -172,8 +172,26 @@ class ScriptMusicBeatState extends MusicBeatState{
 				}catch(e:hscript.Expr.Error){errorHandle('${func_name} for "${id}":\n ${e.toString()}');}
 
 			}
-		@:keep inline public function resetInterps() {interps = new Map();interpCount=0;HSBrTools.shared.clear();}
+		public function resetInterps() {
+			#if linc_luajit
+			for(_ => interp in interps){
+				try{
+					if(interp is SELua){
+						interp.close();
+					}
+				}catch(e){trace('Unable to close interp! ${e.message}');}
+			}
+			#end
+			interps = new Map();
+			interpCount=0;
+			HSBrTools.shared.clear();
+		}
 		@:keep inline public function unloadInterp(?id:String){
+			#if linc_luajit
+			if(interps[id] is SELua){
+				interps[id].close();
+			}
+			#end
 			interpCount--;interps.remove(id);
 		}
 		public function revealToInterp(value:Dynamic,name:String,id:String){
@@ -207,7 +225,16 @@ class ScriptMusicBeatState extends MusicBeatState{
 			// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled
 			if(!parseMoreInterps || !FlxG.save.data.luaScripts) return null;
 
-			if(songScript == "" || !songScript.contains('isSE = true') && !songScript.contains('function initScript')) return null;
+			if(songScript == "" || (!songScript.contains('isSE = true') && !songScript.contains('function initScript'))) {
+				try{
+
+					if(FlxG.save.data.animDebug && !songScript.contains('isSE = true')){
+						showTempmessage('$file ignored as it is missing "isSE = true"!\nThis is required to prevent loading of broken lua scripts',FlxColor.RED);
+					}
+					trace('$file ignored as it is either blank or missing "isSE = true"! This is required to prevent loading of broken lua scripts');
+				}catch(e){}
+				return null;
+			}
 			// if (brTools == null) brTools = hsBrTools;
 			try{
 
@@ -394,13 +421,9 @@ class ScriptMusicBeatState extends MusicBeatState{
 				for (i in 0 ... FlxG.save.data.scripts.length) {
 					if(!parseMoreInterps) break;
 					var v = FlxG.save.data.scripts[i];
-					LoadingScreen.loadingText = 'Loading scripts: $v';
-					var _v = v.substr(v.lastIndexOf('/'));
-					if(_v.lastIndexOf('/') > _v.length - 2){
-						_v = v.substring(0,v.lastIndexOf('/') - 1);
-						_v = _v.substring(_v.lastIndexOf('/'));
-					}
-					loadScript(v,null,'USER/' + _v);
+					LoadingScreen.loadingText = 'Loading scripts: $v'; 
+					// I am dumb, this used to look for a / because I forgor that the name doesn't include a path :skull:
+					loadScript(v,null,'USER/' + v);
 				}
 				if(!parseMoreInterps) return;
 				if(scriptPaths.length < 1) return;
@@ -408,11 +431,12 @@ class ScriptMusicBeatState extends MusicBeatState{
 					if(!parseMoreInterps) break;
 					var v = scriptPaths[i];
 					LoadingScreen.loadingText = 'Loading scripts: $v';
-					var _v = v.substr(v.lastIndexOf('/'));
-					if(_v.lastIndexOf('/') > _v.length - 2){
-						_v = v.substring(0,v.lastIndexOf('/') - 1);
-						_v = _v.substring(_v.lastIndexOf('/'));
-					}
+					var _v = v;
+					try{
+						var regTP:EReg = (~/\/([^\/]+)\/[^\/]*$/g);
+						regTP.match(v);
+						_v = regTP.matched(1);
+					}catch(e){}
 					loadScript(v,null,'USER/' + _v);
 				}
 			}catch(e){errorHandle('Error while trying to parse scripts: ${e.message}');}

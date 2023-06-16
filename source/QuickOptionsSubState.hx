@@ -65,6 +65,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	inline function setValue(str:String,value:Dynamic){
 		settings[str].value = value;
 	}
+	var _callback:() -> Void;
 	var _enabledMouse:Bool = false;
 	function reloadList():Void{
 		if(grpMenuShit != null) grpMenuShit.destroy();
@@ -88,8 +89,9 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	}
 
 
-	public function new()
+	public function new(?callback:() -> Void)
 	{
+		_callback = callback;
 		_enabledMouse = FlxG.mouse.visible;
 		FlxG.mouse.visible = false;
 		FlxG.mouse.enabled = false;
@@ -117,6 +119,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	override function destroy(){
 		FlxG.mouse.visible = _enabledMouse;
 		FlxG.mouse.enabled = true;
+		if(_callback != null) _callback();
 		super.destroy();
 	}
 

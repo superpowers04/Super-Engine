@@ -6,6 +6,7 @@ import llua.State;
 import llua.Convert;
 import cpp.Pointer;
 import flixel.FlxG;
+import Overlay;
 
 using StringTools;
 
@@ -21,6 +22,7 @@ class SELua{
 	public static var currentInstance:SELua;
 	public var psychCompatMode:Bool = false; // Disables SE function calls and uses Psych ones instead.
 
+
 	public function new(?str:String = "",?doExec:Bool = true){
 		code = str;
 		state = LuaL.newstate();
@@ -30,34 +32,47 @@ class SELua{
 		helpers = new SELuaHelperMethods(this);
 		peCompat = new PsychLuaCompat(this);
 		if(!doExec) return;
-		currentInstance = this;
 		exec();
-		if(variables.getBool('psychCompat')){
-			psychCompatMode = true;
+		// if(variables.getBool('psychCompat')){
+		psychCompatMode = true;
 			// peCompat.adaptCallbacks();
-		}
+		// }
 	}
+	var uninit:Bool = false;
 	public function exec(?code:String = ""){
-		currentInstance = this;
-		if(code == "") code = this.code;
+		SELua.currentInstance = this;
+		
 		var status:Dynamic = "Unable to init lua!";
-		variables.set('latestCode',code);
-		variables.set('INTERNALSTATUS',0);
-		LuaL.dostring(state, '
-		succ,err = pcall(function() load(latestCode)() end)
-		if(not succ) then 
-			INTERNALSTATUS = tostring(err)
-		end');
-		Lua.getglobal(state, "INTERNALSTATUS");
-		status = Convert.fromLua(state, -1);
-		Lua.pop(state, 1);
+
+		if(!uninit){
+			variables.set('callLatestCode',"");
+			// variables.set('latestCode',"");
+			variables.set('INTERNALSTATUS',0);
+			status = LuaL.dostring(state, '
+			callLatestCode = function(latestCode)
+				succ,err = pcall(function() load(latestCode)() end)
+				if(not succ) then 
+					INTERNALSTATUS = tostring(err)
+				end
+			end');
+
+		}
+		if(code == "") code = this.code;
+		Lua.getglobal(state, "callLatestCode");
+		Lua.pushstring(state, code);
+		status = Lua.pcall(state, 1, 0, 0);
 		checkStatus(status);
-		Lua.gc(state,Lua.LUA_GCCOLLECT,0);
 	}
+
 	function checkStatus(status:Dynamic){
-		if(!(status is Int) || status != 0){
+		if(status == 0) return;
+		if(!(status is Int)){
 			trace(status);
 			throw status;
+		}else{
+			status = fromLuaError(status);
+			trace(status);
+			throw(status);
 		}
 	}
 
@@ -120,7 +135,7 @@ class SELua{
 					switch(Stat) {
 						case Lua.LUA_YIELD: v+= '\nYIELD';
 						case Lua.LUA_ERRSYNTAX: v += "\nSyntax Error";
-						case Lua.LUA_ERRRUN: v += "\nRuntime Error";
+						case Lua.LUA_ERRRUN: v += '\nRUNTIME ERROR:${_arr[0]}';
 						case Lua.LUA_ERRMEM: v += "\nMemory Allocation Error";
 						case Lua.LUA_ERRERR: v += "\nCritical Error";
 					}
@@ -141,6 +156,14 @@ class SELua{
 
 		Lua.close(state);
 		state = null;
+	}
+
+	public function emptyStack(){
+		var _max = Lua.gettop(state);
+		while(_max > 0) {
+			Lua.pop(state, -1);
+			_max--;
+		}
 	}
 }
 
@@ -165,35 +188,11 @@ class SELuaVaris{
 		}catch(e){}
 		return map;
 	}
-	public function objectToPtr(ptr:Dynamic,?name:String = "",?retPointer:Bool = false ):Dynamic {
-		if(pointerToStr.get(ptr) == null){
-			var id = name + Std.string(flixel.FlxG.random.int(0,1000000000)); // This is shit but whatever
-			if(strToPointer.get(id) != null){
-				while(strToPointer.get(id) != null){
-					id = name + Std.string(flixel.FlxG.random.int(0,1000000000));
-				}
-			}
-			strToPointer.set(id,ptr);
-			pointerToStr.set(ptr,id);
-		}
-		return (retPointer ? pointerID : "") + pointerToStr.get(ptr);
-	}
-	public function ptrToObject(ID:String):Dynamic {
-		if(parent.peCompat != null && parent.peCompat.objects[ID] != null) return parent.peCompat.objects[ID];
-		ID = ID.replace(pointerID,'');
-		if(ID == null || ID == "" || ID.substring(0,pointerID.length) != pointerID){
-			throw('INVALID ID: ${ID}');
-			return null;
-		}
-		return strToPointer.get(ID);
-	}
 	inline function setGlobal(vari){
 		if(vari != "FUNCTIONVAR") Lua.setglobal(parent.state,vari);
 	}
 	public function setMultiple(variables:Array<String>, data:Dynamic,?map:Bool = false){
-		for(vari in variables){
-			set(vari,data,map);
-		}
+		for(vari in variables){set(vari,data,map);}
 	}
 	public function set(variable:String, data:Dynamic,?map:Bool = false):Bool {
 		if(parent.state == null) return false;
@@ -215,12 +214,12 @@ class SELuaVaris{
 
 			return false;
 		}
-		var ptr = objectToPtr(data,true);
-		if(ptr != null && Convert.toLua(parent.state, ptr) && variable != "FUNCTIONVAR"){
-			setGlobal(variable);
-			return true;
-		}
 		return false;
+		// var ptr = objectToPtr(data,true);
+		// if(ptr != null && Convert.toLua(parent.state, ptr) && variable != "FUNCTIONVAR"){
+		// 	setGlobal(variable);
+		// 	return true;
+		// }
 
 	}
 
@@ -237,7 +236,6 @@ class SELuaVaris{
 	}
 
 
-
 	public function call(func:String, args:Array<Dynamic>) {
 		if(parent.state == null) return;
 		var psychFunc:PsychFunction = null;
@@ -250,28 +248,31 @@ class SELuaVaris{
 		var type:Int = Lua.type(parent.state, -1);
 
 		if (type != Lua.LUA_TFUNCTION) {
+			parent.emptyStack();
 			if (type <= Lua.LUA_TNIL) return;
-			Lua.pop(parent.state, 1);
 			throw("" + func + ": attempt to call a " + typeToString(type) + " value");
 			return;
 		}
 		if(psychFunc != null){
-			if(args[0] is flixel.FlxState) args.shift();
+			if(Std.isOfType(args[0],flixel.FlxState)) args.shift();
 			if(psychFunc.convertArgs != null) args = psychFunc.convertArgs(args);
 		}
 		var count = 0;
-		for (arg in args)
-			if(Convert.toLua(parent.state, arg)) count++; else{
-				try{
-					var ptr = objectToPtr(arg,true);
-					Convert.toLua(parent.state, ptr);
-					count++;
-				}catch(e){}
-			}
+		for (arg in args) if(Convert.toLua(parent.state, arg)) count++; 
+			// else{
+			// 	try{
+			// 		var ptr = objectToPtr(arg,true);
+			// 		Convert.toLua(parent.state, ptr);
+			// 		count++;
+			// 	}catch(e){}
+			// }
 		SELua.currentInstance = this.parent;
 		var status:Int = Lua.pcall(parent.state, count, 0, 0);
 
+
 		if (status != Lua.LUA_OK) throw parent.fromLuaError(status);
+		parent.emptyStack();
+
 		
 
 	}
@@ -324,14 +325,6 @@ class SELuaHelperMethods{
 	var parent:SELua;
 	public function new(par:SELua){
 		parent = par;
-		// parent.set('getField',getField);
-		// parent.set('getFields',getFields);
-		// parent.set('getFieldsTbl',getFieldsTbl);
-		// parent.set('setField',setField);
-		// parent.set('toLuaTbl',toLuaTbl);
-		// parent.set('getClass',getClass);
-		// parent.set('getType',getType);
-		// parent.set('printObject', printObject);
 		parent.set('trace',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
 	}
 	#if false
@@ -439,6 +432,7 @@ class PsychLuaCompat{
 		'stepHit' => {name:"onStepHit"},
 		'beatHit' => {name:"onBeatHit"},
 		'startSong' => {name:"onSongStart"},
+		'playAnim' => {name:"onPlayAnim"},
 	];
 	public var objects:Map<String,Dynamic> = [];
 	public static function luaCompat(vari:Dynamic):Dynamic{
@@ -483,6 +477,12 @@ class PsychLuaCompat{
 		parent.set('removeLuaSprite',function(tag:String,path:String,x:Float=0,y:Float=0){
 			FlxG.state.remove(getValueFromPath(null,tag));
 		});
+		parent.set('add',function(tag:String,path:String,x:Float=0,y:Float=0){
+			FlxG.state.add(getValueFromPath(null,tag));
+		});
+		parent.set('remove',function(tag:String,path:String,x:Float=0,y:Float=0){
+			FlxG.state.remove(getValueFromPath(null,tag));
+		});
 		parent.set('playAnim',function(tag:String,name:String, forced:Bool = false, ?reverse:Bool = false, ?startFrame:Int = 0){
 			var obj = getValueFromPath(null,tag);
 			if(obj == null || obj.animation == null || obj.animation.get(name)) return;
@@ -499,6 +499,7 @@ class PsychLuaCompat{
 		// });
 
 
+		parent.set('runMethod',runMethod);
 		parent.set('getProperty',getProperty);
 		parent.set('setProperty',setProperty);
 		parent.set('getPropertyFromGroup',getPropertyFromGroup);
@@ -507,20 +508,64 @@ class PsychLuaCompat{
 		parent.set('setPropertyFromClass',setPropertyFromClass);
 		parent.set('debugPrint',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
 		parent.set('getGlobalValue',getGlobalValue);
-		parent.set('setGlobalValue',setGlobalValue);
-		LuaL.dostring(parent.state,'setmetatable(_G,{
+		// parent.set('setGlobalValue',setGlobalValue);
+		LuaL.dostring(parent.state,/*lua code lmao*/'
+		setmetatable(_G,{
 			__index = function(this,key)
 				return rawget(this,key) or getGlobalValue(key)
 			end,
 
-		})');
-		/*			__newindex = function(this,key,value)
-				if(setGlobalValue(key,value)) then return end
-				rawset(this,key,value)
-			end*/
+		})
+		local OBJECTTBL = {
+			__index = function(self,key)
+				return rawget(self,key) or getProperty(("%s.%s"):format(self.NAME,key))
+			end,
+			__newindex = function(self,key,value)
+				return setProperty(("%s.%s"):format(self.NAME,key),value)
+			end,
+			__call = function(self,func,...)
+				if(func != null) then
+					return callObjectFunction(rawget(self,"NAME"),func,{...})
+				end
+				return rawget(self,"NAME")
+			end
+		}
+		do
+			local dumpCache = function(self) self.CACHE = {} end
+			local CACHEOBJECTTBL = {
+				__index = function(self,key)
+					if(key == "dump")then
+						rawset(self,"",{})
+						return true;
+					end
+					local ret = rawget(self,key) or rawget(rawget(self,"CACHE"),key)
+					if ret then return ret end
+					local ret = getProperty(("%s.%s"):format(self.NAME,key))
+					rawset(key,value)
+				end,
+				__newindex = function(self,key,value)
+					
+					if(key == "CACHE") then return rawset(self,key,value) end
+					rawset(rawget(self,"CACHE"),key,value)
+					return setProperty(("%s.%s"):format(self.NAME,key),value)
+				end,
+				__call = function(self,func,...)
+					if(func != null) then
+						return callObjectFunction(rawget(self,"NAME"),func,{...})
+					end
+					return rawget(self,"NAME")
+				end
+			}
+			function toLuaObj(name) return setmetatable({NAME=name},OBJECTTBL) end
+			function toCachableLuaObj(name) return setmetatable({NAME=name},CACHEOBJECTTBL) end
+		end
+		'); // I love being able to do this with lua kekw
 
 	}
 	public function getValueFromPath(object:Dynamic,path:String):Dynamic{
+		if(object == null && getGlobalValue(path) != null){
+			return getGlobalValue(path);
+		}
 		var splitPath:Array<String> = path.split('.');
 
 		if(path == "" || splitPath[0] == null){
@@ -534,41 +579,42 @@ class PsychLuaCompat{
 				obj = _obj[0];
 				splitPath.unshift('this'+ _obj[1].substr(0,-1));
 			}
-			if(obj == "state"){
-				object = cast FlxG.state;
-			}else{
 
-				object = Reflect.field(FlxG.state,obj);
-				if(object == null) object = parent.variables.ptrToObject(obj);
-				if(object == null) object = Type.resolveClass(obj);
-				if(object == null) object = Reflect.field(PlayState,obj);
-				if(object == null) object = objects[obj];
+			object = ConsoleUtils.quickObject(obj);
+			// if(object == null) object = parent.variables.ptrToObject(obj);
+			if(object == null) object = objects[obj];
+			if(object == null) object = Reflect.field(FlxG.state,obj);
+			if(object == null) object = Type.resolveClass(obj);
+			if(object == null) object = Reflect.field(PlayState,obj);
+			if(object == null){
+				throw 'Unable to find top-level object ${obj} from path ${path}';
+				return null;
+			}
+			
+		}
+		if(splitPath.length > 0){
+
+			var currentPath:String = "";
+			while(splitPath.length > 0){
+				currentPath = splitPath.shift();
+				if(currentPath.endsWith(']')){
+					var index = currentPath.substring(currentPath.indexOf('[') + 1,-1);
+					trace(index);
+					object = Reflect.field(object,currentPath.substring(0,currentPath.indexOf('[')));
+					if (object is Array) object = object[Std.parseInt(index)];
+					else if(object.get != null) object = object.get(index);
+				}else{
+					object = Reflect.field(object,currentPath);
+				}
+				
 				if(object == null){
-					throw 'Unable to find top-level object ${obj} from path ${path}';
 					return null;
 				}
 			}
 		}
-		var currentPath:String = "";
-		while(splitPath.length > 0){
-			currentPath = splitPath.shift();
-			if(currentPath.endsWith(']')){
-				var index = currentPath.substring(currentPath.indexOf('[') + 1,-1);
-				trace(index);
-				object = Reflect.field(object,currentPath.substring(0,currentPath.indexOf('[')));
-				if (object is Array) object = object[Std.parseInt(index)];
-				else if(object.get != null) object = object.get(index);
-			}else{
-				object = Reflect.field(object,currentPath);
-			}
-			
-			if(object == null){
-				return null;
-			}
-		}
 		return object;
 	}
-	public function setValueFromPath(path:String = "",value:Dynamic,obj:Dynamic = null):Void{
+	public  function setValueFromPath(path:String = "",value:Dynamic,obj:Dynamic = null):Void{
 		var splitPath:Array<String> = path.split('.');
 		if(splitPath[0] == "state"){
 			splitPath.shift();
@@ -576,10 +622,10 @@ class PsychLuaCompat{
 		}
 		var lastPath = splitPath.pop();
 		if(splitPath.length > 0) obj = getValueFromPath(obj,splitPath.join('.')); else obj = FlxG.state;
-		if(obj is String || obj is Int || obj is Float) throw('Object "${path}" is null!'); return;
+		if(obj is String || obj is Int || obj is Float) throw('Object "${path}" is not an object!'); return;
 		if(obj == null) throw('Object "${path}" is null!'); return;
 		var type = 0;
-		if(value is String){
+		/*if(value is String){
 			if(!Math.isNaN(Std.parseFloat(value))){
 				value = Std.parseFloat(value);
 				type = 1;
@@ -587,7 +633,7 @@ class PsychLuaCompat{
 				value = Std.parseInt(value);
 				type = 1;
 			}
-		}
+		}*/
 		var field = Reflect.field(obj,lastPath);
 		if(field != null){
 			if((value is String) && value.substring(0,SELuaVaris.pointerID.length) == SELuaVaris.pointerID){
@@ -609,6 +655,17 @@ class PsychLuaCompat{
 	}
 	public function setProperty(path:String,value:Dynamic):Void{
 		setValueFromPath(path,value);
+	}
+	public function runMethod(ID:String,vari:String,args:Array<Dynamic>):Dynamic{
+		var obj = getValueFromPath(null,ID);
+		if(obj == null) return null;
+		if(args == null) args = [];
+		var func = Reflect.field(obj,vari);
+		if(func == null){
+			throw('$vari is not a valid method from $ID');
+			return null;
+		}
+		return Reflect.callMethod(obj,func,args);
 	}
 	public function getPropertyFromClass(classPath:String,path:String):Dynamic{
 		var classObj:Class<Any> = Type.resolveClass(classPath);
@@ -634,7 +691,7 @@ class PsychLuaCompat{
 		if(obj == null) return;
 		setValueFromPath(path,value,obj);
 	}
-	public function getGlobalValue(vari:String):Dynamic{
+	public static function getGlobalValue(vari:String):Dynamic{
 		switch(vari){
 			/*Music related*/
 			case "curStep": return MusicBeatState.instance.curStep;

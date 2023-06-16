@@ -243,7 +243,7 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 				}catch(e){info = [0,0];}
 				// Replaces hit func
 				hit = function(?charID:Int = 0,note){
-					PlayState.instance.eventNoteStore[info[1]] = ConsoleUtils.getValueFromPath(info[0]);
+					PlayState.instance.eventNoteStore[info[1]] = ConsoleUtils.getValueFromPath(null,info[0]);
 				}; 
 			}
 
@@ -278,7 +278,7 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 			// 	// Replaces hit func
 			// 	hit = function(?charID:Int = 0,note){PlayState.instance.parseRun(rawNote[4],rawNote[3]);}; 
 			// }
-			case 'script','hscript':{
+			case 'script' | 'hscript':{
 				info = [rawNote[4]]; 
 				hit = function(?charID:Int = 0,note){PlayState.instance.parseRun(rawNote[4]);}; 
 			}

@@ -1019,6 +1019,11 @@ class ChartingState extends ScriptMusicBeatState
 			tab_group_note.add(e[1] = new FlxButton(x + 100, y, 'Get notedata $id', getNoteData(id)));
 			e[1].alpha = 0.5;
 		}
+		// var applyNoteMeta = function() {
+		// 	if(currentNoteObj == null) return showTempmessage('No note currently selected!',FlxColor.RED);
+		// 	addNote(currentNoteObj);
+		// 	return showTempmessage('Updated note!',FlxColor.RED);
+		// }
 
 
 
@@ -1028,6 +1033,7 @@ class ChartingState extends ScriptMusicBeatState
 		tab_group_note.add(notetype2input);uiMap['notetype2input'] = notetype2input;
 		tab_group_note.add(notetype2txt);uiMap['notetype2txt'] = notetype2txt;
 		tab_group_note.add(useNoteTypeBox);uiMap['useNoteTypeBox'] = useNoteTypeBox;
+		// tab_group_note.add(uiMap['noteTypeApply'] = new FlxButton(170, 20, 'Apply Note metadata', applyNoteMeta));
 		addNoteStore(1,20,140);
 		addNoteStore(2,20,160);
 		addNoteStore(3,20,180);
@@ -2225,7 +2231,7 @@ class ChartingState extends ScriptMusicBeatState
 		noteTypeInputcopy.text = arr.join(', ');
 		if(noteTypeInputcopy.text.toLowerCase() == "null") noteTypeInputcopy.text = "";
 		currentNoteObj = note;
-
+		currentNoteObj.color = 0xFFFFAAFF;
 		// updateGrid();
 		updateNoteUI();
 
@@ -2374,7 +2380,7 @@ class ChartingState extends ScriptMusicBeatState
 			}
 
 			curSelectedNote = thingy;
-
+			
 			callInterp('addNote',[thingy]);
 
 			// updateGrid();

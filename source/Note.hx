@@ -217,7 +217,7 @@ class Note extends FlxSkewedSprite
 			}
 		}
 		if((eventNote || rawNote[1] == -1 || rawNote[2] == "eventNote") && inCharter){
-			color = 0xFFFFFF;
+			color = 0xFFFFFFFF;
 			frames = Paths.getSparrowAtlas("EVENTNOTE");
 		}
 		addAnimations();
@@ -297,7 +297,7 @@ class Note extends FlxSkewedSprite
 			showNote = true;
 			if((rawNote[1] < 0 || rawNote[2] == "eventNote")){
 				type =rawNote[2];
-				eventNote = true; // Just an identifier
+				// eventNote = true; // Just an identifier
 				EventNote.applyEvent(this);
 				
 			}
@@ -428,10 +428,12 @@ class Note extends FlxSkewedSprite
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
 	override function draw(){
-		if(!(eventNote && !inCharter) && showNote && visible){
-			super.draw();
-			if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
-		}
+		// if(!(eventNote && !inCharter) && showNote && visible){
+		if(!inCharter && (!showNote || !visible || eventNote)) return;
+		visible = true; // Force drawing even if visible is false in charter
+		super.draw();
+		if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
+		// }
 	}
 	override function destroy(){
 		if(PlayState.instance != null){

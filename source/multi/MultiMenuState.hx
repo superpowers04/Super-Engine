@@ -400,7 +400,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					if(SELoader.exists('${packDir}/scripts') && SELoader.isDirectory('${packDir}/scripts')){
 
 						for (file in SELoader.readDirectory('${packDir}/scripts')) {
-							if((file.endsWith(".hscript") || file.endsWith(".hx")) && !SELoader.isDirectory('${packDir}/scripts/$file')){
+							if((file.endsWith(".hscript") || file.endsWith(".hx") #if(linc_luajit) || file.endsWith(".lua") #end ) && !SELoader.isDirectory('${packDir}/scripts/$file')){
 								PlayState.scripts.push('${packDir}/scripts/$file');
 							}
 						}
@@ -489,7 +489,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 	override function select(sel:Int = 0){
 		selSong(sel,false);
-	}	
+	}
 
 	var curPlaying = "";
 	var voices:FlxSound;
@@ -740,27 +740,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function changeSelection(change:Int = 0)
 	{
 		var looped = 0;
-		// while(modes[curSelected + change] != null && modes[curSelected + change][0] == CATEGORYNAME && looped < 200){ // If this loops more than 200 times, break to prevent crashes
-		// 	if(change > 0) change+=1;
-		// 	if(change < 0) change-=1;
-		// 	if(curSelected + change > songs.length){
-		// 		curSelected = 0;
-		// 		change = 0;
-		// 	}
-		// 	looped++;
-		// }
-		// if(looped > 199){
-		// 	grpSongs.clear();
-		// 	change = 0;
-		// 	curSelected = 0;
-		// 	songs = ["No Songs!"];
-		// 	songNames = ["Nothing"];
-		// 	modes = [0 => ["None"]];
-		// }
-
 		super.changeSelection(change);
 		if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
-
 	}
 	@:keep inline public static function findFileFromAssets(path:String,name:String,file:String):String{
 		if(FileSystem.exists('${path}/songs/${name}/$file')){

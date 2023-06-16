@@ -427,9 +427,9 @@ class PlayState extends ScriptMusicBeatState
 				showTempmessage('Error! ${error}',FlxColor.RED);
 				return;
 			}
-
+			// _forced
 			Main.game.blockUpdate = Main.game.blockDraw = false;
-			openSubState(new FinishSubState(0,0,error,_forced));
+			openSubState(new FinishSubState(0,0,error,true));
 		}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
 		}
 	}
@@ -729,6 +729,8 @@ class PlayState extends ScriptMusicBeatState
 							for (i in CoolUtil.orderList(SELoader.readDirectory(stagePath))) {
 								if(i.endsWith(".hscript")){
 									parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
+								}else if(i.endsWith(".lua")){
+									parseLua(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
 								}
 							}
 						}
@@ -1222,6 +1224,7 @@ class PlayState extends ScriptMusicBeatState
 	public var swappedChars = false;
 	public function swapChars(?what:Bool = false){
 		// if(settings && !) return;
+		callInterp('swapChars',[PlayState.bf,PlayState.dad]);
 		var bf:Character = boyfriend;
 		var opp:Character = dad;
 		boyfriend = opp;
@@ -1235,11 +1238,15 @@ class PlayState extends ScriptMusicBeatState
 		// }else{
 		healthBar.createFilledBar(dad.definingColor, boyfriend.definingColor);
 		// }
+		// boyfriend.camX = -boyfriend.camX;
+		// dad.camX = -dad.camX;
 		if(useNoteCameras){
-			var x1 = playerNoteCamera.x;
-			var x2 = opponentNoteCamera.x;
-			playerNoteCamera.x = x2;
-			opponentNoteCamera.x = x1;
+			if(!middlescroll){
+				var x1 = playerNoteCamera.x;
+				var x2 = opponentNoteCamera.x;
+				playerNoteCamera.x = x2;
+				opponentNoteCamera.x = x1;
+			}
 		}else{
 
 			if(!middlescroll){ // This is dumb but whatever
@@ -1263,6 +1270,7 @@ class PlayState extends ScriptMusicBeatState
 			}
 		}
 		updateCharacterCamPos();
+		callInterp('swapCharsAfter',[PlayState.bf,PlayState.dad]);
 	}
 	public static var introAudio:Array<flixel.system.FlxAssets.FlxSoundAsset> = [];
 	public static var introGraphics:Array<flixel.system.FlxAssets.FlxGraphicAsset> = [];
@@ -2103,9 +2111,19 @@ class PlayState extends ScriptMusicBeatState
 			var note = null;
 			while (eventNotes[0] != null && eventNotes[0].strumTime < Conductor.songPosition){
 				note = eventNotes.shift();
+				try{
 				// trace('Hit ${note.type}!');
-				note.hit(null,note);
-				note.destroy();
+
+					note.hit(null,note);
+					note.destroy();
+				}catch(e){
+					if(note != null){
+						try{
+							return errorHandle('Unable to handle event note ${note.rawNote}: ${e.message}\n ${e.stack}');
+						}catch(e){}
+					}
+					return errorHandle('Unable to handle event note ${e.message}\n ${e.stack}');
+				}
 			}
 		}
 
@@ -2115,7 +2133,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 	#if !debug
 	}catch(e){
-		MainMenuState.handleError(e,'Caught "update" crash: ${e.message}\n ${e.stack}');
+		handleError('Caught "update" crash: ${e.message}\n ${e.stack}');
 	}
 	#end
 }
@@ -2212,6 +2230,10 @@ class PlayState extends ScriptMusicBeatState
 		}
 		if(gf.lonely || gf.curCharacter == "" || gf.curCharacter == "lonely"){
 			cameraPositions[2] = defLockedCamPos.copy();
+		}
+		if(swappedChars){
+			cameraPositions[0][0] -= 50;
+			cameraPositions[0][1] += 50;
 		}
 		lockedCamPos = defLockedCamPos.copy();
 	}
@@ -2634,6 +2656,7 @@ class PlayState extends ScriptMusicBeatState
 			}
 			strumNote = (if (daNote.parentSprite != null) daNote.parentSprite else if (daNote.mustPress) playerStrums.members[Math.floor(Math.abs(daNote.noteData))] else strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))] );
 			daNote.distanceToSprite = 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed;
+			
 			if(daNote.updateY){
 				if(downscroll){ // Downscroll
 					daNote.y = strumNote.y + daNote.distanceToSprite;
@@ -2732,7 +2755,7 @@ class PlayState extends ScriptMusicBeatState
 				daNote = notes.members[i];
 				i++;
 				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.canBeHit) continue;
-				if(!FlxG.save.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition - 50 || daNote.isSustainNoteEnd) // Only destroy the note when properly hit
+				if(!FlxG.save.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition - 50) // Only destroy the note when properly hit
 					{goodNoteHit(daNote);continue;}
 				// Tell note to be clipped to strumline
 				daNote.isPressed = true;

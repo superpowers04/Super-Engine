@@ -36,7 +36,10 @@ class OfflineMenuState extends SearchMenuState
   function chartOptions(){
 	callInterp('chartOptions',[]);
 	if(cancelCurrentFunction) return;
-	  openSubState(new QuickOptionsSubState());
+	grpSongs.visible = false;
+	openSubState(new QuickOptionsSubState(function(){
+		grpSongs.visible = true;
+	}));
   }
   static var attempted:Bool = false;
   override function create()
