@@ -33,7 +33,7 @@ class FuckState extends FlxUIState
 
 			var errMsg:String = "";
 			if(callStack.length > 0){
-				_stack+='haxe Stack:\n';
+				_stack+='\nhaxe Stack:\n';
 				for (stackItem in callStack)
 				{
 					switch (stackItem)
