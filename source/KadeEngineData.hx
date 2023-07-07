@@ -106,6 +106,8 @@ class KadeEngineData
 		'easterEggs' => true,
 		'useTouch' => true,
 		'useStrumsAsButtons' => true,
+		'chartRepo'=>'https://raw.githubusercontent.com/superpowers04/FNFBR-Repo/main/charts.json',
+		'charRepo'=>'https://raw.githubusercontent.com/superpowers04/FNFBR-Repo/main/characters.json',
 		'lastUpdateID' => MainMenuState.versionIdentifier
 		// 'persistOpp' => false,
 		// 'mainMenuChar' => FlxG.save.data.mainMenuChar = false,

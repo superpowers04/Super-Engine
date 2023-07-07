@@ -44,7 +44,7 @@ typedef RepoCharsJSON = {
 
 class RepoState extends SickMenuState
 {
-	var repo = "https://raw.githubusercontent.com/superpowers04/FNFBR-Repo/main/characters.json";
+	// var repo = "";
 	public static var unarExe = 
 	#if windows
 	"C:\\Program Files\\7-Zip\\7z.exe";
@@ -90,7 +90,7 @@ class RepoState extends SickMenuState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				
-				var http = new Http(repo);
+				var http = new Http(FlxG.save.data.charRepo);
 				
 				http.onData = function (data:String)
 				{

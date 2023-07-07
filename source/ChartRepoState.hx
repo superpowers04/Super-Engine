@@ -48,7 +48,7 @@ typedef RepoChartsJSON = {
 
 class ChartRepoState extends SearchMenuState
 {
-	var repo = "https://raw.githubusercontent.com/superpowers04/FNFBR-Repo/main/charts.json";
+	// var repo = "";
 	#if windows
 	var unarExe = "C:\\Program Files\\7-Zip\\7z.exe";
 	#else
@@ -109,7 +109,7 @@ class ChartRepoState extends SearchMenuState
 		new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
 			
-			var http = new Http(repo);
+			var http = new Http(FlxG.save.data.chartRepo);
 			
 			http.onData = function (data:String)
 			{
@@ -127,8 +127,7 @@ class ChartRepoState extends SearchMenuState
 
 	}
 	override public function update(elapsed:Float){
-
-			super.update(elapsed);
+		super.update(elapsed);
 
 	}
 	function createCont():Void{
