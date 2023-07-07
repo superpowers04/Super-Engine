@@ -633,8 +633,13 @@ class PlayState extends ScriptMusicBeatState
 		// Stage management
 		var bfPos:Array<Float> = [0,0]; 
 		var gfPos:Array<Float> = [0,0]; 
-		var dadPos:Array<Float> = [0,0]; 
-		stageInfo = (if(PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || FlxG.save.data.selStage == "default") TitleState.findStageByNamespace(SONG.stage,onlinemod.OfflinePlayState.nameSpace) else TitleState.findStageByNamespace(FlxG.save.data.selStage,onlinemod.OfflinePlayState.nameSpace));
+		var dadPos:Array<Float> = [0,0];
+		stageInfo =TitleState.findStageByNamespace(FlxG.save.data.selStage,onlinemod.OfflinePlayState.nameSpace);
+		if(FlxG.save.data.stageAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || FlxG.save.data.selStage == "default")
+			stageInfo = TitleState.findStageByNamespace(SONG.stage,onlinemod.OfflinePlayState.nameSpace,null,false);
+		if(stageInfo == null){
+			stageInfo = TitleState.findStageByNamespace(FlxG.save.data.selStage);
+		}
 		stage = stageInfo.folderName;
 		if (FlxG.save.data.preformance){
 			defaultCamZoom = 0.9;

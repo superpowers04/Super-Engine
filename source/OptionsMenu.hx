@@ -67,6 +67,7 @@ class OptionsMenu extends MusicBeatState
 			new SelStageOption("Select the stage to use, Default will use song default"),
 			new SelScriptOption("Enable/Disable scripts that run withsongs"),
 
+			new HCBoolOption("Use Song Stage","Whether to allow the song to choose the stage if you have them installed or force the stage you've selected",'stageAuto'),
 			new HCBoolOption("Use Song Opponent Char","Whether to allow the song to choose the opponent if you have them installed or force the opponent you've selected",'charAuto'),
 			new HCBoolOption("Use Song Player Char","Whether to allow the song to choose the player if you have them installed or force the player you've selected",'charAutoBF'),
 			new HCBoolOption("Pack scripts","Toggle the ability for packs to provide scripts","packScripts"),
@@ -81,7 +82,7 @@ class OptionsMenu extends MusicBeatState
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Online", [
 			// new HCBoolOption("Saves charts to disk whenever you recieve one","Save charts from servers","onlineSaveChart"),
-			new HCBoolOption('Allow Scripts from Servers',"Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS",'allowServerScripts'),
+			new HCBoolOption('Allow Server Scripts',"Allow servers to run scripts. THIS IS DANGEROUS, ONLY ENABLE IF YOU TRUST THE SERVERS",'allowServerScripts'),
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),

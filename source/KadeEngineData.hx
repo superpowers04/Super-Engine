@@ -12,39 +12,42 @@ typedef ObjectInfo = {
 class KadeEngineData
 {
 	static var defaultOptions:Map<String,Dynamic> = [
+		// Performance
+		'fpsCap' => 120,
+		'preformance' => false,
+		// Gameplay
 		'downscroll' => false,
-		'accuracyDisplay' => true,
 		'offset' => 0,
-		'songPosition' => true,
-		'fps' => false,
 		'changedHitX' => -1,
 		'changedHitY' => -1,
 		'changedHit' => false,
 		'seenForcedText' => false,
-		'fpsCap' => 120,
-		'upsCap' => 144,
 		'scrollSpeed' => 1,
-		'npsDisplay' => false,
-		'frames' => 10,
-		'accuracyMod' => 2,
-		'watermark' => true,
 		'ghost' => false,
-		'distractions' => true,
+		'frames' => 10,
+		// Display
+		'watermark' => true,
+		'accuracyDisplay' => true,
+		'songPosition' => true,
+		'fps' => false,
 		'flashing' => true,
+		'npsDisplay' => false,
+		'accuracyMod' => 2,
+		'distractions' => true,
 		'resetButton' => false,
 		'botplay' => false,
 		'cpuStrums' => true,
 		'strumline' => false,
+		// Modification stuff
 		'opponent' => "bf",
 		'playerChar' => "bf",
 		'gfChar' => "gf",
 		'selStage' => "default",
 		'animDebug' => false,
 		'noteSplash' => true,
-		'preformance' => false,
 		'charAuto' => true,
+		'stageAuto' => true,
 		'charAutoBF' => false,
-		'stageAuto' => false,
 		'lastServer' => "",
 		'lastServerPort' => "",
 		'nickname' => "",
@@ -115,7 +118,7 @@ class KadeEngineData
     	FlxG.save.bind('superengine', 'superpowers04');
     	SEFlxSaveWrapper.load();
 		var _data = FlxG.save.data; 
-		for(key => value in defaultOptions) if(Reflect.field(_data,key) == null) Reflect.setField(_data,key,value);
+		for(key => value in defaultOptions) if(Reflect.field(_data,key) == null) {Reflect.setField(_data,key,value);trace('Updated ${key} to ${value}');}
 
 		MainMenuState.lastVersionIdentifier = FlxG.save.data.lastUpdateID;
 		FlxG.save.data.lastUpdateID = MainMenuState.versionIdentifier;
@@ -123,8 +126,6 @@ class KadeEngineData
 			var lastVersionIdentifier = MainMenuState.lastVersionIdentifier;
 			if(lastVersionIdentifier < 1)
 				FlxG.save.data.inputEngine = 1; // Update to new input
-			
-
 		}
 
 
