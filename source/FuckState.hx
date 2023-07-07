@@ -110,6 +110,9 @@ class FuckState extends FlxUIState
 					'crash% speedrun less goooo!',
 					'hey look, the consequences of my actions are coming to haunt me',
 					'time to go to stack overflow for a solution',
+					'you\'re mother',
+					'sex pt 2: electric boobaloo',
+					'sex pt 3: gone wrong'
 					
 				];
 				funnyQuip = jokes[Std.int(Math.random() * jokes.length - 1) ]; // I know, this isn't FlxG.random but fuck you the game just crashed
