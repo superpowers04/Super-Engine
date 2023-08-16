@@ -575,6 +575,7 @@ class PlayState extends ScriptMusicBeatState
 		LoadingScreen.loadingText = 'Loading playstate variables';
 		parseMoreInterps = (QuickOptionsSubState.getSetting("Song hscripts") || isStoryMode);
 		if (instance != null) instance.destroy();
+		ScriptMusicBeatState.instance=cast(instance=this);
 		downscroll = FlxG.save.data.downscroll;
 		middlescroll = FlxG.save.data.middleScroll;
 		instance = this;
@@ -611,20 +612,16 @@ class PlayState extends ScriptMusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 
-		if (SONG == null)
-			SONG = Song.parseJSONshit(SELoader.loadText('assets/data/tutorial/tutorial-hard.json'));
+		if (SONG == null) SONG = Song.parseJSONshit(SELoader.loadText('assets/data/tutorial/tutorial-hard.json'));
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
-		if(hsBrToolsPath == "" || !SELoader.exists(hsBrToolsPath)){
-			hsBrToolsPath = 'assets/';
-		}
+		if(hsBrToolsPath == "" || !SELoader.exists(hsBrToolsPath))hsBrToolsPath = 'assets/';
+		
 		hsBrTools = getBRTools(hsBrToolsPath,'SONG');
-		if(QuickOptionsSubState.getSetting("Song hscripts")){
-			if(SELoader.exists(hsBrTools.path)){
-				LoadingScreen.loadingText = 'Loading song scripts';
-				loadScript(hsBrTools.path,'','SONG',hsBrTools);
-			}
+		if(QuickOptionsSubState.getSetting("Song hscripts") && SELoader.exists(hsBrTools.path)){
+			LoadingScreen.loadingText = 'Loading song scripts';
+			loadScript(hsBrTools.path,'','SONG',hsBrTools);
 		}
 		
 		//dialogue shit
@@ -637,11 +634,11 @@ class PlayState extends ScriptMusicBeatState
 		stageInfo =TitleState.findStageByNamespace(FlxG.save.data.selStage,onlinemod.OfflinePlayState.nameSpace);
 		if(FlxG.save.data.stageAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || FlxG.save.data.selStage == "default")
 			stageInfo = TitleState.findStageByNamespace(SONG.stage,onlinemod.OfflinePlayState.nameSpace,null,false);
-		if(stageInfo == null){
-			stageInfo = TitleState.findStageByNamespace(FlxG.save.data.selStage);
-		}
+		
+		if(stageInfo == null) stageInfo = TitleState.findStageByNamespace(FlxG.save.data.selStage);
+		
 		stage = stageInfo.folderName;
-		if (FlxG.save.data.preformance){
+		if (!FlxG.save.data.preformance){
 			defaultCamZoom = 0.9;
 			curStage = 'stage';
 			stageTags = ["inside","stage"];
@@ -654,11 +651,43 @@ class PlayState extends ScriptMusicBeatState
 			add(stageFront);
 		}else{
 			switch(stage.toLowerCase()){
-					case 'stage','default':
-					{
+				case 'stage','default':{
+					defaultCamZoom = 0.9;
+					curStage = 'stage';
+					stageTags = ["inside","stage"];
+					var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+					bg.antialiasing = true;
+					bg.scrollFactor.set(0.9, 0.9);
+					bg.active = false;
+					add(bg);
+
+					var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+					stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+					stageFront.updateHitbox();
+					stageFront.antialiasing = true;
+					stageFront.scrollFactor.set(0.9, 0.9);
+					stageFront.active = false;
+					add(stageFront);
+
+					var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+					stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+					stageCurtains.updateHitbox();
+					stageCurtains.antialiasing = true;
+					stageCurtains.scrollFactor.set(1.3, 1.3);
+					stageCurtains.active = false;
+
+					add(stageCurtains);
+				} default:{
+					stage = TitleState.retStage(stage);
+					if(stage == "nothing"){
+						stageTags = ["empty"];
 						defaultCamZoom = 0.9;
-						curStage = 'stage';
-						stageTags = ["inside","stage"];
+						curStage = 'nothing';
+					}else if(stage == "" || !SELoader.exists('${stageInfo.path}/${stageInfo.folderName}')){
+						trace('"${stage}" not found, using "Stage"!');
+						stageTags = ["inside"];
+						defaultCamZoom = 0.9;
+						stage = curStage = 'stage';
 						var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
 						bg.antialiasing = true;
 						bg.scrollFactor.set(0.9, 0.9);
@@ -681,74 +710,36 @@ class PlayState extends ScriptMusicBeatState
 						stageCurtains.active = false;
 	
 						add(stageCurtains);
-					}
-					default:
-					{	
-						stage = TitleState.retStage(stage);
-						if(stage == "nothing"){
-							stageTags = ["empty"];
-							defaultCamZoom = 0.9;
-							curStage = 'nothing';
-						}else if(stage == "" || !SELoader.exists('${stageInfo.path}/${stageInfo.folderName}')){
-							trace('"${stage}" not found, using "Stage"!');
-							stageTags = ["inside"];
-							defaultCamZoom = 0.9;
-							stage = curStage = 'stage';
-							var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
-							bg.antialiasing = true;
-							bg.scrollFactor.set(0.9, 0.9);
-							bg.active = false;
-							add(bg);
-		
-							var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
-							stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-							stageFront.updateHitbox();
-							stageFront.antialiasing = true;
-							stageFront.scrollFactor.set(0.9, 0.9);
-							stageFront.active = false;
-							add(stageFront);
-		
-							var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
-							stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-							stageCurtains.updateHitbox();
-							stageCurtains.antialiasing = true;
-							stageCurtains.scrollFactor.set(1.3, 1.3);
-							stageCurtains.active = false;
-		
-							add(stageCurtains);
-						}else{
-							curStage = stage;
-							stageTags = [];
-							var stagePath:String = '${stageInfo.path}/${stageInfo.folderName}';
-							if (SELoader.exists('$stagePath/config.json')){
-								var stageProperties = StageEditor.loadStage(this,'$stagePath/config.json');
-								
-								 // This doesn't have to be provided, doing it this way
-								bfPos = stageProperties.bfPos;
-								dadPos = stageProperties.dadPos;
-								gfPos = stageProperties.gfPos;
-								stageTags = stageProperties.tags;
-								if(gfShow) gfShow = stageProperties.showGF;
-							}
-							var brTool = getBRTools(stagePath);
-							for (i in CoolUtil.orderList(SELoader.readDirectory(stagePath))) {
-								if(i.endsWith(".hscript")){
-									parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
-								}else if(i.endsWith(".lua")){
-									parseLua(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
-								}
+					}else{
+						curStage = stage;
+						stageTags = [];
+						var stagePath:String = '${stageInfo.path}/${stageInfo.folderName}';
+						if (SELoader.exists('$stagePath/config.json')){
+							var stageProperties = StageEditor.loadStage(this,'$stagePath/config.json');
+							
+							 // This doesn't have to be provided, doing it this way
+							bfPos = stageProperties.bfPos;
+							dadPos = stageProperties.dadPos;
+							gfPos = stageProperties.gfPos;
+							stageTags = stageProperties.tags;
+							if(gfShow) gfShow = stageProperties.showGF;
+						}
+						var brTool = getBRTools(stagePath);
+						for (i in CoolUtil.orderList(SELoader.readDirectory(stagePath))) {
+							if(i.endsWith(".hscript")){
+								parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
+							}else if(i.endsWith(".lua")){
+								parseLua(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
 							}
 						}
 					}
 				}
+			}
 		}
 		LoadingScreen.loadingText = "Loading scripts";
 		
-		if(QuickOptionsSubState.getSetting("Song hscripts")){
-			if(FlxG.save.data.scripts != null){
-				loadScripts(null,null);
-			}
-
+		if(QuickOptionsSubState.getSetting("Song hscripts") && FlxG.save.data.scripts != null){
+			loadScripts(null,null);
 		}
 		if(onlinemod.OnlinePlayMenuState.socket != null){
 			for (i in 0 ... onlinemod.OnlinePlayMenuState.scripts.length) {
@@ -776,11 +767,9 @@ class PlayState extends ScriptMusicBeatState
 		callInterp("afterStage",[]);
 
 		if(!(SONG.forceCharacters || PlayState.isStoryMode || ChartingState.charting || isStoryMode)){
-
 			if (PlayState.player2 == "bf" || !FlxG.save.data.charAuto){
 				PlayState.player2 = FlxG.save.data.opponent;
 	    	}
-	    	
 			if((PlayState.player1 == "bf" && FlxG.save.data.playerChar != "automatic") || !FlxG.save.data.charAutoBF ){
 				PlayState.player1 = FlxG.save.data.playerChar;
 			}
@@ -796,26 +785,18 @@ class PlayState extends ScriptMusicBeatState
 			PlayState.player1 = player1CharInfo.getNamespacedName();
 			PlayState.player2 = player2CharInfo.getNamespacedName();
 		}
-		// if (invertedChart){ // Invert players if chart is inverted, Does not swap sides, just changes character names
-		// 	var pl:Array<String> = [player1,player2];
-		// 	player1 = pl[1];
-		// 	player2 = pl[0];
-		// }
+
 		if(loadChars){
 
 			LoadingScreen.loadingText = "Loading GF";
-			switch (SONG.gfVersion)
+			player3 = (switch (SONG.gfVersion)
 			{
-				case 'gf-car':
-					player3 = 'gf-car';
-				case 'gf-christmas':
-					player3 = 'gf-christmas';
-				case 'gf-pixel':
-					player3 = 'gf-pixel';
-				default:
-					player3 = 'gf';
-			}
-			if (FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
+				case 'gf-car': 'gf-car';
+				case 'gf-christmas': 'gf-christmas';
+				case 'gf-pixel': 'gf-pixel';
+				default: 'gf';
+			});
+			if(FlxG.save.data.gfChar != "gf"){player3=FlxG.save.data.gfChar;}
 			gfChar = player3;
 			if(gf== null || !FlxG.save.data.persistGF || (!FlxG.save.data.gfShow && !Std.isOfType(gf,EmptyCharacter)) || gf.getNamespacedName() != player2){
 				if (FlxG.save.data.gfShow && gfShow)
@@ -870,16 +851,10 @@ class PlayState extends ScriptMusicBeatState
 		var camPos:FlxPoint = new FlxPoint(gf.getGraphicMidpoint().x, gf.getGraphicMidpoint().y);
 
 		camPos.set(camPos.x + gf.camX, camPos.y + gf.camY);
-		cachedChars[0][bf.curCharacter] = bf;
-		cachedChars[1][dad.curCharacter] = dad;
-		cachedChars[2][gf.curCharacter] = gf;
-		cachedChars[0]['default'] = bf;
-		cachedChars[1]['default'] = dad;
-		cachedChars[2]['default'] = gf;
-		cachedChars[0]['_song'] = bf;
-		cachedChars[1]['_song'] = dad;
-		cachedChars[2]['_song'] = gf;
-		
+		cachedChars[0][bf.curCharacter] = cachedChars[0]['default'] = cachedChars[0]['_song'] = bf;
+		cachedChars[1][dad.curCharacter] = cachedChars[1]['default'] = cachedChars[1]['_song'] = dad;
+		cachedChars[2][gf.curCharacter] = cachedChars[2]['default'] = cachedChars[2]['_song'] = gf;
+
 		LoadingScreen.loadingText = "Adding characters";
 
 		// REPOSITIONING PER STAGE
@@ -921,7 +896,6 @@ class PlayState extends ScriptMusicBeatState
 
 
 		add(gf);
-
 		charCall("addGF",[],-1);
 		callInterp("addGF",[]);
 		add(dad);
@@ -939,16 +913,13 @@ class PlayState extends ScriptMusicBeatState
 			underlay.alpha = FlxG.save.data.undlaTrans;
 			underlay.cameras = [camHUD];
 			add(underlay);
-			
 		}
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 		
-		if (downscroll)
-			strumLine.y = FlxG.height - 165;
+		if (downscroll) strumLine.y = FlxG.height - 165;
 
-		strumLineNotes = new FlxTypedGroup<StrumArrow>();
-		add(strumLineNotes);
+		add(strumLineNotes = new FlxTypedGroup<StrumArrow>());
 		// Note splashes
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>(10);
 		var noteSplash0:NoteSplash = new NoteSplash();
@@ -966,9 +937,7 @@ class PlayState extends ScriptMusicBeatState
 
 		LoadingScreen.loadingText = "Loading chart";
 		generateSong(SONG.song);
-
 		LoadingScreen.loadingText = "Loading UI";
-		// add(strumLine);
 
 
 		if (prevCamFollow == null){
@@ -984,12 +953,8 @@ class PlayState extends ScriptMusicBeatState
 
 
 		moveCamera = moveCamera;
-		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
-		// FlxG.camera.focusOn(camFollow.getPosition());
-
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-
 		FlxG.fixedTimestep = false;
 
 		if (FlxG.save.data.songPosition){ // This is just to prevent null object references. These variables are properly setup later
@@ -1279,8 +1244,7 @@ class PlayState extends ScriptMusicBeatState
 	}
 	public static var introAudio:Array<flixel.system.FlxAssets.FlxSoundAsset> = [];
 	public static var introGraphics:Array<flixel.system.FlxAssets.FlxGraphicAsset> = [];
-	public function startCountdown():Void
-	{
+	public function startCountdown():Void{
 
 		dialogue = [];
 
@@ -1581,8 +1545,7 @@ class PlayState extends ScriptMusicBeatState
 			}
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
 			var daStrumTime:Float = 0;
-			for (songNotes in section.sectionNotes)
-			{
+			for (songNotes in section.sectionNotes){
 				daStrumTime = songNotes[0] + FlxG.save.data.offset;
 				if (daStrumTime < 0) daStrumTime = 0;
 				if(daStrumTime < Conductor.songPosition) continue;
@@ -1597,8 +1560,6 @@ class PlayState extends ScriptMusicBeatState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 				else
 					oldNote = null;
-				// if(songNotes[3] != null) trace('Note type: ${songNotes[3]}');
-				//                       new(strumTime,  _noteData, prevNote, sustainNote,_inCharter,_type,_rawNote,playerNote)
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,songNotes[3],songNotes,gottaHitNote);
 				if(swagNote.killNote){swagNote.destroy();continue;}
 				swagNote.sustainLength = songNotes[2];

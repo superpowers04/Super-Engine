@@ -462,12 +462,12 @@ class ScriptMusicBeatState extends MusicBeatState{
 	/* Base Functions */
 		/* Zero Args */
 			override public function new(){
-				super();
 				instance = this;
+				super();
 			}
 			override public function create(){
-				super.create();
 				instance = this;
+				super.create();
 
 				created = true;
 				if(lastErr != ""){

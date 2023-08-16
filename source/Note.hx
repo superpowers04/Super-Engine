@@ -114,14 +114,6 @@ class Note extends FlxSkewedSprite
 			animation.addByPrefix('redScroll', 'red0');
 			animation.addByPrefix('blueScroll', 'blue0');
 			animation.addByPrefix('purpleScroll', 'purple0');
-			// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]}0');
-			// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold piece');
-			// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} end hold');
-			// // Kade support, I guess
-			// animation.addByPrefix('${noteNames[noteData]}Scroll','${noteNames[noteData]} alone');
-			// animation.addByPrefix('${noteNames[noteData]}hold','${noteNames[noteData]} hold');
-			// animation.addByPrefix('${noteNames[noteData]}holdend','${noteNames[noteData]} tail'); 
-
 
 
 			animation.addByPrefix('purpleholdend', 'pruple end hold'); // Fucking default names
@@ -263,6 +255,7 @@ class Note extends FlxSkewedSprite
 
 
 	@:keep inline function callInterp(func:String,?args:Array<Dynamic>){
+		if(PlayState.instance != null) return PlayState.instance.callInterp(func,args);
 		if(ScriptMusicBeatState.instance != null) ScriptMusicBeatState.instance.callInterp(func,args);
 	}
 
@@ -277,12 +270,8 @@ class Note extends FlxSkewedSprite
 		type = _type;
 		x = y = 300;
 		this.inCharter = _inCharter;
-		if(_rawNote == null){
-			this.rawNote = [strumTime,_noteData,0];
-		}else{
-			this.rawNote = _rawNote;
+		this.rawNote = (if(_rawNote == null) [strumTime,_noteData,0] else _rawNote);
 
-		}
 
 
 

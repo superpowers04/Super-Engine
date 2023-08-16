@@ -37,46 +37,42 @@ class CoolUtil
 		FlxG.updateFramerate = (FlxG.drawFramerate = Framerate) * 2;
 	}
 
-	public static function clearFlxGroup(obj:FlxTypedGroup<Dynamic>):FlxTypedGroup<Dynamic>{ // Destroys all objects inside of a FlxGroup
+	@:keep inline public static function clearFlxGroup(obj:FlxTypedGroup<Dynamic>):FlxTypedGroup<Dynamic>{ // Destroys all objects inside of a FlxGroup
 		while (obj.members.length > 0){
 			var e = obj.members.pop();
 			if(e != null && e.destroy != null) e.destroy();
-
 		}
 		return obj;
 	}
-	public static function difficultyString():String
+	@:keep inline public static function difficultyString():String
 	{
 
 		return if (PlayState.stateType == 4) PlayState.actualSongName else difficultyArray[PlayState.storyDifficulty];
 	}
 	public static function toggleVolKeys(?toggle:Bool = true){
-		if (toggle)
-		{
+		if (toggle){
 			FlxG.sound.muteKeys = volKeys[0];
 			FlxG.sound.volumeUpKeys = volKeys[1];
 			FlxG.sound.volumeDownKeys = volKeys[2];
+			return;
 		}
-		else
-		{
-			FlxG.sound.muteKeys = null;
-			FlxG.sound.volumeUpKeys = null;
-			FlxG.sound.volumeDownKeys = null;
-		}
+		FlxG.sound.muteKeys = null;
+		FlxG.sound.volumeUpKeys = null;
+		FlxG.sound.volumeDownKeys = null;
+	
 	}
-	public static function coolTextFile(path:String):Array<String>
+	@:keep inline public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = Assets.getText(path).trim().split('\n');
 
 		for (i in 0...daList.length)
 		{
-			daList[i] = daList[i].trim();
-			daList[i].replace("\\n","\n");
+			daList[i] = daList[i].trim().replace("\\n","\n");
 		}
 
 		return daList;
 	}
-	public static function splitFilenameFromPath(str:String):Array<String>{
+	@:keep inline public static function splitFilenameFromPath(str:String):Array<String>{
 		return [str.substr(0,str.lastIndexOf("/")),str.substr(str.lastIndexOf("/") + 1)];
 	}
 
@@ -91,11 +87,7 @@ class CoolUtil
 	public static function coolFormat(text:String){
 		var daList:Array<String> = text.trim().split('\n');
 
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-			daList[i] = daList[i].replace("\\n","\n");
-		}
+		for (i in 0...daList.length) daList[i] = daList[i].trim().replace("\\n","\n");
 
 		return daList;
 	}
@@ -108,22 +100,8 @@ class CoolUtil
 		}
 		return str.trim();
 	}
-	// static var songNames:Map<String,String> = [
-	// 	'dad-battle'=> "Dad Battle",
-	// 	'dadbattle'=> "Dad Battle",
-	// 	'phillynice' =>"philly",
-	// 	'philly-nice' =>"philly",
-	// 	'philly nice' =>"philly",
-	// 	'winter-horrorland' =>"winterhorrorland",
-	// 	'winterhorrorland' =>"Winter Horrorland",
-	// 	'satin-panties' => "satinpanties"
-	// ];
-	// public static function getNativeSongname(?song:String = "",?convLower:Bool = false):String{
 
-	// 	if (songNames[song.toLowerCase()] != null) return if (convLower) songNames[song.toLowerCase()].toLowerCase() else songNames[song.toLowerCase()];
-	// 	return if (convLower) song.toLowerCase() else song;
-	// }
-	public static function orderList(list:Array<String>):Array<String>{
+	@:keep inline public static function orderList(list:Array<String>):Array<String>{
 		haxe.ds.ArraySort.sort(list, function(a, b) {
 		   if(a < b) return -1;
 		   else if(b > a) return 1;
@@ -135,24 +113,18 @@ class CoolUtil
 		{
 			var daList:Array<String> = path.trim().split('\n');
 	
-			for (i in 0...daList.length)
-			{
-				daList[i] = daList[i].trim();
-			}
+			for (i in 0...daList.length) daList[i] = daList[i].trim();
 	
 			return daList;
 		}
 
-	public static function numberArray(max:Int, ?min = 0):Array<Int>
+	@:keep inline public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{
 		var dumbArray:Array<Int> = [];
-		for (i in min...max)
-		{
-			dumbArray.push(i);
-		}
+		for (i in min...max) dumbArray.push(i);
 		return dumbArray;
 	}
-	public static function multiInt(?int:Int = 0){
+	@:keep inline public static function multiInt(?int:Int = 0){
 		if (int == 1) return ''; else return 's';
 	}
 	public static function cleanJSON(input:String):String{ // Haxe doesn't filter out comments?
