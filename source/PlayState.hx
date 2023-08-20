@@ -596,8 +596,7 @@ class PlayState extends ScriptMusicBeatState
 		camHUD = new FlxCamera();
 		camTOP = new FlxCamera();
 		camGame.bgColor = 0xFF000000;
-		camHUD.bgColor = 0x00000000;
-		camTOP.bgColor = 0x00000000;
+		camHUD.bgColor = camTOP.bgColor = 0x00000000;
 
 
 
@@ -609,14 +608,13 @@ class PlayState extends ScriptMusicBeatState
 
 
 
-		persistentUpdate = true;
-		persistentDraw = true;
+		persistentUpdate = persistentDraw = true;
 
 		if (SONG == null) SONG = Song.parseJSONshit(SELoader.loadText('assets/data/tutorial/tutorial-hard.json'));
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
-		if(hsBrToolsPath == "" || !SELoader.exists(hsBrToolsPath))hsBrToolsPath = 'assets/';
+		if(hsBrToolsPath == "" || !SELoader.exists(hsBrToolsPath)) hsBrToolsPath = 'assets/';
 		
 		hsBrTools = getBRTools(hsBrToolsPath,'SONG');
 		if(QuickOptionsSubState.getSetting("Song hscripts") && SELoader.exists(hsBrTools.path)){
@@ -638,7 +636,7 @@ class PlayState extends ScriptMusicBeatState
 		if(stageInfo == null) stageInfo = TitleState.findStageByNamespace(FlxG.save.data.selStage);
 		
 		stage = stageInfo.folderName;
-		if (!FlxG.save.data.preformance){
+		if (FlxG.save.data.preformance){
 			defaultCamZoom = 0.9;
 			curStage = 'stage';
 			stageTags = ["inside","stage"];
@@ -920,18 +918,15 @@ class PlayState extends ScriptMusicBeatState
 		if (downscroll) strumLine.y = FlxG.height - 165;
 
 		add(strumLineNotes = new FlxTypedGroup<StrumArrow>());
-		// Note splashes
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>(10);
 		var noteSplash0:NoteSplash = new NoteSplash();
 		noteSplash0.setupNoteSplash(boyfriend, 0);
-		// noteSplash0.cameras = [camHUD];
 
 		if (SONG.difficultyString != null && SONG.difficultyString != "") songDiff = SONG.difficultyString;
 		else songDiff = if(customDiff != "") customDiff else if(stateType == 4) "mods/charts" else if (stateType == 5) "osu! beatmap" else (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
 		playerStrums = new FlxTypedGroup<StrumArrow>();
 		cpuStrums = new FlxTypedGroup<StrumArrow>();
 
-		// startCountdown();
 
 
 
@@ -993,8 +988,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 		add(kadeEngineWatermark);
 
-		if (downscroll)
-			kadeEngineWatermark.y = FlxG.height * 0.9 + 45 + FlxG.save.data.guiGap;
+		if (downscroll) kadeEngineWatermark.y = FlxG.height * 0.9 + 45 + FlxG.save.data.guiGap;
 
 		
 		if (FlxG.save.data.songInfo == 0 || FlxG.save.data.songInfo == 3) {
@@ -1370,6 +1364,10 @@ class PlayState extends ScriptMusicBeatState
 		}
 	}
 	function startSong(?alrLoaded:Bool = false):Void{
+		if(FlxG.sound.music == null || FlxG.sound.music.length <= 0) {
+			throw("Instrumental failed to load?");
+			return;
+		}
 		FlxG.sound.music.play();
 		vocals.play();
 		startingSong = false;
