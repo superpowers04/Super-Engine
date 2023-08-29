@@ -150,7 +150,7 @@ class TitleState extends MusicBeatState
 			return null;
 		}
 		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
-		if(char.contains('|') && !ignoreNSCheck){
+		if(!ignoreNSCheck && char.contains('|')){
 
 			var _e = char.split('|');
 			return findCharNS(_e[1],_e[0],-1,retBF);
@@ -274,12 +274,11 @@ class TitleState extends MusicBeatState
 		invalidCharacters = [];
 		#if sys
 		// Loading like this is probably not a good idea
-		var dataDir:String = "mods/characters/";
+		
 		var customCharacters:Array<String> = [];
 
 
-		if (SELoader.exists("assets/characters/"))
-		{
+		if (SELoader.exists("assets/characters/")){
 			var dir = "assets/characters";
 			trace('Checking ${dir} for characters');
 			for (char in SELoader.readDirectory(dir))
@@ -309,27 +308,26 @@ class TitleState extends MusicBeatState
 			}
 		}
 
-		if (SELoader.exists(dataDir))
-		{
-		  for (directory in SELoader.readDirectory(dataDir))
+		if (SELoader.exists("mods/characters/")){
+		  for (directory in SELoader.readDirectory("mods/characters/"))
 		  {
-			if (!SELoader.isDirectory(dataDir+"/"+directory)){continue;}
-			if (SELoader.exists(dataDir+"/"+directory+"/config.json"))
+			if (!SELoader.isDirectory("mods/characters/"+directory)){continue;}
+			if (SELoader.exists("mods/characters/"+directory+"/config.json"))
 			{
 				var desc = null;
-				if (SELoader.exists(dataDir+"/"+directory+"/description.txt"))
-					desc = SELoader.getContent('${dataDir}/${directory}/description.txt');
+				if (SELoader.exists("mods/characters/"+directory+"/description.txt"))
+					desc = SELoader.getContent('mods/characters/${directory}/description.txt');
 
 				characters.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
 					folderName:directory,
 					description:desc
 				});
-			}else if (SELoader.exists(dataDir+"/"+directory+"/script.hscript"))
+			}else if (SELoader.exists("mods/characters/"+directory+"/script.hscript"))
 			{
 				var desc = null;
-				if (SELoader.exists(dataDir+"/"+directory+"/description.txt"))
-					desc = SELoader.getContent('${dataDir}/${directory}/description.txt');
+				if (SELoader.exists("mods/characters/"+directory+"/description.txt"))
+					desc = SELoader.getContent('mods/characters/${directory}/description.txt');
 
 				characters.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
@@ -337,7 +335,7 @@ class TitleState extends MusicBeatState
 					description:desc,
 					type:1
 				});
-			}else if (SELoader.exists(dataDir+"/"+directory+"/character.png") && (SELoader.exists("mods/characters/"+directory+"/character.xml") || SELoader.exists("mods/characters/"+directory+"/character.json"))){
+			}else if (SELoader.exists("mods/characters/"+directory+"/character.png") && (SELoader.exists("mods/characters/"+directory+"/character.xml") || SELoader.exists("mods/characters/"+directory+"/character.json"))){
 				// invalidCharacters.push([directory,'mods/characters']);
 				invalidCharacters.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
@@ -448,7 +446,6 @@ class TitleState extends MusicBeatState
 	public static function retStage(char:String):String{
 		return findStageByNamespace(char,true).getNamespacedName();
 	}
-
 	public static function findStage(char:String,?retStage:Bool = true,?ignoreNSCheck:Bool = false):Null<StageInfo>{
 		if(char == ""){
 			trace('Empty stage search, returning Stage');
@@ -520,7 +517,6 @@ class TitleState extends MusicBeatState
 			return null;
 		}
 		return currentstage;
-
 	}
 	public static function checkStages(){
 
@@ -579,7 +575,6 @@ class TitleState extends MusicBeatState
 		}
 		trace('Found ${stages.length} stages');
 		#end
-
 	}
 	#if !android
 	public static function findosuBeatmaps(){
@@ -1284,6 +1279,7 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
+			destHaxe();
 			if(!FlxG.sound.music.playing){
 				FlxG.sound.music.play();
 				FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
@@ -1340,7 +1336,7 @@ class TitleState extends MusicBeatState
 		coolText.bounce();
 		add(cachingText = coolText);
 
-		_sound = FlxG.sound.load(flixel.system.FlxAssets.getSound("flixel/sounds/flixel"),FlxG.save.data.instVol - 0.2); // Put the volume down by 0.2 for safety of eardrums
+		_sound = FlxG.sound.load(Assets.getSound("flixel/sounds/flixel." + flixel.system.FlxAssets.defaultSoundExtension,false),FlxG.save.data.instVol - 0.2); // Put the volume down by 0.2 for safety of eardrums
 		_sound.play();
 		for (time in _times)
 		{
@@ -1409,7 +1405,6 @@ class TitleState extends MusicBeatState
 
 		if(!isShift){
 			FlxG.fullscreen = FlxG.save.data.fullscreen;
-
 		}
 		if(isShift || FlxG.keys.pressed.ENTER || (Sys.args()[0] != null && FileSystem.exists(Sys.args()[0]))){
 			skipBoth = true;

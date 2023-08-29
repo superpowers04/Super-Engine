@@ -148,6 +148,9 @@ class OptionsMenu extends MusicBeatState
 			// new ImportOption("Import your options from SEOPTIONS.json"),
 			// new ExportOption("Export your options to SEOPTIONS.json to backup or to share with a bug report"),
 		],"Misc things"),
+		new OptionCategory("Compatibility", [
+			new HCBoolOption("Legacy hurt notes","Load legacy Tricky mod format notes","useHurtArrows"),
+		],'Toggle compatibility with specific features from mods/engines'),
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your Frames Per Second, This controls how fast the game will update your screen"),
 			// new UPSCapOption("Cap your Updates Per Second, This controls how responsive the game is"),

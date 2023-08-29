@@ -34,7 +34,7 @@ class MainMenuState extends SickMenuState
 	
 	public static var firstStart:Bool = true;
 
-	public static var nightly(default,never):String = "U38";
+	public static var nightly(default,never):String = "U39";
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 	// This should be incremented every update, this'll be sequential so you can just compare it to another version identifier
 	public static var versionIdentifier:Int = 1;
@@ -203,7 +203,7 @@ class MainMenuState extends SickMenuState
 			    errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			    add(errorText);
 			}
-			FlxG.bitmap.clearCache();
+			SELoader.gc();
 			eventColors(Date.now());
 
 			lastError = "";

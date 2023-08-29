@@ -183,7 +183,7 @@ class ChartingState extends ScriptMusicBeatState
 	static var snapSound:Sound;
 	static var clapSound:Sound;
 	public static function playSnap(){
-		if(snapSound == null)snapSound= Sound.fromFile('./assets/shared/sounds/SNAP.ogg');
+		if(snapSound == null) snapSound= Sound.fromFile('./assets/shared/sounds/SNAP.ogg');
 		snapSound.play(new openfl.media.SoundTransform(FlxG.save.data.hitvol));
 	}
 	public static function playClap(){

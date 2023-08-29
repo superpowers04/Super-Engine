@@ -158,6 +158,7 @@ class HscriptUtils {
 		interp.variables.set("TitleState", TitleState);
 		interp.variables.set("makeRangeArray", CoolUtil.numberArray);
 		interp.variables.set("SEVersion",MainMenuState.ver);
+		interp.variables.set("SENightlyVersion",MainMenuState.nightly);
 		interp.variables.set("FinishSubState",FinishSubState);
 		interp.variables.set("Paths",Paths);
 		interp.variables.set("HSBrTools",HSBrTools);

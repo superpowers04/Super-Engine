@@ -65,8 +65,8 @@ class Option
 	
 	// Returns whether the label is to be updated.
 	// why the fuck would *all* of these throw an error
-	public function press():Bool { return false; }
-	public function updateDisplay():String { return throw "stub!"; }
+	public function press():Bool { return right(); }
+	public function updateDisplay():String { return display; }
 	public function left():Bool { return false; }
 	public function right():Bool { return false; }
 }
@@ -77,25 +77,20 @@ class DFJKOption extends Option
 {
 	private var controls:Controls;
 
-	public function new(controls:Controls)
-	{
+	public function new(controls:Controls){
 		super();
 		this.controls = controls;
 		description = 'Change your controls';
+		display = "Key Bindings >";
 		acceptValues = true;
 	}
 
-	public override function press():Bool
-	{
+	public override function press():Bool{
 		OptionsMenu.instance.openSubState(new KeyBindMenu());
 		return false;
 	}
 	override function getValue():String {
 		return KeyBindMenu.getKeyBindsString();
-	}
-	override function updateDisplay():String
-	{
-		return "Key Bindings >";
 	}
 }
 
@@ -110,6 +105,7 @@ class SEJudgement extends Option
 	public function new(name:String)
 	{
 		this.name = name;
+		display = '$name hit window';
 		// this.def = def;
 		super();
 		description = 'Adjust your hit window for $name';
@@ -133,28 +129,16 @@ class SEJudgement extends Option
 		return true;
 	}
 
-	override function updateDisplay():String
-	{
-		return name + " hit timing";
-	}
 
 	override function right():Bool {
 
-		if(FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.SHIFT){
-			setVal(glob - 0.01);
-		}else{
-			setVal(glob - 0.1);
-		}
+		setVal(glob - (FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.SHIFT ? 0.01 : 0.1));
 		return true;
 	}
 
 	override function left():Bool {
 
-		if(FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.SHIFT){
-			setVal(glob + 0.01);
-		}else{
-			setVal(glob + 0.1);
-		}
+		setVal(glob + (FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.SHIFT ? 0.01 : 0.1));
 		return true;
 	}
 
@@ -162,29 +146,16 @@ class SEJudgement extends Option
 		return '${name} hit Window: ${Ratings.ratingMS("",glob)} MS, ${100 - Math.round(glob * 100)}% of ${Math.round((166 * Conductor.timeScale) * 100) * 0.01} MS';
 	}
 }
-class Judgement extends Option
-{
-	
-
+class Judgement extends Option{
 	public function new(desc:String)
 	{
 		super();
 		description = desc;
 		acceptValues = true;
-	}
-	
-	public override function press():Bool
-	{
-		return true;
-	}
-
-	override function updateDisplay():String
-	{
-		return "Safe Frames";
+		display = "Safe Frames";
 	}
 
 	override function left():Bool {
-
 		if (Conductor.safeFrames == 1)
 			return false;
 
@@ -226,6 +197,7 @@ class FPSCapOption extends Option
 	{
 		super();
 		description = desc;
+		display = "FPS Cap";
 		acceptValues = true;
 	}
 
@@ -234,12 +206,6 @@ class FPSCapOption extends Option
 		CoolUtil.setFramerate(Application.current.window.displayMode.refreshRate);
 		return true;
 	}
-
-	override function updateDisplay():String
-	{
-		return "FPS Cap";
-	}
-	
 	override function right():Bool {
 		CoolUtil.setFramerate(CoolUtil.Framerate + 1);
 		return true;
@@ -255,43 +221,6 @@ class FPSCapOption extends Option
 		return "Current FPS Cap: " + CoolUtil.Framerate + (if(CoolUtil.Framerate == Application.current.window.displayMode.refreshRate) " (Refresh Rate)" else if(CoolUtil.Framerate == Application.current.window.frameRate) " (Frame Rate)" else " (Software)");
 	}
 }
-// class UPSCapOption extends Option
-// {
-// 	public function new(desc:String)
-// 	{
-// 		super();
-// 		description = desc;
-// 		acceptValues = true;
-// 	}
-
-// 	public override function press():Bool
-// 	{
-// 		CoolUtil.setUpdaterate(Std.int(Math.max(144,CoolUtil.Framerate)));
-// 		return true;
-// 	}
-
-// 	override function updateDisplay():String
-// 	{
-// 		return "UPS Cap";
-// 	}
-	
-// 	override function right():Bool {
-// 		CoolUtil.setUpdaterate(CoolUtil.updateRate + 1);
-// 		return true;
-// 	}
-
-// 	override function left():Bool {
-// 		CoolUtil.setUpdaterate(CoolUtil.updateRate - 1);
-// 		return true;
-// 	}
-
-// 	override function getValue():String
-// 	{
-// 		return "Current UPS Cap: " + CoolUtil.updateRate;
-// 	}
-// }
-
-
 
 
 
@@ -323,6 +252,7 @@ class CustomizeGameplay extends Option
 	{
 		super();
 		description = desc;
+		display = "Customize Gameplay";
 	}
 
 	public override function press():Bool
@@ -330,11 +260,6 @@ class CustomizeGameplay extends Option
 		trace("switch");
 		LoadingState.loadAndSwitchState(new GameplayCustomizeState());
 		return false;
-	}
-
-	override function updateDisplay():String
-	{
-		return "Customize Gameplay";
 	}
 }
 	
@@ -348,13 +273,7 @@ class PlayerOption extends Option
 		super();
 		description = desc;
 		acceptValues = true;
-
-	}
-	override function right():Bool {
-		return false;
-	}
-	override function left():Bool {
-		return false;
+		display = "Player Character >";
 	}
 
 	public override function press():Bool
@@ -364,10 +283,6 @@ class PlayerOption extends Option
 		return true;
 	}
 
-	override function updateDisplay():String
-	{
-		return "Player Character >";
-	}
 
 	override function getValue():String {
 		return "Current Player: " + ('${FlxG.save.data.playerChar}').replace('null|',"");
@@ -380,25 +295,13 @@ class GFOption extends Option
 		super();
 		description = desc;
 		acceptValues = true;
-
+		display = "GF Character >";
 	}
-	override function right():Bool {
-		return false;
-	}
-	override function left():Bool {
-		return false;
-	}
-
 	public override function press():Bool
 	{
 		PlayerOption.playerEdit = 2;
 		FlxG.switchState(new CharSelection());
 		return true;
-	}
-
-	override function updateDisplay():String
-	{
-		return "GF Character >";
 	}
 
 	override function getValue():String {
@@ -412,13 +315,7 @@ class OpponentOption extends Option
 		super();
 		description = desc;
 		acceptValues = true;
-
-	}
-	override function right():Bool {
-		return false;
-	}
-	override function left():Bool {
-		return false;
+		display = "Opponent Character >";
 	}
 	public override function press():Bool
 	{
@@ -427,10 +324,6 @@ class OpponentOption extends Option
 		return true;
 	}
 
-	override function updateDisplay():String
-	{
-		return "Opponent Character >";
-	}
 
 	override function getValue():String {
 		return "Current Opponent: " + ('${FlxG.save.data.opponent}').replace('null|',"");
@@ -446,6 +339,7 @@ class GUIGapOption extends Option
 		super();
 		description = desc;
 		acceptValues = true;
+		display = "GUI Gap";
 	}
 
 	public override function press():Bool
@@ -454,11 +348,6 @@ class GUIGapOption extends Option
 		return true;
 	}
 
-	override function updateDisplay():String
-	{
-		return "GUI Gap";
-	}
-	
 	override function right():Bool {
 		FlxG.save.data.guiGap += 1;
 
@@ -482,17 +371,13 @@ class SelStageOption extends Option
 		super();
 		description = desc;
 		acceptValues = true;
+		display = "Selected Stage >";
 
 	}
 	public override function press():Bool
 	{
 		FlxG.switchState(new StageSelection());
 		return true;
-	}
-
-	override function updateDisplay():String
-	{
-		return "Selected Stage >";
 	}
 
 	override function getValue():String {
@@ -507,6 +392,7 @@ class ReloadCharlist extends Option
 		super();
 		description = desc;
 		acceptValues = true;
+		display = "Reload Char/Stage List";
 	}
 	public override function press():Bool
 	{
@@ -514,11 +400,6 @@ class ReloadCharlist extends Option
 		TitleState.loadNoteAssets(true,true);
 		// SickMenuState.reloadMusic = true;
 		return true;
-	}
-
-	override function updateDisplay():String
-	{
-		return "Reload Char/Stage List";
 	}
 
 	override function getValue():String {
@@ -536,7 +417,7 @@ class InputEngineOption extends Option
 		super();
 		if (FlxG.save.data.inputEngine >= ies.length) FlxG.save.data.inputEngine = 0;
 		description = desc;
-
+		display = 'Input Engine';
 		acceptValues = true;
 	}
 
@@ -556,12 +437,6 @@ class InputEngineOption extends Option
 		display = updateDisplay();
 		return true;
 	}
-	public override function press():Bool{return right();}
-
-	override function updateDisplay():String
-	{
-		return 'Input Engine';
-	}
 }
 class NoteSelOption extends Option
 {
@@ -570,6 +445,7 @@ class NoteSelOption extends Option
 		super();
 		description = desc;
 		acceptValues = true;
+		display = "Note Style Selection >";
 
 	}
 	public override function press():Bool
@@ -578,34 +454,8 @@ class NoteSelOption extends Option
 		return true;
 	}
 
-	override function updateDisplay():String
-	{
-		return "Note Style Selection >";
-	}
-
 	override function getValue():String {
 		return "Current note style: " + FlxG.save.data.noteAsset;
-	}
-}
-
-class UnloadSongOption extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-	}
-
-	public override function press():Bool
-	{
-		FlxG.save.data.songUnload = !FlxG.save.data.songUnload;
-		display = updateDisplay();
-		return true;
-	}
-
-	override function updateDisplay():String
-	{
-		return "Unload song " + (!FlxG.save.data.songUnload ? "off" : "on");
 	}
 }
 
@@ -638,10 +488,7 @@ class SongInfoOption extends Option
 		display = updateDisplay();
 		return true;
 	}
-	public override function press():Bool{return right();}
-
-	override function updateDisplay():String
-	{
+	override function updateDisplay():String{
 		return 'Song Info: ${ies[FlxG.save.data.songInfo]}';
 	}
 }
@@ -675,13 +522,7 @@ class SelScriptOption extends Option
 		super();
 		description = desc;
 		acceptValues = true;
-
-	}
-	override function right():Bool {
-		return false;
-	}
-	override function left():Bool {
-		return false;
+		display = "Toggle scripts >";
 	}
 	public override function press():Bool
 	{
@@ -689,10 +530,6 @@ class SelScriptOption extends Option
 		return true;
 	}
 
-	override function updateDisplay():String
-	{
-		return "Toggle scripts >";
-	}
 
 	override function getValue():String {
 		return "Current Script count: " + FlxG.save.data.scripts.length;
@@ -708,8 +545,7 @@ class IntOption extends Option{
 
 	public function new(desc:String,name:String,min:Int,max:Int,mod:String)
 	{
-		this.name = name;
-		// display = name;
+		this.name = display = name;
 		script = mod;
 		this.min = min;
 		this.max = max;
@@ -735,11 +571,6 @@ class IntOption extends Option{
 		display = updateDisplay();
 		return true;
 	}
-	public override function press():Bool{return right();}
-	override function updateDisplay():String
-	{
-		return name;
-	}
 }
 class FloatOption extends Option{
 	var min:Float = 0;
@@ -749,8 +580,7 @@ class FloatOption extends Option{
 
 	public function new(desc:String,name:String,min:Float,max:Float,mod:String)
 	{
-		this.name = name;
-		// display = name;
+		this.name = display = name;
 		script = mod;
 		this.min = min;
 		this.max = max;
@@ -759,9 +589,7 @@ class FloatOption extends Option{
 		description = desc;
 
 	}
-	override function getValue():String {
-		return '${OptionsMenu.modOptions[script][name]}';
-	}
+	override function getValue():String return '${OptionsMenu.modOptions[script][name]}';
 
 	override function right():Bool {
 
@@ -777,11 +605,6 @@ class FloatOption extends Option{
 		if (OptionsMenu.modOptions[script][name] < min) OptionsMenu.modOptions[script][name] = max;
 		display = updateDisplay();
 		return true;
-	}
-	public override function press():Bool{return right();}
-	override function updateDisplay():String
-	{
-		return name;
 	}
 }
 class BoolOption extends Option{
@@ -807,10 +630,7 @@ class BoolOption extends Option{
 		return true;
 	}
 
-	override function updateDisplay():String
-	{
-		return name + ": " + getValue();
-	}
+	override function updateDisplay():String return name + ": " + getValue();
 }
 
 
@@ -833,9 +653,8 @@ class HCIntOption extends Option{
 		description = desc;
 
 	}
-	override function getValue():String {
-		return '${Reflect.getProperty(FlxG.save.data,id)}';
-	}
+	override function getValue():String return '${Reflect.getProperty(FlxG.save.data,id)}';
+
 	public override function left():Bool{
 		Reflect.setProperty(FlxG.save.data,id,Math.max(Reflect.getProperty(FlxG.save.data,id) - inc,min));
 		display = updateDisplay();
@@ -846,12 +665,7 @@ class HCIntOption extends Option{
 		display = updateDisplay();
 		return true;
 	}
-	public override function press():Bool{
-		return right();
-	}
-	override function updateDisplay():String{
-		return name + ": " + getValue();
-	}
+	override function updateDisplay():String return name + ": " + getValue();
 }
 class HCFloatOption extends Option{
 	var id:String;
@@ -893,12 +707,7 @@ class HCFloatOption extends Option{
 		display = updateDisplay();
 		return true;
 	}
-	public override function press():Bool{
-		return right();
-	}
-	override function updateDisplay():String{
-		return name + ": " + getValue();
-	}
+	override function updateDisplay():String return name + ": " + getValue();
 }
 class HCBoolOption extends Option{
 	var id:String;
@@ -917,9 +726,7 @@ class HCBoolOption extends Option{
 		description = desc;
 
 	}
-	override function getValue():String {
-		return '${Reflect.getProperty(FlxG.save.data,id)}';
-	}
+	override function getValue():String return '${Reflect.getProperty(FlxG.save.data,id)}';
 	public override function press():Bool{
 		Reflect.setProperty(FlxG.save.data,id,!Reflect.getProperty(FlxG.save.data,id));
 		display = updateDisplay();
@@ -942,16 +749,7 @@ class BackTransOption extends Option
 		super();
 		description = desc;
 		acceptValues = true;
-	}
-
-	public override function press():Bool
-	{
-		return false;
-	}
-
-	override function updateDisplay():String
-	{
-		return "Underlay opacity";
+		display = "Underlay opacity";
 	}
 
 	override function right():Bool {
@@ -962,9 +760,8 @@ class BackTransOption extends Option
 		return true;
 	}
 
-	override function getValue():String {
-		return "Underlay opacity: " + HelperFunctions.truncateFloat(FlxG.save.data.undlaTrans,1);
-	}
+	override function getValue():String return "Underlay opacity: " + HelperFunctions.truncateFloat(FlxG.save.data.undlaTrans,1);
+	
 
 	override function left():Bool {
 		FlxG.save.data.undlaTrans -= 0.1;
@@ -987,13 +784,11 @@ class BackgroundSizeOption extends Option
 		if (FlxG.save.data.undlaSize >= ies.length) FlxG.save.data.undlaSize = 0;
 		super();
 		description = desc;
-
+		display = 'Underlay style';
 		acceptValues = true;
 	}
 
-	override function getValue():String {
-		return iesDesc[FlxG.save.data.undlaSize];
-	}
+	override function getValue():String return iesDesc[FlxG.save.data.undlaSize];
 
 	override function right():Bool {
 		FlxG.save.data.undlaSize += 1;
@@ -1007,12 +802,7 @@ class BackgroundSizeOption extends Option
 		display = updateDisplay();
 		return true;
 	}
-	public override function press():Bool{return right();}
 
-	override function updateDisplay():String
-	{
-		return 'Underlay style';
-	}
 }
 
 
@@ -1023,18 +813,11 @@ class VolumeOption extends Option
 	{
 		opt = option;
 		super();
+		display = '$opt Volume';
 		description = desc;
 		acceptValues = true;
 	}
 
-	public override function press():Bool
-	{
-		return false;
-	}
-
-	override function updateDisplay():String
-	{
-		return  opt + " Volume";}
 
 	override function right():Bool {
 		Reflect.setField(FlxG.save.data,opt+"Vol", Reflect.field(FlxG.save.data,opt+"Vol") + (if(FlxG.keys.pressed.SHIFT) 0.01 else 0.1));
@@ -1078,6 +861,7 @@ class EraseOption extends Option
 		opt = option;
 		super();
 		description = desc;
+		display = "Reset Options to defaults";
 	}
 
 	public override function press():Bool
@@ -1092,21 +876,6 @@ class EraseOption extends Option
 		}
 		
 		return true;
-	}
-
-	override function updateDisplay():String
-	{
-		return "Reset Options to defaults";
-	}
-
-	override function right():Bool {
-		
-		return false;
-	}
-
-
-	override function left():Bool {
-		return false;
 	}
 }
 
@@ -1148,7 +917,6 @@ class QuickOption extends Option{
 	}
 			
 	override function right():Bool {
-
 		changeThing(true);
 		return true;
 	}
@@ -1156,7 +924,6 @@ class QuickOption extends Option{
 		changeThing();
 		return true;
 	}
-	public override function press():Bool{changeThing(true); return true;}
 	override function updateDisplay():String
 	{
 		var val = setting.value;

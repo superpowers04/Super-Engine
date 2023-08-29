@@ -81,7 +81,6 @@ class FinishSubState extends MusicBeatSubstate
 		PlayState.instance.followChar(if(won) 0 else 1);
 		var camPos = PlayState.instance.getDefaultCamPos();
 		PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
-
 		if(!isError){
 			var inName = if(won)"winSong" else "loseSong";
 			PlayState.instance.callInterp(inName,[]);
@@ -196,6 +195,7 @@ class FinishSubState extends MusicBeatSubstate
 			// FlxG.mouse.visible = true;
 			// var timer = new FlxTimer().start(1,function(e:FlxTimer){FinishSubState.instance.ready=true;FlxTween.tween(FinishSubState.instance.contText,{alpha:1},0.5);});
 			Conductor.changeBPM(70);
+			if(isError) win = false;
 			if(name != "FORCEDMOMENT.MP4efdhseuifghbehu"){
 
 				FlxG.camera.alpha = PlayState.instance.camHUD.alpha = 1;

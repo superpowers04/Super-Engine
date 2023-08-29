@@ -138,6 +138,9 @@ class SELoader {
 	@:keep inline public static function getContent(textPath:String):String{return loadText(textPath,false);}
 	@:keep inline public static function saveContent(textPath:String,content:String):String{return saveText(textPath,content,false);}
 	@:keep inline public static function getBytes(textPath:String):haxe.io.Bytes{return loadBytes(textPath,false);}
+	@:keep inline public static function gc(){
+		openfl.system.System.gc();
+	}
 
 	public static function loadBytes(textPath:String,?useCache:Bool = false):haxe.io.Bytes{
 		// No cache support atm

@@ -27,28 +27,32 @@ typedef QOSetting={
 
 class QuickOptionsSubState extends MusicBeatSubstate
 {
+
+	static inline var BOOL=0;
+	static inline var INT=1;
+	static inline var FLOAT=2;
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 	public static var normalSettings:Map<String,QOSetting> = [
-			"Inverted chart" => {type:0,value:false},
-			"Swap characters" => {type:0,value:false},
-			"Opponent arrows" => {type:0,value:true},
-			"Song hscripts" => {type:0,value:true},
-			"Custom Arrows" => {type:0,value:true},
-			"Scroll speed" => {type:2,value:0,min:0,max:10
+			"Inverted chart" => {type:BOOL,value:false},
+			"Swap characters" => {type:BOOL,value:false},
+			"Opponent arrows" => {type:BOOL,value:true},
+			"Song hscripts" => {type:BOOL,value:true},
+			"Custom Arrows" => {type:BOOL,value:true},
+			"Scroll speed" => {type:FLOAT,value:0,min:0.1,max:10
 				#if(!hl),lang:[0 => "Chart"] #end
 
 			},
-			"Song Speed" => {type:2,value:1,min:0,max:10
+			"Song Speed" => {type:FLOAT,value:1,min:0.1,max:10
 				#if(!hl),lang:[1 => "Normal"] #end
 			}, // Not a stolen idea, dunno what you mean
-			"Flippy mode" => {type:0,value:false
+			"Flippy mode" => {type:BOOL,value:false
 				#if(!hl) ,lang:[false => "off",true => "I love pain"] #end
 			},
-			"BotPlay" => {type:0,value:false}
+			"BotPlay" => {type:BOOL,value:false}
 		];
 	static var defSettings:Map<String,QOSetting> = normalSettings.copy();
 	public static var osuSettings:Map<String,QOSetting> = [
-			"Scroll speed" => {type:2,value:0,min:0,max:10
+			"Scroll speed" => {type:FLOAT,value:0,min:0,max:10
 				#if(!hl), lang:[0 => "User Set"] #end
 			}
 		];
@@ -152,8 +156,8 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	}
 
 	function changeSetting(sel:Int,?dir:Bool = true){
-		if (settings[menuItems[sel]].type == 0) setValue(menuItems[sel],settings[menuItems[sel]].value = !settings[menuItems[sel]].value );
-		if (settings[menuItems[sel]].type == 1 || settings[menuItems[sel]].type == 2) {
+		if (settings[menuItems[sel]].type == BOOL) setValue(menuItems[sel],settings[menuItems[sel]].value = !settings[menuItems[sel]].value );
+		if (settings[menuItems[sel]].type == INT || settings[menuItems[sel]].type == FLOAT) {
 			var val = settings[menuItems[sel]].value;
 			var inc:Float = 1;
 			if(settings[menuItems[sel]].type == 2 && FlxG.keys.pressed.SHIFT) inc=0.1;
@@ -171,24 +175,15 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	{
 		curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = menuItems.length - 1;
-		if (curSelected >= menuItems.length)
-			curSelected = 0;
+		if (curSelected < 0) curSelected = menuItems.length - 1;
+		else if (curSelected >= menuItems.length) curSelected = 0;
 
 		var bullShit:Int = 0;
 
-		for (item in grpMenuShit.members)
-		{
+		for (item in grpMenuShit.members){
 			item.targetY = bullShit - curSelected;
+			item.alpha = (item.targetY == 0 ? 1 : 0.6);
 			bullShit++;
-
-			item.alpha = 0.6;
-
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-			}
 		}
 	}
 }

@@ -463,11 +463,7 @@ class ConsoleInput extends TextField{
 			@:privateAccess
 			if(Reflect.getProperty(FlxG.keys.justPressed,key)){
 				if(FlxG.keys.pressed.SHIFT){
-					if(keyListUpper[key] != null){
-						char = keyListUpper[key];
-					}else{
-						char = char.toUpperCase();
-					}
+					char = (keyListUpper[key] != null ? keyListUpper[key] : char.toUpperCase());
 				}
 				addTextAtCaret(char);
 				caretPos++;

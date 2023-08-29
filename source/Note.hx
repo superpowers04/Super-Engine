@@ -22,7 +22,7 @@ using StringTools;
 
 
 
-class Note extends FlxSkewedSprite
+class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 	public var noteID:Int = 0;
@@ -222,7 +222,7 @@ class Note extends FlxSkewedSprite
 		}; // Strums
 		if(noteAnimation != null){
 			var anim = (if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation);
-			var char = (if(char == null)PlayState.getCharFromID(charID) else char);
+			var char = (if(char == null)PlayState.getCharFromID(charID,true) else char);
 			if(!isSustainNote && char.animName == anim){
 				char.animation.play('idle',true);
 			}
@@ -235,14 +235,14 @@ class Note extends FlxSkewedSprite
 			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
 		if(noteAnimation != null){
-			(if(char == null) PlayState.getCharFromID(charID) else char).playAnim((if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
+			(if(char == null) PlayState.getCharFromID(charID,true) else char).playAnim((if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
 		}
 	}
-	inline function getNoteAnim(noteData){return (if (noteAnims[noteData] == null) _noteAnimsBackup[noteData % 4] else noteAnims[noteData]);}
+	@:keep inline function getNoteAnim(noteData){return (if (noteAnims[noteData] == null) _noteAnimsBackup[noteData % 4] else noteAnims[noteData]);}
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		if(noteAnimationMiss != null){
-			(if(char == null) PlayState.getCharFromID(charID) else char).playAnim((if(noteAnimationMiss == "") getNoteAnim(noteData) + "miss" else noteAnimationMiss),true); // Play animation
+			(if(char == null) PlayState.getCharFromID(charID,true) else char).playAnim((if(noteAnimationMiss == "") getNoteAnim(noteData) + "miss" else noteAnimationMiss),true); // Play animation
 		}
 	}
 	// Array of animations, to be used above
@@ -419,7 +419,6 @@ class Note extends FlxSkewedSprite
 	override function draw(){
 		// if(!(eventNote && !inCharter) && showNote && visible){
 		if(!inCharter && (!showNote || !visible || eventNote)) return;
-		visible = true; // Force drawing even if visible is false in charter
 		super.draw();
 		if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
 		// }
@@ -433,15 +432,14 @@ class Note extends FlxSkewedSprite
 	}
 	override function update(elapsed:Float)
 	{
-		super.update(elapsed);
+		// super.update(elapsed);
+		animation.update(elapsed);
 		switch(inCharter){
 			case true:{
 
 				wasGoodHit = (strumTime <= Conductor.songPosition && strumTime + 100 >= Conductor.songPosition);
 				alpha = (wasGoodHit ? 0.7 : 1);
 				if(wasGoodHit && !tooLate && ChartingState.playClaps){
-					// FlxG.sound.play(Paths.sound('SNAP'),FlxG.save.data.hitvol,false,true);
-					// ChartingState.playSnap();
 					ChartingState.playSnap();
 				}
 				tooLate = wasGoodHit;
@@ -451,19 +449,10 @@ class Note extends FlxSkewedSprite
 			case false:{
 				callInterp("noteUpdate",[this]);
 				if (!skipNote || y < 780 && y > -60 && x < 1340 && x > -60){ // doesn't calculate anything until they're on screen
-					visible = (!eventNote && showNote);
+					visible = showNote;
 					skipNote = false;
-					// if(eventNote){
-					// 	if (strumTime <= Conductor.songPosition){
-					// 		callInterp("eventNoteHit",[this]);
-					// 		this.hit(1,this);
-					// 		if(PlayState.instance.cancelCurrentFunction) return;
-					// 		this.destroy();
-					// 	}
-					// 	return;
-					// }
-					// else 
-					if (mustPress && !eventNote)
+					var dad = PlayState.opponentCharacter;
+					if (mustPress)
 					{
 						// ass
 						if (shouldntBeHit)
@@ -496,15 +485,16 @@ class Note extends FlxSkewedSprite
 							}
 						}
 					}
-					else if (aiShouldPress && (PlayState.dad == null || !PlayState.dad.isStunned) && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
+					else if (aiShouldPress && (dad == null || !dad.isStunned) && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition)
 					{
 						hit(1,this);
-						callInterp("noteHitDad",[PlayState.dad,this]);
+						
+						callInterp("noteHitDad",[dad,this]);
 						
 
-						PlayState.dad.holdTimer = 0;
+						dad.holdTimer = 0;
 
-						if (PlayState.dad.useVoices){PlayState.dad.voiceSounds[noteData].play(1);PlayState.dad.voiceSounds[noteData].time = 0;PlayState.instance.vocals.volume = 0;}else if (PlayState.SONG.needsVoices) PlayState.instance.vocals.volume = FlxG.save.data.voicesVol;
+						if (dad.useVoices){dad.voiceSounds[noteData].play(1);dad.voiceSounds[noteData].time = 0;PlayState.instance.vocals.volume = 0;}else if (PlayState.SONG.needsVoices) PlayState.instance.vocals.volume = FlxG.save.data.voicesVol;
 
 						PlayState.instance.notes.remove(this, true);
 						destroy();

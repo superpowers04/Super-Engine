@@ -1,2 +1,8 @@
-1.0.0-U38;
-- 
+1.0.0-U39;
+- BREAKING CHANGE: BF and Opponent will no longer switch depending on if swapCharacters is true or not, 
+	to get the player you can use state.playerCharacter and to get the opponent you can use state.opponentCharacter
+	All callbacks have been updated to reflect this change.
+	If playerCharacter is null, it'll return BF if invertedCharacters is false or Opponent if true 
+	If opponentCharacter is null, it'll return Opponent if invertedCharacters is false or BF if true 
+	The game now internally uses playerCharacter and opponentCharacter during gameplay
+- Camera properly zooms again

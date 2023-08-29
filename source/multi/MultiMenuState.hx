@@ -523,10 +523,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 	}
 	override function handleInput(){
-			if (controls.BACK || FlxG.keys.justPressed.ESCAPE)
-			{
-				ret();
-			}
+			if (controls.BACK || FlxG.keys.justPressed.ESCAPE) {ret();return;}
+
 			if(songs.length == 0 || !allowInput) return;
 			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
 			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
@@ -665,7 +663,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							if(!voices.playing){
 								songProgressText.text = "Playing Inst and Voices";
 								voices.play(FlxG.sound.music.time);
-								voices.volume = FlxG.save.data.voicesVol;
+								voices.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
 								voices.looped = true;
 							}else{
 								songProgressText.text = "Playing Inst";
@@ -678,6 +676,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					}
 					if(FlxG.sound.music.fadeTween != null)FlxG.sound.music.fadeTween.destroy(); // Prevents the song from muting itself
 					FlxG.sound.music.volume = FlxG.save.data.instVol;
+					FlxG.sound.music.volume = FlxG.save.data.instVol * FlxG.sound.volume;
+			
 					FlxG.sound.music.play();
 				}
 				if(playCount > 2){
