@@ -95,7 +95,8 @@ class OptionsMenu extends MusicBeatState
 
 			new AccuracyDOption("Change how accuracy is calculated. ( Simple = Rating based, SE = Distance from note to time, Complex = Etterna(?) )"),
 			// new OffsetMenu("Get a note offset based off of your inputs!"),
-			new InputEngineOption("Change the input engine used, only works locally.")
+			new InputEngineOption("Change the input engine used, only works locally."),
+			new ResetKeybindsOption("Backs up your options to SESETTINGS-BACK.json and then resets them"),
 		],"Edit things like Keybinds, scroll direction, etc"),
 		new OptionCategory("Judgements", [
 			new AccuracyDOption("Change how accuracy is calculated. ( Simple = Rating based, SE = Distance from note to time, Complex = Etterna(?) )"),

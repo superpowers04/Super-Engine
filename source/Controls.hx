@@ -448,20 +448,18 @@ class Controls extends FlxActionSet
 	 * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
 	 * If binder is a literal you can inline this
 	 */
-	public function bindKeys(control:Control, keys:Array<FlxKey>)
+	@:keep inline public function bindKeys(control:Control, keys:Array<FlxKey>)
 	{
-		#if (haxe >= "4.0.0")
+		// trace('$control: $keys');
 		inline forEachBound(control, (action, state) -> addKeys(action, keys, state));
-		#else
-		forEachBound(control, function(action, state) addKeys(action, keys, state));
-		#end
+
 	}
 
 	/**
 	 * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
 	 * If binder is a literal you can inline this
 	 */
-	public function unbindKeys(control:Control, keys:Array<FlxKey>)
+	@:keep inline public function unbindKeys(control:Control, keys:Array<FlxKey>)
 	{
 		#if (haxe >= "4.0.0")
 		inline forEachBound(control, (action, _) -> removeKeys(action, keys));
@@ -572,10 +570,10 @@ class Controls extends FlxActionSet
 
 		removeKeyboard();
 	
-		inline bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.upBind), FlxKey.fromString(FlxG.save.data.AltupBind), FlxKey.UP]);
-		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.downBind), FlxKey.fromString(FlxG.save.data.AltdownBind), FlxKey.DOWN]);
-		inline bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.leftBind), FlxKey.fromString(FlxG.save.data.AltleftBind), FlxKey.LEFT]);
-		inline bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.rightBind), FlxKey.fromString(FlxG.save.data.AltrightBind), FlxKey.RIGHT]);
+		inline bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.keys[3][0]), FlxKey.fromString(FlxG.save.data.keys[3][4]), FlxKey.LEFT]);
+		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.keys[3][1]), FlxKey.fromString(FlxG.save.data.keys[3][5]), FlxKey.DOWN]);
+		inline bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.keys[3][2]), FlxKey.fromString(FlxG.save.data.keys[3][6]), FlxKey.UP]);
+		inline bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.keys[3][3]), FlxKey.fromString(FlxG.save.data.keys[3][7]), FlxKey.RIGHT]);
 		inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 		inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 		inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);

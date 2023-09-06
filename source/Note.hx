@@ -101,6 +101,27 @@ class Note extends FlxSprite
 		return toJson();
 	}
 	public var noteJSON:NoteAssetConfig;
+	// public var multikeyNoteNames:Array<Array<String>> = [
+	// 	['white'],
+	// 	['purple','red'],
+	// 	['purple','white','red'],
+	// 	['purple','aqua','green','red'],
+	// 	['purple','aqua','white','green','red'],
+	// 	['purple','aqua','red','yellow','green','orange'],
+	// 	['purple','aqua','red','white','yellow','green','orange'],
+	// 	['purple','aqua','green','red','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','white','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','cyan','magenta','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','cyan','white','magenta','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','lime','cyan','magenta','tango','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','lime','cyan','white','magenta','tango','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','lime','cyan','tango','canary','magenta','tango','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','lime','cyan','tango','wintergreen','canary','magenta','tango','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','lime','cyan','magenta','tango','canary','scarlet','violet','erin','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','lime','cyan','magenta','tango','wintergreen','canary','scarlet','violet','erin','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','lime','cyan','magenta','tango','white','wintergreen','canary','scarlet','violet','erin','yellow','pink','blue','orange'],
+	// 	['purple','aqua','green','red','lime','cyan','magenta','tango','lime','cyan','wintergreen','violet','erin','canary','scarlet','violet','erin','yellow','pink','blue','orange'],
+	// ];
 	public function addAnimations(){
 		if(noteJSON != null){
 			animation.addByPrefix('scroll', noteJSON.animname);
@@ -340,7 +361,7 @@ class Note extends FlxSprite
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
 			antialiasing = true;
-			var noteName = noteNames[noteData];
+			var noteName = noteNames[noteData % 4]; // TODO Add support for multikey note assets
 			if(eventNote || noteName == null || noteName == "") noteName = noteNames[0];
 			
 

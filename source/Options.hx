@@ -878,6 +878,26 @@ class EraseOption extends Option
 		return true;
 	}
 }
+class ResetKeybindsOption extends Option
+{
+	var opt = "";
+	public function new(desc:String,option:String = "")
+	{
+		opt = option;
+		super();
+		description = desc;
+		display = "Reset Keybinds to defaults";
+	}
+
+	public override function press():Bool
+	{
+		SEFlxSaveWrapper.saveTo();
+		KeyBinds.resetBinds();
+		OptionsMenu.instance.showTempmessage('Reset keybinds back to defaults and backed up your options to SEOPTIONS-BACKUP.json',FlxColor.GREEN,10);
+		
+		return true;
+	}
+}
 
 class QuickOption extends Option{
 	var name:String;

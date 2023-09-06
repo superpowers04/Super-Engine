@@ -34,6 +34,7 @@ typedef SwagSong =
 		var ?modName:String;
 		var ?artist:String;
 		var ?difficultyString:String;
+		var ?keyCount:Null<Int>;
 
 	// Psych
 		var ?sectionBeats:Null<Float>;
@@ -85,7 +86,9 @@ class Song
 	public var player3:String = 'gf';
 	public var noteStyle:String = 'normal';
 	public var stage:String = 'stage';
-	public static var defNoteMetadata:NoteMetadata = {
+	public var keyCount:Int = 4;
+	public static final maniaToKeyMap:Array<Int> = [4, 6, 7, 9, 5, 8, 1, 2, 3, 10, 11, 12, 13, 14, 15, 16 ,17, 18, 21];
+	public static final defNoteMetadata:NoteMetadata = {
 				badnoteHealth : -0.24,
 				badnoteScore : -7490,
 				missScore : -10,
@@ -144,7 +147,6 @@ class Song
 
 
 	static function invertChart(swagShit:SwagSong):SwagSong{
-		var invertedNotes:Array<Int> = [4,5,6,7,0,1,2,3];
 		for (sid => section in swagShit.notes) {
 			section.mustHitSection = !section.mustHitSection;
 			swagShit.notes[sid] = section;
@@ -154,11 +156,13 @@ class Song
 
 
 	static function modifyChart(swagShit:SwagSong,charting:Bool = false):SwagSong{
+		if(swagShit.keyCount == null){
+			swagShit.keyCount = (swagShit.mania != null && swagShit.mania != 0 ? maniaToKeyMap[swagShit.mania] : 4);
+		}
 		var hurtArrows = (QuickOptionsSubState.getSetting("Custom Arrows") || onlinemod.OnlinePlayMenuState.socket != null || charting);
 		var useHurtArrows = FlxG.save.data.useHurtArrows;
 		var opponentArrows = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows") || charting);
-		var invertedNotes:Array<Int> = [4,5,6,7];
-		var oppNotes:Array<Int> = [0,1,2,3];
+		var maxKeys = (swagShit.keyCount * 2) - 1;
 		for (sid => section in swagShit.notes) {
 			if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
 
@@ -174,10 +178,16 @@ class Song
 				var note:Array<Dynamic> = section.sectionNotes[nid];
 				var modified = false;
 				// Removes opponent arrows 
-				if (!opponentArrows && (section.mustHitSection && invertedNotes.contains(note[1]) || !section.mustHitSection && oppNotes.contains(note[1]))){trace("Skipping note");sN.push(nid);continue;}
+				if (!opponentArrows && (section.mustHitSection && note[1] >= swagShit.keyCount || !section.mustHitSection && note[1] < swagShit.keyCount)){
+					sN.push(nid);
+					continue;
+				}
 				
 				if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
-					if(useHurtArrows && Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > 7)) {note[3] = 1;modified = true;} // Support for Andromeda and tricky notes
+					if(useHurtArrows && Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > maxKeys )) {
+						note[3] = 1;
+						modified = true;
+					} // Support for Andromeda and tricky notes
 				}else{
 					note[3] = null;modified = true;
 				}
@@ -212,13 +222,14 @@ class Song
 			swagShit.validScore = true;
 			if ((PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) && !charting) swagShit = invertChart(swagShit);
 			if(Math.isNaN(swagShit.offset)) swagShit.offset = 0;
+
 			swagShit = modifyChart(swagShit,charting);
 			// if (QuickOptionsSubState.getSetting("Hurt notes") || onlinemod.OnlinePlayMenuState.socket != null) swagShit = convHurtArrows(swagShit);
 			// if (onlinemod.OnlinePlayMenuState.socket == null){
 			// 	if (!QuickOptionsSubState.getSetting("Opponent arrows")) swagShit = removeOpponentArrows(swagShit);
 			// 	if (!QuickOptionsSubState.getSetting("Hurt notes")) swagShit = removeHurtArrows(swagShit);
 			// }
-			if(QuickOptionsSubState.getSetting("Scroll speed") > 0) swagShit.speed = QuickOptionsSubState.getSetting("Scroll speed");
+			if(QuickOptionsSubState.getSetting("Scroll speed") > 0 && !charting) swagShit.speed = QuickOptionsSubState.getSetting("Scroll speed");
 			if (swagShit.noteMetadata == null) swagShit.noteMetadata = Song.defNoteMetadata;
 			swagShit.chartType = ChartingState.detectChartType(swagShit);
 			return swagShit;

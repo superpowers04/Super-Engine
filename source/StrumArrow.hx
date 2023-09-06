@@ -69,9 +69,9 @@ class StrumArrow extends FlxSprite{
 				animation.addByPrefix('pressed', noteJSON.pressedanimname,false);
 				animation.addByPrefix('confirm', noteJSON.confirmanimname,false);
 			}else{
-				animation.addByPrefix('static', 'arrow' + arrowIDs[id].toUpperCase());
-				animation.addByPrefix('pressed', arrowIDs[id].toLowerCase() + ' press', 24, false);
-				animation.addByPrefix('confirm', arrowIDs[id].toLowerCase() + ' confirm', 24, false);
+				animation.addByPrefix('static', 'arrow' + arrowIDs[id % 4].toUpperCase());
+				animation.addByPrefix('pressed', arrowIDs[id % 4].toLowerCase() + ' press', 24, false);
+				animation.addByPrefix('confirm', arrowIDs[id % 4].toLowerCase() + ' confirm', 24, false);
 			}
 			animation.play(curAnim);
 			setGraphicSize(Std.int(width * 0.7));

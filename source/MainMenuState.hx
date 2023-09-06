@@ -25,7 +25,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import flixel.util.FlxAxes;
 import haxe.CallStack;
-
+import se.utilities.SEMacros;
 
 using StringTools;
 
@@ -33,8 +33,7 @@ class MainMenuState extends SickMenuState
 {
 	
 	public static var firstStart:Bool = true;
-
-	public static var nightly(default,never):String = "U39";
+	public static var nightly(default,never):String = "X" + SEMacros.buildDate;
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 	// This should be incremented every update, this'll be sequential so you can just compare it to another version identifier
 	public static var versionIdentifier:Int = 1;

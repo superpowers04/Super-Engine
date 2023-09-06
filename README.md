@@ -8,6 +8,7 @@ An overhaul of [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRo
 - Dragging charts into the game's window/mod folder to play them without much setup
 - Scripting capabilities that allow you to add mechanics, features, new input systems or out-right overhauls
 - Easy importing of existing mods so you can play charts with a (hopefully) better input system and user experience
+- Multikey support
 
 All without recompiling the game at all or editing source code. Infact, editing source code is discouraged unless you're going to directly contribute to the engine or make a fork of the engine.
 
@@ -16,7 +17,6 @@ I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highl
 
  Click on a commit and go to the artifacts to download, you need a github account to download artifacts
 <br>You can find downloads, custom content, get help and more at the [Super Engine Discord server](https://discord.gg/28GPGTRuuR)
-<br><br>For an **unofficial** version that supports more keys, [You can use cartoon032's fork](https://github.com/cartoon032/FunkinBattleRoyale-Mod)
 <br><br>Note that due to the setup on my end, I push commits all at once, so pull requests and other things might be out of date and need to be merged manually
 # Modding information
 Read the [mods/readme.txt](https://github.com/superpowers04/Super-Engine/blob/nightly/example_mods/readme.txt) for info about installing/making custom characters, charts, stages and more. 

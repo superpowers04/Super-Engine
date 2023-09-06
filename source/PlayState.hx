@@ -1555,6 +1555,7 @@ class PlayState extends ScriptMusicBeatState
 		
 		var daBeats:Int = 0; // Current section ID, ig
 		var section:SwagSection = null;
+		var halfCount = (songData.keyCount * 2);
 		while (daBeats < noteData.length)
 		{
 			section = noteData[daBeats];
@@ -1572,7 +1573,7 @@ class PlayState extends ScriptMusicBeatState
 				var daNoteData:Int = songNotes[1];
 
 
-				var gottaHitNote:Bool = (if (daNoteData % 8 > 3) !section.mustHitSection else section.mustHitSection);
+				var gottaHitNote:Bool = (if (daNoteData % halfCount > songData.keyCount - 1) !section.mustHitSection else section.mustHitSection);
 
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
@@ -1707,7 +1708,10 @@ class PlayState extends ScriptMusicBeatState
 
 			}
 		}
-		for (i in 0...4){
+		var scale = 1 - ((SONG.keyCount / 4) * 0.05);
+		var strumWidth = Note.swagWidth * scale;
+		var halfKeyCount = Std.int(Math.floor(SONG.keyCount * 0.5));
+		for (i in 0...SONG.keyCount){
 			var babyArrow:StrumArrow = new StrumArrow(i,0, strumLine.y);
 
 			charCall("strumNoteLoad",[babyArrow,player],if (player == 1) 0 else 1,true);
@@ -1722,7 +1726,8 @@ class PlayState extends ScriptMusicBeatState
 			// {
 			babyArrow.y -= 10;
 			babyArrow.alpha = 0;
-			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+			babyArrow.angle = 50;
+			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1,angle:0}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			if(player == 1) babyArrow.color = 0xdddddd;
 			// }
 
@@ -1741,8 +1746,8 @@ class PlayState extends ScriptMusicBeatState
 			if(useNoteCameras){
 
 				babyArrow.screenCenter(X);
-				babyArrow.x += ((Note.swagWidth #if(android) * if(FlxG.save.data.useStrumsAsButtons) 1.5 else 1 #end ) * i) + i - 
-				(Note.swagWidth + (Note.swagWidth * ( #if(android) if(FlxG.save.data.useStrumsAsButtons) 1 else #end 0.5) ));
+				babyArrow.x += ((strumWidth #if(android) * if(FlxG.save.data.useStrumsAsButtons) 1.5 else 1 #end ) * i) + i - 
+				(strumWidth + (strumWidth * ( #if(android) if(FlxG.save.data.useStrumsAsButtons) 1 else #end 0.5) ));
 				#if android
 				if(FlxG.save.data.useStrumsAsButtons){
 					// babyArrow.setGraphicSize(1);
@@ -1763,15 +1768,15 @@ class PlayState extends ScriptMusicBeatState
 					switch(player){
 						case 1:{
 							babyArrow.screenCenter(X);
-							babyArrow.x += (Note.swagWidth * i) + i - (Note.swagWidth + (Note.swagWidth * 0.5));
+							babyArrow.x += (strumWidth * i) + i - ((strumWidth * halfKeyCount) + (strumWidth * 0.5));
 						}
 						case 0:
 							// babyArrow.screenCenter(X);
-							babyArrow.x = (FlxG.width * (if(babyArrow.ID > 1)0.75 else 0.25)) + (Note.swagWidth * i + i) - (Note.swagWidth * 2 + 2);
+							babyArrow.x = (FlxG.width * (if(babyArrow.ID > halfKeyCount)0.75 else 0.25)) + (strumWidth * i + i) - (strumWidth * 2 + 2);
 					}
 
 				}else{
-					babyArrow.x = (FlxG.width * (if(player == 1) 0.625 else 0.15)) + (Note.swagWidth * i) + i - Note.swagWidth;
+					babyArrow.x = (FlxG.width * (if(player == 1) 0.625 else 0.15)) + (strumWidth * i) + i - strumWidth;
 				}
 			}
 			babyArrow.visible = (player == 1 || FlxG.save.data.oppStrumLine);
@@ -1792,6 +1797,7 @@ class PlayState extends ScriptMusicBeatState
 			// }
 			charCall("strumNoteAdd",[babyArrow,player],if (player == 1) 0 else 1,true);
 			callInterp("strumNoteAdd",[babyArrow,player == 1]);
+
 		}
 		if(useNoteCameras){
 			if(player == 1){
@@ -1843,7 +1849,17 @@ class PlayState extends ScriptMusicBeatState
 			}
 		}
 		#end
-
+		for(babyArrow in strumLineNotes){
+			var i = babyArrow.id;
+			var text = new FlxText(babyArrow.x + (babyArrow.width * 0.5),babyArrow.y + (babyArrow.height * 0.5) - 10,'${FlxG.save.data.keys[3][i]}',10);
+			text.alpha = 0.1;
+			text.angle = -50;
+			add(text.setFormat(null,32,0xffFFFFFF,'CENTER',OUTLINE,0xff000000));
+			text.cameras = babyArrow.cameras;
+			FlxTween.tween(text, {alpha: 1,angle:0}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+			FlxTween.tween(text, {y: text.y + 40}, 4, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+			FlxTween.tween(text,{alpha:0,y:text.y + 60},0.5,{startDelay:4 + (0.2 * i),onComplete:function(_){text.destroy();}});
+		}
 	}
 
 	@:keep inline function tweenCamIn():Void{
@@ -2047,8 +2063,8 @@ class PlayState extends ScriptMusicBeatState
 				+'\nChartType: ${SONG.chartType}';
 		}
 		if(controlCamera){
-			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom, defaultCamZoom, elapsed * (Conductor.crochet * 0.9));
-			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultCamHUDZoom, elapsed * (Conductor.crochet * 0.9));
+			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom, defaultCamZoom, elapsed );
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultCamHUDZoom, elapsed * 0.5 );
 		}
 		
 
@@ -2764,14 +2780,26 @@ class PlayState extends ScriptMusicBeatState
 		SEIKeyMap[FlxKey.fromStringMap['DOWN']] =	1;
 		SEIKeyMap[FlxKey.fromStringMap['UP']] =		2;
 		SEIKeyMap[FlxKey.fromStringMap['RIGHT']] =	3;
-		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.leftBind]] =		0;
-		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltleftBind]] =	0;
-		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.downBind]] =		1;
-		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltdownBind]] =	1;
-		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.upBind]] =		2;
-		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltupBind]] =		2;
-		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.rightBind]] =		3;
-		SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltrightBind]] =	3;
+		if(SONG.keyCount == 3){
+			var arr:Array<String> = cast FlxG.save.data.keys[3];
+			for(i => v in arr){
+				SEIKeyMap[FlxKey.fromStringMap[v]] = i % SONG.keyCount; 
+			}
+		}else{
+			var arr:Array<String> = cast FlxG.save.data.keys[SONG.keyCount - 1];
+			for(i => v in arr){
+				SEIKeyMap[FlxKey.fromStringMap[v]] = i; 
+			}
+
+		}
+		// SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.leftBind]] =		0;
+		// SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltleftBind]] =	0;
+		// SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.downBind]] =		1;
+		// SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltdownBind]] =	1;
+		// SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.upBind]] =		2;
+		// SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltupBind]] =		2;
+		// SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.rightBind]] =		3;
+		// SEIKeyMap[FlxKey.fromStringMap[FlxG.save.data.AltrightBind]] =	3;
 		callInterp('registerKeysAfter',[SEIKeyMap]);
 	}
 	function SEIKeyPress(event:KeyboardEvent){

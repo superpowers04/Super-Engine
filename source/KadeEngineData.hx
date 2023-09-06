@@ -123,6 +123,7 @@ class KadeEngineData
 		"AltrightBind" => "M",
 		'lastUpdateID' => MainMenuState.versionIdentifier,
 		'useHurtArrows' => false,
+		'keys' => KeyBinds.defaultKeys,
 		// 'persistOpp' => false,
 		// 'mainMenuChar' => FlxG.save.data.mainMenuChar = false,
 		// 'playStateObjectLocations' = new Map<String,ObjectInfo>(),
