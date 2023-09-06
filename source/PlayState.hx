@@ -132,7 +132,11 @@ class PlayState extends ScriptMusicBeatState
 		public static function set_accuracy(vari:Float):Float{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return accuracy = vari;}
 		public static var accuracy(default,set):Float = 0.00;
 		public static var ghostTaps:Int = 0;
-		public static var combo:Int = 0;
+		public static var combo(default,set):Int = 0;
+		public static function set_combo(val){
+			if (PlayState.instance != null && val > maxCombo) maxCombo = val;
+			return combo = val;
+		}
 		public static var maxCombo:Int = 0;
 		public static var accuracyDefault:Float = 0.00;
 		
@@ -415,7 +419,7 @@ class PlayState extends ScriptMusicBeatState
 			if(currentInterp.args[0] == this) currentInterp.args.shift();
 
 			if(error == "") error = 'No error passed!\nInterp info: ${currentInterp}';
-			if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
+			else if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
 			trace('Error!\n ${error}');
 			if(currentInterp.isActive) trace('Current Interpeter: ${currentInterp}');
 			resetInterps();
@@ -431,8 +435,7 @@ class PlayState extends ScriptMusicBeatState
 			FlxTween.globalManager.clear();
 
 			var _forced = (!songStarted && !forced && playCountdown);
-			generatedMusic = false;
-			persistentUpdate = false;
+			generatedMusic = persistentUpdate = false;
 			persistentDraw = true;
 			if(FinishSubState.instance != null){
 				showTempmessage('Error! ${error}',FlxColor.RED);
@@ -595,8 +598,7 @@ class PlayState extends ScriptMusicBeatState
 		logGameplay = FlxG.save.data.logGameplay;
 
 
-		if (FlxG.sound.music != null)
-			FlxG.sound.music.stop();
+		if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
 		resetScore();
 
@@ -1255,9 +1257,9 @@ class PlayState extends ScriptMusicBeatState
 		if(!songStarted){
 
 			if (!generatedArrows){
-				generatedArrows = true;
 				generateStaticArrows(0);
 				generateStaticArrows(1);
+				generatedArrows = true;
 			}
 			if(invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Swap characters"))) swapChars();
 			playerStrums.visible = cpuStrums.visible = true;
@@ -1575,11 +1577,7 @@ class PlayState extends ScriptMusicBeatState
 
 				var gottaHitNote:Bool = (if (daNoteData % halfCount > songData.keyCount - 1) !section.mustHitSection else section.mustHitSection);
 
-				var oldNote:Note;
-				if (unspawnNotes.length > 0)
-					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-				else
-					oldNote = null;
+				var oldNote:Note = (unspawnNotes.length > 0 ? unspawnNotes[Std.int(unspawnNotes.length - 1)] : null);
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,songNotes[3],songNotes,gottaHitNote);
 				if(swagNote.killNote){swagNote.destroy();continue;}
 				swagNote.sustainLength = songNotes[2];
@@ -1600,8 +1598,7 @@ class PlayState extends ScriptMusicBeatState
 				var _susNote:Float = 0;
 				if(susLength > 0.1){
 
-					for (susNote in 0...Math.floor(susLength))
-					{
+					for (susNote in 0...Math.floor(susLength)){
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
 						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,false,songNotes[3],songNotes,gottaHitNote);
@@ -1678,14 +1675,12 @@ class PlayState extends ScriptMusicBeatState
 	function generateStaticArrows(player:Int):Void
 	{
 		if(useNoteCameras){
-			var camWhore = FlxG.cameras.list;
+			// var camList = FlxG.cameras.list;
 			if(player == 1){
 				if(playerNoteCamera != null)playerNoteCamera.destroy();
 				playerNoteCamera = new FlxCamera(0,0,
-												1280,720
-												);
-				if(FlxG.save.data.undlaSize == 0 && underlay != null)
-					underlay.cameras = [playerNoteCamera];
+												1280,720);
+				if(FlxG.save.data.undlaSize == 0 && underlay != null) underlay.cameras = [playerNoteCamera];
 				
 				FlxG.cameras.add(playerNoteCamera,false);
 				playerNoteCamera.bgColor = 0x00000000;
@@ -1708,7 +1703,7 @@ class PlayState extends ScriptMusicBeatState
 
 			}
 		}
-		var scale = 1 - ((SONG.keyCount / 4) * 0.05);
+		var scale = 1 - ((SONG.keyCount / 4) * 0.1);
 		var strumWidth = Note.swagWidth * scale;
 		var halfKeyCount = Std.int(Math.floor(SONG.keyCount * 0.5));
 		for (i in 0...SONG.keyCount){
@@ -1726,15 +1721,13 @@ class PlayState extends ScriptMusicBeatState
 			// {
 			babyArrow.y -= 10;
 			babyArrow.alpha = 0;
-			babyArrow.angle = 50;
-			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1,angle:0}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			if(player == 1) babyArrow.color = 0xdddddd;
 			// }
 
 			babyArrow.ID = i;
 
-			switch (player)
-			{
+			switch (player){
 				case 0: 
 					cpuStrums.add(babyArrow);
 				case 1:
@@ -1768,7 +1761,7 @@ class PlayState extends ScriptMusicBeatState
 					switch(player){
 						case 1:{
 							babyArrow.screenCenter(X);
-							babyArrow.x += (strumWidth * i) + i - ((strumWidth * halfKeyCount) + (strumWidth * 0.5));
+							babyArrow.x += (strumWidth * i) + i + (strumWidth * 0.5);
 						}
 						case 0:
 							// babyArrow.screenCenter(X);
@@ -1782,9 +1775,6 @@ class PlayState extends ScriptMusicBeatState
 			babyArrow.visible = (player == 1 || FlxG.save.data.oppStrumLine);
 
 			
-			cpuStrums.forEach(function(spr:FlxSprite){					
-				spr.centerOffsets(); //CPU arrows start out slightly off-center
-			});
 
 			strumLineNotes.add(babyArrow);
 			// if(underlay != null && FlxG.save.data.undlaSize == 0 && i == 0 && player == 1){
@@ -1799,17 +1789,24 @@ class PlayState extends ScriptMusicBeatState
 			callInterp("strumNoteAdd",[babyArrow,player == 1]);
 
 		}
+
 		if(useNoteCameras){
 			if(player == 1){
-				if(underlay != null && FlxG.save.data.undlaSize == 0 && player == 1){
+				if(underlay != null && FlxG.save.data.undlaSize == 0){
+					var endNote = playerStrums.members[playerStrums.members.length - 1];
+
+					underlay.scale.x = ((endNote.x + endNote.width)- playerStrums.members[0].x) / underlay.width;
 					underlay.screenCenter(X);
 				}
+				// for(index=>spr in playerStrums.members){
+				// 	spr.x -= (strumWidth * playerStrums.members.length * 0.25);
+				// }
 				playerNoteCamera.x = Std.int(FlxG.width * (if(middlescroll) 0 else 0.25));
 			}else{
 				opponentNoteCamera.x = Std.int(FlxG.width * -0.25);
-				if(middlescroll){
+				if(middlescroll) {
 					opponentNoteCamera.x -= 100;
-					// if(downScroll)opponentNoteCamera.y = 360;
+					// if(underlay != null && FlxG.save.data.undlaSize == 0) 
 				}
 				
 
@@ -1826,6 +1823,8 @@ class PlayState extends ScriptMusicBeatState
 				}
 			}
 			#end
+		}else{
+			cpuStrums.forEach(function(spr:FlxSprite){spr.centerOffsets();}); //CPU arrows start out slightly off-center
 		}
 		#if android
 		if(FlxG.save.data.useTouch && !FlxG.save.data.useStrumsAsButtons && player == 0){
@@ -1851,7 +1850,7 @@ class PlayState extends ScriptMusicBeatState
 		#end
 		for(babyArrow in strumLineNotes){
 			var i = babyArrow.id;
-			var text = new FlxText(babyArrow.x + (babyArrow.width * 0.5),babyArrow.y + (babyArrow.height * 0.5) - 10,'${FlxG.save.data.keys[3][i]}',10);
+			var text = new FlxText(babyArrow.x + (babyArrow.width * 0.5),babyArrow.y + (babyArrow.height * 0.5) - 10,'${FlxG.save.data.keys[SONG.keyCount - 1][i]}',10);
 			text.alpha = 0.1;
 			text.angle = -50;
 			add(text.setFormat(null,32,0xffFFFFFF,'CENTER',OUTLINE,0xff000000));
@@ -1869,7 +1868,6 @@ class PlayState extends ScriptMusicBeatState
 	override function openSubState(SubState:FlxSubState)
 	{
 		if (paused){
-			
 			if (FlxG.sound.music != null && !startingSong){
 				vocals.pause();
 				vocals.time = Conductor.songPosition = FlxG.sound.music.time;
@@ -1959,10 +1957,9 @@ class PlayState extends ScriptMusicBeatState
 				leg--;
 			}
 			nps = notesHitArray.length;
-			if (nps > maxNPS)
-				maxNPS = nps;
+			if (nps > maxNPS) maxNPS = nps;
 		}
-		if (combo > maxCombo) maxCombo = combo;
+		
 
 
 		super.update(elapsed);
@@ -2462,12 +2459,13 @@ class PlayState extends ScriptMusicBeatState
 
 
 				var comboSize = 1.20 - (seperatedScore.length * 0.1);
+				var lastStrum = playerStrums.members[playerStrums.members.length - 1];
 				for (i in 0...comboSplit.length)
 				{
 					var num:Int = Std.parseInt(comboSplit[i]);
 					var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image('num' + num));
 					// numScore.screenCenter();
-					numScore.x = playerStrums.members[playerStrums.members.length - 1].x + (playerStrums.members[playerStrums.members.length - 1].width) + ((43 * comboSize) * i);
+					numScore.x = lastStrum.x + (lastStrum.width) + ((43 * comboSize) * i);
 
 					numScore.y = rating.y;
 					numScore.cameras = rating.cameras;

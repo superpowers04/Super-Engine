@@ -279,6 +279,10 @@ class Note extends FlxSprite
 		if(PlayState.instance != null) return PlayState.instance.callInterp(func,args);
 		if(ScriptMusicBeatState.instance != null) ScriptMusicBeatState.instance.callInterp(func,args);
 	}
+	@:keep inline function getKeyCount():Int{
+		if(PlayState.instance != null && PlayState.SONG != null) return PlayState.SONG.keyCount;
+		return noteAnims.length;
+	}
 
 	public function new(?strumTime:Float = 0, ?_noteData:Int = 0, ?prevNote:Note, ?sustainNote:Bool = false, ?_inCharter:Bool = false,?_type:Dynamic = 0,?_rawNote:Array<Dynamic> = null,?playerNote:Bool = false)
 	{try{
@@ -300,7 +304,7 @@ class Note extends FlxSprite
 		callInterp("noteCheckType",[this,rawNote]);
 
 
-		this.noteData = _noteData % Note.noteAnims.length; 
+		this.noteData = _noteData % getKeyCount(); 
 		shouldntBeHit = (isSustainNote && prevNote.shouldntBeHit || (_type == 1 || _type == "hurtnote" || _type == "hurt note" || _type == "hurt" || _type == true));
 		if(inCharter){
 			this.strumTime = strumTime;
