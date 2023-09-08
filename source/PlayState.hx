@@ -575,6 +575,7 @@ class PlayState extends ScriptMusicBeatState
 		// this.restartTimes = restartTimes;
 		restartTimes++;
 		super();
+		
 		checkInputFocus = false;
 		PlayState.player1 = "";
 		PlayState.player2 = "";
@@ -1239,6 +1240,7 @@ class PlayState extends ScriptMusicBeatState
 				}
 			}
 			if(underlay != null && FlxG.save.data.undlaSize == 0){
+
 				underlay.x = playerStrums.members[0].x -2;
 			}
 		}
@@ -1680,7 +1682,7 @@ class PlayState extends ScriptMusicBeatState
 				if(playerNoteCamera != null)playerNoteCamera.destroy();
 				playerNoteCamera = new FlxCamera(0,0,
 												1280,720);
-				if(FlxG.save.data.undlaSize == 0 && underlay != null) underlay.cameras = [playerNoteCamera];
+				
 				
 				FlxG.cameras.add(playerNoteCamera,false);
 				playerNoteCamera.bgColor = 0x00000000;
@@ -1704,13 +1706,14 @@ class PlayState extends ScriptMusicBeatState
 			}
 		}
 		var scale = 1 - ((SONG.keyCount / 4) * 0.1);
-		var strumWidth = Note.swagWidth * scale;
+		var strumWidth = Note.swagWidth;
 		var halfKeyCount = Std.int(Math.floor(SONG.keyCount * 0.5));
 		for (i in 0...SONG.keyCount){
 			var babyArrow:StrumArrow = new StrumArrow(i,0, strumLine.y);
 
 			charCall("strumNoteLoad",[babyArrow,player],if (player == 1) 0 else 1,true);
 			callInterp("strumNoteLoad",[babyArrow,player == 1]);
+			if(cancelCurrentFunction) continue;
 			babyArrow.init();
 
 
@@ -1721,6 +1724,7 @@ class PlayState extends ScriptMusicBeatState
 			// {
 			babyArrow.y -= 10;
 			babyArrow.alpha = 0;
+			// babyArrow.scale.set(babyArrow.scale.x * scale,babyArrow.scale.y * scale);
 			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			if(player == 1) babyArrow.color = 0xdddddd;
 			// }
@@ -1795,12 +1799,27 @@ class PlayState extends ScriptMusicBeatState
 				if(underlay != null && FlxG.save.data.undlaSize == 0){
 					var endNote = playerStrums.members[playerStrums.members.length - 1];
 
-					underlay.scale.x = ((endNote.x + endNote.width)- playerStrums.members[0].x) / underlay.width;
+					underlay.makeGraphic(Std.int((endNote.x + endNote.width + 8)- playerStrums.members[0].x),1280,0xFF100010);
+					underlay.cameras = playerStrums.members[0].cameras;
 					underlay.screenCenter(X);
+					var underWidth = ((underlay.width - 8) * underlay.scale.x) / playerStrums.members.length;
+					
+					for(index=>spr in playerStrums.members){
+						spr.x = underlay.x + 4 + (underWidth * index);
+					}
+				}else{
+					var endNote = playerStrums.members[playerStrums.members.length - 1];
+					var underlay = new FlxSprite(-100,-100);
+					underlay.makeGraphic(Std.int((endNote.x + endNote.width + 8)- playerStrums.members[0].x),1280,0xFF100010);
+					underlay.cameras = playerStrums.members[0].cameras;
+					underlay.screenCenter(X);
+					var underWidth = ((underlay.width - 8) * underlay.scale.x) / playerStrums.members.length;
+					
+					for(index=>spr in playerStrums.members){
+						spr.x = underlay.x + 4 + (underWidth * index);
+					}
+					underlay.destroy();
 				}
-				// for(index=>spr in playerStrums.members){
-				// 	spr.x -= (strumWidth * playerStrums.members.length * 0.25);
-				// }
 				playerNoteCamera.x = Std.int(FlxG.width * (if(middlescroll) 0 else 0.25));
 			}else{
 				opponentNoteCamera.x = Std.int(FlxG.width * -0.25);
@@ -1848,12 +1867,14 @@ class PlayState extends ScriptMusicBeatState
 			}
 		}
 		#end
-		for(babyArrow in strumLineNotes){
+		for(babyArrow in playerStrums){
 			var i = babyArrow.id;
 			var text = new FlxText(babyArrow.x + (babyArrow.width * 0.5),babyArrow.y + (babyArrow.height * 0.5) - 10,'${FlxG.save.data.keys[SONG.keyCount - 1][i]}',10);
+			
+			text.x = babyArrow.x + (babyArrow.width * 0.5) - (text.width * 0.5);
 			text.alpha = 0.1;
 			text.angle = -50;
-			add(text.setFormat(null,32,0xffFFFFFF,'CENTER',OUTLINE,0xff000000));
+			add(text.setFormat(null,Std.int(32 * (1 - (text.text.length * 0.05)) ),0xffFFFFFF,'CENTER',OUTLINE,0xff000000));
 			text.cameras = babyArrow.cameras;
 			FlxTween.tween(text, {alpha: 1,angle:0}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			FlxTween.tween(text, {y: text.y + 40}, 4, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
@@ -3300,8 +3321,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 
 
-		if (generatedMusic && SONG.notes[Math.floor(curStep / 16)] != null)
-		{
+		if (generatedMusic && SONG.notes[Math.floor(curStep / 16)] != null){
 			curSection = Std.int(curStep / 16);
 			var sect = SONG.notes[curSection];
 			if (sect.changeBPM && !Math.isNaN(sect.bpm)){
@@ -3321,7 +3341,7 @@ class PlayState extends ScriptMusicBeatState
 		// Zoooooooom
 		if (FlxG.save.data.camMovement && controlCamera && camBeat && camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0){
 			FlxG.camera.zoom += 0.015;
-			camHUD.zoom += 0.03;
+			// camHUD.zoom -= 0.03;
 		}
 		
 		iconP1.bounce(Conductor.crochetSecs);

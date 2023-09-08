@@ -509,57 +509,7 @@ class PsychLuaCompat{
 		parent.set('debugPrint',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
 		parent.set('getGlobalValue',getGlobalValue);
 		// parent.set('setGlobalValue',setGlobalValue);
-		LuaL.dostring(parent.state,/*lua code lmao*/'
-		setmetatable(_G,{
-			__index = function(this,key)
-				return rawget(this,key) or getGlobalValue(key)
-			end,
-
-		})
-		local OBJECTTBL = {
-			__index = function(self,key)
-				return rawget(self,key) or getProperty(("%s.%s"):format(self.NAME,key))
-			end,
-			__newindex = function(self,key,value)
-				return setProperty(("%s.%s"):format(self.NAME,key),value)
-			end,
-			__call = function(self,func,...)
-				if(func != null) then
-					return callObjectFunction(rawget(self,"NAME"),func,{...})
-				end
-				return rawget(self,"NAME")
-			end
-		}
-		do
-			local dumpCache = function(self) self.CACHE = {} end
-			local CACHEOBJECTTBL = {
-				__index = function(self,key)
-					if(key == "dump")then
-						rawset(self,"",{})
-						return true;
-					end
-					local ret = rawget(self,key) or rawget(rawget(self,"CACHE"),key)
-					if ret then return ret end
-					local ret = getProperty(("%s.%s"):format(self.NAME,key))
-					rawset(key,value)
-				end,
-				__newindex = function(self,key,value)
-					
-					if(key == "CACHE") then return rawset(self,key,value) end
-					rawset(rawget(self,"CACHE"),key,value)
-					return setProperty(("%s.%s"):format(self.NAME,key),value)
-				end,
-				__call = function(self,func,...)
-					if(func != null) then
-						return callObjectFunction(rawget(self,"NAME"),func,{...})
-					end
-					return rawget(self,"NAME")
-				end
-			}
-			function toLuaObj(name) return setmetatable({NAME=name},OBJECTTBL) end
-			function toCachableLuaObj(name) return setmetatable({NAME=name},CACHEOBJECTTBL) end
-		end
-		'); // I love being able to do this with lua kekw
+		LuaL.dostring(parent.state,/*lua code lmao*/se.utilities.SEMacros.PsychLuaCompatScript); // I love being able to do this with lua kekw
 
 	}
 	public function getValueFromPath(object:Dynamic,path:String):Dynamic{
@@ -614,7 +564,7 @@ class PsychLuaCompat{
 		}
 		return object;
 	}
-	public  function setValueFromPath(path:String = "",value:Dynamic,obj:Dynamic = null):Void{
+	public function setValueFromPath(path:String = "",value:Dynamic,obj:Dynamic = null):Void{
 		var splitPath:Array<String> = path.split('.');
 		if(splitPath[0] == "state"){
 			splitPath.shift();
@@ -700,6 +650,7 @@ class PsychLuaCompat{
 			case "curDecBeat": return MusicBeatState.instance.curStepProgress * 0.25;
 			case "curBPM" | "curBpm": return Conductor.bpm;
 			case "bpm": return PlayState.SONG.bpm;
+			case "songPosition": return Conductor.songPosition;
 			case "crochet": return Conductor.crochet;
 			case "stepCrochet": return Conductor.stepCrochet;
 			case "songLength": return FlxG.sound.music.length;
@@ -713,12 +664,13 @@ class PsychLuaCompat{
 			case "cameraY": return FlxG.camera.scroll.y;
 			case "screenWidth": return FlxG.width;
 			case "screenHeight": return FlxG.height;
+			
 
 
 
 			/* Score shit */
-			case 'score' | 'songScore': return PlayState.songScore;
-			case 'misses': return PlayState.misses;
+			case 'score' | 'songScore' : return PlayState.songScore;
+			case 'misses' | "comboBreaks" : return PlayState.misses;
 
 
 			/* note related*/

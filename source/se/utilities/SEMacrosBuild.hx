@@ -44,6 +44,11 @@ class SEMacrosBuild{
 		fields.push({name:"buildTime",access:[Access.APublic, Access.AStatic, Access.AFinal],pos:Context.currentPos(),
 			kind:FieldType.FVar(macro:Float, macro $v{time.getTime()}), 
 		});
+		#if linc_luajit
+		fields.push({name:"PsychLuaCompatScript",access:[Access.AInline, Access.APublic, Access.AStatic, Access.AFinal],pos:Context.currentPos(),
+			kind:FieldType.FVar(macro:String, macro $v{File.getContent('source/se/handlers/PsychLuaCompatScript.lua')}), 
+		});
+		#end
 
 		return fields;
 	}

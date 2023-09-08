@@ -323,7 +323,7 @@ class FinishSubState extends MusicBeatSubstate
 				comboText.color = FlxColor.WHITE;
 				comboText.scrollFactor.set();
 				var settingsText:FlxText = new FlxText(comboText.width * 1.10 + FlxG.save.data.guiGap,-30,0,
-				(if(PlayState.isStoryMode) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff}')
+				(if(PlayState.isStoryMode) StoryMenuState.weekNames[StoryMenuState.curWeek] else if (PlayState.stateType == 4) PlayState.actualSongName else '${PlayState.SONG.song} ${PlayState.songDiff} ${PlayState.SONG.keyCount}K')
 				
 				+'\n\nSettings:'
 				+'\n\n Able To Save Score: ${canSaveScore()}'

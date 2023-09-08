@@ -62,10 +62,6 @@ class Note extends FlxSprite
 	public var inCharter:Bool = false;
 
 	public static var swagWidth:Float = 112;
-	public static var PURP_NOTE:Int = 0;
-	public static var BLUE_NOTE:Int = 1;
-	public static var GREEN_NOTE:Int = 2;
-	public static var RED_NOTE:Int = 3;
 	public static var noteNames:Array<String> = ["purple","blue","green",'red'];
 	public var skipNote:Bool = true;
 	public var childNotes:Array<Note> = [];
@@ -365,7 +361,7 @@ class Note extends FlxSprite
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
 			antialiasing = true;
-			var noteName = noteNames[noteData % 4]; // TODO Add support for multikey note assets
+			var noteName = noteNames[noteData % noteNames.length]; // TODO Add support for multikey note assets
 			if(eventNote || noteName == null || noteName == "") noteName = noteNames[0];
 			
 
