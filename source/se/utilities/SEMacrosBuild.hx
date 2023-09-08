@@ -12,7 +12,7 @@ class SEMacrosBuild{
 		#if ghaction
 		if(FileSystem.exists('version.downloadMe')){
 			var content = File.getContent('version.downloadMe').split(';');
-			var _buildTime = content[1]
+			var _buildTime = content[1];
 		}else{
 		#end
 			var time = Date.now();
