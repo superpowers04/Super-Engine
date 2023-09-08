@@ -9,6 +9,7 @@ class SEMacrosBuild{
 		return '$val';
 	}
 	public static function initBuild():Array<Field> {
+		var time = Date.now();
 		var _buildTime:String = "";
 		#if ghaction
 		if(FileSystem.exists('version.downloadMe')){
@@ -16,7 +17,6 @@ class SEMacrosBuild{
 			_buildTime = content[1];
 		}else{
 		#end
-			var time = Date.now();
 			var _year = time.getFullYear(); 
 			_year -= Math.floor(_year * 0.001) * 1000;
 			var _month = zeroPad(time.getMonth()+1);
