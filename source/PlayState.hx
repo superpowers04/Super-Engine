@@ -73,7 +73,6 @@ import hscript.InterpEx;
 import se.handlers.SELua;
 #end
 
-import se.objects.EventNote;
 
 import CharacterJson;
 import StageJson;

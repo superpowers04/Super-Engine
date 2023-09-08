@@ -1,4 +1,4 @@
-23.09.07.2119;
+23.09.07.2236;
 - BREAKING CHANGE: BF and Opponent will no longer switch depending on if swapCharacters is true or not, 
 	to get the player you can use state.playerCharacter and to get the opponent you can use state.opponentCharacter
 	All callbacks have been updated to reflect this change.
