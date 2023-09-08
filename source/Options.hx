@@ -129,6 +129,7 @@ class SEJudgement extends Option
 		return true;
 	}
 
+	override function updateDisplay():String return name + " hit timing";
 
 	override function right():Bool {
 

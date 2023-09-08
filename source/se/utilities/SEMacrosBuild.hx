@@ -14,7 +14,7 @@ class SEMacrosBuild{
 		#if ghaction
 		if(FileSystem.exists('version.downloadMe')){
 			var content = File.getContent('version.downloadMe').split(';');
-			_buildTime = content[1];
+			_buildTime = content[0];
 		}else{
 		#end
 			var _year = time.getFullYear(); 
