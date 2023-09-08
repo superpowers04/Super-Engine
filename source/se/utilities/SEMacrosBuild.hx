@@ -9,10 +9,11 @@ class SEMacrosBuild{
 		return '$val';
 	}
 	public static function initBuild():Array<Field> {
+		var _buildTime:String = "";
 		#if ghaction
 		if(FileSystem.exists('version.downloadMe')){
 			var content = File.getContent('version.downloadMe').split(';');
-			var _buildTime = content[1];
+			_buildTime = content[1];
 		}else{
 		#end
 			var time = Date.now();
@@ -22,7 +23,7 @@ class SEMacrosBuild{
 			var _date = zeroPad(time.getDate());
 			var _min = zeroPad(time.getMinutes());
 			var _hour = zeroPad(time.getHours());
-			var _buildTime = '$_year.$_month.$_date.$_hour$_min';
+			_buildTime = '$_year.$_month.$_date.$_hour$_min';
 			trace('Building SE Version:${_buildTime}');
 			if(FileSystem.exists('version.downloadMe')){
 				var content = File.getContent('version.downloadMe').split(';');
