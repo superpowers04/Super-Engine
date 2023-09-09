@@ -20,6 +20,46 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package hscriptfork;
+#if SScript
+import tea.SScript;
+class InterpSE extends SScript {
+	// override public function execute(?code:String){
+	// 	if(code != null) script = code;
+	// 	super.execute();
+	// }
+	/**
+		Sets a variable to this script. 
+
+		If `key` already exists it will be replaced.
+		@param key Variable name.
+		@param obj The object to set. If the object is a macro class, function will be aborted.
+		@return Returns this instance for chaining.
+	**/
+	public override function set(key:String, obj:Dynamic):SScript
+	{
+		if (_destroyed)
+			return null;
+
+		function setVar(key:String, obj:Dynamic):Void
+		{
+			if (interp == null || !active)
+			{
+				if (traces)
+				{
+					if (interp == null) trace("This script is unusable!");
+					else trace("This script is not active!");
+				}
+			}
+			if (interp == null || !active || key == null) return;
+			interp.variables[key] = obj;
+		}
+
+		setVar(key, obj);
+		return this;
+	}
+}
+// typedef InterpSE = SScript;
+#else
 import hscript.InterpEx;
 import hscript.Interp;
 import haxe.PosInfos;
@@ -53,6 +93,9 @@ class InterpSE extends InterpEx {
 		variables.set("Dynamic", Dynamic);
 		variables.set("Array", Array);
 	}
+	@:keep inline function set(k,v){
+		variables.set(k, v);
+	} 
 	public var iterationLimit:Int = 1000000; // Set to 0 to disable
 	public var iterationLimitFor:Int = 1000000; // Set to 0 to disable. Specific to for loops
 	@:access(hscript.Interp)
@@ -133,3 +176,4 @@ class InterpSE extends InterpEx {
 	}
 	
 }
+#end

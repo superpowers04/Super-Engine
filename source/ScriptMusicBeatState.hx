@@ -1,10 +1,12 @@
 package;
 
 
-import hscript.Expr;
-import hscript.Interp;
-import hscript.InterpEx;
-import hscript.ParserEx;
+// import hscript.Expr;
+// import hscript.Interp;
+// import hscript.InterpEx;
+// import hscript.ParserEx;
+import tea.SScript as Interp;
+import hscriptBase.Parser;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -117,7 +119,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 				if(_interp is Interp){
 					currentInterp.type = 'hscript';
 
-					var method = _interp.variables.get(func_name);
+					var method = _interp.get(func_name);
 					if (method == null) {return null;}
 					// trace('$func_name:$id $args');
 					
@@ -283,24 +285,26 @@ class ScriptMusicBeatState extends MusicBeatState{
 
 			if(songScript == "") return null;
 			// if (brTools == null && hsBrTools != null) brTools = hsBrTools;
-			var parser:hscript.Parser = HscriptUtils.createSimpleParser();
 			var interp:Interp = HscriptUtils.createSimpleInterp();
+			var parser = interp.parser;
 			try{
 
-				var program = parser.parseString(songScript,file);
+				// var program = parser.parseString(songScript,file);
+
+				var varis = interp;
 
 				if (brTools != null) {
-					interp.variables.set("BRtools",brTools); 
+					varis.set("BRtools",brTools); 
 				}else {
-					interp.variables.set("BRtools", getBRTools("assets/"));
+					varis.set("BRtools", getBRTools("assets/"));
 				}
 				// Access current state without needing to be inside of a function with ps as an argument
-				interp.variables.set("scriptContents",songScript);
-				interp.variables.set("scriptName",id);
+				varis.set("scriptContents",songScript);
+				varis.set("scriptName",id);
 				addVariablesToHScript(interp);
-				interp.variables.set("close",unloadInterp.bind(id)); // Closes a script
-
-				interp.execute(program);
+				varis.set("close",unloadInterp.bind(id)); // Closes a script
+				interp.doString(songScript,file);
+				// interp.execute();
 				interps[id] = interp;
 				if(brTools != null)brTools.reset();
 				callInterp("initScript",[],id);
@@ -320,8 +324,8 @@ class ScriptMusicBeatState extends MusicBeatState{
 		}
 
 		public function addVariablesToHScript(interp:Interp){
-			interp.variables.set("state",cast (this)); 
-			interp.variables.set("game",cast (this));
+			interp.set("state",cast (this)); 
+			interp.set("game",cast (this));
 		}
 
 		@:keep inline public function getBRTools(path:String = "./assets/",?id:String = ""):HSBrTools{

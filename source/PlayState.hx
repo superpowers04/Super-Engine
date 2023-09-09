@@ -63,8 +63,7 @@ import Overlay.Console;
 
 
 import hscript.Expr;
-import hscript.Interp;
-import hscript.InterpEx;
+import tea.SScript as Interp;
 #if discord_rpc
 	import Discord.DiscordClient;
 #end
@@ -361,12 +360,12 @@ class PlayState extends ScriptMusicBeatState
 
 	/*Interpeter shit*/
 		public override function addVariablesToHScript(interp:Interp){
-			interp.variables.set("state",cast (this)); 
-			interp.variables.set("game",cast (this));
-			interp.variables.set("require",require);
-			interp.variables.set("charGet",charGet); 
-			interp.variables.set("charSet",charSet);
-			interp.variables.set("charAnim",charAnim);
+			interp.set("state",cast (this)); 
+			interp.set("game",cast (this));
+			interp.set("require",require);
+			interp.set("charGet",charGet); 
+			interp.set("charSet",charSet);
+			interp.set("charAnim",charAnim);
 		}
 		#if linc_luajit
 		public override function addVariablesToLua(interp:SELua){
