@@ -149,7 +149,9 @@ class KeyBindMenu extends FlxSubState
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(1);
-				}else if (FlxG.keys.justPressed.LEFT)
+				}
+				#if !mobile
+				else if (FlxG.keys.justPressed.LEFT)
 				{
 					if(keyText[keyMode - 1] == null){
 						FlxG.sound.play(Paths.sound('cancelMenu'));
@@ -166,6 +168,7 @@ class KeyBindMenu extends FlxSubState
 						FlxG.sound.play(Paths.sound('scrollMenu'));
 					}
 				}
+				#end
 
 				if (FlxG.keys.justPressed.ENTER){
 					FlxG.sound.play(Paths.sound('scrollMenu'));

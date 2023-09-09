@@ -141,34 +141,20 @@ class Main extends Sprite
 	}
 	// var fpsOverlay:Overlay;
 
-	public function toggleFPS(fpsEnabled:Bool):Void {
-		fpsCounter.visible = fpsEnabled;
-	}
+	public function toggleFPS(fpsEnabled:Bool):Void fpsCounter.visible = fpsEnabled;
 
-	public function changeFPSColor(color:FlxColor)
-	{
-		fpsCounter.textColor = color;
-	}
+	public function changeFPSColor(color:FlxColor) fpsCounter.textColor = color;
 
-	public function setFPSCap(cap:Float)
-	{
-		openfl.Lib.current.stage.frameRate = cap;
-	}
+	public function setFPSCap(cap:Float) openfl.Lib.current.stage.frameRate = cap;
 
-	public function getFPSCap():Float
-	{
-		return openfl.Lib.current.stage.frameRate;
-	}
+	public function getFPSCap():Float return openfl.Lib.current.stage.frameRate;
 
-	public function getFPS():Float
-	{
-		return fpsCounter.currentFPS;
-	}
+	public function getFPS():Float return fpsCounter.currentFPS;
 	public function onCrash(e:UncaughtErrorEvent){
 		FuckState.FUCK(e);
 	}
-	#if(target.threaded)
 	public static var renderLock:ToggleLock = new ToggleLock();
+	#if(target.threaded)
 	override function __enterFrame(_){
 		try{
 			if(game.blockDraw || game.blockUpdate){

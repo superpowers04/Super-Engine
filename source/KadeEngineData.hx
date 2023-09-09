@@ -104,10 +104,15 @@ class KadeEngineData
 		'persistGF' => false,
 		'menuScripts' => false,
 		'easterEggs' => true,
+		#if mobile
 		'useTouch' => true,
 		'useStrumsAsButtons' => true,
-		'chartRepo'=>'https://raw.githubusercontent.com/superpowers04/FNFBR-Repo/main/charts.json',
-		'charRepo'=>'https://raw.githubusercontent.com/superpowers04/FNFBR-Repo/main/characters.json',
+		#else
+		'useTouch' => false,
+		'useStrumsAsButtons' => false,
+		'chartRepo'=>'',
+		'charRepo'=>'',
+		#end
 		"upBind" => "W",
 		"downBind" => "S",
 		"leftBind" => "A",
@@ -124,6 +129,9 @@ class KadeEngineData
 		'lastUpdateID' => MainMenuState.versionIdentifier,
 		'useHurtArrows' => false,
 		'keys' => KeyBinds.defaultKeys,
+		#if !mobile
+		'simpleMainMenu'=> false,
+		#end
 		// 'persistOpp' => false,
 		// 'mainMenuChar' => FlxG.save.data.mainMenuChar = false,
 		// 'playStateObjectLocations' = new Map<String,ObjectInfo>(),
@@ -141,8 +149,12 @@ class KadeEngineData
 		FlxG.save.data.lastUpdateID = MainMenuState.versionIdentifier;
 		if(MainMenuState.lastVersionIdentifier != MainMenuState.versionIdentifier){ // This is going to be ugly but only executed every time the game's updated
 			var lastVersionIdentifier = MainMenuState.lastVersionIdentifier;
-			if(lastVersionIdentifier < 1)
-				FlxG.save.data.inputEngine = 1; // Update to new input
+			if(lastVersionIdentifier < 1) FlxG.save.data.inputEngine = 1; // Update to new input
+			if(lastVersionIdentifier < 2){
+				// Hopefully fix issues with saves
+				FlxG.save.data.charRepo = null;
+				FlxG.save.data.chartRepo = null;
+			}
 		}
 
 

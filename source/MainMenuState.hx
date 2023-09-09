@@ -36,7 +36,7 @@ class MainMenuState extends SickMenuState
 	public static var nightly(default,never):String = "X" + SEMacros.buildDate;
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 	// This should be incremented every update, this'll be sequential so you can just compare it to another version identifier
-	public static var versionIdentifier:Int = 1;
+	public static var versionIdentifier:Int = 2;
 	public static var lastVersionIdentifier:Int = 0;
 
 	public static var compileType(default,never):String =
@@ -130,7 +130,7 @@ class MainMenuState extends SickMenuState
 				}catch(e){trace('Error closing socket? ${e.message}');}
 			}
 			if(lastVersionIdentifier != versionIdentifier){
-				var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'Super Engine has been updated since last start. You are now on ${ver}!', 32);
+				var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'Super Engine has been updated since last start.\n You are now on ${ver}!', 32);
 				outdatedLMAO.setFormat(CoolUtil.font, 32, if(nightly == "") FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				outdatedLMAO.scrollFactor.set();
 	 			outdatedLMAO.screenCenter(FlxAxes.X);
@@ -206,9 +206,12 @@ class MainMenuState extends SickMenuState
 			eventColors(Date.now());
 
 			lastError = "";
-			#if mobile
-			changeSelection(1); // Scrolls down enough so you can press all of the buttons without needing to scroll
+			#if !mobile
+			if(FlxG.save.data.simpleMainMenu)
+			// Scrolls down enough so you can press all of the buttons without needing to scroll
 			#end
+				changeSelection(1);
+
 			callInterp('createAfter',[]);
 
 		}catch(e){
@@ -287,7 +290,10 @@ class MainMenuState extends SickMenuState
 	}
 	#end
 	function mmSwitch(regen:Bool = false){
-		#if android
+
+		#if !mobile
+		if(FlxG.save.data.simpleMainMenu){
+		#end
 			//Damn, talk about a huge difference from 9 options down to 3
 			options = ['modded songs',"scripted states","credits",'options'];
 			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state",'Customise your experience to fit you'];
@@ -295,7 +301,8 @@ class MainMenuState extends SickMenuState
 				options.unshift('open unfinished chart');
 				descriptions.unshift('Looks like the chart editor closed incorrectly. You can reopen it here');
 			}
-		#else
+		#if !mobile
+		}else{
 			options = ['modded songs','join FNF\'br server',
 			#if !ghaction
 				'host br server',
@@ -306,6 +313,7 @@ class MainMenuState extends SickMenuState
 			'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
 			#end
 			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state",'Open your mods folder in your File Manager','Customise your experience to fit you'];
+		}
 		#end
 		curSelected = 0;
 		#if(!mobile)

@@ -281,9 +281,7 @@ class PlayState extends ScriptMusicBeatState
 			public var songName:FlxText;
 			public var songTimeTxt:FlxText;
 			public var scoreTxt:FlxText;
-			#if android
 			public var noteButtons:Array<FlxSprite>;
-			#end
 
 		/* Stage Shite */
 
@@ -1742,15 +1740,14 @@ class PlayState extends ScriptMusicBeatState
 			if(useNoteCameras){
 
 				babyArrow.screenCenter(X);
-				babyArrow.x += ((strumWidth #if(android) * if(FlxG.save.data.useStrumsAsButtons) 1.5 else 1 #end ) * i) + i - 
-				(strumWidth + (strumWidth * ( #if(android) if(FlxG.save.data.useStrumsAsButtons) 1 else #end 0.5) ));
-				#if android
+				babyArrow.x += ((strumWidth  * if(FlxG.save.data.useStrumsAsButtons) 1.5 else 1 ) * i) + i - 
+				(strumWidth + (strumWidth * (  if(FlxG.save.data.useStrumsAsButtons) 1 else  0.5) ));
+				
 				if(FlxG.save.data.useStrumsAsButtons){
 					// babyArrow.setGraphicSize(1);
 					babyArrow.scale.set(1,1);
 					babyArrow.updateHitbox();
 				}
-				#end
 				// babyArrow.x += 2 + (Note.swagWidth * i + 1);
 				babyArrow.cameras = [switch(player){
 					case 1:
@@ -1832,7 +1829,6 @@ class PlayState extends ScriptMusicBeatState
 		}
 		if(player == 1){
 			add(grpNoteSplashes);
-			#if !mobile
 			if(inputMode == 1){
 				callInterp('addKeyEventListeners',[]);
 				if(!cancelCurrentFunction){
@@ -1840,11 +1836,9 @@ class PlayState extends ScriptMusicBeatState
 					FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, SEIKeyRelease);
 				}
 			}
-			#end
 		}else{
 			cpuStrums.forEach(function(spr:FlxSprite){spr.centerOffsets();}); //CPU arrows start out slightly off-center
 		}
-		#if android
 		if(FlxG.save.data.useTouch && !FlxG.save.data.useStrumsAsButtons && player == 0){
 			var _width = Std.int((FlxG.width / 4) - 1);
 			var _height = Std.int(FlxG.height + 100);
@@ -1865,7 +1859,6 @@ class PlayState extends ScriptMusicBeatState
 				add(spr);
 			}
 		}
-		#end
 		for(babyArrow in playerStrums){
 			var i = babyArrow.id;
 			var text = new FlxText(babyArrow.x + (babyArrow.width * 0.5),babyArrow.y + (babyArrow.height * 0.5) - 10,'${FlxG.save.data.keys[SONG.keyCount - 1][i]}',10);
@@ -2560,8 +2553,8 @@ class PlayState extends ScriptMusicBeatState
 			return;
 		}
 		inputMode = FlxG.save.data.inputEngine;
-		var inputEngines = ["SE-LEGACY" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "") 
-		#if(!mobile), 'SE'+ (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")#end
+		var inputEngines = ["SE-LEGACY" + (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else ""),
+							'SE'+ (if (FlxG.save.data.accurateNoteSustain) "-ACNS" else "")
 		];
 		trace('Using ${inputMode}');
 		// noteShit handles moving notes around and opponent hitting them
@@ -2574,14 +2567,12 @@ class PlayState extends ScriptMusicBeatState
 
 				doKeyShit = kadeBRKeyShit;
 				goodNoteHit = kadeBRGoodNote;
-			#if(!mobile)
 			case 1:
 				noteShit = SENoteShit;
 				doKeyShit = SEKeyShit;
 				goodNoteHit = kadeBRGoodNote;
 				SEIRegisterKeys();
 
-			#end
 			default:
 				MainMenuState.handleError('${inputMode} is not a valid input! Please change your input mode!');
 
@@ -2999,40 +2990,38 @@ class PlayState extends ScriptMusicBeatState
 			controls.RIGHT_R
 		];
 		var hitArray:Array<Bool> = [false,false,false,false];
-		#if android
-			if(FlxG.save.data.useTouch){
-				if(FlxG.save.data.useStrumsAsButtons){
-					for(touch in FlxG.touches.list){
-						for(i in 0...playerStrums.members.length){
-							if(touch.overlaps(playerStrums.members[i])){
-							// var obj = playerStrums.members[i];
-							// if(	touch.screenX > obj.x && touch.screenX < obj.x + obj.width &&
-							// 	touch.screenX > obj.y && touch.screenX < obj.y + obj.height){
-								pressArray[i] = touch.justPressed;
-								holdArray[i] = touch.pressed;
+		if(FlxG.save.data.useTouch){
+			if(FlxG.save.data.useStrumsAsButtons){
+				for(touch in FlxG.touches.list){
+					for(i in 0...playerStrums.members.length){
+						if(touch.overlaps(playerStrums.members[i])){
+						// var obj = playerStrums.members[i];
+						// if(	touch.screenX > obj.x && touch.screenX < obj.x + obj.width &&
+						// 	touch.screenX > obj.y && touch.screenX < obj.y + obj.height){
+							pressArray[i] = touch.justPressed;
+							holdArray[i] = touch.pressed;
 
-							}
 						}
 					}
+				}
 
-				}else{
+			}else{
 
-					for(spr in noteButtons){
-						spr.alpha = 0.1;
-					}
-					for(touch in FlxG.touches.list){
-						if(touch.screenX < FlxG.width && touch.screenY > 30){
-							var pos = Std.int((touch.screenX / FlxG.width) * 4);
-							pressArray[pos] = touch.justPressed;
-							holdArray[pos] = touch.pressed;
-							if(noteButtons[pos] != null){
-								noteButtons[pos].alpha = (if(touch.justPressed) 0.25 else 0.2);
-							}
+				for(spr in noteButtons){
+					spr.alpha = 0.1;
+				}
+				for(touch in FlxG.touches.list){
+					if(touch.screenX < FlxG.width && touch.screenY > 30){
+						var pos = Std.int((touch.screenX / FlxG.width) * 4);
+						pressArray[pos] = touch.justPressed;
+						holdArray[pos] = touch.pressed;
+						if(noteButtons[pos] != null){
+							noteButtons[pos].alpha = (if(touch.justPressed) 0.25 else 0.2);
 						}
 					}
 				}
 			}
-		#end
+		}
 		callInterp("keyShit",[pressArray,holdArray]);
 		charCall("keyShit",[pressArray,holdArray]);
 

@@ -86,10 +86,9 @@ class OptionsMenu extends MusicBeatState
 		],"Settings relating to Characters, scripts, etc"),
 		new OptionCategory("Gameplay", [
 			new DFJKOption(controls),
-			#if android
-				new HCBoolOption("Native tapping support","Toggle the built-in taps for hitting notes","useTouch"),
-				new HCBoolOption("Strum Buttons","Whether to split the screen into 4 buttons or use strums as buttons(Requires native Touch)","useStrumsAsButtons"),
-			#end
+			new HCBoolOption("Native Touch Buttons","Toggle the built-in taps for hitting notes(Legacy input only!)","useTouch"),
+			new HCBoolOption("Strum Buttons","Whether to split the screen into 4 buttons or use strums as buttons(Requires native Touch)","useStrumsAsButtons"),
+			
 			new HCBoolOption('Scroll Type',"Change the scroll direction between upscroll and downscroll",'downscroll','downscroll',"upscroll"),
 			new HCBoolOption('Center strumline',"Move the strumline to the middle of the screen",'middleScroll'),
 
@@ -143,6 +142,10 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption('Reset Key',"Toggle pressing R to gameover","resetButton"),	
 			new HCBoolOption('Easter Eggs',"Toggle easter eggs","easterEggs"),	
 			new HCBoolOption('Gameplay Logging',"Logs your song performance to a text file to 'DATE.log' and 'UNIXTIMECODE.log' in 'songLogs/CHARTFILE/'","logGameplay"),			
+			#if !mobile
+			// Desktop only since this is forced on android
+			new HCBoolOption("Simpler Main Menu","Removes some options from the main menu for ease of use","simpleMainMenu"),
+			#end
 			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
 			// new LogGameplayOption("Logs your game to a text file"),
 			new EraseOption("Backs up your options to SESETTINGS-BACK.json and then resets them"),
@@ -208,13 +211,7 @@ class OptionsMenu extends MusicBeatState
 	var currentSelectedCat:OptionCategory;
 	var blackBorder:FlxSprite;
 	var titleText:FlxText;
-	function addTitleText(str:String = 
-							#if android
-							"Options - Tap here to go back"
-							#else
-							"< Options"
-							#end
-	                      ){
+	function addTitleText(str:String = "< Options - Tap here to go back"){
 		if (titleText != null) titleText.destroy();
 		titleText = new FlxText(FlxG.width * 0.5 - (str.length * 10), 20, 0, str, 12);
 		titleText.scrollFactor.set();
@@ -316,12 +313,17 @@ class OptionsMenu extends MusicBeatState
 				if(FlxG.mouse.overlaps(grpControls.members[curSelected])){
 					_accept = true;
 				}
-				if(grpControls.members[curSelected + 1] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + 1])){
+				if(FlxG.mouse.y > 450){
 					_down = true;
-				}
-				if(grpControls.members[curSelected - 1] != null && FlxG.mouse.overlaps(grpControls.members[curSelected - 1])){
+				}else if(FlxG.mouse.y < 300){
 					_up = true;
 				}
+				// if(grpControls.members[curSelected + 1] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + 1])){
+				// 	_down = true;
+				// }
+				// if(grpControls.members[curSelected - 1] != null && FlxG.mouse.overlaps(grpControls.members[curSelected - 1])){
+				// 	_up = true;
+				// }
 
 				if(FlxG.swipes[0] != null){
 					var swipe = FlxG.swipes[0];

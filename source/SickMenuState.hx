@@ -112,7 +112,8 @@ class SickMenuState extends ScriptMusicBeatState
 				
 			if (SickMenuState.menuMusic == null || musicTime != curMusicTime || reloadMusic){
 				reloadMusic = false;
-				if(FlxG.sound.music.playing){if(!SickMenuState.fading){SickMenuState.fading = true;
+				if(FlxG.sound.music.playing && !SickMenuState.fading){
+					SickMenuState.fading = true;
 					var switchToColor = FlxColor.fromString(mt.color);
 					if(isMainMenu && _bg != null){
 						MainMenuState.bgcolor = switchToColor;
@@ -128,8 +129,7 @@ class SickMenuState extends ScriptMusicBeatState
 						
 						musicHandle(isMainMenu,_bg);
 					});
-					}
-					return;}
+				}
 				SickMenuState.musicFileLoc = mt.file;
 				if(mt.file.contains(" or ")){
 					SickMenuState.musicFileLoc = "assets/music/freakyMenu.ogg"; // Safety net to prevent a null song or something
@@ -243,11 +243,18 @@ class SickMenuState extends ScriptMusicBeatState
 		if(supportMouse){
 		#end
 			if(FlxG.mouse.justReleased){
-				for (i in -2 ... 2) {
+				for (i in -1 ... 2) {
 					if(grpControls.members[curSelected + i] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + i])){
 						select(curSelected + i);
 					}
 				}
+				#if !mobile
+				if(FlxG.mouse.y > 560){
+					changeSelection(1);
+				}else if(FlxG.mouse.y < 300){
+					changeSelection(-1);
+				}
+				#end
 			}
 			if(FlxG.mouse.wheel != 0){
 				var move = -FlxG.mouse.wheel;

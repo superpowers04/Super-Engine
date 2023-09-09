@@ -1,7 +1,7 @@
 package se.objects;
 
+#if(target.threaded) 
 import sys.thread.*;
-
 
 class ToggleLock extends Lock{
 	public function lock(){
@@ -20,3 +20,13 @@ class ToggleLock extends Lock{
 
 
 }
+#else
+class ToggleLock{
+	public function lock() return;
+	public var locked:Bool = false;
+	@:keep inline public function wait(?timeout:Float) return true;
+
+	@:keep inline public function release() return;
+}
+
+#end
