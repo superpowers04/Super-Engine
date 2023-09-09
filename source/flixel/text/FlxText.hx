@@ -843,9 +843,9 @@ class FlxText extends FlxSprite
 		#if web
 		graphic.draw(textField, _matrix);
 		#else
-		Main.renderLock.wait();
 		// Fix to render desktop and mobile text in the same visual location as web
 		_matrix.translate(-1, -1); // left and up
+		Main.renderLock.wait();
 		graphic.draw(textField, _matrix);
 		_matrix.translate(1, 1); // return to center
 		return;

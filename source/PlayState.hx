@@ -245,6 +245,7 @@ class PlayState extends ScriptMusicBeatState
 			}
 			return moveCamera = v;
 		}
+		public var camBeatFreq:Int = 2;
 
 		var updateOverlay = true;
 		var errorMsg:String = "";
@@ -253,7 +254,7 @@ class PlayState extends ScriptMusicBeatState
 
 	/* Objects */
 
-		/*Cam whores*/
+		/*Cams*/
 			public var camHUD:FlxCamera;
 			public var camTOP:FlxCamera;
 			public var camGame:FlxCamera;
@@ -2073,8 +2074,8 @@ class PlayState extends ScriptMusicBeatState
 				+'\nChartType: ${SONG.chartType}';
 		}
 		if(controlCamera){
-			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom, defaultCamZoom, elapsed );
-			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultCamHUDZoom, elapsed * 0.5 );
+			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, Math.max(0, Math.min(1, 1 - (elapsed * 3.125))));
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultCamHUDZoom, elapsed );
 		}
 		
 
@@ -3327,7 +3328,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 
 		// Zoooooooom
-		if (FlxG.save.data.camMovement && controlCamera && camBeat && camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0){
+		if (FlxG.save.data.camMovement && controlCamera && camBeat && camZooming && FlxG.camera.zoom < 1.35 && curBeat % camBeatFreq == 0){
 			FlxG.camera.zoom += 0.015;
 			// camHUD.zoom -= 0.03;
 		}
