@@ -1030,7 +1030,7 @@ class TitleState extends MusicBeatState
 		#end
 		if(shiftSkip != null && isShift != FlxG.keys.pressed.SHIFT){
 			isShift = FlxG.keys.pressed.SHIFT;
-			shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else if(DiscordClient.canSend) 0x5865F2 else 0xFFFFFF);
+			shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 #if discord_rpc else if(DiscordClient.canSend) 0x5865F2 #end else 0xFFFFFF);
 		}
 		#if !(debug)
 		// This is useless in debug mode since updates aren't checked for

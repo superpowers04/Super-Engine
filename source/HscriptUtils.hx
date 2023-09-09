@@ -52,12 +52,11 @@ import tjson.Json;
 
 import haxe.iterators.StringIterator;
 import haxe.iterators.StringKeyValueIterator;
-// import hscript.Interp;
-// import hscript.InterpEx;
+import hscript.Interp;
+import hscript.InterpEx;
 import hscript.Parser;
-// import hscript.ParserEx;
-// import hscript.Expr;
-import tea.SScript;
+import hscript.ParserEx;
+import hscript.Expr;
 import hscriptfork.InterpSE;
 
 import flixel.util.FlxAxes;
@@ -71,7 +70,7 @@ class HscriptUtils {
 
 
 	
-	public static var interp = new InterpSE(null,true,false);
+	public static var interp = new InterpEx();
 	public static var hscriptClasses:Array<String> = [];
 	public static var defines:Array<String> = [];
 	@:access(hscript.InterpEx)
@@ -86,19 +85,19 @@ class HscriptUtils {
 	 * @see https://github.com/TheDrawingCoder-Gamer/Funkin/wiki/HScript-Commands
 	 * @return Interp
 	 */
-	public static function createSimpleInterp():SScript {
-		var reterp = new InterpSE(null,true,false);
+	public static function createSimpleInterp():Interp {
+		var reterp = new InterpSE();
 		reterp = addVarsToInterp(reterp);
 		return reterp;
 	}
 	public static function createSimpleParser():Parser {
-		var parser = new Parser();
+		var parser = new ParserEx();
 		parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
 		parser.preprocesorValues["version"] = MainMenuState.ver;
 		parser.preprocesorValues["debug"] = #if debug true #else false #end;
 		return parser;
 	}
-	public static function eval<T:SScript>(interp:T,?parser:hscript.Parser,str:String):Array<Dynamic>{ // [Errored, Error message if so, stack if present,stage]
+	public static function eval<T:Interp>(interp:T,?parser:hscript.Parser,str:String):Array<Dynamic>{ // [Errored, Error message if so, stack if present,stage]
 		if(str == null || str == ""){
 			return [true,'Eval string is empty',null,'str != null'];
 		}
@@ -108,16 +107,15 @@ class HscriptUtils {
 
 		var program;
 		var parser = (if(parser == null) createSimpleParser() else parser);
-		// try{
+		try{
 
-		// 	// parser.parseModule(songScript);
-		// 	program = parser.parseString(str);
-		// 	if(program == null){throw('Parser is null?');}
-		// }catch(e){return [true,'Line:${parser.line};\n Error:${e.message}',null,'Parsing'];}
+			// parser.parseModule(songScript);
+			program = parser.parseString(str);
+			if(program == null){throw('Parser is null?');}
+		}catch(e){return [true,'Line:${parser.line};\n Error:${e.message}',null,'Parsing'];}
 
 		try{
-			interp.doString(str);
-			// interp.execute();
+			interp.execute(program);
 		}
 		catch(e){
 			return [true,e.message,e.stack,'Executing'];
@@ -145,97 +143,97 @@ class HscriptUtils {
 		#end
 
 	}
-	public static function addVarsToInterp<T:SScript>(interp:T):T {
+	public static function addVarsToInterp<T:Interp>(interp:T):T {
 		// // : )
 		// SE Specific
-		var varis = interp;
-		varis.set("Character", Character);
-		varis.set("PlayState", PlayState);
-		varis.set("Note", Note);
-		varis.set("EmptyCharacter", EmptyCharacter);
-		varis.set("HealthIcon", HealthIcon);
-		varis.set("Alphabet", Alphabet);
-		varis.set("Overlay", Overlay);
-		varis.set("Conductor", Conductor);
-		varis.set("TitleState", TitleState);
-		varis.set("makeRangeArray", CoolUtil.numberArray);
-		varis.set("SEVersion",MainMenuState.ver);
-		varis.set("SENightlyVersion",MainMenuState.nightly);
-		varis.set("FinishSubState",FinishSubState);
-		varis.set("Paths",Paths);
-		varis.set("HSBrTools",HSBrTools);
-		varis.set("SETools",SETools);
-		varis.set("SELoader",SELoader);
-		varis.set("FlxSprTrail",FlxSprTrail);
+
+		interp.variables.set("Character", Character);
+		interp.variables.set("PlayState", PlayState);
+		interp.variables.set("Note", Note);
+		interp.variables.set("EmptyCharacter", EmptyCharacter);
+		interp.variables.set("HealthIcon", HealthIcon);
+		interp.variables.set("Alphabet", Alphabet);
+		interp.variables.set("Overlay", Overlay);
+		interp.variables.set("Conductor", Conductor);
+		interp.variables.set("TitleState", TitleState);
+		interp.variables.set("makeRangeArray", CoolUtil.numberArray);
+		interp.variables.set("SEVersion",MainMenuState.ver);
+		interp.variables.set("SENightlyVersion",MainMenuState.nightly);
+		interp.variables.set("FinishSubState",FinishSubState);
+		interp.variables.set("Paths",Paths);
+		interp.variables.set("HSBrTools",HSBrTools);
+		interp.variables.set("SETools",SETools);
+		interp.variables.set("SELoader",SELoader);
+		interp.variables.set("FlxSprTrail",FlxSprTrail);
 		// eval.bind(Interp,_)
-		varis.set("eval", function(){trace('This does not work yet!');}); // Eval code 
+		interp.variables.set("eval", function(){trace('This does not work yet!');}); // Eval code 
 		// interp.variables.set("SEKeys", SEKeys);
 
 
 		// SE clones of other libaries
-		varis.set("FlxG", HscriptGlobals);
-		varis.set("BRcolor", HscriptColor);
-		varis.set("SESettings",SESettings);
-		varis.set("FlxMath", SEMath);
-		varis.set("File", FReplica);
-		varis.set("FileSystem", FReplica);
-		varis.set("StringTools", SEStringTools); // This uses inlines, I hate my life
-		varis.set("Json", SEJson);
+		interp.variables.set("FlxG", HscriptGlobals);
+		interp.variables.set("BRcolor", HscriptColor);
+		interp.variables.set("SESettings",SESettings);
+		interp.variables.set("FlxMath", SEMath);
+		interp.variables.set("File", FReplica);
+		interp.variables.set("FileSystem", FReplica);
+		interp.variables.set("StringTools", SEStringTools); // This uses inlines, I hate my life
+		interp.variables.set("Json", SEJson);
 
-		varis.set("Type", Type);
-		varis.set("getClass", Type.getClass);
-		varis.set("resolveClass", Type.resolveClass);
+		interp.variables.set("Type", Type);
+		interp.variables.set("getClass", Type.getClass);
+		interp.variables.set("resolveClass", Type.resolveClass);
 		// SE modifications of other libraries
-		varis.set("FlxTimer", BRTimer);
+		interp.variables.set("FlxTimer", BRTimer);
 
 		// Flixel Libaries
 
 
-		varis.set("FlixelFlxG", FlxG); // 
-		varis.set("FlxSprite", FlxSprite);
-		varis.set("FlxGraphic", FlxGraphic);
-		varis.set("FlxSound", FlxSound);
-		varis.set("FlxGroup", flixel.group.FlxGroup);
-		varis.set("FlxAngle", flixel.math.FlxAngle);
-		varis.set("FlxAnimation", flixel.animation.FlxAnimation);
-		varis.set("FlxBaseAnimation", flixel.animation.FlxBaseAnimation);
-		varis.set("FlxBackdrop", flixel.addons.display.FlxBackdrop);
-		varis.set("FlxTypedGroup", FlxTypedGroup);
-		varis.set("FlxAtlasFrames", FlxAtlasFrames);
-		varis.set("FlxTrail", FlxTrail);
-		varis.set("FlxTrailArea", FlxTrailArea);
-		varis.set("FlxPoint", FlxBasePoint);
+		interp.variables.set("FlixelFlxG", FlxG); // 
+		interp.variables.set("FlxSprite", FlxSprite);
+		interp.variables.set("FlxGraphic", FlxGraphic);
+		interp.variables.set("FlxSound", FlxSound);
+		interp.variables.set("FlxGroup", flixel.group.FlxGroup);
+		interp.variables.set("FlxAngle", flixel.math.FlxAngle);
+		interp.variables.set("FlxAnimation", flixel.animation.FlxAnimation);
+		interp.variables.set("FlxBaseAnimation", flixel.animation.FlxBaseAnimation);
+		interp.variables.set("FlxBackdrop", flixel.addons.display.FlxBackdrop);
+		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
+		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
+		interp.variables.set("FlxTrail", FlxTrail);
+		interp.variables.set("FlxTrailArea", FlxTrailArea);
+		interp.variables.set("FlxPoint", FlxBasePoint);
 		
-		varis.set("FlxEase", FlxEase);
-		varis.set("FlxCamera",FlxCamera);
-		varis.set("FlxTween", FlxTween);
-		varis.set("FlxText",FlxText);
-		varis.set("FlxSort",FlxSort);
+		interp.variables.set("FlxEase", FlxEase);
+		interp.variables.set("FlxCamera",FlxCamera);
+		interp.variables.set("FlxTween", FlxTween);
+		interp.variables.set("FlxText",FlxText);
+		interp.variables.set("FlxSort",FlxSort);
 		#if FLXRUNTIMESHADER
-		varis.set("FlxRuntimeShader",flixel.addons.display.FlxRuntimeShader);
+		interp.variables.set("FlxRuntimeShader",flixel.addons.display.FlxRuntimeShader);
 		#end
-		varis.set("FlxShader",flixel.graphics.tile.FlxGraphicsShader);
-		varis.set("FlxTextBorderStyle",FlxTextBorderStyle);
-		varis.set("FlxAxes",SEAxes);
+		interp.variables.set("FlxShader",flixel.graphics.tile.FlxGraphicsShader);
+		interp.variables.set("FlxTextBorderStyle",FlxTextBorderStyle);
+		interp.variables.set("FlxAxes",SEAxes);
 
-		varis.set("FlxAnimate", FlxAnimate);
-		varis.set("FlxAnimateFrames", FlxAnimateFrames);
+		interp.variables.set("FlxAnimate", FlxAnimate);
+		interp.variables.set("FlxAnimateFrames", FlxAnimateFrames);
 
 		// Normal Haxe
-		varis.set("Math", Math);
-		varis.set("Global",HSBrTools.shared);
-		varis.set("Std", Std);
-		varis.set("Reflect", Reflect);
+		interp.variables.set("Math", Math);
+		interp.variables.set("Global",HSBrTools.shared);
+		interp.variables.set("Std", Std);
+		interp.variables.set("Reflect", Reflect);
 
-		varis.set("mobile",#if(mobile) true #else false #end );
+		interp.variables.set("mobile",#if(mobile) true #else false #end );
 		if(defines == null){getDefines();}
-		varis.set("defines",defines );
+		interp.variables.set("defines",defines );
 
 
-		varis.set("this", interp);
+		interp.variables.set("this", interp);
 
 		
-		varis.set("debug", #if(debug) true #else false #end );
+		interp.variables.set("debug", #if(debug) true #else false #end );
 		
 		
 		return interp;

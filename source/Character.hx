@@ -29,7 +29,9 @@ import Xml;
 import flixel.sound.FlxSound;
 
 import hscript.Expr;
-import tea.SScript as Interp;
+import hscript.Interp;
+import hscript.InterpEx;
+import hscript.ParserEx;
 
 
 
@@ -234,10 +236,10 @@ class CharAnimController extends FlxAnimationController{
 	// HScript related shit
 	@privateAccess
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false):Dynamic { // Modified from Modding Plus, I am too dumb to figure this out myself 
-			if ((!useHscript || amPreview) || (interp == null || !interp.exists(func_name) ) && !important) {return null;}
+			if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return null;}
 			try{
 				args.insert(0,this);
-				var method = interp.get(func_name);
+				var method = interp.variables.get(func_name);
 				return Reflect.callMethod(interp,method,args);
 			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}'); return null;}
 		}
@@ -249,21 +251,21 @@ class CharAnimController extends FlxAnimationController{
 			return; // Don't load in editor
 		} 
 		var interp = HscriptUtils.createSimpleInterp();
-		var parser = interp.parser;
+		var parser = new hscript.Parser();
 		var program:Expr;
 		try{
 			parser.allowTypes = parser.allowJSON = true;
-			// program = parser.parseString(scriptContents);
+			program = parser.parseString(scriptContents);
 			
-			interp.set("hscriptPath", '${charLoc}/$curCharacter');
-			interp.set("charName", curCharacter);
-			interp.set("charProperties", charProperties);
-			interp.set("PlayState", PlayState );
-			interp.set("state", cast FlxG.state );
-			interp.set("game", cast FlxG.state );
-			interp.set("animation", animation );
-			interp.set("BRtools",new HSBrTools('${charLoc}/$curCharacter/'));
-			interp.doString(scriptContents,curCharacter);
+			interp.variables.set("hscriptPath", '${charLoc}/$curCharacter');
+			interp.variables.set("charName", curCharacter);
+			interp.variables.set("charProperties", charProperties);
+			interp.variables.set("PlayState", PlayState );
+			interp.variables.set("state", cast FlxG.state );
+			interp.variables.set("game", cast FlxG.state );
+			interp.variables.set("animation", animation );
+			interp.variables.set("BRtools",new HSBrTools('${charLoc}/$curCharacter/'));
+			interp.execute(program);
 			this.interp = interp;
 		}catch(e){
 			handleError('Error parsing char ${curCharacter} hscript, Line:${parser.line}; Error:${e.message}');

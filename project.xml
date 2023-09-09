@@ -124,9 +124,8 @@
 
 	<!-- <haxedef name='FLXRUNTIMESHADER' if='desktop'> -->
 
-	<!-- <haxelib name="hscript" /> -->
-	<!-- <haxelib name="hscript-ex"/> -->
-	<haxelib name="SScript"/>
+	<haxelib name="hscript" />
+	<haxelib name="hscript-ex"/>
 	<haxelib name="flxanimate" />
 	<haxedef name="hscriptPos" />
 

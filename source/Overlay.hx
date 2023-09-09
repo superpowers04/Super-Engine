@@ -13,9 +13,9 @@ import se.handlers.SELua;
 #end
 
 import hscript.Expr;
-import tea.SScript as Interp;
-// import hscript.InterpEx;
-// import hscript.ParserEx;
+import hscript.Interp;
+import hscript.InterpEx;
+import hscript.ParserEx;
 
 using StringTools;
 
@@ -273,7 +273,7 @@ class Console extends TextField
 class ConsoleInput extends TextField{
 	public var _parent:Console = null;
 	public var interp:Interp;
-	var parser:hscriptBase.Parser;
+	var parser:hscript.Parser;
 	var hsbrtools:HSBrTools = new HSBrTools('',"CONSOLE");
 	public var commandHistory:Array<String> = [];
 	public var actualText:String = "";
@@ -322,20 +322,18 @@ class ConsoleInput extends TextField{
 	#end
 	public function runHscript(?songScript:String = ""){
 		if(interp == null){ // No need to clog memory if hscript isn't gonna be touched
+			parser = HscriptUtils.createSimpleParser();
 			interp = HscriptUtils.createSimpleInterp();
-			parser = interp.parser;
-			interp.set("BRtools", hsbrtools);
-			interp.set("t",Console.instance.log);
-			interp.set("log",Console.instance.log);
+			interp.variables.set("BRtools", hsbrtools);
+			interp.variables.set("t",Console.instance.log);
+			interp.variables.set("log",Console.instance.log);
 		}
 		try{
 			@:privateAccess
 			parser.line = 0;
-			interp.set("state",cast (FlxG.state)); 
-			interp.set("game",cast (FlxG.state));
-			// interp.parser = parser;
-			interp.doString(songScript,'CONSOLE');
-			// interp.execute();
+			interp.variables.set("state",cast (FlxG.state)); 
+			interp.variables.set("game",cast (FlxG.state));
+			interp.execute(parser.parseString(songScript,'CONSOLE'));
 		}catch(e){
 			var _line = '${parser.line}';
 			try{

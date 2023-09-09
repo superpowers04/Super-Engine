@@ -2,7 +2,9 @@ package;
 
 
 import hscript.Expr;
-import tea.SScript as Interp;
+import hscript.Interp;
+import hscript.InterpEx;
+import hscript.ParserEx;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -108,29 +110,28 @@ class SelectScriptableState extends SearchMenuState{
 	public static function parseHS(?script:String = "",?brTools:HSBrTools = null,?id:String = ""):Null<Interp>{
 		if (script == "") {handleError("Script has no contents!");return null;}
 		var interp = HscriptUtils.createSimpleInterp();
-		var parser = interp.parser;
+		var parser = new hscript.Parser();
 		try{
 			parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
 
 			var program;
 			// parser.parseModule(songScript);
-			// program = parser.parseString(script);
-			var varis = interp;
+			program = parser.parseString(script);
+
 			if (brTools != null) {
 				trace('Using hsBrTools');
-				interp.set("BRtools",brTools); 
+				interp.variables.set("BRtools",brTools); 
 				brTools.reset();
 			}else {
 				trace('Using assets folder');
-				interp.set("BRtools",new HSBrTools("assets/"));
+				interp.variables.set("BRtools",new HSBrTools("assets/"));
 			}
-			varis.set("id",id);
-			varis.set("close",function(){ FlxG.switchState(new SelectScriptableState()); }); // Closes a script
-			varis.set("Manager",ScriptableStateManager);
-			varis.set("ScriptableStateManager",ScriptableStateManager);
-			varis.set("state",null);
-			interp.doString(script);
-			interp.execute();
+			interp.variables.set("id",id);
+			interp.variables.set("close",function(){ FlxG.switchState(new SelectScriptableState()); }); // Closes a script
+			interp.variables.set("Manager",ScriptableStateManager);
+			interp.variables.set("ScriptableStateManager",ScriptableStateManager);
+			interp.variables.set("state",null);
+			interp.execute(program);
 			if(brTools != null)brTools.reset();
 			callInterpet("initScript",[],interp);
 			return interp;

@@ -259,22 +259,12 @@ class SELuaVaris{
 		}
 		var count = 0;
 		for (arg in args) if(Convert.toLua(parent.state, arg)) count++; 
-			// else{
-			// 	try{
-			// 		var ptr = objectToPtr(arg,true);
-			// 		Convert.toLua(parent.state, ptr);
-			// 		count++;
-			// 	}catch(e){}
-			// }
 		SELua.currentInstance = this.parent;
 		var status:Int = Lua.pcall(parent.state, count, 0, 0);
 
 
 		if (status != Lua.LUA_OK) throw parent.fromLuaError(status);
 		parent.emptyStack();
-
-		
-
 	}
 	public function getRaw(variable:String):Dynamic {
 		if(parent.state == null) return null;
