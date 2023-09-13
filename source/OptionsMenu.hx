@@ -231,9 +231,8 @@ class OptionsMenu extends MusicBeatState
 				var i = cat.options.length;
 				while(i > 0){
 					i--;
-					if(cat.options[i] != null && !cat.options[i].isVisible){
-						cat.options.remove(cat.options[i]);
-					}
+					if(cat.options[i] == null || cat.options[i].isVisible) continue;
+					cat.options.remove(cat.options[i]);
 				}
 			}
 		}
@@ -286,11 +285,6 @@ class OptionsMenu extends MusicBeatState
 		var height:Float = obj2.height;
 		var x:Float = obj2.x;
 		var y:Float = obj2.y;
-			
-			
-			
-			
-
 		return (obj1.x > x && obj1.x < x + width) && (obj1.y > y && obj1.y < y + height);
 	}
 	override function update(elapsed:Float)
@@ -307,17 +301,10 @@ class OptionsMenu extends MusicBeatState
 			var _accept = controls.ACCEPT;
 
 			if(FlxG.mouse.justReleased){
-				if(isHovering(FlxG.mouse,titleText)){
-					_back = true;
-				}
-				if(FlxG.mouse.overlaps(grpControls.members[curSelected])){
-					_accept = true;
-				}
-				if(FlxG.mouse.y > 450){
-					_down = true;
-				}else if(FlxG.mouse.y < 300){
-					_up = true;
-				}
+				if(isHovering(FlxG.mouse,titleText)) _back = true;
+				if(FlxG.mouse.overlaps(grpControls.members[curSelected])) _accept = true;
+				if(FlxG.mouse.y > 450) _down = true;
+				else if(FlxG.mouse.y < 300) _up = true;
 				// if(grpControls.members[curSelected + 1] != null && FlxG.mouse.overlaps(grpControls.members[curSelected + 1])){
 				// 	_down = true;
 				// }
@@ -367,21 +354,15 @@ class OptionsMenu extends MusicBeatState
 			
 			if (isCat){
 				
-				if (currentSelectedCat.getOptions()[curSelected].acceptValues)
-				{
-
-					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.RIGHT || _right ){
-						if(currentSelectedCat.getOptions()[curSelected].right()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].display);
-					}
-					if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.LEFT || _left ){
-						if(currentSelectedCat.getOptions()[curSelected].left()) updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].display);
-					}
-
+				if (currentSelectedCat.getOptions()[curSelected].acceptValues){
+					if((FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.RIGHT || _right ) && currentSelectedCat.getOptions()[curSelected].right()) 
+						updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].display);
+					if((FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.LEFT || _left ) && currentSelectedCat.getOptions()[curSelected].left())
+						updateAlphabet(grpControls.members[curSelected],currentSelectedCat.getOptions()[curSelected].display);
 				}
 				updateOffsetText();
 			}else{
-				if (FlxG.keys.pressed.SHIFT)
-				{
+				if (FlxG.keys.pressed.SHIFT)/{
 					if (FlxG.keys.pressed.RIGHT) FlxG.save.data.offset += 0.1;
 					else if (FlxG.keys.pressed.LEFT) FlxG.save.data.offset -= 0.1;
 				}
