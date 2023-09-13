@@ -164,10 +164,9 @@ class KadeEngineData
 	 
 
 		Conductor.recalculateTimings();
-		// KeyBinds.keyCheck();
+		KeyBinds.keyCheck();
 		PlayerSettings.init();
 		
-		// PlayerSettings.player1.controls.loadKeyBinds();
 
 		Main.watermarks = FlxG.save.data.watermark;
 

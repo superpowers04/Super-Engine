@@ -14,7 +14,7 @@ class KeyBinds
 
 	public static var gamepad:Bool = false;
 	public static var defaultKeys:Array<Array<String>> = [
-		["A","S","W","D"],
+		["A","S","W","D",'J','K','I','L'],
 		["A","D"],
 		["A","SPACE","D"],
 		["A","S","W","D","Z","X","N","M"],
@@ -34,6 +34,20 @@ class KeyBinds
 		["Q","W","E","R","A","S","D","F","C","V","SPACE","N","M","H","J","K","L","U","I","O","P"],
 	];
 
+	public static function keyCheck():Void{
+		for(count => keys in defaultKeys){
+			var _keys = FlxG.save.data.keys[count];
+			if(_keys == null){
+				FlxG.save.data.keys[count] = keys.copy();
+				continue;
+			}
+			for(index => key in keys){
+				if(_keys[index] == null){
+					_keys[index] = key;
+				}
+			}
+		}
+	}
 	public static function resetBinds():Void{
 		FlxG.save.data.keys = [];
 		for(count => keys in defaultKeys){
