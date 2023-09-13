@@ -27,6 +27,8 @@ class FuckState extends FlxUIState
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
 	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown"){
+		LoadingScreen.hide();
+		LoadingScreen.forceHide();
 		var _stack:String = "";
 		try{
 			var callStack:Array<StackItem> = CallStack.exceptionStack(true);
@@ -169,6 +171,8 @@ class FuckState extends FlxUIState
 	override function new(e:String,info:String,saved:Bool = false){
 		err = '${e}\nThis happened in ${info}';
 		this.saved = saved;
+		LoadingScreen.hide();
+		LoadingScreen.forceHide();
 		super();
 	}
 	override function create()
@@ -238,10 +242,13 @@ class FuckState extends FlxUIState
 				MainMenuState.firstStart = true;
 				FlxG.switchState(new MainMenuState());
 			}
-			if (FlxG.keys.justPressed.ESCAPE)
-			{
-				Sys.exit(1);
-			}
+			if (FlxG.keys.justPressed.ESCAPE) Sys.exit(1);
+
+			if (LoadingScreen.isVisible){
+				LoadingScreen.forceHide(); // Hide you fucking piece of shit
+				LoadingScreen.object.alpha = 0;
+				LoadingScreen.isVisible = false;
+			} 
 		}catch(e){}
 		super.update(elapsed);
 	}

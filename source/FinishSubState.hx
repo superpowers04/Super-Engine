@@ -94,9 +94,9 @@ class FinishSubState extends MusicBeatSubstate
 		
 		PlayState.instance.generatedMusic = PlayState.instance.handleTimes = PlayState.instance.acceptInput = false;
 		
-		var dad = PlayState.dad;
-		var boyfriend = PlayState.boyfriend;
-		var curAnim:String = PlayState.boyfriend.animName;
+		var dad = PlayState.opponentCharacter;
+		var boyfriend = PlayState.playerCharacter;
+		var curAnim:String = boyfriend.animName;
 
 		// Conductor.changeBPM(70);
 		FlxG.cameras.setDefaultDrawTarget(PlayState.instance.camGame,true);

@@ -13,6 +13,7 @@ import flixel.text.FlxText;
 
 class LoadingScreen extends Sprite{
 	public static var object:LoadingScreen;
+	public static var isVisible = false;
 
 	public static var loadingText(default,set):String = "";
 	public static function set_loadingText(val:String):String{
@@ -176,7 +177,7 @@ class LoadingScreen extends Sprite{
 		}
 		// object.alpha = 1;
 		if(tween != null){tween.cancel();}
-		object.funni = true;
+		isVisible = object.funni = true;
 		object.elapsed = 0;
 		object.scaleX = lime.app.Application.current.window.width / 1280;
 		object.scaleY = lime.app.Application.current.window.height / 720;
@@ -192,7 +193,7 @@ class LoadingScreen extends Sprite{
 			return;
 		}
 		if(tween != null){tween.cancel();}
-		object.funni = false;
+		isVisible = object.funni = false;
 		object.alpha = 0;
 		try{
 			Main.funniSprite.removeChild(object);}catch(e){}

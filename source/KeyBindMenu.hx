@@ -35,7 +35,7 @@ class KeyBindMenu extends FlxSubState
 	var keyWarning:FlxText;
 	var warningTween:FlxTween;
 	var keyText:Array<Array<String>> = [
-		null,
+		["UI LEFT", "UI DOWN", "UI UP", "UI RIGHT"],
 		["LEFT","DOWN"],
 		["LEFT","MIDDLE","DOWN"],
 		["LEFT", "DOWN", "UP", "RIGHT", "ALT LEFT", "ALT DOWN", "ALT UP", "ALT RIGHT"],
@@ -55,7 +55,7 @@ class KeyBindMenu extends FlxSubState
 		["KEY 1", "KEY 2", "KEY 3", "KEY 4", "KEY 5", "KEY 6", "KEY 7", "KEY 8", "KEY 9", "KEY 10", "KEY 11", "KEY 12","KEY 13","KEY 14","KEY 15","KEY 16","KEY 17","KEY 18"],
 	];
 	var keyModeText:Array<String> = [
-		null,null,null,"4K/User Interface"
+		'User Interface',null,null,"4K"
 	];
 	var keyAlt:Array<String> = ["LEFT ARROW", "DOWN ARROW", "UP ARROW", "RIGHT ARROW"];
 	var defaultKeys:Array<String> = ["A", "S", "W", "D", "Z", "X", "N", "M", "R"];

@@ -557,7 +557,7 @@ class PlayState extends ScriptMusicBeatState
 		if(showWarning) showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
 	}
 	override public function loadScripts(?enableScripts:Bool = false,?enableCallbacks:Bool = false,?force:Bool = false){
-		if((!enableScripts && !parseMoreInterps) || (!FlxG.save.data.menuScripts && !force)) return;
+		if((!enableScripts && !parseMoreInterps) || (!FlxG.save.data.packScripts && !force)) return;
 		super.loadScripts(enableScripts,enableCallbacks,force);
 		for (i in 0 ... scripts.length) {
 			var v = scripts[i];
@@ -738,9 +738,12 @@ class PlayState extends ScriptMusicBeatState
 						for (i in CoolUtil.orderList(SELoader.readDirectory(stagePath))) {
 							if(i.endsWith(".hscript")){
 								parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
-							}else if(i.endsWith(".lua")){
+							}
+							#if linc_luajit
+							else if(i.endsWith(".lua")){
 								parseLua(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
 							}
+							#end
 						}
 					}
 				}
@@ -1458,7 +1461,14 @@ class PlayState extends ScriptMusicBeatState
 			add(jumpToText);
 			FlxTween.tween(jumpToText,{alpha:1},0.4);
 			jumpToTimer = FlxTween.tween(jumpToText,{y:jumpToText.y + 40},10,{onUpdate:function(_){
-				if(subState != null || !acceptInput || !(controls.RIGHT_P || controls.LEFT_P || controls.UP_P || controls.DOWN_P)) return;
+				if(subState != null || !acceptInput) return;
+				var hasPressed = false;
+				for(key => _ in SEIKeyMap){
+					if(!FlxG.keys.checkStatus(key, PRESSED)) continue;
+					hasPressed = true;
+					break;
+				}
+				if(!(controls.RIGHT_P || controls.LEFT_P || controls.UP_P || controls.DOWN_P)) return;
 				if(isJumpTo){
 					var arrowList:Array<Note> = [];
 					for (n in unspawnNotes) {
@@ -2790,11 +2800,20 @@ class PlayState extends ScriptMusicBeatState
 		SEIKeyMap[FlxKey.fromStringMap['DOWN']] =	1;
 		SEIKeyMap[FlxKey.fromStringMap['UP']] =		2;
 		SEIKeyMap[FlxKey.fromStringMap['RIGHT']] =	3;
-		if(SONG.keyCount == 3){
+		if(SONG.keyCount == 0 || SONG.keyCount == 1){
+			SEIKeyMap[FlxKey.fromStringMap['ANY']] = 0;
+		}else if(SONG.keyCount == 4){
 			var arr:Array<String> = cast FlxG.save.data.keys[3];
-			for(i => v in arr){
-				SEIKeyMap[FlxKey.fromStringMap[v]] = i % SONG.keyCount; 
-			}
+			SEIKeyMap[FlxKey.fromStringMap[arr[0]]] = 0;
+			SEIKeyMap[FlxKey.fromStringMap[arr[1]]] = 1;
+			SEIKeyMap[FlxKey.fromStringMap[arr[2]]] = 2;
+			SEIKeyMap[FlxKey.fromStringMap[arr[3]]] = 3;
+			SEIKeyMap[FlxKey.fromStringMap[arr[4]]] = 0;
+			SEIKeyMap[FlxKey.fromStringMap[arr[5]]] = 1;
+			SEIKeyMap[FlxKey.fromStringMap[arr[6]]] = 2;
+			SEIKeyMap[FlxKey.fromStringMap[arr[7]]] = 3;
+
+			
 		}else{
 			var arr:Array<String> = cast FlxG.save.data.keys[SONG.keyCount - 1];
 			for(i => v in arr){

@@ -12,7 +12,7 @@ typedef ScoreJson = {
 class SongScores {
 
 	var songNames:Array<String> = [];
-	var scores:Array<Array<Dynamic>> = [];
+	var scores:Array<Dynamic> = [];
 	var path:String = "";
 	public function new(?path:String = ""){
 		if(path == ""){
@@ -28,7 +28,9 @@ class SongScores {
 			json = cast try{Json.parse(SELoader.loadText(path));}catch(e){ {songNames:["Bopeebo"],scores:[1]}; };
 		}
 		songNames = json.songNames;
+		#if !hl
 		scores = json.scores;
+		#end
 	}
 	public function save(){
 		try{
