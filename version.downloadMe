@@ -1,4 +1,2 @@
 23.09.12.2045;
-* UI keys are now seperate from the 4K keys
-* Fix alt keys not working when using 4K
-* Fix some crashes
+* UI Keys now have alts

@@ -155,7 +155,7 @@ class KadeEngineData
 				FlxG.save.data.charRepo = null;
 				FlxG.save.data.chartRepo = null;
 				if(_data.keys != null){
-					_data.keys[0] = ['A','S','W','D'];
+					_data.keys[0] = ['A','S','W','D','I','K','J',"L"];
 				}
 			}
 		}

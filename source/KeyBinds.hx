@@ -44,10 +44,14 @@ class KeyBinds
 		FlxG.save.data.upBind = FlxG.save.data.keys[0][2];
 		FlxG.save.data.rightBind = FlxG.save.data.keys[0][3];
 		FlxG.save.data.killBind = "R";
-		FlxG.save.data.AltupBind = "N";
-		FlxG.save.data.AltdownBind = "X";
-		FlxG.save.data.AltleftBind = "Z";
-		FlxG.save.data.AltrightBind = "M";
+		FlxG.save.data.AltupBind = FlxG.save.data.keys[0][4];
+		FlxG.save.data.AltdownBind = FlxG.save.data.keys[0][5];
+		FlxG.save.data.AltleftBind = FlxG.save.data.keys[0][6];
+		FlxG.save.data.AltrightBind = FlxG.save.data.keys[0][7];
+		if (FlxG.save.data.AltupBind == null) FlxG.save.data.AltupBind = "F12";
+		if (FlxG.save.data.AltdownBind == null) FlxG.save.data.AltdownBind = "F12";
+		if (FlxG.save.data.AltleftBind == null) FlxG.save.data.AltleftBind = "F12";
+		if (FlxG.save.data.AltrightBind == null) FlxG.save.data.AltrightBind = "F12";
 		PlayerSettings.player1.controls.loadKeyBinds();
 	}
 
