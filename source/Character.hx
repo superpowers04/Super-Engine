@@ -30,8 +30,7 @@ import flixel.sound.FlxSound;
 
 import hscript.Expr;
 import hscript.Interp;
-import hscript.InterpEx;
-import hscript.ParserEx;
+import hscriptfork.InterpSE;
 
 
 
@@ -1275,6 +1274,12 @@ class CharAnimController extends FlxAnimationController{
 		},
 		{
 			"player1": [0, -18],
+			"player2": [20, 22],
+			"player3": [0, 0],
+			"anim": "hit"
+		},
+		{
+			"player1": [0, 0],
 			"player2": [-27, -13],
 			"player3": [0, 0],
 			"anim": "dodge"
@@ -1403,7 +1408,7 @@ class CharAnimController extends FlxAnimationController{
 			"fps": 24,
 			"anim": "hit",
 			"indices": [],
-			"name": "boyfriend hit"
+			"name": "BF hit"
 		},
 		{
 			"loop": false,

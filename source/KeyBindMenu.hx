@@ -136,17 +136,15 @@ class KeyBindMenu extends FlxSubState
 		#end
 		if (frames <= 10) frames++;
 
-		infoText.text = #if(!mobile) 'Key mode: ${(keyModeText[keyMode] == null ? '${keyMode + 1}K' : keyModeText[keyMode])}. Press Left/Right to switch' + #end'\n(' + #if(mobile) 'Tap or press ' + #end'Escape to save, Backspace to leave without saving. )\n${lastKey != "" ? lastKey + " is blacklisted!" : ""}'; //'//Shitty haxe syntax moment
+		infoText.text = #if(!mobile) 'Key mode: ${(keyModeText[keyMode] ?? '${keyMode + 1}K')}. Press Left/Right to switch' + #end'\n(' + #if(mobile) 'Tap or press ' + #end'Escape to save, Backspace to leave without saving. )\n${lastKey != "" ? lastKey + " is blacklisted!" : ""}'; //'//Shitty haxe syntax moment
 
 		switch(state){
 
 			case "select":
-				if (FlxG.keys.justPressed.UP)
-				{
+				if (FlxG.keys.justPressed.UP){
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(-1);
-				}else if (FlxG.keys.justPressed.DOWN)
-				{
+				}else if (FlxG.keys.justPressed.DOWN){
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(1);
 				}

@@ -202,6 +202,7 @@ class SickMenuState extends ScriptMusicBeatState
 			descriptionText.setFormat(CoolUtil.font, 22, FlxColor.WHITE, LEFT, NONE, FlxColor.BLACK);
 			descriptionText.borderSize = 2;
 			var blackBorder:FlxSprite = new FlxSprite(-30,FlxG.height - 30).makeGraphic((FlxG.width),40,FlxColor.fromString("0x220011"));
+			blackBorder.scrollFactor.set();
 			blackBorder.alpha = 0.8;
 
 			add(blackBorder);

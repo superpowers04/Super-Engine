@@ -64,7 +64,7 @@ import Overlay.Console;
 
 import hscript.Expr;
 import hscript.Interp;
-import hscript.InterpEx;
+import hscriptfork.InterpSE;
 #if discord_rpc
 	import Discord.DiscordClient;
 #end
@@ -305,11 +305,11 @@ class PlayState extends ScriptMusicBeatState
 		@:keep inline public static function set_opponent(vari){return dad = vari;};
 		public static var playerCharacter(get,default):Character = null;
 		@:keep inline public static function get_playerCharacter(){
-			return (playerCharacter == null ? (instance != null && instance.swappedChars ? dad : boyfriend) : playerCharacter);
+			return (playerCharacter ?? (instance != null && instance.swappedChars ? dad : boyfriend));
 		};
 		public static var opponentCharacter(get,default):Character = null;
 		@:keep inline public static function get_opponentCharacter(){
-			return (opponentCharacter == null ? (instance != null && instance.swappedChars ? boyfriend : dad) : opponentCharacter);
+			return (opponentCharacter ?? (instance != null && instance.swappedChars ? boyfriend : dad));
 		};
 
 		public static var player1:String = "bf";
@@ -413,11 +413,14 @@ class PlayState extends ScriptMusicBeatState
 
 	public override function errorHandle(?error:String = "",?forced:Bool = false) handleError(error,forced);
 	public function handleError(?error:String = "",?forced:Bool = false){
+		generatedMusic = persistentUpdate = false;
+		canPause=true;
 		try{
 			if(currentInterp.args[0] == this) currentInterp.args.shift();
 
-			if(error == "") error = 'No error passed!\nInterp info: ${currentInterp}';
-			else if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
+			if(error == "") error = 'No error passed!';
+			// else if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
+			if(currentInterp.isActive) error = '\nInterp info: ${currentInterp}';
 			trace('Error!\n ${error}');
 			if(currentInterp.isActive) trace('Current Interpeter: ${currentInterp}');
 			resetInterps();
@@ -431,18 +434,26 @@ class PlayState extends ScriptMusicBeatState
 			errorMsg = "";
 			FlxTimer.globalManager.clear();
 			FlxTween.globalManager.clear();
+			try { camGame.visible = false; } catch(e){}
+			try { camHUD.visible = false; } catch(e){}
+			try { playerNoteCamera.visible=false; } catch(e){}
+			try { opponentNoteCamera.visible=false; } catch(e){}
 
 			var _forced = (!songStarted && !forced && playCountdown);
 			generatedMusic = persistentUpdate = false;
 			persistentDraw = true;
 			if(FinishSubState.instance != null){
-				showTempmessage('Error! ${error}',FlxColor.RED);
+				// showTempmessage('Error! ${error}',FlxColor.RED);
+				FinishSubState.instance.destroy();
+				openSubState(new ErrorSubState(0,0,error,true));
+				canPause = true;
 				return;
 			}
 			// _forced
 			Main.game.blockUpdate = Main.game.blockDraw = false;
 			openSubState(new FinishSubState(0,0,error,true));
-		}catch(e){trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
+		}catch(e){
+			trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
 		}
 	}
 
@@ -597,7 +608,7 @@ class PlayState extends ScriptMusicBeatState
 		logGameplay = FlxG.save.data.logGameplay;
 
 
-		if (FlxG.sound.music != null) FlxG.sound.music.stop();
+		FlxG.sound.music?.stop();
 
 		resetScore();
 
@@ -975,8 +986,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
-		if (downscroll)
-			healthBarBG.y = 50 + FlxG.save.data.guiGap;
+		if (downscroll) healthBarBG.y = 50 + FlxG.save.data.guiGap;
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -1064,9 +1074,7 @@ class PlayState extends ScriptMusicBeatState
 			practiceText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 			practiceText.cameras = [camHUD];
 			practiceText.screenCenter(X);
-			if(downscroll){
-				practiceText.y += 20;
-			}
+			if(downscroll) practiceText.y += 20;
 			insert(members.indexOf(healthBar),practiceText);
 			FlxTween.tween(practiceText,{alpha:0},1,{type:PINGPONG});
 			// }
@@ -1467,6 +1475,10 @@ class PlayState extends ScriptMusicBeatState
 					if(!FlxG.keys.checkStatus(key, PRESSED)) continue;
 					hasPressed = true;
 					break;
+				}
+				if(Conductor.songPosition > skipPos) {
+					FlxTween.tween(PlayState.jumpToText,{alpha:0},0.2,{onComplete:function(_){jumpToTimer.cancelChain();PlayState.jumpToText.destroy();}});
+					return;
 				}
 				if(!(controls.RIGHT_P || controls.LEFT_P || controls.UP_P || controls.DOWN_P)) return;
 				if(isJumpTo){
@@ -3458,5 +3470,6 @@ class PlayState extends ScriptMusicBeatState
 		}catch(e){}
 		super.destroy();
 	}
+
 
 }

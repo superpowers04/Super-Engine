@@ -23,28 +23,36 @@ import flixel.tweens.FlxEase;
 
 using StringTools;
 
+@:publicFields @:structInit class SongInfo {
+	var isCategory:Bool = false;
+	var name:String = "";
+	var charts:Array<String>;
+	var path:String = "";
+	var namespace:String = null;
+}
+
 class MultiMenuState extends onlinemod.OfflineMenuState
 {
-	var modes:Map<Int,Array<String>> = [];
+	// static var modes:Map<Int,Array<String>> = [];
+	// static var nameSpaces:Array<String> = [];
+	// static var songNames:Array<String> = [];
+	static var songInfoArray:Array<SongInfo> = [];
 	static inline var CATEGORYNAME:String = "-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-CATEGORY";
-	var diffText:FlxText;
-	var scoreText:FlxText;
 	var selMode:Int = 0;
-	var blockedFiles:Array<String> = ['events.json','picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','se-overrides.json','config.json'];
+	static var blockedFiles:Array<String> = ['events.json','picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','se-overrides.json','config.json'];
 	static var lastSel:Int = 1;
 	static var lastSearch:String = "";
 	public static var lastSong:String = ""; 
 	var beetHit:Bool = false;
 
-	var songNames:Array<String> = [];
-	var nameSpaces:Array<String> = [];
 	var shouldDraw:Bool = true;
 	var inTween:FlxTween;
 	var score:Int = 0;
 	var interpScore:Int = 0;
 	var shouldVoicesPlay:Bool = false;
 
-
+	var diffText:FlxText;
+	var scoreText:FlxText;
 	var songProgress:FlxBar = new FlxBar();
 	var songProgressParent:Alphabet;
 	var songProgressText:FlxText = new FlxText(0,0,"00:00/00:00. Playing voices",12);
@@ -56,8 +64,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 	}
 	override function beatHit(){
-		if (voices != null && shouldVoicesPlay && (!voices.playing || (voices.time > FlxG.sound.music.time + 20 || voices.time < FlxG.sound.music.time - 20)))
-		{
+		if (voices != null && shouldVoicesPlay && (!voices.playing || (voices.time > FlxG.sound.music.time + 20 || voices.time < FlxG.sound.music.time - 20))){
 			voices.time = FlxG.sound.music.time;
 			voices.play();
 		}
@@ -76,9 +83,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 		return super.switchTo(nextState);
 	}
-	override function create()
-	{
-		try{
+	override function create(){try{
 
 		retAfter = false;
 		SearchMenuState.doReset = true;
@@ -108,7 +113,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		changeSelection(lastSel);
 		lastSel = 1;
 		changeDiff();
-		updateInfoText('Use shift to scroll faster; Shift+F10 to erase the score of the current chart. Press CTRL/Control to listen to inst/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songs.length} songs.');
+		updateInfoText('Use shift to scroll faster; Shift+F10 to erase the score of the current chart. Press CTRL/Control to listen to inst/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songInfoArray.length} songs.');
 		}catch(e){MainMenuState.handleError(e,'Something went wrong in create; ${e.message}\n${e.stack}');
 		}
 
@@ -127,7 +132,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			inTween.destroy();
 		}
 	}
-	function addListing(name:String,i:Int):Alphabet{
+	function addListing(name:String,i:Int,child:Dynamic):Alphabet{
 		callInterp('addListing',[name,i]);
 		if(cancelCurrentFunction) return null;
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false);
@@ -135,6 +140,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		controlLabel.cutOff = 25;
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
+		controlLabel.menuValue = child;
 		if (i != 0) controlLabel.alpha = 0.6;
 		grpSongs.add(controlLabel);
 		callInterp('addListingAfter',[controlLabel,name,i]);
@@ -143,8 +149,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	function addCategory(name:String,i:Int):Alphabet{
 		callInterp('addCategory',[name,i]);
 		if(cancelCurrentFunction) return null;
-		songs[i] = name;
-		modes[i] = [CATEGORYNAME];
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
 		controlLabel.adjustAlpha = false;
 		controlLabel.screenCenter(X);
@@ -160,102 +164,85 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		callInterp('addCategoryAfter',[controlLabel,name,i]);
 		return controlLabel;
 	}
-	inline function isValidFile(file) {return (!blockedFiles.contains(file.toLowerCase()) && (StringTools.endsWith(file, '.json') || StringTools.endsWith(file, '.sm')));}
+	@:keep inline static public function isValidFile(file) {return ((StringTools.endsWith(file, '.json') || StringTools.endsWith(file, '.sm')) && !blockedFiles.contains(file.toLowerCase()));}
+	@:keep inline function addSong(path:String,name:String):SongInfo{
+		if (!SELoader.exists('${path}/Inst.ogg') ) return null;
+		var songInfo:SongInfo = {
+			name:name,
+			charts:[],
+			namespace:null,
+			path:path + '/'
+		};
+		for (file in orderList(SELoader.readDirectory(path))) {
+			if (!isValidFile(file)) continue;
+			songInfo.charts.push(file);
+		}
+
+		return songInfo;
+	}
 	override function reloadList(?reload=false,?search = ""){
 		curSelected = 0;
 		var _goToSong = 0;
 		if(reload){grpSongs.clear();}
 
-		songs = ["No Songs!"];
-		songNames = ["Nothing"];
-		modes = [0 => ["None"]];
+		songInfoArray=[];
 		var i:Int = 0;
 
 
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
 		callInterp('reloadList',[reload,search,query]);
 		if(!cancelCurrentFunction){
-			if (SELoader.exists(dataDir))
-			{
+			var emptyCats:Array<String> = [];
+			if (SELoader.exists(dataDir)){
 				var dirs = orderList(SELoader.readDirectory(dataDir));
 				addCategory("charts folder",i);
 				i++;
 
 				LoadingScreen.loadingText = 'Scanning mods/charts';
-				for (directory in dirs)
-				{
-					if (search == "" || query.match(directory.toLowerCase())) // Handles searching
-					{
-						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
-							modes[i] = [];
-							for (file in orderList(SELoader.readDirectory(dataDir + directory)))
-							{
-									if (isValidFile(file)){
-										modes[i].push(file);
-									}
-							}
-							if (modes[i][0] == null){ // No charts to load!
-								modes[i][0] = "No charts for this song!";
-							}
-							songs[i] = dataDir + directory;
-							songNames[i] =directory;
-
-							addListing(directory,i);
-							if(_goToSong == 0)_goToSong = i;
-							i++;
-
-						}
-					}
+				for (directory in dirs){
+					if (search != "" && !query.match(directory.toLowerCase())) continue; // Handles searching
+					var song = addSong('${dataDir}${directory}',directory);
+					if(song == null) continue;
+					addListing(directory,i,song);
+					songInfoArray.push(song);
+					if(_goToSong == 0)_goToSong = i;
+					i++;
 				}
 			}
 			var _packCount:Int = 0;
-			if (SELoader.exists("mods/weeks"))
-			{
-				for (name in orderList(SELoader.readDirectory("mods/weeks")))
-				{
+			if (SELoader.exists("mods/weeks")){
+				for (name in orderList(SELoader.readDirectory("mods/weeks"))){
 
 					var dataDir = "mods/weeks/" + name + "/charts/";
 					if(!SELoader.exists(dataDir)){continue;}
 					var catMatch = query.match(name.toLowerCase());
 					var dirs = orderList(SELoader.readDirectory(dataDir));
-					addCategory(name + "(Week)",i);
-					i++;
+					// addCategory(name + "(Week)",i);
 					_packCount++;
 					var containsSong = false;
 					LoadingScreen.loadingText = 'Scanning mods/weeks/$name';
-					for (directory in dirs)
-					{
-						if ((search == "" || catMatch || query.match(directory.toLowerCase())) && SELoader.isDirectory('${dataDir}${directory}')) // Handles searching
-						{
-							if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
-								modes[i] = [];
-								for (file in orderList(SELoader.readDirectory(dataDir + directory)))
-								{
-										if (isValidFile(file)){
-											modes[i].push(file);
-										}
-								}
-								if (modes[i][0] == null){ // No charts to load!
-									modes[i][0] = "No charts for this song!";
-								}
-								songs[i] = dataDir + directory;
-								songNames[i] = directory;
-
-								
-								addListing(directory,i);
-								nameSpaces[i] = dataDir;
-								if(_goToSong == 0)_goToSong = i;
+					for (directory in dirs){
+						if (SELoader.isDirectory('${dataDir}${directory}') && (search != "" && !catMatch && !query.match(directory.toLowerCase()))) continue; // Handles searching
+						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
+							var song = addSong('${dataDir}${directory}',directory);
+							if(song == null) continue;
+							song.namespace = dataDir;
+							if(!containsSong){
 								containsSong = true;
-								i++;
+								addCategory(name,i);
 							}
+							addListing(directory,i,song);
+							songInfoArray.push(song);
+							if(_goToSong == 0)_goToSong = i;
+							
+							i++;
 						}
 					}
 					if(!containsSong){
-						grpSongs.members[i - 1].color = FlxColor.RED;
+						emptyCats.push(name + "(Week)");
 					}
 				}
 			}
-			var emptyCats:Array<String> = [];
 			if (SELoader.exists("mods/packs"))
 			{
 				for (name in orderList(SELoader.readDirectory("mods/packs")))
@@ -264,39 +251,24 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					var catMatch = query.match(name.toLowerCase());
 					var dataDir = "mods/packs/" + name + "/charts/";
 					if(!SELoader.exists(dataDir)){continue;}
+					_packCount++;
 					var containsSong = false;
 					var dirs = orderList(SELoader.readDirectory(dataDir));
 					LoadingScreen.loadingText = 'Scanning mods/packs/$name/charts/';
-					for (directory in dirs)
-					{
-						if ((search == "" || catMatch || query.match(directory.toLowerCase())) && SELoader.isDirectory('${dataDir}${directory}')) // Handles searching
-						{
-							if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
-								if(!containsSong){
-									containsSong = true;
-									addCategory(name,i);
-									i++;
-								}
-								modes[i] = [];
-								for (file in orderList(SELoader.readDirectory(dataDir + directory)))
-								{
-										if (isValidFile(file)){
-											modes[i].push(file);
-										}
-								}
-								if (modes[i][0] == null){ // No charts to load!
-									modes[i][0] = "No charts for this song!";
-								}
-
-								songs[i] = dataDir + directory;
-								songNames[i] =directory;
-
-								
-								addListing(directory,i);
-								if(_goToSong == 0)_goToSong = i;
-								nameSpaces[i] = dataDir;
-								i++;
+					for (directory in dirs){
+						if (SELoader.isDirectory('${dataDir}${directory}') && (search != "" && !catMatch && !query.match(directory.toLowerCase()))) continue; // Handles searching
+						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
+							var song = addSong('${dataDir}${directory}',directory);
+							if(song == null) continue;
+							song.namespace = dataDir;
+							if(!containsSong){
+								containsSong = true;
+								addCategory(name,i);
 							}
+							addListing(directory,i,song);
+							songInfoArray.push(song);
+							if(_goToSong == 0)_goToSong = i;
+							i++;
 						}
 					}
 					if(!containsSong){
@@ -316,7 +288,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		// 	grpSongs.members[i - 1].color = FlxColor.RED;
 		// }
 		if(reload && lastSel == 1) changeSelection(_goToSong);
-		updateInfoText('Use shift to scroll faster; Shift+F7 to erase the score of the current chart. Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songs.length} songs');
+		SELoader.gc();
+		updateInfoText('Use shift to scroll faster; Shift+F7 to erase the score of the current chart. Press CTRL/Control to listen to instrumental/voices of song. Press again to toggle the voices. *Disables autopause while listening to a song in this menu. Found ${songInfoArray.length} songs');
 	}
 	// function checkSong(dataDir:String,directory:String){
 
@@ -422,16 +395,17 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 
 	function selSong(sel:Int = 0,charting:Bool = false){
-		if (songs[sel] == "No Songs!" || modes[sel][selMode] == CATEGORYNAME){ // Actually check if the song is a song, if not then error
+		if (grpSongs.members[sel].menuValue == null){ // Actually check if the song is a song, if not then error
 			FlxG.sound.play(Paths.sound("cancelMenu"));
 			showTempmessage("Invalid song!",FlxColor.RED);
 			return;
 		}
+		var songInfo = grpSongs.members[sel].menuValue;
 		if(charting){
-			var songLoc = songs[sel];
-			var chart = modes[sel][selMode];
-			var songName = songNames[sel];
-			if(modes[curSelected][selMode] == "No charts for this song!"){
+			var songLoc = songInfo.path;
+			var chart = songInfo.charts[selMode];
+			var songName = songInfo.name;
+			if(chart == null){
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
 				var song = cast Song.getEmptySong();
 				song.song = songName;
@@ -464,27 +438,26 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			// LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
 			return;
 		}
-		if (modes[sel][selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
+		if (songInfo.charts[selMode] == "No charts for this song!"){ // Actually check if the song has no charts when loading, if so then error
 			FlxG.sound.play(Paths.sound("cancelMenu"));
 			showTempmessage("Invalid song!",FlxColor.RED);
 			return;
 		}
 		onlinemod.OfflinePlayState.nameSpace = "";
-		if(nameSpaces[sel] != null){
-			onlinemod.OfflinePlayState.nameSpace = nameSpaces[sel];
+		if(songInfo.namespace != null){
+			onlinemod.OfflinePlayState.nameSpace = songInfo.namespace;
 			trace('Using namespace ${onlinemod.OfflinePlayState.nameSpace}');
 		}
 		lastSel = sel;
 		lastSearch = searchField.text;
-		lastSong = songs[sel] + modes[sel][selMode] + songNames[sel];
+		lastSong = songInfo.path + songInfo.charts[selMode] + songInfo.name;
 		{
-			var diffList:Array<String> = [];
-			for(i => v in modes[sel]){
+			var diffList:Array<String> = PlayState.songDifficulties = [];
+			for(i => v in songInfo.charts){
 				diffList.push(songs[curSelected] + "/" + v);
 			}
-			PlayState.songDifficulties = diffList;
 		}
-		gotoSong(songs[sel],modes[sel][selMode],songNames[sel]);
+		gotoSong(songInfo.path,songInfo.charts[selMode],songInfo.name);
 	}
 
 	override function select(sel:Int = 0){
@@ -494,7 +467,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var curPlaying = "";
 	var voices:FlxSound;
 	var playCount:Int = 0;
-	var curVol:Float = 1;
+	var curVol:Float = 2;
 	var SCORETXT:String = "";
 
 	override function update(e){
@@ -515,26 +488,25 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		// 		scoreText.screenCenter(X);
 		// 	}
 		// }
-		// Fucking flixel
-		if(voices != null && curVol != FlxG.sound.volume){ // Don't change volume unless volume changes
+		// // Fucking flixel
+		if(curVol != FlxG.sound.volume){ // Don't change volume unless volume changes
 			curVol = FlxG.sound.volume;
-			FlxG.sound.music.volume = FlxG.save.data.instVol * FlxG.sound.volume;
-			voices.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
+			FlxG.sound.music.volume = FlxG.save.data.instVol;
+			if(voices != null) voices.volume = FlxG.save.data.voicesVol;
 		}
 	}
+
 	override function handleInput(){
 			if (controls.BACK || FlxG.keys.justPressed.ESCAPE) {ret();return;}
 
-			if(songs.length == 0 || !allowInput) return;
+			if(songInfoArray.length == 0 || !allowInput) return;
 			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
 			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
 			if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} 
 			else if (controls.DOWN_P || (controls.DOWN  && grpSongs.members[curSelected].y > FlxG.height * 0.50 && grpSongs.members[curSelected].y < FlxG.height * 0.56) ){changeSelection(1);}
 			handleScroll();
 			extraKeys();
-			if (controls.ACCEPT && songs.length > 0){
-				select(curSelected);
-			}
+			if (controls.ACCEPT) select(curSelected);
 	}
 	var listeningTime:Float = 0;
 	override function extraKeys(){
@@ -562,13 +534,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}
 			}
 		}
-		if(FlxG.mouse.justPressedMiddle){
-			changeDiff(1);
-		}
-		if(FlxG.mouse.wheel != 0){
-			var move = -FlxG.mouse.wheel;
-			changeSelection(Std.int(move));
-		}
+		if(FlxG.mouse.justPressedMiddle) changeDiff(1);
+		if(FlxG.mouse.wheel != 0) changeSelection(Std.int(-FlxG.mouse.wheel));
 		if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F7){
 			Highscore.setScore(curScoreName,0,['N/A']);
 			changeDiff();
@@ -577,145 +544,153 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			FlxG.autoPause = false;
 			playCount++;
 			allowInput = false;
-			#if (target.threaded)
-			sys.thread.Thread.create(() -> {
-			#end
-				if(curPlaying != songs[curSelected]){
-					if(songProgressParent != null){
-						try{
-							songProgressParent.remove(songProgress);
-							songProgressParent.remove(songProgressText);
-						}catch(e){}
-					}
-					FlxG.sound.music.fadeOut(0.4);
-
-					curPlaying = songs[curSelected];
-					if(voices != null){
-						voices.stop();
-						voices.destroy();
-					}
-					voices = null;
-					try{
-						FlxG.sound.playMusic(SELoader.loadSound('${songs[curSelected]}/Inst.ogg'),FlxG.save.data.instVol,true);
-					}catch(e){
-
-						showTempmessage('Unable to play instrumental! ${e.message}',FlxColor.RED);
-					}
-					if (FlxG.sound.music.playing){
-
-						if(modes[curSelected][selMode] != "No charts for this song!" && SELoader.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
+			curVol = 2; // Resync audio volume
+			var songInfo = grpSongs.members[curSelected]?.menuValue;
+			if(songInfo == null) {
+				curPlaying = "";
+				SickMenuState.musicHandle();
+			}else{
+				#if (target.threaded)
+				sys.thread.Thread.create(() -> {
+				#end
+					if(curPlaying != songInfo.name){
+						if(songProgressParent != null){
 							try{
-
-								var e:SwagSong = cast Json.parse(File.getContent(songs[curSelected] + "/" + modes[curSelected][selMode])).song;
-								if(e.bpm > 0){
-									Conductor.changeBPM(e.bpm);
-								}
-							}catch(e){
-								showTempmessage("Unable to get BPM from chart automatically. BPM will be out of sync",0xee0011);
-							}
-							FlxG.sound.music.pause();
+								songProgressParent.remove(songProgress);
+								songProgressParent.remove(songProgressText);
+							}catch(e){}
 						}
+						FlxG.sound.music.fadeOut(0.4);
+
+						curPlaying = songInfo.name;
+						if(voices != null){
+							voices.stop();
+							voices.destroy();
+						}
+						voices = null;
+
 						try{
-							songProgressParent = grpSongs.members[curSelected];
-							songProgressParent.add(songProgress);
-							songProgressParent.add(songProgressText);
-							songProgress.revive();
-							songProgressText.revive();
-							songProgress.setParent(FlxG.sound.music,'time');
-							songProgress.setRange(0,FlxG.sound.music.length);
-							try{FlxTween.cancelTweensOf(songProgress);}catch(e){}
-							try{FlxTween.cancelTweensOf(songProgressText);}catch(e){}
-							songProgressText.alpha = songProgress.alpha = 0;
-							songProgressText.y = songProgress.y = 0;
-							songProgressText.x = (songProgress.x = songProgressParent.x + 20) ;
-							songProgressText.y = (songProgress.y = songProgressParent.y + 60) - 5;
-							FlxTween.tween(songProgress,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
-							FlxTween.tween(songProgressText,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
-							FlxTween.tween(songProgressText,{x:songProgress.x + songProgress.width + 10},0.7,{ease:FlxEase.expoOut});
-							songProgressText.text = "Playing Inst";
-						}catch(e){}
-
-						#if discord_rpc
-							if(listeningTime == 0)listeningTime = Date.now().getTime();
-							DiscordClient.changePresence('Listening to a song in menus',songNames[curSelected],listeningTime);
-						#end
-					}else{
-						curPlaying = "";
-						SickMenuState.musicHandle();
-					}
-				}
-				if(curPlaying == songs[curSelected]){
-					try{
-
-						if(voices == null){
-							if(SELoader.exists('${songs[curSelected]}/Voices.ogg')){
-								voices = new FlxSound();
-								voices.loadEmbedded(SELoader.loadSound('${songs[curSelected]}/Voices.ogg'),true);
-								voices.volume = FlxG.save.data.voicesVol;
-								voices.looped = true;
-								voices.play(FlxG.sound.music.time);
-								FlxG.sound.list.add(voices);
-								songProgressText.text = "Playing Inst and Voices";
-							}else{
-								songProgressText.text = "Playing Inst. No Voices available";
-							}
-						}else{
-							if(!voices.playing){
-								songProgressText.text = "Playing Inst and Voices";
-								voices.play(FlxG.sound.music.time);
-								voices.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
-								voices.looped = true;
-							}else{
-								songProgressText.text = "Playing Inst";
-								voices.stop();
-							}
+							FlxG.sound.playMusic(SELoader.loadSound('${songInfo.path}Inst.ogg'),FlxG.save.data.instVol,true);
+						}catch(e){
+							showTempmessage('Unable to play instrumental! ${e.message}',FlxColor.RED);
 						}
-						shouldVoicesPlay = (voices != null && voices.playing);
-					}catch(e){
-						showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
+						if (FlxG.sound.music.playing){
+
+							if(songInfo.charts[selMode] != null && SELoader.exists(songInfo.path + "/" + songInfo.charts[selMode])){
+								try{
+
+									var e:SwagSong = cast Json.parse(SELoader.getContent(songInfo.path + "/" + songInfo.charts[selMode])).song;
+									if(e.bpm > 0) Conductor.changeBPM(e.bpm);
+								}catch(e){
+									showTempmessage("Unable to get BPM from chart automatically. BPM will be out of sync",0xee0011);
+								}
+								FlxG.sound.music.pause();
+							}
+							try{
+								songProgressParent = grpSongs.members[curSelected];
+								songProgressParent.add(songProgress);
+								songProgressParent.add(songProgressText);
+								songProgress.revive();
+								songProgressText.revive();
+								songProgress.setParent(FlxG.sound.music,'time');
+								songProgress.setRange(0,FlxG.sound.music.length);
+								try{FlxTween.cancelTweensOf(songProgress);}catch(e){}
+								try{FlxTween.cancelTweensOf(songProgressText);}catch(e){}
+								songProgressText.alpha = songProgress.alpha = 0;
+								songProgressText.y = songProgress.y = 0;
+								songProgressText.x = (songProgress.x = songProgressParent.x + 20) ;
+								songProgressText.y = (songProgress.y = songProgressParent.y + 60) - 5;
+								FlxTween.tween(songProgress,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
+								FlxTween.tween(songProgressText,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
+								FlxTween.tween(songProgressText,{x:songProgress.x + songProgress.width + 10},0.7,{ease:FlxEase.expoOut});
+								songProgressText.text = "Playing Inst";
+							}catch(e){}
+
+							#if discord_rpc
+								if(listeningTime == 0)listeningTime = Date.now().getTime();
+								DiscordClient.changePresence('Listening to a song in menus',songInfo.name,listeningTime);
+							#end
+						}else{
+							curPlaying = "";
+							SickMenuState.musicHandle();
+						}
 					}
-					if(FlxG.sound.music.fadeTween != null)FlxG.sound.music.fadeTween.destroy(); // Prevents the song from muting itself
-					FlxG.sound.music.volume = FlxG.save.data.instVol;
-					FlxG.sound.music.volume = FlxG.save.data.instVol * FlxG.sound.volume;
-			
-					FlxG.sound.music.play();
-				}
-				if(playCount > 2){
-					playCount = 0;
-					openfl.system.System.gc();
-				}
-				allowInput = true;
-			#if (target.threaded)
-			});
-			#end
+					if(curPlaying == songInfo.name){
+						try{
+							if(voices == null){
+								if(SELoader.exists('${songInfo.path}/Voices.ogg')){
+									voices = new FlxSound();
+									voices.loadEmbedded(SELoader.loadSound('${songInfo.path}/Voices.ogg'),true);
+									voices.volume = FlxG.save.data.voicesVol;
+									voices.looped = true;
+									voices.play(FlxG.sound.music.time);
+									FlxG.sound.list.add(voices);
+									songProgressText.text = "Playing Inst and Voices";
+								}else{
+									songProgressText.text = "Playing Inst. No Voices available";
+								}
+							}else{
+								if(!voices.playing){
+									songProgressText.text = "Playing Inst and Voices";
+									voices.play(FlxG.sound.music.time);
+									voices.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
+									voices.looped = true;
+								}else{
+									songProgressText.text = "Playing Inst";
+									voices.stop();
+								}
+							}
+							shouldVoicesPlay = (voices != null && voices.playing);
+						}catch(e){
+							showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
+						}
+						if(FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.destroy(); // Prevents the song from muting itself
+						FlxG.sound.music.volume = FlxG.save.data.instVol;
+						FlxG.sound.music.volume = FlxG.save.data.instVol * FlxG.sound.volume;
+				
+						FlxG.sound.music.play();
+					}
+					if(playCount > 2){
+						playCount = 0;
+						openfl.system.System.gc();
+					}
+					allowInput = true;
+				#if (target.threaded)
+				});
+				#end
+			}
 		}
 		super.extraKeys();
 	}
 	var twee:FlxTween;
 	var curScoreName:String = "";
 	function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
-		if (songs.length == 0 || songs[curSelected] == null || songs[curSelected] == "") {
+		var songInfo = grpSongs.members[curSelected]?.menuValue;
+		if (songInfo == null) {
 			diffText.text = 'No song selected';
-
+			diffText.screenCenter(X);
 			return;
 		}
 		if(twee != null)twee.cancel();
 		diffText.scale.set(1.2,1.2);
 		twee = FlxTween.tween(diffText.scale,{x:1,y:1},(30 / Conductor.bpm));
-		lastSong = modes[curSelected][selMode] + songNames[curSelected];
+		var charts = songInfo.charts;
+		lastSong = charts[selMode] + songInfo.name;
 
 		if (forcedInt == -100) selMode += change; else selMode = forcedInt;
-		if (selMode >= modes[curSelected].length) selMode = 0;
-		if (selMode < 0) selMode = modes[curSelected].length - 1;
+		if (selMode >= charts.length) selMode = 0;
+		if (selMode < 0) selMode = charts.length - 1;
 		// var e:Dynamic = TitleState.getScore(4);
 		// if(e != null && e != 0) diffText.text = '< ' + e + '%(' + Ratings.getLetterRankFromAcc(e) + ') - ' + modes[curSelected][selMode] + ' >';
 		// else 
-		diffText.text = (if(modes[curSelected][selMode - 1 ] != null ) '< ' else '|  ') + (if(modes[curSelected][selMode] == CATEGORYNAME) songs[curSelected] else modes[curSelected][selMode]) + (if(modes[curSelected][selMode + 1 ] != null) ' >' else '  |');
+		// "No charts for this song!"
+		// diffText.text = (if(modes[curSelected][selMode - 1 ] != null ) '< ' else '|  ') + (if(modes[curSelected][selMode] == CATEGORYNAME) songs[curSelected] else modes[curSelected][selMode]) + (if(modes[curSelected][selMode + 1 ] != null) ' >' else '  |');
+		diffText.text = (charts[selMode - 1] == null ? "< " : "|  ") + (charts[selMode] ?? "No charts for this song!") + (charts[selMode + 1] == null ? " >" : "  |");
 		// diffText.centerOffsets();
 		diffText.screenCenter(X);
-		var name = '${songs[curSelected]}-${modes[curSelected][selMode]}${(if(QuickOptionsSubState.getSetting("Inverted chart")) "-inverted" else "")}';
+		var name = '${songInfo.name}-${charts[selMode]}${(QuickOptionsSubState.getSetting("Inverted chart") ? "-inverted" : "")}';
 		curScoreName = "";
-		if(modes[curSelected][selMode] == null || modes[curSelected][selMode] == CATEGORYNAME || !Highscore.songScores.exists(name)){
+		if(charts[selMode] == null || !Highscore.songScores.exists(name)){
 			// score = 0;
 			scoreText.text = "N/A";
 			SCORETXT = "N/A";
@@ -741,7 +716,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	{
 		var looped = 0;
 		super.changeSelection(change);
-		if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
+		var songInfo = grpSongs.members[curSelected]?.menuValue;
+		if(songInfo == null || !songInfo.charts.contains('${songInfo.name}.json')){
+			changeDiff(0,0);
+			return;
+		}
+		changeDiff(0,songInfo.charts.indexOf('${songInfo.name}.json'));
+		// if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
 	}
 	@:keep inline public static function findFileFromAssets(path:String,name:String,file:String):String{
 		if(FileSystem.exists('${path}/songs/${name}/$file')){

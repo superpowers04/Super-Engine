@@ -127,10 +127,8 @@ class Main extends Sprite
 		var message:String = "";
 		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
 
-		for (stackItem in callStack)
-		{
-			switch (stackItem)
-			{
+		for (stackItem in callStack){
+			switch (stackItem){
 				case FilePos(s, file, line, column):
 					message += file + " (line " + line + ")\n";
 				default:

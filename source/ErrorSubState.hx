@@ -145,10 +145,7 @@ class ErrorSubState extends MusicBeatSubstate
 		if (ready){
 
 
-			if (controls.ACCEPT)
-			{
-				retMenu();
-			}
+			if (controls.ACCEPT) retMenu();
 			#if android
 				if(FlxG.mouse.justPressed){
 					trace(FlxG.mouse.screenX / FlxG.width);

@@ -1332,7 +1332,7 @@ class TitleState extends MusicBeatState
 		var coolText:Alphabet = new Alphabet(0, 0, "_", true, false);
 		coolText.screenCenter(X);
 		coolText.forceFlxText = true;
-		coolText.text = 'PRECACHING TEXT: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890~#$%&()*+:;<=>@[|]^.,\'!?/';
+		coolText.text = 'PRECACHING TEXT: ABCDEFGHIJKLMNOPQRSTUVWXYZbcfgijkmpqrstvxz1234567890~#$%&()*+:;<=>@[|]^.,\'!?/unholywader';
 		coolText.bounce();
 		add(cachingText = coolText);
 

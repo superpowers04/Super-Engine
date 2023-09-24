@@ -131,6 +131,7 @@ class SearchMenuState extends ScriptMusicBeatState
 	public static var doReset:Bool = true;
 	public var blackBorder:FlxSprite;
 	public var scrollBar:FlxSprite;
+	public var scrollBarBG:FlxSprite;
 	public var infoTextBorder:FlxSprite;
 	override function create()
 	{try{
@@ -159,19 +160,19 @@ class SearchMenuState extends ScriptMusicBeatState
 		add(grpSongs);
 		FlxG.mouse.visible = true;
 		if (toggleables['search']){
-				blackBorder = new FlxSprite(-30,0).makeGraphic((Std.int(FlxG.width + 40)),140,FlxColor.BLACK);
-				blackBorder.alpha = 0.5;
-				add(blackBorder);
-				//Searching
-				searchField = new FlxInputText(10, 100, 1152, 20);
-				searchField.maxLength = 81;
-				add(searchField);
-		
-				searchButton = new FlxUIButton(10 + 1152 + 9, 100, buttonText["Find"], findButton);
-				searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
-				searchButton.resize(100, searchField.height);
-				add(searchButton);
-			}
+			blackBorder = new FlxSprite(-30,0).makeGraphic((Std.int(FlxG.width + 40)),140,FlxColor.BLACK);
+			blackBorder.alpha = 0.5;
+			add(blackBorder);
+			//Searching
+			searchField = new FlxInputText(10, 100, 1152, 20);
+			searchField.maxLength = 81;
+			add(searchField);
+	
+			searchButton = new FlxUIButton(10 + 1152 + 9, 100, buttonText["Find"], findButton);
+			searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
+			searchButton.resize(100, searchField.height);
+			add(searchButton);
+		}
 
 		infotext = new FlxText(5, FlxG.height - (20 * infoTextBoxSize ), FlxG.width - 5, "Hold shift to scroll faster", 16);
 		infotext.wordWrap = true;
@@ -181,7 +182,12 @@ class SearchMenuState extends ScriptMusicBeatState
 		infoTextBorder.alpha = 0.5;
 		overLay.add(infoTextBorder);
 		overLay.add(infotext);
-		scrollBar = new FlxSprite(FlxG.width - 19,0).makeGraphic(18,24,FlxColor.WHITE);
+		var _sbbgy:Int = Std.int(blackBorder == null ? 0 : blackBorder.y + blackBorder.height);
+		scrollBarBG = new FlxSprite(FlxG.width - 20,_sbbgy).makeGraphic(18,Std.int(FlxG.height) - _sbbgy,0xFF220022);
+		scrollBarBG.alpha = 0.9;
+		scrollBarBG.scrollFactor.set();
+		overLay.add(scrollBarBG);
+		scrollBar = new FlxSprite(scrollBarBG.x - 1,scrollBarBG.y + 12).makeGraphic(22,Std.int(scrollBarBG.width) + 2,FlxColor.WHITE);
 		scrollBar.alpha = 0.8;
 		scrollBar.scrollFactor.set();
 		overLay.add(scrollBar);
@@ -249,15 +255,19 @@ class SearchMenuState extends ScriptMusicBeatState
 	var idleColor = 0xff997799;
 	var scrollHover:Bool = false;
 	var scrollOffsetY:Float = 0;
-	@:keep inline function handleScroll(){
-		if(FlxG.mouse.x > scrollBar.x){
+	function handleScroll(){
+		var sbBGYOffset = scrollBarBG.y;
+		var sbBGHeight = sbBGYOffset + scrollBarBG.height - 20;
+		if(FlxG.mouse.x > scrollBar.x && FlxG.mouse.x < scrollBar.x + scrollBar.width){
 			scrollBar.alpha = 1;
+			scrollHover = true;
 			if(FlxG.mouse.pressed){
-				scrollBar.y = FlxG.mouse.screenY - 5;
-				if(scrollBar.y < 140) scrollBar.y = 140;
-				if(scrollBar.y > FlxG.height - 20) scrollBar.y = FlxG.height - 20;
-				var sel = Std.int((songs.length * ((scrollBar.y - 140) / (FlxG.height - 160)) ));
-				if(curSelected != sel && sel > 0 && sel < songs.length){
+				scrollBar.y = FlxG.mouse.y - (scrollBar.height * 0.5);
+				if(scrollBar.y < sbBGYOffset) scrollBar.y = sbBGYOffset;
+				if(scrollBar.y > sbBGHeight) scrollBar.y = sbBGHeight;
+				var sel = Std.int((grpSongs.length * ((scrollBar.y - sbBGYOffset) / (sbBGHeight - sbBGYOffset)) ));
+
+				if(curSelected != sel && sel > 0 && sel < grpSongs.length){
 					curSelected = 0;
 					changeSelection(sel);
 				}
@@ -266,7 +276,9 @@ class SearchMenuState extends ScriptMusicBeatState
 			scrollBar.alpha = 0.8;
 			scrollHover = false;
 		}
-		scrollBar.y = Std.int(140 + ((FlxG.height - 160) * (curSelected / songs.length)));
+		scrollBar.y = Std.int(sbBGYOffset - (scrollBar.height * 0.5) + ((scrollBarBG.height - 20) * (curSelected / grpSongs.length))) ;
+		if(scrollBar.y < sbBGYOffset) scrollBar.y = sbBGYOffset;
+		if(scrollBar.y > sbBGHeight) scrollBar.y = sbBGHeight;
 	}
 	function handleInput(){
 		callInterp('handleInput',[]);
@@ -342,7 +354,7 @@ class SearchMenuState extends ScriptMusicBeatState
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		// if (onlinemod.OnlinePlayMenuState.socket != null){
 		// 	FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{
-			goToLastClass();
+		goToLastClass();
 			// }
 	}
 	function changeSelection(change:Int = 0)
@@ -350,64 +362,42 @@ class SearchMenuState extends ScriptMusicBeatState
 		if (change != 0) FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 		callInterp('changeSelection',[change]);
 		if(cancelCurrentFunction) return;
-		// if (grpSongs.length < 2){
-		// 	return;
-		// }
 		curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = grpSongs.members.length - 1;
-		if (curSelected >= grpSongs.members.length)
-			curSelected = 0;
+		if (curSelected < 0) curSelected = grpSongs.members.length - 1;
+		if (curSelected >= grpSongs.members.length) curSelected = 0;
 
 		var bullShit:Int = 0;
 		
 
 
-			for (item in grpSongs.members)
-			{
-				var onScreen = ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10));
-				if (onScreen){ // If item is onscreen, then actually move and such
-					if (!item.alive){
-						item.revive();
-						if (change < 0 ) item.y = -500; else item.y = FlxG.height + 300;
+		for (item in grpSongs.members){
+			var onScreen = ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10));
+			if (onScreen){ // If item is onscreen, then actually move and such
+				if (!item.alive){
+					item.revive();
+					if (change < 0 ) item.y = -500; else item.y = FlxG.height + 300;
+				}
+				item.targetY = bullShit - curSelected;
+				if(item.adjustAlpha){
+					item.alpha = 0.6;
+					if(!useAlphabet) item.color = idleColor;
+					if (item.targetY == 0){
+						item.alpha = 1;
+						if(!useAlphabet) item.color = hoverColor;
 					}
-					item.targetY = bullShit - curSelected;
-
-					if(item.adjustAlpha){
-						item.alpha = 0.6;
-
-						if(!useAlphabet) item.color = idleColor;
-						if (item.targetY == 0)
-						{
-							item.alpha = 1;
-
-							if(!useAlphabet) item.color = hoverColor;
-						}
-					} 
-				}else{item.kill();} // Else, try to kill it to lower the amount of sprites loaded
-				bullShit++;
-			}
+				} 
+			}else if(item.alive) item.kill(); // Else, try to kill it to lower the amount of sprites loaded
+			bullShit++;
+		}
 		callInterp('changeSelectionAfter',[change]);
-		if(cancelCurrentFunction) return;
 	}catch(e) MainMenuState.handleError('Error with searchmenu "chgsel" ${e.message}');}
-	function SetVolumeControls(enabled:Bool)
-	{
-		if (enabled)
-		{
-			FlxG.sound.muteKeys = muteKeys;
-			FlxG.sound.volumeUpKeys = volumeUpKeys;
-			FlxG.sound.volumeDownKeys = volumeDownKeys;
-		}
-		else
-		{
-			FlxG.sound.muteKeys = null;
-			FlxG.sound.volumeUpKeys = null;
-			FlxG.sound.volumeDownKeys = null;
-		}
+	function SetVolumeControls(enabled:Bool){
+		FlxG.sound.muteKeys = (enabled ? muteKeys : null);
+		FlxG.sound.volumeUpKeys = (enabled ? volumeUpKeys : null);
+		FlxG.sound.volumeDownKeys = (enabled ? volumeDownKeys : null);
 	}
-	function HandleData(packetId:Int, data:Array<Dynamic>)
-	{
+	function HandleData(packetId:Int, data:Array<Dynamic>){
 		onlinemod.OnlinePlayMenuState.RespondKeepAlive(packetId);
 		var Chat = onlinemod.Chat;
 		var Packets = onlinemod.Packets;
@@ -420,8 +410,7 @@ class SearchMenuState extends ScriptMusicBeatState
 
 				// OnlineLobbyState.addPlayerUI(id, nickname);
 				OnlineLobbyState.addPlayer(id, nickname);
-				if (OnlineLobbyState.receivedPrevPlayers)
-					Chat.PLAYER_JOIN(nickname);
+				if (OnlineLobbyState.receivedPrevPlayers) Chat.PLAYER_JOIN(nickname);
 			case Packets.PLAYER_LEFT:
 				var id:Int = data[0];
 				var nickname:String = OnlineLobbyState.clients[id];
@@ -433,15 +422,8 @@ class SearchMenuState extends ScriptMusicBeatState
 				var jsonInput:String = data[0];
 				var folder:String = data[1];
 				var count = 0;
-				for (i in OnlineLobbyState.clients.keys())
-				{
-					count++;
-				}
-				if (count == 2 && TitleState.supported) {
-					TitleState.p2canplay = true;
-				}else{
-					TitleState.p2canplay = false;
-				}
+				for (i in OnlineLobbyState.clients.keys()) count++;
+				TitleState.p2canplay = (count == 2 && TitleState.supported);
 				onlinemod.OnlineLobbyState.StartGame(jsonInput, folder);
 
 			case Packets.BROADCAST_CHAT_MESSAGE:

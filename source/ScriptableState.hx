@@ -3,8 +3,7 @@ package;
 
 import hscript.Expr;
 import hscript.Interp;
-import hscript.InterpEx;
-import hscript.ParserEx;
+import hscriptfork.InterpSE;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;

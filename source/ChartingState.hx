@@ -1200,10 +1200,7 @@ class ChartingState extends ScriptMusicBeatState
 				return _song.notes[curSection].lengthInSteps;
 	}*/
 
-	function stepStartTime(step):Float
-	{
-		return _song.bpm / (step / 4) / 60;
-	}
+	function stepStartTime(step):Float return _song.bpm / (step / 4) / 60;
 
 	function sectionStartTime(section:Int):Float
 	{

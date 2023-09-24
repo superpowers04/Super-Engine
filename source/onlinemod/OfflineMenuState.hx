@@ -109,8 +109,7 @@ class OfflineMenuState extends SearchMenuState
 			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, file.substr(0, file.length - 5), true, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
-			if (i != 0)
-			  controlLabel.alpha = 0.6;
+			if (i != 0) controlLabel.alpha = 0.6;
 			grpSongs.add(controlLabel);
 
 			i++;
@@ -125,8 +124,8 @@ class OfflineMenuState extends SearchMenuState
 	goToLastClass();
   }
   override function extraKeys(){
-  		callInterp('extraKeys',[]);
-  		if(cancelCurrentFunction) return;
+	callInterp('extraKeys',[]);
+	if(cancelCurrentFunction) return;
 	if (FlxG.keys.justPressed.R){
 	  changeSelection(Math.floor(songs.length * Math.random()));
 	}
@@ -142,25 +141,22 @@ class OfflineMenuState extends SearchMenuState
 
   }
   override function select(sel:Int = 0){
-  		callInterp('select',[sel]);
-	  OfflinePlayState.chartFile = songs[curSelected];
-	  PlayState.isStoryMode = false;
-	  var songName = songFiles[curSelected];
-	  PlayState.songDir = songDirs[curSelected];
-	  // Set difficulty
-	  PlayState.storyDifficulty = 1;
-	  if (StringTools.endsWith(songs[curSelected], '-hard.json'))
-	  {
+ 	callInterp('select',[sel]);
+	OfflinePlayState.chartFile = songs[curSelected];
+	PlayState.isStoryMode = false;
+	var songName = songFiles[curSelected];
+	PlayState.songDir = songDirs[curSelected];
+	// Set difficulty
+	PlayState.storyDifficulty = 1;
+	if (StringTools.endsWith(songs[curSelected], '-hard.json')){
 		songName = songName.substr(0,songName.indexOf('-hard.json'));
 		PlayState.storyDifficulty = 2;
-	  }
-	  else if (StringTools.endsWith(songs[curSelected], '-easy.json'))
-	  {
+	}else if (StringTools.endsWith(songs[curSelected], '-easy.json')){
 		songName = songName.substr(0,songName.indexOf('-easy.json'));
 		PlayState.storyDifficulty = 0;
-	  }
-	  PlayState.actualSongName = songName;
+	}
+	PlayState.actualSongName = songName;
 
-	  LoadingState.loadAndSwitchState(new OfflinePlayState());
+	LoadingState.loadAndSwitchState(new OfflinePlayState());
   }
 }

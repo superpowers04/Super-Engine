@@ -14,8 +14,6 @@ import se.handlers.SELua;
 
 import hscript.Expr;
 import hscript.Interp;
-import hscript.InterpEx;
-import hscript.ParserEx;
 
 using StringTools;
 
@@ -627,10 +625,7 @@ class ConsoleInput extends TextField{
 			case 'help':
 				var ret = 'Command list:';
 				for(_ => v in cmdList){
-					if(v[1] == null)
-						ret += '\n${v[0]}';
-					else
-						ret += '\n`${v[0]}` - ${v[1]}';
+					ret += (v[1] == null ? '\n${v[0]}' : '\n`${v[0]}` - ${v[1]}');
 				}
 				Console.print(ret);
 				return null;
@@ -753,6 +748,10 @@ class ConsoleUtils{
 		switch(vari){
 			case "boyfriend" | "bf": return PlayState.boyfriend;
 			case "opponent" | "dad": return PlayState.dad;
+
+			case "player" | "playerCharacter": return PlayState.playerCharacter;
+			case "opponentCharacter": return PlayState.opponentCharacter;
+
 			case "girlfriend" | "gf": return PlayState.gf;
 			case "song" | "SONG": return PlayState.SONG;
 			case "PlayState": return PlayState;

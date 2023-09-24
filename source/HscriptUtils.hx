@@ -53,9 +53,7 @@ import tjson.Json;
 import haxe.iterators.StringIterator;
 import haxe.iterators.StringKeyValueIterator;
 import hscript.Interp;
-import hscript.InterpEx;
 import hscript.Parser;
-import hscript.ParserEx;
 import hscript.Expr;
 import hscriptfork.InterpSE;
 
@@ -70,7 +68,7 @@ class HscriptUtils {
 
 
 	
-	public static var interp = new InterpEx();
+	public static var interp = new InterpSE();
 	public static var hscriptClasses:Array<String> = [];
 	public static var defines:Array<String> = [];
 	@:access(hscript.InterpEx)
@@ -91,7 +89,7 @@ class HscriptUtils {
 		return reterp;
 	}
 	public static function createSimpleParser():Parser {
-		var parser = new ParserEx();
+		var parser = new Parser();
 		parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
 		parser.preprocesorValues["version"] = MainMenuState.ver;
 		parser.preprocesorValues["debug"] = #if debug true #else false #end;
@@ -133,6 +131,8 @@ class HscriptUtils {
 			case EInvalidIterator(v): "Invalid iterator: "+v;
 			case EInvalidOp(op): "Invalid operator: "+op;
 			case EInvalidAccess(f): "Invalid access to field " + f;
+			case EAlreadyExistingClass(f): 'Class $f Already exists';
+			case EInvalidClass(f): 'Invalid class $f';
 			case ECustom(msg): msg;
 		};
 		#if hscriptPos
@@ -2527,33 +2527,26 @@ class SERandom
 		var blue:Int;
 		var alpha:Int;
 
-		if (Min == null && Max == null)
-		{
+		if (Min == null && Max == null){
 			red = int(0, 255);
 			green = int(0, 255);
 			blue = int(0, 255);
-			alpha = Alpha == null ? int(0, 255) : Alpha;
-		}
-		else if (Max == null)
-		{
+			alpha = Alpha ?? int(0, 255);
+		}else if (Max == null){
 			red = int(Min.red, 255);
 			green = GreyScale ? red : int(Min.green, 255);
 			blue = GreyScale ? red : int(Min.blue, 255);
-			alpha = Alpha == null ? int(Min.alpha, 255) : Alpha;
-		}
-		else if (Min == null)
-		{
+			alpha = Alpha ?? int(Min.alpha, 255);
+		}else if (Min == null){
 			red = int(0, Max.red);
 			green = GreyScale ? red : int(0, Max.green);
 			blue = GreyScale ? red : int(0, Max.blue);
-			alpha = Alpha == null ? int(0, Max.alpha) : Alpha;
-		}
-		else
-		{
+			alpha = Alpha ?? int(0, Max.alpha);
+		}else{
 			red = int(Min.red, Max.red);
 			green = GreyScale ? red : int(Min.green, Max.green);
 			blue = GreyScale ? red : int(Min.blue, Max.blue);
-			alpha = Alpha == null ? int(Min.alpha, Max.alpha) : Alpha;
+			alpha = Alpha ?? int(Min.alpha, Max.alpha);
 		}
 
 		return FlxColor.fromRGB(red, green, blue, alpha);

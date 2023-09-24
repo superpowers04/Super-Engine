@@ -1294,36 +1294,38 @@ class AnimationDebug extends MusicBeatState
 			case 0:{
 				if (rPress && !pressArray.contains(true)) spawnChar(true);
 				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
-				if(FlxG.mouse.justPressed){
-					lastMouseX = Std.int(FlxG.mouse.x);
-					lastMouseY = Std.int(FlxG.mouse.y);
-				}
-				if(FlxG.mouse.justPressedRight){
-					lastRMouseX = Std.int(FlxG.mouse.screenX);
-					lastRMouseY = Std.int(FlxG.mouse.screenY);
-				}
-
-				if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
-
-					var mx = Std.int(FlxG.mouse.screenX);
-					var my = Std.int(FlxG.mouse.screenY);
-
-					camFollow.x+=lastRMouseX - mx;
-					camFollow.y+=lastRMouseY - my;
-					lastRMouseX = mx;
-					lastRMouseY = my;
-				}
-				if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
-					var mx = Std.int(FlxG.mouse.x);
-					var my = Std.int(FlxG.mouse.y);
-					if(shiftPress){
-						updateCharPos(-(lastMouseX - mx),(lastMouseY - my),false,false);
-					}else{
-						moveOffset(lastMouseX - mx,lastMouseY - my,false,false);
+				if(!FlxG.mouse.overlaps(animDropDown)){
+					if(FlxG.mouse.justPressed){
+						lastMouseX = Std.int(FlxG.mouse.x);
+						lastMouseY = Std.int(FlxG.mouse.y);
 					}
-					lastMouseX = mx;
-					lastMouseY = my;
+					if(FlxG.mouse.justPressedRight){
+						lastRMouseX = Std.int(FlxG.mouse.screenX);
+						lastRMouseY = Std.int(FlxG.mouse.screenY);
+					}
 
+					if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
+
+						var mx = Std.int(FlxG.mouse.screenX);
+						var my = Std.int(FlxG.mouse.screenY);
+
+						camFollow.x+=lastRMouseX - mx;
+						camFollow.y+=lastRMouseY - my;
+						lastRMouseX = mx;
+						lastRMouseY = my;
+					}
+					if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
+						var mx = Std.int(FlxG.mouse.x);
+						var my = Std.int(FlxG.mouse.y);
+						if(shiftPress){
+							updateCharPos(-(lastMouseX - mx),(lastMouseY - my),false,false);
+						}else{
+							moveOffset(lastMouseX - mx,lastMouseY - my,false,false);
+						}
+						lastMouseX = mx;
+						lastMouseY = my;
+
+					}
 				}
 
 				var modifier = "";

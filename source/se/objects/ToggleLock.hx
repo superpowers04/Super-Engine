@@ -28,5 +28,4 @@ class ToggleLock{
 
 	@:keep inline public function release() return;
 }
-
 #end

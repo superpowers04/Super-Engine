@@ -3,8 +3,8 @@ package;
 
 import hscript.Expr;
 import hscript.Interp;
-import hscript.InterpEx;
-import hscript.ParserEx;
+import hscriptfork.InterpSE;
+import hscript.Parser;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -30,7 +30,8 @@ using StringTools;
 		if(!isActive) return "No Interp Active";
 		var ret = 'Name:$name\n Type:${type}\n Current Function:${currentFunction}';
 		@:privateAccess if(interp != null && interp is hscript.Interp && interp.curExpr != null){
-			ret+='\n  Line:${interp.curExpr.line}\n  Characters:${interp.curExpr.pmin} - ${interp.curExpr.pmax}';
+			var interp:Interp = interp;
+			ret+='\n  Line Number:${interp.curExpr.line}\n  Characters:${interp.curExpr.pmin} - ${interp.curExpr.pmax}';
 		}
 		ret+='\n  Args:${args}';
 		return ret;
@@ -225,13 +226,17 @@ class ScriptMusicBeatState extends MusicBeatState{
 			// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled
 			if(!parseMoreInterps || !FlxG.save.data.luaScripts) return null;
 
-			if(songScript == "" || (!songScript.contains('isSE = true') && !songScript.contains('function initScript'))) {
+			if(songScript == "" || !songScript.startsWith('ignoreScript') || (!songScript.contains('isSE = true') && !songScript.contains('function initScript'))) {
 				try{
+					if(!songScript.startsWith('ignoreScript')){
+						trace('$file ignored as it starts with ignoreScript');
+					}else{
+						if(FlxG.save.data.animDebug && !songScript.contains('isSE = true')){
+							showTempmessage('$file ignored as it is missing "isSE = true"!\nThis is required to prevent loading broken lua scripts',FlxColor.RED);
+						}
 
-					if(FlxG.save.data.animDebug && !songScript.contains('isSE = true')){
-						showTempmessage('$file ignored as it is missing "isSE = true"!\nThis is required to prevent loading of broken lua scripts',FlxColor.RED);
+						trace('$file ignored as it is either blank or missing "isSE = true"! This is required to prevent loading broken lua scripts');
 					}
-					trace('$file ignored as it is either blank or missing "isSE = true"! This is required to prevent loading of broken lua scripts');
 				}catch(e){}
 				return null;
 			}

@@ -65,7 +65,8 @@ class HSBrTools {
 	}
 
 	inline function handleError(e:String){
-		PlayState.instance.handleError(e + '\nExtra info:\n\nPath:${path}\nHasOptions:${hasSettings}');
+		// PlayState.instance.handleError(e + '\nExtra info:\n\nPath:${path}\nHasOptions:${hasSettings}');
+		throw(e + '\nExtra info:\n\nPath:${path}\nHasOptions:${hasSettings}');
 	}
 
 
