@@ -187,9 +187,7 @@ class Alphabet extends FlxSpriteGroup
 			remove(border);
 			border.destroy();
 		}
-		if(finalText == ""){
-			finalText = _finalText;
-		}
+		if(finalText == "") finalText = _finalText;
 		splitWords = finalText.split("");
 		var _X = -xOffset;
 		var _Y = y;
@@ -209,7 +207,7 @@ class Alphabet extends FlxSpriteGroup
 			border.alpha = 0.001;
 			#end
 			insert(0,border);
-		}catch(e){}
+		}catch(e){trace(e);}
 		
 	}
 	var currentLetter = 0;

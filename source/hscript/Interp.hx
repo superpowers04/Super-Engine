@@ -82,28 +82,18 @@ class Interp {
 	#end
 
 	public function new() {
-		#if haxe3
 		locals = new Map();
-		#else
-		locals = new Hash();
-		#end
 		declared = new Array();
 		resetVariables();
 		initOps();
 	}
 
 	private function resetVariables() {
-		#if haxe3
 		customClasses = new Map<String, Dynamic>();
 		variables = new Map<String, Dynamic>();
 		publicVariables = new Map<String, Dynamic>();
 		staticVariables = new Map<String, Dynamic>();
-		#else
-		customClasses = new Hash();
-		variables = new Hash();
-		publicVariables = new Hash();
-		staticVariables = new Hash();
-		#end
+
 
 		variables.set("null", null);
 		variables.set("true", true);
@@ -169,7 +159,7 @@ class Interp {
 		
 	}
 
-	function setVar(name:String, v:Dynamic) {
+	public function setVar(name:String, v:Dynamic) {
 		if (allowStaticVariables && staticVariables.exists(name))
 			staticVariables.set(name, v);
 		else if (allowPublicVariables && publicVariables.exists(name))
@@ -209,30 +199,31 @@ class Interp {
 			case EIdent(id):
 				var l = locals.get(id);
 				if (l == null) {
-					if (!variables.exists(id) && !staticVariables.exists(id) && !publicVariables.exists(id) && scriptObject != null) {
-						if (Type.typeof(scriptObject) == TObject) {
-							Reflect.setField(scriptObject, id, v);
-						} else {
-							if (isBypassAccessor && __instanceFields.contains(id)) {
-								Reflect.setField(scriptObject, id, v);
-								return v;
-							}
-							if (__instanceFields.contains(id)) {
-								Reflect.setProperty(scriptObject, id, v);
-							} else if (__instanceFields.contains('set_$id')) { // setter
-								Reflect.getProperty(scriptObject, 'set_$id')(v);
-							} else {
-								setVar(id, v);
-							}
-						}
-					} else {
-						setVar(id, v);
-					}
+					// if (!variables.exists(id) && !staticVariables.exists(id) && !publicVariables.exists(id) && scriptObject != null && __instanceFields != null) {
+					// 	if (Type.typeof(scriptObject) == TObject) {
+					// 		Reflect.setField(scriptObject, id, v);
+					// 	} else {
+						// if (isBypassAccessor && __instanceFields.contains(id)) {
+						// 	Reflect.setField(scriptObject, id, v);
+						// 	return v;
+						// }
+						// if (__instanceFields.contains(id)) {
+						// 	Reflect.setProperty(scriptObject, id, v);
+						// 	return v;
+						// } else if (__instanceFields.contains('set_$id')) { // setter
+						// 	Reflect.getProperty(scriptObject, 'set_$id')(v);
+						// 	return v;
+						// } 
+
+						// }
+					// }
+					setVar(id, v);
+					
 				} else {
 					l.r = v;
-					if (l.depth == 0) {
-						setVar(id, v);
-					}
+					// if (l.depth == 0) {
+					// 	setVar(id, v);
+					// }
 				}
 				// TODO
 			case EField(e, f, s):
@@ -355,11 +346,7 @@ class Interp {
 
 	public function execute(expr:Expr):Dynamic {
 		depth = 0;
-		#if haxe3
 		locals = new Map();
-		#else
-		locals = new Hash();
-		#end
 		declared = new Array();
 		return exprReturn(expr);
 	}
@@ -395,12 +382,8 @@ class Interp {
 		return null;
 	}
 
-	public function duplicate<T>(h:#if haxe3 Map<String, T> #else Hash<T> #end) {
-		#if haxe3
+	public function duplicate<T>(h:Map<String, T>) {
 		var h2 = new Map();
-		#else
-		var h2 = new Hash();
-		#end
 		for (k in h.keys())
 			h2.set(k, h.get(k));
 		return h2;

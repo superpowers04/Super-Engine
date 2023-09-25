@@ -55,10 +55,7 @@ class HSBrTools {
 	}
 
 	public function getSetting(setting:String,?defValue:Dynamic = false):Dynamic{
-		if (optionsMap[setting] != null){
-			return optionsMap[setting];
-		}
-		return defValue;
+		return optionsMap[setting] ?? defValue;
 	}
 	function get_global(){
 		return shared;

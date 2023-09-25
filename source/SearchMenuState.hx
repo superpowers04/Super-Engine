@@ -238,7 +238,8 @@ class SearchMenuState extends ScriptMusicBeatState
 		}
 	}catch(e) MainMenuState.handleError('Error with loading stage list ${e.message}');}
 	override function update(elapsed:Float)
-	{try{
+	{
+		// try{
 		super.update(elapsed);
 		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
 		if (toggleables['search'] && searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
@@ -247,7 +248,8 @@ class SearchMenuState extends ScriptMusicBeatState
 		}
 		if(bg.height > 720) bg.y = FlxMath.lerp(bg.y,(curSelected / grpSongs.length) * -(bg.height - 720),elapsed);
 
-	}catch(e) MainMenuState.handleError('Error with searchmenu "update" ${e.message}');}
+	// }catch(e) MainMenuState.handleError('Error with searchmenu "update" ${e.message}');
+	}
 	function select(sel:Int = 0){
 		trace("You forgot to replace the select function!");
 	}

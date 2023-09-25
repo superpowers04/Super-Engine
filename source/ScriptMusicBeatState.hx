@@ -408,10 +408,10 @@ class ScriptMusicBeatState extends MusicBeatState{
 						}
 						if(cont) continue;
 						#if linc_luajit
-							if(i.endsWith(".lua")) parseLua(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
+							if(i.endsWith(".lua")) parseLua(SELoader.loadText('$_path/$i'),brtool,'$nameSpace:${i}','$_path/$i');
 							else 
 						#end
-							parseHScript(SELoader.loadText('$_path/$i'),brtool,'$nameSpace-${i}','$_path/$i');
+							parseHScript(SELoader.loadText('$_path/$i'),brtool,'$nameSpace:${i}','$_path/$i');
 						
 					}
 				}

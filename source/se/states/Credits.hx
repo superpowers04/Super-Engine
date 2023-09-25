@@ -25,7 +25,7 @@ class Credits extends SearchMenuState
 * NayToon - Many fixes, multiplayer improvements, providing early Windows builds, etc.
 * Henry.xml/Harley.xml - Created the note splash animation
 * BeastlyGabi/BeastlyGhost - Some general help
-* XieneDev - Made Battle Royale. This engine actually wouldn't exist if it wasn't for this pog FNF mod
+* XieneDev - Made Battle Royale. This engine actually wouldn't exist if it wasn't for this mod
 "],["Funkin' Team" , "The base game!
 
 * ninjamuffin99 - Programming
@@ -45,24 +45,31 @@ class Credits extends SearchMenuState
 * TrafficKid - GitHub Wikipedia
 * GwebDev - Edited WebM code
 * Axy - Poggers help
-"], ["TJSON","Library used for parsing JSON's quickly
+"],['Libraries',"All of the libraries Super Engine uses or has custom versions of
 
-* JWambaugh - Making the library 
+* Haxe - Coding language
+* Lime/OpenFL - Too much to list here :skul:
+* Flixel - Game Engine
+
+* extension-androidtools - Some tools related to android support
+* Aidan63/linc_discord-rpc - Discord Rich Presence support
+* JWambaugh/TJSON - Library used for parsing JSON's quickly
+* FNF-CNE-Devs/Hscript-Improved - Hscript support
 "],["Shoutouts" , "Some general shoutouts
 
 * V.S. Ex Tabi - The arrow examples are from here
 * ShadowMario - A huge inspiration. Both Psych Engine and FNF Multi 3.2 were massive inspirations for Super Engine. FunkinLua helped me with implementing SELua"
 ]];
 	override function reloadList(?reload:Bool = false,?search:String=""){try{
-			curSelected = 0;
-			if(reload){CoolUtil.clearFlxGroup(grpSongs);}
-			songs = [];
+		curSelected = 0;
+		if(reload){CoolUtil.clearFlxGroup(grpSongs);}
+		songs = [];
 
-			var i:Int = 0;
-			for (_ => name in descriptions){
-				_addToList(name[0],i);
-				i++;
-			}
+		var i:Int = 0;
+		for (_ => name in descriptions){
+			_addToList(name[0],i);
+			i++;
+		}
 		}catch(e) MainMenuState.handleError('Error with loading credits list ${e.message}');
 	}
 	function _addToList(char:String,i:Int = 0){

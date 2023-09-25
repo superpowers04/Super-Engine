@@ -1,2 +1,6 @@
-23.09.24.0132;
+23.09.25.0210;
+* ***Possibly breaking change:*** Switch from hscript-ex to hscript-improved
 * UI Keys now have alts
+* Rewrite internals of the modded songs list to be more effecient
+* the text `ignoreScript` being at the beginning of a lua file will make the file be ignored
+  * Note this should probably be `ignoreScript = true` and not just `ignoreScript` to prevent causing issues with older versions of SE or other engines
