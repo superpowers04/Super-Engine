@@ -365,15 +365,11 @@ class Note extends FlxSprite
 			if(eventNote || noteName == null || noteName == "") noteName = noteNames[0];
 			
 
-			if (isSustainNote && prevNote != null)
-			{
+			if (isSustainNote && prevNote != null){
 				noteScore * 0.2;
 				alpha = 0.6;
-				// Funni downscroll flip when sussy note
-				
-				
 
-				animation.play(if(noteJSON == null) noteName + "holdend" else "holdend");
+				animation.play(noteJSON == null ? noteName + "holdend" : "holdend");
 				isSustainNoteEnd = true;
 				updateHitbox();
 				
@@ -381,11 +377,10 @@ class Note extends FlxSprite
 
 				parentNoteWidth = prevNote.width;
 
-				if (prevNote.isSustainNote)
-				{
+				if (prevNote.isSustainNote){
 					parentNoteWidth = prevNote.parentNoteWidth;
 					var _offset:Float = prevNote.offset.x;
-					prevNote.animation.play(if(prevNote.noteJSON == null) noteName + "hold" else "hold");
+					prevNote.animation.play(prevNote.noteJSON == null ? noteName + "hold" : "hold");
 					if (prevNote.parentNote != null){
 						prevNote.parentNote.childNotes.push(this);
 						this.parentNote = prevNote.parentNote;
@@ -394,7 +389,7 @@ class Note extends FlxSprite
 						this.parentNote = prevNote;
 					}
 					prevNote.isSustainNoteEnd = false;
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (if(FlxG.save.data.scrollSpeed != 1) FlxG.save.data.scrollSpeed else PlayState.SONG.speed);
+					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (FlxG.save.data.scrollSpeed != 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed);
 					prevNote.updateHitbox();
 					prevNote.offset.x = _offset;
 

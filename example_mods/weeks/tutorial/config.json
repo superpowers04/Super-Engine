@@ -1,0 +1,5 @@
+{
+	"":"This is an example of a week that doesn't provide any songs and just pulls from your modded songs folder",
+	"name":"Learning The Ropes",
+	"songs":["tutorial"]
+}

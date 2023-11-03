@@ -604,9 +604,11 @@ class TitleState extends MusicBeatState
 
 		LoadingScreen.loadingText = 'Loading "shared" library';
 		Assets.loadLibrary("shared");
+		Assets.loadLibrary("assets");
+		Paths.setCurrentLevel("assets");
 		@:privateAccess
 		{
-			trace("Loaded " + (openfl.Assets.list().length) + " assets");
+			trace('Loaded ${openfl.Assets.list().length} assets');
 		}
 		
 
@@ -890,7 +892,7 @@ class TitleState extends MusicBeatState
 		FlxG.mouse.visible = false;
 
 
-		shiftSkip = new FlxText(0,0,0,#if(discord_rpc) "DRP not init -" + #end " Hold shift to go to the options menu after title screen",16);
+		shiftSkip = new FlxText(0,0,0,#if(discord_rpc) (FlxG.save.data.discordDRP ? "Awaiting DRP -" : "DRP disabled -") + #end " Hold shift to go to the options menu after title screen",16);
 		
 		shiftSkip.y = FlxG.height - shiftSkip.height - 12;
 		shiftSkip.x = 6;
@@ -1190,7 +1192,7 @@ class TitleState extends MusicBeatState
 				shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else 0x5865F2);
 				shiftSkip.x = shiftSkip.x + 10;
 				FlxTween.tween(shiftSkip,{x:shiftSkip.x - 10},0.5,{ease:FlxEase.bounceInOut});
-				shiftSkip.text = "DRP initiated - Hold shift to go to the options menu after title screen";
+				shiftSkip.text = "DRP connected! - Hold shift to go to the options menu after title screen";
 			}
 		#end
 

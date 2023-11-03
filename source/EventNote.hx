@@ -25,7 +25,6 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 
 	static var psychChars:Array<Int> = [1,0,2]; // Psych uses different character ID's than SE
 	public static function applyEvent(note:Dynamic){
-
 		var rawNote:Array<Dynamic> = note.rawNote;
 		for(index => value in rawNote){
 			if(value is String){rawNote[index] = (cast(value,String)).trim();}
@@ -47,8 +46,12 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 						// Psych uses different character ID's than SE, more charts will be coming from Psych than SE
 						switch(Std.string(rawNote[4]).toLowerCase()){
 							case "dad","opponent","0":1;
+							case "bf","player","boyfriend","1":0;
 							case "gf","girlfriend","2":2;
-							default:0;
+							default:{
+								MusicBeatState.instance.showTempmessage('A note is attempting to use ${rawNote[4]} as a character, This doesn\'t seem intentional!',0xFFFF0000);
+								0;
+							}
 						}
 					]; 
 				}catch(e){info = [rawNote[3],0];}

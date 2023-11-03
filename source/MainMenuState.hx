@@ -63,7 +63,11 @@ class MainMenuState extends SickMenuState
 		if(MainMenuState.errorMessage == error || lastError == error) return; // Prevents the same error from showing twice
 
 		lastError = error;
-		MainMenuState.errorMessage += "\n" + error;
+		var _error = error;
+		if(FlxG.save.data.doCoolLoading && error.indexOf('display.CairoRenderer') == -1){
+			_error = "Flixel tried to render an FlxText while the game was rendering the loading screen, causing an error.\nYou can probably just re-do what you did. If this is annoying, disable threaded loading in the options";
+		}
+		MainMenuState.errorMessage += "\n" + _error;
 		trace('${error}:${details}');
 		if(exception != null)
 			try{trace('${exception.message}\n${exception.stack}');}catch(e){}

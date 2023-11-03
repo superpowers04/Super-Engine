@@ -23,6 +23,11 @@ import flixel.tweens.FlxEase;
 
 using StringTools;
 
+
+/* MultiMenu rework:
+
+*/
+
 @:publicFields @:structInit class SongInfo {
 	var isCategory:Bool = false;
 	var name:String = "";
@@ -40,7 +45,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	static var songInfoArray:Array<SongInfo> = [];
 	static var categories:Array<String> = [];
 	static inline var CATEGORYNAME:String = "-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-CATEGORY";
-	var selMode:Int = 0;
+	var selMode:Int = -1;
 	static var blockedFiles:Array<String> = ['events.json','picospeaker.json','dialogue-end.json','dialogue.json','_meta.json','meta.json','se-overrides.json','config.json'];
 	static var lastSel:Int = 1;
 	static var lastSearch:String = "";
@@ -153,8 +158,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if(cancelCurrentFunction) return null;
 		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
 		controlLabel.adjustAlpha = false;
-		controlLabel.screenCenter(X);
-		if(controlLabel.border != null) controlLabel.border.alpha = 0.35;
+		controlLabel.x = 20;
+		if(controlLabel.border != null) {
+			controlLabel.border.alpha = 0.35;
+			controlLabel.border.lockGraphicSize((Std.int(FlxG.width) + 20),Std.int(controlLabel.border.height));
+			controlLabel.border.x -= 20;
+		}
 		controlLabel.yOffset = 20;
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
@@ -181,11 +190,46 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 		return songInfo;
 	}
+	inline function reloadListFromMemory(search:String = "",query){
+		var _goToSong = 0;
+		var i:Int = 0;
+		var emptyCats:Array<String> = [];
+		var currentCat = "";
+		var currentCatID:Int = -1;
+		var hadSong = false;
+		var matchedCat = false;
+		for(song in songInfoArray){
+			if(currentCatID != song.categoryID){
+				if(!hadSong) emptyCats.push(currentCat);
+				hadSong = false;
+				currentCatID = song.categoryID;
+				currentCat = categories[currentCatID] ?? "Unknown";
+				matchedCat = search == "" || (currentCat != "Unknown" && query.match(currentCat.toLowerCase()));
+			}
+			if(!matchedCat && !query.match(song.name.toLowerCase())) continue;
+			if(!hadSong) {
+				hadSong = true;
+				addCategory(currentCat,i,false);
+				i++;
+			}
+			if(_goToSong == 0) _goToSong = i;
+			addListing(song.name,i,song);
+			i++;
+
+
+		}
+		if(!hadSong) emptyCats.push(currentCat);
+		while(emptyCats.length > 0){
+			var e = emptyCats.shift();
+			addCategory(e,i).color = FlxColor.RED;
+			i++;
+		}
+		changeSelection(_goToSong);
+	}
 	override function reloadList(?reload=false,?search = ""){
 		if(!allowInput) return;
 		curSelected = 0;
-		var _goToSong = 0;
-		var i:Int = 0;
+
 		if(reload) {
 			CoolUtil.clearFlxGroup(grpSongs);
 		}
@@ -193,7 +237,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
 		callInterp('reloadList',[reload,search,query]);
 
-		if(!cancelCurrentFunction && reload && songInfoArray[0] != null){
+		if(!cancelCurrentFunction && songInfoArray[0] != null && (reload || FlxG.save.data.cacheMultiList)){
+			if(selMode == -1) {
+				reloadListFromMemory(search,query);
+				return;
+			}
 			#if (false && target.threaded)
 			var loadingText = new FlxText(0,0,'Loading...',32);
 			replace(grpSongs,loadingText);
@@ -201,38 +249,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			sys.thread.Thread.create(() -> {
 				allowInput = false;
 			#end
-				var emptyCats:Array<String> = [];
-				var currentCat = "";
-				var currentCatID:Int = -1;
-				var hadSong = false;
-				var matchedCat = false;
-				for(song in songInfoArray){
-					if(currentCatID != song.categoryID){
-						if(!hadSong) emptyCats.push(currentCat);
-						hadSong = false;
-						currentCatID = song.categoryID;
-						currentCat = categories[currentCatID] ?? "Unknown";
-						matchedCat = search == "" || (currentCat != "Unknown" && query.match(currentCat.toLowerCase()));
-					}
-					if(!matchedCat && !query.match(song.name.toLowerCase())) continue;
-					if(!hadSong) {
-						hadSong = true;
-						addCategory(currentCat,i,false);
-						i++;
-					}
-					if(_goToSong == 0) _goToSong = i;
-					addListing(song.name,i,song);
-					i++;
-
-
-				}
-				if(!hadSong) emptyCats.push(currentCat);
-				while(emptyCats.length > 0){
-					var e = emptyCats.shift();
-					addCategory(e,i).color = FlxColor.RED;
-					i++;
-				}
-				changeSelection(_goToSong);
+				reloadListFromMemory(search,query);
 			#if (false && target.threaded)
 				allowInput = true;
 				
@@ -242,6 +259,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			#end
 			return;
 		}
+		var _goToSong = 0;
+		var i:Int = 0;
 		categories = [];
 		songInfoArray=[];
 		callInterp('generateList',[reload,search,query]);
@@ -282,7 +301,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
 							var song = addSong('${dataDir}${directory}',directory,catID);
 							if(song == null) continue;
-							song.namespace = dataDir;
+							song.namespace = name;
 							if(!containsSong){
 								containsSong = true;
 								addCategory(name,i);
@@ -316,7 +335,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
 							var song = addSong('${dataDir}${directory}',directory,catID);
 							if(song == null) continue;
-							song.namespace = dataDir;
+							song.namespace = name;
 							if(!containsSong){
 								containsSong = true;
 								addCategory(name,i);
@@ -385,7 +404,28 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	// 	}
 	// 	return ret;
 	// }
+	public static function loadScriptsFromSongPath(selSong:String){
+		LoadingScreen.loadingText = "Finding scripts";
+		if(selSong.contains("mods/packs") || selSong.contains("mods/weeks")){
+			var packDirL = selSong.split("/"); // Holy shit this is shit but using substr won't work for some reason :<
 
+			if(packDirL[packDirL.length] == "")packDirL.pop(); // There might be an extra slash at the end, remove it
+			packDirL.pop();
+			if(packDirL.contains('packs')) 
+				while(packDirL[packDirL.length - 2] != null && packDirL[packDirL.length - 2] != 'packs' )packDirL.pop(); 
+
+			// Packs have a sub charts folder, weeks do not
+			
+			var packDir = packDirL.join("/");
+			if(SELoader.isDirectory('${packDir}/scripts')){
+				for (file in SELoader.readDirectory('${packDir}/scripts')) {
+					if((file.endsWith(".hscript") || file.endsWith(".hx") #if(linc_luajit) || file.endsWith(".lua") #end ) && !SELoader.isDirectory('${packDir}/scripts/$file')){
+						PlayState.scripts.push('${packDir}/scripts/$file');
+					}
+				}
+			}
+		}
+	}
 	public static function gotoSong(?selSong:String = "",?songJSON:String = "",?songName:String = "",?charting:Bool = false,?blankFile:Bool = false,?voicesFile:String="",?instFile:String=""){
 			try{
 				if(selSong == "" || songJSON == "" || songName == ""){
@@ -420,23 +460,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				}else{
 					onlinemod.OfflinePlayState.voicesFile = voicesFile;
 				}
-				LoadingScreen.loadingText = "Finding scripts";
-				if(FlxG.save.data.packScripts && (selSong.contains("mods/packs") || selSong.contains("mods/weeks"))){
-					var packDirL = selSong.split("/"); // Holy shit this is shit but using substr won't work for some reason :<
-					if(packDirL[packDirL.length] == "")packDirL.pop(); // There might be an extra slash at the end, remove it
-					packDirL.pop();
-					if(packDirL.contains("packs")) packDirL.pop(); // Packs have a sub charts folder, weeks do not
-
-					var packDir = packDirL.join("/");
-					if(SELoader.exists('${packDir}/scripts') && SELoader.isDirectory('${packDir}/scripts')){
-
-						for (file in SELoader.readDirectory('${packDir}/scripts')) {
-							if((file.endsWith(".hscript") || file.endsWith(".hx") #if(linc_luajit) || file.endsWith(".lua") #end ) && !SELoader.isDirectory('${packDir}/scripts/$file')){
-								PlayState.scripts.push('${packDir}/scripts/$file');
-							}
-						}
-					}
-				}
+				loadScriptsFromSongPath(selSong);
 				// if (FileSystem.exists('${selSong}/script.hscript')) {
 				// 	trace("Song has script!");
 				// 	MultiPlayState.scriptLoc = '${selSong}/script.hscript';
@@ -447,7 +471,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.nameSpace = selSong;
 				PlayState.stateType = 4;
 				FlxG.sound.music.fadeOut(0.4);
-				LoadingState.loadAndSwitchState(new MultiPlayState(charting));
+				LoadingScreen.loadAndSwitchState(new MultiPlayState(charting));
 			}catch(e){MainMenuState.handleError(e,'Error while loading chart ${e.message}');
 			}
 	}
@@ -459,10 +483,16 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			return;
 		}
 		var songInfo = grpSongs.members[sel].menuValue;
+		onlinemod.OfflinePlayState.nameSpace = "";
+		if(songInfo.namespace != null){
+			onlinemod.OfflinePlayState.nameSpace = songInfo.namespace;
+			trace('Using namespace ${onlinemod.OfflinePlayState.nameSpace}');
+		}
 		if(charting){
 			var songLoc = songInfo.path;
 			var chart = songInfo.charts[selMode];
 			var songName = songInfo.name;
+			loadScriptsFromSongPath(songLoc);
 			if(chart == null){
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
 				var song = cast Song.getEmptySong();
@@ -501,11 +531,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			showTempmessage("Invalid song!",FlxColor.RED);
 			return;
 		}
-		onlinemod.OfflinePlayState.nameSpace = "";
-		if(songInfo.namespace != null){
-			onlinemod.OfflinePlayState.nameSpace = songInfo.namespace;
-			trace('Using namespace ${onlinemod.OfflinePlayState.nameSpace}');
-		}
+
 		lastSel = sel;
 		lastSearch = searchField.text;
 		lastSong = songInfo.path + songInfo.charts[selMode] + songInfo.name;
@@ -571,8 +597,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function extraKeys(){
 		if(controls.LEFT_P){changeDiff(-1);}
 		if(controls.RIGHT_P){changeDiff(1);}
-		if (FlxG.keys.justPressed.SEVEN && songs.length > 0 && FlxG.save.data.animDebug)
-		{
+		if (FlxG.keys.justPressed.SEVEN && songs.length > 0 && FlxG.save.data.animDebug){
 			selSong(curSelected,true);
 		}
 		if((FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)){
@@ -723,11 +748,40 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 	var twee:FlxTween;
 	var curScoreName:String = "";
+	function updateScore(?songInfo:SongInfo,?chart:String){
+		if(songInfo == null || chart == null){
+			scoreText.text = "N/A";
+			SCORETXT = "N/A";
+			scoreText.screenCenter(X);
+			return;
+		}
+		var name = '${songInfo.path}-${chart}${(QuickOptionsSubState.getSetting("Inverted chart") ? "-inverted" : "")}';
+		curScoreName = "";
+		if(!Highscore.songScores.exists(name)){
+			scoreText.text = "N/A";
+			SCORETXT = "N/A";
+			scoreText.screenCenter(X);
+			return;
+		}
+		curScoreName = name;
+		scoreText.text = (Highscore.songScores.getArr(curScoreName)).join(", ");
+		scoreText.screenCenter(X);
+			// var _Arr:Array<Dynamic> = Highscore.songScores.getArr(name);
+			// if(Std.isOfType(_Arr[0],Int)){
+			// 	score = _Arr.shift();
+			// }else{
+			// 	score = -1;
+			// }
+			// SCORETXT = ', ${_Arr.join(", ")}';
+			// score = Highscore.getScoreUnformatted();
+		
+	}
 	function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
 		var songInfo = grpSongs.members[curSelected]?.menuValue;
 		if (songInfo == null) {
 			diffText.text = 'No song selected';
 			diffText.screenCenter(X);
+			updateScore();
 			return;
 		}
 		if(twee != null)twee.cancel();
@@ -747,32 +801,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		diffText.text = (charts[selMode - 1] == null ? "< " : "|  ") + (charts[selMode] ?? "No charts for this song!") + (charts[selMode + 1] == null ? " >" : "  |");
 		// diffText.centerOffsets();
 		diffText.screenCenter(X);
-		var name = '${songInfo.name}-${charts[selMode]}${(QuickOptionsSubState.getSetting("Inverted chart") ? "-inverted" : "")}';
-		curScoreName = "";
-		if(charts[selMode] == null || !Highscore.songScores.exists(name)){
-			// score = 0;
-			scoreText.text = "N/A";
-			SCORETXT = "N/A";
-			scoreText.screenCenter(X);
-		}else{
-			// var _Arr:Array<Dynamic> = Highscore.songScores.getArr(name);
-			// if(Std.isOfType(_Arr[0],Int)){
-			// 	score = _Arr.shift();
-			// }else{
-			// 	score = -1;
-			// }
-			// SCORETXT = ', ${_Arr.join(", ")}';
-			curScoreName = name;
-			scoreText.text = (Highscore.songScores.getArr(curScoreName)).join(", ");
-			scoreText.screenCenter(X);
-			// score = Highscore.getScoreUnformatted();
-		}
+		updateScore(songInfo,charts[selMode]);
+
 		// diffText.x = (FlxG.width) - 20 - diffText.width;
 
 	}
 
-	override function changeSelection(change:Int = 0)
-	{
+	override function changeSelection(change:Int = 0){
 		var looped = 0;
 		super.changeSelection(change);
 		var songInfo = grpSongs.members[curSelected]?.menuValue;
@@ -801,7 +836,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 		return '';
 	}
-	inline static function upToString(str:String,ending:String){
+	@:keep inline static function upToString(str:String,ending:String){
 		return str.substr(0,str.lastIndexOf(ending) + ending.length);
 	}
 	@:keep inline public static function getAssetsPathFromChart(path:String,attempt:Int = 0):String{
@@ -888,11 +923,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		}
 	}
 	override function goOptions(){
-			lastSel = curSelected;
-			lastSearch = searchField.text;
-			FlxG.mouse.visible = false;
-			OptionsMenu.lastState = 4;
-			FlxG.switchState(new OptionsMenu());
+		lastSel = curSelected;
+		lastSearch = searchField.text;
+		FlxG.mouse.visible = false;
+		OptionsMenu.lastState = 4;
+		FlxG.switchState(new OptionsMenu());
 	}
 }
 typedef FuckingSong = {

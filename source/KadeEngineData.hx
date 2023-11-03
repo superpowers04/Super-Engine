@@ -87,7 +87,6 @@ class KadeEngineData
 		'goodMiss' => false,
 		'beatBouncing' => true,
 		'scrollOSUSpeed' => 2,
-		'packScripts' => true,
 		'luaScripts' => true,
 		'judgeSick' => Ratings.getDefRating("sick"),
 		'judgeGood' => Ratings.getDefRating("good"),
@@ -129,6 +128,7 @@ class KadeEngineData
 		'lastUpdateID' => MainMenuState.versionIdentifier,
 		'useHurtArrows' => false,
 		'keys' => KeyBinds.defaultKeys,
+		'cacheMultiList'=> false,
 		#if !mobile
 		'simpleMainMenu'=> false,
 		#end
@@ -136,8 +136,7 @@ class KadeEngineData
 		// 'mainMenuChar' => FlxG.save.data.mainMenuChar = false,
 		// 'playStateObjectLocations' = new Map<String,ObjectInfo>(),
 	];
-    public static function initSave()
-    {
+    public static function initSave(){
 
     	
     	FlxG.save.bind('superengine', 'superpowers04');

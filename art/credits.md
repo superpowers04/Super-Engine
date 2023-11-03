@@ -39,4 +39,4 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 - [GWebDev](https://twitter.com/GFlipaclip) - Haxeflixel Video
 - [Ethab Taxi](https://twitter.com/EthabTaxi) - He's just sorta chillin'.<br>
 - [V.S. Ex Tabi](https://gamebanana.com/mods/286388) - The arrow examples are from here
-- [Shadow Mario](https://github.com/ShadowMario/) - A whole bunch of inspiration. Both from Psych Engine and FNF Multi 3.X
+- [Shadow Mario](https://github.com/ShadowMario/) - A whole bunch of inspiration. Both from [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) and [FNF Multi 3.X](https://shadowmario.itch.io/funkinmulti)

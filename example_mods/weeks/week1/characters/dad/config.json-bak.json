@@ -1,0 +1,149 @@
+{
+     "animations_offsets" : [
+         {
+             "player1" : [
+                 0,
+                0
+            ],
+            "player2" : [
+                 -4,
+                27
+            ],
+            "player3" : [
+                 0,
+                0
+            ],
+            "anim" : "singRIGHT"
+        },
+        {
+             "player1" : [
+                 0,
+                0
+            ],
+            "player2" : [
+                 2,
+                -31
+            ],
+            "player3" : [
+                 0,
+                0
+            ],
+            "anim" : "singDOWN"
+        },
+        {
+             "player1" : [
+                 0,
+                0
+            ],
+            "player2" : [
+                 -8,
+                51
+            ],
+            "player3" : [
+                 0,
+                0
+            ],
+            "anim" : "singUP"
+        },
+        {
+             "player1" : [
+                 0,
+                0
+            ],
+            "player2" : [
+                 -8,
+                10
+            ],
+            "player3" : [
+                 0,
+                0
+            ],
+            "anim" : "singLEFT"
+        }
+    ],
+    "dance_idle" : false,
+    "voices" : "",
+    "no_antialiasing" : false,
+    "cam_pos" : [
+         0,
+        0
+    ],
+    "sing_duration" : 6.1,
+    "flip_x" : false,
+    "genBy" : "FNFBR; Animation Editor",
+    "char_pos2" : [
+         -24,
+        60
+    ],
+    "like" : "",
+    "common_stage_offset" : [
+
+    ],
+    "offset_flip" : 1,
+    "scale" : 1,
+    "char_pos" : [
+
+    ],
+    "clone" : "",
+    "cam_pos2" : [
+         13,
+        0
+    ],
+    "animations" : [
+         {
+             "loopStart" : 0,
+            "indices" : [
+
+            ],
+            "fps" : 24,
+            "anim" : "idle",
+            "loop" : false,
+            "name" : "Dad idle dance",
+            "oneshot" : false
+        },
+        {
+             "loopStart" : 0,
+            "indices" : [
+
+            ],
+            "fps" : 24,
+            "anim" : "singDOWN",
+            "loop" : false,
+            "name" : "Dad Sing Note DOWN",
+            "oneshot" : false
+        },
+        {
+             "loopStart" : 0,
+            "indices" : [
+
+            ],
+            "fps" : 24,
+            "anim" : "singUP",
+            "loop" : false,
+            "name" : "Dad Sing Note UP",
+            "oneshot" : false
+        },
+        {
+             "loopStart" : 0,
+            "indices" : [
+
+            ],
+            "fps" : 24,
+            "anim" : "singRIGHT",
+            "loop" : false,
+            "name" : "Dad Sing Note RIGHT",
+            "oneshot" : false
+        },
+        {
+             "loopStart" : 0,
+            "indices" : [
+
+            ],
+            "fps" : 24,
+            "anim" : "singLEFT",
+            "loop" : false,
+            "name" : "Dad Sing Note LEFT",
+            "oneshot" : false
+        }
+    ]
+}

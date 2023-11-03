@@ -289,9 +289,8 @@ class OnlineLoadState extends MusicBeatState
 
 	function checkComplete()
 	{
-		if (loadedVoices && loadedInst)
-		{
-			LoadingState.loadAndSwitchState(new OnlinePlayState(customSong, voices, inst));
+		if (loadedVoices && loadedInst){
+			LoadingScreen.loadAndSwitchState(new OnlinePlayState(customSong, voices, inst));
 		}
 	}
 }

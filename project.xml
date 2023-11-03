@@ -55,33 +55,21 @@
 	
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
-	<define name="EMBED_ALL" unless="NO_EMBED_ALL"/>
 	
 	<section if="EMBED_ALL">
-		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
-		<library name="tutorial" preload="true" embed='true' />
-		<library name="week1"    preload="true" embed='true' />
 	</section>
 	<section if="PRELOAD_ALL" unless="EMBED_ALL">
-		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
-		<library name="tutorial" preload="true" />
-		<library name="week1"    preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
-		<library name="songs"    preload="false" />
 		<library name="shared"   preload="false" />
-		<library name="tutorial" preload="false" />
-		<library name="week1"    preload="false" />
 	</section>
 
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" />
 	<assets path="assets/shared"   library="shared"   exclude="*.mp3" />
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" embed='true'/>
-	<assets path="assets/week1"    library="week1"    exclude="*.mp3" embed='true'/>
 	
+	<assets path="assets/fonts" embed='true'/>
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<assets path='art/credits.md' rename='Credits.md' />
@@ -103,7 +91,7 @@
 		<assets path="assets/preload/images/iconGrid.png" embed='true'/> 
 		<assets path="assets/preload/images/" embed='true'/> 
 		<assets path="assets/preload/images/logoBumpin.png" embed='true'/> 
-		<assets path="assets/fonts" embed='true'/>
+		
 		<assets path="assets/shared/images/characters" embed='true'/>
 	</section>
 	<!-- _______________________________ Libraries ______________________________ -->

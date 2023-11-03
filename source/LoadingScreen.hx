@@ -216,7 +216,19 @@ class LoadingScreen extends Sprite{
 		
 	}
 
+	@:keep inline static public function loadAndSwitchState(target:flixel.FlxState, stopMusic = false)
+	{
+		LoadingScreen.show();
+		if (stopMusic && FlxG.sound.music != null){
+			if(SickMenuState.chgTime){
+				SickMenuState.curSongTime = FlxG.sound.music.time;
+				SickMenuState.chgTime = false;
+			}
+			FlxG.sound.music.stop();
 
+		}
+		FlxG.switchState(target);
+	}
 
 
 

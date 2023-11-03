@@ -70,7 +70,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Use Song Stage","Whether to allow the song to choose the stage if you have them installed or force the stage you've selected",'stageAuto'),
 			new HCBoolOption("Use Song Opponent Char","Whether to allow the song to choose the opponent if you have them installed or force the opponent you've selected",'charAuto'),
 			new HCBoolOption("Use Song Player Char","Whether to allow the song to choose the player if you have them installed or force the player you've selected",'charAutoBF'),
-			new HCBoolOption("Pack scripts","Toggle the ability for packs to provide scripts","packScripts"),
+			// new HCBoolOption("Pack scripts","Toggle the ability for packs to provide scripts","packScripts"),
 			new HCBoolOption("Menu Scripts","Toggle the ability for scripts to run in menus","menuScripts"),
 			#if linc_luajit
 			new HCBoolOption("Lua Scripts","Toggle lua scripts for fixing broken compatibility with some mods","luaScripts"),
@@ -163,6 +163,9 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption('Performance mode',"Disables many effects to make the game run better",'performance'),
 			new HCBoolOption("Persistant BF","Doesn't destroy the Player when you exit a song. Makes loading quicker but uses more ram and might cause issues","persistBF"),
 			new HCBoolOption("Persistant GF","Doesn't destroy GF when you exit a song. Makes loading quicker but uses more ram and might cause issues","persistGF"),
+			// new HCBoolOption("Cache Modded Songs list", "Toggle whether the song list entirely reloads every time it's opened",'cacheMultiList'),
+			new HCBoolOption("Threaded loading screen","Makes the loading screen use threads and show loading progress but is buggy and can cause crashes","doCoolLoading"),
+	
 			// new HCBoolOption("Doesn't destroy the opponent when you exit a song. Makes loading quicker but uses more ram and might cause issues","Persistant Opponent","persistOpp"),
 			// new UnloadSongOption("Unload the song when exiting the game"),
 			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
@@ -182,8 +185,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Show Opponent", "Toggle whether the opponent is loaded or not",'dadShow'),
 			new HCBoolOption("Show GF", "Toggle whether gf is loaded or not",'gfShow'),
 			new HCBoolOption("Show Player", "Toggle whether the player is loaded or not",'bfShow'),
-			new HCBoolOption("Threaded loading screen","Makes the loading screen use threads and show loading progress but is buggy","doCoolLoading"),
-			// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
+		// new MMCharOption("**CAN PUT GAME INTO CRASH LOOP! IF STUCK, HOLD SHIFT AND DISABLE THIS OPTION. Show character on main menu"),
 		],"Toggle visibility of certain gameplay aspects"),
 		new OptionCategory("Auditory", [
 			#if hxCodec

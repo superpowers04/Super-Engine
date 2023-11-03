@@ -60,7 +60,7 @@ class StoryMenuState extends MusicBeatState
 	// ];
 
 	public static var weekNames:Array<String> = [];
-	static public var weekDialogue:Array<Bool> = [true,true];
+	static public var weekDialogue:Array<Bool> = [];
 	static public var weekDirectories:Array<String> = [];
 	public static var weekData:Array<Array<String>> = [];
 	var weekChartNames:Array<Array<String>> = [];
@@ -91,44 +91,13 @@ class StoryMenuState extends MusicBeatState
 	public static var loadDialog:Bool = true;
 
 	function resetWeeks(){
-
-		if(Assets.hasLibrary("week1")){
-			weekData = [
-				['tutorial'],
-				['dad battle'],
-			];
-			weekDirectories = [
-				"Learning The Ropes",
-				"Daddy Dearest"
-			];
-			weekCharacters = [
-				['gf', 'bf',''],
-				['bf', 'bf', 'gf']
-			];
-
-			weekNames = [
-				"Learning The Ropes",
-				"Daddy Dearest",
-			];
-			weekEmbedded = [true, true];
-		}else{
-			weekEmbedded = [];
-			weekCharacters = [];
-			weekNames = [];
-			weekData = [];
-			weekDirectories = [];
-		}
+		weekEmbedded = [];
+		weekCharacters = [];
+		weekNames = [];
+		weekData = [];
+		weekDirectories = [];
 		curDifficulty = 1;
 
-		// weekDifficulties =  [
-		// 	[],
-		// 	[],
-		// 	[],
-		// 	[],
-		// 	[],
-		// 	[],
-		// 	[]
-		// ];
 
 
 	}
@@ -277,9 +246,8 @@ class StoryMenuState extends MusicBeatState
 			onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
 			onlinemod.OfflinePlayState.nameSpace = weekNames[curWeek];
 			// LoadingState.loadAndSwitchState(new MultiPlayState());
-			new FlxTimer().start(1, function(tmr:FlxTimer)
-			{
-				LoadingState.loadAndSwitchState(new MultiPlayState(), true);
+			new FlxTimer().start(1, function(tmr:FlxTimer){
+				LoadingScreen.loadAndSwitchState(new MultiPlayState(), true);
 			// 	// PlayState.instance.clearVariables();
 			});
 		}catch(e){MainMenuState.handleError(e,"Error switching songs for week " + '${weekNames[curWeek]}',!inStoryMenu);
@@ -516,7 +484,7 @@ class StoryMenuState extends MusicBeatState
 
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				LoadingState.loadAndSwitchState(new PlayState(), true);
+				LoadingScreen.loadAndSwitchState(new PlayState(), true);
 			});
 		}else{
 			PlayState.storyDifficulty = curDifficulty;

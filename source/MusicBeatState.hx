@@ -23,6 +23,8 @@ import se.extensions.flixel.FlxSpriteLockScale;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
 
+
+
 class MusicBeatState extends FlxUIState
 {
 	public static var instance:MusicBeatState;
@@ -337,6 +339,9 @@ class MusicBeatState extends FlxUIState
 		FlxG.mouse.visible = false;
 		FlxG.mouse.enabled = true;
 		return super.switchTo(nextState);
+	}
+	public static function switchState(nextState:FlxState){
+		return FlxG.switchState(nextState);
 	}
 
 	function tranIn(){ // Replace with empty functions to disable

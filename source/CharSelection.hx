@@ -151,9 +151,9 @@ class CharSelection extends SearchMenuState
 		var curSelected =getChar();
 		if (chars[curSelected] != null && chars[curSelected][1] != -1 && onlinemod.OnlinePlayMenuState.socket == null){
 			var _char = formatChar(chars[curSelected]);
-			if (FlxG.keys.justPressed.ONE)  {LoadingState.loadAndSwitchState(new AnimationDebug(_char,true ,0,true));}
-			if (FlxG.keys.justPressed.TWO)  {LoadingState.loadAndSwitchState(new AnimationDebug(_char,false,1,true));}
-			if (FlxG.keys.justPressed.THREE){LoadingState.loadAndSwitchState(new AnimationDebug(_char,false,2,true));}
+			if (FlxG.keys.justPressed.ONE)  {LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,true ,0,true));}
+			if (FlxG.keys.justPressed.TWO)  {LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,false,1,true));}
+			if (FlxG.keys.justPressed.THREE){LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,false,2,true));}
 		}
 	}
 	inline function formatChar(char:Array<Dynamic>):String{

@@ -168,7 +168,7 @@ class AnimationDebug extends MusicBeatState
 			SELoader.createDirectory('mods/characters/$name');
 			SELoader.importFile(file,'mods/characters/$name/character.$ending1');
 			SELoader.importFile(validFile,'mods/characters/$name/character.$ending2');
-			LoadingState.loadAndSwitchState(new AnimationDebug("INVALID|" + name,false,1,false,true));
+			LoadingScreen.loadAndSwitchState(new AnimationDebug("INVALID|" + name,false,1,false,true));
 
 		},[file,validFile,ending1,ending2],"Type a name for the character\n",name,function(name:String){return (if(TitleState.retChar(name) != "") "This character already exists! Please use a different name" else "");}));
 	} 
@@ -758,35 +758,38 @@ class AnimationDebug extends MusicBeatState
 			dad.camX += x;
 			dad.camY += y;
 			camFollow.setPosition(get_Dad_X(), get_Dad_Y());
-
-		}else{
-			camFollow.setPosition(x,y);
+			return;
 		}
+		camFollow.setPosition(x,y);
 	}
 
 
 	// var editorAnim:Map;
 
-
-	function editAnimation(Anim:String,charAnim:CharJsonAnimation,?unbind:Bool = false,?overide:Bool = true){
-		var exists:Bool = false;
-		var id:Int = 0;
+	@:keep inline function findAnimation(Anim:String):Array<Dynamic>{
+		var meow:Array<Dynamic> = [];
 		for (i => v in charJson.animations) {
 			if (v.anim == Anim) {
-				if(!overide) return;
-				exists=true;id = i;break;
+				meow[0] = i;
+				meow[1] = v;
+				break;
 			}
 		}
+		return meow;
+	}
+	function editAnimation(Anim:String,charAnim:CharJsonAnimation,?unbind:Bool = false,?overide:Bool = true){
+		var existingAnim:Array<Dynamic> = findAnimation(Anim);
+		var anim = existingAnim[1];
 		if (unbind){
-			if (exists) charJson.animations[id] = null;
+			if (anim != null) charJson.animations[anim] = null;
 			return;
 		}
-		if (exists){
-			charJson.animations[id] = charAnim;
-		}else{
-			charJson.animations.push(charAnim);
+		if (anim != null){
+			charJson.animations[anim] = charAnim;
+			showTempmessage('Replaced existing animation!');
+			return;
 		}
-		
+		charJson.animations.push(charAnim);
 	}
 
 	
@@ -796,12 +799,11 @@ class AnimationDebug extends MusicBeatState
 	var animUICurAnim:String = "idle";
 	var animUICurName:String = "";
 	function playTempAnim(name:String){
-		if(uiMap['animFPS'] != null){
-
-			dad.addAnimation("ANIMATIONDEBUG_tempAnim",name,Std.int(uiMap['animFPS'].value),uiMap['loop'].checked,uiMap['flipanim'].checked);
-		}else{
-
+		if(uiMap['animFPS'] == null){
 			dad.addAnimation("ANIMATIONDEBUG_tempAnim",name,24);
+		}else{
+			dad.addAnimation("ANIMATIONDEBUG_tempAnim",name,Std.int(uiMap['animFPS'].value),uiMap['loop'].checked,uiMap['flipanim'].checked);
+
 		}
 		dad.playAnim("ANIMATIONDEBUG_tempAnim");
 	}
@@ -824,23 +826,14 @@ class AnimationDebug extends MusicBeatState
 		if(charJson.color == null || charJson.color[0] == null){
 			charJson.color = [255,255,255];
 		}
-		if(r > -1){
-			charJson.color[0] = r;
-		}
-		if(g > -1){
-			charJson.color[1] = g;
-		}
-		if(b > -1){
-			charJson.color[2] = b;
-		}
+		if(r != -1) charJson.color[0] = r;
+		if(g != -1) charJson.color[1] = g;
+		if(b != -1) charJson.color[2] = b;
+		
 		// var colText = uiMap["colorTxt"];
 		var col:FlxColor = FlxColor.fromRGB(charJson.color[0],charJson.color[1],charJson.color[2]);
 		_colText.color = col;
-		if(_colText.color.lightness >= 0.4){
-			_colText.borderColor = FlxColor.BLACK;
-		}else{
-			_colText.borderColor = FlxColor.WHITE;
-		}
+		_colText.borderColor = (_colText.color.lightness >= 0.4 ? FlxColor.BLACK : FlxColor.WHITE);
 		_colText.text = col.toWebString();
 	}
 	public function setupUI(dest:Bool = false){
@@ -901,11 +894,9 @@ class AnimationDebug extends MusicBeatState
 		animDropDown3.selectedLabel = '';animDropDown3.cameras = [camHUD];
 		uiBox.add(animDropDown3);
 
-		var animTxt = new FlxText(5, 210,0,"Internal Name");
-		uiBox.add(animTxt);
+		uiBox.add(new FlxText(5, 210,0,"Internal Name"));
 
-		var animTxt = new FlxText(140, 210,0,"XML Name");
-		uiBox.add(animTxt);
+		uiBox.add(new FlxText(140, 210,0,"XML Name"));
 
 		// Togglables 
 
@@ -931,18 +922,15 @@ class AnimationDebug extends MusicBeatState
 		// uiBox.add(prTxt);
 		// var priorityText = new FlxUIInputText(150, 40, 20, '-1');
 		uiBox.add(uiMap["prioritytxt"] = new FlxText(10, 90,0,"Priority(-1 for def)"));
-		uiMap["priorityText"] = new FlxUINumericStepper(140, 90, 1, -1,-999,999,2);
-		uiBox.add(uiMap["priorityText"]);
+		uiBox.add(uiMap["priorityText"] = new FlxUINumericStepper(140, 90, 1, -1,-999,999,2));
 
 
 		uiBox.add(uiMap["animtxt"] = new FlxText(10, 110,0,"Animation FPS"));
-		uiMap["animFPS"] = new FlxUINumericStepper(140, 110, 1, 24);
+		uiBox.add(uiMap["animFPS"] = new FlxUINumericStepper(140, 110, 1, 24));
 		uiMap["animFPS"].callback = function(value,_){ updateTempAnim();};
-		uiBox.add(uiMap["animFPS"]);
 
 		uiBox.add(uiMap["looptxt"] = new FlxText(10, 130,0,"Loop start frame"));
-		uiMap["loopStart"] = new FlxUINumericStepper(140, 130, 1, 0,0);
-		uiBox.add(uiMap["loopStart"]);
+		uiBox.add(uiMap["loopStart"] = new FlxUINumericStepper(140, 130, 1, 0,0));
 
 		uiMap["commitButton"] = new FlxUIButton(20,160,"Add animation",function(){
 			try{

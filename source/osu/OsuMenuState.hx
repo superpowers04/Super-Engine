@@ -118,7 +118,7 @@ class OsuMenuState extends onlinemod.OfflineMenuState
 		PlayState.storyDifficulty = 1;
 
 		PlayState.actualSongName = name;
-		LoadingState.loadAndSwitchState(new OsuPlayState());
+		LoadingScreen.loadAndSwitchState(new OsuPlayState());
 	}catch(e){MainMenuState.handleError(e,'Error while loading beatmap ${e.message}');}
   }
 

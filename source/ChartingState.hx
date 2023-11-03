@@ -190,7 +190,7 @@ class ChartingState extends ScriptMusicBeatState
 	}
 	public static function gotoCharter(){
 		// if(FlxG.save.data.legacyCharter){
-			LoadingState.loadAndSwitchState(new ChartingState(Conductor.songPosition));
+		LoadingScreen.loadAndSwitchState(new ChartingState(Conductor.songPosition));
 		// }else{
 		// 	LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
 		// }
@@ -2384,10 +2384,10 @@ class ChartingState extends ScriptMusicBeatState
 		}
 		MusicBeatState.returningFromClass = true;
 		switch(PlayState.stateType){
-			case 2: LoadingState.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
-			case 4,6: LoadingState.loadAndSwitchState(new multi.MultiPlayState());
-			case 5: LoadingState.loadAndSwitchState(new osu.OsuPlayState());
-			default: LoadingState.loadAndSwitchState(new PlayState());
+			case 2: LoadingScreen.loadAndSwitchState(new onlinemod.OfflinePlayState()); 
+			case 4,6: LoadingScreen.loadAndSwitchState(new multi.MultiPlayState());
+			case 5: LoadingScreen.loadAndSwitchState(new osu.OsuPlayState());
+			default: LoadingScreen.loadAndSwitchState(new PlayState());
 		}
 	}
 }

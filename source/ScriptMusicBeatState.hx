@@ -226,9 +226,9 @@ class ScriptMusicBeatState extends MusicBeatState{
 			// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled
 			if(!parseMoreInterps || !FlxG.save.data.luaScripts) return null;
 
-			if(songScript == "" || !songScript.startsWith('ignoreScript') || (!songScript.contains('isSE = true') && !songScript.contains('function initScript'))) {
+			if(songScript == "" || songScript.startsWith('ignoreScript') || (!songScript.contains('isSE = true') && !songScript.contains('function initScript'))) {
 				try{
-					if(!songScript.startsWith('ignoreScript')){
+					if(songScript.startsWith('ignoreScript')){
 						trace('$file ignored as it starts with ignoreScript');
 					}else{
 						if(FlxG.save.data.animDebug && !songScript.contains('isSE = true')){
@@ -245,14 +245,15 @@ class ScriptMusicBeatState extends MusicBeatState{
 
 				// parser.parseModule(songScript);
 				var interp:SELua = new SELua(songScript);
-				if (brTools != null) {
-					// interp.variables.set("BRtools",brTools,true);
-					interp.BRTools = brTools; 
-					// brTools.reset();
-				}else {
-					// interp.variables.set("BRtools", getBRTools("assets/"),true);
-					interp.BRTools = getBRTools("assets/");
-				}
+				// if (brTools != null) {
+				// 	// interp.variables.set("BRtools",brTools,true);
+				// 	interp.BRTools = brTools; 
+				// 	// brTools.reset();
+				// }else {
+				// 	// interp.variables.set("BRtools", getBRTools("assets/"),true);
+				// 	interp.BRTools = getBRTools("assets/");
+				// }
+				interp.BRTools = brTools ?? getBRTools("assets/");
 				interp.variables.set("BRtoolsRef",interp.BRTools); 
 				// if(interp.get('isSE') == null && interp.get('initScript') == null){
 				// 	interp.stop();
@@ -291,14 +292,9 @@ class ScriptMusicBeatState extends MusicBeatState{
 			var parser:hscript.Parser = HscriptUtils.createSimpleParser();
 			var interp:Interp = HscriptUtils.createSimpleInterp();
 			try{
-
 				var program = parser.parseString(songScript,file);
 
-				if (brTools != null) {
-					interp.variables.set("BRtools",brTools); 
-				}else {
-					interp.variables.set("BRtools", getBRTools("assets/"));
-				}
+				interp.variables.set("BRtools",brTools ?? getBRTools("assets/")); 
 				// Access current state without needing to be inside of a function with ps as an argument
 				interp.variables.set("scriptContents",songScript);
 				interp.variables.set("scriptName",id);
@@ -333,42 +329,47 @@ class ScriptMusicBeatState extends MusicBeatState{
 			if(brtools[path] == null) brtools[path] = new HSBrTools(path,id);
 			return brtools[path];
 		}
-		public function requireScript(v:String,?important:Bool = false,?nameSpace:String = "requirement",?script:String = ""):Bool{
+		public function requireScript(v:String,?important:Bool = false,?nameSpace:String = "requirement",?script:String = ""):Dynamic{
 			// if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null){return false;}
-			if(interps['${nameSpace}-${v}'] != null || interps['global-${v}'] != null) return true; // Don't load the same script twice
+			if(interps['${nameSpace}-${v}'] != null || interps['global-${v}'] != null) return interps['${nameSpace}-${v}'] ?? interps['global-${v}']; // Don't load the same script twice
 			trace('Checking for ${v}');
 			if (SELoader.exists('mods/scripts/${v}/script.hscript')){
 				parseHScript(SELoader.loadText('mods/scripts/${v}/script.hscript'),getBRTools('mods/scripts/${v}',v),'${nameSpace}-${v}','mods/scripts/${v}/script.hscript');
+			#if linc_luajit
+			}else if (SELoader.exists('mods/scripts/${v}/script.lua')){
+				parseLua(SELoader.loadText('mods/scripts/${v}/script.lua'),getBRTools('mods/scripts/${v}',v),'${nameSpace}-${v}','mods/scripts/${v}/script.lua');
+
+			#end
 			// }else if (FileSystem.exists('mods/dependancies/${v}/script.hscript')){
 			// 	parseHScript(File.getContent('mods/dependancies/${v}/script.hscript'),new HSBrTools('mods/dependancies/${v}',v),'${nameSpace}-${v}');
 			}else{showTempmessage('Script \'${v}\'' + (if(script == "") "" else ' required by \'${script}\'') + ' doesn\'t exist!');}
 			if(important && interps['${nameSpace}-${v}'] == null){errorHandle('$script is missing a script: $v!');}
-			return ((interps['${nameSpace}-${v}'] == null));
+			return interps['${nameSpace}-${v}'];
 		}
-		public function require(v:String,nameSpace:String):Bool{
-			// if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null){return false;}
-			trace('Checking for ${v}');
-			if(interps[nameSpace] == null) {
-				trace('Unable to load $v: $nameSpace doesn\'t exist!');
-				return false;
-			}
-			if (SELoader.exists('mods/${v}') || SELoader.exists('mods/scripts/${v}/script.hscript')){
-				var parser = new hscript.Parser();
-				try{
-					parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
+		// public function require(v:String,nameSpace:String):Bool{
+		// 	// if(QuickOptionsSubState.getSetting("Song hscripts") && onlinemod.OnlinePlayMenuState.socket == null){return false;}
+		// 	trace('Checking for ${v}');
+		// 	if(interps[nameSpace] == null) {
+		// 		trace('Unable to load $v: $nameSpace doesn\'t exist!');
+		// 		return false;
+		// 	}
+		// 	if (SELoader.exists('mods/${v}') || SELoader.exists('mods/scripts/${v}/script.hscript')){
+		// 		var parser = new hscript.Parser();
+		// 		try{
+		// 			parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
 
-					var program;
-					// parser.parseModule(songScript);
-					program = parser.parseString(SELoader.loadText('mods/scripts/${v}/script.hscript'));
-					interps[nameSpace].execute(program);
-				}catch(e){
-					errorHandle('Unable to load $v for $nameSpace:${e.message}');
-					return false;
-				}
-				// parseHScript(,new HSBrTools('mods/scripts/${v}',v),'${nameSpace}-${v}');
-			}else{showTempmessage('Unable to load $v for $nameSpace: Script doesn\'t exist');}
-			return ((interps['${nameSpace}-${v}'] == null));
-		}
+		// 			var program;
+		// 			// parser.parseModule(songScript);
+		// 			program = parser.parseString(SELoader.loadText('mods/scripts/${v}/script.hscript'));
+		// 			interps[nameSpace].execute(program);
+		// 		}catch(e){
+		// 			errorHandle('Unable to load $v for $nameSpace:${e.message}');
+		// 			return false;
+		// 		}
+		// 		// parseHScript(,new HSBrTools('mods/scripts/${v}',v),'${nameSpace}-${v}');
+		// 	}else{showTempmessage('Unable to load $v for $nameSpace: Script doesn\'t exist');}
+		// 	return ((interps['${nameSpace}-${v}'] == null));
+		// }
 		public function loadSingleScript(scriptPath:String){
 			if(!parseMoreInterps) return;
 
@@ -428,7 +429,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 					var v = FlxG.save.data.scripts[i];
 					LoadingScreen.loadingText = 'Loading scripts: $v'; 
 					// I am dumb, this used to look for a / because I forgor that the name doesn't include a path :skull:
-					loadScript(v,null,'USER/' + v);
+					loadScript(v,null,'USER:' + v);
 				}
 				if(!parseMoreInterps) return;
 				if(scriptPaths.length < 1) return;
@@ -436,19 +437,15 @@ class ScriptMusicBeatState extends MusicBeatState{
 					if(!parseMoreInterps) break;
 					var v = scriptPaths[i];
 					LoadingScreen.loadingText = 'Loading scripts: $v';
-					var _v = v;
-					try{
-						var regTP:EReg = (~/\/([^\/]+)\/[^\/]*$/g);
-						regTP.match(v);
-						_v = regTP.matched(1);
-					}catch(e){}
-					loadScript(v,null,'USER/' + _v);
+					var _v = v.substring(v.lastIndexOf('/') + 1);
+					// var namespace = (v.contains('packs/') ? v.substring(v.indexOf('packs/') + 6,v.indexOf('/charts')) : "USER");
+
+					loadScript(v,null,'USER:$_v');
 				}
 			}catch(e){errorHandle('Error while trying to parse scripts: ${e.message}');}
 		}
 
-		/*Soft reloads a state, i.e reloading scripts. This will not reload hsbrtools as to prevent crashes. Use a normal reset for that
-		*/
+		/*Soft reloads a state, i.e reloading scripts. This will not reload hsbrtools as to prevent crashes. Use a normal reset for that*/
 		public function softReloadState(?showWarning:Bool = true){
 			if(!parseMoreInterps){
 				showTempmessage('You are currently unable to reload interpeters!',FlxColor.RED);
@@ -563,6 +560,14 @@ class ScriptMusicBeatState extends MusicBeatState{
 					if(cancelCurrentFunction) return false;
 				}
 				return super.switchTo(s);
+			}
+			override public function startOutro(func:() -> Void){
+				if(useNormalCallbacks){
+					callInterp('startOutro',[func]);
+					if(cancelCurrentFunction) return;
+				}
+				super.startOutro(func);
+				return;
 			}
 
 // 	/* End of base functions */

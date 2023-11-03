@@ -53,10 +53,8 @@ class FreeplayState extends MusicBeatState
 		// var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 		super.create();
 		
-		if (SELoader.exists("assets/data"))
-		{
-			for (dir in SELoader.readDirectory("assets/data"))
-			{
+		if (SELoader.exists("assets/data")){
+			for (dir in SELoader.readDirectory("assets/data")){
 				if(SELoader.exists('assets/data/${dir}/${dir}.json') && SELoader.exists('assets/songs/${dir}/Inst.ogg')){
 					try{
 
@@ -72,7 +70,7 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 		if(songs.length < 1){
-			MainMenuState.handleError("No songs found!");
+			MainMenuState.handleError("No songs found! Please use modded songs list instead!");
 		}
 		haxe.ds.ArraySort.sort(songs, function(a, b) {
 		   if(a.songName < b.songName) return -1;
@@ -254,7 +252,7 @@ class FreeplayState extends MusicBeatState
 				onlinemod.OfflinePlayState.instFile = 'assets/songs/${songs[curSelected].songName}/Inst.ogg';
 				PlayState.stateType = 0;
 				FlxG.sound.music.fadeOut(0.4);
-				LoadingState.loadAndSwitchState(new MultiPlayState());
+				LoadingScreen.loadAndSwitchState(new MultiPlayState());
 			}catch(e){MainMenuState.handleError(e,'Error while loading chart ${e.message}');
 			}
 		}

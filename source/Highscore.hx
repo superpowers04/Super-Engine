@@ -48,29 +48,21 @@ class SongScores {
 	public static var NORESULT:Array<Dynamic> = [0,"No score to display!"];
 	public function getArr(song:String):Array<Dynamic>{
 		var index = songNames.indexOf(song);
-		if(index < 0){
-			return [0,"No score to display!"];
-		}
+		if(index < 0) return [0,"No score to display!"];
 		return scores[index].copy();
 	}
 	public function get(song:String):Int{
 		var index = songNames.indexOf(song);
-		if(index < 0){
-			return 0;
-		}
-		return scores[index][0];
+		if(index < 0) return 0;
+
+		return scores[index][0] ?? 0;
 	}
 	public function set(song:String,?score:Int = 0,?arr:Array<Dynamic>){
 		var index = songNames.indexOf(song);
-		if(index < 0){
-			index = songNames.length;
-		}
+		if(index < 0) index = songNames.length;
+
 		songNames[index] = song;
-		if(arr == null){
-			scores[index] = [score];
-		}else{
-			scores[index] = arr;
-		}
+		scores[index] = arr ?? [score];
 		save();
 		trace('Funni set $song = $score');
 	}
@@ -143,7 +135,7 @@ class Highscore
 	/**
 	 * YOU SHOULD FORMAT SONG WITH formatSong() BEFORE TOSSING IN SONG VARIABLE
 	 */
-	public static function setScore(song:String, score:Int,?Arr:Array<Dynamic>,?forced:Bool = false):Bool
+	@:keep inline public static function setScore(song:String, score:Int,?Arr:Array<Dynamic>,?forced:Bool = false):Bool
 	{
 		// // Reminder that I don't need to format this song, it should come formatted!
 		if(songScores.get(song) < score || forced){
@@ -153,42 +145,34 @@ class Highscore
 		return false;
 	}
 
-	public static function formatSong(song:String, diff:Int):String
+	@:keep inline public static function formatSong(song:String, diff:Int):String
 	{
-		var daSong:String = song;
-
-		if (diff == 0)
-			daSong += '-easy';
-		else if (diff == 2)
-			daSong += '-hard';
-
-		return daSong;
+		if (diff == 0) return '$song-easy';
+		if (diff == 2) return '$song-hard';
+		return song;
 	}
 
-	public static function getScoreUnformatted(song:String):Int
-	{
+	@:keep inline public static function getScoreUnformatted(song:String):Int{
 		try{
 			return cast songScores.get(song);
 		}catch(e){return 0;}
 	}
-	public static function getScore(song:String, diff:Int):Array<Dynamic>
-	{
+	@:keep inline public static function getScore(song:String, diff:Int):Array<Dynamic>{
 		var songy = formatSong(song, diff);
 		return songScores.getArr(songy);
 	}
 
 	public static function getWeekScore(week:Dynamic, diff:Int):Int
 	{
-		if (!songScores.exists(formatSong('week-' + week, diff)))
-			setScore(formatSong('week-' + week, diff), 0);
+		if (!songScores.exists(formatSong('week-' + week, diff))) setScore(formatSong('week-' + week, diff), 0);
 
 		return songScores.get(formatSong('week-' + week, diff));
 	}
-	public static function save():Void { // This is usually not needed as scores are automatically saved
+	@:keep inline public static function save():Void { // This is usually not needed as scores are automatically saved
 		songScores.save();
 	}
 
-	public static function load():Void {
+	@:keep inline public static function load():Void {
 		// if (FileSystem.exists())
 		// {
 		songScores = new SongScores();

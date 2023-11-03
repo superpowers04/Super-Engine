@@ -242,7 +242,7 @@ class OnlineLobbyState extends MusicBeatState
 		  TitleState.supported = true;
 		  Sender.SendPacket(Packets.SUPPORTED, [], OnlinePlayMenuState.socket);
 		  Chat.SERVER_MESSAGE("This server is compatible with extra features!");
-		}else if(StringTools.startsWith(data[0],"'32d5d167'")) handleServerCommand(data[0].toLowerCase(),0); else Chat.SERVER_MESSAGE(data[0]);
+		}else if(StringTools.startsWith(data[0],"'32d5d167'")) handleServerCommand(data[0],0); else Chat.SERVER_MESSAGE(data[0]);
 
 	  case Packets.DISCONNECT:
 		TitleState.p2canplay = false;
@@ -255,10 +255,12 @@ class OnlineLobbyState extends MusicBeatState
 	try{ // All responses start with '32d5d168'
 
 	  var args:Array<String> = command.split(' ');
-	  switch (args[1]){
+	  var argsLower:Array<String> = command.toLowerCase().split(' ');
+	  if(args[1] == null) throw('Command is empty!');
+	  switch (argsLower[1]){
 		case "set":{
 
-			if (args[3] == "true" || args[3] == "on" || args[3] == "false" || args[3] == "off"){ 
+			if (argsLower[3] == "true" || argsLower[3] == "on" || argsLower[3] == "false" || argsLower[3] == "off"){ 
 				var bool = (args[3] == "true" || args[3] == "on");
 				switch(args[2]){
 					case "invertnotes":
@@ -312,7 +314,9 @@ class OnlineLobbyState extends MusicBeatState
 				sendResponse("Client has scripts disabled",false);
 				return;
 			}
-			if(args[2].startsWith("temp-")){
+			if(args[2] == null) throw('No name for script specified!');
+			if(args[3] == null) throw('Script contents are empty!');
+			if(argsLower[2].startsWith("temp-")){
 				var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
 				args.splice(0,3);
 				var script = args.join(" ");
@@ -396,7 +400,7 @@ class OnlineLobbyState extends MusicBeatState
 			sendResponse("Client has script!");
 		}
 		case "get":{ // Anything sent from this has to be filtered by the server, All responses start with '32d5d168'
-			switch(args[2]){
+			switch(argsLower[2]){
 				case "info":{
 					var clientInfo = {
 						version: MainMenuState.ver,

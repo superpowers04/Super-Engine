@@ -256,10 +256,8 @@ class CustomizeGameplay extends Option
 		display = "Customize Gameplay";
 	}
 
-	public override function press():Bool
-	{
-		trace("switch");
-		LoadingState.loadAndSwitchState(new GameplayCustomizeState());
+	public override function press():Bool{
+		LoadingScreen.loadAndSwitchState(new GameplayCustomizeState());
 		return false;
 	}
 }

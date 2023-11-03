@@ -939,8 +939,7 @@ class CharAnimController extends FlxAnimationController{
 	// Added for Animation debug
 	public function idleEnd(?ignoreDebug:Bool = false)
 	{
-		if (!debugMode || ignoreDebug)
-		{
+		if (!debugMode || ignoreDebug){
 			if (dance_idle){
 				playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
 			}
@@ -953,8 +952,7 @@ class CharAnimController extends FlxAnimationController{
 		
 		var daOffset = animOffsets.get(AnimName); // Get offsets
 		var offsets:Array<Float> = [offsetX,offsetY];
-		if (daOffset != null) // Set offsets if animation has any
-		{
+		if (daOffset != null){ // Set offsets if animation has any
 			offsets[0]+=daOffset[0];
 			offsets[1]+=daOffset[1];
 		}
@@ -980,8 +978,7 @@ class CharAnimController extends FlxAnimationController{
 	} 
 	public var currentAnimationPriority:Int = -100;
 	public var forceNextAnim:Bool = false;
-	public dynamic function playAnim(AnimName:String = "idle", ?Force:Bool = false, ?Reversed:Bool = false, ?Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool
-	{
+	public dynamic function playAnim(AnimName:String = "idle", ?Force:Bool = false, ?Reversed:Bool = false, ?Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool{
 		var lastAnim = "";
 		if(AnimName.contains('/')){
 			return playAnimAvailable(AnimName.split('/'),Force,Reversed,Frame);
@@ -1045,8 +1042,7 @@ class CharAnimController extends FlxAnimationController{
 			setOffsets(AnimName,offsetX,offsetY);
 		} // Skip if already playing, no need to calculate offsets and such
 
-		if (dance_idle && lastAnim != AnimName )
-		{
+		if (dance_idle && lastAnim != AnimName ){
 			switch(AnimName){
 				case 'singLEFT', 'singLEFT-alt', 'danceLeft','danceLeft-alt':
 					danced = true;

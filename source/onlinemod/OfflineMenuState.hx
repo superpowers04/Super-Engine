@@ -157,6 +157,6 @@ class OfflineMenuState extends SearchMenuState
 	}
 	PlayState.actualSongName = songName;
 
-	LoadingState.loadAndSwitchState(new OfflinePlayState());
+	LoadingScreen.loadAndSwitchState(new OfflinePlayState());
   }
 }

@@ -141,16 +141,15 @@ class KeyBindMenu extends FlxSubState
 		switch(state){
 
 			case "select":
-				if (FlxG.keys.justPressed.UP){
+				if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.UP){
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(-1);
-				}else if (FlxG.keys.justPressed.DOWN){
+				}else if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.DOWN){
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(1);
 				}
 				#if !mobile
-				else if (FlxG.keys.justPressed.LEFT)
-				{
+				else if (FlxG.keys.justPressed.A || FlxG.keys.justPressed.LEFT){
 					if(keyText[keyMode - 1] == null){
 						FlxG.sound.play(Paths.sound('cancelMenu'));
 					}else{
@@ -158,7 +157,7 @@ class KeyBindMenu extends FlxSubState
 						FlxG.sound.play(Paths.sound('scrollMenu'));
 					}
 					
-				}else if (FlxG.keys.justPressed.RIGHT){
+				}else if (FlxG.keys.justPressed.D || FlxG.keys.justPressed.RIGHT){
 					if(keyText[keyMode + 1] == null){
 						FlxG.sound.play(Paths.sound('cancelMenu'));
 					}else{
@@ -206,8 +205,7 @@ class KeyBindMenu extends FlxSubState
 
 		}
 
-		if(FlxG.keys.justPressed.ANY)
-			textUpdate();
+		if(FlxG.keys.justPressed.ANY) textUpdate();
 
 		super.update(elapsed);
 		
