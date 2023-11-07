@@ -67,6 +67,7 @@ class PauseSubState extends MusicBeatSubstate
 				menuItems.insert(3,'Back to chart editor');
 				menuItems.insert(4,'Exit Charting Mode');
 			}else if (PlayState.songDifficulties.length > 0) menuItems.insert(2,'Swap Charts');
+			else if (multi.MultiMenuState.importedSong) menuItems.insert(2,'Import Chart');
 		#end
 
 		openfl.system.System.gc();
@@ -133,8 +134,7 @@ class PauseSubState extends MusicBeatSubstate
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 
-		for (i in 0...menuItems.length)
-		{
+		for (i in 0...menuItems.length){
 			var _text = menuItems[i];
 			if(_text == "Jump to") _text = getJumpTo();
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, _text, true, false,true);
@@ -356,6 +356,38 @@ class PauseSubState extends MusicBeatSubstate
 				MusicBeatState.returningFromClass = true;
 				onlinemod.OfflinePlayState.chartFile = PlayState.songDifficulties[currentChart];
 				FlxG.resetState();
+			case "Import Chart":
+				SELoader.createDirectory('mods/packs/imported');
+				SELoader.createDirectory('mods/packs/imported/charts');
+				var path = 'mods/packs/imported/charts/' + PlayState.SONG.song;
+				if(SELoader.exists(path)){
+					path = 'mods/packs/imported/charts/' + PlayState.actualSongName.replace('.json','');
+				}
+				if(SELoader.exists(path)){
+					MusicBeatState.instance.showTempmessage('Unable to import: "${path}" exists!',0xFFFF0000);
+					return;
+				}
+				try{
+					SELoader.createDirectory(path);
+					trace('Importing ${PlayState.actualSongName} to $path');
+					SELoader.createDirectory(path);
+					SELoader.importFile(onlinemod.OfflinePlayState.chartFile,'${path}/${PlayState.actualSongName}');
+					if(SELoader.exists('${path}/Inst.ogg')) SELoader.importFile(onlinemod.OfflinePlayState.instFile,'${path}/${PlayState.actualSongName}-Inst.ogg');
+					else SELoader.importFile(onlinemod.OfflinePlayState.instFile,'${path}/Inst.ogg');
+
+					if(onlinemod.OfflinePlayState.voicesFile != "") {
+						if(SELoader.exists('${path}/Voices.ogg')) SELoader.importFile(onlinemod.OfflinePlayState.voicesFile,'${path}/${PlayState.actualSongName}-Voices.ogg');
+						else SELoader.importFile(onlinemod.OfflinePlayState.voicesFile,'${path}/Voices.ogg');
+					}
+				}catch(e){
+					MusicBeatState.instance.showTempmessage('Error while importing, chart usability is unknown!:\n ${e.message}!',0xFFFF0000);
+					return;
+				}
+				@:privateAccess{
+					multi.MultiMenuState.lastSearch = "imported";
+					multi.MultiMenuState.lastSel = 0;
+				}
+				quit();
 			default:
 				callInterp("pauseSelect",[sel]);
 		}

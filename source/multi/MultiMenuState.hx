@@ -63,6 +63,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	var songProgress:FlxBar = new FlxBar();
 	var songProgressParent:Alphabet;
 	var songProgressText:FlxText = new FlxText(0,0,"00:00/00:00. Playing voices",12);
+	public static var importedSong = false;
 	override function draw(){
 		if(shouldDraw){
 			super.draw();
@@ -93,6 +94,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function create(){try{
 
 		retAfter = false;
+		importedSong = false;
 		SearchMenuState.doReset = true;
 		if(scriptSubDirectory == "") scriptSubDirectory = "/multilist/";
 		dataDir = "mods/charts/";
@@ -298,7 +300,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					LoadingScreen.loadingText = 'Scanning mods/weeks/$name';
 					for (directory in dirs){
 						if (SELoader.isDirectory('${dataDir}${directory}') && (search != "" && !catMatch && !query.match(directory.toLowerCase()))) continue; // Handles searching
-						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
+						if (SELoader.exists('${dataDir}${directory}/Inst.ogg')){
 							var song = addSong('${dataDir}${directory}',directory,catID);
 							if(song == null) continue;
 							song.namespace = name;
@@ -332,7 +334,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					LoadingScreen.loadingText = 'Scanning mods/packs/$name/charts/';
 					for (directory in dirs){
 						if (SELoader.isDirectory('${dataDir}${directory}') && (search != "" && !catMatch && !query.match(directory.toLowerCase()))) continue; // Handles searching
-						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') ){
+						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') || SELoader.exists('${dataDir}${directory}/ignoreMissingInst') ){
 							var song = addSong('${dataDir}${directory}',directory,catID);
 							if(song == null) continue;
 							song.namespace = name;
@@ -435,7 +437,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				selSong = selSong.replace("\\","/"); // Who decided this was a good idea?
 				#end
 				LoadingScreen.loadingText = "Setting up variables";
-				onlinemod.OfflinePlayState.chartFile = '${selSong}/${songJSON}';
+				var chartFile = onlinemod.OfflinePlayState.chartFile = '${selSong}/${songJSON}';
 				PlayState.isStoryMode = false;
 				// Set difficulty
 				PlayState.songDiff = songJSON;
@@ -445,21 +447,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.hsBrToolsPath = selSong;
 				PlayState.scripts = [];
 
-
-				if(instFile == "" ){
-					if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Inst.ogg")){
-						onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.chartFile + "-Inst.ogg";
-					}else{
-						onlinemod.OfflinePlayState.instFile = '${selSong}/Inst.ogg';
-					}
-				} else onlinemod.OfflinePlayState.instFile = instFile;
-				if(voicesFile == ""){
-					if(FileSystem.exists(onlinemod.OfflinePlayState.chartFile + "-Voices.ogg")){
-						onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
-					}else if(FileSystem.exists('${selSong}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${selSong}/Voices.ogg';}
-				}else{
-					onlinemod.OfflinePlayState.voicesFile = voicesFile;
-				}
+				onlinemod.OfflinePlayState.instFile = (instFile != "" ? instFile 
+					:(FileSystem.exists('${chartFile}-Inst.ogg') ? '${chartFile}-Inst.ogg' 
+					:'${selSong}/Inst.ogg'));
+				onlinemod.OfflinePlayState.voicesFile = (voicesFile != "" ? voicesFile 
+					:(FileSystem.exists('${chartFile}-Voices.ogg') ? '${chartFile}-Voices.ogg' 
+					:(FileSystem.exists('${selSong}/Voices.ogg') ? '${selSong}/Voices.ogg'
+					: '')));
 				loadScriptsFromSongPath(selSong);
 				// if (FileSystem.exists('${selSong}/script.hscript')) {
 				// 	trace("Song has script!");
@@ -541,7 +535,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				diffList.push(songs[curSelected] + "/" + v);
 			}
 		}
-		gotoSong(songInfo.path,songInfo.charts[selMode],songInfo.name);
+		gotoSong(SELoader.getPath(songInfo.path),songInfo.charts[selMode],songInfo.name);
 	}
 
 	override function select(sel:Int = 0){
@@ -912,6 +906,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				MusicBeatState.instance.showTempmessage('Unable to find Inst.ogg for "$json"',FlxColor.RED);
 				return;
 			}
+			importedSong = true;
 			gotoSong(dir,
 					json,
 					name,

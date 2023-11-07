@@ -1006,12 +1006,8 @@ class TitleState extends MusicBeatState
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || skipBoth;
 
 		#if mobile
-		for (touch in FlxG.touches.list)
-		{
-			if (touch.justPressed)
-			{
-				pressedEnter = true;
-			}
+		for (touch in FlxG.touches.list) {
+			if (touch.justPressed) pressedEnter = true;
 		}
 		#end
 
@@ -1025,8 +1021,7 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 
 			#if switch
-			if (gamepad.justPressed.B)
-				pressedEnter = true;
+			if (gamepad.justPressed.B) pressedEnter = true;
 			#end
 		}
 		#end
@@ -1042,8 +1037,7 @@ class TitleState extends MusicBeatState
 			MainMenu();
 		}
 		#end
-		if (pressedEnter && !transitioning && skippedIntro)
-		{
+		if (pressedEnter && !transitioning && skippedIntro){
 
 
 
@@ -1121,7 +1115,8 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
-		if (pressedEnter && !skippedIntro && initialized && (!forcedText || FlxG.save.data.seenForcedText)) skipIntro();
+		if (pressedEnter && !skippedIntro && initialized && (!forcedText || FlxG.save.data.seenForcedText))
+			skipIntro();
 
 		super.update(elapsed);
 	}
@@ -1133,9 +1128,7 @@ class TitleState extends MusicBeatState
 
 	function createCoolText(textArray:Array<String>,yOffset:Int = 200)
 	{
-		for (i in 0...textArray.length)
-		{
-			addMoreText(textArray[i],yOffset);
+		for (i in 0...textArray.length) addMoreText(textArray[i],yOffset);
 			// var money:Alphabet = new Alphabet(0, 0, textArray[i], true, false);
 			// money.screenCenter(X);
 			// money.y += (i * 70) + 100;
@@ -1143,7 +1136,7 @@ class TitleState extends MusicBeatState
 			// FlxTween.tween(money.scale,{x:1,y:1},0.2,{ease:FlxEase.expoOut});
 			// credGroup.add(money);
 			// textGroup.add(money);
-		}
+	
 	}
 
 	function addMoreText(text:String,yOffset:Int = 200):Alphabet

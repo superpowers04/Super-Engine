@@ -32,7 +32,7 @@ class SELoader {
  		
  		return PATH = _path.replace('//','/'); // Fixes paths having //'s in them 
  	}
-
+ 	public static var rawMode = false;
 	public static var id = "SELoader";
 
 	inline public static function handleError(e:String){
@@ -42,23 +42,22 @@ class SELoader {
 	}
 	// Basically clenses paths and returns the base path with the requested one. Used heavily for the Android port
 	@:keep inline public static function getPath(path:String):String{
-			// Remove library from path
-			if(path.indexOf(":") > 3) path = path.substring(path.indexOf(":") + 1);
-			// Absolute paths should just return themselves without anything changed
-			if(
-				#if windows
-					path.substring(1,2) == ':' || 
-				#end
-					path.substring(0,1) == "/"){
+		// Remove library from path
+		if(path.indexOf(":") > 3) path = path.substring(path.indexOf(":") + 1);
+		// Absolute paths should just return themselves without anything changed
+		if(
+			#if windows
+				path.substring(1,2) == ':' || 
+			#end
+				path.substring(0,1) == "/" || rawMode){
+			rawMode = false;
+			return path.replace('//','/');
+		}
+		if(path.startsWith("assets/") && FileSystem.exists('${PATH}mods${path}')) path = 'mods/' + path; // Return modded assets before vanilla assets
 
-				return path.replace('//','/');
-			}else{
-
-				if(path.startsWith("assets/") && FileSystem.exists('${PATH}mods${path}')) path = 'mods/' + path;
-
-				return (PATH + path).replace('//','/'); // Fixes paths having //'s in them
-			}
+		return (PATH + path).replace('//','/'); // Fixes paths having //'s in them
 	}
+	
 
 	public static function loadText(textPath:String,?useCache:Bool = false):String{
 		if(cache.textArray[textPath] != null || useCache){

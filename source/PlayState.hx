@@ -90,7 +90,7 @@ typedef OutNote = {
 	var rating:String;
 	var isSustain:Bool;
 }
-
+class FakeException extends Exception{}
 
 class PlayState extends ScriptMusicBeatState
 {
@@ -105,6 +105,7 @@ class PlayState extends ScriptMusicBeatState
 		public static var playlistMode:Bool = false;
 		public static var songDiff:String = "";
 		public static var invertedChart:Bool = false;
+		public var chartIsInverted:Bool = false;
 		var songLength:Float = 0;
 		public var curSection:Int = 0;
 		public var curSong:String = "";
@@ -434,6 +435,10 @@ class PlayState extends ScriptMusicBeatState
 
 			}
 
+	public function throwError(?error:String = "",?forced:Bool = false) {
+		handleError(error,forced);
+		throw(new FakeException(''));
+	}
 	public override function errorHandle(?error:String = "",?forced:Bool = false) handleError(error,forced);
 	public function handleError(?error:String = "",?forced:Bool = false){
 		generatedMusic = persistentUpdate = false;
@@ -443,7 +448,7 @@ class PlayState extends ScriptMusicBeatState
 
 			if(error == "") error = 'No error passed!';
 			// else if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
-			if(currentInterp.isActive) error = '\nInterp info: ${currentInterp}';
+			if(currentInterp.isActive) error += '\nInterp info: ${currentInterp}';
 			trace('Error!\n ${error}');
 			if(currentInterp.isActive) trace('Current Interpeter: ${currentInterp}');
 			resetInterps();
@@ -650,9 +655,10 @@ class PlayState extends ScriptMusicBeatState
 		#if !debug
 		try{
 		#end
+		SELoader.gc();
 		LoadingScreen.loadingText = 'Loading playstate variables';
 		parseMoreInterps = (QuickOptionsSubState.getSetting("Song hscripts") || isStoryMode);
-		if (instance != null) instance.destroy();
+		instance?.destroy();
 		ScriptMusicBeatState.instance=cast(instance=this);
 		downscroll = FlxG.save.data.downscroll;
 		middlescroll = FlxG.save.data.middleScroll;
@@ -1113,7 +1119,6 @@ class PlayState extends ScriptMusicBeatState
 
 		LoadingScreen.loadingText = "Finishing up";
 		super.create();
-		SELoader.gc();
 		LoadingScreen.loadingText = "Starting countdown/dialog";
 
 		if((dialogue != null && dialogue[0] != null && isStoryMode)){
@@ -1128,7 +1133,10 @@ class PlayState extends ScriptMusicBeatState
 		}
 
 	#if !debug 
-	}catch(e){MainMenuState.handleError(e,'Caught "create" crash: ${e.message}\n ${e.stack}');}
+	}catch(e){
+		if(e is FakeException) return;
+		MainMenuState.handleError(e,'Caught "create" crash: ${e.message}\n ${e.stack}');
+	}
 	#end
 	}
 	function loadDialog(){		
@@ -1477,7 +1485,14 @@ class PlayState extends ScriptMusicBeatState
 					FlxTween.tween(PlayState.jumpToText,{alpha:0},0.2,{onComplete:function(_){jumpToTimer.cancelChain();PlayState.jumpToText.destroy();}});
 					return;
 				}
-				if(!(controls.RIGHT_P || controls.LEFT_P || controls.UP_P || controls.DOWN_P)) return;
+				var skip = false;
+				for(i in strumLineNotes.members ) {
+					if(i.animation.name != "static"){
+						skip = true;
+						break;
+					}
+				}
+				if(!skip) return;
 				if(isJumpTo){
 					var arrowList:Array<Note> = [];
 					for (n in unspawnNotes) {
@@ -1485,8 +1500,6 @@ class PlayState extends ScriptMusicBeatState
 							break;
 						}
 						arrowList.push(n);
-						
-						
 					}
 					for (n in arrowList) {
 						unspawnNotes.remove(n);
@@ -1570,6 +1583,9 @@ class PlayState extends ScriptMusicBeatState
 		add(notes);
 		Note.lastNoteID = -1;
 
+		chartIsInverted = (PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart")));
+		var opponentNotes = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows") || ChartingState.charting);
+		var showOpponentNotes = FlxG.save.data.oppStrumLine;
 		var noteData:Array<SwagSection> = songData.notes;
 
 		// Per song offset check
@@ -1595,8 +1611,9 @@ class PlayState extends ScriptMusicBeatState
 
 
 				var gottaHitNote:Bool = (if (daNoteData % halfCount > songData.keyCount - 1) !section.mustHitSection else section.mustHitSection);
-
+				if(chartIsInverted) gottaHitNote = !gottaHitNote;
 				var oldNote:Note = (unspawnNotes.length > 0 ? unspawnNotes[Std.int(unspawnNotes.length - 1)] : null);
+				if(!opponentNotes && !gottaHitNote) continue;
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,songNotes[3],songNotes,gottaHitNote);
 				if(swagNote.killNote){swagNote.destroy();continue;}
 				swagNote.sustainLength = songNotes[2];
@@ -1608,7 +1625,7 @@ class PlayState extends ScriptMusicBeatState
 					// swagNote.destroy();
 					continue;
 				}
-				unspawnNotes.push(swagNote);
+				(showOpponentNotes || swagNote.mustPress ? unspawnNotes : eventNotes).push(swagNote);
 
 				var susLength:Float = swagNote.sustainLength;
 
@@ -1669,7 +1686,7 @@ class PlayState extends ScriptMusicBeatState
 		if (vocals == null ){
 			if (SONG.needsVoices){
 				SONG.needsVoices = false;
-				showTempmessage("Song needs voices but none found! Automatically disabled");
+				trace("Song needs voices but none found! Automatically disabled");
 			}
 			vocals = new FlxSound();
 		}
@@ -1691,8 +1708,9 @@ class PlayState extends ScriptMusicBeatState
 		FlxG.cameras.remove(camera,false);
 		FlxG.cameras.add(camera,false);
 	}
-	function generateStaticArrows(player:Int):Void
-	{
+	function generateStaticArrows(player:Int):Void{
+
+		cpuStrums.visible = FlxG.save.data.oppStrumLine;
 		if(useNoteCameras){
 			// var camList = FlxG.cameras.list;
 			if(player == 1){
@@ -1715,7 +1733,7 @@ class PlayState extends ScriptMusicBeatState
 				if(middlescroll) opponentNoteCamera.setScale(0.5,0.5);
 				
 				// readdCam(camHUD,false);
-				FlxG.cameras.add(opponentNoteCamera,false);
+				if(FlxG.save.data.oppStrumLine) FlxG.cameras.add(opponentNoteCamera,false);
 				readdCam(camHUD);
 				readdCam(camTOP);
 				
@@ -1769,21 +1787,14 @@ class PlayState extends ScriptMusicBeatState
 					babyArrow.updateHitbox();
 				}
 				// babyArrow.x += 2 + (Note.swagWidth * i + 1);
-				babyArrow.cameras = [switch(player){
-					case 1:
-						playerNoteCamera;
-					default:
-						opponentNoteCamera;
-				}];
+				babyArrow.cameras = [player == 1 ? playerNoteCamera : opponentNoteCamera];
 			}else{
 
 				if(middlescroll){
-					switch(player){
-						case 1:{
-							babyArrow.screenCenter(X);
-							babyArrow.x += (strumWidth * i) + i + (strumWidth * 0.5);
-						}
-						case 0:
+					if(player == 1){
+						babyArrow.screenCenter(X);
+						babyArrow.x += (strumWidth * i) + i + (strumWidth * 0.5);
+					}else{
 							// babyArrow.screenCenter(X);
 							babyArrow.x = (FlxG.width * (if(babyArrow.ID > halfKeyCount)0.75 else 0.25)) + (strumWidth * i + i) - (strumWidth * 2 + 2);
 					}
@@ -1792,7 +1803,7 @@ class PlayState extends ScriptMusicBeatState
 					babyArrow.x = (FlxG.width * (if(player == 1) 0.625 else 0.15)) + (strumWidth * i) + i - strumWidth;
 				}
 			}
-			babyArrow.visible = (player == 1 || FlxG.save.data.oppStrumLine);
+			// babyArrow.visible = (player == 1);
 
 			
 
@@ -1809,7 +1820,6 @@ class PlayState extends ScriptMusicBeatState
 			callInterp("strumNoteAdd",[babyArrow,player == 1]);
 
 		}
-
 		if(useNoteCameras){
 			if(player == 1){
 				if(underlay != null && FlxG.save.data.undlaSize == 0){
@@ -1838,6 +1848,7 @@ class PlayState extends ScriptMusicBeatState
 				}
 				playerNoteCamera.x = Std.int(FlxG.width * (if(middlescroll) 0 else 0.25));
 			}else{
+				opponentNoteCamera.visible = FlxG.save.data.oppStrumLine;
 				opponentNoteCamera.x = Std.int(FlxG.width * -0.25);
 				if(middlescroll) {
 					opponentNoteCamera.x -= 100;
@@ -1859,7 +1870,7 @@ class PlayState extends ScriptMusicBeatState
 		}else{
 			cpuStrums.forEach(function(spr:FlxSprite){spr.centerOffsets();}); //CPU arrows start out slightly off-center
 		}
-		if(FlxG.save.data.useTouch && !FlxG.save.data.useStrumsAsButtons && player == 0){
+		if(FlxG.save.data.useTouch && !FlxG.save.data.useStrumsAsButtons && player == 1){
 			var _width = Std.int((FlxG.width / 4) - 1);
 			var _height = Std.int(FlxG.height + 100);
 			noteButtons = [
@@ -2092,8 +2103,8 @@ class PlayState extends ScriptMusicBeatState
 				+'\nChartType: ${SONG.chartType}';
 		}
 		if(controlCamera){
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, FlxMath.bound(1 - (elapsed * Conductor.stepCrochet), 0, 1));
-			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultCamHUDZoom, FlxMath.bound(1 - (elapsed * Conductor.stepCrochet), 0, 1) );
+			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.25 * elapsed);
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultCamHUDZoom, 0.25 * elapsed );
 		}
 		
 
@@ -2148,7 +2159,7 @@ class PlayState extends ScriptMusicBeatState
 				note = eventNotes.shift();
 				try{
 
-					note.hit(null,note);
+					note.hit((note.mustPress ? 0 : 1),note);
 					note.destroy();
 				}catch(e){
 					if(note != null){
@@ -3347,7 +3358,8 @@ class PlayState extends ScriptMusicBeatState
 			PlayState.canUseAlts = sect.altAnim;
 			if(controlCamera){
 				var locked = (sect.centerCamera || !FlxG.save.data.camMovement || camLocked || (notes.members[0] == null && unspawnNotes[0] == null || (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition > 4000)) );
-				followChar((sect.mustHitSection ? 0 : 1),locked);
+				
+				(chartIsInverted ? followChar((sect.mustHitSection ? 1 : 0),locked) : followChar((sect.mustHitSection ? 0 : 1),locked));
 			}
 		}
 

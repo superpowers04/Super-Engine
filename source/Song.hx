@@ -161,7 +161,6 @@ class Song
 		}
 		var hurtArrows = (QuickOptionsSubState.getSetting("Custom Arrows") || onlinemod.OnlinePlayMenuState.socket != null || charting);
 		var useHurtArrows = FlxG.save.data.useHurtArrows;
-		var opponentArrows = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows") || charting);
 		var maxKeys = (swagShit.keyCount * 2) - 1;
 		for (sid => section in swagShit.notes) {
 			if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
@@ -178,10 +177,10 @@ class Song
 				var note:Array<Dynamic> = section.sectionNotes[nid];
 				var modified = false;
 				// Removes opponent arrows 
-				if (!opponentArrows && (section.mustHitSection && note[1] >= swagShit.keyCount || !section.mustHitSection && note[1] < swagShit.keyCount)){
-					sN.push(nid);
-					continue;
-				}
+				// if (!opponentArrows && (section.mustHitSection && note[1] >= swagShit.keyCount || !section.mustHitSection && note[1] < swagShit.keyCount)){
+				// 	sN.push(nid);
+				// 	continue;
+				// }
 				
 				if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
 					if(useHurtArrows && Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > maxKeys )) {
@@ -220,7 +219,7 @@ class Song
 				swagShit.rawJSON = rawJson;
 			}
 			swagShit.validScore = true;
-			if ((PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) && !charting) swagShit = invertChart(swagShit);
+			// if ((PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart"))) && !charting) swagShit = invertChart(swagShit);
 			if(Math.isNaN(swagShit.offset)) swagShit.offset = 0;
 
 			swagShit = modifyChart(swagShit,charting);

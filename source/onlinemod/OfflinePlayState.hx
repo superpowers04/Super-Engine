@@ -72,7 +72,10 @@ class OfflinePlayState extends PlayState
 						}
 					}
 				}
-				if(voicesFile != ""){loadedVoices = SELoader.loadFlxSound(voicesFile);}
+				if(voicesFile != ""){
+					SELoader.rawMode = true;
+					loadedVoices = SELoader.loadFlxSound(voicesFile);
+				}
 				if(voicesFile == "" && PlayState.SONG != null){
 					loadedVoices =  new FlxSound();
 					PlayState.SONG.needsVoices = false;
@@ -97,6 +100,7 @@ class OfflinePlayState extends PlayState
 					if (instFile == ""){MainMenuState.handleError('${PlayState.actualSongName} is missing a inst file!');}
 
 				}
+				SELoader.rawMode = true;
 				loadedInst = SELoader.loadSound(instFile);
 			}
 		#if(target.threaded)

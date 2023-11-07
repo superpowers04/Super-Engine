@@ -65,6 +65,7 @@ class ImportModFromFolder extends MusicBeatState
 	var selectedLength = false;
 	var chartPrefix:String = "";
 	var folderList:Array<String> = []; 
+	var isSuperEngine:Bool = false;
 
 	public function new (folder:String,name:String,?importExisting:Bool = false)
 	{
@@ -91,7 +92,6 @@ class ImportModFromFolder extends MusicBeatState
 
 		super.create();
 		folder = FileSystem.absolutePath(folder);
-		var assets = ('${folder}assets/').replace('//','/'); // For easy access
 			// done = selectedLength = true;
 			// changedText = '${folder} doesn\'t have a assets folder!';
 			// loadingText.color = FlxColor.RED;
@@ -105,6 +105,8 @@ class ImportModFromFolder extends MusicBeatState
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			return;
 		} 
+		
+		var assets = ('${folder}assets/').replace('//','/'); // For easy access
 		// This is a mess
 
 		if(FileSystem.exists(assets)) { 

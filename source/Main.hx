@@ -155,6 +155,7 @@ class Main extends Sprite
 	#if(target.threaded)
 	override function __enterFrame(_){
 		try{
+			if(FlxG.keys.justPressed.F1) throw('Manual error');
 			if(game.blockDraw || game.blockUpdate){
 				renderLock.lock();
 				super.__enterFrame(_);
