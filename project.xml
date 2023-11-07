@@ -48,6 +48,7 @@
 
 
 	<classpath name="source" />
+	<classpath name="othersources" />
 
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" embed='false' unless="web"/>

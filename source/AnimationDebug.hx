@@ -420,7 +420,7 @@ class AnimationDebug extends MusicBeatState
 			charAnims = ["**Unbind"];
 			if (dad.charXml != null){
 				if(dad.charXml.trim().substring(0,1) == "{"){ // Probably a sprite atlas
-					var obj:flixel.graphics.frames.FlxAtlasFrames.TexturePackerObject = Json.parse(dad.charXml);
+					var obj:flixel.graphics.atlas.TexturePackerAtlas = Json.parse(dad.charXml);
 					inline function addAnim(name:String){
 						if(name.lastIndexOf('-') != -1 ) name = name.substring(0,name.lastIndexOf('-') - 1);
 						else if(name.lastIndexOf('0') != -1)name = name.substring(0,name.lastIndexOf('0') - 1);
@@ -430,7 +430,7 @@ class AnimationDebug extends MusicBeatState
 					if ((obj.frames is Array)){
 						for (frame in Lambda.array(obj.frames))
 						{
-							addAnim(frame.frameName);
+							addAnim(frame.filename);
 						}
 					}else{
 						for (frameName in Reflect.fields(obj.frames)){

@@ -1,4 +1,4 @@
-23.11.06.1947;
+23.11.07.0004;
 * ***Possibly breaking change:*** Switch from hscript-ex to hscript-improved
 * UI Keys now have alts
 * Rewrite internals of the modded songs list to be more effecient
