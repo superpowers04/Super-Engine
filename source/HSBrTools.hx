@@ -33,7 +33,7 @@ class HSBrTools {
 	public var bitmapArray:Map<String,BitmapData> = [];
 	public var xmlArray:Map<String,String> = [];
 	public var textArray:Map<String,String> = [];
-	public var soundArray:Map<String,Sound> = [];
+	public var soundArray:Map<String,FlxSound> = [];
 	// public var dumpGraphics:Bool = false; // If true, All FlxGraphics will be dumped upon creation, trades off bitmap editability for less memory usage
  
 	
@@ -174,14 +174,16 @@ class HSBrTools {
 
 
 
-	public function loadSound(soundPath:String):Sound{
-		if(soundArray[soundPath] == null) soundArray[soundPath] = SELoader.loadSound('${path}${soundPath}');
+	public function loadSound(soundPath:String):FlxSound{
+		if(soundArray[soundPath] == null) soundArray[soundPath] = SELoader.loadFlxSound('${path}${soundPath}');
 		return soundArray[soundPath];
 	}
+	public function loadFlxSound(soundPath:String) return loadSound(soundPath);
 
-	public function playSound(soundPath:String,?volume:Float = 0.662121):FlxSound{
-		if(volume == 0.662121) volume = FlxG.save.data.otherVol;
-		return FlxG.sound.play(loadSound(soundPath),volume);
+	public function playSound(soundPath:String,?volume:Float = 2):FlxSound{
+		var sound = loadFlxSound(soundPath);
+		sound.volume = (volume == 2 ? FlxG.save.data.otherVol : volume);
+		return sound.play();
 	}
 
 	public function unloadSound(soundPath:String){
@@ -207,7 +209,7 @@ class HSBrTools {
 				trace('${id} : CacheSound: "${path}${soundPath}" doesn\'t exist!');
 				return;
 			}
-			soundArray[soundPath] = SELoader.loadSound('${path}${soundPath}');
+			soundArray[soundPath] = SELoader.loadFlxSound('${path}${soundPath}');
 		}
 	}
 	public function cacheGraphic(pngPath:String,?dumpGraphic:Bool = false){ // DOES NOT CHECK IF FILE IS VALID!

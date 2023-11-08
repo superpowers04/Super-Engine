@@ -17,11 +17,10 @@ class LoadingScreen extends Sprite{
 
 	public static var loadingText(default,set):String = "";
 	public static function set_loadingText(val:String):String{
-		loadingText = val;
 		// Main.game.blockUpdate = Main.game.blockDraw = true;
 		// lime.app.Application.current.draw();
 		// Main.game.blockUpdate = Main.game.blockDraw = false;
-		return loadingText;
+		return loadingText = val;
 	}
 	// var _loadingText:String = "";
 	var funni = false;

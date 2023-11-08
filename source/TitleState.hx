@@ -831,7 +831,7 @@ class TitleState extends MusicBeatState
 			SELoader.createDirectory('mods/imported/charts');
 			SELoader.saveContent('mods/imported/charts/Individual_charts_will_be_imported_here',"");
 			SELoader.createDirectory('mods/imported/scripts');
-			SELoader.saveContent('mods/imported/scripts/Place_Scripts_Here',"")
+			SELoader.saveContent('mods/imported/scripts/Place_Scripts_Here',"");
 
 			SELoader.saveContent('mods/imported/readme.txt','This pack is used for imported songs and characters. The game will check for this file to make sure the imported pack exists.\nYou can empty this file if you wish but deleting it will regenerate the directory structure of this folder.\nThis pack can be used as an example of how to structure your packs if you wish.');
 		}
@@ -1345,10 +1345,7 @@ class TitleState extends MusicBeatState
 
 		_sound = FlxG.sound.load(Assets.getSound("flixel/sounds/flixel." + flixel.system.FlxAssets.defaultSoundExtension,false),FlxG.save.data.instVol - 0.2); // Put the volume down by 0.2 for safety of eardrums
 		_sound.play();
-		for (time in _times)
-		{
-			new FlxTimer().start(time, _timerCallback);
-		}
+		for (time in _times) new FlxTimer().start(time, _timerCallback);
 	}
 	function destHaxe(){
 		flixel.util.FlxTimer.globalManager.clear();
@@ -1379,8 +1376,7 @@ class TitleState extends MusicBeatState
 			_sprite.scaleX = FlxG.game.scaleX;
 			_sprite.scaleY = FlxG.game.scaleY;
 		}
-		if (_curPart == 6)
-		{
+		if (_curPart == 6){
 			// Make the logo a tad bit longer, so our users fully appreciate our hard work :D
 			FlxTween.tween(_sprite.filters[0],{blurX:0,blurY:0,strength:1},1.5,{ease:FlxEase.quadOut});
 			FlxTween.tween(_sprite, {alpha: 0}, 3.0, {ease: FlxEase.quadOut, onComplete: __onComplete});

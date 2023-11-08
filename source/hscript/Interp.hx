@@ -217,6 +217,15 @@ class Interp {
 
 						// }
 					// }
+					if(scriptObject != null){
+						if(__instanceFields.contains(id)){
+							Reflect.setProperty(scriptObject, id, v);
+							return v;
+						}else if (__instanceFields.contains('set_$id')) { // setter
+							Reflect.getProperty(scriptObject, 'set_$id')(v);
+							return v;
+						} 
+					}
 					setVar(id, v);
 					
 				} else {
@@ -256,17 +265,17 @@ class Interp {
 			case EIdent(id):
 				var l = locals.get(id);
 				v = fop(expr(e1), expr(e2));
-				if (l == null) {
-					if (__instanceFields.contains(id)) {
-						Reflect.setProperty(scriptObject, id, v);
-					} else if (__instanceFields.contains('set_$id')) { // setter
-						Reflect.getProperty(scriptObject, 'set_$id')(v);
-					} else {
-						setVar(id, v);
-					}
-				}
-				else
+				if (l != null) {
 					l.r = v;
+					return v;
+				}
+				if (__instanceFields.contains(id)) {
+					Reflect.setProperty(scriptObject, id, v);
+				} else if (__instanceFields.contains('set_$id')) { // setter
+					Reflect.getProperty(scriptObject, 'set_$id')(v);
+				} else {
+					setVar(id, v);
+				}
 			case EField(e, f, s):
 				var obj = expr(e);
 				if(s && obj == null) return null;
@@ -398,13 +407,13 @@ class Interp {
 
 	inline function error(e:#if hscriptPos ErrorDef #else Error #end, rethrow = false):Dynamic {
 		#if hscriptPos var e = new Error(e, curExpr.pmin, curExpr.pmax, curExpr.origin, curExpr.line); #end
-
+		#if hl
 		if (rethrow) {
 			this.rethrow(e);
-		} else {
-			throw e;
+			return;
 		}
-		return null;
+		#end
+		throw e;
 	}
 
 	inline function rethrow(e:Dynamic) {
@@ -417,14 +426,10 @@ class Interp {
 
 	public function resolve(id:String, doException:Bool = true):Dynamic {
 		id = StringTools.trim(id);
-		var l = locals.get(id);
-		if (l != null)
-			return l.r;
+		if (locals.exists(id)) return locals.get(id).r;
 
-		var v = variables.get(id);
 		for(map in [variables, publicVariables, staticVariables, customClasses])
-			if (map.exists(id))
-				return map[id];
+			if (map.exists(id)) return map[id];
 
 		if (scriptObject != null) {
 			// search in object
@@ -442,7 +447,7 @@ class Interp {
 		}
 		if (doException)
 			error(EUnknownVariable(id));
-		return v;
+		return null;
 	}
 
 	public function expr(e:Expr):Dynamic {

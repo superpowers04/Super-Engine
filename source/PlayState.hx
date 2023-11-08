@@ -247,6 +247,8 @@ class PlayState extends ScriptMusicBeatState
 			return moveCamera = v;
 		}
 		public var camBeatFreq:Int = 2;
+		public var camZoomingDecay:Float = 1; // I didn't steal this from Psych, naaaaahhhhh
+		public var camZoomAmount:Float = 0.015;
 
 		var updateOverlay = true;
 		var errorMsg:String = "";
@@ -574,6 +576,9 @@ class PlayState extends ScriptMusicBeatState
 			showTempmessage('You are currently unable to reload interpeters!',FlxColor.RED);
 			return;
 		}
+		FlxG.sound.music.pause();
+		if(vocals != null) vocals.pause();
+		var time = Conductor.songPosition;
 		callInterp('reload',[false]);
 		callInterp('unload',[]);
 		FlxTimer.globalManager.clear();
@@ -590,10 +595,13 @@ class PlayState extends ScriptMusicBeatState
 		dad = new Character(oldBf.x, oldBf.y,oldBf.isPlayer,oldBf.charType, oldBf.charInfo);
 		this.replace(oldBf,dad);
 		oldBf.destroy();
+		FlxG.sound.music.play();
+		if(vocals != null) vocals.play();
 
 
 		callInterp('reloadDone',[]);
 		if(showWarning) showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
+		Conductor.songPosition = time;
 	}
 	override public function loadScripts(?enableScripts:Bool = false,?enableCallbacks:Bool = false,?force:Bool = false){
 		if((!enableScripts && !parseMoreInterps && !force)) return;
@@ -2103,8 +2111,8 @@ class PlayState extends ScriptMusicBeatState
 				+'\nChartType: ${SONG.chartType}';
 		}
 		if(controlCamera){
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.25 * elapsed);
-			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultCamHUDZoom, 0.25 * elapsed );
+			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, FlxMath.bound(1 - (elapsed * 3.125 * camZoomingDecay * speed), 0, 1));
+			camHUD.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, FlxMath.bound(1 - (elapsed * 3.125 * camZoomingDecay * speed), 0, 1));
 		}
 		
 
@@ -3364,9 +3372,9 @@ class PlayState extends ScriptMusicBeatState
 		}
 
 		// Zoooooooom
-		if (FlxG.save.data.camMovement && controlCamera && camBeat && camZooming && FlxG.camera.zoom < 1.35 && curBeat % camBeatFreq == 0){
-			FlxG.camera.zoom += 0.015;
-			// camHUD.zoom -= 0.03;
+		if (FlxG.save.data.camMovement && controlCamera && camBeat && camZooming && curBeat % camBeatFreq == 0){
+			FlxG.camera.zoom += camZoomAmount;
+			camHUD.zoom += 0.015;
 		}
 		
 		iconP1.bounce(Conductor.crochetSecs);
