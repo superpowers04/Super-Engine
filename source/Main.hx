@@ -157,6 +157,7 @@ class Main extends Sprite
 		try{
 			if(FlxG.keys.justPressed.F1) throw('Manual error');
 			if(game.blockDraw || game.blockUpdate){
+				renderLock.wait();
 				renderLock.lock();
 				super.__enterFrame(_);
 				renderLock.release();

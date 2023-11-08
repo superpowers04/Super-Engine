@@ -67,7 +67,8 @@ class MainMenuState extends SickMenuState
 		if(FlxG.save.data.doCoolLoading && error.indexOf('display.CairoRenderer') == -1){
 			_error = "Flixel tried to render an FlxText while the game was rendering the loading screen, causing an error.\nYou can probably just re-do what you did. If this is annoying, disable threaded loading in the options";
 		}
-		MainMenuState.errorMessage = '${_error}\n${MainMenuState.errorMessage}';
+		if(MainMenuState.errorMessage != '${_error}\n${MainMenuState.errorMessage}')
+			MainMenuState.errorMessage = '${_error}\n${MainMenuState.errorMessage}';
 		trace('${error}:${details}');
 		if(exception != null)
 			try{trace('${exception.message}\n${exception.stack}');}catch(e){}
@@ -280,6 +281,7 @@ class MainMenuState extends SickMenuState
 		options = ["deprecated freeplay","download charts","download characters","import charts from mods","changelog", 'credits'];
 		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine",'Convert charts from other mods to work here. Will put them in Modded Songs',"Read the latest changes for the engine","Check out the awesome people who helped with this engine in some way"];
 		
+		if (ChartingState.charting) {options.unshift("open closed chart"); descriptions.unshift("It looks like a chart is still open. This option will reopen the chart editor");}
 		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
 		curSelected = 0;

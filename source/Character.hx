@@ -233,13 +233,13 @@ class CharAnimController extends FlxAnimationController{
 	// HScript related shit
 	@privateAccess
 	public function callInterp(func_name:String, args:Array<Dynamic>,?important:Bool = false):Dynamic { // Modified from Modding Plus, I am too dumb to figure this out myself 
-			if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return null;}
-			try{
-				args.insert(0,this);
-				var method = interp.variables.get(func_name);
-				return Reflect.callMethod(interp,method,args);
-			}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}'); return null;}
-		}
+		if ((!useHscript || amPreview) || (interp == null || !interp.variables.exists(func_name) ) && !important) {return null;}
+		try{
+			args.insert(0,this);
+			var method = interp.variables.get(func_name);
+			return Reflect.callMethod(interp,method,args);
+		}catch(e){handleError('Something went wrong with ${func_name} for ${curCharacter}, ${e.message}'); return null;}
+	}
 
 	function parseHScript(scriptContents:String){
 		if (amPreview || !useHscript){

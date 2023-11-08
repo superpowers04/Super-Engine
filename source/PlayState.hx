@@ -2112,7 +2112,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 		if(controlCamera){
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, FlxMath.bound(1 - (elapsed * 3.125 * camZoomingDecay * speed), 0, 1));
-			camHUD.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, FlxMath.bound(1 - (elapsed * 3.125 * camZoomingDecay * speed), 0, 1));
+			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, FlxMath.bound(1 - (elapsed * 3.125 * camZoomingDecay * speed), 0, 1));
 		}
 		
 
@@ -2820,10 +2820,7 @@ class PlayState extends ScriptMusicBeatState
 		SEIKeyMap = [];
 		callInterp('registerKeys',[SEIKeyMap]);
 		if(cancelCurrentFunction) return;
-		SEIKeyMap[FlxKey.fromStringMap['LEFT']] =	0;
-		SEIKeyMap[FlxKey.fromStringMap['DOWN']] =	1;
-		SEIKeyMap[FlxKey.fromStringMap['UP']] =		2;
-		SEIKeyMap[FlxKey.fromStringMap['RIGHT']] =	3;
+		
 		if(SONG.keyCount == 0 || SONG.keyCount == 1){
 			SEIKeyMap[FlxKey.fromStringMap['ANY']] = 0;
 		}else if(SONG.keyCount == 4){
@@ -3374,7 +3371,7 @@ class PlayState extends ScriptMusicBeatState
 		// Zoooooooom
 		if (FlxG.save.data.camMovement && controlCamera && camBeat && camZooming && curBeat % camBeatFreq == 0){
 			FlxG.camera.zoom += camZoomAmount;
-			camHUD.zoom += 0.015;
+			camHUD.zoom -= 0.015;
 		}
 		
 		iconP1.bounce(Conductor.crochetSecs);

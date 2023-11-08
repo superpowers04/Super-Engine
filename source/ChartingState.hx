@@ -1106,8 +1106,7 @@ class ChartingState extends ScriptMusicBeatState
 
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
 	{
-		if (id == FlxUICheckBox.CLICK_EVENT)
-		{
+		if (id == FlxUICheckBox.CLICK_EVENT){
 			var check:FlxUICheckBox = cast sender;
 			var label = check.getLabel().text;
 			switch (label)
@@ -1118,19 +1117,14 @@ class ChartingState extends ScriptMusicBeatState
 					_song.notes[curSection].centerCamera = check.checked;
 				case 'Change BPM':
 					_song.notes[curSection].changeBPM = check.checked;
-					FlxG.log.add('changed bpm shit');
 				case "Alt Animations":
 					_song.notes[curSection].altAnim = check.checked;
 			}
-		
+			return;
 		}
-
-
-		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
-		{
+		if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper)){
 			var nums:FlxUINumericStepper = cast sender;
 			var wname = nums.name;
-			FlxG.log.add(wname);
 			switch(wname) {
 				case 'section_length':
 				

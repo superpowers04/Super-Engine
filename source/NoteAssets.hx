@@ -87,7 +87,9 @@ class NoteAssets{
 	public static var noteJSON:NoteAssetJSON;
 
 
-	public static var defNoteJSON(default,never):NoteAssetJSON = {
+	public static var defNoteJSON(get,never):NoteAssetJSON;
+	public static function get_defNoteJSON(){
+		return {
 		notes:[
 			{ // Left
 				flipx:false,
@@ -148,7 +150,7 @@ class NoteAssets{
 			}
 		]
 	};
-	
+	}
 
 	public static function get_frames():FlxFramesCollection{
 		return sprite.frames;
