@@ -98,17 +98,17 @@ class SEFlxFrames extends FlxAtlasFrames{
 	{
 		if(name == "") name = frameObj.name;
 		else if(frameObj.name != name) {
-			framesHash.set(name,frameObj);
+			framesByName.set(name,frameObj);
 			return frameObj;
 		}
-		if(name != null && framesHash.exists(name))
-			return framesHash.get(name);
+		if(name != null && framesByName.exists(name))
+			return framesByName.get(name);
 
 		frames.push(frameObj);
 		frameObj.cacheFrameMatrix();
 
 		if (name != null)
-			framesHash.set(name, frameObj);
+			framesByName.set(name, frameObj);
 
 		return frameObj;
 	}
@@ -128,12 +128,12 @@ class SEFlxFrames extends FlxAtlasFrames{
 				flipY == frameValue.flipY &&
 				flipX == frameValue.flipX
 			){
-				framesHash.set(name,frameValue);
+				framesByName.set(name,frameValue);
 				return frameValue;
 			}
 		}
-		if (name != null && framesHash.exists(name))
-			return framesHash.get(name);
+		if (name != null && framesByName.exists(name))
+			return framesByName.get(name);
 
 		var texFrame:FlxFrame = new FlxFrame(parent, angle, flipX, flipY, duration);
 		texFrame.name = name;
@@ -149,8 +149,8 @@ class SEFlxFrames extends FlxAtlasFrames{
 
 	public override function getIndexByName(name:String):Int
 	{
-		var frame = framesHash.get(name);
+		var frame = framesByName.get(name);
 		if(frame == null) return -1;
-		return frames.indexOf(framesHash.get(name));
+		return frames.indexOf(framesByName.get(name));
 	}
 }

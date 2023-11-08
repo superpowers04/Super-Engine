@@ -123,6 +123,14 @@ class AnimationDebug extends MusicBeatState
 	var quitHeldBG:FlxSprite;
 	var animDropDown:PsychDropDown;
 	var bf:Character;
+	#if mobile
+	public static function fileDrop(file:String){
+		if(MusicBeatState.instance.onFileDrop(file) == null || !FileSystem.exists(file)){
+			return;
+		}
+		throw("Importing isn't supported on mobile targets yet!");
+	}
+	#else
 	public static function fileDrop(file:String){
 		// Normal filesystem/file is used here because we aren't working within the game's folder. We need absolute paths
 
@@ -164,10 +172,10 @@ class AnimationDebug extends MusicBeatState
 		FlxG.state.openSubState(new QuickNameSubState(function(name:String,file:String,validFile:String,ending1:String,ending2:String){
 			var _file = file.substr(file.lastIndexOf("/") + 1);
 			var _validFile = validFile.substr(file.lastIndexOf("/") + 1);
-			if(SELoader.exists('mods/characters/$name/')){name = '${name}DRAGDROP-${FlxG.random.int(0,999999)}';}
-			SELoader.createDirectory('mods/characters/$name');
-			SELoader.importFile(file,'mods/characters/$name/character.$ending1');
-			SELoader.importFile(validFile,'mods/characters/$name/character.$ending2');
+			if(SELoader.exists('mods/packs/imported/characters/$name/')){name = '${name}DRAGDROP-${FlxG.random.int(0,999999)}';}
+			SELoader.createDirectory('mods/packs/imported/characters/$name');
+			SELoader.importFile(file,'mods/packs/imported/characters/$name/character.$ending1');
+			SELoader.importFile(validFile,'mods/packs/imported/characters/$name/character.$ending2');
 			LoadingScreen.loadAndSwitchState(new AnimationDebug("INVALID|" + name,false,1,false,true));
 
 		},[file,validFile,ending1,ending2],"Type a name for the character\n",name,function(name:String){return (if(TitleState.retChar(name) != "") "This character already exists! Please use a different name" else "");}));
@@ -187,6 +195,7 @@ class AnimationDebug extends MusicBeatState
 		}
 		return null;
 	}
+	#end
 	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false,?dragDrop:Bool = false)
 	{
 		super();
@@ -428,8 +437,7 @@ class AnimationDebug extends MusicBeatState
 					}
 					// yes I stole this from flxatlasframes, fight me
 					if ((obj.frames is Array)){
-						for (frame in Lambda.array(obj.frames))
-						{
+						for (frame in Lambda.array(obj.frames)){
 							addAnim(frame.filename);
 						}
 					}else{
@@ -455,10 +463,8 @@ class AnimationDebug extends MusicBeatState
 					for (i => v in charJson.animations) {animList.push(v.anim);}
 					if(charJson.animations_offsets != null) {for (i => v in charJson.animations) {animationList.push(v.name);}}
 				}
-				
 				animDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animList, true));
 			}catch(e){showTempmessage("Unable to load animation list",FlxColor.RED);}
-
 			
 		}catch(e) {MainMenuState.handleError('Error occurred in spawnChar, animdebug ${e.message}');trace(e.message);}
 	}
@@ -526,7 +532,6 @@ class AnimationDebug extends MusicBeatState
 			if(charX != 0 || charY != 0) '\ncharPos: [${charX}, ${charY}]' else ""; 
 		for (i => v in offset) {
 			var name = i;
-
 			text+='\n"${name}" : { "player${charType + 1}": [${v[0]}, ${v[1]}] }';
 		}
 		sys.io.File.saveContent(Sys.getCwd() + "offsets.txt",text);
@@ -612,7 +617,6 @@ class AnimationDebug extends MusicBeatState
 			// Compensate for the game moving the character's position
 
 			charJson.cam_pos = [0,0];
-			trace('${dad.x},${dad.y}');
 
 			dad.x -= characterX;
 			if(charType == 2){
@@ -623,7 +627,6 @@ class AnimationDebug extends MusicBeatState
 			}
 			dad.y = -dad.y;
 
-			trace('${dad.x},${dad.y}');
 			errorStage = 5; // Position
 			switch (charType) {
 				case 0: {

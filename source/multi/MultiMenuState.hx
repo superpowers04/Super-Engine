@@ -834,14 +834,14 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		return str.substr(0,str.lastIndexOf(ending) + ending.length);
 	}
 	@:keep inline public static function getAssetsPathFromChart(path:String,attempt:Int = 0):String{
-		if(path.contains('data/') && attempt < 1){
-			return path.substr(0,path.lastIndexOf('data/'));
+		if(path.contains('/data/') && attempt < 1){
+			return path.substr(0,path.lastIndexOf('/data/'));
 		}
-		if(path.contains('assets/')  && attempt < 2){
-			return upToString(path,'assets/');
+		if(path.contains('/assets/')  && attempt < 2){
+			return upToString(path,'/assets/');
 		}
-		if(path.contains('mods/')  && attempt < 3){
-			return upToString(path,'mods/');
+		if(path.contains('/mods/')  && attempt < 3){
+			return upToString(path,'/mods/');
 		}
 		return "";
 	}
@@ -861,7 +861,18 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var dir = file.substr(0,file.lastIndexOf("/"));
 			var json = file.substr(file.lastIndexOf("/") + 1);
 			var name = json.substr(0,json.lastIndexOf("."));
-
+			var chartName = "";
+			var content = File.getContent(file);
+			if(content != null && content != ""){
+				var name:Dynamic = cast Json.parse(File.getContent(file));
+				var songName:String = "";
+				if(name.song != null && Std.isOfType(name.song,String)){
+					songName = cast name.song;
+				}else if(name.song != null && name.song.song != null && Std.isOfType(name.song.song,String)){
+					songName = cast name.song.song;
+				}
+				chartName = songName;
+			}
 			var attempts = 0;
 			if(FileSystem.exists('${dir}/Inst.ogg')){ 
 				inst = '${dir}/Inst.ogg';
@@ -873,6 +884,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				attempts++;
 				var assets = getAssetsPathFromChart(file,attempts);
 				if(assets == "") break; // Nothing else to search!
+				trace(assets);
 
 				inst = findFileFromAssets(assets,name,'Inst.ogg');
 				voices = findFileFromAssets(assets,name,'Voices.ogg');
@@ -882,25 +894,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					inst = findFileFromAssets(assets,name,'Inst.ogg');
 					voices = findFileFromAssets(assets,name,'Voices.ogg');
 				}
-				if(inst == ""){ // Check more places
-					var content = File.getContent(file);
-					if(content != null && content != ""){
-						var name:Dynamic = cast Json.parse(File.getContent(file));
-						var songName:String = "";
-						if(name.song != null && Std.isOfType(name.song,String)){
-							songName = cast name.song;
-						}else if(name.song != null && name.song.song != null && Std.isOfType(name.song.song,String)){
-							songName = cast name.song.song;
-						}
-						if(songName != null && songName != ""){ // Try using the chart name maybe?
-							trace(songName);
-							inst = findFileFromAssets(assets,name,'Inst.ogg');
-							voices = findFileFromAssets(assets,name,'Voices.ogg');
-						}
-					}
-
+				if(inst == "" && chartName != ""){ // Try using the chart name maybe?
+					inst = findFileFromAssets(assets,chartName,'Inst.ogg');
+					voices = findFileFromAssets(assets,chartName,'Voices.ogg');
 				}
-				
 			}
 			if(inst == ""){
 				MusicBeatState.instance.showTempmessage('Unable to find Inst.ogg for "$json"',FlxColor.RED);

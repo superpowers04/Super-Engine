@@ -134,7 +134,11 @@ class ImportModFromFolder extends MusicBeatState
 				directory = directory.replace('//','/');
 				if(!FileSystem.isDirectory('${folder}songs/${directory}') || (!importExisting && existingSongs.contains(directory.toLowerCase()))) continue; // Skip if it's a file or if it's on the existing songs list
 				var dir:String = ('${folder}/songs/${directory}/').replace('//','/');
-				if(!FileSystem.exists('${dir}Inst.ogg') || (!FileSystem.isDirectory('${assets}data/${directory}/') && !FileSystem.isDirectory('${assets}data/songs/${directory}/')) ) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
+
+				if(!FileSystem.exists('${dir}Inst.ogg') || (!FileSystem.isDirectory('${assets}data/${directory}/') && 
+						!FileSystem.isDirectory('${assets}data/songs/${directory}/') && 
+						!FileSystem.isDirectory('${assets}data/song data/${directory}/') // Leather Engine????
+					)) {trace('"${assets}data/${directory}/" or "${dir}Inst.ogg" doesnt exist');continue;}
 				folderList.push('${folder}');
 				break;
 			}
@@ -190,7 +194,9 @@ class ImportModFromFolder extends MusicBeatState
 	function scanSongs(?folder:String = "",assets:String=""){
 		try{
 			if(FileSystem.exists('${assets}songs/')){ // Chad github style
-				var inCharts = (if(FileSystem.isDirectory('${assets}data/songs/')) '${assets}data/songs/' else '${assets}data/'); // Fuckin later versions of kade engine
+				var inCharts = (FileSystem.isDirectory('${assets}data/songs/') ? '${assets}data/songs/' : 
+				(FileSystem.isDirectory('${assets}data/song data/') ? '${assets}data/song data/'
+				:'${assets}data/')); // Fuckin later versions of kade engine
 				for (directory in FileSystem.readDirectory('${assets}songs/')) {
 					changedText = 'Checking ${directory}...'; // Just display this text
 					

@@ -46,15 +46,13 @@ class CharAnimController extends FlxAnimationController{
 		}
 		Prefix = EReg.escape(Prefix);
 		var regTP:EReg = new EReg('^${Prefix}[- ]*[0-9][0-9]?[0-9]?[0-9]?','ig'); // Fixes the game improperly registering frames from other animations
-		for (index => frame in _sprite.frames.framesHash)
-		{
+		for (index => frame in _sprite.frames.framesHash){
 			if (regTP.match(index)) AnimFrames.push(frame);
 		}
 	}
 	function fuckinAddAll(AnimFrames:Array<FlxFrame>):Void
 	{
-		for (index => frame in _sprite.frames.framesHash)
-		{
+		for (index => frame in _sprite.frames.framesHash){
 			AnimFrames.push(frame);
 		}
 	}

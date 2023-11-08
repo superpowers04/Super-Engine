@@ -822,8 +822,20 @@ class TitleState extends MusicBeatState
 
 
 		}
+		// Android doesn't support importing
+		#if !android
+		if(!SELoader.exists('mods/imported/readme.txt')){
+			SELoader.createDirectory('mods/imported');
+			SELoader.createDirectory('mods/imported/characters');
+			SELoader.saveContent('mods/imported/characters/Individual_characters_will_be_imported_here',"");
+			SELoader.createDirectory('mods/imported/charts');
+			SELoader.saveContent('mods/imported/charts/Individual_charts_will_be_imported_here',"");
+			SELoader.createDirectory('mods/imported/scripts');
+			SELoader.saveContent('mods/imported/scripts/Place_Scripts_Here',"")
 
-
+			SELoader.saveContent('mods/imported/readme.txt','This pack is used for imported songs and characters. The game will check for this file to make sure the imported pack exists.\nYou can empty this file if you wish but deleting it will regenerate the directory structure of this folder.\nThis pack can be used as an example of how to structure your packs if you wish.');
+		}
+		#end
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		// bg.antialiasing = true;
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));

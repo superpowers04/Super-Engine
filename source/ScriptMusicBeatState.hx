@@ -290,6 +290,11 @@ class ScriptMusicBeatState extends MusicBeatState{
 			if(songScript == "") return null;
 			// if (brTools == null && hsBrTools != null) brTools = hsBrTools;
 			var parser:hscript.Parser = HscriptUtils.createSimpleParser();
+			if(interps[id] != null && interps[id] is Interp){
+				var program = parser.parseString(songScript,file);
+				interps[id].execute(program);
+			}
+
 			var interp:Interp = HscriptUtils.createSimpleInterp();
 			try{
 				var program = parser.parseString(songScript,file);
@@ -455,7 +460,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 			callInterp('unload',[]);
 			FlxTimer.globalManager.clear();
 			FlxTween.globalManager.clear();
-			resetInterps();
+			// resetInterps();
 			loadScripts();
 			callInterp('reloadDone',[]);
 			if(showWarning) showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');
