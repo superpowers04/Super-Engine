@@ -15,7 +15,7 @@ import haxe.CallStack;
 
 import openfl.Lib;
 
-class FuckState extends Sprite
+class FuckState extends FlxUIState
 {
 
 	// public static var needVer:String = "Unknown";
@@ -24,8 +24,6 @@ class FuckState extends Sprite
 	public var info:String = "";
 	public static var currentStateName:String = "";
 	public static var FATAL:Bool = false;
-
-	var _stage:Stage;
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
 	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown"){
@@ -173,17 +171,14 @@ class FuckState extends Sprite
 	override function new(e:String,info:String,saved:Bool = false){
 		err = '${e}\nThis happened in ${info}';
 		this.saved = saved;
-		this._stage = openfl.Lib.application.window.stage;
 		LoadingScreen.hide();
 		LoadingScreen.forceHide();
 		super();
+	}
+	override function create()
+	{
+		super.create();
 		LoadingScreen.forceHide();
-		_stage.addEventListener(KeyboardEvent.KEY_DOWN, keyActions);
-		
-		final textFormat = new TextFormat(font, 24, 0xFFFFFF);
-		final centerX = 640;
-		final centerY = 360;
-
 		// var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(if(Math.random() > 0.5) 'week54prototype' else "zzzzzzzz", 'shared'));
 		// bg.scale.x *= 1.55;
 		// bg.scale.y *= 1.55;
@@ -197,39 +192,34 @@ class FuckState extends Sprite
 		// kadeLogo.y -= 180;
 		// kadeLogo.alpha = 0.8;
 		// add(kadeLogo);
-		var outdatedLMAO:TextField = new TextField()
-		outdatedLMAO.y = 36;
-		outdatedLMAO.text = (if(FATAL) 'F' else 'Potentially f') + 'atal error caught');
-		outdatedLMAO.x = centerX - (outdatedLMAO.width * 0.5);
-		
-		// outdatedLMAO.setFormat(CoolUtil.font, 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// outdatedLMAO.scrollFactor.set();
-		// outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
-		addChild(outdatedLMAO);
+		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,(if(FATAL) 'F' else 'Potentially f') + 'atal error caught' , 32);
+		outdatedLMAO.setFormat(CoolUtil.font, 32, FlxColor.RED, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		outdatedLMAO.scrollFactor.set();
+		outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
+		add(outdatedLMAO);
 		trace("-------------------------\nERROR:\n\n"
 			+ err + "\n\n-------------------------");
-		var txt:TextField = new TextField();
-		txt.text = "\n\nError/Stack:\n\n"+ err;
-		txt.y = 
-		// txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
-		// txt.borderColor = FlxColor.BLACK;
-		// txt.borderSize = 3;
-		// txt.borderStyle = FlxTextBorderStyle.OUTLINE;
-		// txt.screenCenter();
-		addChild(txt);
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Please take a screenshot and report this, " +(if(FATAL)"P" else "Press enter to attempt to return to the main menu or p")+ "ress Escape to close the game",32);
+			"\n\nError/Stack:\n\n"
+			+ err,
+			16);
 		
-		// txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
-		// txt.borderColor = FlxColor.BLACK;
-		// txt.borderSize = 3;
-		// txt.borderStyle = FlxTextBorderStyle.OUTLINE;
-		// txt.screenCenter(X);
-		txt.x = 
+		txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
+		txt.borderColor = FlxColor.BLACK;
+		txt.borderSize = 3;
+		txt.borderStyle = FlxTextBorderStyle.OUTLINE;
+		txt.screenCenter();
+		add(txt);
+		var txt:FlxText = new FlxText(0, 0, FlxG.width,
+			"Please take a screenshot and report this, " +(if(FATAL)"P" else "Press enter to attempt to return to the main menu or")+ "ress Escape to close the game",32);
+		
+		txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
+		txt.borderColor = FlxColor.BLACK;
+		txt.borderSize = 3;
+		txt.borderStyle = FlxTextBorderStyle.OUTLINE;
+		txt.screenCenter(X);
 		txt.y = 680;
-		addChild(txt);
-		scaleX=_stage.stageWidth / 1280;
-		scaleY=_stage.stageHeight / 720;
+		add(txt);
 		if(saved){
 			txt.y -= 30;
 			var dateNow:String = Date.now().toString();
@@ -240,18 +230,19 @@ class FuckState extends Sprite
 		}
 	}
 
-	override function __enterFrame(elapsed:Float){	
+	override function update(elapsed:Float)
+	{	
 		try{
 
-			// if (FlxG.keys.justPressed.ENTER && !FATAL)
-			// {
-			// 	// var _main = Main.instance;
-			// 	LoadingScreen.show();
-			// 	// TitleState.initialized = false;
-			// 	MainMenuState.firstStart = true;
-			// 	FlxG.switchState(new MainMenuState());
-			// }
-			// if (FlxG.keys.justPressed.ESCAPE) Sys.exit(1);
+			if (FlxG.keys.justPressed.ENTER && !FATAL)
+			{
+				// var _main = Main.instance;
+				LoadingScreen.show();
+				// TitleState.initialized = false;
+				MainMenuState.firstStart = true;
+				FlxG.switchState(new MainMenuState());
+			}
+			if (FlxG.keys.justPressed.ESCAPE) Sys.exit(1);
 
 			if (LoadingScreen.isVisible){
 				LoadingScreen.forceHide(); // Hide you fucking piece of shit
@@ -259,163 +250,6 @@ class FuckState extends Sprite
 				LoadingScreen.isVisible = false;
 			} 
 		}catch(e){}
-		super.__enterFrame(elapsed);
-	}
-
-	public function keyActions(e:KeyboardEvent):Void {
-		switch e.keyCode {
-			case Keyboard.ENTER:
-				if(FATAL) return;
-				_stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyActions);
-				// now that the crash handler should be no longer active, remove it from the game container.
-				if (Main.instance != null && Main.instance.contains(this)) Main.instance.removeChild(this);
-			case Keyboard.ESCAPE:
-				sys.exit(1);
-		}
+		super.update(elapsed);
 	}
 }
-/* Kinda funny situation, 
-	this was made by crowplexus, and it was originally inspired by the original fuck state from super engine. now I am stealing it back >:) 
-
-class CrashHandler extends Sprite {
-	final font:String = CoolUtil.font;
-
-	var errorTitle:RotatableTextField;
-	var loggedError:TextField;
-	var _modReset:Bool = false;
-
-	private static var _active:Bool = false;
-
-	var _stage:Stage;
-	var random = new flixel.math.FlxRandom();
-
-	final imagineBeingFunny:Array<String> = [
-		// crowplexus
-		"Fatal Error!",
-		"!rorrE lataF",
-		"Enough of your puns SANS.",
-		"Forever riddled with bugs.",
-		"Welcome to game development!",
-		"Anything wrong with your script buddy?",
-		"Take a break and listen to something nice -> watch?v=Zqa2mgjbOIM",
-		// Keoiki
-		"I wish i was funny so i could come up with a funny",
-		"Let me guess, Null Object Reference?",
-		// Totally Wizard
-		"Gay gay gay gay gay gay gay gay gay gay gay",
-		// Ne_Eo
-		"U fucking messed up, i can't believe you",
-		"What are you??? A idiot program -Godot RAMsey",
-		'I told you, ${DiscordWrapper.username ?? "the human"} was gonna crash the engine',
-		// SrtHero278
-		"GET IN THE CAR I FUCKED UP",
-		"...Oh dear. Your brain       is... a                  underwhelming. ",
-		// Zyfix
-		"IT WAS A MISS INPUT, MISS INPUT CALM DOWN, YOU CALM THE FUCK DOWN",
-		// RapperGF
-		"Thats not very forever engine fnf of you.",
-	];
-
-	public function new(stack:String):Void {
-		super();
-
-		this._stage = openfl.Lib.application.window.stage;
-
-		if (!_active)
-			_active = true;
-
-		final _matrix = new flixel.math.FlxMatrix().rotateByPositive90();
-
-		// draw a background
-		// [0.8, 0.6]
-		// 0xFFA95454
-		graphics.beginGradientFill(LINEAR, [0xFF000000, 0xFFA84444], [0.5, 1], [75, 255], _matrix);
-		graphics.drawRect(0, 0, _stage.stageWidth, _stage.stageHeight);
-		graphics.endFill();
-
-		// -- TEXT CREATING PHASE -- //
-
-		final tf = new TextFormat(font, 24, 0xFFFFFF);
-		final tf2 = new TextFormat(font, 48, 0xDADADA);
-
-		errorTitle = new RotatableTextField();
-		loggedError = new TextField();
-
-		// create the error title!
-		errorTitle.defaultTextFormat = tf2;
-
-		random.shuffle(imagineBeingFunny);
-		// imagineBeingFunny = ["IT WAS A MISS INPUT, MISS INPUT CALM DOWN, YOU CALM THE FUCK DOWN"]; // testing long
-		var quote:String = random.getObject(imagineBeingFunny);
-		errorTitle.text = '${quote}\n';
-
-		for (i in 0...quote.length)
-			errorTitle.appendText('-');
-
-		errorTitle.width = _stage.stageWidth * 0.5;
-		errorTitle.x = centerX(errorTitle.width);
-		errorTitle.y = _stage.stageHeight * 0.1;
-
-		errorTitle.autoSize = CENTER;
-		errorTitle.multiline = true;
-
-		// create the error text
-		loggedError.defaultTextFormat = tf;
-		loggedError.text = '\n\n${stack}\n'
-			+ "\nPress R to Unload your mods if needed, Press ESCAPE to Reset"
-			+ "\nIf you feel like this error shouldn't have happened,"
-			+ "\nPlease report it to our GitHub Page by pressing SPACE";
-
-		// and position it properly
-		loggedError.autoSize = errorTitle.autoSize;
-		// loggedError.width = _stage.stageWidth;
-		loggedError.y = errorTitle.y + (errorTitle.height) + 50;
-		loggedError.autoSize = CENTER;
-
-		addChild(errorTitle);
-		addChild(loggedError);
-
-		// Autosizing
-		if (loggedError.width > _stage.stageWidth) {
-			loggedError.scaleX = loggedError.scaleY = _stage.stageWidth / (loggedError.width + 100);
-		}
-		loggedError.x = centerX(loggedError.width);
-
-		if (errorTitle.width > _stage.stageWidth) {
-			errorTitle.scaleX = errorTitle.scaleY = _stage.stageWidth / (errorTitle.width + 100);
-		}
-		errorTitle.x = centerX(errorTitle.width);
-
-		// Sound from codename
-		final sound:Sound = AssetHelper.getAsset('audio/sfx/errorReceived', SOUND);
-		final volume:Float = Tools.toFloatPercent(Settings.masterVolume);
-
-		sound.play(new SoundTransform(volume)).addEventListener(Event.SOUND_COMPLETE, (_) -> {
-			sound.close();
-		});
-
-		_stage.addEventListener(KeyboardEvent.KEY_DOWN, keyActions);
-		addEventListener(Event.ENTER_FRAME, (e) -> {
-			var time = openfl.Lib.getTimer() / 1000;
-			if (time - lastTime > 1 / 5) {
-				if (!setupOrigin) {
-					errorTitle.originX = errorTitle.width * 0.5;
-					errorTitle.originY = errorTitle.height * 0.5;
-					setupOrigin = true;
-				}
-				errorTitle.rotation = random.float(-1, 1);
-				lastTime = time;
-			}
-		});
-	}
-
-	var lastTime = 0.0;
-	var setupOrigin = false;
-
-
-	inline function centerX(w:Float):Float {
-		return (0.5 * (_stage.stageWidth - w));
-	}
-}
-
-*/
