@@ -43,7 +43,7 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup /tmp/haxelib
-          sh installDeps
+          sh installDeps.bat
         shell: sh
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
@@ -83,7 +83,7 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup /tmp/haxelib
-          sh installDeps
+          sh installDeps.bat
         shell: bash
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
