@@ -1996,9 +1996,9 @@ class PlayState extends ScriptMusicBeatState
 				try{
 					// We need to make CERTAIN vocals exist and are non-empty
 					// before we try to play them. Otherwise the game crashes.
-					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.PITCH, speed);
 					if (vocals != null && vocals.length > 0) 
-						lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+						lime.media.openal.AL.sourcef(vocals._channel.__audioSource.__backend.handle, lime.media.openal.AL.PITCH, speed);
 				}catch (e) {}
 			}
 		}
@@ -2820,7 +2820,7 @@ class PlayState extends ScriptMusicBeatState
 		SEIKeyMap = [];
 		callInterp('registerKeys',[SEIKeyMap]);
 		if(cancelCurrentFunction) return;
-		
+
 		if(SONG.keyCount == 0 || SONG.keyCount == 1){
 			SEIKeyMap[FlxKey.fromStringMap['ANY']] = 0;
 		}else if(SONG.keyCount == 4){

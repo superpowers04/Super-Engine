@@ -533,7 +533,6 @@ class PsychLuaCompat{
 			
 		}
 		if(splitPath.length > 0){
-
 			var currentPath:String = "";
 			while(splitPath.length > 0){
 				currentPath = splitPath.shift();
