@@ -591,7 +591,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function extraKeys(){
 		if(controls.LEFT_P){changeDiff(-1);}
 		if(controls.RIGHT_P){changeDiff(1);}
-		if (FlxG.keys.justPressed.SEVEN && songs.length > 0 && FlxG.save.data.animDebug){
+		if (FlxG.keys.justPressed.SEVEN && FlxG.save.data.animDebug){
 			selSong(curSelected,true);
 		}
 		if((FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)){
