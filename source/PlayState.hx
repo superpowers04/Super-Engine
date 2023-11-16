@@ -663,6 +663,7 @@ class PlayState extends ScriptMusicBeatState
 		#if !debug
 		try{
 		#end
+		scriptSubDirectory = "";
 		SELoader.gc();
 		LoadingScreen.loadingText = 'Loading playstate variables';
 		parseMoreInterps = (QuickOptionsSubState.getSetting("Song hscripts") || isStoryMode);
@@ -1593,7 +1594,7 @@ class PlayState extends ScriptMusicBeatState
 
 		chartIsInverted = (PlayState.invertedChart || (onlinemod.OnlinePlayMenuState.socket == null && QuickOptionsSubState.getSetting("Inverted chart")));
 		var opponentNotes = (onlinemod.OnlinePlayMenuState.socket != null || QuickOptionsSubState.getSetting("Opponent arrows") || ChartingState.charting);
-		var showOpponentNotes = FlxG.save.data.oppStrumLine;
+		var showOpponentNotes = FlxG.save.data.oppStrumline;
 		var noteData:Array<SwagSection> = songData.notes;
 
 		// Per song offset check
@@ -1718,7 +1719,7 @@ class PlayState extends ScriptMusicBeatState
 	}
 	function generateStaticArrows(player:Int):Void{
 
-		cpuStrums.visible = FlxG.save.data.oppStrumLine;
+		cpuStrums.visible = FlxG.save.data.oppStrumline;
 		if(useNoteCameras){
 			// var camList = FlxG.cameras.list;
 			if(player == 1){
@@ -1741,7 +1742,7 @@ class PlayState extends ScriptMusicBeatState
 				if(middlescroll) opponentNoteCamera.setScale(0.5,0.5);
 				
 				// readdCam(camHUD,false);
-				if(FlxG.save.data.oppStrumLine) FlxG.cameras.add(opponentNoteCamera,false);
+				if(FlxG.save.data.oppStrumline) FlxG.cameras.add(opponentNoteCamera,false);
 				readdCam(camHUD);
 				readdCam(camTOP);
 				
@@ -1856,7 +1857,7 @@ class PlayState extends ScriptMusicBeatState
 				}
 				playerNoteCamera.x = Std.int(FlxG.width * (if(middlescroll) 0 else 0.25));
 			}else{
-				opponentNoteCamera.visible = FlxG.save.data.oppStrumLine;
+				opponentNoteCamera.visible = FlxG.save.data.oppStrumline;
 				opponentNoteCamera.x = Std.int(FlxG.width * -0.25);
 				if(middlescroll) {
 					opponentNoteCamera.x -= 100;

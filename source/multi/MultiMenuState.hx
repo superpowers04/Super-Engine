@@ -271,18 +271,25 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if (SELoader.exists(dataDir)){
 				var dirs = orderList(SELoader.readDirectory(dataDir));
 				var catID = 0;
-				addCategory("charts folder",i);
-				i++;
-
+				var containsSong = false;
 				LoadingScreen.loadingText = 'Scanning mods/charts';
 				for (directory in dirs){
 					if (search != "" && !query.match(directory.toLowerCase())) continue; // Handles searching
 					var song = addSong('${dataDir}${directory}',directory,catID);
 					if(song == null) continue;
+
+					if(!containsSong){
+						containsSong = true;
+						addCategory('Charts Folder',i);
+						i++;
+					}
 					addListing(directory,i,song);
 					songInfoArray.push(song);
 					if(_goToSong == 0)_goToSong = i;
 					i++;
+				}
+				if(!containsSong){
+					emptyCats.push('Charts Folder');
 				}
 			}
 			var _packCount:Int = 0;
@@ -357,7 +364,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			}
 			while(emptyCats.length > 0){
 				var e = emptyCats.shift();
-				addCategory(e,i).color = FlxColor.RED;
+				if(e != null && e != "") addCategory(e,i).color = FlxColor.RED;
 				i++;
 			}
 		}
@@ -488,19 +495,21 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			var songName = songInfo.name;
 			loadScriptsFromSongPath(songLoc);
 			if(chart == null){
-				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${songName}.json';
-				var song = cast Song.getEmptySong();
-				song.song = songName;
-				SELoader.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:song}));
-				
-				reloadList(true,searchField.text);
-				curSelected = sel;
-				changeSelection();
-				selSong(sel,true);
-				// showTempmessage('Generated blank chart for $songName');
-				return;
-
-
+				var e = '${songLoc}/${songName}.json';
+				if(onlinemod.OfflinePlayState.chartFile == e){
+					onlinemod.OfflinePlayState.chartFile = e;
+					var song = cast Song.getEmptySong();
+					song.song = songName;
+					SELoader.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:song}));
+					
+					reloadList(true,searchField.text);
+					curSelected = sel;
+					changeSelection();
+					selSong(sel,true);
+					// showTempmessage('Generated blank chart for $songName');
+					return;
+				}
+				chart = e;
 			}else{
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${chart}';
 				PlayState.SONG = Song.parseJSONshit(SELoader.loadText(onlinemod.OfflinePlayState.chartFile),true);
@@ -792,7 +801,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		// else 
 		// "No charts for this song!"
 		// diffText.text = (if(modes[curSelected][selMode - 1 ] != null ) '< ' else '|  ') + (if(modes[curSelected][selMode] == CATEGORYNAME) songs[curSelected] else modes[curSelected][selMode]) + (if(modes[curSelected][selMode + 1 ] != null) ' >' else '  |');
-		diffText.text = (charts[selMode - 1] == null ? "< " : "|  ") + (charts[selMode] ?? "No charts for this song!") + (charts[selMode + 1] == null ? " >" : "  |");
+		diffText.text = (charts[selMode - 1] == null ? "|  " : "< ") + (charts[selMode] ?? "No charts for this song!") + (charts[selMode + 1] == null ? "  |" : " >");
 		// diffText.centerOffsets();
 		diffText.screenCenter(X);
 		updateScore(songInfo,charts[selMode]);

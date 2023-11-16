@@ -61,7 +61,7 @@ class OfflineMenuState extends SearchMenuState
 		sideButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
 		sideButton.resize(250, 30);
 	#end
-
+	scriptSubDirectory = "/offlinemenu/";
 	useNormalCallbacks = true;
 	loadScripts(true);
 	super.create();
@@ -127,7 +127,7 @@ class OfflineMenuState extends SearchMenuState
 	callInterp('extraKeys',[]);
 	if(cancelCurrentFunction) return;
 	if (FlxG.keys.justPressed.R){
-	  changeSelection(Math.floor(songs.length * Math.random()));
+	  changeSelection(Math.floor(grpSongs.length * Math.random()));
 	}
 	optionsButton.label.color = (if(FlxG.keys.pressed.SHIFT) 0xFF222222 else 0xFF000000);
 	sideButton.label.color = (if(FlxG.keys.pressed.SHIFT) 0xFF222222 else 0xFF000000);

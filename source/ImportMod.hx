@@ -66,6 +66,12 @@ class ImportModFromFolder extends MusicBeatState
 	var chartPrefix:String = "";
 	var folderList:Array<String> = []; 
 	var isSuperEngine:Bool = false;
+	var changedText(null,set):String= "";
+	inline function set_changedText(str){
+		loadingText.text = changedText;
+		loadingText.screenCenter(X);
+		return "";
+	}
 
 	public function new (folder:String,name:String,?importExisting:Bool = false)
 	{
@@ -262,15 +268,6 @@ class ImportModFromFolder extends MusicBeatState
 		for (i => v in folderList) {
 			scanSongs(v,v);
 		}
-	}
-	var changedText = "";
-	override function draw(){
-		if(changedText != ""){
-			loadingText.text = changedText;
-			loadingText.screenCenter(X);
-			changedText = "";
-		}
-		super.draw();
 	}
 	override function update(elapsed:Float)
 	{

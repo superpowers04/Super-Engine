@@ -397,7 +397,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 				parseHScript(SELoader.loadText(scriptPath),getBRTools(path),'${parentDir}:${scriptName}',scriptPath);
 			
 		}
-		var scriptSubDirectory:String = ""; 
+		var scriptSubDirectory:String = "nil/"; 
 		public var scriptPaths = [];
 		public function loadScript(v:String,?path:String = "mods/scripts/",?nameSpace:String="global",?brtool:HSBrTools = null){
 			if(!parseMoreInterps) return;
@@ -423,10 +423,32 @@ class ScriptMusicBeatState extends MusicBeatState{
 				}
 				// parseHScript(File.getContent('mods/scripts/${v}/script.hscript'),new HSBrTools('mods/scripts/${v}',v),'global-${v}');
 			}
+			var _path = '${path}${v}${Type.getClassName(cast this)}';
+			if (SELoader.exists(_path)){
+				
+				if(brtool == null) brtool = getBRTools(_path,v);
+				trace(_path);
+				for (i in CoolUtil.orderList(SELoader.readDirectory(_path))) {
+					if(i.endsWith(".hscript") || #if linc_luajit i.endsWith(".lua") || #end i.endsWith(".hx")){
+						var cont = false;
+						for (i in ignoreScripts) {
+							if(v.contains(i)) cont = true;
+						}
+						if(cont) continue;
+						#if linc_luajit
+							if(i.endsWith(".lua")) parseLua(SELoader.loadText('$_path/$i'),brtool,'$nameSpace:${i}','$_path/$i');
+							else 
+						#end
+							parseHScript(SELoader.loadText('$_path/$i'),brtool,'$nameSpace:${i}','$_path/$i');
+						
+					}
+				}
+			}
 		}
 		@:keep public function loadScripts(?enableScripts:Bool = false,?enableCallbacks:Bool = false,?force:Bool = false){
 			if((!enableScripts && !parseMoreInterps) || (!FlxG.save.data.menuScripts && !force)) return;
 			parseMoreInterps = true;
+			if(scriptSubDirectory == "nil/") trace('Scriptable state ${Type.getClassName(cast this)} has no custom subdirectory, Using `nil/`!');
 			try{
 
 				for (i in 0 ... FlxG.save.data.scripts.length) {
@@ -460,7 +482,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 			callInterp('unload',[]);
 			FlxTimer.globalManager.clear();
 			FlxTween.globalManager.clear();
-			// resetInterps();
+			resetInterps();
 			loadScripts();
 			callInterp('reloadDone',[]);
 			if(showWarning) showTempmessage('Soft reloaded state. This is unconventional, Hold shift and press F5 for a proper state reload');

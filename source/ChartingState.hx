@@ -1371,8 +1371,7 @@ class ChartingState extends ScriptMusicBeatState
 								FlxG.mouse.y);
 			}
 			var justAdded = false;
-			if (FlxG.mouse.justPressed)
-			{
+			if (FlxG.mouse.justPressed){
 				justAdded = true;
 				var overlaps = false;
 				for(note in curRenderedNotes.members){
@@ -1523,7 +1522,7 @@ class ChartingState extends ScriptMusicBeatState
 				vocals.pause();
 				claps.splice(0, claps.length);
 				var daTime:Float = (FlxG.keys.pressed.SHIFT ? Conductor.stepCrochet * 2 : 700 * FlxG.elapsed);
-				if (FlxG.keys.justPressed.W) FlxG.sound.music.time -= daTime;
+				if (FlxG.keys.pressed.W) FlxG.sound.music.time -= daTime;
 				else FlxG.sound.music.time += daTime;
 				vocals.time = FlxG.sound.music.time;
 			}
@@ -2315,8 +2314,7 @@ class ChartingState extends ScriptMusicBeatState
 
 				// }
 				try{
-					lastPath = path;
-					onlinemod.OfflinePlayState.chartFile = path;}catch(e){return;}
+					lastPath = onlinemod.OfflinePlayState.chartFile = path;}catch(e){return;}
 					//Bodgey as hell but doesn't work otherwise
 					sys.io.File.saveContent(path,'{"song":' + data + "}");
 
@@ -2332,6 +2330,18 @@ class ChartingState extends ScriptMusicBeatState
 	}
 	function saveRemind(show:Bool = true){ // Save reminder every 10 minutes
 		if(show)showTempmessage("Don't forget to save frequently!",FlxColor.RED);
+		try{
+			var path = (onlinemod.OfflinePlayState.chartFile ?? lastPath) + ".bak";
+			callInterp('autosaveChart',[path]);
+			var _raw = _song.rawJSON;
+			_song.rawJSON = null;
+			var data:String = Json.stringify(_song);
+			_song.rawJSON = _raw;
+			sys.io.File.saveContent(path,'{"song":' + data + "}");
+			showTempmessage("Backup saved!",FlxColor.RED);
+		}catch(e){
+			trace(e);
+		}
 		if(saveReminder != null)saveReminder.cancel();
 		saveReminder = new FlxTimer().start(600,function(tmr:FlxTimer){saveRemind();});
 	}

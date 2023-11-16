@@ -281,8 +281,7 @@ class MainMenuState extends SickMenuState
 		options = ["deprecated freeplay","download charts","download characters","import charts from mods","changelog", 'credits'];
 		descriptions = ['Play any song from the main game or your assets folder',"Download charts made for or ported to Super Engine","Download characters made for or ported to Super Engine",'Convert charts from other mods to work here. Will put them in Modded Songs',"Read the latest changes for the engine","Check out the awesome people who helped with this engine in some way"];
 		
-		if (ChartingState.charting) {options.unshift("open closed chart"); descriptions.unshift("It looks like a chart is still open. This option will reopen the chart editor");}
-		if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
+				if (TitleState.osuBeatmapLoc != '') {options.push("osu beatmaps"); descriptions.push("Play osu beatmaps converted over to FNF");}
 		options.push("back"); descriptions.push("Go back to the main menu");
 		curSelected = 0;
 
@@ -304,10 +303,6 @@ class MainMenuState extends SickMenuState
 			//Damn, talk about a huge difference from 9 options down to 3
 			options = ['modded songs',"scripted states","credits",'options'];
 			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state",'Customise your experience to fit you'];
-			if(ChartingState.charting){
-				options.unshift('open unfinished chart');
-				descriptions.unshift('Looks like the chart editor closed incorrectly. You can reopen it here');
-			}
 		#if !mobile
 		}else{
 			options = ['modded songs','join FNF\'br server',
@@ -320,8 +315,10 @@ class MainMenuState extends SickMenuState
 			'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
 			#end
 			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state",'Open your mods folder in your File Manager','Customise your experience to fit you'];
+
 		}
 		#end
+		if (ChartingState.charting) {options.unshift("open closed chart"); descriptions.unshift("It looks like a chart is still open. This option will reopen the chart editor");}
 		curSelected = 0;
 		#if(!mobile)
 			otherMenu = false;
@@ -350,8 +347,7 @@ class MainMenuState extends SickMenuState
 			}
 		}
 		
-		switch (daChoice)
-		{
+		switch (daChoice){
 
 			case 'open closed chart':
 				loading = true;

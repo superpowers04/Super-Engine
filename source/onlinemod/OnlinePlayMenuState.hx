@@ -17,7 +17,7 @@ import openfl.net.Socket;
 import openfl.utils.ByteArray;
 using StringTools;
 
-class OnlinePlayMenuState extends MusicBeatState
+class OnlinePlayMenuState extends ScriptMusicBeatState
 {
 	var errorMessage:String;
 	var errorColor:FlxColor;
@@ -45,6 +45,7 @@ class OnlinePlayMenuState extends MusicBeatState
 		OnlinePlayState.useSongChar = ["","",""];
 		errorMessage = message;
 		errorColor = color;
+
 		// if(OnlineHostMenu.socket != null){
 		// 	OnlineHostMenu.shutdownServer();
 		// }
@@ -96,6 +97,9 @@ class OnlinePlayMenuState extends MusicBeatState
 
 		if(FlxG.save.data.savedServers.length == 0) openSubState(new onlinemod.OnlineAddServer());
 
+		scriptSubDirectory = "/onlineserverlist/";
+		useNormalCallbacks = true;
+		loadScripts(true);
 		super.create();
 	}
 	public override function closeSubState(){
@@ -136,8 +140,7 @@ class OnlinePlayMenuState extends MusicBeatState
 		}
 	}
 
-	public static function OnData(e:ProgressEvent)
-	{
+	public static function OnData(e:ProgressEvent){
 		var data:ByteArray = new ByteArray();
 		socket.readBytes(data);
 		receiver.OnData(data);
@@ -146,9 +149,8 @@ class OnlinePlayMenuState extends MusicBeatState
 	public static function OnError(e:IOErrorEvent)
 	{
 		if (Type.getClass(FlxG.state) == OnlinePlayMenuState)
-			OnlinePlayMenuState.SetErrorText('Socket error: ${e.text}');
-		else
-			FlxG.switchState(new OnlinePlayMenuState('Socket error: ${e.text}'));
+			return OnlinePlayMenuState.SetErrorText('Socket error: ${e.text}');
+		FlxG.switchState(new OnlinePlayMenuState('Socket error: ${e.text}'));
 
 	}
 

@@ -19,7 +19,7 @@ import sys.io.File;
 import tjson.Json;
 using StringTools;
 
-class OnlineLobbyState extends MusicBeatState
+class OnlineLobbyState extends ScriptMusicBeatState
 {
 
   var clientTexts:Map<Int, Int> = []; // Maps a player ID to the corresponding index in clientsGroup
@@ -43,23 +43,23 @@ class OnlineLobbyState extends MusicBeatState
   var keepClients:Bool;
   var showingLeaderBoard:Bool = true;
   var hasLeaderboard:Bool = false;
+  var handleNextPacket:Bool = true;
   // public static var loadedScripts:Bool = false;
 
 	public function new(keepClients:Bool=false,?_hasLeaderboard:Bool = false)
 	{
 		super();
-
+		scriptSubDirectory = "/onlinelobby/";
 		if(_hasLeaderboard){
 			showingLeaderBoard = false;
 			hasLeaderboard = true;
 		}
-		if (!keepClients)
-		{
-		  clients = [];
-		  clientsOrder = [];
-		  receivedPrevPlayers = false;
+		if (!keepClients){
+			clients = [];
+			clientsOrder = [];
+			receivedPrevPlayers = false;
 
-		  Chat.chatMessages = [];
+			Chat.chatMessages = [];
 		}
 		FlxG.mouse.visible = true;
 
@@ -71,11 +71,10 @@ class OnlineLobbyState extends MusicBeatState
 		if(showingLeaderBoard){
 			backButton.getLabel().name = "Show Player List";
 			replace(clientsGroup,clientsGroupLeaderboard);
-		}else{
-			backButton.getLabel().name = "Show Leaderboard";
-			replace(clientsGroupLeaderboard,clientsGroup);
-
+			return;
 		}
+		backButton.getLabel().name = "Show Leaderboard";
+		replace(clientsGroupLeaderboard,clientsGroup);
 	}
 	var backButton:FlxUIButton;
   override function create()
@@ -138,8 +137,7 @@ class OnlineLobbyState extends MusicBeatState
 	Chat.createChat(this);
 
 
-	if (!keepClients)
-	  Chat.PLAYER_JOIN(OnlineNickState.nickname);
+	if (!keepClients) Chat.PLAYER_JOIN(OnlineNickState.nickname);
 
 
 	OnlinePlayMenuState.AddXieneText(this);
@@ -150,12 +148,11 @@ class OnlineLobbyState extends MusicBeatState
 
 
 	OnlinePlayMenuState.receiver.HandleData = HandleData;
-	if (!keepClients)
-	  Sender.SendPacket(Packets.JOINED_LOBBY, [], OnlinePlayMenuState.socket);
+	if (!keepClients) Sender.SendPacket(Packets.JOINED_LOBBY, [], OnlinePlayMenuState.socket);
 
 	optionsButton = new FlxUIButton(1100, 30, "Quick Options", () -> {
-	  Chat.created = false;
-	  FlxG.switchState(new OnlineOptionsMenu());
+		Chat.created = false;
+		FlxG.switchState(new OnlineOptionsMenu());
 	});
 	optionsButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
 	optionsButton.resize(160, 70);
@@ -186,16 +183,19 @@ class OnlineLobbyState extends MusicBeatState
 	clientTexts = [];
 	clientCount = 0;
 
-	for (i in clientsOrder)
-	{
-	  var nick:String = i != -1 ? clients[i] : OnlineNickState.nickname;
-	  addPlayerUI(i, nick, i == -1 ? FlxColor.YELLOW : null);
+	for (i in clientsOrder){
+		addPlayerUI(i, i == -1 ? OnlineNickState.nickname : clients[i], i == -1 ? FlxColor.YELLOW : null);
 	}
   }
 
   function HandleData(packetId:Int, data:Array<Dynamic>)
   {
 	OnlinePlayMenuState.RespondKeepAlive(packetId);
+	callInterp("packetRecieve",[packetId,data]);
+	if(!handleNextPacket){
+		handleNextPacket = true;
+		return;
+	}
 	switch (packetId)
 	{
 	  case Packets.BROADCAST_NEW_PLAYER:
@@ -239,9 +239,9 @@ class OnlineLobbyState extends MusicBeatState
 		Chat.MUTED();
 	  case Packets.SERVER_CHAT_MESSAGE:
 		if(data[0] == "'ceabf544' This is a compatibility message, Ignore me!"){
-		  TitleState.supported = true;
-		  Sender.SendPacket(Packets.SUPPORTED, [], OnlinePlayMenuState.socket);
-		  Chat.SERVER_MESSAGE("This server is compatible with extra features!");
+			TitleState.supported = true;
+			Sender.SendPacket(Packets.SUPPORTED, [], OnlinePlayMenuState.socket);
+			Chat.SERVER_MESSAGE("This server is compatible with extra features!");
 		}else if(StringTools.startsWith(data[0],"'32d5d167'")) handleServerCommand(data[0],0); else Chat.SERVER_MESSAGE(data[0]);
 
 	  case Packets.DISCONNECT:

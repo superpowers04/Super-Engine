@@ -1,9 +1,4 @@
-23.11.09.1206;
-* ***Possibly breaking change:*** Switch from hscript-ex to hscript-improved
-* UI Keys now have alts
-* Allow importing of songs you opened using drag'n'drop
-* Move built-in songs to mods folder to be example mods instead
-* Rewrite internals of the modded songs list to be more effecient
-* Cam zooming now works more like Psych Engine i.e I fixed cam zooming *finally*
-* the text `ignoreScript` being at the beginning of a lua file will make the file be ignored
-  * Note this should probably be `ignoreScript = true` and not just `ignoreScript` to prevent causing issues with older versions of SE or other engines
+23.11.16.1357;
+* A bunch of fixes
+* The game now actually autosaves the chart in the chart editor
+* Make scrollbar work like other scrollbars(If you hold click, it'll scroll until you let go even if you're not hovering over it)

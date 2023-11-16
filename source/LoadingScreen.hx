@@ -10,24 +10,58 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
+import lime.app.Application;
 
 class LoadingScreen extends Sprite{
 	public static var object:LoadingScreen;
 	public static var isVisible = false;
 
-	public static var loadingText(default,set):String = "";
-	public static function set_loadingText(val:String):String{
-		// Main.game.blockUpdate = Main.game.blockDraw = true;
-		// lime.app.Application.current.draw();
-		// Main.game.blockUpdate = Main.game.blockDraw = false;
-		return loadingText = val;
-	}
+	public static var loadingText:String = "";
 	// var _loadingText:String = "";
 	var funni = false;
 	var textField:TextField;
+	var tipTextField:TextField;
 	// var loadingText:Alphabet;
 	var loadingIcon:Sprite;
 	var vel:Float = 0;
+	static var tips:Array<String> = [
+		"You can drag a PNG or XML of a character into the game to import them.",
+		"You can drag any FNF json chart into the game and play it. Some weird engines might not work though..",
+		"With threaded loading, this loading screen has a chance of crashing\nbecause of Flixel trying to make an FlxText at the wrong time...",
+		"By default, the only characters available are GF and BF.",
+		"Enable Content Creation Mode for some stuff that might help with making packs.",
+		"You've just wasted your time looking at this....",
+		"This engine is buggy as hell.\nFeel free to report any bugs you find on the Discord server.",
+		"Hey, look Mom! I'm on a loading screen!!!",
+		"I'm here to pad out the loading screen messages. How am I doing? :3",
+		"goober","l + bozo + ratio + skill issue + bruh",
+		"Never do drugs, you'll probably die",
+		"Lua >>> python, fight me",
+		'You opened the game at ${Date.now()}',
+		#if windows
+		"Totally real error! Delete system32 to fix!!!! hah got you so good...\ndon't actually delete that please",
+		#elseif !mobile
+		"Totally real error! Run 'sudo rm -rf /' to fix!!!! hah got you so good...\nNote that will delete your entire drive. Do not run it",
+		#end
+		'You\'re currently on ${MainMenuState.ver}. You probably knew that though...',
+		'Also try Terraria. I mean it\'s a different genre but the game\'s still cool',
+		"This game can still crash on stupid shit even though it has so much error checking...",
+		// 'This game\'s native resolution is 1280x720. You started the game with ${Application.current.window.width}x${Application.current.window.height}.',
+		"Did you know that Content Creation Mode enables a debug console?\nYou can use F10 for it..",
+		"Did you know that Content Creation Mode enables an object mover?\nYou can use Shift+F8 for it..",
+		"Did you know that missing a note will make you lose health?",
+		"If you have practice mode disabled, you will die at 0 health.\n Otherwise your score will just not save",
+		"your mother",
+		"I'm going to kill you and all the cake is gone",
+		"You will be baked, and then there will be cake",
+		"The cake is a lie",
+		"Part 5: Booby trap the stalemate button",
+		"This is the part where he kills you",
+		"This text is so long that it will probably fall off the screen\n and you will be unable to read it because I'm such a massive troll\n that likes to make text fall off the screen to troll people lmao lmao this is just padding to make the text even longer I got you so goooooooooddddddd ",
+		"sex",
+		"If you're under the age of 13...<br> what the hell are you doing playing fnf? Go do your homework or something"
+	];
+	static var currentTip:Int = 0;
 
 	public override function new(?txt = "loading"){
 		super();
@@ -92,20 +126,29 @@ class LoadingScreen extends Sprite{
 		errText.scrollFactor.set();
 		var oldTF = errText.textField;
 		errText.destroy();
-		textField = new TextField();
+		addChild(textField = new TextField());
 		textField.width = 1280;
 		textField.text = "";
 		textField.y = 720 * 0.7;
-		addChild(textField);
+		addChild(tipTextField = new TextField());
+		tipTextField.width = 1280;
+		tipTextField.text = "";
+		tipTextField.y = 720 * 0.75;
 
 
 		// textField.x = (1280 * 0.5);
 		var tf = new TextFormat(oldTF.defaultTextFormat.font, 32, 0xFFFFFF);
-		textField.embedFonts = oldTF.embedFonts;
+		tipTextField.embedFonts = textField.embedFonts = oldTF.embedFonts;
 		tf.align = "center";
 
 		textField.defaultTextFormat = tf;
-		// addChild(Main.fpsCounter);
+
+
+		var tf = new TextFormat(oldTF.defaultTextFormat.font, 24, 0xffaaff);
+		
+		tf.align = "center";
+		tipTextField.defaultTextFormat = tf;
+
 
 		// new FlxTimer().start(0.1,function(_){
 		// 	FlxG.cameras.remove(cam);
@@ -150,7 +193,6 @@ class LoadingScreen extends Sprite{
 					}
 				}
 			}
-
 			if(FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.F1){
 				MainMenuState.handleError("Manually triggered force exit");
 			}
@@ -165,8 +207,10 @@ class LoadingScreen extends Sprite{
 		}	
 	} 
 	function updateText(){
-		textField.htmlText = loadingText;
+		textField.htmlText =  '$loadingText';
+		tipTextField.text = tips[currentTip] ?? "your mother";
 		if(loadingIcon != null) vel += 0.15;
+		
 		// textField.x = (1280 * 0.5) - textField.width;
 	}
 	public static var tween:FlxTween;
@@ -177,9 +221,10 @@ class LoadingScreen extends Sprite{
 		// object.alpha = 1;
 		if(tween != null){tween.cancel();}
 		isVisible = object.funni = true;
+		currentTip = Math.floor(Math.random() * tips.length);
 		object.elapsed = 0;
-		object.scaleX = lime.app.Application.current.window.width / 1280;
-		object.scaleY = lime.app.Application.current.window.height / 720;
+		object.scaleX = Application.current.window.width / 1280;
+		object.scaleY = Application.current.window.height / 720;
 		Main.funniSprite.addChildAt(object,1);
 		loadingText = "";
 		object.updateText();
@@ -195,7 +240,8 @@ class LoadingScreen extends Sprite{
 		isVisible = object.funni = false;
 		object.alpha = 0;
 		try{
-			Main.funniSprite.removeChild(object);}catch(e){}
+			Main.funniSprite.removeChild(object);
+		}catch(e){}
 	}
 	public static function hide(){
 		Main.game.blockUpdate = Main.game.blockDraw = false;
@@ -206,12 +252,13 @@ class LoadingScreen extends Sprite{
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 1;
-		if(!FlxG.save.data.doCoolLoading)
+		if(!FlxG.save.data.doCoolLoading){
 			try{
 				tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){Main.funniSprite.removeChild(object);}});
 			}catch(e){
 				object.alpha = 0;
 			}
+		}
 		
 	}
 

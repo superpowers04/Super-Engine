@@ -39,7 +39,7 @@ typedef WeekSong = {
 }
 
 
-class StoryMenuState extends MusicBeatState
+class StoryMenuState extends ScriptMusicBeatState
 {
 	var scoreText:FlxText;
 

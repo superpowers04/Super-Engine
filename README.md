@@ -21,7 +21,7 @@ I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highl
 # Modding information
 Read the [mods/readme.txt](https://github.com/superpowers04/Super-Engine/blob/nightly/example_mods/readme.txt) for info about installing/making custom characters, charts, stages and more. 
 <br>**Anything beyond bf and gf SHOULD NOT be hardcoded into this engine.** This engine is meant to be a 1 time install with updates, Please do not package this engine inside of a mod. 
-<br>If you *have* to include an engine/exe in your mod, [Forever Engine Legacy](https://github.com/BeastlyGabi/Forever-Engine-Legacy) and [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) are far more fit for this
+<br>If you *have* to include an engine/exe in your mod, [Crowplexus' fork of Forever Engine](https://github.com/crowplexus/Forever-Engine), [Forever Engine Legacy](https://github.com/crowplexus/Forever-Engine-Legacy) and [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) are far more fit for this
 
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide. Although you will also need to use
