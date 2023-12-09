@@ -129,6 +129,7 @@ class SelectScriptableState extends SearchMenuState{
 			interp.variables.set("close",function(){ FlxG.switchState(new SelectScriptableState()); }); // Closes a script
 			interp.variables.set("Manager",ScriptableStateManager);
 			interp.variables.set("ScriptableStateManager",ScriptableStateManager);
+			interp.variables.set("FlxG",FlxG);
 			interp.variables.set("state",null);
 			interp.execute(program);
 			if(brTools != null)brTools.reset();

@@ -9,20 +9,16 @@ import flixel.util.FlxAxes;
 
 using StringTools;
 
-class OnlineResultState extends MusicBeatState
-{
-  var clients:Map<Int, String>;
+class OnlineResultState extends MusicBeatState {
 
   public function new(clients:Map<Int, String>)
   {
     super();
-
-    this.clients = clients;
   }
 
   override function create()
   {
-    var bg:FlxSprite = new FlxSprite().loadGraphic('assets/images/onlinemod/online_bg1.png');
+    var bg:FlxSprite = SELoader.loadFlxSprite('assets/images/onlinemod/online_bg1.png',true);
 		add(bg);
 
 
@@ -110,7 +106,7 @@ class OnlineResultState extends MusicBeatState
         var id:Int = data[0];
         var message:String = data[1];
 
-        Chat.MESSAGE(OnlineLobbyState.clients[id], message);
+        Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
       case Packets.REJECT_CHAT_MESSAGE:
         Chat.SPEED_LIMIT();
       case Packets.MUTED:

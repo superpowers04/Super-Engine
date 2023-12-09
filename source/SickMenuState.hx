@@ -230,8 +230,7 @@ class SickMenuState extends ScriptMusicBeatState
 		if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
 		if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
 
-		if (controls.ACCEPT && grpControls.members[curSelected] != null)
-		{
+		if (controls.ACCEPT && grpControls.members[curSelected] != null) {
 			if(doResize){
 				FlxTween.tween(grpControls.members[curSelected],{x:FlxG.width},2,{ease:FlxEase.quadIn});
 				if(curTween != null)curTween.cancel();
@@ -272,6 +271,7 @@ class SickMenuState extends ScriptMusicBeatState
 	}
 	var isEpicTween:Bool = false;
 	var curTween:FlxTween;
+	var beatTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
 		if(grpControls.members[curSelected] != null && !isEpicTween){
@@ -279,6 +279,14 @@ class SickMenuState extends ScriptMusicBeatState
 			grpControls.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();
 			curTween = FlxTween.tween(grpControls.members[curSelected].scale,{x:1,y:1},Conductor.stepCrochet * 0.003,{ease:FlxEase.circOut});
+		}
+		if(FlxG.save.data.beatBouncing){
+			if(beatTween != null){
+				beatTween.cancel();
+				beatTween.destroy();
+			}else{
+				beatTween = FlxTween.tween(bg.scale.set(1.01,1.01),{x:1,y:1},Conductor.stepCrochet * 0.003);
+			}
 		}
 	}
 	function select(sel:Int){

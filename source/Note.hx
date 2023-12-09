@@ -479,11 +479,11 @@ class Note extends FlxSprite
 								canBeHit = false;
 						}else{
 
-							if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) ) ||
-							    strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
+							if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + ((Conductor.safeZoneOffset * 0.5) * Conductor.timeScale)) ) ||
+							    strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * Conductor.timeScale) && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
 									canBeHit = true;
 
-							if (!wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale){
+							if (!wasGoodHit && strumTime < Conductor.songPosition - (Conductor.safeZoneOffset * Conductor.timeScale)){
 								canBeHit = false;
 								tooLate = true;
 								skipNote = true;

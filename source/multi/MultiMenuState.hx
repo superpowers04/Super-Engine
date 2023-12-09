@@ -32,6 +32,8 @@ using StringTools;
 	var isCategory:Bool = false;
 	var name:String = "";
 	var charts:Array<String>;
+	@:optional var voices:Null<String>;
+	@:optional var inst:Null<String>;
 	var path:String = "";
 	var namespace:String = null;
 	var categoryID:Int = 0;
@@ -54,6 +56,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 
 	var shouldDraw:Bool = true;
 	var inTween:FlxTween;
+	var beatTween:FlxTween;
 	var score:Int = 0;
 	var interpScore:Int = 0;
 	var shouldVoicesPlay:Bool = false;
@@ -76,18 +79,24 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			voices.time = FlxG.sound.music.time;
 			voices.play();
 		}
+		if(shouldDraw && FlxG.save.data.beatBouncing){
+			if(beatTween != null){
+				beatTween.cancel();
+				beatTween.destroy();
+			}
+			beatTween = FlxTween.tween(bg.scale.set(1.01,1.01),{x:1,y:1},Conductor.stepCrochet * 0.003);
+		}
 		super.beatHit();
 	}
 	override function findButton(){
 		super.findButton();
 		changeDiff();
 	}
-	override function switchTo(nextState:FlxState):Bool{
+	override function switchTo(nextState:FlxState):Bool {
 		FlxG.autoPause = true;
 		if(voices != null){
 			voices.destroy();
 			voices = null;
-
 		}
 		return super.switchTo(nextState);
 	}
@@ -123,10 +132,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		lastSel = 1;
 		changeDiff();
 		updateInfoText('Use shift to scroll faster; Shift+F10 to erase the score of the current chart. Press CTRL/Control to listen to inst/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songInfoArray.length} songs.');
-		}catch(e){MainMenuState.handleError(e,'Something went wrong in create; ${e.message}\n${e.stack}');
-		}
-
-	}
+	}catch(e){MainMenuState.handleError(e,'Something went wrong in create; ${e.message}\n${e.stack}');}}
 	override function onFocus() {
 		shouldDraw = true;
 		super.onFocus();
@@ -254,7 +260,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				reloadListFromMemory(search,query);
 			#if (false && target.threaded)
 				allowInput = true;
-				
 				replace(loadingText,grpSongs);
 				loadingText.destroy();
 			});
@@ -277,7 +282,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					if (search != "" && !query.match(directory.toLowerCase())) continue; // Handles searching
 					var song = addSong('${dataDir}${directory}',directory,catID);
 					if(song == null) continue;
-
 					if(!containsSong){
 						containsSong = true;
 						addCategory('Charts Folder',i);
@@ -334,26 +338,51 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					// dataDir = "mods/packs/" + dataDir + "/charts/";
 					var catMatch = query.match(name.toLowerCase());
 					var dataDir = "mods/packs/" + name + "/charts/";
-					if(!SELoader.exists(dataDir)){continue;}
+					if(!SELoader.exists(dataDir) && !SELoader.exists(dataDir = "mods/packs/" + name + "/data/")){continue;}
 					_packCount++;
 					var containsSong = false;
 					var dirs = orderList(SELoader.readDirectory(dataDir));
-					LoadingScreen.loadingText = 'Scanning mods/packs/$name/charts/';
-					for (directory in dirs){
-						if (SELoader.isDirectory('${dataDir}${directory}') && (search != "" && !catMatch && !query.match(directory.toLowerCase()))) continue; // Handles searching
-						if (SELoader.exists('${dataDir}${directory}/Inst.ogg') || SELoader.exists('${dataDir}${directory}/ignoreMissingInst') ){
-							var song = addSong('${dataDir}${directory}',directory,catID);
-							if(song == null) continue;
-							song.namespace = name;
-							if(!containsSong){
-								containsSong = true;
-								addCategory(name,i);
+					if(dataDir == 'mods/packs/$name/data/'){ // Vanilla style
+						var songDir = 'mods/packs/$name/songs/';
+						LoadingScreen.loadingText = 'Scanning mods/packs/$name/data/';
+						for (directory in dirs){
+							if (SELoader.isDirectory('${dataDir}${directory}') && (search != "" && !catMatch && !query.match(directory.toLowerCase()))) continue; // Handles searching
+							if (SELoader.exists('${songDir}${directory}/Inst.ogg')){
+								var song = addSong('${dataDir}${directory}',directory,catID);
+								if(song == null) continue;
+								song.inst = '${songDir}${directory}/Inst.ogg';
+								song.voices = '${songDir}${directory}/Voices.ogg';
+								song.namespace = name;
+								if(!containsSong){
+									containsSong = true;
+									addCategory(name,i);
+									i++;
+								}
+								addListing(directory,i,song);
+								songInfoArray.push(song);
+								if(_goToSong == 0)_goToSong = i;
 								i++;
 							}
-							addListing(directory,i,song);
-							songInfoArray.push(song);
-							if(_goToSong == 0)_goToSong = i;
-							i++;
+						}
+					}else{ // SE Style
+
+						LoadingScreen.loadingText = 'Scanning mods/packs/$name/charts/';
+						for (directory in dirs) {
+							if (SELoader.isDirectory('${dataDir}${directory}') && (search != "" && !catMatch && !query.match(directory.toLowerCase()))) continue; // Handles searching
+							if (SELoader.exists('${dataDir}${directory}/Inst.ogg') || SELoader.exists('${dataDir}${directory}/ignoreMissingInst') ){
+								var song = addSong('${dataDir}${directory}',directory,catID);
+								if(song == null) continue;
+								song.namespace = name;
+								if(!containsSong) {
+									containsSong = true;
+									addCategory(name,i);
+									i++;
+								}
+								addListing(directory,i,song);
+								songInfoArray.push(song);
+								if(_goToSong == 0) _goToSong = i;
+								i++;
+							}
 						}
 					}
 					if(!containsSong){
@@ -435,9 +464,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			}
 		}
 	}
+	/*TODO: REMOVE ALL INSTANCES OF SONGNAME*/
 	public static function gotoSong(?selSong:String = "",?songJSON:String = "",?songName:String = "",?charting:Bool = false,?blankFile:Bool = false,?voicesFile:String="",?instFile:String=""){
 			try{
-				if(selSong == "" || songJSON == "" || songName == ""){
+				if(selSong == "" || songJSON == ""){
 					throw("No song name provided!");
 				}
 				#if windows
@@ -448,18 +478,18 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				PlayState.isStoryMode = false;
 				// Set difficulty
 				PlayState.songDiff = songJSON;
-				PlayState.storyDifficulty = (if(songJSON == '${songName}-easy.json') 0 else if(songJSON == '${songName}-easy.json') 2 else 1);
+				PlayState.storyDifficulty = (songJSON.endsWith('-easy.json') ? 0 : (songJSON.endsWith('easy.json') ? 2 : 1));
 				PlayState.actualSongName = songJSON;
 				onlinemod.OfflinePlayState.voicesFile = '';
 				PlayState.hsBrToolsPath = selSong;
 				PlayState.scripts = [];
 
 				onlinemod.OfflinePlayState.instFile = (instFile != "" ? instFile 
-					:(FileSystem.exists('${chartFile}-Inst.ogg') ? '${chartFile}-Inst.ogg' 
-					:'${selSong}/Inst.ogg'));
+					: (FileSystem.exists('${chartFile}-Inst.ogg') ? '${chartFile}-Inst.ogg' 
+					: '${selSong}/Inst.ogg'));
 				onlinemod.OfflinePlayState.voicesFile = (voicesFile != "" ? voicesFile 
-					:(FileSystem.exists('${chartFile}-Voices.ogg') ? '${chartFile}-Voices.ogg' 
-					:(FileSystem.exists('${selSong}/Voices.ogg') ? '${selSong}/Voices.ogg'
+					: (FileSystem.exists('${chartFile}-Voices.ogg') ? '${chartFile}-Voices.ogg' 
+					: (FileSystem.exists('${selSong}/Voices.ogg') ? '${selSong}/Voices.ogg'
 					: '')));
 				loadScriptsFromSongPath(selSong);
 				// if (FileSystem.exists('${selSong}/script.hscript')) {
@@ -514,9 +544,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${chart}';
 				PlayState.SONG = Song.parseJSONshit(SELoader.loadText(onlinemod.OfflinePlayState.chartFile),true);
 			}
-			if (SELoader.exists('${songLoc}/Voices.ogg')) {onlinemod.OfflinePlayState.voicesFile = '${songLoc}/Voices.ogg';}
+			onlinemod.OfflinePlayState.voicesFile = (songInfo.voices ?? (SELoader.exists('${songLoc}/Voices.ogg') ? '${songLoc}/Voices.ogg' : ""));
 			PlayState.hsBrTools = new HSBrTools('${songLoc}');
-			onlinemod.OfflinePlayState.instFile = '${songLoc}/Inst.ogg';
+			onlinemod.OfflinePlayState.instFile = (songInfo.inst ?? '${songLoc}/Inst.ogg');
 			if(SELoader.exists(onlinemod.OfflinePlayState.chartFile + "-Inst.ogg")){
 				onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.chartFile + "-Inst.ogg";
 			}
@@ -524,7 +554,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				onlinemod.OfflinePlayState.voicesFile = onlinemod.OfflinePlayState.chartFile + "-Voices.ogg";
 			}
 			PlayState.stateType = 4;
-			PlayState.SONG.needsVoices =  onlinemod.OfflinePlayState.voicesFile != "";
+			PlayState.SONG.needsVoices = onlinemod.OfflinePlayState.voicesFile != "";
 			ChartingState.gotoCharter();
 			// LoadingState.loadAndSwitchState(new charting.ForeverChartEditor());
 			return;
@@ -541,10 +571,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		{
 			var diffList:Array<String> = PlayState.songDifficulties = [];
 			for(i => v in songInfo.charts){
-				diffList.push(songs[curSelected] + "/" + v);
+				diffList.push(songInfo.path + "/" + v);
 			}
 		}
-		gotoSong(SELoader.getPath(songInfo.path),songInfo.charts[selMode],songInfo.name);
+		gotoSong(SELoader.getPath(songInfo.path),songInfo.charts[selMode],songInfo.name,songInfo.inst,songInfo.voices);
 	}
 
 	override function select(sel:Int = 0){
@@ -578,9 +608,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		// }
 		// // Fucking flixel
 		if(curVol != FlxG.sound.volume){ // Don't change volume unless volume changes
-			curVol = FlxG.sound.volume;
-			FlxG.sound.music.volume = FlxG.save.data.instVol;
-			if(voices != null) voices.volume = FlxG.save.data.voicesVol;
+			try{
+				curVol = FlxG.sound.volume;
+				FlxG.sound.music.volume = FlxG.save.data.instVol;
+
+				if(voices != null) voices.volume = FlxG.save.data.voicesVol;
+			}catch(ignored){}
 		}
 	}
 
@@ -642,6 +675,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 				#end
 					if(curPlaying != songInfo.name){
 						if(songProgressParent != null){
+
 							try{
 								songProgressParent.remove(songProgress);
 								songProgressParent.remove(songProgressText);
@@ -739,8 +773,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 					}
 					if(playCount > 2){
 						playCount = 0;
-						openfl.system.System.gc();
+						SELoader.gc();
 					}
+					curVol = 0;
 					allowInput = true;
 				#if (target.threaded)
 				});
@@ -929,6 +964,51 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		FlxG.mouse.visible = false;
 		OptionsMenu.lastState = 4;
 		FlxG.switchState(new OptionsMenu());
+	}
+	public static function findSongByName(songName:String = "",?namespace:String = ""):String{
+		if(songName == "") return null;
+		if(namespace == "" && songName.contains('|')){
+			namespace = songName.substring(0,songName.indexOf('|'));
+			songName = songName.substring(songName.indexOf('|') + 1);
+
+		}
+		var probablyHasDifficulty = songName.contains("-");
+		var songNameWithoutDifficulty = (probablyHasDifficulty ? songName.substring(0,songName.lastIndexOf("-")) : "");
+		var difficulty = (probablyHasDifficulty ? songName.substring(songName.lastIndexOf("-") + 1) : "");
+		if(namespace != ""){
+			if(SELoader.exists('mods/packs/$namespace')){
+				var packDir = 'mods/packs/$namespace/charts';
+				var dir = SELoader.anyExists(['$packDir/$songName/$songName.json','$packDir/$songNameWithoutDifficulty/$songName.json']);
+				if(dir != null) return dir;
+			}
+			if(SELoader.exists('mods/weeks/$namespace')){
+				var packDir = 'mods/weeks/$namespace/charts';
+				var dir = SELoader.anyExists(['$packDir/$songName/$songName.json','$packDir/$songNameWithoutDifficulty/$songName.json']);
+				if(dir != null) return dir;
+			}
+		}
+		var dir = SELoader.anyExists(['mods/charts/$songName/$songName.json',
+									'mods/packs/$songNameWithoutDifficulty/charts/$songName/$songName.json',
+									'mods/packs/$songNameWithoutDifficulty/charts/$songNameWithoutDifficulty/$songName.json',
+									'mods/packs/$songName/charts/$songName/$songName.json',
+									'mods/charts/$songNameWithoutDifficulty/$songName.json']);
+		if(dir != null) return dir;
+		for(i in SELoader.readDirectory('mods/packs')){
+			var dir = SELoader.anyExists(['mods/packs/$i/charts/$songName/$songName.json','mods/packs/$i/charts/$songNameWithoutDifficulty/$songName.json']);
+			if(dir != null) return dir;
+		}
+		return null;
+	}
+	public static function playSongByName(songName:String = "",?namespace:String = ""):Bool{
+		var song = findSongByName(songName,namespace);
+		if(song == null)return false;
+		if(!SELoader.exists(song)){
+			trace('"$song" does not exist!');
+			return false;
+		}
+		gotoSong(song.substr(0,song.lastIndexOf('/')),song.substr(song.lastIndexOf('/') + 1));
+		return true;
+
 	}
 }
 typedef FuckingSong = {

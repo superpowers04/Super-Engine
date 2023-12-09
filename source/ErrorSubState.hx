@@ -27,8 +27,7 @@ using StringTools;
 
 
 
-class ErrorSubState extends MusicBeatSubstate
-{
+class ErrorSubState extends MusicBeatSubstate {
 	public var curSelected:Int = 0;
 	public var music:FlxSound;
 	public var perSongOffset:FlxText;

@@ -18,11 +18,8 @@ using StringTools;
 class ArrowSelection extends SearchMenuState
 {
 	public var playerStrums:FlxTypedGroup<StrumArrow> = new FlxTypedGroup<StrumArrow>();
-	function generateStaticArrows(player:Int):Void
-	{
-
-		for (i in 0...4)
-		{
+	function generateStaticArrows(player:Int):Void{
+		for (i in 0...4){
 			// FlxG.log.add(i);
 			var babyArrow:StrumArrow = new StrumArrow(i,0, if (FlxG.save.data.downscroll) FlxG.height - 165 else 50);
 
@@ -34,13 +31,6 @@ class ArrowSelection extends SearchMenuState
 			babyArrow.alpha = 0;
 			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			playerStrums.add(babyArrow);
-
-			
-			
-
-
-
-			// strumLineNotes.add(babyArrow);
 		}
 	}
 	override function create()

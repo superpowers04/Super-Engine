@@ -229,7 +229,7 @@ class OnlineLoadState extends MusicBeatState
 					var id:Int = data[0];
 					var message:String = data[1];
 
-					Chat.MESSAGE(OnlineLobbyState.clients[id], message);
+					Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
 				case Packets.REJECT_CHAT_MESSAGE:
 					Chat.SPEED_LIMIT();
 				case Packets.SERVER_CHAT_MESSAGE:
@@ -237,7 +237,7 @@ class OnlineLoadState extends MusicBeatState
 
 				case Packets.PLAYER_LEFT:
 					var id:Int = data[0];
-					var nickname:String = OnlineLobbyState.clients[id];
+					var nickname:String = OnlineLobbyState.clients[id].name;
 
 					OnlineLobbyState.removePlayer(id);
 					Chat.PLAYER_LEAVE(nickname);

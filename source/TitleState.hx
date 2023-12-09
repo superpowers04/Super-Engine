@@ -160,7 +160,7 @@ class TitleState extends MusicBeatState
 			if(retBF) return defaultChar;
 			return null;
 		}
-		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
+		if(!Math.isNaN(Std.parseInt(char))){
 			var e = Std.parseInt(char);
 			if(characters[e] != null){
 
@@ -173,10 +173,32 @@ class TitleState extends MusicBeatState
 			}
 		}
 		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
-		for (i in characters){
-			if(i.id == char.toLowerCase()){
-				return i;
+		
+		if(char.contains("-")){
+			var splitChar = char.split('-');
+			var splitCharMap:Map<String,Int> = [];
+			var curStr = "";
+			for(index => split in splitChar){
+				curStr +=(index == 0 ? split : '-$split');
+				splitCharMap[curStr] = index;
 			}
+			var curProbability = -1;
+			var probableChar:CharInfo = null;
+			for (i in characters){
+				if(i.id == char){
+					return i;
+				}else if(splitCharMap.exists(i.id)){
+					curProbability = splitCharMap[i.id];
+					probableChar = i;
+				}
+			}
+			if(curProbability >= 0){
+				trace('Found character with substring ${probableChar.id}');
+				return probableChar;
+			}
+
+		}else{
+			for (i in characters) if(i.id == char) return i;
 		}
 		trace('Unable to find $char!');
 		if(retBF) return defaultChar;
@@ -194,9 +216,7 @@ class TitleState extends MusicBeatState
 		}
 		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
 		for (i in invalidCharacters){
-			if(i.id == char){
-				return i;
-			}
+			if(i.id == char) return i;
 		}
 		
 		return findChar(char);
@@ -212,15 +232,45 @@ class TitleState extends MusicBeatState
 			return null;
 		}
 		var currentChar:CharInfo = null;
-		char = char.replace(' ',"-").replace('_',"-");
-		for (i in characters){
-			if(i.id == char.toLowerCase()){
-				if(i.nameSpace == namespace && (nameSpaceType == -1 || i.nameSpaceType == nameSpaceType)){
-					return i;
+		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
+		
+		if(char.contains("-")){
+			var splitChar = char.split('-');
+			var splitCharMap:Map<String,Int> = [];
+			var curStr = "";
+			for(index => split in splitChar){
+				splitCharMap[curStr += (index == 0 ? split : '-$split')] = index;
+			}
+			var curProbability = -1;
+			var probableChar:CharInfo = null;
+			for (i in characters){
+				if(i.id == char){
+					if(i.nameSpace == namespace && (nameSpaceType == -1 || i.nameSpaceType == nameSpaceType)){
+						return i;
+					}
+					currentChar = i;
+				}else if(currentChar == null && splitCharMap.exists(i.id)){
+					curProbability = splitCharMap[i.id];
+					probableChar = i;
 				}
-				currentChar = i;
+			}
+			if(currentChar == null && curProbability >= 0){
+				trace('Found character with substring ${probableChar.id}');
+				return probableChar;
+			}
+
+		}else{
+			for (i in characters){
+				if(i.id == char.toLowerCase()){
+					if(i.nameSpace == namespace && (nameSpaceType == -1 || i.nameSpaceType == nameSpaceType)){
+						return i;
+					}
+					currentChar = i;
+				}
 			}
 		}
+
+
 		if(currentChar == null){
 			trace('Unable to find $char!');
 			if(retBF) return defaultChar;
@@ -294,6 +344,7 @@ class TitleState extends MusicBeatState
 						id:char.replace(' ','-').replace('_','-').toLowerCase(),
 						folderName:char,
 						path:"assets/characters/",
+						nameSpace:"SEAssetsFolder",
 						description:desc
 					});
 
@@ -302,6 +353,7 @@ class TitleState extends MusicBeatState
 					invalidCharacters.push({
 						id:char.replace(' ','-').replace('_','-').toLowerCase(),
 						folderName:char,
+						nameSpace:"SEAssetsFolder",
 						path:dir
 					});
 				}
@@ -321,6 +373,7 @@ class TitleState extends MusicBeatState
 				characters.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
 					folderName:directory,
+					nameSpace:"SECharactersFolder",
 					description:desc
 				});
 			}else if (SELoader.exists("mods/characters/"+directory+"/script.hscript"))
@@ -333,6 +386,7 @@ class TitleState extends MusicBeatState
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
 					folderName:directory,
 					description:desc,
+					nameSpace:"SECharactersFolder",
 					type:1
 				});
 			}else if (SELoader.exists("mods/characters/"+directory+"/character.png") && (SELoader.exists("mods/characters/"+directory+"/character.xml") || SELoader.exists("mods/characters/"+directory+"/character.json"))){
@@ -340,6 +394,7 @@ class TitleState extends MusicBeatState
 				invalidCharacters.push({
 					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
 					folderName:directory,
+					nameSpace:"SECharactersFolder",
 					path:'mods/characters'
 				});
 			}
@@ -824,16 +879,16 @@ class TitleState extends MusicBeatState
 		}
 		// Android doesn't support importing
 		#if !android
-		if(!SELoader.exists('mods/imported/readme.txt')){
-			SELoader.createDirectory('mods/imported');
-			SELoader.createDirectory('mods/imported/characters');
-			SELoader.saveContent('mods/imported/characters/Individual_characters_will_be_imported_here',"");
-			SELoader.createDirectory('mods/imported/charts');
-			SELoader.saveContent('mods/imported/charts/Individual_charts_will_be_imported_here',"");
-			SELoader.createDirectory('mods/imported/scripts');
-			SELoader.saveContent('mods/imported/scripts/Place_Scripts_Here',"");
+		if(!SELoader.exists('mods/packs/imported/readme.txt')){
+			SELoader.createDirectory('mods/packs/imported');
+			SELoader.createDirectory('mods/packs/imported/characters');
+			SELoader.saveContent('mods/packs/imported/characters/Individual_characters_will_be_imported_here',"");
+			SELoader.createDirectory('mods/packs/imported/charts');
+			SELoader.saveContent('mods/packs/imported/charts/Individual_charts_will_be_imported_here',"");
+			SELoader.createDirectory('mods/packs/imported/scripts');
+			SELoader.saveContent('mods/packs/imported/scripts/Place_Scripts_Here',"");
 
-			SELoader.saveContent('mods/imported/readme.txt','This pack is used for imported songs and characters. The game will check for this file to make sure the imported pack exists.\nYou can empty this file if you wish but deleting it will regenerate the directory structure of this folder.\nThis pack can be used as an example of how to structure your packs if you wish.');
+			SELoader.saveContent('mods/packs/imported/readme.txt','This pack is used for imported songs and characters. The game will check for this file to make sure the imported pack exists.\nYou can empty this file if you wish but deleting it will regenerate the directory structure of this folder.\nThis pack can be used as an example of how to structure your packs if you wish.');
 		}
 		#end
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -959,6 +1014,9 @@ class TitleState extends MusicBeatState
 				['I put the l','in lesbian'],
 				["you're talkin mad valid",'for someone in','cuddling distance'],
 				['women','based'],
+				['men','based'],
+				['embies','based'],
+				['person','based'],
 				['skirt go speeen','still cis though'],
 				['i want to wear a dress and makeup','still cis though'],
 			],
@@ -1218,7 +1276,7 @@ class TitleState extends MusicBeatState
 				// addMoreText('evilsk8er').startTyping(0.022,Conductor.crochetSecs);
 				credTextShit.x -= 130;
 			case 2:
-				addMoreText('present');
+				addMoreText('do not present');
 			case 7:
 				deleteCoolText();
 			case 10:
@@ -1228,7 +1286,7 @@ class TitleState extends MusicBeatState
 					// createCoolText(['In Partnership']);
 				
 				deleteCoolText();
-				addMoreText('In Partnership with').startTyping(0,Conductor.crochetSecs * 2);
+				addMoreText('not partnered with').startTyping(0,Conductor.crochetSecs * 2);
 			case 11:
 				// if (Main.watermarks)  You're not more important than fucking newgrounds
 				// 	createCoolText(['Kade Engine', 'by']);
@@ -1260,13 +1318,13 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 26:
-				addMoreText('Friday');
+				addMoreText('Friday Night Funkin\'');
 			// credTextShit.visible = true;
 			case 28:
-				addMoreText('Night');
+				addMoreText('Super');
 			// credTextShit.text += '\nNight';
 			case 30:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				addMoreText('Engine'); // credTextShit.text += '\nFunkin';
 
 			case 32:
 				skipIntro();
@@ -1477,8 +1535,7 @@ class TitleState extends MusicBeatState
 		_gfx.lineTo(-50, 50);
 		_gfx.endFill();
 		deleteCoolText();
-		createCoolText(['Powered by','HaxeFlixel']);
-
+		createCoolText(['Powered by',(FlxG.random.bool(0.1) ? 'the bane of my existance' : 'HaxeFlixel')]);
 	}
 
 	function drawLightBlue():Void

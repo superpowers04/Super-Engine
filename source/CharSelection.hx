@@ -25,6 +25,7 @@ class CharSelection extends SearchMenuState
 	var curChar = "";
 	var curCharNameSpaced = "";
 	var curCharID = 0;
+	var isNameSpaced:Bool = false;
 	// Type
 	// -1 = automatic
 	// 0 = valid
@@ -48,7 +49,6 @@ class CharSelection extends SearchMenuState
 			}
 		}catch(e) MainMenuState.handleError('Error with loading stage list ${e.message}');
 	}
-	var isNameSpaced:Bool = false;
 	function _addToList(char:Array<Dynamic>,i:Int = 0){
 		songs.push(char[0]);
 		charIDList.push(i);
@@ -62,10 +62,12 @@ class CharSelection extends SearchMenuState
 			if(char[0].toLowerCase() == curChar.toLowerCase()){
 				curCharID = i;
 				controlLabel.color = FlxColor.GREEN;
+				trace('found at $i ${char[0]}/$curChar');
 			}else if(char[4] != null && char[4].getNamespacedName().toLowerCase() == curCharNameSpaced){
 				curCharID = i;
 				isNameSpaced = true;
 				controlLabel.color = FlxColor.GREEN;
+				trace('found ns at $i ${char[0]}/$curChar');
 			}
 		}
 
@@ -77,6 +79,7 @@ class CharSelection extends SearchMenuState
 
 	override function create()
 	{try{
+		TitleState.checkCharacters();
 		scriptSubDirectory = "/charselect/";
 		switch (Options.PlayerOption.playerEdit){
 			case 0:
@@ -86,8 +89,11 @@ class CharSelection extends SearchMenuState
 			case 2:
 				curChar = FlxG.save.data.gfChar;
 		}
-		curChar = TitleState.findCharByNamespace(curChar).folderName;
-		curCharNameSpaced = TitleState.findCharByNamespace(curChar).getNamespacedName().toLowerCase();
+		var char = TitleState.findCharByNamespace(curChar);
+		trace('$curChar;$char');
+		curChar = char.folderName;
+
+		curCharNameSpaced = char.getNamespacedName().toLowerCase();
 		chars = [];
 		if (Options.PlayerOption.playerEdit == 0){
 			chars.push(['automatic',-1,'Automatically choose whatever BF is suitable for the chart']);

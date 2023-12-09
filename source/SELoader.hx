@@ -23,16 +23,16 @@ using StringTools;
 
 class SELoader {
 
- 	static public var cache:InternalCache = new InternalCache();
- 	
- 	public static var PATH(default,set):String = '';
- 	public static function set_PATH(_path:String):String{
- 		if(!_path.endsWith('/')) _path = _path + "/"; // SELoader expects the main path to have a / at the end
- 		_path = _path.replace('\\',"/"); // Unix styled paths, Windows \\ paths are weird and fucky and i hate it
- 		
- 		return PATH = _path.replace('//','/'); // Fixes paths having //'s in them 
- 	}
- 	public static var rawMode = false;
+	static public var cache:InternalCache = new InternalCache();
+	
+	public static var PATH(default,set):String = '';
+	public static function set_PATH(_path:String):String{
+		if(!_path.endsWith('/')) _path = _path + "/"; // SELoader expects the main path to have a / at the end
+		_path = _path.replace('\\',"/"); // Unix styled paths, Windows \\ paths are weird and fucky and i hate it
+		
+		return PATH = _path.replace('//','/'); // Fixes paths having //'s in them 
+	}
+	public static var rawMode = false;
 	public static var id = "SELoader";
 
 	inline public static function handleError(e:String){
@@ -78,7 +78,7 @@ class SELoader {
 	}
 
 
-	public static function loadFlxSprite(x:Int,y:Int,pngPath:String,?useCache:Bool = false):FlxSprite{
+	public static function loadFlxSprite(x:Int = 0,y:Int = 0,pngPath:String,?useCache:Bool = false):FlxSprite{
 		if(!FileSystem.exists('${pngPath}')){
 			handleError('${id}: Image "${pngPath}" doesn\'t exist!');
 			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
@@ -190,6 +190,10 @@ class SELoader {
 	}
 	public static function fullPath(path:String):String{
 		return FileSystem.fullPath(getPath(path));
+	}
+	public static function anyExists(paths:Array<String>):String{
+		for(i in paths) if(exists(i)) return i;
+		return null;
 	}
 	public static function exists(path:String):Bool{
 		return FileSystem.exists(getPath(path));

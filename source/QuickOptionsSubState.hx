@@ -38,7 +38,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 			"Opponent arrows" => {type:BOOL,value:true},
 			"Song hscripts" => {type:BOOL,value:true},
 			"Custom Arrows" => {type:BOOL,value:true},
-			"Scroll speed" => {type:FLOAT,value:0,min:0.1,max:10
+			"Scroll speed" => {type:FLOAT,value:0,min:-10,max:10
 				#if(!hl),lang:[0 => "Chart"] #end
 
 			},

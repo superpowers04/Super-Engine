@@ -3,6 +3,7 @@ package onlinemod;
 import flixel.FlxG;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
+import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -14,6 +15,7 @@ import flixel.tweens.FlxEase;
 import flixel.sound.FlxSound;
 import flash.media.Sound;
 import onlinemod.Packets;
+import onlinemod.Player;
 
 import Section.SwagSection;
 
@@ -21,9 +23,11 @@ import Section.SwagSection;
 
 class OnlinePlayState extends PlayState
 {
-	var clients:Map<Int, String> = [];
-	public static var clientScores:Map<Int, Int> = [];
-	public static var clientText:Map<Int, String> = [];
+	var clients(get,set):Map<Int,Player>;
+	@:keep inline public function get_clients() return OnlineLobbyState.clients;
+	@:keep inline public function set_clients(vari) return OnlineLobbyState.clients = vari;
+	// public static var clientScores:Map<Int, Int> = [];
+	// public static var clientText:Map<Int, String> = [];
 	public static var lastPressed:Array<Bool> = [false,false,false,false];
 	public static var useSongChar:Array<String> = ["","",""];
 	public static var autoDetPlayer2:Bool = true;
@@ -85,21 +89,16 @@ class OnlinePlayState extends PlayState
 				}
 			}
 		}
-
-		clients = OnlineLobbyState.clients.copy();
 		if (autoDetPlayer2){
-				var count = 0;
-				for (i in clients.keys())
-				{
-					count++;
-					if(count > 1){break;}
-				}
+			var count = 0;
+			for (i in clients.keys()) {
+				count++;
+				if(count > 1){break;}
+			}
 				// PlayState.dadShow = (count == 1);
 		}
 
 		super.create();
-		clientScores = [];
-		clientText = [];
 		clientsGroup = new FlxTypedGroup<FlxText>();
 		CoolLeaderBoard = [];
 
@@ -127,9 +126,8 @@ class OnlinePlayState extends PlayState
 		clientsGroup.add(scoretext);
 
 		// Add the score UI for other players
-		for (i in clients.keys())
-		{
-			clientScores[i] = 0;
+		for (i in clients.keys()) {
+			clients[i].score = 0;
 			clientCount++;
 
 			CoolLeaderBoard.push([]);
@@ -142,12 +140,12 @@ class OnlinePlayState extends PlayState
 			CoolLeaderBoard[CoolLeaderBoard.length - 1].push(Box2);
 			Box2.cameras = [camHUD];
 			add(Box2);
-			var nametext = new FlxText(Box2.x + 10, Box2.y + 12.5, OnlineLobbyState.clients[i],16);
+			var nametext = new FlxText(Box2.x + 10, Box2.y + 12.5, OnlineLobbyState.clients[i].name,16);
 			nametext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			CoolLeaderBoard[CoolLeaderBoard.length - 1].push(nametext);
 			nametext.cameras = [camHUD];
 			add(nametext);
-			var scoretext = new FlxText(Box2.x + Box2.width + 10, Box2.y + 5, '0\nn/a%  0x',16);
+			var scoretext = new FlxText(Box2.x + Box2.width + 10, Box2.y + 5, '0\nN/A%  0x',16);
 			scoretext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			CoolLeaderBoard[CoolLeaderBoard.length - 1].push(scoretext);
 			scoretext.cameras = [camHUD];
@@ -157,19 +155,19 @@ class OnlinePlayState extends PlayState
 		}
 		scoreY -= scoreY/2;
 		for(i in 0...CoolLeaderBoard.length){
-				// Long Box
-				CoolLeaderBoard[i][0].y = scoreY + (CoolLeaderBoard[i][0].height * i) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5)));
-				CoolLeaderBoard[i][0].x = (!PlayState.invertedChart ? 125 - (Math.abs(0 - i) * 10) : FlxG.width - 625 + (Math.abs(0 - i) * 10));
-				// Name Box
-				CoolLeaderBoard[i][1].y = CoolLeaderBoard[i][0].y;
-				CoolLeaderBoard[i][1].x = CoolLeaderBoard[i][0].x + 10;
-				// Name Text
-				CoolLeaderBoard[i][2].y = CoolLeaderBoard[i][1].y + 5;
-				CoolLeaderBoard[i][2].x = CoolLeaderBoard[i][1].x + 10;
-				// Score Text
-				CoolLeaderBoard[i][3].y = CoolLeaderBoard[i][1].y + 5;
-				CoolLeaderBoard[i][3].x = CoolLeaderBoard[i][1].x + CoolLeaderBoard[i][1].width + 10;
-			}
+			// Long Box
+			CoolLeaderBoard[i][0].y = scoreY + (CoolLeaderBoard[i][0].height * i) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5)));
+			CoolLeaderBoard[i][0].x = (!PlayState.invertedChart ? 125 - (Math.abs(0 - i) * 10) : FlxG.width - 625 + (Math.abs(0 - i) * 10));
+			// Name Box
+			CoolLeaderBoard[i][1].y = CoolLeaderBoard[i][0].y;
+			CoolLeaderBoard[i][1].x = CoolLeaderBoard[i][0].x + 10;
+			// Name Text
+			CoolLeaderBoard[i][2].y = CoolLeaderBoard[i][1].y + 5;
+			CoolLeaderBoard[i][2].x = CoolLeaderBoard[i][1].x + 10;
+			// Score Text
+			CoolLeaderBoard[i][3].y = CoolLeaderBoard[i][1].y + 5;
+			CoolLeaderBoard[i][3].x = CoolLeaderBoard[i][1].x + CoolLeaderBoard[i][1].width + 10;
+		}
 
 
 		// Add XieneDev watermark
@@ -205,7 +203,7 @@ class OnlinePlayState extends PlayState
 		OnlinePlayMenuState.receiver.HandleData = HandleData;
 		new FlxTimer().start(transIn.duration, (timer:FlxTimer) -> Sender.SendPacket(Packets.GAME_READY, [], OnlinePlayMenuState.socket));
 
-		waitMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+		waitMusic = SELoader.loadFlxSound('assets/shared/music/breakfast.ogg');
 		waitMusic.volume = 0;
 		waitMusic.play(false, FlxG.random.int(0, Std.int(waitMusic.length / 2)));
 		FlxG.sound.list.add(waitMusic);
@@ -214,36 +212,28 @@ class OnlinePlayState extends PlayState
 		FlxG.autoPause = false;
 	}catch(e){MainMenuState.handleError('Crash in "create" caught: ${e.message}');}}
 
-	override function startCountdown()
-	{
+	override function startCountdown(){
 		try{
+			if (!ready) return;
 
-			if (!ready)
-				return;
-
-		super.startCountdown();
-			
+			super.startCountdown();
+			FlxG.sound.music.onComplete = endSong;
 		}catch(e){MainMenuState.handleError(e,'Crash in "startCountdown" caught: ${e.message}');}
 	}
 
-	override function startSong(?alrLoaded:Bool = false)
-	{
+	override function startSong(?alrLoaded:Bool = false){
 		FlxG.sound.playMusic(loadedInst, 1, false);
 		super.startSong(true);
 	}
 
-	override function generateSong(?dataPath:String = "")
-	{
+	override function generateSong(?dataPath:String = ""){
 	//   // I have to code the entire code over so that I can remove the offset thing
 	//   var songData = PlayState.SONG;
 		// Conductor.changeBPM(songData.bpm);
 
 		// curSong = songData.song;
 
-		if (PlayState.SONG.needsVoices)
-			vocals = loadedVoices;
-		else
-			vocals = new FlxSound();
+		vocals = (PlayState.SONG.needsVoices ? loadedVoices : new FlxSound());
 		super.generateSong(dataPath);
 
 		// Instantly get note id's, if this isn't done now, a note might not get added to the list
@@ -266,8 +256,7 @@ class OnlinePlayState extends PlayState
 		SendScore();
 	}
 
-	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void
-	{
+	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void{
 		super.noteMiss(direction, daNote,forced,calcStats);
 		clientsGroup.members[0].text = PlayState.songScore + "\n" + HelperFunctions.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
 
@@ -289,8 +278,7 @@ class OnlinePlayState extends PlayState
 		for(Array in CoolLeaderBoard){
 			if(Array[2].text == OnlineNickState.nickname)
 				break;
-			else
-				WhereME++;
+			WhereME++;
 		}
 		if(CoolLeaderBoard.length > 1){
 			for(i in 0...CoolLeaderBoard.length){
@@ -307,11 +295,9 @@ class OnlinePlayState extends PlayState
 	}
 
 	override function finishSong(?win=true){}
-	override function endSong():Void
-	{
-		clients[-1] = OnlineNickState.nickname;
-		clientScores[-1] = PlayState.songScore;
-		clientText[-1] = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + HelperFunctions.truncateFloat(PlayState.accuracy,2);
+	override function endSong():Void{
+		clients[-1].score = PlayState.songScore;
+		clients[-1].scoreText = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + HelperFunctions.truncateFloat(PlayState.accuracy,2);
 
 		canPause = false;
 		FlxG.sound.playMusic(loadedInst, FlxG.save.data.instVol, true);
@@ -322,12 +308,11 @@ class OnlinePlayState extends PlayState
 
 		Sender.SendPacket(Packets.GAME_END, [], OnlinePlayMenuState.socket);
 
-		FlxG.switchState(new OnlineResultState(clients));
+		FlxG.switchState(new OnlineLobbyState(true,true));
 	}
 
 
-	override function keyShit()
-	{
+	override function keyShit() {
 		if (inPause)
 			return;
 
@@ -410,8 +395,8 @@ class OnlinePlayState extends PlayState
 					return;
 				}
 
-				clientScores[id] = score;
-				clientText[id] = "S:" + score+ " M:n/a A:n/a";
+				clients[id].score = score;
+				clients[id].scoreText = "S:" + score+ " M:n/a A:n/a";
 				clientsGroup.members[clientTexts[id]].text = Std.string(score);
 			case Packets.BROADCAST_CURRENT_INFO:
 				var id:Int = data[0];
@@ -437,16 +422,16 @@ class OnlinePlayState extends PlayState
 					return;
 				}
 
-				clientScores[id] = score;
-				clientText[id] = "S:" + score+ " M:" + misses+ " A:" + accuracy;
+				clients[id].score = score;
+				clients[id].scoreText = "S:" + score+ " M:" + misses+ " A:" + accuracy;
 				clientsGroup.members[clientTexts[id]].text = score + "\n" + accuracy + "%  " + misses;
 
 			case Packets.PLAYER_LEFT:
 				var id:Int = data[0];
-				var nickname:String = OnlineLobbyState.clients[id];
+				var nickname:String = OnlineLobbyState.clients[id].name;
 
 				clientsGroup.members[clientTexts[id]].setFormat(CoolUtil.font, 16, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-				if(clientScores[id] == null) clientsGroup.members[clientTexts[id]].text = 'left';
+				if(clients[id].scoreText == null || clients[id].scoreText == "" || clients[id].scoreText == "N/A") clientsGroup.members[clientTexts[id]].text = 'left';
 				for(Array in CoolLeaderBoard){
 					if(Array[3] == clientsGroup.members[clientTexts[id]]){
 						var Box1 = new FlxSprite().makeGraphic(275, 50, 0x7FBF0000); // #BF0000
@@ -603,8 +588,7 @@ class OnlinePlayState extends PlayState
 	}
 	
 
-	function SendScore()
-	{
+	function SendScore() {
 		if (TitleState.supported)
 			Sender.SendPacket(Packets.SEND_CURRENT_INFO, [PlayState.songScore,PlayState.misses,Math.ceil(PlayState.accuracy * 100)], OnlinePlayMenuState.socket);
 		else

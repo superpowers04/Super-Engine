@@ -7,9 +7,12 @@ import llua.Convert;
 import cpp.Pointer;
 import flixel.FlxG;
 import Overlay;
+import hscript.Expr;
+import hscript.Interp;
+import hscript.Parser;
+import hscriptfork.InterpSE;
 
 using StringTools;
-
 
 class SELua{
 	public var state:State;
@@ -220,7 +223,6 @@ class SELuaVaris{
 		// 	setGlobal(variable);
 		// 	return true;
 		// }
-
 	}
 
 	function typeToString(type:Int):String {
@@ -425,6 +427,7 @@ class PsychLuaCompat{
 		'playAnim' => {name:"onPlayAnim"},
 	];
 	public var objects:Map<String,Dynamic> = [];
+	public var hscriptInterpeter:Interp;
 	public static function luaCompat(vari:Dynamic):Dynamic{
 		if((vari is String) || (vari is Int) || (vari is Float) || (vari is Array)  
 			|| (vari is haxe.ds.StringMap) || (vari is haxe.ds.IntMap) || (vari is haxe.ds.EnumValueMap) || (vari is haxe.ds.ObjectMap)){
@@ -448,10 +451,10 @@ class PsychLuaCompat{
 	public function new(par:SELua){
 		parent = par;
 		parent.set('psychCompat',false);
-		parent.set('callObjectFunction',function(path:String,func:String,Args:Array<Dynamic>){
+		parent.set('callObjectFunction',function(path:String,func:String,Args:Array<Dynamic>):Dynamic{
 			var obj = getValueFromPath(null,path);
-			if(obj == null) {throw '$path is not a valid object!';return;}
-			Reflect.callMethod(obj,Reflect.field(obj,func),Args);
+			if(obj == null) {throw '$path is not a valid object!';return null;}
+			return luaCompat(Reflect.callMethod(obj,Reflect.field(obj,func),Args));
 		});
 
 
@@ -459,28 +462,28 @@ class PsychLuaCompat{
 		parent.set('loadFlxSprite',function(tag:String,path:String,x:Float=0,y:Float=0){
 			objects[tag] = parent.BRTools.loadFlxSprite(x,y,path);
 		});
-		parent.set('addObject',function(tag:String,path:String,x:Float=0,y:Float=0){
+		parent.set('addObject',function(tag:String){
 			var obj = getValueFromPath(null,tag);
 			if(obj == null) return;
 			FlxG.state.add(obj);
 		});
-		parent.set('removeLuaSprite',function(tag:String,path:String,x:Float=0,y:Float=0){
+		parent.set('removeLuaSprite',function(tag:String){
 			FlxG.state.remove(getValueFromPath(null,tag));
 		});
-		parent.set('add',function(tag:String,path:String,x:Float=0,y:Float=0){
+		parent.set('add',function(tag:String){
 			FlxG.state.add(getValueFromPath(null,tag));
 		});
-		parent.set('remove',function(tag:String,path:String,x:Float=0,y:Float=0){
+		parent.set('remove',function(tag:String){
 			FlxG.state.remove(getValueFromPath(null,tag));
 		});
 		parent.set('playAnim',function(tag:String,name:String, forced:Bool = false, ?reverse:Bool = false, ?startFrame:Int = 0){
 			var obj = getValueFromPath(null,tag);
 			if(obj == null || obj.animation == null || obj.animation.get(name)) return;
 			if(obj.playAnim != null){
-				obj.playAnim(name,forced,reverse,startFrame);
-			}else{
-				obj.animation.play(name, forced, reverse, startFrame);
+				obj.playAnim(name, forced, reverse, startFrame);
+				return;
 			}
+			obj.animation.play(name, forced, reverse, startFrame);
 		});
 		// parent.set('addAnimation',function(tag:String,name:String, forced:Bool = false, ?reverse:Bool = false, ?startFrame:Int = 0){
 		// 	var obj = getValueFromPath(tag);
@@ -498,10 +501,40 @@ class PsychLuaCompat{
 		parent.set('setPropertyFromClass',setPropertyFromClass);
 		parent.set('debugPrint',Reflect.makeVarArgs(function(e:Array<Dynamic>) trace('lua: ${e.join(' ')}')));
 		parent.set('getGlobalValue',getGlobalValue);
+		parent.set('runHaxeCode',runHaxeCode);
 		// parent.set('setGlobalValue',setGlobalValue);
 		LuaL.dostring(parent.state,/*lua code lmao*/se.utilities.SEMacros.PsychLuaCompatScript); // I love being able to do this with lua kekw
 
 	}
+	public function runHaxeCode(code):Dynamic{
+		var parser:hscript.Parser = HscriptUtils.createSimpleParser();
+		var program = parser.parseString(code,"runHaxeCode");
+
+		try{
+			if(hscriptInterpeter == null){
+			
+				var interp:Interp = HscriptUtils.createSimpleInterp();
+
+				interp.variables.set("BRtools",parent.BRTools); 
+				// Access current state without needing to be inside of a function with ps as an argument
+				interp.variables.set("scriptContents",code);
+				interp.variables.set("scriptName","runHaxeCode");
+				interp.variables.set("lua",parent);
+				interp.variables.set("state",cast (FlxG.state)); 
+				interp.variables.set("game",cast (FlxG.state));
+				hscriptInterpeter = interp;
+			}
+			return hscriptInterpeter.execute(program);
+		}catch(e){
+			var _line = '${parser.line}';
+			try{
+				var _split = code.split('\n');
+				_line = '${parser.line};"${_split[parser.line - 1]}"';
+			}catch(e){_line = '${parser.line}';}
+			throw('Error parsing runHaxeCode hscript\nLine:${_line}\n ${e.message}');
+		}
+		return null;
+	};
 	public function getValueFromPath(object:Dynamic,path:String):Dynamic{
 		if(object == null && getGlobalValue(path) != null){
 			return getGlobalValue(path);
@@ -538,12 +571,11 @@ class PsychLuaCompat{
 				currentPath = splitPath.shift();
 				if(currentPath.endsWith(']')){
 					var index = currentPath.substring(currentPath.indexOf('[') + 1,-1);
-					trace(index);
-					object = Reflect.field(object,currentPath.substring(0,currentPath.indexOf('[')));
+					object = Reflect.getProperty(object,currentPath.substring(0,currentPath.indexOf('[')));
 					if (object is Array) object = object[Std.parseInt(index)];
 					else if(object.get != null) object = object.get(index);
 				}else{
-					object = Reflect.field(object,currentPath);
+					object = Reflect.getProperty(object,currentPath);
 				}
 				
 				if(object == null){
@@ -554,6 +586,7 @@ class PsychLuaCompat{
 		return object;
 	}
 	public function setValueFromPath(path:String = "",value:Dynamic,obj:Dynamic = null):Void{
+		throw('Function not implemented yet!');
 		var splitPath:Array<String> = path.split('.');
 		if(splitPath[0] == "state"){
 			splitPath.shift();
@@ -561,8 +594,14 @@ class PsychLuaCompat{
 		}
 		var lastPath = splitPath.pop();
 		if(splitPath.length > 0) obj = getValueFromPath(obj,splitPath.join('.')); else obj = FlxG.state;
-		if(obj is String || obj is Int || obj is Float) throw('Object "${path}" is not an object!'); return;
-		if(obj == null) throw('Object "${path}" is null!'); return;
+		if(obj is String || obj is Int || obj is Float) {
+			throw('Object "${path}" is not an object!');
+			return;
+		}
+		if(obj == null) {
+			throw('Object "${path}" is null!');
+			return;
+		}
 		var type = 0;
 		/*if(value is String){
 			if(!Math.isNaN(Std.parseFloat(value))){
@@ -573,21 +612,27 @@ class PsychLuaCompat{
 				type = 1;
 			}
 		}*/
-		var field = Reflect.field(obj,lastPath);
-		if(field != null){
-			if((value is String) && value.substring(0,SELuaVaris.pointerID.length) == SELuaVaris.pointerID){
-				var ptr = parent.variables.strToPointer.get(value.substring(SELuaVaris.pointerID.length));
-				if(ptr != null) value = ptr.ref;
-			}
-			if((field is Int || field is Float) && type != 1) {
-				throw('Field of type ${Type.typeof(field)} is incompatible with ${Type.typeof(value)}');
-				return;
-			}
-			if(field is Int) value = Std.int(value);
-			// if(field is String) ;
-		}
+		// var field = Reflect.field(obj,lastPath);
+		// if(field != null){
+		// if((value is String) && value.substring(0,SELuaVaris.pointerID.length) == SELuaVaris.pointerID){
+		// 	var ptr = parent.variables.strToPointer.get(value.substring(SELuaVaris.pointerID.length));
+		// 	if(ptr != null) value = ptr.ref;
+		// }
+		// 	if(Type.typeof(field) != Type.typeof(value)){
 
-		Reflect.setField(obj,lastPath,value);
+		// 		if((field is Int || field is Float) && type != 1) {
+		// 			throw('Field of type ${Type.typeof(field)} is incompatible with ${Type.typeof(value)}');
+		// 			return;
+		// 		}
+		// 		if(field is Int) value = Std.int(value);
+		// 	}
+		// 	// if(field is String) ;
+		// }
+		trace('$obj\n$lastPath\n$value');
+		// if(Reflect.hasField(obj,'set_$lastPath')){
+		// 	Reflect.callMethod(obj,Reflect.field(obj,'set_$lastPath'),[value]);
+		// }else 
+		Reflect.setProperty(obj,lastPath,value);
 	}
 	public function getProperty(path:String):Dynamic{
 		return luaCompat(getValueFromPath(null,path));

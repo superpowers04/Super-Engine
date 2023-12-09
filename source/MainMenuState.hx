@@ -50,7 +50,7 @@ class MainMenuState extends SickMenuState
 	public static var buildType:String = #if(android) "android" #else Sys.systemName() #end ;
 	public static var errorMessage:String = "";
 	public static var bgcolor:Int = 0;
-	public static var char:Character = null;
+	// public static var char:Character = null;
 	static var hasWarnedInvalid:Bool = false;
 	static var hasWarnedNightly:Bool = (nightly == "");
 	public static var triedChar:Bool = false;
@@ -64,7 +64,7 @@ class MainMenuState extends SickMenuState
 
 		lastError = error;
 		var _error = error;
-		if(FlxG.save.data.doCoolLoading && error.indexOf('display.CairoRenderer') == -1){
+		if(FlxG.save.data.doCoolLoading && error.indexOf('display.CairoRenderer') >= 0){
 			_error = "Flixel tried to render an FlxText while the game was rendering the loading screen, causing an error.\nYou can probably just re-do what you did. If this is annoying, disable threaded loading in the options";
 		}
 		if(MainMenuState.errorMessage != '${_error}\n${MainMenuState.errorMessage}')
@@ -98,6 +98,7 @@ class MainMenuState extends SickMenuState
 		this.important = important;
 		multi.MultiMenuState.importedSong = false;
 		super();
+		FlxG.mouse.enabled = FlxG.mouse.visible = true;
 		MusicBeatState.lastClassList = [];
 		scriptSubDirectory = "/mainmenu/";
 	}
@@ -200,13 +201,12 @@ class MainMenuState extends SickMenuState
 			if (MainMenuState.errorMessage != ""){
 
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-
 				var errorText =  new FlxText(2, 64, 0, MainMenuState.errorMessage, 12);
-			    errorText.scrollFactor.set();
-			    errorText.wordWrap = true;
-			    errorText.fieldWidth = 1200;
-			    errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			    add(errorText);
+				errorText.scrollFactor.set();
+				errorText.wordWrap = true;
+				errorText.fieldWidth = 1200;
+				errorText.setFormat(CoolUtil.font, 32, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				add(errorText);
 			}
 			SELoader.gc();
 			eventColors(Date.now());
@@ -239,23 +239,19 @@ class MainMenuState extends SickMenuState
 	}
 
 	override function goBack(){
-		#if mobile
-			selected = false;
-		#else
-		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;} else{
+		#if !mobile
+		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;} else
+		#end
+		{
+	
 			selected = false;
 		}
-		#end
 		// FlxG.switchState(new TitleState());
 		// do nothing
 	}
 
-	override function update(elapsed:Float)
-	{
-		if (FlxG.sound.music.volume < 0.8)
-		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
+	override function update(elapsed:Float) {
+		if (FlxG.sound.music.volume < 0.8) FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		// if(char != null){
 		// 	if(controls.LEFT){
 		// 		char.playAnim("singLEFT",true);
@@ -265,11 +261,11 @@ class MainMenuState extends SickMenuState
 		// }
 		super.update(elapsed);
 	}
-	override function beatHit()
-	{
-		super.beatHit();
-		// if(char != null && char.animation.curAnim.finished) char.dance(true);
-	}
+	// override function beatHit()
+	// {
+	// 	super.beatHit();
+	// 	// if(char != null && char.animation.curAnim.finished) char.dance(true);
+	// }
 	override function changeSelection(change:Int = 0){
 		// if(char != null && change != 0) char.playAnim(Note.noteAnims[if(change > 0)1 else 2],true);
 		if(MainMenuState.errorMessage != "")MainMenuState.errorMessage = "";
@@ -317,15 +313,13 @@ class MainMenuState extends SickMenuState
 			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state",'Open your mods folder in your File Manager','Customise your experience to fit you'];
 
 		}
+			otherMenu = false;
 		#end
 		if (ChartingState.charting) {options.unshift("open closed chart"); descriptions.unshift("It looks like a chart is still open. This option will reopen the chart editor");}
 		curSelected = 0;
-		#if(!mobile)
-			otherMenu = false;
-		#end
-		if(regen)generateList();
 		callInterp('mmSwitch',[]);
 		if(cancelCurrentFunction) return;
+		if(regen)generateList();
 		if(regen)changeSelection();
 		selected = false;
 	}
@@ -351,6 +345,10 @@ class MainMenuState extends SickMenuState
 
 			case 'open closed chart':
 				loading = true;
+
+				onlinemod.OfflinePlayState.instFile = ChartingState.lastInst;
+				onlinemod.OfflinePlayState.voicesFile = ChartingState.lastVoices;
+				onlinemod.OfflinePlayState.chartFile = ChartingState.lastChart;
 				FlxG.switchState(new ChartingState());
 			case 'modded songs':
 				loading = true;
@@ -369,8 +367,9 @@ class MainMenuState extends SickMenuState
 						MainMenuState.handleError('Unable to play online, You need to give internet access to the game!');
 						return;
 					}
-					#end
+					#else
 					FlxG.switchState(new onlinemod.OnlinePlayMenuState());
+					#end
 				case 'other':
 					// FlxG.switchState(new OtherMenuState());
 					otherSwitch();

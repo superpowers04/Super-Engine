@@ -11,6 +11,7 @@ import sys.FileSystem;
 import sys.io.File;
 import sys.thread.Lock;
 import sys.thread.Thread;
+import Overlay;
 
 
 import Section.SwagSection;
@@ -55,8 +56,8 @@ class OfflinePlayState extends PlayState
 	super();
   }
 
-  function loadSongs(){
-  		LoadingScreen.loadingText = "Loading music";
+	function loadSongs(){
+		LoadingScreen.loadingText = "Loading music";
 		if(lastVoicesFile != voicesFile && loadedVoices != null){
 			loadedVoices.destroy();
 		}
@@ -114,10 +115,10 @@ class OfflinePlayState extends PlayState
 	trace('Loading $voicesFile, $instFile');
 	
   }
-  override function destroy(){
-	if(loadedVoices != null){loadedVoices.pause();loadedVoices.time = 0;}
-	super.destroy();
-  }
+	override function destroy(){
+		if(loadedVoices != null){loadedVoices.pause();loadedVoices.time = 0;}
+		super.destroy();
+	}
   function loadJSON(){
 	try{
 
@@ -295,25 +296,76 @@ override function startCountdown(){
   //  }catch(e){MainMenuState.handleError('Caught "gensong" crash: ${e.message}');}}
 
 
-  override function endSong()
-  {
-	if(PlayState.isStoryMode){
-		super.endSong();
-	}else{
+	override function endSong() {
+		if(PlayState.isStoryMode){
+			super.endSong();
+		}else{
 
-		canPause = false;
-		FlxG.sound.music.onComplete = null;
-		if (ChartingState.charting){FlxG.switchState(new ChartingState());return;}
-			persistentUpdate = false;
-			persistentDraw = true;
-			paused = true;
+			canPause = false;
+			FlxG.sound.music.onComplete = null;
+			if (ChartingState.charting){FlxG.switchState(new ChartingState());return;}
+				persistentUpdate = false;
+				persistentDraw = true;
+				paused = true;
 
-			vocals.stop();
-			FlxG.sound.music.stop();
+				vocals.stop();
+				FlxG.sound.music.stop();
 
-			super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
+				super.openSubState(new FinishSubState(PlayState.boyfriend.getScreenPosition().x, PlayState.boyfriend.getScreenPosition().y,true));
+		}
 	}
-  }
+	var cmdList:Array<Array<String>> = [
+		["help",'Prints the normal help message'],
+		["statehelp",'Prints this message'],
+
+		['-- Utilities --'],
+		["p1/player1",'Change the player1 of the chart, save it and reload it'],
+		["p2/player2",'Change the player2 of the chart, save it and reload it'],
+		["gf/p3/player3",'Change the gf of the chart, save it and reload it'],
+		["stage",'Change the stage of the chart, save it and reload it'],
+	];
+	override public function consoleCommand(text:String,args:Array<String>):Dynamic{
+		switch(args[0]){
+			case "statehelp":
+				var ret = 'State specific Command list:';
+				for(_ => v in cmdList){
+					ret += (v[1] == null ? '\n${v[0]}' : '\n`${v[0]}` - ${v[1]}');
+				}
+				Console.print(ret);
+			case "p1" | "p2" | "p3" | "player1" |  "player2" |  "player3" | "gf" | "stage":{
+				var type = args.shift();
+				switch(type){
+					case "p1":PlayState.SONG.player1=args.join(" ");
+					case "p2":PlayState.SONG.player2=args.join(" ");
+					case "gf" | "p3":PlayState.SONG.gfVersion=args.join(" ");
+					case "stage":PlayState.SONG.stage=args.join(" ");
+				}
+				var _song = PlayState.SONG;
+				var _raw = _song.rawJSON;
+				_song.rawJSON = null; // It's a good idea to not include 2 copies of the json
+				var data:String = tjson.Json.stringify(_song);
+				_song.rawJSON = _raw; // It's a good idea to not include 2 copies of the json
+				if ((data != null) && (data.length > 0)){
+					try{
+						//Bodgey as hell but doesn't work otherwise
+						var path = onlinemod.OfflinePlayState.chartFile;
+						SELoader.importFile(path,'chartBackup.json');
+						trace('Backed chart up to ${SELoader.getPath('chartBackup.json')}');
+						File.saveContent(path,'{"song":' + data + "}");
+						trace('Saved chart to ${path}');
+					
+						Console.showConsole = false;
+						FlxG.resetState();
+
+
+					}catch(e){trace(e);}
+				}
+				return true;
+			}
+
+		}
+		return null;
+	}
 }
 
 

@@ -293,14 +293,15 @@ class PauseSubState extends MusicBeatSubstate
 	function retMenu(){
 		if (PlayState.isStoryMode){FlxG.switchState(new StoryMenuState());return;}
 		PlayState.actualSongName = ""; // Reset to prevent issues
-		if (shouldveLeft || ChartingState.charting) {Main.game.forceStateSwitch(new MainMenuState());return;}
-		switch (PlayState.stateType)
-		{
+		if (shouldveLeft || ChartingState.charting) {
+			ChartingState.charting = false;
+			Main.game.forceStateSwitch(new MainMenuState());
+			return;
+		}
+		switch (PlayState.stateType) {
 			case 2:MusicBeatState.returningFromClass=true;FlxG.switchState(new onlinemod.OfflineMenuState());
 			case 4:MusicBeatState.returningFromClass=true;FlxG.switchState(new multi.MultiMenuState());
 			case 5:MusicBeatState.returningFromClass=true;FlxG.switchState(new osu.OsuMenuState());
-				
-
 			default:MusicBeatState.instance.goToLastClass(PlayState);
 		}
 		shouldveLeft = true;
@@ -401,11 +402,10 @@ class PauseSubState extends MusicBeatSubstate
 		}catch(e){}
 		if(perSongOffset != null)perSongOffset.destroy();
 		for (i in [levelDifficulty,levelInfo,restarts]) {
-			if(i != null){
-				FlxTween.tween(i,{x:FlxG.width + 10},0.3,{ease:FlxEase.quartIn,
-					onComplete:function(_){i.destroy();}
-				});
-			}
+			if(i == null) continue;
+			FlxTween.tween(i,{x:FlxG.width + 10},0.3,{ease:FlxEase.quartIn,
+				onComplete:function(_){i.destroy();}
+			});
 		}
 		FlxG.sound.music.pause();
 		Conductor.songPosition = FlxG.sound.music.time = time;
@@ -415,16 +415,14 @@ class PauseSubState extends MusicBeatSubstate
 
 
 
-		startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer)
-		{
+		startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer) {
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
 
 			var introAlts:Array<String> = introAssets.get('default');
 			var altSuffix:String = "";
-			switch (swagCounter)
-			{
+			switch (swagCounter) {
 				case 1:
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 					ready.scrollFactor.set();
@@ -434,10 +432,7 @@ class PauseSubState extends MusicBeatSubstate
 					add(ready);
 					FlxTween.tween(ready, {y: ready.y + 100, alpha: 0}, Conductor.crochet / 1000, {
 						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							ready.destroy();
-						}
+						onComplete: function(twn:FlxTween) {ready.destroy();}
 					});
 					FlxG.sound.play(Paths.sound('intro2' + altSuffix), 0.6);
 				case 2:
@@ -450,10 +445,7 @@ class PauseSubState extends MusicBeatSubstate
 					add(set);
 					FlxTween.tween(set, {y: set.y + 100, alpha: 0}, Conductor.crochet / 1000, {
 						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							set.destroy();
-						}
+						onComplete: function(twn:FlxTween) {set.destroy();}
 					});
 					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
 				case 3:
@@ -467,22 +459,15 @@ class PauseSubState extends MusicBeatSubstate
 					add(go);
 					FlxTween.tween(go, {y: go.y + 100, alpha: 0}, Conductor.crochet / 1000, {
 						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							go.destroy();
-						}
+						onComplete: function(twn:FlxTween) {go.destroy();}
 					});
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
 
 					PlayState.instance.callInterp("pauseExit",[]);
-					for (i in tweens){
-						i.active = true;
-					}
-					for (i in timers){
-						i.active = true;
-					}
-					if(_tween != null)_tween.cancel();
+					for (i in tweens) i.active = true;
+					for (i in timers) i.active = true;
+					if(_tween != null) _tween.cancel();
 					FlxG.sound.music.time = Conductor.songPosition;
 					FlxG.sound.music.volume = volume;
 					FlxTween.tween(FlxG.sound.music,{volume:volume},0.01);
@@ -500,35 +485,25 @@ class PauseSubState extends MusicBeatSubstate
 		}, 5);
 	}catch(e){MainMenuState.handleError(e,'Something went wrong on countdown ${e.message}');}}
 	
-	override function destroy()
-	{
+	override function destroy() {
 		if (pauseMusic != null){pauseMusic.destroy();}
 
 		super.destroy();
 	}
 
-	function changeSelection(change:Int = 0):Void
-	{
+	function changeSelection(change:Int = 0):Void {
 		curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = menuItems.length - 1;
-		if (curSelected >= menuItems.length)
-			curSelected = 0;
+		if (curSelected < 0) curSelected = menuItems.length - 1;
+		if (curSelected >= menuItems.length) curSelected = 0;
 
 		var bullShit:Int = 0;
 
-		for (item in grpMenuShit.members)
-		{
+		for (item in grpMenuShit.members) {
 			item.targetY = bullShit - curSelected;
 			bullShit++;
 			#if(!mobile)
-				item.alpha = 0.6;
-
-				if (item.targetY == 0)
-				{
-					item.alpha = 1;
-				}
+				item.alpha = (item.targetY == 0 ? 1 : 0.6);
 			#else
 				item.alpha = 1;
 			#end

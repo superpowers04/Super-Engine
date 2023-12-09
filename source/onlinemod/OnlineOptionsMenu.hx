@@ -38,7 +38,7 @@ class OnlineOptionsMenu extends OptionsMenu
 					if (OnlineLobbyState.receivedPrevPlayers) Chat.PLAYER_JOIN(nickname);
 				case Packets.PLAYER_LEFT:
 					var id:Int = data[0];
-					Chat.PLAYER_LEAVE(OnlineLobbyState.clients[id]);
+					Chat.PLAYER_LEAVE(OnlineLobbyState.clients[id].name);
 					OnlineLobbyState.removePlayer(id);
 				// createNamesUI();
 				case Packets.GAME_START:
@@ -52,7 +52,7 @@ class OnlineOptionsMenu extends OptionsMenu
 					var id:Int = data[0];
 					var message:String = data[1];
 
-					Chat.MESSAGE(OnlineLobbyState.clients[id], message);
+					Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
 				case Packets.REJECT_CHAT_MESSAGE:
 					Chat.SPEED_LIMIT();
 				case Packets.MUTED:

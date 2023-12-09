@@ -7,6 +7,7 @@ import SEInputText as FlxInputText;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxAxes;
+import onlinemod.Player;
 
 class OnlineNickState extends MusicBeatState
 {
@@ -49,8 +50,8 @@ class OnlineNickState extends MusicBeatState
 	var confirmButton = new FlxUIButton(0, FlxG.height * 0.65, "Confirm", () -> {
 	  
 		if (OnlinePlayMenuState.socket != null && OnlinePlayMenuState.socket.connected){
-			nickname = nickField.text;
-			FlxG.save.data.nickname = nickField.text;
+			var _Player = OnlineLobbyState.clients[-1] = new Player(FlxG.save.data.nickname = nickname = nickField.text,-1);
+			_Player.self = true;
 			Sender.SendPacket(Packets.SEND_NICKNAME, [nickname], OnlinePlayMenuState.socket);
 		}else{
 			FlxG.switchState(new OnlinePlayMenuState('Socket closed unexpectedly?'));

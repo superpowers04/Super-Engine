@@ -32,8 +32,7 @@ class SEFlxFrames extends FlxAtlasFrames{
 	 *                        Or you can just pass a path to the XML file in the assets directory.
 	 * @return  Newly created `FlxAtlasFrames` collection.
 	 */
-	public static function fromSparrow(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames
-	{
+	public static function fromSparrow(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames {
 		var graphic:FlxGraphic = FlxG.bitmap.add(Source);
 		if (graphic == null)
 			return null;
@@ -53,8 +52,7 @@ class SEFlxFrames extends FlxAtlasFrames{
 
 		var data:Access = new Access(Xml.parse(Description).firstElement());
 
-		for (texture in data.nodes.SubTexture)
-		{
+		for (texture in data.nodes.SubTexture) {
 			var name = texture.att.name;
 			var trimmed = texture.has.frameX;
 			var rotated = (texture.has.rotated && texture.att.rotated == "true");
@@ -64,13 +62,10 @@ class SEFlxFrames extends FlxAtlasFrames{
 			var rect = FlxRect.get(Std.parseFloat(texture.att.x), Std.parseFloat(texture.att.y), Std.parseFloat(texture.att.width),
 				Std.parseFloat(texture.att.height));
 
-			var size = if (trimmed)
-			{
+			var size = if (trimmed) {
 				new Rectangle(Std.parseInt(texture.att.frameX), Std.parseInt(texture.att.frameY), Std.parseInt(texture.att.frameWidth),
 					Std.parseInt(texture.att.frameHeight));
-			}
-			else
-			{
+			} else {
 				new Rectangle(0, 0, rect.width, rect.height);
 			}
 

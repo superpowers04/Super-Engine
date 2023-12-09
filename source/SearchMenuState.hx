@@ -76,9 +76,9 @@ class SearchMenuState extends ScriptMusicBeatState
 	}
 
 	function findButton(){
-			reloadList(true,searchField.text);
-			searchField.hasFocus = false;
-			changeSelection(0);
+		reloadList(true,searchField.text);
+		searchField.hasFocus = false;
+		changeSelection(0);
 	}
 	function orderList(list:Array<String>):Array<String>{
 		haxe.ds.ArraySort.sort(list, function(a, b) {
@@ -96,7 +96,7 @@ class SearchMenuState extends ScriptMusicBeatState
 		}
 	}
 	// var bgColor:FlxColor = 0xFFFF6E6E;
-	static public function resetVars(){
+	@:keep inline static public function resetVars(){
 		LoadingScreen.loadingText = "Resetting Variables";
 		if (ChartingState.charting) ChartingState.charting = false;
 		if (/*FlxG.save.data.songUnload && */PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
@@ -242,6 +242,7 @@ class SearchMenuState extends ScriptMusicBeatState
 		// try{
 		super.update(elapsed);
 		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
+		// if (FlxG.sound.music.volume < 0.8) FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		if (toggleables['search'] && searchField.hasFocus){SetVolumeControls(false);if (FlxG.keys.pressed.ENTER) findButton();}else{
 			SetVolumeControls(true);
 			handleInput();
@@ -270,7 +271,7 @@ class SearchMenuState extends ScriptMusicBeatState
 				scrollBar.y = FlxG.mouse.y - (scrollBar.height * 0.5);
 				if(scrollBar.y < sbBGYOffset) scrollBar.y = sbBGYOffset;
 				if(scrollBar.y > sbBGHeight) scrollBar.y = sbBGHeight;
-				var sel = Std.int((LENGTH * ((scrollBar.y - sbBGYOffset) / (sbBGHeight - sbBGYOffset)) ));
+				var sel = Math.round((LENGTH * ((scrollBar.y - sbBGYOffset) / (sbBGHeight - sbBGYOffset)) ));
 
 				if(curSelected != sel && sel > 0 && sel < LENGTH){
 					curSelected = 0;
@@ -292,7 +293,7 @@ class SearchMenuState extends ScriptMusicBeatState
 		if (controls.BACK || FlxG.keys.justPressed.ESCAPE){
 			ret();
 		}
-		if(songs.length <= 0 || !allowInput || cancelCurrentFunction) return;
+		if(!grpSongs.visible || songs.length <= 0 || !allowInput || cancelCurrentFunction) return;
 		if(songs.length > 1){
 			if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} 
 			else if (controls.UP_P || (controls.UP && grpSongs.members[curSelected].y > FlxG.height * 0.46 && grpSongs.members[curSelected].y < FlxG.height * 0.50) ){changeSelection(-1);}
@@ -420,8 +421,7 @@ class SearchMenuState extends ScriptMusicBeatState
 				if (OnlineLobbyState.receivedPrevPlayers) Chat.PLAYER_JOIN(nickname);
 			case Packets.PLAYER_LEFT:
 				var id:Int = data[0];
-				var nickname:String = OnlineLobbyState.clients[id];
-				Chat.PLAYER_LEAVE(nickname);
+				Chat.PLAYER_LEAVE(OnlineLobbyState.clients[id].name);
 
 				OnlineLobbyState.removePlayer(id);
 				// createNamesUI();
@@ -437,7 +437,7 @@ class SearchMenuState extends ScriptMusicBeatState
 				var id:Int = data[0];
 				var message:String = data[1];
 
-				Chat.MESSAGE(OnlineLobbyState.clients[id], message);
+				Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
 			case Packets.REJECT_CHAT_MESSAGE:
 				Chat.SPEED_LIMIT();
 			case Packets.MUTED:

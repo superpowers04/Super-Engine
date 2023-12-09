@@ -26,7 +26,8 @@ class LoadingScreen extends Sprite{
 	var vel:Float = 0;
 	static var tips:Array<String> = [
 		"You can drag a PNG or XML of a character into the game to import them.",
-		"You can drag any FNF json chart into the game and play it. Some weird engines might not work though..",
+		"Unfortunately, your mother",
+		"You can drag any FNF json chart into the game and play it.\n Some weird engines might not work though..",
 		"With threaded loading, this loading screen has a chance of crashing\nbecause of Flixel trying to make an FlxText at the wrong time...",
 		"By default, the only characters available are GF and BF.",
 		"Enable Content Creation Mode for some stuff that might help with making packs.",
@@ -52,6 +53,10 @@ class LoadingScreen extends Sprite{
 		"Did you know that missing a note will make you lose health?",
 		"If you have practice mode disabled, you will die at 0 health.\n Otherwise your score will just not save",
 		"your mother",
+		"your mother is a lesbian and thats a threat",
+		"qhar?!?!?!",
+		"did you know that- uhh i forgor",
+		"Powered by\nThe bane of my existance :3",
 		"I'm going to kill you and all the cake is gone",
 		"You will be baked, and then there will be cake",
 		"The cake is a lie",
@@ -59,7 +64,9 @@ class LoadingScreen extends Sprite{
 		"This is the part where he kills you",
 		"This text is so long that it will probably fall off the screen\n and you will be unable to read it because I'm such a massive troll\n that likes to make text fall off the screen to troll people lmao lmao this is just padding to make the text even longer I got you so goooooooooddddddd ",
 		"sex",
-		"If you're under the age of 13...<br> what the hell are you doing playing fnf? Go do your homework or something"
+		"Some people call the 'Arrow keys' as 'Cursor keys'",
+		"You've been distracted",
+		"If you're under the age of 13...\nwhat the hell are you doing playing fnf? Go do your homework, play roblox or something"
 	];
 	static var currentTip:Int = 0;
 

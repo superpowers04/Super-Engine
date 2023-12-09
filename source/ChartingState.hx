@@ -124,6 +124,9 @@ class ChartingState extends ScriptMusicBeatState
 	var noteTypeInputcopy:FlxInputText; // cuz i'm scary something gonna break
 	var typingcharactershit:FlxInputText; // that right there a another one
 	var useNoteTypeBox:FlxUICheckBox;
+	var sustainGraphic:FlxGraphic = null;
+	var rawToNote:Map<Array<Dynamic>,Note> = [];
+	var noteToRaw:Map<Note,Array<Dynamic>> = [];
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -366,6 +369,8 @@ class ChartingState extends ScriptMusicBeatState
 			updateSection();
 			time = 0;
 		}
+		sustainGraphic = FlxGraphic.fromRectangle(1,1,0xFFFFFFFF,false);
+		sustainGraphic.persist = true;
 		updateSection();
 		saveRemind(true);
 		updateHeads();
@@ -1046,22 +1051,25 @@ class ChartingState extends ScriptMusicBeatState
 		// audioBytes[1] = audioBuffers[1].data.toBytes();
 	}
 	var noVocals:Bool = false;
+	public static var lastInst:String = "";
+	public static var lastVoices:String = "";
+	public static var lastChart:String = "";
+
 	function loadSong():Void
 	{
-		if (FlxG.sound.music != null)
-		{
-			FlxG.sound.music.stop();
+		if (FlxG.sound.music != null) FlxG.sound.music.stop();
 			// vocals.stop();
-		}
 
-			loadedInst = Sound.fromFile(if(onlinemod.OfflinePlayState.instFile != "") onlinemod.OfflinePlayState.instFile else 'assets/songs/' + _song.song.toLowerCase() + "/Inst.ogg");
-			FlxG.sound.playMusic(loadedInst, 0.6,true);
+		loadedInst = Sound.fromFile(onlinemod.OfflinePlayState.instFile);
+		FlxG.sound.playMusic(loadedInst, 0.6,true);
 
-
+		lastInst = onlinemod.OfflinePlayState.instFile;
+		lastVoices = onlinemod.OfflinePlayState.voicesFile;
+		lastChart = onlinemod.OfflinePlayState.chartFile;
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		if(_song.needsVoices || (onlinemod.OfflinePlayState.voicesFile != "" && FileSystem.exists(onlinemod.OfflinePlayState.voicesFile))){
-			vocals = new FlxSound().loadEmbedded(Sound.fromFile(if(onlinemod.OfflinePlayState.voicesFile != "")  onlinemod.OfflinePlayState.voicesFile else ('assets/songs/' + _song.song.toLowerCase() + "/Voices.ogg")));
+			vocals = new FlxSound().loadEmbedded(Sound.fromFile(onlinemod.OfflinePlayState.voicesFile));
 
 		} 
 		if(vocals == null){
@@ -1087,10 +1095,7 @@ class ChartingState extends ScriptMusicBeatState
 
 	function generateUI():Void
 	{
-		while (bullshitUI.members.length > 0)
-		{
-			bullshitUI.remove(bullshitUI.members[0], true);
-		}
+		while (bullshitUI.members.length > 0) bullshitUI.remove(bullshitUI.members[0], true);
 
 		// general shit
 		var title:FlxText = new FlxText(UI_box.x + 20, UI_box.y + 20, 0);
@@ -1423,8 +1428,10 @@ class ChartingState extends ScriptMusicBeatState
 				dummyArrow.visible = true;
 			}
 
-			if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.ESCAPE) FlxG.switchState(new MainMenuState());
-			else if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.ESCAPE){
+			if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.ESCAPE){
+				charting = false;
+				FlxG.switchState(new MainMenuState());
+			}else if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.ESCAPE){
 				lastSection = curSection;
 
 				PlayState.SONG = _song;
@@ -1895,8 +1902,6 @@ class ChartingState extends ScriptMusicBeatState
 		callInterp('updateNote',[note,i]);
 		curRenderedNotes.add(note);
 	}
-	var rawToNote:Map<Array<Dynamic>,Note> = [];
-	var noteToRaw:Map<Note,Array<Dynamic>> = [];
 	function updateGrid(?updateNotes:Bool = true):Void
 	{
 
@@ -1952,6 +1957,7 @@ class ChartingState extends ScriptMusicBeatState
 			if(sectionInfo == null || sectionInfo[0] == null) {continue;}
 			var id = 0;
 			var i:Array<Dynamic>;
+			var sustainColors:Array<Null<Int>> = [0xFFC24B99,0xFF00FFFF,0x12FA05,0xF9393F];
 			while (id <= sectionInfo.length)
 			{
 				i = sectionInfo[id];
@@ -1962,14 +1968,15 @@ class ChartingState extends ScriptMusicBeatState
 					updateNote(null,i,secID);
 				}
 
-				if (!Math.isNaN(daSus) && daSus > 0)
-				{
+				if (!Math.isNaN(daSus) && daSus > 0){
 					var note = rawToNote[i];
 					var daNoteInfo = i[1];
 					var daStrumTime = i[0];
 					var daType = i[3];
 					var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
-						note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * _song.notes[curSection].lengthInSteps, 0, gridBG.height)));
+						note.y + GRID_SIZE).loadGraphic(sustainGraphic);
+					sustainVis.setGraphicSize(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * _song.notes[curSection].lengthInSteps, 0, gridBG.height)));
+					if(sustainColors[note.noteData] != null) sustainVis.color = sustainColors[note.noteData];
 					curRenderedSustains.add(sustainVis);
 				}
 			}

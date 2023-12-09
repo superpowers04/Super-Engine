@@ -196,10 +196,9 @@
 	<icon path="art/icon1024.png" size='1024'/>
 	<icon path="art/iconOG.png" />
 
-	<android permission="android.permission.INTERNET"/>
-	<android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
-	<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
-
+	<config:android permission="android.permission.INTERNET"/>
+	<config:android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<config:android permission="android.permission.READ_EXTERNAL_STORAGE"/>
 
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->

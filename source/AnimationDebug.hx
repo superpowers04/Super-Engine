@@ -146,6 +146,7 @@ class AnimationDebug extends MusicBeatState
 			var name = file.substring(0,file.lastIndexOf("/"));
 			FlxG.switchState(new ImportModFromFolder(file + '/',name.substring(name.lastIndexOf('/'))));
 			return;
+			
 		}
 		if(file.endsWith(".json")){
 			return multi.MultiMenuState.fileDrop(file);
@@ -254,7 +255,7 @@ class AnimationDebug extends MusicBeatState
 			// Emulate playstate's setup
 			try{
 
-				var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(FlxGraphic.fromBitmapData(BitmapData.fromFile('assets/shared/images/stagefront.png')));
+				var stageFront:FlxSprite = SELoader.loadFlxSprite(-650, 600,'assets/shared/images/stagefront.png');
 				stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 				stageFront.updateHitbox();
 				stageFront.antialiasing = false;
@@ -1691,39 +1692,15 @@ typedef AnimSetting={
 	var ?name:String;
 }
 
-class AnimSwitchMode extends MusicBeatSubstate
-{
-	var grpMenuShit:FlxTypedGroup<Alphabet>;
+class AnimSwitchMode extends se.substates.QuickList {
 	var animDebug:AnimationDebug;
-	var settings:Array<AnimSetting> = [];
-	var curSelected:Int = 0;
-	var infotext:FlxText;
-	var toptext:FlxText;
-
-	function reloadList():Void{
-		grpMenuShit.clear();
-		var i = 0;
-		for (name => value in settings)
-		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, '${value.name}', true, false,70,false);
-			songText.isMenuItem = true;
-			songText.targetY = i;
-			grpMenuShit.add(songText);
-			i++;
-		}
-		changeSelection();
-	}
 
 
-	public function new()
-	{
+	override public function new() {
 		// AnimationDebug.reloadChar = true;
 		AnimationDebug.instance.setupUI(true);
 		AnimationDebug.instance.editMode = 0;
 		AnimationDebug.instance.toggleOffsetText(false);
-		super();
-		FlxG.state.persistentUpdate = false;
-		FlxG.state.persistentDraw = true;
 		settings = [
 			{name:"Offsetting",value:function(){
 				AnimationDebug.instance.editMode = 0;
@@ -1743,98 +1720,12 @@ class AnimSwitchMode extends MusicBeatSubstate
 				AnimationDebug.instance.toggleOffsetText(false);
 			},description:"Move character per animation frame to help with fixing broken XML frame positions"},
 		];
-
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		bg.alpha = 0.0;
-		bg.scrollFactor.set();
-		add(bg);
-		grpMenuShit = new FlxTypedGroup<Alphabet>();
-		add(grpMenuShit);
-
-		var infotexttxt:String = "";
-		infotext = new FlxText(5, FlxG.height - 40, FlxG.width - 100, infotexttxt, 16);
-		infotext.wordWrap = true;
-		infotext.scrollFactor.set();
-		infotext.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		toptext = new FlxText(5, 40, FlxG.width - 100, "< Switch mode", 16);
-		toptext.scrollFactor.set();
-		toptext.setFormat(CoolUtil.font, 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		toptext.screenCenter(X);
-		add(toptext);
-		var blackBorder = new FlxSprite(-30,FlxG.height - 40).makeGraphic((Std.int(FlxG.width)),Std.int(50),FlxColor.BLACK);
-		blackBorder.alpha = 0.5;
-		add(blackBorder);
-		add(infotext);
-		FlxTween.tween(bg, {alpha: 0.7}, 0.4, {ease: FlxEase.quartInOut});
-		reloadList();
-		changeSelection(0);
-
-
-		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		super();
 	}
-
-	override function update(elapsed:Float)
-	{
-
-		super.update(elapsed);
-
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-		var rightP = controls.RIGHT_P;
-		var accepted = controls.ACCEPT;
-		var oldOffset:Float = 0;
-		if(FlxG.mouse.justReleased){
-			settings[curSelected].value();
-			close();
-		}
-		if(FlxG.mouse.wheel != 0){
-			changeSelection(FlxG.mouse.wheel);
-		}
-		if (upP){
-			changeSelection(-1);
-		}else if (downP){
-			changeSelection(1);
-		}
-		
-		if (FlxG.keys.pressed.ESCAPE){
-			AnimationDebug.instance.editMode = 0;
-			AnimationDebug.instance.toggleOffsetText(false);
-			close();
-		}
-
-		if (accepted && settings[curSelected].type != 1) {settings[curSelected].value();close();}
-	}
-
-	function changeSelection(?change:Int = 0)
-	{
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = settings.length - 1;
-		if (curSelected >= settings.length)
-			curSelected = 0;
-
-		var bullShit:Int = 0;
-
-		for (item in grpMenuShit.members)
-		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
-
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
-			}
-		}
-		if (settings[curSelected].description != null)
-			infotext.text = settings[curSelected].description;
-		else
-			infotext.text = "No description";
+	override function quit(){
+		AnimationDebug.instance.editMode = 0;
+		AnimationDebug.instance.toggleOffsetText(false);
+		close();
 	}
 }
 class AnimDebugOptions extends MusicBeatSubstate
@@ -1928,12 +1819,9 @@ class AnimDebugOptions extends MusicBeatSubstate
 		var accepted = controls.ACCEPT;
 		var oldOffset:Float = 0;
 
-		if (upP)
-		{
+		if (upP) {
 			changeSelection(-1);
-   
-		}else if (downP)
-		{
+		}else if (downP) {
 			changeSelection(1);
 		}
 		
@@ -1963,34 +1851,17 @@ class AnimDebugOptions extends MusicBeatSubstate
 		// reloadList();
 	}
 
-	function changeSelection(?change:Int = 0)
-	{
+	function changeSelection(?change:Int = 0) {
 		curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = menuItems.length - 1;
-		if (curSelected >= menuItems.length)
-			curSelected = 0;
+		if (curSelected < 0) curSelected = menuItems.length - 1;
+		if (curSelected >= menuItems.length) curSelected = 0;
 
-		var bullShit:Int = 0;
+		for (index => item in grpMenuShit.members) {
+			item.targetY = index - curSelected; 
 
-		for (item in grpMenuShit.members)
-		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
-
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
-			}
+			item.alpha = (item.targetY == 0 ? 1 : 0.6);
 		}
-		if (settings[menuItems[curSelected]].description != null)
-			infotext.text = settings[menuItems[curSelected]].description;
-		else
-			infotext.text = "No description";
+		infotext.text = settings[menuItems[curSelected]].description ?? "No description";
 	}
 }

@@ -124,10 +124,10 @@ class Console extends TextField
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
 	public static var debugVar:String = "";
-	var requestUpdate = false;
-	public static var showConsole = false;
-	var isShowingConsole = true;
-	var wasMouseDisabled = false;
+	var requestUpdate:Bool = false;
+	public static var showConsole:Bool = false;
+	var isShowingConsole:Bool = true;
+	var wasMouseDisabled:Bool = false;
 
 	public function new(x:Float = 20, y:Float = 20, color:Int = 0xFFFFFFFF)
 	{
@@ -452,28 +452,49 @@ class ConsoleInput extends TextField{
 		}
 	}
 	@:noCompletion
-	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
+	private #if !flash override #end function __enterFrame(deltaTime:Float):Void // This is such a fucking mess, I should be using events but fuck it
 	{
 		if(FlxG.keys == null || alpha <= 0) return;
 
 
-		for(key => char in keyList){
-			@:privateAccess
-			if(Reflect.getProperty(FlxG.keys.justPressed,key)){
-				if(FlxG.keys.pressed.SHIFT){
-					char = (keyListUpper[key] != null ? keyListUpper[key] : char.toUpperCase());
-				}
-				addTextAtCaret(char);
-				caretPos++;
+		if(FlxG.keys.pressed.CONTROL){
+			if(FlxG.keys.pressed.BACKSPACE){
+				
+				actualText = actualText.substring(0,caretPos - 1) + actualText.substring(caretPos);
+				caretPos--;
+				updateShownText();
+			}else if(FlxG.keys.justPressed.C){
+				lime.system.Clipboard.text = actualText;
+				Console.print('Copied input text to clipboard');
+			}else if(FlxG.keys.justPressed.V){
+				var text = lime.system.Clipboard.text;
+				addTextAtCaret(text);
+				caretPos+=text.length;
 				updateShownText();
 			}
-		}
-
-		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.BACKSPACE){
+		}else if(FlxG.keys.justPressed.BACKSPACE){
 			actualText = actualText.substring(0,caretPos - 1) + actualText.substring(caretPos);
 			caretPos--;
 			updateShownText();
+		}else if(FlxG.keys.justPressed.DELETE){
+			actualText = actualText.substring(0,caretPos) + actualText.substring(caretPos + 1);
+			updateShownText();
+		}else{
+
+			for(key => char in keyList){
+				@:privateAccess
+				if(Reflect.getProperty(FlxG.keys.justPressed,key)){
+					if(FlxG.keys.pressed.SHIFT){
+						char = (keyListUpper[key] != null ? keyListUpper[key] : char.toUpperCase());
+					}
+					addTextAtCaret(char);
+					caretPos++;
+					updateShownText();
+				}
+			}
 		}
+
+
 		if(FlxG.keys.pressed.SHIFT){
 			if(FlxG.keys.justPressed.UP){
 				if(CURRENTCMDHISTORY < commandHistory.length){
@@ -495,15 +516,7 @@ class ConsoleInput extends TextField{
 				updateShownText();
 			}
 		}else{
-			if(FlxG.keys.justPressed.BACKSPACE){
-				actualText = actualText.substring(0,caretPos - 1) + actualText.substring(caretPos);
-				caretPos--;
-				updateShownText();
-			}else if(FlxG.keys.justPressed.DELETE){
-				actualText = actualText.substring(0,caretPos) + actualText.substring(caretPos + 1);
-				caretPos--;
-				updateShownText();
-			}else if(FlxG.keys.justPressed.LEFT){
+			if(FlxG.keys.justPressed.LEFT){
 				caretPos--;
 				updateShownText();
 			}else if(FlxG.keys.justPressed.RIGHT){
@@ -525,6 +538,7 @@ class ConsoleInput extends TextField{
 	}
 	var cmdList:Array<Array<String>> = [
 		["help",'Prints this message'],
+		["statehelp",'If a state has custom commands, they\'ll be listed here. If it doesn\'t, you\'ll get a "command not found" error'],
 
 		['-- Utilities --'],
 		["mainmenu",'Return to the main menu'],
@@ -551,10 +565,7 @@ class ConsoleInput extends TextField{
 		}
 		var args:Array<String> = text.split(' ');
 		switch(args[0].toLowerCase()){
-			case 'echo' | "print":
-				text = text.substring(text.indexOf(' '));
-				Console.print(text);
-				return text;
+
 			case 'hs': 
 				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
 				return runHscript(text.substring(3));
@@ -578,6 +589,14 @@ class ConsoleInput extends TextField{
 			case 'hst' :
 				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
 				return runHscript("trace(" + text.substring(3) + ");");
+			case 'playsong' | 'play':
+				var song = text.substring(text.indexOf(' ') + 1);
+				if(song != "" && multi.MultiMenuState.playSongByName(song)){
+					Console.showConsole = false;
+					return true;
+				}	
+				Console.print('Unable to find song $song');
+				
 			case 'reload':
 				Console.showConsole = false;
 				FlxG.resetState();
@@ -622,6 +641,16 @@ class ConsoleInput extends TextField{
 
 			// 		Console.print('PlayState:${cpp.Stdlib.sizeof(PlayState)}');
 				// }
+			case 'quit' | 'exit':
+				Sys.exit(0);
+				return null;
+			case 'close' | 'exitconsole' | 'hide':
+				Console.showConsole = false;
+				return null;
+			case 'echo' | "print" | 'trace':
+				text = text.substring(text.indexOf(' '));
+				Console.print(text);
+				return text;
 			case 'help':
 				var ret = 'Command list:';
 				for(_ => v in cmdList){
@@ -631,6 +660,14 @@ class ConsoleInput extends TextField{
 				return null;
 				              // \n"hs (CODE)" - Run hscript code\n"hst (CODE)" - Run HScript Code encased in a trace\n"reload" - Reset current state\n"mainmenu" - Go to the main menu');
 			default:
+				try{
+					if(MusicBeatState.instance != null){
+						var ret:Dynamic = MusicBeatState.instance.consoleCommand(text,args);
+						if(ret != null) return ret;
+					}
+				}catch(e){
+					Console.error(e.message);
+				}
 				Console.error('Command "${args[0]}" not found, run help for a list of commands');
 		}
 		return null;

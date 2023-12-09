@@ -1151,10 +1151,10 @@ class CharAnimController extends FlxAnimationController{
 
 
 	public var animName(get,set):String; // Shorthand for either playing an animation or grabbing the name
-	@:keep inline public function get_animName():Null<String>{ // Instead of erroring due to curAnim being shit, just return null
+	public function get_animName():Null<String>{ // Instead of erroring due to curAnim being shit, just return null
 		return if(animation.curAnim != null && animation.curAnim.name != null) animation.curAnim.name else null;
 	}
-	@:keep inline public function set_animName(str:String):String{
+	public function set_animName(str:String):String{
 		playAnim(str,true);
 		return animName;
 	}

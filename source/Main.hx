@@ -50,8 +50,7 @@ class Main extends Sprite
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
-	public static function main():Void
-	{
+	public static function main():Void {
 
 		// quick checks 
 
@@ -103,6 +102,7 @@ class Main extends Sprite
 		
 		funniSprite = new Sprite();
 		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
+		FlxG.mouse.enabled = false;
 		addChild(funniSprite);
 		funniSprite.addChild(game);
 		LoadingScreen.show();
