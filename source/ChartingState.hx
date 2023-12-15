@@ -993,27 +993,25 @@ class ChartingState extends ScriptMusicBeatState
 
 		useNoteTypeBox = new FlxUICheckBox(notetypeinput.x , notetypeinput.y + 20 ,null,null, 'Use note type?');
 		useNoteTypeBox.checked = true;
-		var storeNoteData = function(id:Int) {
-			return function(){
-				storedNoteData[id] = new CharterNoteData(noteTypeInput.text,notetype2input.text);
-				storedNDButtons[id][1].alpha = 1;
-			}
+		var storeNoteData = function(id:Int){
+			storedNoteData[id] = new CharterNoteData(noteTypeInput.text,notetype2input.text);
+			storedNDButtons[id][1].alpha = 1;
 		}
+		
 		var getNoteData = function(id:Int) {
-			return function(){
-				if(storedNoteData[id] == null){
-					showTempmessage('Nothing has been stored here!',FlxColor.RED);
-					return;
-				}
-				noteTypeInput.text = storedNoteData[id].type;
-				notetype2input.text = storedNoteData[id].meta;
+			if(storedNoteData[id] == null){
+				showTempmessage('Nothing has been stored here!',FlxColor.RED);
+				return;
 			}
+			noteTypeInput.text = storedNoteData[id].type;
+			notetype2input.text = storedNoteData[id].meta;
 		}
+		
 		inline function addNoteStore(id:Int,x:Float,y:Float){
 			var e = storedNDButtons[id] = [];
-			tab_group_note.add(e[0] = new FlxButton(x, y, 'Store notedata $id', storeNoteData(id)));
-			tab_group_note.add(e[1] = new FlxButton(x + 100, y, 'Get notedata $id', getNoteData(id)));
-			e[1].alpha = 0.5;
+			tab_group_note.add(e[0] = new FlxButton(x, y, 'Store notedata $id', storeNoteData.bind(id)));
+			tab_group_note.add(e[1] = new FlxButton(x + 100, y, 'Get notedata $id', getNoteData.bind(id)));
+			if(storedNoteData[id] == null) e[1].alpha = 0.5;
 		}
 		// var applyNoteMeta = function() {
 		// 	if(currentNoteObj == null) return showTempmessage('No note currently selected!',FlxColor.RED);
@@ -1974,8 +1972,7 @@ class ChartingState extends ScriptMusicBeatState
 					var daStrumTime = i[0];
 					var daType = i[3];
 					var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
-						note.y + GRID_SIZE).loadGraphic(sustainGraphic);
-					sustainVis.setGraphicSize(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * _song.notes[curSection].lengthInSteps, 0, gridBG.height)));
+						note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * _song.notes[curSection].lengthInSteps, 0, gridBG.height)));
 					if(sustainColors[note.noteData] != null) sustainVis.color = sustainColors[note.noteData];
 					curRenderedSustains.add(sustainVis);
 				}
@@ -2254,12 +2251,19 @@ class ChartingState extends ScriptMusicBeatState
 		FlxG.resetState();
 	}
 
-	inline function autosaveSong():Void
-	{
-		// FlxG.save.data.autosave = Json.stringify({
-		// 	"song": _song
-		// });
-		// FlxG.save.flush();
+	@:keep inline function autosaveSong():Void {
+		try{
+			var path = (onlinemod.OfflinePlayState.chartFile ?? lastPath) + ".bak";
+			callInterp('autosaveChart',[path]);
+			var _raw = _song.rawJSON;
+			_song.rawJSON = null;
+			var data:String = Json.stringify(_song);
+			_song.rawJSON = _raw;
+			sys.io.File.saveContent(path,'{"song":' + data + "}");
+			showTempmessage("Backup saved!",FlxColor.RED);
+		}catch(e){
+			trace(e);
+		}
 	}
 	var fd:FileDialog;
 	private function loadLevel_()
@@ -2337,18 +2341,7 @@ class ChartingState extends ScriptMusicBeatState
 	}
 	function saveRemind(show:Bool = true){ // Save reminder every 10 minutes
 		if(show)showTempmessage("Don't forget to save frequently!",FlxColor.RED);
-		try{
-			var path = (onlinemod.OfflinePlayState.chartFile ?? lastPath) + ".bak";
-			callInterp('autosaveChart',[path]);
-			var _raw = _song.rawJSON;
-			_song.rawJSON = null;
-			var data:String = Json.stringify(_song);
-			_song.rawJSON = _raw;
-			sys.io.File.saveContent(path,'{"song":' + data + "}");
-			showTempmessage("Backup saved!",FlxColor.RED);
-		}catch(e){
-			trace(e);
-		}
+		autosaveSong();
 		if(saveReminder != null)saveReminder.cancel();
 		saveReminder = new FlxTimer().start(600,function(tmr:FlxTimer){saveRemind();});
 	}

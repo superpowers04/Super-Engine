@@ -192,7 +192,7 @@ class OnlineAddServer extends MusicBeatSubstate
 
 	public static function AddXieneText(state:FlxState)
 	{
-		var xieneText = new FlxText(0, FlxG.height - 30, "XieneDev");
+		var xieneText = new FlxText(0, FlxG.height - 30, "XieneDev - BR Online");
 		xieneText.setFormat(CoolUtil.font, 28, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		xieneText.screenCenter(FlxAxes.X);
 		state.add(xieneText);

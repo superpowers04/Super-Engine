@@ -29,8 +29,7 @@ import se.utilities.SEMacros;
 
 using StringTools;
 
-class MainMenuState extends SickMenuState
-{
+class MainMenuState extends SickMenuState {
 	
 	public static var firstStart:Bool = true;
 	public static var nightly(default,never):String = "X" + SEMacros.buildDate;
@@ -126,7 +125,8 @@ class MainMenuState extends SickMenuState
 
 			if(MainMenuState.errorMessage == "" && ScriptableStateManager.goToLastState && ScriptableStateManager.lastState != ""){
 				SelectScriptableState.selectState(ScriptableStateManager.lastState);
-			}else 
+				return;
+			}
 			bg.scrollFactor.set(0.1,0.1);
 			bg.color = MainMenuState.bgcolor;
 			if (onlinemod.OnlinePlayMenuState.socket != null){

@@ -480,10 +480,18 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 							try{
 								_inob = _ob.members[_id];
 								_id--;
-								if(_inob != null  && FlxG.mouse.overlaps(_inob)){
+
+								if(_inob == null) continue;
+								if(_inob.members != null){
+									_id = Std.int(_inob.members.length-1);
+									_ob = _inob;
+									continue;
+								}
+								if(FlxG.mouse.overlaps(_inob)){
 									obj = cast (_inob,FlxSprite);
 									break;
 								}
+							
 							}catch(e){obj = null;}
 						}
 
@@ -503,9 +511,20 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 	}
 	var lastRMouseX:Float = 0;
 	var lastRMouseY:Float = 0;
+	var fakePointer:FlxObject = new FlxObject();
 
 	override function update(el:Float){
 		super.update(el);
+		if(!FlxG.mouse.pressed && FlxG.mouse.pressedMiddle){
+			mx=FlxG.mouse.x;
+			my=FlxG.mouse.y;
+			obj = fakePointer;
+			fakePointer.x = FlxG.mouse.x;
+			fakePointer.y = FlxG.mouse.y;
+			updateObjPosText();
+			obj = null;
+
+		}
 		if(FlxG.mouse.justPressed){
 			mx=FlxG.mouse.x;
 			my=FlxG.mouse.y;

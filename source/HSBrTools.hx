@@ -183,6 +183,7 @@ class HSBrTools {
 	public function playSound(soundPath:String,?volume:Float = 2):FlxSound{
 		var sound = loadFlxSound(soundPath);
 		sound.volume = (volume == 2 ? FlxG.save.data.otherVol : volume);
+		FlxG.sound.list.add(sound);
 		return sound.play();
 	}
 

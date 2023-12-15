@@ -99,27 +99,38 @@ class Main extends Sprite
 		// Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		
 		addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
-		
-		funniSprite = new Sprite();
-		game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
-		FlxG.mouse.enabled = false;
-		addChild(funniSprite);
-		funniSprite.addChild(game);
-		LoadingScreen.show();
-		fpsCounter = new Overlay(0, 0);
-		funniSprite.addChild(fpsCounter);
-		console = Console.instance;
-		#if !mobile
-		addChild(console);
-		addChild(console.commandBox);
+		try{
 
-		// fpsCounter.visible = false;
-		// fpsOverlay = new Overlay(0, 0);
-		// addChild(fpsCounter);
+			funniSprite = new Sprite();
+			game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
+			FlxG.mouse.enabled = false;
+			addChild(funniSprite);
+			funniSprite.addChild(game);
+			LoadingScreen.show();
+			fpsCounter = new Overlay(0, 0);
+			funniSprite.addChild(fpsCounter);
+			console = Console.instance;
+			#if !mobile
+			addChild(console);
+			addChild(console.commandBox);
 
-		// fpsCounter = new FPS(10, 3, 0xFFFFFF);
-		// addChild(fpsCounter);
-		toggleFPS(FlxG.save.data.fps);
+			// fpsCounter.visible = false;
+			// fpsOverlay = new Overlay(0, 0);
+			// addChild(fpsCounter);
+
+			// fpsCounter = new FPS(10, 3, 0xFFFFFF);
+			// addChild(fpsCounter);
+			toggleFPS(FlxG.save.data.fps);
+		}catch(e){
+			try{removeChild(game);}catch(e){};
+			try{removeChild(fpsCounter);}catch(e){};
+			try{removeChild(console);}catch(e){};
+			game = null;
+			addChild(new se.ErrorSprite('Error occured while trying to load Flixel.\nDid you make sure to extract the game? or did you put it in the wrong folder?\nThe '+
+				#if(windows)"exe" #else "executable" #end
+				+ 'Should be next to the manifest or assets folder!\nError:\n${e.message}'
+			));
+		}
 
 		#end
 	}
@@ -155,12 +166,17 @@ class Main extends Sprite
 	#if(target.threaded)
 	override function __enterFrame(_){
 		try{
-			if(FlxG.keys.justPressed.F1) throw('Manual error');
-			if(game.blockDraw || game.blockUpdate){
-				renderLock.wait();
-				renderLock.lock();
-				super.__enterFrame(_);
-				renderLock.release();
+			if(game != null){
+
+				if(FlxG.keys.justPressed.F1) throw('Manual error');
+				if(game.blockDraw || game.blockUpdate){
+					renderLock.wait();
+					renderLock.lock();
+					super.__enterFrame(_);
+					renderLock.release();
+				}else{
+					super.__enterFrame(_);
+				}
 			}else{
 				super.__enterFrame(_);
 			}

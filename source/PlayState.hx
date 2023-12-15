@@ -400,23 +400,29 @@ class PlayState extends ScriptMusicBeatState
 		}
 		public override function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
 				try{
-					if(func_name == "noteHitDad"){
-						charCall("noteHitSelf",[args[1]],1);
-						charCall("noteHitOpponent",[args[1]],0);
-					}else if(func_name == "noteHit"){
-						charCall("noteHitSelf",[args[1]],0);
-						charCall("noteHitOpponent",[args[1]],1);
-					}else if(func_name == "susHitDad"){
-						charCall("susHitSelf",[args[1]],1);
-						charCall("susHitOpponent",[args[1]],0);
-					}else if(func_name == "susHit"){
-						charCall("susHitSelf",[args[1]],0);
-						charCall("susHitOpponent",[args[1]],1);
+					switch(func_name){
+						case ("noteHitDad"):{
+							charCall("noteHitSelf",[args[1]],1);
+							charCall("noteHitOpponent",[args[1]],0);
+						}
+						case ("noteHit"):{
+							charCall("noteHitSelf",[args[1]],0);
+							charCall("noteHitOpponent",[args[1]],1);
+						}
+						case ("susHitDad"):{
+							charCall("susHitSelf",[args[1]],1);
+							charCall("susHitOpponent",[args[1]],0);
+						}
+						case ("susHit"):{
+							charCall("susHitSelf",[args[1]],0);
+							charCall("susHitOpponent",[args[1]],1);
+						}
+
 					}
 					args.insert(0,this);
 					if (id == "") {
-						for (name in interps.keys()) {
-							callSingleInterp(func_name,args,name);
+						for (name => interp in interps) {
+							callSingleInterp(func_name,args,name,interp);
 						}
 						if(Console.instance != null && Console.instance.commandBox != null){
 							if(Console.instance.commandBox.interp != null) callSingleInterp(func_name,args,'console-hx',Console.instance.commandBox.interp);
@@ -1347,6 +1353,9 @@ class PlayState extends ScriptMusicBeatState
 			}
 			callInterp("startTimerStepAfter",[swagCounter]);
 
+			if(swagCounter == introAudio.length + 1){
+				Conductor.songPosition = 0;
+			}
 			swagCounter += 1;
 			// generateSong('fresh');
 		}, introAudio.length + 1);
@@ -1407,7 +1416,7 @@ class PlayState extends ScriptMusicBeatState
 			}
 		}
 	}
-	function startSong(?alrLoaded:Bool = false):Void{
+	function startSong(?IGNORED:Bool = false):Void{
 		if(FlxG.sound.music == null || FlxG.sound.music.length <= 0) {
 			throw("Instrumental failed to load?");
 			return;
@@ -1912,8 +1921,7 @@ class PlayState extends ScriptMusicBeatState
 		FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 	}
 
-	override function openSubState(SubState:FlxSubState)
-	{
+	override function openSubState(SubState:FlxSubState) {
 		if (!paused) return super.openSubState(SubState);
 
 		if (FlxG.sound.music != null && !startingSong){
@@ -1925,8 +1933,7 @@ class PlayState extends ScriptMusicBeatState
 		return super.openSubState(SubState);
 	}
 
-	override function closeSubState()
-	{
+	override function closeSubState() {
 		if (!paused) return super.closeSubState();
 		
 		if (FlxG.sound.music != null && !startingSong) vocals.time = Conductor.songPosition = FlxG.sound.music.time;
@@ -1942,8 +1949,8 @@ class PlayState extends ScriptMusicBeatState
 	var resyncCount:Int = 0;
 	function resyncVocals():Void{
 
-		FlxG.sound.music.play();
 		Conductor.songPosition = FlxG.sound.music.time;
+		FlxG.sound.music.play();
 		if(SONG.needsVoices && (!vocals.playing || vocals.time > Conductor.songPosition + 5 || vocals.time < Conductor.songPosition - 5)){
 			vocals.time = FlxG.sound.music.time;
 			vocals.play();
@@ -2118,12 +2125,10 @@ class PlayState extends ScriptMusicBeatState
 
 
 		if (health <= 0 && !hasDied && checkHealth && !ChartingState.charting && onlinemod.OnlinePlayMenuState.socket == null){
-
 			if(practiceMode) {
 				hasDied = true;
 				practiceText.text = "Practice Mode; Score won't be saved";
 				practiceText.screenCenter(X);
-					
 			} else finishSong(false);
 		}
  		if (FlxG.save.data.resetButton && onlinemod.OnlinePlayMenuState.socket == null && controls.RESET)
@@ -2188,13 +2193,13 @@ class PlayState extends ScriptMusicBeatState
 			if(timeSinceOnscreenNote > 0) timeSinceOnscreenNote -= elapsed;
 			keyShit();
 		}
-	#if !debug
-	}catch(e){
-		handleError('Caught "update" crash: ${e.message}\n ${e.stack}');
+		#if !debug
+		}catch(e){
+			handleError('Caught "update" crash: ${e.message}\n ${e.stack}');
+		}
+		#end
 	}
-	#end
-}
-	@:keep inline public function pause(){
+	public function pause(){
 		currentSpeed = 1;
 		persistentUpdate = false;
 		persistentDraw = true;
@@ -2620,39 +2625,39 @@ class PlayState extends ScriptMusicBeatState
 
 
 	}
-	dynamic function noteShit(){MainMenuState.handleError("I can't handle input for some reason, Please report this!");}
 	public function DadStrumPlayAnim(id:Int,?anim:String = "confirm") {
 		var spr:StrumArrow= cpuStrums.members[id];
-		if(spr != null) {
-			switch(anim.toLowerCase()){
-				case "confirm":
-					spr.confirm(true);
-				case "static":
-					spr.playStatic(true);
-				case "press":
-					spr.press(true);
-			}
+		if(spr == null) return;
+		switch(anim.toLowerCase()){
+			case "confirm":
+				spr.confirm(true);
+			case "static":
+				spr.playStatic(true);
+			case "press":
+				spr.press(true);
 		}
+		
 	}
 	public function BFStrumPlayAnim(id:Int,anim:String = 'confirm') {
 		var spr:StrumArrow= playerStrums.members[id];
-		if(spr != null) {
-			switch(anim.toLowerCase()){
-				case "confirm":
-					spr.confirm(true);
-				case "static":
-					spr.playStatic(true);
-				case "press":
-					spr.press(true);
-			}
+		if(spr == null) return;
+		switch(anim.toLowerCase()){
+			case "confirm":
+				spr.confirm(true);
+			case "static":
+				spr.playStatic(true);
+			case "press":
+				spr.press(true);
 		}
+		
 	}
 
 
 	private function keyShit():Void
 		{try{doKeyShit();}catch(e){handleError('Error during keyshit: ${e.message}\n ${e.stack}');}}
-	private dynamic function doKeyShit():Void
-		{MainMenuState.handleError("I can't handle key inputs? Please report this!");}
+	public var doKeyShit:()->Void = function():Void{throw("I can't handle key inputs? Please report this!");};
+	public var noteShit:()->Void = function():Void{throw("I can't handle input for some reason, Please report this!");};
+	public var goodNoteHit:(Note, ?Bool)->Void = function(note:Note, ?resetMashViolation:Bool = true):Void{throw("I cant register any note hits!");};
 
 
 
@@ -3277,9 +3282,6 @@ class PlayState extends ScriptMusicBeatState
 		}
 
 
-
-	dynamic function goodNoteHit(note:Note, ?resetMashViolation = true):Void {MainMenuState.handleError('I cant register any note hits!');}
-
 	override function stepHit(){
 		if(lastStep == curStep) return;
 		super.stepHit();
@@ -3354,7 +3356,8 @@ class PlayState extends ScriptMusicBeatState
 
 			PlayState.canUseAlts = sect.altAnim;
 			if(controlCamera){
-				var locked = (sect.centerCamera || !FlxG.save.data.camMovement || camLocked || (notes.members[0] == null && unspawnNotes[0] == null || (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition > 4000)) );
+				var locked = (sect.centerCamera || !FlxG.save.data.camMovement || camLocked || 
+					(notes.length == 0 && unspawnNotes.length == 0 || (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition > 4000)));
 				
 				(chartIsInverted ? followChar((sect.mustHitSection ? 1 : 0),locked) : followChar((sect.mustHitSection ? 0 : 1),locked));
 			}

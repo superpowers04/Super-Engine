@@ -64,6 +64,7 @@ class OnlinePlayState extends PlayState
 		this.loadedVoices = voices;
 		this.loadedInst = inst;
 		practiceMode = true;
+		FlxG.sound.playMusic(loadedInst, 1, false);
 
 	}
 
@@ -89,14 +90,14 @@ class OnlinePlayState extends PlayState
 				}
 			}
 		}
-		if (autoDetPlayer2){
-			var count = 0;
-			for (i in clients.keys()) {
-				count++;
-				if(count > 1){break;}
-			}
-				// PlayState.dadShow = (count == 1);
-		}
+		// if (autoDetPlayer2){
+		// 	var count = 0;
+		// 	for (i in clients.keys()) {
+		// 		count++;
+		// 		if(count > 1){break;}
+		// 	}
+		// 		// PlayState.dadShow = (count == 1);
+		// }
 
 		super.create();
 		clientsGroup = new FlxTypedGroup<FlxText>();
@@ -212,19 +213,7 @@ class OnlinePlayState extends PlayState
 		FlxG.autoPause = false;
 	}catch(e){MainMenuState.handleError('Crash in "create" caught: ${e.message}');}}
 
-	override function startCountdown(){
-		try{
-			if (!ready) return;
-
-			super.startCountdown();
-			FlxG.sound.music.onComplete = endSong;
-		}catch(e){MainMenuState.handleError(e,'Crash in "startCountdown" caught: ${e.message}');}
-	}
-
-	override function startSong(?alrLoaded:Bool = false){
-		FlxG.sound.playMusic(loadedInst, 1, false);
-		super.startSong(true);
-	}
+	override function startCountdown() if (ready) super.startCountdown();
 
 	override function generateSong(?dataPath:String = ""){
 	//   // I have to code the entire code over so that I can remove the offset thing
@@ -276,25 +265,26 @@ class OnlinePlayState extends PlayState
 		CoolLeaderBoard.sort((a,b) -> Std.int(b[3].text.split(' ')[0]) - Std.int(a[3].text.split(' ')[0]));
 		var WhereME = 1;
 		for(Array in CoolLeaderBoard){
-			if(Array[2].text == OnlineNickState.nickname)
-				break;
+			if(Array[2].text == OnlineNickState.nickname) break;
 			WhereME++;
 		}
 		if(CoolLeaderBoard.length > 1){
 			for(i in 0...CoolLeaderBoard.length){
-					var YMove = scoreY + ((CoolLeaderBoard[i][0].height * (i - (WhereME - (CoolLeaderBoard.length * 0.5)))) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5))));
-					var XMove = (!PlayState.invertedChart ? 125 - (Math.abs((WhereME - 1) - i) * 10) : FlxG.width - 625 + (Math.abs((WhereME - 1) - i) * 10));
-					if(YMove - CoolLeaderBoard[i][0].y >= 20 || YMove - CoolLeaderBoard[i][0].y <= -20 || YMove - CoolLeaderBoard[i][1].y >= 20 || YMove - CoolLeaderBoard[i][1].y <= -20){
-						FlxTween.tween(CoolLeaderBoard[i][0],{y: YMove,x: XMove},0.1,{ease: FlxEase.quadInOut});
-						FlxTween.tween(CoolLeaderBoard[i][1],{y: YMove,x: XMove + 10},0.1,{ease: FlxEase.quadInOut});
-						FlxTween.tween(CoolLeaderBoard[i][2],{y: YMove + 12.5,x: XMove + 10},0.1,{ease: FlxEase.quadInOut});
-						FlxTween.tween(CoolLeaderBoard[i][3],{y: YMove + 5,x: XMove + CoolLeaderBoard[i][1].width + 20},0.1,{ease: FlxEase.quadInOut});
-					}
+				var YMove = scoreY + ((CoolLeaderBoard[i][0].height * (i - (WhereME - (CoolLeaderBoard.length * 0.5)))) - (CoolLeaderBoard[i][0].height + (CoolLeaderBoard[i][0].height * ((CoolLeaderBoard.length * 0.5) - 1.5))));
+				var XMove = (!PlayState.invertedChart ? 125 - (Math.abs((WhereME - 1) - i) * 10) : FlxG.width - 625 + (Math.abs((WhereME - 1) - i) * 10));
+				if(YMove - CoolLeaderBoard[i][0].y >= 20 || YMove - CoolLeaderBoard[i][0].y <= -20 
+					|| YMove - CoolLeaderBoard[i][1].y >= 20 || YMove - CoolLeaderBoard[i][1].y <= -20) {
+					FlxTween.tween(CoolLeaderBoard[i][0],{y: YMove,x: XMove},0.1,{ease: FlxEase.quadInOut});
+					FlxTween.tween(CoolLeaderBoard[i][1],{y: YMove,x: XMove + 10},0.1,{ease: FlxEase.quadInOut});
+					FlxTween.tween(CoolLeaderBoard[i][2],{y: YMove + 12.5,x: XMove + 10},0.1,{ease: FlxEase.quadInOut});
+					FlxTween.tween(CoolLeaderBoard[i][3],{y: YMove + 5,x: XMove + CoolLeaderBoard[i][1].width + 20},0.1,{ease: FlxEase.quadInOut});
 				}
 			}
+		}
+		
 	}
 
-	override function finishSong(?win=true){}
+	override function finishSong(?win=true){endSong();}
 	override function endSong():Void{
 		clients[-1].score = PlayState.songScore;
 		clients[-1].scoreText = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + HelperFunctions.truncateFloat(PlayState.accuracy,2);
@@ -319,31 +309,21 @@ class OnlinePlayState extends PlayState
 		super.keyShit();
 	}
 
-	override function openSubState(SubState:FlxSubState)
-	{
-		if (Type.getClass(SubState) == PauseSubState)
-		{
-			var realPaused:Bool = paused;
-			paused = false;
+	public override function pause(){
+		var realPaused:Bool = paused;
+		paused = false;
 
-			super.openSubState(new OnlinePauseSubState());
-			inPause = true;
+		super.openSubState(new OnlinePauseSubState());
+		inPause = true;
 
-			paused = realPaused;
-			persistentUpdate = true;
-			
-			canPause = false;
-
-			return;
-		}
-
-		super.openSubState(SubState);
+		paused = realPaused;
+		persistentUpdate = true;
+		
+		canPause = false;
 	}
-
 	override function closeSubState()
 	{
-		if (paused)
-		{
+		if (paused) {
 			canPause = true;
 			inPause = false;
 		}

@@ -251,7 +251,7 @@ class LoadingScreen extends Sprite{
 		}catch(e){}
 	}
 	public static function hide(){
-		Main.game.blockUpdate = Main.game.blockDraw = false;
+		if(Main.game != null) Main.game.blockUpdate = Main.game.blockDraw = false;
 		if(object == null){
 			return;
 		}

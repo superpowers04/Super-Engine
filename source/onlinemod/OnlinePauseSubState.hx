@@ -26,8 +26,7 @@ class OnlinePauseSubState extends MusicBeatSubstate
 
 	var offline:Bool;
 
-	public function new()
-	{
+	public function new() {
 
 		super();
 
@@ -71,8 +70,7 @@ class OnlinePauseSubState extends MusicBeatSubstate
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 
-		for (i in 0...menuItems.length)
-		{
+		for (i in 0...menuItems.length) {
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
@@ -93,18 +91,16 @@ class OnlinePauseSubState extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
+		if(!ready) return;
+		
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		// var accepted = controls.ACCEPT;
 
-		if (upP)
-			changeSelection(-1);
-		else if (downP)
-			changeSelection(1);
+		if (upP) changeSelection(-1);
+		else if (downP) changeSelection(1);
 
-		if (controls.ACCEPT && ready)
-		{
+		if (controls.ACCEPT) {
 			var daSelected:String = menuItems[curSelected];
 
 			switch (daSelected)
@@ -126,30 +122,19 @@ class OnlinePauseSubState extends MusicBeatSubstate
 		}
 	}
 
-	function changeSelection(change:Int = 0):Void
-	{
+	function changeSelection(change:Int = 0):Void {
 		curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = menuItems.length - 1;
-		if (curSelected >= menuItems.length)
-			curSelected = 0;
+		if (curSelected < 0) curSelected = menuItems.length - 1;
+		if (curSelected >= menuItems.length) curSelected = 0;
 
 		var bullShit:Int = 0;
 
-		for (item in grpMenuShit.members)
-		{
+		for (item in grpMenuShit.members) {
 			item.targetY = bullShit - curSelected;
 			bullShit++;
 
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
-			}
+			item.alpha = (item.targetY == 0 ? 1 : 0.6);
 		}
 	}
 }

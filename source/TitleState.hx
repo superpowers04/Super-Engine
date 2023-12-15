@@ -817,9 +817,11 @@ class TitleState extends MusicBeatState
 			#if !android
 				findosuBeatmaps();
 			#end
+			var isUsingPaths = false;
 			if(SELoader.exists('path.txt')){
 				SELoader.PATH = SELoader.loadText('path.txt');
 				trace('Loading files from ${SELoader.PATH}');
+				isUsingPaths = true;
 			}
 			if(!SELoader.exists('assets')){
 				FuckState.FATAL = true;
@@ -827,9 +829,9 @@ class TitleState extends MusicBeatState
 				#if(android) 
 				+ "\nDue to android weirdness, you'll have to manually copy your Assets, Manifest and Mods folder to the folder listed above\nYou can get these from a Desktop build of the game" 
 				#else
-				+"\nDid you uncompress the game's assets to this folder before setting up path.txt?"
+				+(isUsingPaths?"\nDid you uncompress the game's assets to this folder before setting up path.txt?":"Did you make sure to extract the game?")
 				#end
-				,"VALIDPATHCHECK");
+				,"TitleState.checkPathisValid");
 				return;
 			}
 			MainMenuState.firstStart = true;
@@ -1232,18 +1234,20 @@ class TitleState extends MusicBeatState
 	var ttBounce:FlxTween;
 	var cachingText:Alphabet;
 	var drpcansend:Bool = false;
-	override function beatHit()
-	{
+	var beatAmounts:Map<Int,Float> = [0=>0.05,1=>0.05,31=>0.07,32=>0.08,64=>0.12,65=>0.05,66=>0.03,67=>0.02,68=>0.005,69=>0];
+	var beatIntensity:Float = 0.05;
+	override function beatHit() {
 		super.beatHit();
-
+		if(beatAmounts.exists(curBeat)) beatIntensity = beatAmounts[curBeat];
 		if (logoBl != null){
 			
 			if(tweeny != null)tweeny.cancel();
-			logoBl.scale.set(1,1);
+			var amount = 0.9 + beatIntensity;
+			logoBl.scale.set(amount,amount);
 			// FlxTween.tween(logoBl.scale,{x:1,y:1},0.1);
 			tweeny = FlxTween.tween(logoBl.scale,{x:0.9,y:0.9},(60 / Conductor.bpm),{ease:FlxEase.expoOut});
 			if(ttBounce != null)ttBounce.cancel();
-			titleText.scale.x = titleText.scale.y = 1.1;
+			titleText.scale.set(0.1 + amount,0.1 + amount);
 			ttBounce = FlxTween.tween(titleText.scale,{x:1,y:1},(60 / Conductor.bpm),{ease:FlxEase.expoOut});
 		} 
 		// logoBl.animation.play('bump');
@@ -1340,8 +1344,7 @@ class TitleState extends MusicBeatState
 
 	var skippedIntro:Bool = false;
 
-	function skipIntro():Void
-	{
+	function skipIntro():Void {
 		if (!skippedIntro)
 		{
 			destHaxe();
@@ -1358,15 +1361,16 @@ class TitleState extends MusicBeatState
 			FlxG.camera.scroll.y += 100;
 			logoBl.screenCenter();
 			logoBl.y -= 100;
+			if(Date.now().getHours() == 2){
+				logoBl.angle = FlxG.random.int(0,360);
+				logoBl.x = FlxG.random.int(-50,50);
+				logoBl.y = FlxG.random.int(-50,50);
+			}
+			if(Date.now().getHours() == 2 || Date.now().getMonth() == 9){
+				titleText.color=0xffff8b0f;
+			}
 
 			FlxTween.tween(FlxG.camera.scroll,{x: 0,y:0},1,{ease:FlxEase.cubeOut});
-			// var _x = logoBl.x;
-			// logoBl.x = -100;
-			// var _y = titleText.y;
-			// titleText.y = FlxG.height;
-			// FlxTween.tween(gfDance,{x: },0.4);
-			// FlxTween.tween(logoBl,{x: _x},0.5);
-			// FlxTween.tween(titleText,{y: _y},0.5);
 		}
 	}
 
@@ -1472,7 +1476,7 @@ class TitleState extends MusicBeatState
 		}
 		new FlxTimer().start(2, function(_){
 			if(MusicBeatState.instance.curStep == 0){
-				FuckState.FUCK("curStep seems to have not progressed at all.\nThis usually indicates that the game cannot play audio for whatever reason.\nRestarting should fix this.\nif you hear audio perfectly fine, you can safely ignore this and press enter");
+				FuckState.FUCK("curStep seems to have not progressed at all.\nThis usually indicates that the game cannot play audio for whatever reason.\nRestarting should fix this.\nif you hear audio perfectly fine, you can safely ignore this and press enter","TitleState.audioCheck",false,true);
 			}
 		});
 	}

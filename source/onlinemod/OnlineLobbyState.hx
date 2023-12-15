@@ -19,31 +19,30 @@ import sys.FileSystem;
 import sys.io.File;
 import tjson.Json;
 using StringTools;
-class OnlineLobbyState extends ScriptMusicBeatState
-{
+class OnlineLobbyState extends ScriptMusicBeatState {
 
-  var clientTexts:Map<Int, Int> = []; // Maps a player ID to the corresponding index in clientsGroup
-  var clientsGroup:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
-  var clientsGroupLeaderboard:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
-  var clientCount:Int = 0; // Amount of clients in the lobby
-  public static var optionsButton:FlxUIButton;
+	var clientTexts:Map<Int, Int> = []; // Maps a player ID to the corresponding index in clientsGroup
+	var clientsGroup:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
+	var clientsGroupLeaderboard:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
+	var clientCount:Int = 0; // Amount of clients in the lobby
+	public static var optionsButton:FlxUIButton;
 
-  static inline var NAMES_PER_ROW:Int = 5;
-  static inline var NAMES_SIZE:Int = 32;
-  static inline var NAMES_VERTICAL_SPACING:Int = 48;
+	static inline var NAMES_PER_ROW:Int = 5;
+	static inline var NAMES_SIZE:Int = 32;
+	static inline var NAMES_VERTICAL_SPACING:Int = 48;
 
-  public static var clients:Map<Int, Player> = []; // Maps a player ID to the corresponding player
-  public static var clientsOrder:Array<Int> = []; // This array holds ID values in order of join time (including ID -1 for self)
-  public static var receivedPrevPlayers:Bool = false;
-  var quitHeld:Int = 0;
-  var quitHeldBar:FlxBar;
-  var quitHeldBG:FlxSprite;
+	public static var clients:Map<Int, Player> = []; // Maps a player ID to the corresponding player
+	public static var clientsOrder:Array<Int> = []; // This array holds ID values in order of join time (including ID -1 for self)
+	public static var receivedPrevPlayers:Bool = false;
+	var quitHeld:Int = 0;
+	var quitHeldBar:FlxBar;
+	var quitHeldBG:FlxSprite;
 
 
-  var keepClients:Bool;
-  var showingLeaderBoard:Bool = true;
-  var hasLeaderboard:Bool = false;
-  var handleNextPacket:Bool = true;
+	var keepClients:Bool;
+	var showingLeaderBoard:Bool = true;
+	var hasLeaderboard:Bool = false;
+	var handleNextPacket:Bool = true;
   // public static var loadedScripts:Bool = false;
 
 	public function new(keepClients:Bool=false,?_hasLeaderboard:Bool = false){
@@ -159,8 +158,7 @@ class OnlineLobbyState extends ScriptMusicBeatState
 		add(quitHeldBG);
 
 
-		quitHeldBar = new FlxBar(quitHeldBG.x + 4, quitHeldBG.y + 4, LEFT_TO_RIGHT, Std.int(quitHeldBG.width - 8), Std.int(quitHeldBG.height - 8), this,
-		  'quitHeld', 0, 1000);
+		quitHeldBar = new FlxBar(quitHeldBG.x + 4, quitHeldBG.y + 4, LEFT_TO_RIGHT, Std.int(quitHeldBG.width - 8), Std.int(quitHeldBG.height - 8), this, 'quitHeld', 0, 1000);
 		quitHeldBar.numDivisions = 1000;
 		quitHeldBar.scrollFactor.set();
 		quitHeldBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
@@ -182,7 +180,10 @@ class OnlineLobbyState extends ScriptMusicBeatState
 		addPlayerUI(i, i == -1 ? OnlineNickState.nickname : clients[i].name, i == -1 ? FlxColor.YELLOW : null);
 	}
   }
-
+  override function onFocus(){
+  	super.onFocus();
+  	FlxG.mouse.enabled = FlxG.mouse.visible = true;
+  }
   function HandleData(packetId:Int, data:Array<Dynamic>)
   {
 	OnlinePlayMenuState.RespondKeepAlive(packetId);

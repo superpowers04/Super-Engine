@@ -15,20 +15,24 @@ import haxe.CallStack;
 
 import openfl.Lib;
 
-class FuckState extends FlxUIState
-{
+class FuckState extends FlxUIState {
 
-	// public static var needVer:String = "Unknown";
-	// public static var currChanges:String = "Check for Updates needs to be enabled in Options > Misc!";
 	public var err:String = "";
 	public var info:String = "";
 	public static var currentStateName:String = "";
 	public static var FATAL:Bool = false;
+	public static var forced:Bool = false;
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
-	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown"){
+	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown",_forced:Bool = false,_FATAL:Bool = false){
 		LoadingScreen.hide();
 		LoadingScreen.forceHide();
+		if(forced && !_forced && !_FATAL) return;
+		if(_forced) forced = _forced;
+		if(_FATAL){
+			forced = true;
+			FATAL=true;
+		}
 		var _stack:String = "";
 		try{
 			var callStack:Array<StackItem> = CallStack.exceptionStack(true);
@@ -36,10 +40,8 @@ class FuckState extends FlxUIState
 			var errMsg:String = "";
 			if(callStack.length > 0){
 				_stack+='\nhaxe Stack:\n';
-				for (stackItem in callStack)
-				{
-					switch (stackItem)
-					{
+				for (stackItem in callStack) {
+					switch (stackItem) {
 						case FilePos(s, file, line, column):
 							_stack += '\n$file:${line}:${column}';
 						default:
@@ -164,6 +166,7 @@ class FuckState extends FlxUIState
 
 			}
 		}
+		if(Main.game == null) return;
 		try{LoadingScreen.hide();}catch(e){}
 		Main.game.forceStateSwitch(new FuckState(exception,info,saved));
 	}
@@ -234,15 +237,18 @@ class FuckState extends FlxUIState
 	{	
 		try{
 
-			if (FlxG.keys.justPressed.ENTER && !FATAL)
-			{
+			if (FlxG.keys.justPressed.ENTER && !FATAL) {
 				// var _main = Main.instance;
+				forced = false;
 				LoadingScreen.show();
 				// TitleState.initialized = false;
 				MainMenuState.firstStart = true;
 				FlxG.switchState(new MainMenuState());
 			}
-			if (FlxG.keys.justPressed.ESCAPE) Sys.exit(1);
+			if (FlxG.keys.justPressed.ESCAPE){
+				trace('Exit requested!');
+				Sys.exit(1);
+			}
 
 			if (LoadingScreen.isVisible){
 				LoadingScreen.forceHide(); // Hide you fucking piece of shit

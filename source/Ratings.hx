@@ -1,41 +1,48 @@
+package;
 import flixel.FlxG;
 
 @:structInit class Rating{
 	public var accuracy:Float = 0;
 	public var name:String = "";
+	public var color:Int = 0xFFFFFFFF;
 }
 
 class Ratings
 {
 	public static var rankings:Array<Rating> = [
-		{name:"Perfectly legit",accuracy:100.0001},
-		{name:"Perfect!",accuracy:100},
-		{name:"SS",accuracy:99},
-		{name:"S",accuracy:95},
-		{name:"A",accuracy:90},
-		{name:"B",accuracy:80},
-		{name:"C",accuracy:70},
-		{name:"Nice",accuracy:69},
-		{name:"C",accuracy:60},
-		{name:"D",accuracy:50},
-		{name:"F",accuracy:40},
-		{name:"FU",accuracy:30},
-		{name:"FUC",accuracy:20},
-		{name:"FUCK",accuracy:10},
-		{name:"afk",accuracy:1},
-		{name:"N/A",accuracy:-1},
-		{name:"actual bot moment",accuracy:-100}
+		{name:"Perfectly legit",accuracy:100.0001,color:0xFF00d4ff},
+		{name:"Perfect!",accuracy:100,color:0xffaaff},
+		{name:"SS",accuracy:99,color:0xFFDD88DD},
+		{name:"S",accuracy:95,color:0xFFAA55AA},
+		{name:"A",accuracy:90,color:0xFF00FF00},
+		{name:"A?",accuracy:89,color:0xFF74fc05},
+		{name:"B",accuracy:80,color:0xFF8dfc05},
+		{name:"B?",accuracy:79,color:0xFFa5fc05},
+		{name:"C",accuracy:70,color:0xFFd3fc05},
+		{name:"Nice",accuracy:69,color:0xffaaff},
+		{name:"D",accuracy:60,color:0xFFd3fc05},
+		{name:"D?",accuracy:59,color:0xFFebfc05},
+		{name:"E",accuracy:50,color:0xFFfceb05},
+		{name:"F",accuracy:40,color:0xFFfcc205},
+		{name:"FU",accuracy:30,color:0xFFfc9905},
+		{name:"FUC",accuracy:20,color:0xFFfc8405},
+		{name:"FUCK",accuracy:10,color:0xFFfc6805},
+		{name:"afk",accuracy:1,color:0xFFfc0505},
+		{name:"N/A",accuracy:-1,color:0xFFFF0000},
+		{name:"actual bot moment",accuracy:-100,color:0xFFFF0000}
 	];
-	public static function getLetterRankFromAcc(?accuracy:Float = 0) // generate a letter ranking
-	{ 
-		var ranking = "N/A";
+	@:keep public static function getRank(?accuracy:Float = 0) {// Grab ranking from accuracy
+		var retRanking = rankings[rankings.length - 1];
 		for (ranking in rankings){
 			if(accuracy >= ranking.accuracy){
-				return ranking.name;
+				retRanking = ranking;
+				break;
 			}
 		}
-		return "what";
-
+		return retRanking;
+	}
+	@:keep public static inline function getLetterRankFromAcc(?accuracy:Float = 0) {// generate a letter ranking
+		return getRank(accuracy).name;
 	}
 	public static function GenerateLetterRank(accuracy:Float) // generate a letter ranking
 	{

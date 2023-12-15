@@ -10,6 +10,7 @@ class ToggleLock extends Lock{
 	public var locked:Bool = false;
 	override public function wait(?timeout:Float){
 		if(!locked) return true;
+		trace('waiting for unlock :3333');
 		return super.wait(timeout);
 	}
 

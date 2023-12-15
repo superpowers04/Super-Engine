@@ -59,7 +59,7 @@ class CharSelection extends SearchMenuState
 		if (i != 0) controlLabel.alpha = 0.6;
 		if(!isNameSpaced){
 
-			if(char[0].toLowerCase() == curChar.toLowerCase()){
+			if(char[0].toLowerCase() == curChar){
 				curCharID = i;
 				controlLabel.color = FlxColor.GREEN;
 				trace('found at $i ${char[0]}/$curChar');
@@ -89,11 +89,15 @@ class CharSelection extends SearchMenuState
 			case 2:
 				curChar = FlxG.save.data.gfChar;
 		}
-		var char = TitleState.findCharByNamespace(curChar);
-		trace('$curChar;$char');
-		curChar = char.folderName;
+		// var char = TitleState.findCharByNamespace(curChar);
+		// trace('$curChar;$char');
+		if(curChar.contains('|')){
+			var e = curChar.indexOf("|");
+			curChar = (curCharNameSpaced = curChar.toLowerCase()).substring(e + 1);
+		}else{
+			curCharNameSpaced = curChar = curChar.toLowerCase();
+		}
 
-		curCharNameSpaced = char.getNamespacedName().toLowerCase();
 		chars = [];
 		if (Options.PlayerOption.playerEdit == 0){
 			chars.push(['automatic',-1,'Automatically choose whatever BF is suitable for the chart']);
