@@ -35,7 +35,7 @@ class MainMenuState extends SickMenuState {
 	public static var nightly(default,never):String = "X" + SEMacros.buildDate;
 	public static var ver(default,never):String = "1.0.0" + (if(nightly != "") "-" + nightly else "");
 	// This should be incremented every update, this'll be sequential so you can just compare it to another version identifier
-	public static var versionIdentifier:Int = 2;
+	public static var versionIdentifier:Int = 3;
 	public static var lastVersionIdentifier:Int = 0;
 
 	public static var compileType(default,never):String =
@@ -63,7 +63,7 @@ class MainMenuState extends SickMenuState {
 
 		lastError = error;
 		var _error = error;
-		if(FlxG.save.data.doCoolLoading && error.indexOf('display.CairoRenderer') >= 0){
+		if(SESave.data.doCoolLoading && error.indexOf('display.CairoRenderer') >= 0){
 			_error = "Flixel tried to render an FlxText while the game was rendering the loading screen, causing an error.\nYou can probably just re-do what you did. If this is annoying, disable threaded loading in the options";
 		}
 		if(MainMenuState.errorMessage != '${_error}\n${MainMenuState.errorMessage}')
@@ -152,29 +152,29 @@ class MainMenuState extends SickMenuState {
 				add(outdatedLMAO);
 			}else 
 			//  Whole bunch of checks to prevent crashing
-			if (TitleState.retChar(FlxG.save.data.playerChar) == "" && FlxG.save.data.playerChar != "automatic"){
-				errorMessage += '\n${FlxG.save.data.playerChar} is an invalid player! Reset back to BF!';
-				FlxG.save.data.playerChar = "bf";
+			if (TitleState.retChar(SESave.data.playerChar) == "" && SESave.data.playerChar != "automatic"){
+				errorMessage += '\n${SESave.data.playerChar} is an invalid player! Reset back to BF!';
+				SESave.data.playerChar = "bf";
 			}
-			if (TitleState.retChar(FlxG.save.data.opponent) == null){
-				errorMessage += '\n${FlxG.save.data.opponent} is an invalid opponent! Reset back to BF!';
-				FlxG.save.data.opponent = "bf";
+			if (TitleState.retChar(SESave.data.opponent) == null){
+				errorMessage += '\n${SESave.data.opponent} is an invalid opponent! Reset back to BF!';
+				SESave.data.opponent = "bf";
 			}
-			if (TitleState.retChar(FlxG.save.data.gfChar) == null){
-				errorMessage += '\n${FlxG.save.data.gfChar} is an invalid GF! Reset back to GF!';
-				FlxG.save.data.gfChar = "gf";
+			if (TitleState.retChar(SESave.data.gfChar) == null){
+				errorMessage += '\n${SESave.data.gfChar} is an invalid GF! Reset back to GF!';
+				SESave.data.gfChar = "gf";
 			}
-			// if(MainMenuState.errorMessage == "" && !triedChar && FlxG.save.data.mainMenuChar && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
+			// if(MainMenuState.errorMessage == "" && !triedChar && SESave.data.mainMenuChar && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT){
 			// 	triedChar = true;
 			// 	try{
-			// 		char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,FlxG.save.data.playerChar,true,0,true);
+			// 		char = new Character(FlxG.width * 0.55,FlxG.height * 0.10,SESave.data.playerChar,true,0,true);
 			// 		if(char != null) add(char);
 			// 	}catch(e){MainMenuState.lastStack = e.stack;trace(e);char = null;}
 			// }
 			if(firstStart){
 				// FlxG.sound.volumeHandler = function(volume:Float){
-				// 	FlxG.save.data.masterVol = volume;
-				// 	FlxG.save.data.flush();
+				// 	SESave.data.masterVol = volume;
+				// 	SESave.data.flush();
 				// };
 				FlxG.camera.scroll.y -= 100;
 				FlxTween.tween(FlxG.camera.scroll,{y:0},1,{ease:FlxEase.cubeOut});
@@ -201,7 +201,7 @@ class MainMenuState extends SickMenuState {
 			if (MainMenuState.errorMessage != ""){
 
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				var errorText =  new FlxText(2, 64, 0, MainMenuState.errorMessage, 12);
+				var errorText =  new FlxText(2, 90, 0, MainMenuState.errorMessage, 12);
 				errorText.scrollFactor.set();
 				errorText.wordWrap = true;
 				errorText.fieldWidth = 1200;
@@ -213,7 +213,7 @@ class MainMenuState extends SickMenuState {
 
 			lastError = "";
 			#if !mobile
-			if(FlxG.save.data.simpleMainMenu)
+			if(SESave.data.simpleMainMenu)
 			// Scrolls down enough so you can press all of the buttons without needing to scroll
 			#end
 				changeSelection(1);
@@ -294,7 +294,7 @@ class MainMenuState extends SickMenuState {
 	function mmSwitch(regen:Bool = false){
 
 		#if !mobile
-		if(FlxG.save.data.simpleMainMenu){
+		if(SESave.data.simpleMainMenu){
 		#end
 			//Damn, talk about a huge difference from 9 options down to 3
 			options = ['modded songs',"scripted states","credits",'options'];

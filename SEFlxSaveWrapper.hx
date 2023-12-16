@@ -8,7 +8,7 @@ import sys.io.File;
 class SEFlxSaveWrapper{
 	public static function save(){
 		var path = SELoader.absolutePath('SESETTINGS.json');
-		File.saveContent(path,Json.stringify(FlxG.save.data));
+		File.saveContent(path,Json.stringify(SESave.data));
 
 	}
 	public static function load(){
@@ -19,7 +19,15 @@ class SEFlxSaveWrapper{
 
 			var anon = Json.parse(CoolUtil.cleanJSON(txt));
 			for(field in Reflect.fields(anon)){
-				Reflect.setField(FlxG.save.data,field,Reflect.field(anon,field));
+				// if(!Reflect.hasField(SESave.data,field)){
+				// 	trace('Invalid save field "$field" ignored');
+				// 	continue;
+				// }
+				try{
+					Reflect.setProperty(SESave.data,field,Reflect.field(anon,field));
+				}catch(e){
+					trace('Invalid save field "$field" ignored');
+				}
 			}
 		}catch(e){
 			SELoader.copy('SESETTINGS.json','SESETTINGS-BACKUP.json');

@@ -73,7 +73,7 @@ class OsuBeatMap{
 					gfVersion: 'gf',
 					noteStyle: 'normal',
 					stage: 'stage',
-					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else FlxG.save.data.scrollOSUSpeed,
+					speed: if(QuickOptionsSubState.osuSettings['Scroll speed'].value > 0) QuickOptionsSubState.osuSettings['Scroll speed'].value else SESave.data.scrollOSUSpeed,
 					validScore: false,
 					chartType:"SE-OSU!" + getType(),
 					chartVersion:"SE-OSU!" + getType(),

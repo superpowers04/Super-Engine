@@ -160,7 +160,7 @@ class Song
 			swagShit.keyCount = (swagShit.mania != null && swagShit.mania != 0 ? maniaToKeyMap[swagShit.mania] : 4);
 		}
 		var hurtArrows = (QuickOptionsSubState.getSetting("Custom Arrows") || onlinemod.OnlinePlayMenuState.socket != null || charting);
-		var useHurtArrows = FlxG.save.data.useHurtArrows;
+		var useHurtArrows = SESave.data.useHurtArrows;
 		var maxKeys = (swagShit.keyCount * 2) - 1;
 		for (sid => section in swagShit.notes) {
 			if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;

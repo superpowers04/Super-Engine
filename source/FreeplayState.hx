@@ -717,7 +717,7 @@ class FreeplayState extends MusicBeatState
 // 		// Fucking flixel
 // 		if(voices != null && curVol != FlxG.sound.volume){ // Don't change volume unless volume changes
 // 			curVol = FlxG.sound.volume;
-// 			voices.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
+// 			voices.volume = SESave.data.voicesVol * FlxG.sound.volume;
 // 		}
 // 	}
 // 	override function handleInput(){
@@ -740,7 +740,7 @@ class FreeplayState extends MusicBeatState
 // 	override function extraKeys(){
 // 		if(controls.LEFT_P){changeDiff(-1);}
 // 		if(controls.RIGHT_P){changeDiff(1);}
-// 		if (FlxG.keys.justPressed.SEVEN && songs.length > 0 && FlxG.save.data.animDebug)
+// 		if (FlxG.keys.justPressed.SEVEN && songs.length > 0 && SESave.data.animDebug)
 // 		{
 // 			selSong(curSelected,true);
 // 		}
@@ -768,7 +768,7 @@ class FreeplayState extends MusicBeatState
 // 					}
 // 					voices = null;
 // 					FlxG.sound.music.stop();
-// 					FlxG.sound.playMusic(Sound.fromFile('${songs[curSelected]}/Inst.ogg'),FlxG.save.data.instVol,true);
+// 					FlxG.sound.playMusic(Sound.fromFile('${songs[curSelected]}/Inst.ogg'),SESave.data.instVol,true);
 // 					if (FlxG.sound.music.playing){
 // 						if(modes[curSelected][selMode] != "No charts for this song!" && FileSystem.exists(songs[curSelected] + "/" + modes[curSelected][selMode])){
 // 							try{
@@ -793,7 +793,7 @@ class FreeplayState extends MusicBeatState
 // 						if(voices == null){
 // 							voices = new FlxSound();
 // 							voices.loadEmbedded(Sound.fromFile('${songs[curSelected]}/Voices.ogg'),true);
-// 							voices.volume = FlxG.save.data.voicesVol;
+// 							voices.volume = SESave.data.voicesVol;
 // 							voices.play(FlxG.sound.music.time);
 
 // 						}else{

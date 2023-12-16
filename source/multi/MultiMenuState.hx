@@ -79,7 +79,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			voices.time = FlxG.sound.music.time;
 			voices.play();
 		}
-		if(shouldDraw && FlxG.save.data.beatBouncing){
+		if(shouldDraw && SESave.data.beatBouncing){
 			if(beatTween != null){
 				beatTween.cancel();
 				beatTween.destroy();
@@ -245,7 +245,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		var query = new EReg((~/[-_ ]/g).replace(search.toLowerCase(),'[-_ ]'),'i'); // Regex that allows _ and - for songs to still pop up if user puts space, game ignores - and _ when showing
 		callInterp('reloadList',[reload,search,query]);
 
-		if(!cancelCurrentFunction && songInfoArray[0] != null && (reload || FlxG.save.data.cacheMultiList)){
+		if(!cancelCurrentFunction && songInfoArray[0] != null && (reload || SESave.data.cacheMultiList)){
 			if(selMode == -1) {
 				reloadListFromMemory(search,query);
 				return;
@@ -610,9 +610,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if(curVol != FlxG.sound.volume){ // Don't change volume unless volume changes
 			try{
 				curVol = FlxG.sound.volume;
-				FlxG.sound.music.volume = FlxG.save.data.instVol;
+				FlxG.sound.music.volume = SESave.data.instVol;
 
-				if(voices != null) voices.volume = FlxG.save.data.voicesVol;
+				if(voices != null) voices.volume = SESave.data.voicesVol;
 			}catch(ignored){}
 		}
 	}
@@ -633,7 +633,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	override function extraKeys(){
 		if(controls.LEFT_P){changeDiff(-1);}
 		if(controls.RIGHT_P){changeDiff(1);}
-		if (FlxG.keys.justPressed.SEVEN && FlxG.save.data.animDebug){
+		if (FlxG.keys.justPressed.SEVEN && SESave.data.animDebug){
 			selSong(curSelected,true);
 		}
 		if((FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)){
@@ -691,7 +691,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 						voices = null;
 
 						try{
-							FlxG.sound.playMusic(SELoader.loadSound('${songInfo.path}Inst.ogg'),FlxG.save.data.instVol,true);
+							FlxG.sound.playMusic(SELoader.loadSound('${songInfo.path}Inst.ogg'),SESave.data.instVol,true);
 						}catch(e){
 							showTempmessage('Unable to play instrumental! ${e.message}',FlxColor.RED);
 						}
@@ -700,8 +700,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							if(songInfo.charts[selMode] != null && SELoader.exists(songInfo.path + "/" + songInfo.charts[selMode])){
 								try{
 
-									var e:SwagSong = cast Json.parse(SELoader.getContent(songInfo.path + "/" + songInfo.charts[selMode])).song;
-									if(e.bpm > 0) Conductor.changeBPM(e.bpm);
+									var song:SwagSong = cast Json.parse(SELoader.getContent(songInfo.path + "/" + songInfo.charts[selMode])).song;
+									// if(e.bpm > 0) Conductor.changeBPM(e.bpm);
+									if(song.bpm > 0) Conductor.changeBPM(song.bpm);
+									try{
+										Conductor.mapBPMChanges(song);
+									}catch(e){}
 								}catch(e){
 									showTempmessage("Unable to get BPM from chart automatically. BPM will be out of sync",0xee0011);
 								}
@@ -742,7 +746,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 								if(SELoader.exists('${songInfo.path}/Voices.ogg')){
 									voices = new FlxSound();
 									voices.loadEmbedded(SELoader.loadSound('${songInfo.path}/Voices.ogg'),true);
-									voices.volume = FlxG.save.data.voicesVol;
+									voices.volume = SESave.data.voicesVol;
 									voices.looped = true;
 									voices.play(FlxG.sound.music.time);
 									FlxG.sound.list.add(voices);
@@ -754,7 +758,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 								if(!voices.playing){
 									songProgressText.text = "Playing Inst and Voices";
 									voices.play(FlxG.sound.music.time);
-									voices.volume = FlxG.save.data.voicesVol * FlxG.sound.volume;
+									voices.volume = SESave.data.voicesVol * FlxG.sound.volume;
 									voices.looped = true;
 								}else{
 									songProgressText.text = "Playing Inst";
@@ -766,8 +770,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 							showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
 						}
 						if(FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.destroy(); // Prevents the song from muting itself
-						FlxG.sound.music.volume = FlxG.save.data.instVol;
-						FlxG.sound.music.volume = FlxG.save.data.instVol * FlxG.sound.volume;
+						FlxG.sound.music.volume = SESave.data.instVol;
+						FlxG.sound.music.volume = SESave.data.instVol * FlxG.sound.volume;
 				
 						FlxG.sound.music.play();
 					}

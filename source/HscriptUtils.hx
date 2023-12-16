@@ -538,7 +538,7 @@ class BRTimer extends FlxTimer{ // Make sure errors are caught whenever a timer 
 
 class SESettings{
 	public static function get(id:String):Dynamic{
-		return Reflect.field(FlxG.save.data,id);
+		return Reflect.field(SESave.data,id);
 	}
 }
 

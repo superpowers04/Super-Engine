@@ -42,7 +42,7 @@ class OnlineAddServer extends MusicBeatSubstate
 		super();
 	}
 	inline function saveServer(){
-		FlxG.save.data.savedServers.push([ipField.text,portField.text,pwdField.text]);
+		SESave.data.savedServers.push([ipField.text,portField.text,pwdField.text]);
 		SEFlxSaveWrapper.save();
 	}
 	override function create()
@@ -62,7 +62,7 @@ class OnlineAddServer extends MusicBeatSubstate
 		ipText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(ipText);
 
-		ipField = new FlxInputText(0, FlxG.height * 0.3, 700, 32,FlxG.save.data.lastServer);
+		ipField = new FlxInputText(FlxG.height * 0.3, 700, 32,SESave.data.lastServer);
 		ipField.setFormat(32, FlxColor.BLACK, CENTER);
 		ipField.screenCenter(FlxAxes.X);
 		ipField.customFilterPattern = ~/[^A-Za-z0-9.-]/;
@@ -73,7 +73,7 @@ class OnlineAddServer extends MusicBeatSubstate
 		portText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(portText);
 
-		portField = new FlxInputText(0, FlxG.height * 0.5, 700, 32,FlxG.save.data.lastServerPort);
+		portField = new FlxInputText(FlxG.height * 0.5, 700, 32,SESave.data.lastServerPort);
 		portField.setFormat(32, FlxColor.BLACK, CENTER);
 		portField.screenCenter(FlxAxes.X);
 		portField.customFilterPattern = ~/[^0-9]/;

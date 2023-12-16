@@ -121,7 +121,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Good Misses","Whether you'll get a miss from getting a good","goodMiss"),
 		],"Toggle Practice mode, Ghost Tapping, etc"),
 
-		new OptionCategory("Appearance", [ // if(!FlxG.save.data.noterating && !FlxG.save.data.showTimings && !FlxG.save.data.showCombo)
+		new OptionCategory("Appearance", [ // if(!SESave.data.noterating && !SESave.data.showTimings && !SESave.data.showCombo)
 			new HCBoolOption('Distractions',"Toggle stage distractions that can hinder your gameplay(Handled by the stage, not the game)",'distractions'),
 			new HCBoolOption('Camera Movement',"Toggle the camera zooming and moving to current singer",'camMovement'),
 			// new NPSDisplayOption("Shows your current Notes Per Second."),
@@ -225,7 +225,7 @@ class OptionsMenu extends MusicBeatState
 		loading = false;
 		FlxG.mouse.visible = true;
 		instance = this;
-		FlxG.save.data.masterVol = FlxG.sound.volume;
+		SESave.data.masterVol = FlxG.sound.volume;
 		if(onlinemod.OnlinePlayMenuState.socket == null){
 			initOptions();
 		}else{
@@ -262,7 +262,7 @@ class OptionsMenu extends MusicBeatState
 
 		currentDescription = "none";
 
-		versionShit = new FlxText(5, FlxG.height + 40, 0, "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription, 12);
+		versionShit = new FlxText(5, FlxG.height + 40, 0, "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(SESave.data.offset,2) + " - Description - " + currentDescription, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		
@@ -364,16 +364,16 @@ class OptionsMenu extends MusicBeatState
 			updateOffsetText();
 		}else{
 			if (FlxG.keys.pressed.SHIFT){
-				if (FlxG.keys.pressed.RIGHT) FlxG.save.data.offset += 0.1;
-				else if (FlxG.keys.pressed.LEFT) FlxG.save.data.offset -= 0.1;
+				if (FlxG.keys.pressed.RIGHT) SESave.data.offset += 0.1;
+				else if (FlxG.keys.pressed.LEFT) SESave.data.offset -= 0.1;
 			}
-			else if (FlxG.keys.justPressed.RIGHT) FlxG.save.data.offset += 0.1;
-			else if (FlxG.keys.justPressed.LEFT) FlxG.save.data.offset -= 0.1;
+			else if (FlxG.keys.justPressed.RIGHT) SESave.data.offset += 0.1;
+			else if (FlxG.keys.justPressed.LEFT) SESave.data.offset -= 0.1;
 			updateOffsetText();
 		}
 	
 
-		if (controls.RESET) FlxG.save.data.offset = 0;
+		if (controls.RESET) SESave.data.offset = 0;
 
 		if (_accept){
 			if (isCat){ 
@@ -426,7 +426,7 @@ class OptionsMenu extends MusicBeatState
 			versionShit.text = (if(currentSelectedCat.getOptions()[curSelected].acceptValues) currentSelectedCat.getOptions()[curSelected].getValue() + " - " else "") + 
 				"Description - " + currentDescription;
 		else
-			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(SESave.data.offset,2) + " - Description - " + currentDescription;
 	}
 
 	function changeSelection(change:Int = 0)
@@ -460,10 +460,10 @@ class OptionsMenu extends MusicBeatState
 	}
 	function initOptions(){
 		trace('Initializing script options');
-		if(FlxG.save.data.scripts.length < 1) return;
+		if(SESave.data.scripts.length < 1) return;
 		try{SELoader.createDirectory('mods/scriptOptions/');}catch(e){trace('Unable to create dir! ${e}');}
-		for (si in 0 ... FlxG.save.data.scripts.length) {
-			var script = FlxG.save.data.scripts[si];
+		for (si in 0 ... SESave.data.scripts.length) {
+			var script = SESave.data.scripts[si];
 			if(!SELoader.exists('mods/scripts/$script/options.json')) {
 				continue;
 			}
@@ -559,7 +559,7 @@ class OptionsMenu extends MusicBeatState
 			// FlxG.save.flush();
 			SEFlxSaveWrapper.save();
 		}catch(e){MainMenuState.errorMessage += '\nUnable to save options! ${e.message}';}
-		// File.saveContent('SEOPTIONS.json',Json.stringify(FlxG.save.data));
+		// File.saveContent('SEOPTIONS.json',Json.stringify(SESave.data));
 		for (i => v in modOptions) {
 			try{
 				// File.saveContent('mods/scriptOptions/$i.json',Json.stringify({options:v}));

@@ -689,7 +689,7 @@ class PsychLuaCompat{
 			case "stepCrochet": return Conductor.stepCrochet;
 			case "songLength": return FlxG.sound.music.length;
 			case "songName": return PlayState.SONG.song;
-			case "scrollSpeed": return flixel.math.FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? PlayState.SONG.speed : FlxG.save.data.scrollSpeed, 2);
+			case "scrollSpeed": return flixel.math.FlxMath.roundDecimal(SESave.data.scrollSpeed == 1 ? PlayState.SONG.speed : SESave.data.scrollSpeed, 2);
 			case 'songPath': return onlinemod.OfflinePlayState.chartFile.substr(0,onlinemod.OfflinePlayState.chartFile.lastIndexOf('/'));
 
 			/* Environment shit */

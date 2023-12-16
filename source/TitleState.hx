@@ -51,8 +51,7 @@ typedef Scorekillme = {
 	public var id:String = "";
 	public var path(get,default):String = null;
 	public function get_path(){
-		if(path == "" || path == null) return "mods/characters/";
-		return path;
+		return ((path == "" || path == null) ? "mods/characters/" : path);
 	}
 	public var folderName:String = "";
 	public var description:String = null;
@@ -68,7 +67,7 @@ typedef Scorekillme = {
 		return 'Character $nameSpace/$id, Raw folder name:$folderName, path:$path';
 	}
 	public function getNamespacedName(){
-		return (if (nameSpace != null) '$nameSpace|$id' else id);
+		return (nameSpace == null ? id : '$nameSpace|$id');
 	}
 }
 @:structInit class StageInfo{
@@ -86,7 +85,7 @@ typedef Scorekillme = {
 		return 'Stage $nameSpace/$id, Raw folder name:$folderName, path:$path';
 	}
 	public function getNamespacedName(){
-		return (if (nameSpace != null) '$nameSpace|$id' else id);
+		return (nameSpace == null ? id : '$nameSpace|$id');
 	}
 }
 
@@ -112,7 +111,7 @@ class TitleState extends MusicBeatState
 
 	public static var easterEgg(default,set):Int = 0x00;
 	public static function set_easterEgg(val:Int){
-		if(FlxG.save.data.easterEggs) return easterEgg = val;
+		if(SESave.data.easterEggs) return easterEgg = val;
 		return 0x00;
 	}
 
@@ -136,11 +135,11 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 	public static function loadNoteAssets(?forced:Bool = false,?forced2:Bool = false){
-		if (NoteAssets == null || NoteAssets.name != FlxG.save.data.noteAsset || forced){
-			if (!SELoader.exists('mods/noteassets/${FlxG.save.data.noteAsset}.png') || !SELoader.exists('mods/noteassets/${FlxG.save.data.noteAsset}.xml')){
-				FlxG.save.data.noteAsset = "default";
+		if (NoteAssets == null || NoteAssets.name != SESave.data.noteAsset || forced){
+			if (!SELoader.exists('mods/noteassets/${SESave.data.noteAsset}.png') || !SELoader.exists('mods/noteassets/${SESave.data.noteAsset}.xml')){
+				SESave.data.noteAsset = "default";
 			} // Hey, requiring an entire reset of the game's settings when noteasset goes missing is not a good idea
-			new NoteAssets(FlxG.save.data.noteAsset,forced2);
+			new NoteAssets(SESave.data.noteAsset,forced2);
 		}
 	}
 	public static function findChar(char:String,?retBF:Bool = true,?ignoreNSCheck:Bool = false):Null<CharInfo>{
@@ -150,6 +149,7 @@ class TitleState extends MusicBeatState
 			return null;
 		}
 		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
+		if(char.startsWith('null|')) char = char.replace('null|','');
 		if(!ignoreNSCheck && char.contains('|')){
 
 			var _e = char.split('|');
@@ -245,7 +245,7 @@ class TitleState extends MusicBeatState
 			var probableChar:CharInfo = null;
 			for (i in characters){
 				if(i.id == char){
-					if(i.nameSpace == namespace && (nameSpaceType == -1 || i.nameSpaceType == nameSpaceType)){
+					if((i.nameSpace == namespace && i.nameSpaceType == nameSpaceType) || nameSpaceType == -1){
 						return i;
 					}
 					currentChar = i;
@@ -262,7 +262,7 @@ class TitleState extends MusicBeatState
 		}else{
 			for (i in characters){
 				if(i.id == char.toLowerCase()){
-					if(i.nameSpace == namespace && (nameSpaceType == -1 || i.nameSpaceType == nameSpaceType)){
+					if((i.nameSpace == namespace && i.nameSpaceType == nameSpaceType) || nameSpaceType == -1){
 						return i;
 					}
 					currentChar = i;
@@ -280,7 +280,7 @@ class TitleState extends MusicBeatState
 	}
 	public static function findCharByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
 		if(char == ""){
-			trace('Empty character search, returning BF');
+			trace('Empty character search, returning $defaultChar');
 			if(retBF) return defaultChar;
 			return null;
 		}
@@ -301,12 +301,13 @@ class TitleState extends MusicBeatState
 		trace(list);
 		while (list.length > 0){
 			var char = list.pop();
-			if(char == "" ){continue;}
+			if(char == "" || char == "bf" || char == "null|bf"){continue;}
 			var charInfo = findCharByNamespace(char,nameSpace,false);
 			if(charInfo != null){
 				return charInfo;
 			}
 		}
+		trace('Unable to find anyone in $list, returning $defaultChar');
 		return defaultChar;
 	}
 	public static function retCharPath(char:String):String{
@@ -487,14 +488,16 @@ class TitleState extends MusicBeatState
 		checkStages();
 
 
-		if(FlxG.save.data.scripts != null){
-			for (i in 0 ... FlxG.save.data.scripts.length) {
-				var v = FlxG.save.data.scripts[i];
+		if(SESave.data.scripts != null){
+			var scripts:Array<String> = [];
+			for (v in SESave.data.scripts) {
 				if(!SELoader.exists('mods/scripts/${v}/')){
-					FlxG.save.data.scripts.remove(v);
 					trace('Script $v doesn\'t exist! Disabling');
+					continue;
 				}
+				scripts.push(cast v);
 			}
+			SESave.data.scripts = scripts;
 		}
 	}
 
@@ -961,7 +964,7 @@ class TitleState extends MusicBeatState
 		FlxG.mouse.visible = false;
 
 
-		shiftSkip = new FlxText(0,0,0,#if(discord_rpc) (FlxG.save.data.discordDRP ? "Awaiting DRP -" : "DRP disabled -") + #end " Hold shift to go to the options menu after title screen",16);
+		shiftSkip = new FlxText(0,0,0,#if(discord_rpc) (SESave.data.discordDRP ? "Awaiting DRP -" : "DRP disabled -") + #end " Hold shift to go to the options menu after title screen",16);
 		
 		shiftSkip.y = FlxG.height - shiftSkip.height - 12;
 		shiftSkip.x = 6;
@@ -969,8 +972,8 @@ class TitleState extends MusicBeatState
 		add(shiftSkip);
 		CoolUtil.setFramerate(true);
 		// CoolUtil.setUpdaterate(true);
-		FlxG.sound.volume = FlxG.save.data.masterVol;
-		Main.instance.toggleFPS(FlxG.save.data.fps);
+		FlxG.sound.volume = SESave.data.masterVol;
+		Main.instance.toggleFPS(SESave.data.fps);
 
 		if(initialized)
 			skipIntro();
@@ -1046,17 +1049,17 @@ class TitleState extends MusicBeatState
 	function getIntroTextShit():Array<String>
 	{
 		var now = Date.now();
-		// FlxG.save.data.seenText = true;
+		// SESave.data.seenText = true;
 		if(hardcodedDays[now.getMonth()] != null && hardcodedDays[now.getMonth()][now.getDate()] != null){
-			// FlxG.save.data.seenText = false;
+			// SESave.data.seenText = false;
 			forcedText = true;
 			return FlxG.random.getObject(hardcodedDays[now.getMonth()][now.getDate()]);
 		}else if(hardcodedDays[now.getMonth()] != null && hardcodedDays[now.getMonth()][-1] != null){
-			// FlxG.save.data.seenText = false;
+			// SESave.data.seenText = false;
 			forcedText = true;
 			return FlxG.random.getObject(hardcodedDays[now.getMonth()][-1]);
 		}
-		if(FlxG.save.data.seenForcedText) FlxG.save.data.seenForcedText = false;
+		if(SESave.data.seenForcedText) SESave.data.seenForcedText = false;
 		var fullText:String = Assets.getText(Paths.txt('introText'));
 
 		var firstArray:Array<String> = fullText.split('\n');
@@ -1113,7 +1116,7 @@ class TitleState extends MusicBeatState
 
 
 
-			if (FlxG.save.data.flashing){
+			if (SESave.data.flashing){
 				FlxTween.tween(titleText,{alpha:0},0.1,{type:PINGPONG,ease:FlxEase.cubeInOut});
 			}
 
@@ -1131,7 +1134,7 @@ class TitleState extends MusicBeatState
 			#if !(debug || hl)
 			if (
 			    #if(android) !Main.grantedPerms.contains('android.permission.INTERNET') || #end 
-			    FlxG.keys.pressed.SHIFT || FlxG.keys.pressed.CONTROL || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !FlxG.save.data.updateCheck){
+			    FlxG.keys.pressed.SHIFT || FlxG.keys.pressed.CONTROL || FileSystem.exists(Sys.getCwd() + "/noUpdates") || checkedUpdate || !SESave.data.updateCheck){
 				#if(android)
 				if(!Main.grantedPerms.contains('android.permission.INTERNET')){
 					android.widget.Toast.makeText('Update check skipped due to lack of internet permissions',20);
@@ -1187,7 +1190,7 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
-		if (pressedEnter && !skippedIntro && initialized && (!forcedText || FlxG.save.data.seenForcedText))
+		if (pressedEnter && !skippedIntro && initialized && (!forcedText || SESave.data.seenForcedText))
 			skipIntro();
 
 		super.update(elapsed);
@@ -1317,7 +1320,7 @@ class TitleState extends MusicBeatState
 				createCoolText(curWacky.slice(max));
 			case 24:
 				deleteCoolText();
-				if(forcedText) FlxG.save.data.seenForcedText = true;
+				if(forcedText) SESave.data.seenForcedText = true;
 			// credTextShit.visible = false;
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
@@ -1350,7 +1353,7 @@ class TitleState extends MusicBeatState
 			destHaxe();
 			if(!FlxG.sound.music.playing){
 				FlxG.sound.music.play();
-				FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
+				FlxG.sound.music.fadeIn(0.1,SESave.data.instVol);
 			}
 			remove(ngSpr);
 			destHaxe();
@@ -1405,7 +1408,7 @@ class TitleState extends MusicBeatState
 		coolText.bounce();
 		add(cachingText = coolText);
 
-		_sound = FlxG.sound.load(Assets.getSound("flixel/sounds/flixel." + flixel.system.FlxAssets.defaultSoundExtension,false),FlxG.save.data.instVol - 0.2); // Put the volume down by 0.2 for safety of eardrums
+		_sound = FlxG.sound.load(Assets.getSound("flixel/sounds/flixel." + flixel.system.FlxAssets.defaultSoundExtension,false),SESave.data.instVol - 0.2); // Put the volume down by 0.2 for safety of eardrums
 		_sound.play();
 		for (time in _times) new FlxTimer().start(time, _timerCallback);
 	}
@@ -1466,10 +1469,10 @@ class TitleState extends MusicBeatState
 		initialized = true;
 		destHaxe();
 		FlxG.sound.music.play();
-		FlxG.sound.music.fadeIn(0.1,FlxG.save.data.instVol);
+		FlxG.sound.music.fadeIn(0.1,SESave.data.instVol);
 
 		if(!isShift){
-			FlxG.fullscreen = FlxG.save.data.fullscreen;
+			FlxG.fullscreen = SESave.data.fullscreen;
 		}
 		if(isShift || FlxG.keys.pressed.ENTER || (Sys.args()[0] != null && FileSystem.exists(Sys.args()[0]))){
 			skipBoth = true;

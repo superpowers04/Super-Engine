@@ -234,7 +234,7 @@ override function startCountdown(){
 		// 	{
 
 		// 		if(songNotes[1] == -1) continue;
-		// 		var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
+		// 		var daStrumTime:Float = songNotes[0] + SESave.data.offset;
 		// 		if (daStrumTime < 0)
 		// 			daStrumTime = 0;
 		// 		var daNoteData:Int = songNotes[1];

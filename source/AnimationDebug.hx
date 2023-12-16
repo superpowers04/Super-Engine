@@ -168,7 +168,7 @@ class AnimationDebug extends MusicBeatState
 			ending2 = "png";
 		}
 		if(validFile == "")return;
-		if(!FlxG.save.data.animDebug) {throw "You need to enable Content Creation Mode to work on characters!";return;}
+		if(!SESave.data.animDebug) {throw "You need to enable Content Creation Mode to work on characters!";return;}
 		var name = file.substring(file.lastIndexOf("/") + 1,file.lastIndexOf("."));
 		FlxG.state.openSubState(new QuickNameSubState(function(name:String,file:String,validFile:String,ending1:String,ending2:String){
 			var _file = file.substr(file.lastIndexOf("/") + 1);
@@ -1184,9 +1184,9 @@ class AnimationDebug extends MusicBeatState
 		}
 		try{
 
-			// var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - FlxG.save.data.guiGap).loadGraphic(Paths.image('healthBar'));
-			// if (FlxG.save.data.downscroll)
-			// 	healthBarBG.y = 50 + FlxG.save.data.guiGap;
+			// var healthBarBG = new FlxSprite(0, FlxG.height * 0.9 - SESave.data.guiGap).loadGraphic(Paths.image('healthBar'));
+			// if (SESave.data.downscroll)
+			// 	healthBarBG.y = 50 + SESave.data.guiGap;
 			// healthBarBG.screenCenter(X);
 			// healthBarBG.scrollFactor.set();
 			// add(healthBarBG);

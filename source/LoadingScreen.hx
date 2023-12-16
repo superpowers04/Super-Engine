@@ -15,6 +15,7 @@ import lime.app.Application;
 class LoadingScreen extends Sprite{
 	public static var object:LoadingScreen;
 	public static var isVisible = false;
+	public static var canShow:Bool = true;
 
 	public static var loadingText:String = "";
 	// var _loadingText:String = "";
@@ -72,7 +73,7 @@ class LoadingScreen extends Sprite{
 
 	public override function new(?txt = "loading"){
 		super();
-
+		if(object == null) object = this;
 		width = 1280;
 		height = 720;
 
@@ -84,7 +85,7 @@ class LoadingScreen extends Sprite{
 		var loadingText = new Alphabet(0,0,txt,true);
 		loadingText.isMenuItem = false;
 		loadingText.visible = true;
-		if(FlxG.save.data.doCoolLoading){
+		if(SESave.data.doCoolLoading){
 			loadingIcon = new Sprite();
 			loadingIcon.x = 640;
 			loadingIcon.y = 300;
@@ -175,7 +176,7 @@ class LoadingScreen extends Sprite{
 	}
 
 	public static function initScreen(?text:String = "Loading"){
-		object = new LoadingScreen(text);
+		new LoadingScreen(text);
 
 	}
 	var elapsed = 0;
@@ -184,7 +185,7 @@ class LoadingScreen extends Sprite{
 			if(textField.htmlText != loadingText){
 				updateText();
 			}
-			if(FlxG.save.data.doCoolLoading){
+			if(SESave.data.doCoolLoading){
 				if(loadingIcon != null){
 					loadingIcon.rotation += e * vel;
 					loadingIcon.rotation = loadingIcon.rotation % 360;
@@ -225,6 +226,10 @@ class LoadingScreen extends Sprite{
 		if(object == null){
 			initScreen();
 		}
+		if(!canShow){
+			forceHide();
+			return;
+		}
 		// object.alpha = 1;
 		if(tween != null){tween.cancel();}
 		isVisible = object.funni = true;
@@ -235,14 +240,12 @@ class LoadingScreen extends Sprite{
 		Main.funniSprite.addChildAt(object,1);
 		loadingText = "";
 		object.updateText();
-		if(!FlxG.save.data.doCoolLoading)object.alpha = 1;
+		if(!SESave.data.doCoolLoading)object.alpha = 1;
 
 		// object.visible = true;
 	}
 	public static function forceHide(){
-		if(object == null){
-			return;
-		}
+		if(object == null) return;
 		if(tween != null){tween.cancel();}
 		isVisible = object.funni = false;
 		object.alpha = 0;
@@ -252,14 +255,15 @@ class LoadingScreen extends Sprite{
 	}
 	public static function hide(){
 		if(Main.game != null) Main.game.blockUpdate = Main.game.blockDraw = false;
-		if(object == null){
+		if(object == null) return;
+		if(!object.funni){
+			object.alpha = 0;
 			return;
 		}
-		if(!object.funni){return;}
 		if(tween != null){tween.cancel();}
 		object.funni = false;
 		object.alpha = 1;
-		if(!FlxG.save.data.doCoolLoading){
+		if(!SESave.data.doCoolLoading){
 			try{
 				tween = FlxTween.tween(object,{alpha:0},0.4,{onComplete:function(_){Main.funniSprite.removeChild(object);}});
 			}catch(e){
@@ -269,8 +273,7 @@ class LoadingScreen extends Sprite{
 		
 	}
 
-	@:keep inline static public function loadAndSwitchState(target:flixel.FlxState, stopMusic = false)
-	{
+	@:keep inline static public function loadAndSwitchState(target:flixel.FlxState, stopMusic = false) {
 		LoadingScreen.show();
 		if (stopMusic && FlxG.sound.music != null){
 			if(SickMenuState.chgTime){

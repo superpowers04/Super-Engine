@@ -235,7 +235,7 @@ class SelectScriptableState extends SearchMenuState{
 	}
 
 	override function select(sel:Int = 0){
-		// FlxG.save.data.selStage = songs[sel];
+		// SESave.data.selStage = songs[sel];
 		if(songs[sel] != 'No scripts found!' && SELoader.exists("mods/scripts/" + songs[sel] + "/state/state.hscript")){
 			selectState(songs[sel]);
 		}

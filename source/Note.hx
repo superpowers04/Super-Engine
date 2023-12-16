@@ -199,7 +199,7 @@ class Note extends FlxSprite
 		if(eventNote && !inCharter) return;
 		if (frames == null){
 			try{
-				if (shouldntBeHit && FlxG.save.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
+				if (shouldntBeHit && SESave.data.useBadArrowTex) {frames = FlxAtlasFrames.fromSparrow(NoteAssets.badImage,NoteAssets.badXml);}
 			}catch(e){}
 			try{
 				if(frames == null && shouldntBeHit) {color = 0x220011;}
@@ -235,7 +235,7 @@ class Note extends FlxSprite
 	dynamic public function hit(?charID:Int = 0,note:Note){
 		switch (charID) {
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
-			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
+			case 1:if (SESave.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
 		if(noteAnimation != null){
 			var anim = (if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation);
@@ -249,7 +249,7 @@ class Note extends FlxSprite
 	dynamic public function susHit(?charID:Int = 0,note:Note){ // Played every update instead of every time the strumnote is hit
 		switch (charID) {
 			case 0:PlayState.instance.BFStrumPlayAnim(noteData);
-			case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
+			case 1:if (SESave.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
 		if(noteAnimation != null){
 			(if(char == null) PlayState.getCharFromID(charID,true) else char).playAnim((if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
@@ -314,7 +314,7 @@ class Note extends FlxSprite
 		}else{
 			this.strumTime = Math.round(strumTime);
 
-			showNote = !(!playerNote && !FlxG.save.data.oppStrumLine);
+			showNote = !(!playerNote && !SESave.data.oppStrumLine);
 			if((rawNote[1] < 0 || rawNote[2] == "eventNote")){ // Psych event notes, These should not be shown, and should not appear on the player's side
 				
 				shouldntBeHit = false; // Make sure it doesn't become a hurt note
@@ -389,7 +389,7 @@ class Note extends FlxSprite
 						this.parentNote = prevNote;
 					}
 					prevNote.isSustainNoteEnd = false;
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (FlxG.save.data.scrollSpeed != 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed);
+					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (SESave.data.scrollSpeed != 1 ? SESave.data.scrollSpeed : PlayState.SONG.speed);
 					prevNote.updateHitbox();
 					prevNote.offset.x = _offset;
 
@@ -424,7 +424,7 @@ class Note extends FlxSprite
 				else if(isSustainNote) if(noteJSON.offsetHold != null){offset.x+=noteJSON.offsetHold[0];offset.y+=noteJSON.offsetHold[1];}
 				else if(noteJSON.offsetScroll != null){offset.x+=noteJSON.offsetStatic[0];offset.y+=noteJSON.offsetStatic[1];}
 			}
-			if (FlxG.save.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
+			if (SESave.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
 			if(shouldntBeHit && noteAnimation == ""){
 				noteAnimationMiss = noteAnimation = 'hurt${noteDirections[noteData]}/hurt/sing${noteDirections[noteData]}miss';
 			}
@@ -502,7 +502,7 @@ class Note extends FlxSprite
 
 			dad.holdTimer = 0;
 
-			if (dad.useVoices){dad.voiceSounds[noteData].play(1);dad.voiceSounds[noteData].time = 0;PlayState.instance.vocals.volume = 0;}else if (PlayState.SONG.needsVoices) PlayState.instance.vocals.volume = FlxG.save.data.voicesVol;
+			if (dad.useVoices){dad.voiceSounds[noteData].play(1);dad.voiceSounds[noteData].time = 0;PlayState.instance.vocals.volume = 0;}else if (PlayState.SONG.needsVoices) PlayState.instance.vocals.volume = SESave.data.voicesVol;
 
 			PlayState.instance.notes.remove(this, true);
 			destroy();

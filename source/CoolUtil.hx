@@ -16,25 +16,25 @@ class CoolUtil
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 	public static var volKeys:Array<Array<Int>> = [];
 	public static var volKeysEnabled = true;
-	public static var Framerate:Int = 0;
-	public static var updateRate:Int = 120;
-	public static function setFramerate(?fps:Int = 0,?update:Bool = false,?temp:Bool = false){
+	public static var Framerate:Float = 0;
+	public static var updateRate:Float = 120;
+	public static function setFramerate(?fps:Float = 0,?update:Bool = false,?temp:Bool = false){
 		if(!temp){
 			if(fps != 0 && !update){
-				updateRate = (Framerate = FlxG.save.data.fpsCap = fps) * 2;
+				updateRate = (Framerate = SESave.data.fpsCap = fps) * 2;
 			}
 			if(Framerate == 0 || update){
-				Framerate = cast FlxG.save.data.fpsCap;
+				Framerate = cast SESave.data.fpsCap;
 			}
 			if(Framerate < 30){
-				Framerate = FlxG.save.data.fpsCap = if(Application.current.window.displayMode.refreshRate > 30 ) Application.current.window.displayMode.refreshRate else if(Application.current.window.frameRate > 30) Application.current.window.frameRate else 30;
+				Framerate = SESave.data.fpsCap = if(Application.current.window.displayMode.refreshRate > 30 ) Application.current.window.displayMode.refreshRate else if(Application.current.window.frameRate > 30) Application.current.window.frameRate else 30;
 			}
 			if(Framerate > 300){
-				Framerate = FlxG.save.data.fpsCap = 300;
+				Framerate = SESave.data.fpsCap = 300;
 			}
 		}
 		Main.instance.setFPSCap(Framerate);
-		FlxG.updateFramerate = (FlxG.drawFramerate = Framerate) * 2;
+		FlxG.updateFramerate = (FlxG.drawFramerate = Std.int(Framerate)) * 2;
 	}
 
 	@:keep inline public static function clearFlxGroup(obj:FlxTypedGroup<Dynamic>):FlxTypedGroup<Dynamic>{ // Destroys all objects inside of a FlxGroup

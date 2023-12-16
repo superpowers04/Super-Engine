@@ -144,11 +144,11 @@ class FuckState extends FlxUIState {
 				err +="\n # ---------- GAME INFORMATION ----------";
 				err +='\n Version: ${MainMenuState.ver}';
 				err +='\n Buildtype: ${MainMenuState.compileType}';
-				err +='\n Debug: ${FlxG.save.data.animDebug}';
+				err +='\n Debug: ${SESave.data.animDebug}';
 				err +='\n Registered character count: ${TitleState.characters.length}';
-				err +='\n Scripts: ${FlxG.save.data.scripts}';
+				err +='\n Scripts: ${SESave.data.scripts}';
 				err +='\n State: ${currentStateName}';
-				err +='\n Save: ${FlxG.save.data}';
+				err +='\n Save: ${SESave.data}';
 				err +='\n # --------------------------------------';
 				
 			}catch(e){
@@ -167,19 +167,22 @@ class FuckState extends FlxUIState {
 			}
 		}
 		if(Main.game == null) return;
-		try{LoadingScreen.hide();}catch(e){}
+		// try{LoadingScreen.hide();}catch(e){}
 		Main.game.forceStateSwitch(new FuckState(exception,info,saved));
 	}
 	var saved:Bool = false;
 	override function new(e:String,info:String,saved:Bool = false){
 		err = '${e}\nThis happened in ${info}';
 		this.saved = saved;
-		LoadingScreen.hide();
+		// LoadingScreen.hide();
+		LoadingScreen.canShow = false;
 		LoadingScreen.forceHide();
+		try{
+			LoadingScreen.object.alpha=0;
+		}catch(e){}
 		super();
 	}
-	override function create()
-	{
+	override function create() {
 		super.create();
 		LoadingScreen.forceHide();
 		// var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(if(Math.random() > 0.5) 'week54prototype' else "zzzzzzzz", 'shared'));
@@ -223,7 +226,7 @@ class FuckState extends FlxUIState {
 		txt.screenCenter(X);
 		txt.y = 680;
 		add(txt);
-		if(saved){
+		if(saved) {
 			txt.y -= 30;
 			var dateNow:String = Date.now().toString();
 
@@ -233,17 +236,17 @@ class FuckState extends FlxUIState {
 		}
 	}
 
-	override function update(elapsed:Float)
-	{	
-		try{
+	override function update(elapsed:Float) { try{
 
 			if (FlxG.keys.justPressed.ENTER && !FATAL) {
 				// var _main = Main.instance;
 				forced = false;
+				LoadingScreen.canShow = true;
 				LoadingScreen.show();
 				// TitleState.initialized = false;
 				MainMenuState.firstStart = true;
 				FlxG.switchState(new MainMenuState());
+				return;
 			}
 			if (FlxG.keys.justPressed.ESCAPE){
 				trace('Exit requested!');
@@ -254,6 +257,7 @@ class FuckState extends FlxUIState {
 				LoadingScreen.forceHide(); // Hide you fucking piece of shit
 				LoadingScreen.object.alpha = 0;
 				LoadingScreen.isVisible = false;
+				LoadingScreen.canShow = false;
 			} 
 		}catch(e){}
 		super.update(elapsed);

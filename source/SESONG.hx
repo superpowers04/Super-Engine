@@ -128,7 +128,7 @@ class SESONG{
 	public function generateNotes(song:SESONG,?jumpTo:Float = 0):Array<Note>{
 		var unspawnNotes:Array<Note> = [];
 		for (songNotes in eventNotes){
-			daStrumTime = songNotes[0] + FlxG.save.data.offset;
+			daStrumTime = songNotes[0] + SESave.data.offset;
 
 			var daNoteData:Int = songNotes[1];
 
@@ -141,7 +141,7 @@ class SESONG{
 			unspawnNotes.push(swagNote);
 		}
 		for (songNotes in songNotes){
-				daStrumTime = songNotes[0] + FlxG.save.data.offset;
+				daStrumTime = songNotes[0] + SESave.data.offset;
 				if (daStrumTime < 0)
 					daStrumTime = 0;
 

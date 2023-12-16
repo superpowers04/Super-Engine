@@ -49,7 +49,7 @@ class MenuItem extends FlxSpriteGroup
 		var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
 		y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48),10 * elapsed);
-		if (FlxG.save.data.flashing){
+		if (SESave.data.flashing){
 
 			if (isFlashing)
 				flashingEl += elapsed;

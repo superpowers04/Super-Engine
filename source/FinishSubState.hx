@@ -118,13 +118,13 @@ class FinishSubState extends MusicBeatSubstate
 			if(win){
 				for (g in [PlayState.instance.cpuStrums,PlayState.instance.playerStrums]) {
 					g.forEach(function(i){
-						FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
+						FlxTween.tween(i, {y:if(SESave.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
 					});
 				}
-				if (FlxG.save.data.songPosition)
+				if (SESave.data.songPosition)
 				{
 					for (i in [PlayState.songPosBar,PlayState.songPosBG,PlayState.instance.songName,PlayState.instance.songTimeTxt]) {
-						FlxTween.tween(i, {y:if(FlxG.save.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
+						FlxTween.tween(i, {y:if(SESave.data.downscroll)FlxG.height + 200 else -200},1,{ease: FlxEase.expoIn});
 					}
 				}
 
@@ -137,9 +137,9 @@ class FinishSubState extends MusicBeatSubstate
 
 
 				FlxTween.tween(PlayState.instance.kadeEngineWatermark, {y:FlxG.height + 200},1,{ease: FlxEase.expoIn});
-				FlxTween.tween(PlayState.instance.scoreTxt, {y:if(FlxG.save.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
-				bfAnims = ['win','hey','singUP'];
-				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('cheer',true); else {dad.playAnimAvailable(['lose'],true);}
+				FlxTween.tween(PlayState.instance.scoreTxt, {y:if(SESave.data.downscroll) -200 else FlxG.height + 200},1,{ease: FlxEase.expoIn});
+				bfAnims = ['win','hey'];
+				if (dad.curCharacter == SESave.data.gfChar) dad.playAnim('cheer',true); else {dad.playAnimAvailable(['lose'],true);}
 				PlayState.gf.playAnim('cheer',true);
 			}else{
 				// boyfriend.playAnim('singDOWNmiss');
@@ -148,8 +148,10 @@ class FinishSubState extends MusicBeatSubstate
 				// dad.playAnim("hey",true);
 				// dad.playAnim("win",true);
 				bfAnims = ['lose'];
-				dad.playAnimAvailable(['win','hey'],true);
-				if (dad.curCharacter == FlxG.save.data.gfChar) dad.playAnim('sad',true); else dad.playAnim("hey",true);
+				
+				if (dad.curCharacter == SESave.data.gfChar) dad.playAnim('sad',true); 
+				else
+					dad.playAnimAvailable(['win','hey'],true);
 				PlayState.gf.playAnim('sad',true);
 			}
 		
@@ -158,8 +160,11 @@ class FinishSubState extends MusicBeatSubstate
 				// FlxG.camera.zoom = 1;
 				// PlayState.instance.camHUD.zoom = 1;
 
-				if(boyfriend.playAnimAvailable(bfAnims,true)) boyfriend.animation.finishCallback = this.finishNew; else finishNew();
-				// if (FlxG.save.data.camMovement){
+				if(boyfriend.playAnimAvailable(bfAnims,true)) 
+					boyfriend.animation.finishCallback = this.finishNew; 
+				else 
+					finishNew();
+				// if (SESave.data.camMovement){
 				PlayState.instance.followChar(0);
 				PlayState.instance.controlCamera = false;
 				// }
@@ -206,11 +211,11 @@ class FinishSubState extends MusicBeatSubstate
 				FlxG.camera.zoom = PlayState.instance.camTOP.zoom = PlayState.instance.camHUD.zoom = 1;
 				// FlxG.camera.zoom = PlayState.instance.defaultCamZoom;
 				PlayState.instance.generatedMusic = false;
-				var camPos = PlayState.instance.getDefaultCamPos();
+				var camPos = PlayState.instance.getDefaultCamPos(false);
 				// PlayState.instance.camFollow.setPosition(camPos[0],camPos[1]);
-				PlayState.instance.moveCamera = false;
-				PlayState.instance.camGame.scroll.x = camPos[0];
-				PlayState.instance.camGame.scroll.y = camPos[1];
+				PlayState.instance.moveCamera = PlayState.instance.controlCamera = false;
+				PlayState.instance.camFollow.x = PlayState.instance.camGame.scroll.x = camPos[0];
+				PlayState.instance.camFollow.y = PlayState.instance.camGame.scroll.y = camPos[1];
 				FlxG.state.persistentUpdate = !isError && !pauseGame;
 				if (win) PlayState.playerCharacter.animation.finishCallback = null; else PlayState.dad.animation.finishCallback = null;
 				updateBF = false;
@@ -256,7 +261,7 @@ class FinishSubState extends MusicBeatSubstate
 				finishedText.color = FlxColor.RED;
 				finishedText.scrollFactor.set();
 				finishedText.screenCenter(X);
-				var errText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,150,0,'Error Message:\n${errorMsg}');
+				var errText:FlxText = new FlxText(20 + SESave.data.guiGap,150,0,'Error Message:\n${errorMsg}');
 				errText.size = 20;
 				errText.wordWrap = true;
 				errText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
@@ -321,7 +326,7 @@ class FinishSubState extends MusicBeatSubstate
 				songText.color = FlxColor.WHITE;
 				songText.scrollFactor.set();
 				songText.screenCenter(X);
-				var comboText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,80,0,'\n\n'
+				var comboText:FlxText = new FlxText(20 + SESave.data.guiGap,80,0,'\n\n'
 						+(if(PlayState.instance.botPlay) "Botplay " else "") + (!PlayState.isStoryMode ? 'Song performance' : "Week performance")
 						+'\n\nSicks - ${PlayState.sicks}'
 						+'\nGoods - ${PlayState.goods}'
@@ -329,7 +334,7 @@ class FinishSubState extends MusicBeatSubstate
 						+'\nShits - ${PlayState.shits}'
 						+'\nGhost Taps - ${PlayState.ghostTaps}'
 						+'\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})'
-						+'\nMisses${if(FlxG.save.data.ghost) "" else " + Ghost Taps"}${if(FlxG.save.data.shittyMiss) ' + Shits' else ''}${if(FlxG.save.data.badMiss) ' + Bads' else ''}${if(FlxG.save.data.goodMiss) ' + Goods' else ''}: ${PlayState.misses}'
+						+'\nMisses${if(SESave.data.ghost) "" else " + Ghost Taps"}${if(SESave.data.shittyMiss) ' + Shits' else ''}${if(SESave.data.badMiss) ' + Bads' else ''}${if(SESave.data.goodMiss) ' + Goods' else ''}: ${PlayState.misses}'
 						+'\n\nScore: ${(savedScore ? '${_oldScore} > ${PlayState.songScore}' : '${PlayState.songScore} / ${_oldScore}')}' // ' shitty haxe syntax highlighting strikes again :skull:
 						+'\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%');
 				comboText.size = 28;
@@ -340,14 +345,14 @@ class FinishSubState extends MusicBeatSubstate
 				var settingsText:FlxText = new FlxText(600,75,0,
 				'\n\n\n\nSettings:'
 				+'\n\n Able To Save Score: ${canSaveScore()}'
-				// +'\n Downscroll: ${FlxG.save.data.downscroll}'
-				+'\n Ghost Tapping: ${FlxG.save.data.ghost}'
-				+'\n Practice: ${FlxG.save.data.practiceMode}${if(PlayState.instance.hasDied)' - Score not saved' else ''}'
+				// +'\n Downscroll: ${SESave.data.downscroll}'
+				+'\n Ghost Tapping: ${SESave.data.ghost}'
+				+'\n Practice: ${SESave.data.practiceMode}${if(PlayState.instance.hasDied)' - Score not saved' else ''}'
 				+'\n HScripts: ${QuickOptionsSubState.getSetting("Song hscripts")}' + (QuickOptionsSubState.getSetting("Song hscripts") ? '\n  Script Count:${PlayState.instance.interpCount}' : "")
-				+'\n Safe Frames: ${FlxG.save.data.frames}' 
+				+'\n Safe Frames: ${SESave.data.frames}' 
 				+'\n HitWindows: ${Ratings.ratingMS("sick")},${Ratings.ratingMS("good")},${Ratings.ratingMS("bad")},${Ratings.ratingMS("shit")} MS'
 				+'\n Input Engine: ${PlayState.inputEngineName}, V${MainMenuState.ver}'
-				+'\n Song Offset: ${HelperFunctions.truncateFloat(FlxG.save.data.offset + PlayState.songOffset,2)}ms'
+				+'\n Song Offset: ${HelperFunctions.truncateFloat(SESave.data.offset + PlayState.songOffset,2)}ms'
 				);
 				settingsText.size = 20;
 				settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
@@ -365,7 +370,7 @@ class FinishSubState extends MusicBeatSubstate
 				
 				letterText.scrollFactor.set();
 
-				contText = new FlxText(FlxG.width - FlxG.save.data.guiGap,FlxG.height - 90,0,
+				contText = new FlxText(FlxG.width - SESave.data.guiGap,FlxG.height - 90,0,
 				#if android
 					'Tap the left of the screen to exit or the right of the screen to restart'
 				#else
@@ -379,7 +384,7 @@ class FinishSubState extends MusicBeatSubstate
 				contText.screenCenter(X);
 				contText.scrollFactor.set();
 				contText.alpha = 0.3;
-				// var chartInfoText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${FlxG.save.data.offset + PlayState.songOffset}ms | Played on ${songName}');
+				// var chartInfoText:FlxText = new FlxText(20,FlxG.height + 50,0,'Offset: ${SESave.data.offset + PlayState.songOffset}ms | Played on ${songName}');
 				// chartInfoText.size = 16;
 				// chartInfoText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
 				// chartInfoText.color = FlxColor.WHITE;
@@ -498,8 +503,6 @@ class FinishSubState extends MusicBeatSubstate
 		}
 
 		if (ready){
-
-
 			if (controls.ACCEPT){
 				retMenu();
 			}
@@ -545,8 +548,7 @@ class FinishSubState extends MusicBeatSubstate
 		super.draw();
 
 	}
-	function restart()
-	{
+	function restart() {
 		ready = false;
 		// FlxG.sound.music.stop();
 		// FlxG.sound.play(Paths.music('gameOverEnd'));

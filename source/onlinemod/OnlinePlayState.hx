@@ -51,7 +51,7 @@ class OnlinePlayState extends PlayState
 
 	var inPause:Bool = false;
 
-	var originalSafeFrames:Int = FlxG.save.data.frames;
+	var originalSafeFrames:Int = SESave.data.frames;
 
 	public function new(customSong:Bool, voices:FlxSound, inst:Sound)
 	{
@@ -73,12 +73,12 @@ class OnlinePlayState extends PlayState
 		handleNextPacket = true;
 		OnlinePlayMenuState.SetVolumeControls(true); // Make sure volume is enabled
 		if (customSong){
-			if (useSongChar[0] != "") PlayState.SONG.player1 = FlxG.save.data.playerChar;
+			if (useSongChar[0] != "") PlayState.SONG.player1 = SESave.data.playerChar;
 			
-			if ((FlxG.save.data.charAuto || useSongChar[1] != "") && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
+			if ((SESave.data.charAuto || useSongChar[1] != "") && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
 				PlayState.player2 = TitleState.retChar(PlayState.player2);
 			}else{
-				PlayState.player2 = FlxG.save.data.opponent;
+				PlayState.player2 = SESave.data.opponent;
 			}
 			for (i => v in useSongChar) {
 				if (v != ""){
@@ -290,7 +290,7 @@ class OnlinePlayState extends PlayState
 		clients[-1].scoreText = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + HelperFunctions.truncateFloat(PlayState.accuracy,2);
 
 		canPause = false;
-		FlxG.sound.playMusic(loadedInst, FlxG.save.data.instVol, true);
+		FlxG.sound.playMusic(loadedInst, SESave.data.instVol, true);
 		FlxG.sound.music.onComplete = null;
 		FlxG.sound.music.pause();
 		vocals.volume = 0;
@@ -360,7 +360,7 @@ class OnlinePlayState extends PlayState
 				FlxTween.tween(waitingText, {alpha: 0}, 0.5);
 				FlxTween.tween(waitMusic, {volume: 0}, 0.5);
 
-				FlxG.save.data.frames = safeFrames;
+				SESave.data.frames = safeFrames;
 				Conductor.recalculateTimings();
 			case Packets.BROADCAST_SCORE:
 				var id:Int = data[0];
@@ -480,7 +480,7 @@ class OnlinePlayState extends PlayState
 									var noteData:Int = noteData[data[0]][1];
 									switch (charID) {
 										case 0:PlayState.instance.BFStrumPlayAnim(noteData);
-										case 1:if (FlxG.save.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
+										case 1:if (SESave.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 									}; // Strums
 									PlayState.charAnim(charID,Note.noteAnims[noteData] = (if(data[1] != null && data[1] != 0 ) "miss" else ""),true); // Play animation
 								}
@@ -589,7 +589,7 @@ class OnlinePlayState extends PlayState
 			if (waitMusic.volume < 0.75)
 				waitMusic.volume += 0.01 * elapsed;
 		}
-		if(FlxG.save.data.animDebug){
+		if(SESave.data.animDebug){
 			Overlay.debugVar += '\nClient count:${clientCount}'
 				+'\nLast Packet: ${lastPacketID};${lastPacket}';
 		}
@@ -600,7 +600,7 @@ class OnlinePlayState extends PlayState
 		// This function is called when the State changes. For example, when exiting via the pause menu.
 		FlxG.sound.music.onComplete = null;
 
-		FlxG.save.data.frames = originalSafeFrames;
+		SESave.data.frames = originalSafeFrames;
 		Conductor.recalculateTimings();
 		super.destroy();
 	}

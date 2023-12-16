@@ -176,7 +176,7 @@ class Console extends TextField
 	@:keep inline public static function error(str:String) return Console.print('Error: ${str}');
 	@:keep inline public static function print(str:String) return instance.log(str);
 	public function log(str:String){
-		if(FlxG.save.data != null && !FlxG.save.data.animDebug){return;}
+		if(SESave.data != null && !SESave.data.animDebug){return;}
 		// text += "\n-" + lineCount + ": " + str;
 		lineCount++;
 		var lc = Std.string(lineCount);
@@ -194,7 +194,7 @@ class Console extends TextField
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
-		if(FlxG.keys == null || FlxG.save.data == null || !FlxG.save.data.animDebug) return;
+		if(FlxG.keys == null || SESave.data == null || !SESave.data.animDebug) return;
 		if(showConsole && requestUpdate){
 			text = lines.join("\n");
 			requestUpdate = false;
@@ -203,7 +203,7 @@ class Console extends TextField
 		if(FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F10){
 			lines = [];
 			trace("Cleared log");
-		}else if(FlxG.keys != null && FlxG.keys.justPressed.F10 && FlxG.save.data != null){
+		}else if(FlxG.keys != null && FlxG.keys.justPressed.F10 && SESave.data != null){
 			showConsole = !showConsole;
 		}
 		if(isShowingConsole != showConsole){

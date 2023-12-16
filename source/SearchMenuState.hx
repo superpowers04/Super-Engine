@@ -99,7 +99,7 @@ class SearchMenuState extends ScriptMusicBeatState
 	@:keep inline static public function resetVars(){
 		LoadingScreen.loadingText = "Resetting Variables";
 		if (ChartingState.charting) ChartingState.charting = false;
-		if (/*FlxG.save.data.songUnload && */PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
+		if (/*SESave.data.songUnload && */PlayState.SONG != null) {PlayState.SONG = null;} // I'm not even sure if this is needed but whatever
 		PlayState.songDifficulties = [];PlayState.nameSpace = "";PlayState.scripts = [];PlayState.hsBrTools = null;onlinemod.OfflinePlayState.instFile = onlinemod.OfflinePlayState.voicesFile = "";
 		HSBrTools.shared = [];
 		SickMenuState.chgTime = true;
@@ -108,15 +108,15 @@ class SearchMenuState extends ScriptMusicBeatState
 		if(Note.noteDirections[0] == null){Note.noteDirections = ["LEFT","DOWN","UP",'RIGHT','NONE'];}
 		Conductor.offset = 0;
 		onlinemod.OfflinePlayState.nameSpace = "";
-		if(FlxG.save.data.persistBF == null && PlayState.boyfriend != null){
+		if(!SESave.data.persistBF && PlayState.boyfriend != null){
 			try{PlayState.boyfriend.destroy();}catch(e){}
 			PlayState.boyfriend = null;
 		} 
-		if(FlxG.save.data.persistGF == null && PlayState.gf != null){
+		if(!SESave.data.persistGF && PlayState.gf != null){
 			try{PlayState.gf.destroy();}catch(e){}
 			PlayState.gf = null;
 		} 
-		if(/*FlxG.save.data.persistOpp == null &&*/ PlayState.dad != null){
+		if(/*SESave.data.persistOpp == null &&*/ PlayState.dad != null){
 			try{PlayState.dad.destroy();}catch(e){}
 			PlayState.dad = null;
 		}
@@ -350,7 +350,7 @@ class SearchMenuState extends ScriptMusicBeatState
 	var curTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
-		if(FlxG.save.data.beatBouncing && grpSongs != null && grpSongs.members[curSelected] != null){
+		if(SESave.data.beatBouncing && grpSongs != null && grpSongs.members[curSelected] != null){
 			
 			grpSongs.members[curSelected].scale.set(1.1,1.1);
 			if(curTween != null)curTween.cancel();

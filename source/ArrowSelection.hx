@@ -21,7 +21,7 @@ class ArrowSelection extends SearchMenuState
 	function generateStaticArrows(player:Int):Void{
 		for (i in 0...4){
 			// FlxG.log.add(i);
-			var babyArrow:StrumArrow = new StrumArrow(i,0, if (FlxG.save.data.downscroll) FlxG.height - 165 else 50);
+			var babyArrow:StrumArrow = new StrumArrow(i,0, if (SESave.data.downscroll) FlxG.height - 165 else 50);
 
 			babyArrow.init();
 			// babyArrow.x += Note.swagWidth * i + i;
@@ -177,7 +177,7 @@ class ArrowSelection extends SearchMenuState
 		updateArrowDisplay();
 	}
 	override function select(sel:Int = 0){
-		FlxG.save.data.noteAsset = songs[curSelected];
+		SESave.data.noteAsset = songs[curSelected];
 
 	}
 }

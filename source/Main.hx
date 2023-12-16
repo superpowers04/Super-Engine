@@ -120,7 +120,7 @@ class Main extends Sprite
 
 			// fpsCounter = new FPS(10, 3, 0xFFFFFF);
 			// addChild(fpsCounter);
-			toggleFPS(FlxG.save.data.fps);
+			toggleFPS(SESave.data.fps);
 		}catch(e){
 			try{removeChild(game);}catch(e){};
 			try{removeChild(fpsCounter);}catch(e){};
@@ -282,7 +282,7 @@ class FlxGameEnhanced extends FlxGame{
 		try{
 
 			#if(target.threaded && !hl)
-				if(_state != _requestedState && FlxG.save.data.doCoolLoading){
+				if(_state != _requestedState && SESave.data.doCoolLoading){
 					blockUpdate = blockEnterFrame = blockDraw = true;
 					// Main.funniSprite.removeChild(this);
 					_oldAutoPause = FlxG.autoPause;
@@ -301,7 +301,7 @@ class FlxGameEnhanced extends FlxGame{
 				hasUpdated = true;
 				super.update();
 
-				if (FlxG.keys.justPressed.F11) FlxG.save.data.fullscreen = (FlxG.fullscreen = !FlxG.fullscreen);
+				if (FlxG.keys.justPressed.F11) SESave.data.fullscreen = (FlxG.fullscreen = !FlxG.fullscreen);
 			}
 		}catch(e){
 			FuckState.FUCK(e,"FlxGame.Update");

@@ -1,6 +1,7 @@
-23.12.14.2358;
+23.12.15.2149;
 * A bunch of fixes
 * Clean up results screen
-* The game now actually autosaves the chart in the chart editor
-* Make scrollbar work like other scrollbars(If you hold click, it'll scroll until you let go even if you're not hovering over it)
 * Include tutorial and the first week as examples
+* The game now actually autosaves the chart in the chart editor
+* Ditch FlxG.save.data, it's a dynamic variable which is slower and cring
+* Make scrollbar work like other scrollbars(If you hold click, it'll scroll until you let go even if you're not hovering over it)

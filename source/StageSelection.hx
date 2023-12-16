@@ -45,7 +45,7 @@ class StageSelection extends SearchMenuState
 		controlLabel.targetY = i;
 		if (i != 0)
 			controlLabel.alpha = 0.6;
-		if(id == FlxG.save.data.selStage){
+		if(id == SESave.data.selStage){
 			controlLabel.color = FlxColor.GREEN;
 		}
 		grpSongs.add(controlLabel);
@@ -66,6 +66,6 @@ class StageSelection extends SearchMenuState
 		super.create();
 	}catch(e) MainMenuState.handleError('Error with stagesel "create" ${e.message}');}
 	override function select(sel:Int = 0){
-		FlxG.save.data.selStage = stageIDs[sel];
+		SESave.data.selStage = stageIDs[sel];
 	}
 }

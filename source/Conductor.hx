@@ -19,6 +19,7 @@ class Conductor
 {
 	public static var bpm:Float = 100;
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
+	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
 	public static var crochetSecs(get,set):Float;
 	public static function get_crochetSecs():Float{
 		return crochet * 0.001;
@@ -26,7 +27,6 @@ class Conductor
 	public static function set_crochetSecs(val:Float):Float{
 		return crochet = val * 1000;
 	}
-	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
 	public static var songPosition:Float;
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
@@ -37,19 +37,15 @@ class Conductor
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
-	public function new()
-	{
-	}
+	public function new(){}
 
-	public static function recalculateTimings()
-	{
-		Conductor.safeFrames = FlxG.save.data.frames;
+	@:keep inline public static function recalculateTimings() {
+		Conductor.safeFrames = SESave.data.frames;
 		Conductor.safeZoneOffset = Math.floor((Conductor.safeFrames / 60) * 1000);
 		Conductor.timeScale = Conductor.safeZoneOffset / 166;
 	}
 
-	public static function mapBPMChanges(?song:SwagSong)
-	{
+	public static function mapBPMChanges(?song:SwagSong) {
 		bpmChangeMap = [];
 		offset = 0;
 		if(song == null) return;
@@ -58,21 +54,19 @@ class Conductor
 		var curBPM:Float = Math.abs(song.bpm);
 		var totalSteps:Int = 0;
 		var totalPos:Float = 0;
-		for (i in 0...song.notes.length)
-		{
-			if(song.notes[i].changeBPM && song.notes[i].bpm != curBPM)
-			{
-				curBPM = Math.abs(song.notes[i].bpm);
-				var event:BPMChangeEvent = {
+		for (i in 0...song.notes.length) {
+			var v = song.notes[i];
+			if(v.changeBPM && v.bpm != curBPM) {
+				curBPM = Math.abs(v.bpm);
+				bpmChangeMap.push({
 					stepTime: totalSteps,
 					songTime: totalPos,
 					bpm: curBPM
-				};
-				bpmChangeMap.push(event);
+				});
 			}
 
 
-			var deltaSteps:Int = song.notes[i].lengthInSteps;
+			var deltaSteps:Int = v.lengthInSteps;
 			totalSteps += deltaSteps;
 			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
 		}
@@ -81,7 +75,7 @@ class Conductor
 
 	public static function changeBPM(newBpm:Float)
 	{
-		if(Math.isNaN(newBpm) || newBpm < 1){
+		if(Math.isNaN(newBpm) || newBpm == 0){
 			newBpm = 120;
 		}
 		bpm = Math.abs(newBpm);

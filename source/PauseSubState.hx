@@ -355,7 +355,8 @@ class PauseSubState extends MusicBeatSubstate
 				if(currentChart < 0 || PlayState.songDifficulties[currentChart] == null) {FlxG.sound.play(Paths.sound('cancelMenu'));return;}
 				ChartingState.charting = false;
 				MusicBeatState.returningFromClass = true;
-				onlinemod.OfflinePlayState.chartFile = PlayState.songDifficulties[currentChart];
+				var chart = PlayState.songDifficulties[currentChart];
+				multi.MultiMenuState.gotoSong(chart.substring(0,chart.lastIndexOf('/')),PlayState.songDifficulties[currentChart]);
 				FlxG.resetState();
 			case "Import Chart":
 				SELoader.createDirectory('mods/packs/imported');

@@ -110,7 +110,7 @@ class SEJudgement extends Option
 		super();
 		description = 'Adjust your hit window for $name';
 		acceptValues = true;
-		glob = Reflect.getProperty(FlxG.save.data,"judge" + name);
+		glob = Reflect.getProperty(SESave.data,"judge" + name);
 		trace('$name - $glob');
 	}
 	function setVal(val:Float){
@@ -118,7 +118,7 @@ class SEJudgement extends Option
 		if(val < 0.01){val = 0.99;}
 		trace('' + glob + ' -> ' + val);
 		glob = val;
-		Reflect.setField(FlxG.save.data,"judge" + name,val);
+		Reflect.setField(SESave.data,"judge" + name,val);
 	}
 	public override function press():Bool
 	{
@@ -161,7 +161,7 @@ class Judgement extends Option{
 			return false;
 
 		Conductor.safeFrames -= 1;
-		FlxG.save.data.frames = Conductor.safeFrames;
+		SESave.data.frames = Conductor.safeFrames;
 
 		Conductor.recalculateTimings();
 		return true;
@@ -183,7 +183,7 @@ class Judgement extends Option{
 			return false;
 
 		Conductor.safeFrames += 1;
-		FlxG.save.data.frames = Conductor.safeFrames;
+		SESave.data.frames = Conductor.safeFrames;
 
 		Conductor.recalculateTimings();
 		return true;
@@ -235,15 +235,15 @@ class AccuracyDOption extends Option
 	
 	public override function press():Bool
 	{
-		FlxG.save.data.accuracyMod++;
-		if(FlxG.save.data.accuracyMod > 2) FlxG.save.data.accuracyMod = 0;
+		SESave.data.accuracyMod++;
+		if(SESave.data.accuracyMod > 2) SESave.data.accuracyMod = 0;
 		display = updateDisplay();
 		return true;
 	}
 
 	override function updateDisplay():String
 	{
-		return "Accuracy Mode: " + (if(FlxG.save.data.accuracyMod == 0) "Simple" else if(FlxG.save.data.accuracyMod == 2) "SE" else "Etterna");
+		return "Accuracy Mode: " + (if(SESave.data.accuracyMod == 0) "Simple" else if(SESave.data.accuracyMod == 2) "SE" else "Etterna");
 	}
 }
 
@@ -284,7 +284,7 @@ class PlayerOption extends Option
 
 
 	override function getValue():String {
-		return "Current Player: " + ('${FlxG.save.data.playerChar}').replace('null|',"");
+		return "Current Player: " + ('${SESave.data.playerChar}').replace('null|',"");
 	}
 }
 class GFOption extends Option
@@ -304,7 +304,7 @@ class GFOption extends Option
 	}
 
 	override function getValue():String {
-		return "Current GF: " + ('${FlxG.save.data.gfChar}').replace('null|',"");
+		return "Current GF: " + ('${SESave.data.gfChar}').replace('null|',"");
 	}
 }
 class OpponentOption extends Option
@@ -325,7 +325,7 @@ class OpponentOption extends Option
 
 
 	override function getValue():String {
-		return "Current Opponent: " + ('${FlxG.save.data.opponent}').replace('null|',"");
+		return "Current Opponent: " + ('${SESave.data.opponent}').replace('null|',"");
 	}
 
 }
@@ -343,24 +343,24 @@ class GUIGapOption extends Option
 
 	public override function press():Bool
 	{
-		FlxG.save.data.guiGap = 0;
+		SESave.data.guiGap = 0;
 		return true;
 	}
 
 	override function right():Bool {
-		FlxG.save.data.guiGap += 1;
+		SESave.data.guiGap += 1;
 
 		return true;
 	}
 
 	override function left():Bool {
-		FlxG.save.data.guiGap -= 1;
+		SESave.data.guiGap -= 1;
 		return true;
 	}
 
 	override function getValue():String
 	{
-		return 'Hud distance: ${FlxG.save.data.guiGap}, Press enter to reset to 0';
+		return 'Hud distance: ${SESave.data.guiGap}, Press enter to reset to 0';
 	}
 }
 class SelStageOption extends Option
@@ -380,7 +380,7 @@ class SelStageOption extends Option
 	}
 
 	override function getValue():String {
-		return "Current Stage: " + FlxG.save.data.selStage;
+		return "Current Stage: " + SESave.data.selStage;
 	}
 
 }
@@ -414,25 +414,25 @@ class InputEngineOption extends Option
 	{
 		acceptValues = true;
 		super();
-		if (FlxG.save.data.inputEngine >= ies.length) FlxG.save.data.inputEngine = 0;
+		if (SESave.data.inputEngine >= ies.length) SESave.data.inputEngine = 0;
 		description = desc;
 		display = 'Input Engine';
 		acceptValues = true;
 	}
 
 	override function getValue():String {
-		return iesDesc[FlxG.save.data.inputEngine];
+		return iesDesc[SESave.data.inputEngine];
 	}
 
 	override function right():Bool {
-		FlxG.save.data.inputEngine += 1;
-		if (FlxG.save.data.inputEngine >= ies.length) FlxG.save.data.inputEngine = 0;
+		SESave.data.inputEngine += 1;
+		if (SESave.data.inputEngine >= ies.length) SESave.data.inputEngine = 0;
 		display = updateDisplay();
 		return true;
 	}
 	override function left():Bool {
-		FlxG.save.data.inputEngine -= 1;
-		if (FlxG.save.data.inputEngine < 0) FlxG.save.data.inputEngine = ies.length - 1;
+		SESave.data.inputEngine -= 1;
+		if (SESave.data.inputEngine < 0) SESave.data.inputEngine = ies.length - 1;
 		display = updateDisplay();
 		return true;
 	}
@@ -454,7 +454,7 @@ class NoteSelOption extends Option
 	}
 
 	override function getValue():String {
-		return "Current note style: " + FlxG.save.data.noteAsset;
+		return "Current note style: " + SESave.data.noteAsset;
 	}
 }
 
@@ -465,30 +465,30 @@ class SongInfoOption extends Option
 	public function new(desc:String)
 	{
 		super();
-		if (FlxG.save.data.songInfo >= ies.length) FlxG.save.data.songInfo = 0;
+		if (SESave.data.songInfo >= ies.length) SESave.data.songInfo = 0;
 		description = desc;
 
 		acceptValues = true;
 	}
 
 	override function getValue():String {
-		return iesDesc[FlxG.save.data.songInfo];
+		return iesDesc[SESave.data.songInfo];
 	}
 
 	override function right():Bool {
-		FlxG.save.data.songInfo += 1;
-		if (FlxG.save.data.songInfo >= ies.length) FlxG.save.data.songInfo = 0;
+		SESave.data.songInfo += 1;
+		if (SESave.data.songInfo >= ies.length) SESave.data.songInfo = 0;
 		display = updateDisplay();
 		return true;
 	}
 	override function left():Bool {
-		FlxG.save.data.songInfo -= 1;
-		if (FlxG.save.data.songInfo < 0) FlxG.save.data.songInfo = ies.length - 1;
+		SESave.data.songInfo -= 1;
+		if (SESave.data.songInfo < 0) SESave.data.songInfo = ies.length - 1;
 		display = updateDisplay();
 		return true;
 	}
 	override function updateDisplay():String{
-		return 'Song Info: ${ies[FlxG.save.data.songInfo]}';
+		return 'Song Info: ${ies[SESave.data.songInfo]}';
 	}
 }
 class FullscreenOption extends Option
@@ -501,14 +501,14 @@ class FullscreenOption extends Option
 
 	public override function press():Bool
 	{
-		FlxG.save.data.fullscreen = (FlxG.fullscreen = !FlxG.fullscreen);
+		SESave.data.fullscreen = (FlxG.fullscreen = !FlxG.fullscreen);
 		display = updateDisplay();
 		return true;
 	}
 
 	override function updateDisplay():String
 	{
-		return "Fullscreen " + (!FlxG.save.data.fullscreen ? "off" : "on");
+		return "Fullscreen " + (!SESave.data.fullscreen ? "off" : "on");
 	}
 
 }
@@ -531,7 +531,7 @@ class SelScriptOption extends Option
 
 
 	override function getValue():String {
-		return "Current Script count: " + FlxG.save.data.scripts.length;
+		return "Current Script count: " + SESave.data.scripts.length;
 	}
 
 }
@@ -570,6 +570,7 @@ class IntOption extends Option{
 		display = updateDisplay();
 		return true;
 	}
+	override function updateDisplay():String return name + ": " + getValue();
 }
 class FloatOption extends Option{
 	var min:Float = 0;
@@ -589,6 +590,7 @@ class FloatOption extends Option{
 
 	}
 	override function getValue():String return '${OptionsMenu.modOptions[script][name]}';
+	override function updateDisplay():String return name + ": " + getValue();
 
 	override function right():Bool {
 
@@ -652,15 +654,15 @@ class HCIntOption extends Option{
 		description = desc;
 
 	}
-	override function getValue():String return '${Reflect.getProperty(FlxG.save.data,id)}';
+	override function getValue():String return '${Reflect.getProperty(SESave.data,id)}';
 
 	public override function left():Bool{
-		Reflect.setProperty(FlxG.save.data,id,Math.max(Reflect.getProperty(FlxG.save.data,id) - inc,min));
+		Reflect.setProperty(SESave.data,id,Math.max(Reflect.getProperty(SESave.data,id) - inc,min));
 		display = updateDisplay();
 		return true;
 	}
 	public override function right():Bool{
-		Reflect.setProperty(FlxG.save.data,id,Math.max(Reflect.getProperty(FlxG.save.data,id) + inc,max));
+		Reflect.setProperty(SESave.data,id,Math.max(Reflect.getProperty(SESave.data,id) + inc,max));
 		display = updateDisplay();
 		return true;
 	}
@@ -686,14 +688,14 @@ class HCFloatOption extends Option{
 
 	}
 	override function getValue():String {
-		return '${Reflect.getProperty(FlxG.save.data,id)}';
+		return '${Reflect.getProperty(SESave.data,id)}';
 	}
 	public override function left():Bool{
 		var ince = inc;
 		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) ince *= 0.01;
 		else if(FlxG.keys.pressed.SHIFT) ince *= 10;
 		else if(FlxG.keys.pressed.CONTROL) ince *= 0.1;
-		Reflect.setProperty(FlxG.save.data,id,Math.max(cast (Reflect.getProperty(FlxG.save.data,id),Float) - ince,min));
+		Reflect.setProperty(SESave.data,id,Math.max(cast (Reflect.getProperty(SESave.data,id),Float) - ince,min));
 		display = updateDisplay();
 		return true;
 	}
@@ -702,7 +704,7 @@ class HCFloatOption extends Option{
 		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) ince *= 0.01;
 		else if(FlxG.keys.pressed.SHIFT) ince *= 10;
 		else if(FlxG.keys.pressed.CONTROL) ince *= 0.1;
-		Reflect.setProperty(FlxG.save.data,id,Math.min(cast (Reflect.getProperty(FlxG.save.data,id),Float) + ince,max));
+		Reflect.setProperty(SESave.data,id,Math.min(cast (Reflect.getProperty(SESave.data,id),Float) + ince,max));
 		display = updateDisplay();
 		return true;
 	}
@@ -725,16 +727,16 @@ class HCBoolOption extends Option{
 		description = desc;
 
 	}
-	override function getValue():String return '${Reflect.getProperty(FlxG.save.data,id)}';
+	override function getValue():String return '${Reflect.getProperty(SESave.data,id)}';
 	public override function press():Bool{
-		Reflect.setProperty(FlxG.save.data,id,!Reflect.getProperty(FlxG.save.data,id));
+		Reflect.setProperty(SESave.data,id,!Reflect.getProperty(SESave.data,id));
 		display = updateDisplay();
 		return true;
 	}
 
 	override function updateDisplay():String
 	{
-		var ret:Bool = cast(Reflect.getProperty(FlxG.save.data,id),Bool);
+		var ret:Bool = cast(Reflect.getProperty(SESave.data,id),Bool);
 		if(trueText == "" || falseText == ""){
 			return '$name: $ret';
 		}
@@ -752,24 +754,24 @@ class BackTransOption extends Option
 	}
 
 	override function right():Bool {
-		FlxG.save.data.undlaTrans += 0.1;
+		SESave.data.undlaTrans += 0.1;
 
-		if (FlxG.save.data.undlaTrans > 1)
-			FlxG.save.data.undlaTrans = 1;
+		if (SESave.data.undlaTrans > 1)
+			SESave.data.undlaTrans = 1;
 		return true;
 	}
 
-	override function getValue():String return "Underlay opacity: " + HelperFunctions.truncateFloat(FlxG.save.data.undlaTrans,1);
+	override function getValue():String return "Underlay opacity: " + HelperFunctions.truncateFloat(SESave.data.undlaTrans,1);
 	
 
 	override function left():Bool {
-		FlxG.save.data.undlaTrans -= 0.1;
+		SESave.data.undlaTrans -= 0.1;
 
-		if (FlxG.save.data.undlaTrans < 0)
-			FlxG.save.data.undlaTrans = 0;
+		if (SESave.data.undlaTrans < 0)
+			SESave.data.undlaTrans = 0;
 
-		if (FlxG.save.data.undlaTrans > 1)
-			FlxG.save.data.undlaTrans = 1;
+		if (SESave.data.undlaTrans > 1)
+			SESave.data.undlaTrans = 1;
 
 		return true;
 	}
@@ -780,24 +782,24 @@ class BackgroundSizeOption extends Option
 	var iesDesc:Array<String> = ["Only show underlay below strumline","Fill underlay to entire screen",];
 	public function new(desc:String)
 	{
-		if (FlxG.save.data.undlaSize >= ies.length) FlxG.save.data.undlaSize = 0;
+		if (SESave.data.undlaSize >= ies.length) SESave.data.undlaSize = 0;
 		super();
 		description = desc;
 		display = 'Underlay style';
 		acceptValues = true;
 	}
 
-	override function getValue():String return iesDesc[FlxG.save.data.undlaSize];
+	override function getValue():String return iesDesc[SESave.data.undlaSize];
 
 	override function right():Bool {
-		FlxG.save.data.undlaSize += 1;
-		if (FlxG.save.data.undlaSize >= ies.length) FlxG.save.data.undlaSize = 0;
+		SESave.data.undlaSize += 1;
+		if (SESave.data.undlaSize >= ies.length) SESave.data.undlaSize = 0;
 		display = updateDisplay();
 		return true;
 	}
 	override function left():Bool {
-		FlxG.save.data.undlaSize -= 1;
-		if (FlxG.save.data.undlaSize < 0) FlxG.save.data.undlaSize = ies.length - 1;
+		SESave.data.undlaSize -= 1;
+		if (SESave.data.undlaSize < 0) SESave.data.undlaSize = ies.length - 1;
 		display = updateDisplay();
 		return true;
 	}
@@ -819,10 +821,10 @@ class VolumeOption extends Option
 
 
 	override function right():Bool {
-		Reflect.setField(FlxG.save.data,opt+"Vol", Reflect.field(FlxG.save.data,opt+"Vol") + (if(FlxG.keys.pressed.SHIFT) 0.01 else 0.1));
+		Reflect.setField(SESave.data,opt+"Vol", Reflect.field(SESave.data,opt+"Vol") + (if(FlxG.keys.pressed.SHIFT) 0.01 else 0.1));
 
-		if (Reflect.field(FlxG.save.data,opt+"Vol") > 1)
-			Reflect.setField(FlxG.save.data,opt+"Vol", 1);
+		if (Reflect.field(SESave.data,opt+"Vol") > 1)
+			Reflect.setField(SESave.data,opt+"Vol", 1);
 		// display = updateDisplay();
 		return true;
 	}
@@ -831,20 +833,20 @@ class VolumeOption extends Option
 
 		switch(opt){
 			case "master":{
-				FlxG.sound.volume = FlxG.save.data.masterVol;
+				FlxG.sound.volume = SESave.data.masterVol;
 			}
 			case "inst":{
-				FlxG.sound.music.volume = FlxG.save.data.instVol;
+				FlxG.sound.music.volume = SESave.data.instVol;
 			}
 		}
-		return opt + " Volume: " + (HelperFunctions.truncateFloat(Reflect.field(FlxG.save.data,opt+"Vol"),2) * 100) + "%"; // Multiplied by 100 to appear as 0-100 instead of 0-1
+		return opt + " Volume: " + (HelperFunctions.truncateFloat(Reflect.field(SESave.data,opt+"Vol"),2) * 100) + "%"; // Multiplied by 100 to appear as 0-100 instead of 0-1
 
 	}
 
 	override function left():Bool {
-		Reflect.setField(FlxG.save.data,opt+"Vol", Reflect.field(FlxG.save.data,opt+"Vol") - (if(FlxG.keys.pressed.SHIFT) 0.01 else 0.1));
-		if (Reflect.field(FlxG.save.data,opt+"Vol") < 0)
-			Reflect.setField(FlxG.save.data,opt+"Vol", 0);
+		Reflect.setField(SESave.data,opt+"Vol", Reflect.field(SESave.data,opt+"Vol") - (if(FlxG.keys.pressed.SHIFT) 0.01 else 0.1));
+		if (Reflect.field(SESave.data,opt+"Vol") < 0)
+			Reflect.setField(SESave.data,opt+"Vol", 0);
 		// display = updateDisplay();
 
 		return true;

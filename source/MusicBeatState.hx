@@ -220,8 +220,6 @@ class MusicBeatState extends FlxUIState {
 				}
 			}catch(e){}
 		}
-		updateCurStep();
-		updateBeat();
 		if(FlxG.keys.justPressed.F3){
 			var mess = 'Global Mouse pos: ${FlxG.mouse.x},${FlxG.mouse.y}; Screen mouse pos: ${FlxG.mouse.screenX},${FlxG.mouse.screenY}; member count: ${members.length}'; 
 			// trace(mess);
@@ -230,7 +228,9 @@ class MusicBeatState extends FlxUIState {
 		if(FlxG.keys.justPressed.F4 && forceQuit){
 			throw("Manually triggered error");
 		}
-
+		
+		updateCurStep();
+		updateBeat();
 		if (oldStep != curStep && curStep > 0){
 			oldStep = curStep;
 			stepHit();
@@ -275,15 +275,14 @@ class MusicBeatState extends FlxUIState {
 
 			}
 		}
-		if(FlxG.save.data.animDebug){
+		if(SESave.data.animDebug){
 			Overlay.debugVar = '\nBPM:${Conductor.bpm}/${HelperFunctions.truncateFloat(Conductor.crochet,2)}MS(S:${HelperFunctions.truncateFloat(Conductor.stepCrochet,2)}MS)\ncurBeat:${curBeat}\ncurStep:${curStep}';
 		}
 
 		super.update(elapsed);
 	}
 
-	private function updateBeat():Void
-	{
+	private function updateBeat():Void {
 		lastBeat = curStep;
 		curBeat = Math.floor(curStep / 4);
 	}
@@ -316,12 +315,10 @@ class MusicBeatState extends FlxUIState {
 		if (curStep % 4 == 0 && oldBeat != curBeat){
 			oldBeat = curBeat;
 			beatHit();
-
 		}
 	}
 
-	public function beatHit():Void
-	{
+	public function beatHit():Void {
 		//do literally nothing dumbass
 	}
 	

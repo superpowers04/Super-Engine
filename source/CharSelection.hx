@@ -83,11 +83,11 @@ class CharSelection extends SearchMenuState
 		scriptSubDirectory = "/charselect/";
 		switch (Options.PlayerOption.playerEdit){
 			case 0:
-				curChar = FlxG.save.data.playerChar;
+				curChar = SESave.data.playerChar;
 			case 1:
-				curChar = FlxG.save.data.opponent;
+				curChar = SESave.data.opponent;
 			case 2:
-				curChar = FlxG.save.data.gfChar;
+				curChar = SESave.data.gfChar;
 		}
 		// var char = TitleState.findCharByNamespace(curChar);
 		// trace('$curChar;$char');
@@ -124,7 +124,7 @@ class CharSelection extends SearchMenuState
 			case 0: title="Change BF";bg.color = 0x007799;
 			case 1: title="Change Opponent";bg.color = 0x600060;
 			case 2: title="Change GF";bg.color = 0x771521;
-			default: title= "You found a 'secret', You should exit this menu to prevent further 'secret's";bg.color = 0xff0000;
+			default: title= "You found a 'secret',\n You should exit this menu to prevent further 'secret's";bg.color = 0xff0000;
 		}
 
 
@@ -132,7 +132,7 @@ class CharSelection extends SearchMenuState
 		if (title != "") addTitleText(title);
 		titleText.screenCenter(X);
 		if (onlinemod.OnlinePlayMenuState.socket == null) defText = "Use shift to scroll faster;\nCharacter Editor keys: 1=bf, 2=dad, 3=gf;\n";
-		if(!FlxG.save.data.performance){
+		if(!SESave.data.performance){
 
 			uiIcon = new HealthIcon("face",Options.PlayerOption.playerEdit == 0);
 			uiIcon.updateAnim(100);
@@ -161,13 +161,25 @@ class CharSelection extends SearchMenuState
 		var curSelected =getChar();
 		if (chars[curSelected] != null && chars[curSelected][1] != -1 && onlinemod.OnlinePlayMenuState.socket == null){
 			var _char = formatChar(chars[curSelected]);
-			if (FlxG.keys.justPressed.ONE)  {LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,true ,0,true));}
-			if (FlxG.keys.justPressed.TWO)  {LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,false,1,true));}
-			if (FlxG.keys.justPressed.THREE){LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,false,2,true));}
+			if(chars[curSelected][4].type == 1 && (FlxG.keys.justPressed.ONE || FlxG.keys.justPressed.TWO || FlxG.keys.justPressed.THREE)){
+				FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxTween.tween(grpSongs.members[curSelected], {x: grpSongs.members[curSelected].x + 100}, 0.4, {ease: FlxEase.bounceInOut,onComplete: function(twn:FlxTween){return;}});
+				FlxTween.tween(infotext, {alpha:0}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){FlxTween.tween(infotext, {alpha:1}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){return;}});}});
+				
+				updateInfoText('This character is a script based character and cannot be edited!');
+				
+				retAfter = false;
+				return;
+			}else{
+
+				if (FlxG.keys.justPressed.ONE)  {LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,true ,0,true));}
+				if (FlxG.keys.justPressed.TWO)  {LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,false,1,true));}
+				if (FlxG.keys.justPressed.THREE){LoadingScreen.loadAndSwitchState(new AnimationDebug(_char,false,2,true));}
+			}
 		}
 	}
 	inline function formatChar(char:Array<Dynamic>):String{
-		return ((if(char[1] == 1)"INVALID|" else if(char[4] != null && char[4].nameSpace != null) '${char[4].namespace}|' else "") +'${char[0]}');
+		return ((char[1] == 1 ? "INVALID|" : ((char[4] != null && char[4].nameSpace != null) ? '${char[4].nameSpace}|' : "")) +'${char[0]}');
 	}
 	inline function getChar(){
 		return charIDList[curSelected];
@@ -197,7 +209,7 @@ class CharSelection extends SearchMenuState
 		retAfter = true;
 		var curSelected =getChar();
 		var char = chars[curSelected];
-		// if(!FlxG.save.data.performance){
+		// if(!SESave.data.performance){
 		// 	try{
 		// 		if(char != null && char[4] != null && SELoader.exists('${char[4].path}/${char[4].folderName}/charSel.png')){
 		// 			exampleImage.loadGraphic(SELoader.loadGraphic('${char[4].path}/${char[4].folderName}/charSel.png'));
@@ -224,7 +236,7 @@ class CharSelection extends SearchMenuState
 		var text = '${defText}';
 		if(char != null){
 			if(char[4] != null){
-				if(char[4].nameSpace == "" || char[4].nameSpace == null) text+="Provided by your characters folder;\n";
+				if(char[4].nameSpace == "" || char[4].nameSpace == null || char[4].nameSpace == "SECharactersFolder") text+="Provided by your characters folder;\n";
 				else if(char[4].nameSpace == "INTERNAL") text+="Provided by the base game;\n";
 				else text+='Provided by ${char[4].nameSpace};\n';
 			}
@@ -238,7 +250,7 @@ class CharSelection extends SearchMenuState
 		}
 		updateInfoText(text);
 		updateName((if(char == null || char[0] == null) "Unknown?!?!?" else char[0]));
-		if(!FlxG.save.data.performance){
+		if(!SESave.data.performance){
 			uiIcon.changeSprite(formatChar(chars[curSelected]),'face',false,(if(char == null || char[4] == null )null else chars[curSelected][4].path));
 			uiIcon.x = infoTextBorder.x + (infoTextBorder.width * 0.5) - (uiIcon.width * 0.5);
 			uiIcon.y = infoTextBorder.y + 50;
@@ -253,7 +265,7 @@ class CharSelection extends SearchMenuState
 		retAfter = true;
 
 		if(curSelected == -1){
-			FlxG.save.data.playerChar = 'automatic';
+			SESave.data.playerChar = 'automatic';
 
 			return;
 		}
@@ -267,25 +279,16 @@ class CharSelection extends SearchMenuState
 			retAfter = false;
 			return;
 		}
-		if(chars[curSelected][4].type == 1){
-			FlxG.sound.play(Paths.sound('cancelMenu'));
-			FlxTween.tween(grpSongs.members[curSelected], {x: grpSongs.members[curSelected].x + 100}, 0.4, {ease: FlxEase.bounceInOut,onComplete: function(twn:FlxTween){return;}});
-			FlxTween.tween(infotext, {alpha:0}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){FlxTween.tween(infotext, {alpha:1}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){return;}});}});
-			
-			updateInfoText('This character is a script based character and cannot be edited!');
-			
-			retAfter = false;
-			return;
-		}
+
 		var _char =formatChar(chars[curSelected]);
 
 		switch (Options.PlayerOption.playerEdit){
-		case 0:
-			FlxG.save.data.playerChar = _char;
-		case 1:
-			FlxG.save.data.opponent = _char;
-		case 2:
-			FlxG.save.data.gfChar = _char;
+			case 0:
+				SESave.data.playerChar = _char;
+			case 1:
+				SESave.data.opponent = _char;
+			case 2:
+				SESave.data.gfChar = _char;
 		}
 		// for(i in 0...grpSongs.members.length){
 		// 	if(grpSongs.members[i].color == FlxColor.GREEN){

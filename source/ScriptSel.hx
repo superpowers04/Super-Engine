@@ -24,7 +24,7 @@ class ScriptSel extends SearchMenuState
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
 		if (i != 0) controlLabel.alpha = 0.6;
-		if(FlxG.save.data.scripts.contains(char)) controlLabel.color = FlxColor.GREEN;
+		if(SESave.data.scripts.contains(char)) controlLabel.color = FlxColor.GREEN;
 		
 		grpSongs.add(controlLabel);
 	}
@@ -56,8 +56,8 @@ class ScriptSel extends SearchMenuState
 
 	override function select(sel:Int = 0){
 		if(songs[sel] != 'No scripts found!'){
-			if(!FlxG.save.data.scripts.remove(songs[sel])){
-				FlxG.save.data.scripts.push(songs[sel]);
+			if(!SESave.data.scripts.remove(songs[sel])){
+				SESave.data.scripts.push(songs[sel]);
 				grpSongs.members[sel].color = FlxColor.GREEN;
 			}else{grpSongs.members[sel].color = FlxColor.WHITE;}
 		}

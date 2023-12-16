@@ -17,8 +17,7 @@ import openfl.net.Socket;
 import openfl.utils.ByteArray;
 using StringTools;
 
-class OnlinePlayMenuState extends ScriptMusicBeatState
-{
+class OnlinePlayMenuState extends ScriptMusicBeatState {
 	var errorMessage:String;
 	var errorColor:FlxColor;
 
@@ -96,7 +95,7 @@ class OnlinePlayMenuState extends ScriptMusicBeatState
 		if (socket != null && socket.connected)
 			socket.close();
 
-		if(FlxG.save.data.savedServers.length == 0) openSubState(new onlinemod.OnlineAddServer());
+		if(SESave.data.savedServers.length == 0) openSubState(new onlinemod.OnlineAddServer());
 
 		scriptSubDirectory = "/onlineserverlist/";
 		useNormalCallbacks = true;
@@ -226,8 +225,8 @@ class OnlinePlayMenuState extends ScriptMusicBeatState
 			socket.addEventListener(Event.CLOSE, OnClose);
 			socket.addEventListener(ProgressEvent.SOCKET_DATA, OnData);
 			receiver = new Receiver(HandleData);
-			FlxG.save.data.lastServer = IP;
-			FlxG.save.data.lastServerPort = Port;
+			SESave.data.lastServer = IP;
+			SESave.data.lastServerPort = Port;
 			password = Password;
 			socket.connect(IP, Std.parseInt(Port));
 		}catch (e: Dynamic){
@@ -240,15 +239,15 @@ class OnlinePlayMenuState extends ScriptMusicBeatState
 		if(ServerList.length > 0) for(Array in ServerList) for(thing in Array){remove(thing);thing.destroy();}
 		ServerList = [];
 		try{
-		if(FlxG.save.data.savedServers.length > 0){
-			for(i in 0...FlxG.save.data.savedServers.length){
+		if(SESave.data.savedServers.length > 0){
+			for(i in 0...SESave.data.savedServers.length){
 				var _Server:Array<Dynamic> = [];
-				var serverInfo:Array<Dynamic> = cast FlxG.save.data.savedServers[i];
+				var serverInfo:Array<Dynamic> = cast SESave.data.savedServers[i];
 
 				ServerList.push(_Server);
 				var BlackBox = new FlxSprite().makeGraphic(FlxG.width, 75, i % 2 == 0 ? 0x7F000000 : 0x7f3f3f3f);
 				BlackBox.screenCenter();
-				BlackBox.y += (BlackBox.height * i) - (BlackBox.height + (BlackBox.height * ((FlxG.save.data.savedServers.length * 0.5) - 1.5)));
+				BlackBox.y += (BlackBox.height * i) - (BlackBox.height + (BlackBox.height * ((SESave.data.savedServers.length * 0.5) - 1.5)));
 				_Server.push(add(BlackBox));
 
 				var ServerIP = new FlxText(250, BlackBox.y + 5 , FlxG.width , 'Server: ${serverInfo[0]}:${serverInfo[1]}\nPassword: ${if(serverInfo[2] != null && serverInfo[2] != "")('').rpad('*',serverInfo[2].length) else "No password"}',24);
@@ -269,7 +268,7 @@ class OnlinePlayMenuState extends ScriptMusicBeatState
 							showTempmessage('Are you sure you\'d like to delete "${serverInfo[0]}"?',FlxColor.RED,2);
 							new FlxTimer().start(2, function(tmr:FlxTimer){RUSure = 0;});
 						case 2:
-							FlxG.save.data.savedServers.splice(i,1);
+							SESave.data.savedServers.splice(i,1);
 							reloadServerList();
 					}
 				});

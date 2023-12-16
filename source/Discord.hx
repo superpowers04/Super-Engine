@@ -12,7 +12,7 @@ class DiscordClient
 	public static var canSend:Bool = false;
 	public function new()
 	{
-		if(!FlxG.save.data.discordDRP) return;
+		if(!SESave.data.discordDRP) return;
 		#if discord_rpc
 		trace("Discord Client starting...");
 		DiscordRpc.start({
@@ -71,7 +71,7 @@ class DiscordClient
 	public static function initialize()
 	{
 		#if discord_rpc
-		if(!FlxG.save.data.discordDRP) return;
+		if(!SESave.data.discordDRP) return;
 		var DiscordDaemon = sys.thread.Thread.create(() ->
 		{
 			new DiscordClient();

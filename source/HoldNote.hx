@@ -85,7 +85,7 @@ class HoldNote extends Note
 		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
 		// and flip it so it doesn't look weird.
 		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS 
-		flipY = (FlxG.save.data.downscroll && sustainNote);
+		flipY = (SESave.data.downscroll && sustainNote);
 
 		if (isSustainNote && prevNote != null)
 		{
@@ -104,7 +104,7 @@ class HoldNote extends Note
 			animation.play(noteName + "hold");
 			prevNote.childNotes.push(this);
 			this.parentNote = prevNote;
-			// prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (if(FlxG.save.data.scrollSpeed != 1) FlxG.save.data.scrollSpeed else PlayState.SONG.speed);
+			// prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (if(SESave.data.scrollSpeed != 1) SESave.data.scrollSpeed else PlayState.SONG.speed);
 			prevNote.updateHitbox();
 			subSprite = new FlxSliceSprite(graphic,spliceRect,width,height,frame.uv);
 			subSprite.fillCenter=true;

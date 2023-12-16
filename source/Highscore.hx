@@ -101,7 +101,7 @@ class Highscore
 
 
 
-		// if(!FlxG.save.data.botplay)
+		// if(!SESave.data.botplay)
 		// {
 			// if (songScores.exists(daSong))
 			// {
@@ -118,7 +118,7 @@ class Highscore
 
 
 
-		if(!FlxG.save.data.botplay)
+		if(!SESave.data.botplay)
 		{
 			var daWeek:String = formatSong('week$week', diff);
 

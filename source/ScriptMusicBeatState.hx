@@ -224,14 +224,14 @@ class ScriptMusicBeatState extends MusicBeatState{
 		#if linc_luajit
 		public function parseLua(?songScript:String = "",?brTools:HSBrTools = null,?id:String = "song",?file:String = "hscript"):SELua{
 			// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled
-			if(!parseMoreInterps || !FlxG.save.data.luaScripts) return null;
+			if(!parseMoreInterps || !SESave.data.luaScripts) return null;
 
 			if(songScript == "" || songScript.startsWith('ignoreScript') || (!songScript.contains('isSE = true') && !songScript.contains('function initScript'))) {
 				try{
 					if(songScript.startsWith('ignoreScript')){
 						trace('$file ignored as it starts with ignoreScript');
 					}else{
-						if(FlxG.save.data.animDebug && !songScript.contains('isSE = true')){
+						if(SESave.data.animDebug && !songScript.contains('isSE = true')){
 							showTempmessage('$file ignored as it is missing "isSE = true"!\nThis is required to prevent loading broken lua scripts',FlxColor.RED);
 						}
 
@@ -446,14 +446,14 @@ class ScriptMusicBeatState extends MusicBeatState{
 			}
 		}
 		@:keep public function loadScripts(?enableScripts:Bool = false,?enableCallbacks:Bool = false,?force:Bool = false){
-			if((!enableScripts && !parseMoreInterps) || (!FlxG.save.data.menuScripts && !force)) return;
+			if((!enableScripts && !parseMoreInterps) || (!SESave.data.menuScripts && !force)) return;
 			parseMoreInterps = true;
 			if(scriptSubDirectory == "nil/") trace('Scriptable state ${Type.getClassName(cast this)} has no custom subdirectory, Using `nil/`!');
 			try{
 
-				for (i in 0 ... FlxG.save.data.scripts.length) {
+				for (i in 0 ... SESave.data.scripts.length) {
 					if(!parseMoreInterps) break;
-					var v = FlxG.save.data.scripts[i];
+					var v = SESave.data.scripts[i];
 					LoadingScreen.loadingText = 'Loading scripts: $v'; 
 					// I am dumb, this used to look for a / because I forgor that the name doesn't include a path :skull:
 					loadScript(v,null,'USER:' + v);
@@ -540,7 +540,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 		/* One Arg*/
 
 			override public function update(e:Float){
-				if(FlxG.save.data.animDebug && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F5){
+				if(SESave.data.animDebug && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F5){
 					if(FlxG.keys.pressed.SHIFT){
 						callInterp('unload',[]);
 						callInterp('reload',[true]);

@@ -62,7 +62,7 @@ class KeyBindMenu extends FlxSubState
 	var defaultGpKeys:Array<String> = ["DPAD_LEFT", "DPAD_DOWN", "DPAD_UP", "DPAD_RIGHT"];
 	var curSelected:Int = 0;
 
-	var keys:Array<Array<String>> = FlxG.save.data.keys;
+	var keys:Array<Array<String>> = SESave.data.keys;
 	var tempKey:String = "";
 	var blacklist:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT","ESCAPE", "ENTER", "BACKSPACE", "TAB","ONE","TWO","SEVEN","THREE"];
 
@@ -74,15 +74,15 @@ class KeyBindMenu extends FlxSubState
 
 	public static function getKeyBindsString():String{
 		if (KeyBinds.gamepad) {
-			return '${FlxG.save.data.gpleftBind}-${FlxG.save.data.gpdownBind}-${FlxG.save.data.gpupBind}-${FlxG.save.data.gprightBind}';
+			return '${SESave.data.gpleftBind}-${SESave.data.gpdownBind}-${SESave.data.gpupBind}-${SESave.data.gprightBind}';
 		}
-		return '${FlxG.save.data.leftBind}-${FlxG.save.data.downBind}-${FlxG.save.data.upBind}-${FlxG.save.data.rightBind} Alt ${FlxG.save.data.AltleftBind}-${FlxG.save.data.AltdownBind}-${FlxG.save.data.AltupBind}-${FlxG.save.data.AltrightBind}';
+		return '${SESave.data.leftBind}-${SESave.data.downBind}-${SESave.data.upBind}-${SESave.data.rightBind} Alt ${SESave.data.AltleftBind}-${SESave.data.AltdownBind}-${SESave.data.AltupBind}-${SESave.data.AltrightBind}';
 	}
 
 	override function create()
 	{   
 
-		var _keys:Array<Array<String>> =FlxG.save.data.keys;
+		var _keys:Array<Array<String>> =SESave.data.keys;
 		for(count => keyArr in _keys){
 			keys[count] = keyArr.copy();
 			for(i => v in KeyBinds.defaultKeys[count]){
@@ -228,7 +228,7 @@ class KeyBindMenu extends FlxSubState
 
 	function save(){
 
-		var _keys = FlxG.save.data.keys = [];
+		var _keys = SESave.data.keys = [];
 		for(count => keyArr in keys){
 			_keys[count] = keyArr.copy();
 			if(keyText[count] == null) continue;
@@ -239,14 +239,14 @@ class KeyBindMenu extends FlxSubState
 			}
 			
 		}
-		FlxG.save.data.upBind = _keys[3][2];
-		FlxG.save.data.downBind = _keys[3][1];
-		FlxG.save.data.leftBind = _keys[3][0];
-		FlxG.save.data.rightBind = _keys[3][3];
-		FlxG.save.data.AltupBind = _keys[3][6];
-		FlxG.save.data.AltdownBind = _keys[3][5];
-		FlxG.save.data.AltleftBind = _keys[3][4];
-		FlxG.save.data.AltrightBind = _keys[3][7];
+		SESave.data.upBind = _keys[3][2];
+		SESave.data.downBind = _keys[3][1];
+		SESave.data.leftBind = _keys[3][0];
+		SESave.data.rightBind = _keys[3][3];
+		SESave.data.AltupBind = _keys[3][6];
+		SESave.data.AltdownBind = _keys[3][5];
+		SESave.data.AltleftBind = _keys[3][4];
+		SESave.data.AltrightBind = _keys[3][7];
 		PlayerSettings.player1.controls.loadKeyBinds();
 
 	}

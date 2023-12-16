@@ -70,7 +70,7 @@ class ErrorSubState extends MusicBeatSubstate {
 		finishedText.color = FlxColor.RED;
 		finishedText.scrollFactor.set();
 		finishedText.screenCenter(X);
-		var errText:FlxText = new FlxText(20 + FlxG.save.data.guiGap,150,0,'Error Message:\n${errorMsg}');
+		var errText:FlxText = new FlxText(20 + SESave.data.guiGap,150,0,'Error Message:\n${errorMsg}');
 		errText.size = 20;
 		errText.wordWrap = true;
 		errText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);

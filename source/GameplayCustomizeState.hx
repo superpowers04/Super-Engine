@@ -57,7 +57,7 @@ class GameplayCustomizeState extends PlayState
 	var objClicks:Map<FlxSprite,String> = [];
 	var rating:FlxSprite;
 	public override function create() {
-		SAVDATA = cast FlxG.save.data.playStateObjectLocations;
+		SAVDATA = cast SESave.data.playStateObjectLocations;
 		PlayState.SONG = {
 				song: SickMenuState.musicFileLoc,
 				notes: [{
@@ -87,7 +87,7 @@ class GameplayCustomizeState extends PlayState
 				difficultyString: "e"
 			};
 		
-		if(FlxG.save.data.noterating){
+		if(SESave.data.noterating){
 			rating = new FlxSprite(-1000,-1000);
 			rating.loadGraphic(Paths.image("sick"));
 			rating.screenCenter();
@@ -123,7 +123,7 @@ class GameplayCustomizeState extends PlayState
 
 	}
 	inline function resetValues(){
-		FlxG.save.data.playStateObjectLocations = new Map<String,ObjectInfo>();
+		SESave.data.playStateObjectLocations = new Map<String,ObjectInfo>();
 		FlxG.resetState();
 	}
 	// override function generateSong(?dataPath:String = ""){
@@ -241,9 +241,9 @@ class GameplayCustomizeState extends PlayState
 		posText.screenCenter();
 		// if (FlxG.mouse.overlaps(sick) && FlxG.mouse.justReleased)
 		// {
-		//     FlxG.save.data.changedHitX = sick.x;
-		//     FlxG.save.data.changedHitY = sick.y;
-		//     FlxG.save.data.changedHit = true;
+		//     SESave.data.changedHitX = sick.x;
+		//     SESave.data.changedHitY = sick.y;
+		//     SESave.data.changedHit = true;
 		// }
 
 		if (FlxG.keys.justPressed.R)
@@ -254,7 +254,7 @@ class GameplayCustomizeState extends PlayState
 		if (controls.BACK)
 		{
 			FlxG.mouse.enabled = false;
-			FlxG.save.data.playStateObjectLocations = cast SAVDATA;
+			SESave.data.playStateObjectLocations = cast SAVDATA;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OptionsMenu());
 		}

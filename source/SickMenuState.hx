@@ -148,9 +148,9 @@ class SickMenuState extends ScriptMusicBeatState
 
 			// if (_bg != null){ }
 
-			FlxG.sound.playMusic(SickMenuState.menuMusic,FlxG.save.data.instVol);
+			FlxG.sound.playMusic(SickMenuState.menuMusic,SESave.data.instVol);
 			// if (!MainMenuState.firstStart) FlxG.sound.music.time = FlxMath.wrap(Math.floor(SickMenuState.curSongTime),0,Math.floor(FlxG.sound.music.length));
-			}else if (!FlxG.sound.music.playing) {FlxG.sound.playMusic(SickMenuState.menuMusic,FlxG.save.data.instVol);Conductor.changeBPM(mt.bpm);}
+			}else if (!FlxG.sound.music.playing) {FlxG.sound.playMusic(SickMenuState.menuMusic,SESave.data.instVol);Conductor.changeBPM(mt.bpm);}
 			if(!isMainMenu && !recolor && _bg != null){
 				_bg.color = FlxColor.interpolate(_bg.color,FlxColor.fromString(SickMenuState.musicList[musicTime].color),0.2);
 			}else if(recolor && _bg != null){
@@ -166,7 +166,7 @@ class SickMenuState extends ScriptMusicBeatState
 		// if (ChartingState.charting) ChartingState.charting = false;
 		SearchMenuState.resetVars();
 		trace('Loading new menu state!');
-		// if (FlxG.save.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;}
+		// if (SESave.data.songUnload && PlayState.SONG != null) {PlayState.SONG = null;}
 		// PlayState.songScript = "";PlayState.hsBrTools = null;
 		if(SearchMenuState.background == null){
 			try{
@@ -281,7 +281,7 @@ class SickMenuState extends ScriptMusicBeatState
 			if(curTween != null)curTween.cancel();
 			curTween = FlxTween.tween(grpControls.members[curSelected].scale,{x:1,y:1},Conductor.stepCrochet * 0.003,{ease:FlxEase.circOut});
 		}
-		if(FlxG.save.data.beatBouncing){
+		if(SESave.data.beatBouncing){
 			if(beatTween != null){
 				beatTween.cancel();
 				beatTween.destroy();

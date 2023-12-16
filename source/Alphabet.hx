@@ -152,13 +152,13 @@ class Alphabet extends FlxSpriteGroup
 		_finalText = text;
 		isBold = bold;
 		this.xOffset = xOffset;
-		if(FlxG.save.data.useFontEverywhere) this.useAlphabet = useAlphabet = false;
+		if(SESave.data.useFontEverywhere) this.useAlphabet = useAlphabet = false;
 		this.moveX = !dontMoveX;
 		this.useAlphabet = useAlphabet;
 		if(sprite == null || Frames == null){
 			if(sprite == null) sprite = new FlxSprite();
 			trace('Loading alphabet sprites');
-			if(FlxG.save.data.useFontEverywhere){
+			if(SESave.data.useFontEverywhere){
 				Frames =  new flixel.graphics.frames.FlxFramesCollection(FlxGraphic.fromRectangle(1,1,0x01000000,false,"blank.mp4"));
 			}else{
 

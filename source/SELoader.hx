@@ -178,7 +178,7 @@ class SELoader {
 	}
 
 	public static function playSound(soundPath:String,?volume:Float = -1):FlxSound{
-		if(volume == -1) volume = FlxG.save.data.otherVol;
+		if(volume == -1) volume = SESave.data.otherVol;
 		return FlxG.sound.play(loadSound(soundPath),volume);
 	}
 
@@ -317,7 +317,7 @@ class InternalCache{
 	}
 
 	public function playSound(soundPath:String,?volume:Float = 0.662121):FlxSound{
-		if(volume == 0.662121) volume = FlxG.save.data.otherVol;
+		if(volume == 0.662121) volume = SESave.data.otherVol;
 		return FlxG.sound.play(loadSound(soundPath),volume);
 	}
 

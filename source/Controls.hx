@@ -566,18 +566,18 @@ class Controls extends FlxActionSet
 	public function loadKeyBinds()
 	{
 
-		//trace(FlxKey.fromString(FlxG.save.data.upBind));
+		//trace(FlxKey.fromString(SESave.data.upBind));
 
 		removeKeyboard();
 	
-		inline bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.keys[0][0]), FlxKey.fromString(FlxG.save.data.keys[0][4]), FlxKey.LEFT]);
-		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.keys[0][1]), FlxKey.fromString(FlxG.save.data.keys[0][5]), FlxKey.DOWN]);
-		inline bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.keys[0][2]), FlxKey.fromString(FlxG.save.data.keys[0][6]), FlxKey.UP]);
-		inline bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.keys[0][3]), FlxKey.fromString(FlxG.save.data.keys[0][7]), FlxKey.RIGHT]);
+		inline bindKeys(Control.LEFT, [FlxKey.fromString(SESave.data.keys[0][0]), FlxKey.fromString(SESave.data.keys[0][4]), FlxKey.LEFT]);
+		inline bindKeys(Control.DOWN, [FlxKey.fromString(SESave.data.keys[0][1]), FlxKey.fromString(SESave.data.keys[0][5]), FlxKey.DOWN]);
+		inline bindKeys(Control.UP, [FlxKey.fromString(SESave.data.keys[0][2]), FlxKey.fromString(SESave.data.keys[0][6]), FlxKey.UP]);
+		inline bindKeys(Control.RIGHT, [FlxKey.fromString(SESave.data.keys[0][3]), FlxKey.fromString(SESave.data.keys[0][7]), FlxKey.RIGHT]);
 		inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 		inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 		inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-		inline bindKeys(Control.RESET, [FlxKey.fromString(FlxG.save.data.killBind)]);
+		inline bindKeys(Control.RESET, [FlxKey.fromString(SESave.data.killBind)]);
 	}
 
 	function removeKeyboard()

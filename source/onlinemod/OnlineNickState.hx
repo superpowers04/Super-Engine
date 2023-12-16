@@ -50,7 +50,7 @@ class OnlineNickState extends MusicBeatState
 	var confirmButton = new FlxUIButton(0, FlxG.height * 0.65, "Confirm", () -> {
 	  
 		if (OnlinePlayMenuState.socket != null && OnlinePlayMenuState.socket.connected){
-			var _Player = OnlineLobbyState.clients[-1] = new Player(FlxG.save.data.nickname = nickname = nickField.text,-1);
+			var _Player = OnlineLobbyState.clients[-1] = new Player(SESave.data.nickname = nickname = nickField.text,-1);
 			_Player.self = true;
 			Sender.SendPacket(Packets.SEND_NICKNAME, [nickname], OnlinePlayMenuState.socket);
 		}else{
@@ -72,7 +72,7 @@ class OnlineNickState extends MusicBeatState
 
 	OnlinePlayMenuState.receiver.HandleData = HandleData;
 
-	nickField.text = FlxG.save.data.nickname;
+	nickField.text = SESave.data.nickname;
 	super.create();
   }
 

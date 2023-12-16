@@ -136,7 +136,7 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 					info = [Std.parseFloat(rawNote[3]),(if( Math.isNaN(Std.parseInt(rawNote[4]))) 0xFFFFFF else Std.parseInt(rawNote[4]))]; 
 				}catch(e){info = [1];}
 				// Replaces hit func
-				hit = function(?charID:Int = 0,note){if(FlxG.save.data.distractions && FlxG.save.data.flashingLights) FlxG.camera.flash(info[2],info[1]);}; 
+				hit = function(?charID:Int = 0,note){if(SESave.data.distractions && SESave.data.flashingLights) FlxG.camera.flash(info[2],info[1]);}; 
 
 			}
 			case "set camzoom" | "setcamzoom" | "camzoom": {
@@ -207,7 +207,7 @@ class EventNote implements flixel.util.FlxDestroyUtil.IFlxDestroyable{
 					if(Math.isNaN(info[1])) info[1] = 0; 
 				}catch(e){info = [0.7];}
 				// Replaces hit func
-				hit = function(?charID:Int = 0,note){if(FlxG.save.data.distractions) FlxG.camera.shake(info[0],info[1]);}; 
+				hit = function(?charID:Int = 0,note){if(SESave.data.distractions) FlxG.camera.shake(info[0],info[1]);}; 
 				
 			}
 			case "camera follow pos" | "camfollowpos" | "cam follow" | "cam follow position": {

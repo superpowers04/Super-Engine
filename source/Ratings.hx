@@ -47,22 +47,22 @@ class Ratings
 	public static function GenerateLetterRank(accuracy:Float) // generate a letter ranking
 	{
 		var ranking:String = "N/A";
-		if(FlxG.save.data.botplay)
+		if(SESave.data.botplay)
 			ranking = "BotPlay";
 
 		// These ratings are pretty self explanatory
 		if (PlayState.misses > 10)
-			ranking = "(Clear)";
+			ranking = "(Clear) ";
 		else if (PlayState.misses > 0) // Single Digit Combo Breaks
-			ranking = "(SDCB)";
+			ranking = "(SDCB) ";
 		else if (PlayState.shits > 0) 
-			ranking = "(ShitFC)";
+			ranking = "(ShitFC) ";
 		else if (PlayState.bads > 0)
-			ranking = "(BadFC)";
+			ranking = "(BadFC) ";
 		else if (PlayState.goods > 0)
-			ranking = "(GoodFC)";
+			ranking = "(GoodFC) ";
 		else
-			ranking = "(SickFC)";
+			ranking = "(SickFC) ";
 
 		// WIFE TIME :)))) (based on Wife3)
 		ranking += getLetterRankFromAcc(accuracy);
@@ -95,25 +95,25 @@ class Ratings
 
 	public static function CalculateRanking(score:Int,scoreDef:Int,nps:Int,maxNPS:Int,accuracy:Float):String
 	{
-		return switch(FlxG.save.data.songInfo){
-			case 0:(FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
+		return switch(SESave.data.songInfo){
+			case 0:(SESave.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
 				" | Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				" | Combo:" + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
 				" | Combo Breaks:" + PlayState.misses + 																				// Misses/Combo Breaks
-				"\n | Accuracy:" + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
+				"\n | Accuracy:" + (SESave.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
 				"| " + GenerateLetterRank(accuracy) + " |";
-			case 1:(FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
+			case 1:(SESave.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
 				"\nScore: " + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				"\nCombo: " + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
 				"\nCombo Breaks: " + PlayState.misses + 																				// Misses/Combo Breaks
-				"\nAccuracy: " + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
+				"\nAccuracy: " + (SESave.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
 				"\nRank: " + GenerateLetterRank(accuracy); 
-			case 2:(FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
+			case 2:(SESave.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
 				"\nScore: " + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				"\nCombo: " + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
 				"\nCombo Breaks/Misses: " + PlayState.misses + 																				// Misses/Combo Breaks
 				'\nSicks: ${PlayState.sicks}\nGoods: ${PlayState.goods}\nBads: ${PlayState.bads}\nShits: ${PlayState.shits}'+
-				"\nAccuracy: " + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
+				"\nAccuracy: " + (SESave.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
 				"\nRank: " + GenerateLetterRank(accuracy); 
 			case 3:'Misses:${PlayState.misses}    Score:' + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score);
 			default:"";
@@ -138,10 +138,10 @@ class Ratings
 		return 0.0;
 	}
 	public static var ratings:Map<String,()->Float  > = [
-		"sick" => function():Float return FlxG.save.data.judgeSick,
-		"good" => function():Float return FlxG.save.data.judgeGood,
-		"bad" =>  function():Float return FlxG.save.data.judgeBad,
-		"shit" => function():Float return FlxG.save.data.judgeShit
+		"sick" => function():Float return SESave.data.judgeSick,
+		"good" => function():Float return SESave.data.judgeGood,
+		"bad" =>  function():Float return SESave.data.judgeBad,
+		"shit" => function():Float return SESave.data.judgeShit
 	];
 	public static function ratingMS(?rating:String = "",?amount:Float = 0.0):Float{
 		if(amount == 0.0){

@@ -300,7 +300,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 				}
 				case "sendhscript":{ // Allows downloading of hscripts
 					QuickOptionsSubState.setSetting("Song hscripts",true);
-					if(!FlxG.save.data.allowServerScripts){
+					if(!SESave.data.allowServerScripts){
 						Chat.CLIENT_MESSAGE("Server tried to send script but you're blocking server scripts.");
 						Chat.CLIENT_MESSAGE("You can change this in your options if you trust the server.");
 						sendResponse("Client has scripts disabled",false);
@@ -335,7 +335,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 					sendResponse('Script "${scriptName}" installed and enabled!',true);
 				}
 				case "disablescript":{ // Allows disabling of hscripts
-					if(!FlxG.save.data.allowServerScripts){
+					if(!SESave.data.allowServerScripts){
 						Chat.CLIENT_MESSAGE("Server tried to disable a script but you're blocking server scripts. You can change this in your options if you trust the server.");
 						sendResponse("Client has scripts disabled",false);
 						return;
@@ -363,7 +363,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 				}
 				case "enablescript":{ // Allows enabling of hscripts
 					QuickOptionsSubState.setSetting("Song hscripts",true);
-					if(!FlxG.save.data.allowServerScripts){
+					if(!SESave.data.allowServerScripts){
 						Chat.CLIENT_MESSAGE("Server tried to enable a script but you're blocking server scripts. You can change this in your options if you trust the server.");
 						sendResponse("Client has scripts disabled",false);
 						return;
@@ -379,7 +379,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 				}
 				case "hasscript":{ // Allows enabling of hscripts
 					QuickOptionsSubState.setSetting("Song hscripts",true);
-					if(!FlxG.save.data.allowServerScripts){
+					if(!SESave.data.allowServerScripts){
 						Chat.CLIENT_MESSAGE("Server checked if you have a script but you're blocking server scripts. You can change this in your options if you trust the server.");
 						sendResponse("Client has scripts disabled",false);
 						return;
@@ -403,7 +403,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 							sendResponse("info:" + Json.stringify(clientInfo));
 						}
 						case "character" | "char":{
-							sendResponse("character:" + FlxG.save.data.playerChar);
+							sendResponse("character:" + SESave.data.playerChar);
 						}
 					}
 				}

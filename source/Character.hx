@@ -545,9 +545,9 @@ class CharAnimController extends FlxAnimationController{
 	}
 	public function isSelectedChar():Bool{
 		switch ( charType ) {
-			default: return FlxG.save.data.playerChar == curCharacter;
-			case 1: return FlxG.save.data.opponent == curCharacter;
-			case 2: return FlxG.save.data.gfChar == curCharacter;
+			default: return SESave.data.playerChar == curCharacter;
+			case 1: return SESave.data.opponent == curCharacter;
+			case 2: return SESave.data.gfChar == curCharacter;
 		}
 	}
 	public function loadCustomChar(){
@@ -555,7 +555,7 @@ class CharAnimController extends FlxAnimationController{
 		curCharacter = charInfo.folderName;
 		charLoc = charInfo.path;
 		namespace = charInfo.nameSpace;
-		if(FlxG.save.data.doCoolLoading) LoadingScreen.loadingText = 'Loading Character "${getNamespacedName()}"';
+		if(SESave.data.doCoolLoading) LoadingScreen.loadingText = 'Loading Character "${getNamespacedName()}"';
 
 		if (!amPreview && FileSystem.exists('${charLoc}/$curCharacter/script.hscript')){
 			parseHScript(SELoader.loadText('${charLoc}/$curCharacter/script.hscript'));
@@ -713,7 +713,7 @@ class CharAnimController extends FlxAnimationController{
 					}
 			}
 		}
-		if (FlxG.save.data.playVoices && charProperties.voices == "custom" && SELoader.exists('${charLoc}/$curCharacter/custom_left.ogg')) {
+		if (SESave.data.playVoices && charProperties.voices == "custom" && SELoader.exists('${charLoc}/$curCharacter/custom_left.ogg')) {
 			useVoices = true;
 			voiceSounds = [	SELoader.loadFlxSound('${charLoc}/$curCharacter/custom_left.ogg'),
 							SELoader.loadFlxSound('${charLoc}/$curCharacter/custom_down.ogg'),
@@ -1065,12 +1065,12 @@ class CharAnimController extends FlxAnimationController{
 	public function cloneAnimation(name:String,anim:FlxAnimation){
 		try{
 
-		if(!amPreview && anim != null){
-			animation.add(name,anim.frames,anim.frameRate,anim.flipX);
-			if (animOffsets.exists(anim.name)){
-				addOffset(name,animOffsets[anim.name][0],animOffsets[anim.name][1],true);
+			if(!amPreview && anim != null){
+				animation.add(name,anim.frames,anim.frameRate,anim.flipX);
+				if (animOffsets.exists(anim.name)){
+					addOffset(name,animOffsets[anim.name][0],animOffsets[anim.name][1],true);
+				}
 			}
-		}
 		}catch(e)MainMenuState.handleError('Caught character "cloneAnimation" crash: ${e.message}');
 	}
 	public function addOffset(name:String, x:Float = 0, y:Float = 0,?custom:Bool = false,?replace:Bool = false)
