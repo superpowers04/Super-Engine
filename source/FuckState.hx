@@ -12,8 +12,11 @@ import lime.app.Application;
 import flixel.addons.ui.FlxUIState;
 import lime.app.Application as LimeApp;
 import haxe.CallStack;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
 
 import openfl.Lib;
+using StringTools;
 
 class FuckState extends FlxUIState {
 
@@ -24,9 +27,9 @@ class FuckState extends FlxUIState {
 	public static var forced:Bool = false;
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
-	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown",_forced:Bool = false,_FATAL:Bool = false){
-		LoadingScreen.hide();
+	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown",_forced:Bool = false,_FATAL:Bool = false,_rawError:Bool=false){
 		LoadingScreen.forceHide();
+		LoadingScreen.loadingText = 'ERROR!';
 		if(forced && !_forced && !_FATAL) return;
 		if(_forced) forced = _forced;
 		if(_FATAL){
@@ -166,7 +169,55 @@ class FuckState extends FlxUIState {
 
 			}
 		}
-		if(Main.game == null) return;
+		Main.renderLock.release();
+		if(Main.game == null || _rawError || !TitleState.initialized){
+			try{Main.instance.removeChild(Main.funniSprite);}catch(e){};
+			if(Main.game != null){
+				Main.game.blockUpdate = Main.game.blockDraw = false;
+			}
+			Main.game = null;
+			// Main.instance
+			trace('OpenFL error screen');
+			try{
+				var addChild=Main.instance.addChild;
+				var textField = new TextField();
+				addChild(textField);
+				textField.width = 1280;
+				textField.text = '${exception}\nThis happened in ${info}';
+				textField.y = 720 * 0.3;
+				var textFieldTop = new TextField();
+				addChild(textFieldTop);
+				textFieldTop.width = 1280;
+				textFieldTop.text = "A fatal error occured!";
+				textFieldTop.textColor = 0xFFFF0000;
+				textFieldTop.y = 30;
+				var textFieldBot = new TextField();
+				addChild(textFieldBot);
+				textFieldBot.width = 1280;
+				textFieldBot.text = "Please take a screenshot and report this";
+				textFieldBot.y = 720 * 0.8;
+				if(saved){
+					var dateNow:String = Date.now().toString();
+
+					dateNow = StringTools.replace(dateNow, " ", "_");
+					dateNow = StringTools.replace(dateNow, ":", ".");
+					textFieldBot.text = 'Saved crashreport to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\nPlease send this file when reporting this crash.';
+				}
+
+				// textField.x = (1280 * 0.5);
+				var tf = new TextFormat(CoolUtil.font, 32, 0xFFFFFF);
+				tf.align = "center";
+				textFieldBot.embedFonts = textFieldTop.embedFonts = textField.embedFonts = true;
+				textFieldBot.defaultTextFormat =textFieldTop.defaultTextFormat =textField.defaultTextFormat = tf;
+					
+
+				// Main.instance.addChild(new se.ErrorSprite('${exception}\nThis happened in ${info}',saved));
+			}catch(e){trace('FUCK $e');}
+			return;
+		}
+
+		
+
 		// try{LoadingScreen.hide();}catch(e){}
 		Main.game.forceStateSwitch(new FuckState(exception,info,saved));
 	}
@@ -232,7 +283,7 @@ class FuckState extends FlxUIState {
 
 			dateNow = StringTools.replace(dateNow, " ", "_");
 			dateNow = StringTools.replace(dateNow, ":", ".");
-			txt.text = 'Crash report saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\n Please send this file when reporting this crash. Press enter to attempt to soft-restart the game or press Escape to close the game';
+			txt.text = 'Crash report saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\n Please send this file when reporting this crash.' + txt.text.substring(41);
 		}
 	}
 

@@ -8,10 +8,10 @@ using StringTools;
 
 class SEFlxSaveWrapper{
 	public static function save(){
-		File.saveContent(SELoader.absolutePath('SESETTINGS.json'),Json.stringify(SESave.data).replace('"" :','" :').replace('"":','":'));
+		SELoader.saveContent('SESETTINGS.json',Json.stringify(SESave.data).replace('"" :','" :').replace('"":','":'));
 	}
 	public static function saveTo(path:String = "SESETTINGS-BACK.json"){
-		File.saveContent(SELoader.absolutePath(path),Json.stringify(SESave.data).replace('"" :','" :').replace('"":','":'));
+		SELoader.saveContent(path,Json.stringify(SESave.data).replace('"" :','" :').replace('"":','":'));
 	}
 	public static function load():Void{
 		if(!SELoader.exists('SESETTINGS.json')) return;
@@ -20,22 +20,31 @@ class SEFlxSaveWrapper{
 		if(anon is SESave){
 			SESave.data = anon;
 			return;
-		} 
-
-		for(field in Type.getInstanceFields(SESave)){
-			if(field.startsWith('set_')){
-				field = field.substring(4);
-			}
-			if(!Reflect.hasField(anon,field)){
-				trace('Save field "$field" was not found in the save file');
-				continue;
-			}
-			// try{
-			Reflect.setProperty(SESave.data,field,Reflect.field(anon,field));
-			// }catch(e){
-			// 	trace('Invalid save field "$field" ignored');
-			// }
 		}
+		SELoader.saveContent("SESETTINGS-OLD.json",json);
+		trace('Unable to load settings from an invalid format');
+		try{
+			MusicBeatState.instance.showTempmessage('Settings file is in an invalid format\n Your settings have been reset!',0xFFFF0000);
+		}catch(e){}
+		
+		// Type.getInstanceFields(SESave)
+		// for(field in Reflect.fields(anon)){
+		// 	if(field.startsWith('set_')){
+		// 		field = field.substring(4);
+		// 	}
+		// 	// if(!Reflect.hasField(anon,field)){
+		// 	// 	trace('Save field "$field" was not found in the save file');
+		// 	// 	continue;
+		// 	// }
+		// 	try{
+		// 		var stuff = Reflect.field(anon,field);
+		// 		if(stuff == null) throw("Invalid field!");
+		// 		Reflect.setProperty(SESave.data,field,stuff);
+		// 	}catch(e){
+		// 		trace('Unable to load field "$field": $e');
+		// 	}
+		// }
+
 			
 		
 		

@@ -122,14 +122,9 @@ class Main extends Sprite
 			// addChild(fpsCounter);
 			toggleFPS(SESave.data.fps);
 		}catch(e){
-			try{removeChild(game);}catch(e){};
-			try{removeChild(fpsCounter);}catch(e){};
-			try{removeChild(console);}catch(e){};
-			game = null;
-			addChild(new se.ErrorSprite('Error occured while trying to load Flixel.\nDid you make sure to extract the game? or did you put it in the wrong folder?\nThe '+
-				#if(windows)"exe" #else "executable" #end
-				+ 'Should be next to the manifest or assets folder!\nError:\n${e.message}'
-			));
+			FuckState.FUCK(null,'Error occured while trying to load Flixel.\nDid you make sure to extract the game? or did you put it in the wrong folder?\nThe '+
+			#if(windows)"exe" #else "executable" #end
+			+ 'Should be next to the manifest or assets folder!\nError:\n${e.message}',true,true,true);
 		}
 
 		#end
@@ -146,7 +141,8 @@ class Main extends Sprite
 					Sys.println(stackItem);
 			}
 		}
-		FuckState.FUCK(null,message);
+		FuckState.FUCK(null,message,true,true);
+		// uncaughtError(text);
 	}
 	// var fpsOverlay:Overlay;
 
@@ -179,6 +175,7 @@ class Main extends Sprite
 				}
 			}else{
 				super.__enterFrame(_);
+				// trace('h');
 			}
 		}catch(e){
 			FuckState.FUCK(e,"Main.onEnterFrame");

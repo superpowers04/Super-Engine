@@ -1,7 +1,7 @@
-23.12.16.1514;
+23.12.16.2016;
 * A bunch of fixes
 * Clean up results screen
-* Include tutorial and the first week as examples
+* Include tutorial and the first week as examples. Complete with custom charts for all 4 songs :3
 * The game now actually autosaves the chart in the chart editor
-* Ditch FlxG.save.data, it's a dynamic variable which is slower and cring
+* Ditch FlxG.save.data, it's a dynamic variable which is slower and cring. Sadly this change will make you lose your settings
 * Make scrollbar work like other scrollbars(If you hold click, it'll scroll until you let go even if you're not hovering over it)

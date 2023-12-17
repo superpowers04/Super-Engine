@@ -124,14 +124,13 @@ class TitleState extends MusicBeatState
 	public static var outdated:Bool = false;
 	public static var checkedUpdate:Bool = false;
 	public static var updatedVer:String = "";
-	public static var errorMessage:String = "";
 	public static var osuBeatmapLoc:String = "";
 	public static var songScores:Scorekillme;
 	public static var pauseMenuMusic:Sound;
 
 
 
-	public static var curWacky:Array<String> = [];
+	public var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
 	public static function loadNoteAssets(?forced:Bool = false,?forced2:Bool = false){

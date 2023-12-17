@@ -220,8 +220,7 @@ class OptionsMenu extends MusicBeatState
 		titleText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(titleText);
 	}
-	override function create()
-	{
+	override function create() {
 		loading = false;
 		FlxG.mouse.visible = true;
 		instance = this;
@@ -289,8 +288,7 @@ class OptionsMenu extends MusicBeatState
 		var y:Float = obj2.y;
 		return (obj1.x > x && obj1.x < x + width) && (obj1.y > y && obj1.y < y + height);
 	}
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
 
 		if (!acceptInput) return;
@@ -429,8 +427,7 @@ class OptionsMenu extends MusicBeatState
 			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(SESave.data.offset,2) + " - Description - " + currentDescription;
 	}
 
-	function changeSelection(change:Int = 0)
-	{
+	function changeSelection(change:Int = 0) {
 
 		if (change != 0 ) FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 
@@ -439,12 +436,9 @@ class OptionsMenu extends MusicBeatState
 		if (curSelected < 0) curSelected = grpControls.members.length - 1;
 		if (curSelected >= grpControls.members.length) curSelected = 0;
 
-		if (isCat)
-			currentDescription = currentSelectedCat.options[curSelected].description;
-		else if (options[curSelected].description != null)
-			currentDescription = options[curSelected].description;
-		else
-			currentDescription = "Select a category";
+		if (isCat) currentDescription = currentSelectedCat.options[curSelected].description;
+		else if (options[curSelected].description != null) currentDescription = options[curSelected].description;
+		else currentDescription = "Select a category";
 		
 
 		updateOffsetText();
@@ -452,10 +446,7 @@ class OptionsMenu extends MusicBeatState
 		for (bullShit => item in grpControls.members){
 			item.targetY = bullShit - curSelected;
 
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0) item.alpha = 1;
+			item.alpha = ((item.targetY == 0) ? 1 : 0.6);
 		}
 	}
 	function initOptions(){
@@ -541,7 +532,7 @@ class OptionsMenu extends MusicBeatState
 		for (i => v in obj) {
 			_obj.push({name:i,value:v});
 		}
-		File.saveContent(path,Json.stringify(_obj));
+		SELoader.saveContent(path,Json.stringify(_obj));
 	}
 	public static function loadScriptOptions(path:String):Null<Map<String,Dynamic>>{ // TJSON gets fucky with maps, this'll load them using a typedef instead
 		
@@ -559,6 +550,7 @@ class OptionsMenu extends MusicBeatState
 			// FlxG.save.flush();
 			SEFlxSaveWrapper.save();
 		}catch(e){MainMenuState.errorMessage += '\nUnable to save options! ${e.message}';}
+		Main.instance.toggleFPS(SESave.data.fps);
 		// File.saveContent('SEOPTIONS.json',Json.stringify(SESave.data));
 		for (i => v in modOptions) {
 			try{
