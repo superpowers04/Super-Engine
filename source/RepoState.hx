@@ -57,6 +57,7 @@ class RepoState extends SickMenuState
 	var installingList:Array<String> = [];
 	var installingText:FlxText;
 	var installedText:FlxText;
+	var waiting:Bool = true;
 
 	@:keep inline public static function unzip(from:String,to:String):Void{
 		Sys.command(unarExe,['x','-y',from,'-o${to}']);
@@ -81,7 +82,7 @@ class RepoState extends SickMenuState
 	override public function create():Void
 	{
 		#if (linux || windows)
-	
+			grpControls = new FlxTypedGroup<Alphabet>();
 			descriptions = [];
 			if (!sys.FileSystem.exists(unarExe)) {
 				MainMenuState.handleError("This feature requires 7-Zip to be installed");
@@ -112,6 +113,7 @@ class RepoState extends SickMenuState
 
 	}
 	override public function update(elapsed:Float){
+		if(waiting) return;
 		super.update(elapsed);
 
 	}
@@ -130,7 +132,6 @@ class RepoState extends SickMenuState
 			MainMenuState.handleError('Something went wrong, ${e.message}');
 			return;	
 		}
-
 		super.create();
 		bg.color = 0x335533;
 
@@ -143,6 +144,7 @@ class RepoState extends SickMenuState
 		installedText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(installedText);
 		updateText();
+		waiting = false;
 	}
 	override function select(sel:Int){
 		var char:RepoCharsJSON = repoArray.characters[sel];

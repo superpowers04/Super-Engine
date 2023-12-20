@@ -37,16 +37,14 @@ class OnlineAddServer extends MusicBeatSubstate
 	var ServerList:Array<Array<Dynamic>> = [];
 	var SaveButton:FlxUIButton;
 
-	public function new(?color:FlxColor=FlxColor.RED)
-	{
+	public function new(?color:FlxColor=FlxColor.RED) {
 		super();
 	}
 	inline function saveServer(){
 		SESave.data.savedServers.push([ipField.text,portField.text,pwdField.text]);
 		SEFlxSaveWrapper.save();
 	}
-	override function create()
-	{
+	override function create() {
 		TitleState.supported = false;
 		var bg:FlxSprite = new FlxSprite(0,-FlxG.height * 0.25).loadGraphic(FlxGraphic.fromRectangle(FlxG.width,Std.int(FlxG.height * 1.5),0xff000000));
 		bg.alpha = 0.7;
@@ -58,22 +56,22 @@ class OnlineAddServer extends MusicBeatSubstate
 		add(topText);
 
 
-		var ipText:FlxText = new FlxText(FlxG.width/2 - 350, FlxG.height * 0.3 - 40, "IP Address:");
+		var ipText:FlxText = new FlxText(290, FlxG.height * 0.3 - 40, "IP Address:");
 		ipText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(ipText);
 
-		ipField = new FlxInputText(FlxG.height * 0.3, 700, 32,SESave.data.lastServer);
+		ipField = new FlxInputText(0,FlxG.height * 0.3, 700,32);
 		ipField.setFormat(32, FlxColor.BLACK, CENTER);
 		ipField.screenCenter(FlxAxes.X);
 		ipField.customFilterPattern = ~/[^A-Za-z0-9.-]/;
 		ipField.hasFocus = true;
 		add(ipField);
 
-		var portText:FlxText = new FlxText(FlxG.width/2 - 350, FlxG.height * 0.5 - 40, "Port:");
+		var portText:FlxText = new FlxText(290, FlxG.height * 0.5 - 40, "Port:");
 		portText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(portText);
 
-		portField = new FlxInputText(FlxG.height * 0.5, 700, 32,SESave.data.lastServerPort);
+		portField = new FlxInputText(0,FlxG.height * 0.5, 700,32);
 		portField.setFormat(32, FlxColor.BLACK, CENTER);
 		portField.screenCenter(FlxAxes.X);
 		portField.customFilterPattern = ~/[^0-9]/;

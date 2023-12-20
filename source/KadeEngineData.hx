@@ -8,9 +8,9 @@ typedef ObjectInfo = {
 	var ?subObjects:Map<String,ObjectInfo>;
 }
 
-
-class KadeEngineData
-{
+// Ironically, this doesn't actually use anything kade engine related for saves,
+//  I just think it's funny to have this still :3
+class KadeEngineData {
 
 	public static function initSave(){
 

@@ -82,12 +82,9 @@ class CharSelection extends SearchMenuState
 		TitleState.checkCharacters();
 		scriptSubDirectory = "/charselect/";
 		switch (Options.PlayerOption.playerEdit){
-			case 0:
-				curChar = SESave.data.playerChar;
-			case 1:
-				curChar = SESave.data.opponent;
-			case 2:
-				curChar = SESave.data.gfChar;
+			case 0: curChar = SESave.data.playerChar;
+			case 1: curChar = SESave.data.opponent;
+			case 2: curChar = SESave.data.gfChar;
 		}
 		// var char = TitleState.findCharByNamespace(curChar);
 		// trace('$curChar;$char');

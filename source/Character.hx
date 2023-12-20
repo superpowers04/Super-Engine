@@ -876,19 +876,16 @@ class CharAnimController extends FlxAnimationController{
 			if(animation.curAnim.finished || animation.curAnim.curFrame >= animation.curAnim.numFrames) animHasFinished = true;
 			if(animHasFinished && loopAnimTo[animation.curAnim.name] != null) playAnim(loopAnimTo[animation.curAnim.name]);
 			else if(animHasFinished && animLoops[animation.curAnim.name] != null && animLoops[animation.curAnim.name]) {playAnim(animation.curAnim.name);currentAnimationPriority = -1;}
-			if (currentAnimationPriority == 11 && isDonePlayingAnim())
-			{
+			if (currentAnimationPriority == 11 && isDonePlayingAnim()) {
 				// playAnim('idle', true, false, 10);
 				dance();
 			}
-			if (currentAnimationPriority == 10)
-			{
+			if (currentAnimationPriority == 10) {
 				holdTimer += elapsed;
 			}
 			else
 				holdTimer = 0;
-			if (!isPlayer && holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
-			{
+			if (!isPlayer && holdTimer >= Conductor.stepCrochet * dadVar * 0.001) {
 				holdTimer = 0;
 				dance();
 			}
@@ -902,8 +899,7 @@ class CharAnimController extends FlxAnimationController{
 	/**
 	 * FOR GF DANCING SHIT
 	 */
-	public function dance(Forced:Bool = false,beatDouble:Bool = false,useDanced:Bool = true)
-	{
+	public function dance(Forced:Bool = false,beatDouble:Bool = false,useDanced:Bool = true) {
 		if (amPreview){
 			if (dance_idle || charType == 2 ){
 				playAnim('danceRight');
@@ -913,14 +909,13 @@ class CharAnimController extends FlxAnimationController{
 
 				if (animation.curAnim == null || animation.curAnim.name.startsWith("dance") || animHasFinished){
 					if(useDanced){
-						playAnim('dance${if(danced)'Right' else 'Left'}',Forced/*,beatProg*/);
+						playAnim('dance${(danced ? 'Right' : 'Left')}',Forced/*,beatProg*/);
 
 					}else{
-						playAnim('dance${if(beatDouble)'Right' else 'Left'}',Forced);
+						playAnim('dance${(beatDouble ? 'Right' : 'Left')}',Forced);
 					}
 				}
-			}
-		else{
+			}else{
 				playAnim('idle'/*,frame*/);
 			}
 		}

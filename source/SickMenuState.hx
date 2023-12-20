@@ -227,7 +227,7 @@ class SickMenuState extends ScriptMusicBeatState
 		callInterp('handleInput',[]);
 		if(cancelCurrentFunction) return;
 		if (controls.BACK) goBack();
-		if (selected || grpControls.members.length == 0) return;
+		if (selected || grpControls.length == 0) return;
 		if (controls.UP_P && FlxG.keys.pressed.SHIFT){changeSelection(-5);} else if (controls.UP_P){changeSelection(-1);}
 		if (controls.DOWN_P && FlxG.keys.pressed.SHIFT){changeSelection(5);} else if (controls.DOWN_P){changeSelection(1);}
 

@@ -1196,7 +1196,7 @@ class AnimationDebug extends MusicBeatState
 			// healthBar.createColoredFilledBar(dad.definingColor, dad.definingColor);
 			// healthBar.updateBar();
 			// healthBar.percent = 100;
-			var iconP1 = new HealthIcon(dad.curCharacter, (charType == 0));
+			var iconP1 = new HealthIcon(dad.charInfo.getNamespacedName(), (charType == 0));
 			iconP1.y = (FlxG.height * 0.9) - (iconP1.height / 2);
 			
 			iconP1.screenCenter(X);
@@ -1698,6 +1698,7 @@ class AnimSwitchMode extends se.substates.QuickList {
 
 	override public function new() {
 		// AnimationDebug.reloadChar = true;
+		super();
 		AnimationDebug.instance.setupUI(true);
 		AnimationDebug.instance.editMode = 0;
 		AnimationDebug.instance.toggleOffsetText(false);
@@ -1720,7 +1721,6 @@ class AnimSwitchMode extends se.substates.QuickList {
 				AnimationDebug.instance.toggleOffsetText(false);
 			},description:"Move character per animation frame to help with fixing broken XML frame positions"},
 		];
-		super();
 	}
 	override function quit(){
 		AnimationDebug.instance.editMode = 0;
@@ -1767,10 +1767,8 @@ class AnimDebugOptions extends MusicBeatSubstate
 	}
 
 
-	public function new()
-	{
+	public function new() {
 		AnimationDebug.reloadChar = true;
-		super();
 		settings = [
 			"flip_x" => {type:0,value:getValue("flip_x",false),
 				description:"Whether to flip the character, useful for BF clones"},
@@ -1782,6 +1780,7 @@ class AnimDebugOptions extends MusicBeatSubstate
 			"sing_duration" => {type:2,value:getValue("sing_duration",4),
 				description:"How long to play the Character's sing animations for"}
 		];
+		super();
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.0;

@@ -765,29 +765,30 @@ class ChartingState extends ScriptMusicBeatState
 
 		var player2Label = new FlxText(140,30,64,'Opponent');
 
-		var acceptplayer1 = new FlxButton(10,70,'apply', function(){
-			_song.player1 = player1DropDown.text;
-			leftIcon.changeSprite(_song.player1);
-		});
-		var acceptplayer2 = new FlxButton(140,70,'apply', function(){
-			_song.player2 = player2DropDown.text;
-			rightIcon.changeSprite(_song.player2);
+		var player3DropDown = new FlxInputText(10, 84, 120, _song.gfVersion, 8);
+		typingcharactershit = player3DropDown;
+
+		var player3Label = new FlxText(10,70,64,'GF');
+
+		var acceptplayers = new FlxButton(140,70,'apply chars', function(){
+			_song.gfVersion = player3DropDown.text;
+			leftIcon.changeSprite(_song.player1 = player1DropDown.text);
+			rightIcon.changeSprite(_song.player2 = player2DropDown.text);
 		});
 
-		stageSel = new FlxInputText(10, 120, 120, _song.stage, 8);
+		stageSel = new FlxInputText(10, 140, 120, _song.stage, 8);
 		stageSel.callback = (_,_) -> {
 			_song.stage = stageSel.text;
 		};
 
-		var stageLabel = new FlxText(10,100,64,'Stage');
+		var stageLabel = new FlxText(10,120,64,'Stage');
 
 		tab_group_assets.name = "Assets";
 		tab_group_assets.add(player1DropDown); uiMap["player1DropDown"] = player1DropDown;
 		tab_group_assets.add(player2DropDown); uiMap["player2DropDown"] = player2DropDown;
 		tab_group_assets.add(player1Label); uiMap["player1Label"] = player1Label;
 		tab_group_assets.add(player2Label); uiMap["player2Label"] = player2Label;
-		tab_group_assets.add(acceptplayer1); uiMap["acceptplayer1"] = acceptplayer1;
-		tab_group_assets.add(acceptplayer2); uiMap["acceptplayer2"] = acceptplayer2;
+		tab_group_assets.add(acceptplayers); uiMap["acceptplayers"] = acceptplayers;
 		tab_group_assets.add(stageSel); uiMap["stageSel"] = stageSel;
 		tab_group_assets.add(stageLabel); uiMap["stageLabel"] = stageLabel;
 		tab_group_assets.add(waveformEnabled); uiMap['waveformEnabled'] = waveformEnabled;

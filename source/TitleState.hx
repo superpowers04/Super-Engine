@@ -163,7 +163,7 @@ class TitleState extends MusicBeatState
 			var e = Std.parseInt(char);
 			if(characters[e] != null){
 
-				// trace('Found char with ID of $e');
+				trace('Found char with ID of $e');
 				return characters[e];
 			}else{
 				trace('Invalid ID $e, out of range 0-${characters.length}');
@@ -302,18 +302,16 @@ class TitleState extends MusicBeatState
 			var char = list.pop();
 			if(char == "" || char == "bf" || char == "null|bf"){continue;}
 			var charInfo = findCharByNamespace(char,nameSpace,false);
-			if(charInfo != null){
-				return charInfo;
-			}
+			if(charInfo != null) return charInfo;
 		}
 		trace('Unable to find anyone in $list, returning $defaultChar');
 		return defaultChar;
 	}
-	public static function retCharPath(char:String):String{
+	@:keep inline public static function retCharPath(char:String):String{
 		var path = findChar(char,false);
 		return (if(path == null || path.path == null) "" else path.path);
 	}
-	public static function checkCharacters(){
+	@:keep inline public static function checkCharacters(){
 		LoadingScreen.loadingText = 'Updating character list';
 		characters = [
 			{id:"bf",folderName:"bf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/BOYFRIEND",internalJSON:Character.BFJSON,description:"The funny rap guy"},
@@ -846,24 +844,24 @@ class TitleState extends MusicBeatState
 			if(!SELoader.exists("mods/menuTimes.json")){ // Causes crashes if done while game is running, unknown why
 				try{
 					SELoader.saveContent("mods/menuTimes.json",Json.stringify([
-																			{
-																				file: "mods/title-morning.ogg or assets/music/breakfast.ogg",
-																				begin:6,end:10,wrapAround:false,color:"0xdd9911",bpm:160
-																			},
-																			{
-																				file: "mods/title-day.ogg or assets/music/freakyMenu.ogg",
-																				// Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
-																				wrapAround:false,end:100,begin:101,color:"0xECD77F",bpm:204 
-																			},
-																			{
-																				file: "mods/title-evening.ogg or assets/music/GiveaLilBitBack.ogg",
-																				begin:17,end:19,wrapAround:false,color:"0xdd9911",bpm:125
-																			},
-																			{
-																				file: "mods/title-night.ogg or assets/music/freshChillMix.ogg",
-																				begin:20,end:5,wrapAround:true,color:"0x113355",bpm:117
-																			},
-																		]));
+						{
+							file: "mods/title-morning.ogg or assets/music/breakfast.ogg",
+							begin:6,end:10,wrapAround:false,color:"0xdd9911",bpm:160
+						},
+						{
+							file: "mods/title-day.ogg or assets/music/freakyMenu.ogg",
+							// Uses 100 because there is no 100th hour of the day, if there is than what the hell device are you using?
+							wrapAround:false,end:100,begin:101,color:"0xECD77F",bpm:204 
+						},
+						{
+							file: "mods/title-evening.ogg or assets/music/GiveaLilBitBack.ogg",
+							begin:17,end:19,wrapAround:false,color:"0xdd9911",bpm:125
+						},
+						{
+							file: "mods/title-night.ogg or assets/music/freshChillMix.ogg",
+							begin:20,end:5,wrapAround:true,color:"0x113355",bpm:117
+						},
+					]));
 				}catch(e){
 					FuckState.FATAL = true;
 					throw('Unable to write to "${FileSystem.absolutePath('mods/menuTimes.json')}"!' + " Common causes:\n* You didn't extract the zip\n* You don't have permission to write to the mods folder\nThis isn't an error you can ignore, as something is really wrong with your setup!\n" + e.details());

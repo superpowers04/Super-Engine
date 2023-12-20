@@ -808,34 +808,33 @@ class PlayState extends ScriptMusicBeatState
 			if((PlayState.player1 == "bf" && SESave.data.playerChar != "automatic") || !SESave.data.charAutoBF ){
 				PlayState.player1 = SESave.data.playerChar;
 			}
+			if (PlayState.player3 == "bf"){
+				PlayState.player3 = "gf";
+	    	}
 		}
+		var player3CharInfo;
 		{
 			var p1List:Array<String> = [SESave.data.playerChar];
 			var p2List:Array<String> = [SESave.data.opponent];
+			var p3List:Array<String> = [SESave.data.gfChar];
 			for(id in PlayState.player1.split('/')) p1List.push(id);
 			for(id in PlayState.player2.split('/')) p2List.push(id);
+			for(id in PlayState.player3.split('/')) p3List.push(id);
 
 			player1CharInfo = TitleState.getCharFromList(p1List,onlinemod.OfflinePlayState.nameSpace);
 			player2CharInfo = TitleState.getCharFromList(p2List,onlinemod.OfflinePlayState.nameSpace);
+			player3CharInfo = TitleState.getCharFromList(p3List,onlinemod.OfflinePlayState.nameSpace);
 			PlayState.player1 = player1CharInfo.getNamespacedName();
 			PlayState.player2 = player2CharInfo.getNamespacedName();
+			PlayState.player3 = player3CharInfo.getNamespacedName();
 		}
 
-		if(loadChars){
+		if(loadChars && (SESave.data.gfShow || _dadShow || SESave.data.bfShow)){
 
 			LoadingScreen.loadingText = "Loading GF";
-			player3 = (switch (SONG.gfVersion)
-			{
-				case 'gf-car': 'gf-car';
-				case 'gf-christmas': 'gf-christmas';
-				case 'gf-pixel': 'gf-pixel';
-				default: 'gf';
-			});
-			if(SESave.data.gfChar != "gf"){player3=SESave.data.gfChar;}
-			gfChar = player3;
 			if(gf== null || !SESave.data.persistGF || (!SESave.data.gfShow && !Std.isOfType(gf,EmptyCharacter)) || gf.getNamespacedName() != player2){
 				if (SESave.data.gfShow && gfShow)
-					gf = new Character(400, 100, player3,false,2);
+					gf = {x:400, y:100,charInfo:player3CharInfo,isPlayer:false,charType:2};
 				else gf =  new EmptyCharacter(400, 100);
 			}else{
 				try{
@@ -850,20 +849,25 @@ class PlayState extends ScriptMusicBeatState
 			gf.scrollFactor.set(0.95, 0.95);
 			
 			LoadingScreen.loadingText = "Loading opponent";
-			if (!ChartingState.charting && SONG.player1.startsWith("gf") && SESave.data.charAuto) player1 = SESave.data.gfChar;
-			if (!ChartingState.charting && SONG.player2.startsWith("gf") && SESave.data.charAuto) player2 = SESave.data.gfChar;
+			if (!ChartingState.charting && SONG.player1 == "gf" && SESave.data.charAuto) player1 = "gf";
+			if (!ChartingState.charting && SONG.player2 == "gf" && SESave.data.charAuto) player2 = "gf";
 
 			// if(dad == null || !SESave.data.persistOpp || (!(dadShow || SESave.data.dadShow) && !Std.isOfType(dad,EmptyCharacter)) || dad.getNamespacedName() != player2){
-			if (_dadShow && !(player3 == player2 && player1 != player2))
+			if(player3CharInfo == player2CharInfo || player2 == "gf"){
+				dad = gf;
+			}else if (_dadShow)
 				dad = {x:100, y:100, charInfo:player2CharInfo,isPlayer:false,charType:1};
 			else dad = new EmptyCharacter(100, 100);
+			dad.playAnim("songStart");
 			// }else{
 				// dad.x = 100;
 				// dad.y = 100;
 			// }
 
 			LoadingScreen.loadingText = "Loading BF";
-			if(boyfriend == null || !SESave.data.persistBF || (!SESave.data.bfShow && !Std.isOfType(boyfriend,EmptyCharacter)) || boyfriend.getNamespacedName() != player1){
+			if(player3CharInfo == player1CharInfo || player1 == "gf"){
+				bf = gf;
+			}else if(boyfriend == null || !SESave.data.persistBF || (!SESave.data.bfShow && !Std.isOfType(boyfriend,EmptyCharacter)) || boyfriend.getNamespacedName() != player1){
 				if (bfShow)
 					boyfriend = {x:770, y:100, charInfo:player1CharInfo,isPlayer:true,charType:0} ;
 				else boyfriend =  new EmptyCharacter(770,100);
@@ -883,6 +887,7 @@ class PlayState extends ScriptMusicBeatState
 			boyfriend = new EmptyCharacter(400,100);
 			gf = new EmptyCharacter(400, 100);
 		}
+		if(!gf.lonely && (dad == gf || bf == gf)) gf = new EmptyCharacter(400,100);
 		var camPos:FlxPoint = new FlxPoint(gf.getGraphicMidpoint().x, gf.getGraphicMidpoint().y);
 
 		camPos.set(camPos.x + gf.camX, camPos.y + gf.camY);
@@ -901,26 +906,6 @@ class PlayState extends ScriptMusicBeatState
 					case 2:gf.x+=v[0];gf.y+=v[1];
 				}
 			}
-		}
-		if (player3 == player2 && player1 != player2){// Don't hide GF if player 1 is GF
-			dad.destroy();
-			dad = gf;
-			// if (isStoryMode){
-			camPos.x += 600;
-			if(curStage == "stage") defaultCamZoom = 0.9;
-				// tweenCamIn();
-			// }
-		}
-
-		if (player3 == player1 && player1 != player2){ // Don't hide GF if player 1 is GF
-			boyfriend.destroy();
-			boyfriend = gf;
-			// if (isStoryMode){
-			camPos.x += 600;
-			if(curStage == "stage") defaultCamZoom = 0.9;
-				// tweenCamIn();
-			// }
-			
 		}
 		// if (dad.spiritTrail && SESave.data.distractions){
 		// 	var dadTrail = new FlxSprTrail(dad,0.2,0,2);
@@ -1084,12 +1069,14 @@ class PlayState extends ScriptMusicBeatState
 		if(practiceMode){
 			// if(practiceMode ){
 			practiceText = new FlxText(0,healthBar.y - 64,(if(botPlay) "Botplay" else if(flippy)"Flippy Mode" else if(ChartingState.charting) "Testing Chart" else "Practice mode"),16);
-			practiceText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-			practiceText.cameras = [camHUD];
-			practiceText.screenCenter(X);
-			if(downscroll) practiceText.y += 20;
-			insert(members.indexOf(healthBar),practiceText);
-			FlxTween.tween(practiceText,{alpha:0},1,{type:PINGPONG});
+			if(onlinemod.OnlinePlayMenuState.socket == null){
+				practiceText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+				practiceText.cameras = [camHUD];
+				practiceText.screenCenter(X);
+				if(downscroll) practiceText.y += 20;
+				insert(members.indexOf(healthBar),practiceText);
+				FlxTween.tween(practiceText,{alpha:0},1,{type:PINGPONG});
+			}
 			// }
 			healthBar.visible = healthBarBG.visible = false;
 			var iconOffset = 26;
@@ -1179,8 +1166,7 @@ class PlayState extends ScriptMusicBeatState
 
 
 
-	inline function addDialogue(?dialogueBox:DialogueBox):Void
-	{
+	inline function addDialogue(?dialogueBox:DialogueBox):Void {
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();
 		add(black);
