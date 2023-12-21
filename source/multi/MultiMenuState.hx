@@ -128,7 +128,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 		if(lastSearch != "") reloadList(true,lastSearch);
 
 		lastSearch = "";
-		changeSelection(lastSel - 1);
+		curSelected = 0;
+		changeSelection(lastSel);
 		lastSel = 1;
 		changeDiff();
 		updateInfoText('Use shift to scroll faster; Shift+F10 to erase the score of the current chart. Press CTRL/Control to listen to inst/voices of song. Press again to toggle the voices. *Disables autopause while in this menu. Found ${songInfoArray.length} songs.');
