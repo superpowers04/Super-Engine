@@ -129,13 +129,7 @@ class MainMenuState extends SickMenuState {
 			}
 			bg.scrollFactor.set(0.1,0.1);
 			bg.color = MainMenuState.bgcolor;
-			if (onlinemod.OnlinePlayMenuState.socket != null){
-				try{
-					QuickOptionsSubState.setSetting("Song hscripts",true);
-					onlinemod.OnlinePlayMenuState.socket.close();
-					onlinemod.OnlinePlayMenuState.socket=null;
-				}catch(e){trace('Error closing socket? ${e.message}');}
-			}
+			onlinemod.OnlinePlayMenuState.disconnect();
 			if(lastVersionIdentifier != versionIdentifier){
 				var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'Super Engine has been updated since last start.\n You are now on ${ver}!', 32);
 				outdatedLMAO.setFormat(CoolUtil.font, 32, if(nightly == "") FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);

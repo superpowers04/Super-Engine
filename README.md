@@ -24,11 +24,8 @@ Read the [mods/readme.txt](https://github.com/superpowers04/Super-Engine/blob/ni
 <br>If you *have* to include an engine/exe in your mod, [Crowplexus' fork of Forever Engine](https://github.com/crowplexus/Forever-Engine), [Forever Engine Legacy](https://github.com/crowplexus/Forever-Engine-Legacy) and [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) are far more fit for this
 
 ## Compiling
-- Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide. Although you will also need to use
-```bash
-haxelib git linc_luajit https://github.com/superpowers04/linc_luajit
-haxelib install flxanimate
-```
+- Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide. 
+  Although you will also need to use the installDeps.bat file. While it is a bat file, it works on Windows, Mac and Linux. I only named it .bat so it can work properly on Windows machines or whatever
 
 # Information
 ## Friday Night Funkin'

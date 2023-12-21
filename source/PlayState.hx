@@ -816,17 +816,14 @@ class PlayState extends ScriptMusicBeatState
 		{
 			var p1List:Array<String> = [SESave.data.playerChar];
 			var p2List:Array<String> = [SESave.data.opponent];
-			var p3List:Array<String> = [SESave.data.gfChar];
 			for(id in PlayState.player1.split('/')) p1List.push(id);
 			for(id in PlayState.player2.split('/')) p2List.push(id);
-			for(id in PlayState.player3.split('/')) p3List.push(id);
 
 			player1CharInfo = TitleState.getCharFromList(p1List,onlinemod.OfflinePlayState.nameSpace);
 			player2CharInfo = TitleState.getCharFromList(p2List,onlinemod.OfflinePlayState.nameSpace);
-			player3CharInfo = TitleState.getCharFromList(p3List,onlinemod.OfflinePlayState.nameSpace);
 			PlayState.player1 = player1CharInfo.getNamespacedName();
 			PlayState.player2 = player2CharInfo.getNamespacedName();
-			PlayState.player3 = player3CharInfo.getNamespacedName();
+			PlayState.player3 = (player3CharInfo = TitleState.findChar(SESave.data.gfChar)).getNamespacedName();
 		}
 
 		if(loadChars && (SESave.data.gfShow || _dadShow || SESave.data.bfShow)){
@@ -853,7 +850,7 @@ class PlayState extends ScriptMusicBeatState
 			if (!ChartingState.charting && SONG.player2 == "gf" && SESave.data.charAuto) player2 = "gf";
 
 			// if(dad == null || !SESave.data.persistOpp || (!(dadShow || SESave.data.dadShow) && !Std.isOfType(dad,EmptyCharacter)) || dad.getNamespacedName() != player2){
-			if(player3CharInfo == player2CharInfo || player2 == "gf"){
+			if(player2 == "gf"){
 				dad = gf;
 			}else if (_dadShow)
 				dad = {x:100, y:100, charInfo:player2CharInfo,isPlayer:false,charType:1};
@@ -865,7 +862,7 @@ class PlayState extends ScriptMusicBeatState
 			// }
 
 			LoadingScreen.loadingText = "Loading BF";
-			if(player3CharInfo == player1CharInfo || player1 == "gf"){
+			if(player1 == "gf"){
 				bf = gf;
 			}else if(boyfriend == null || !SESave.data.persistBF || (!SESave.data.bfShow && !Std.isOfType(boyfriend,EmptyCharacter)) || boyfriend.getNamespacedName() != player1){
 				if (bfShow)
@@ -873,7 +870,6 @@ class PlayState extends ScriptMusicBeatState
 				else boyfriend =  new EmptyCharacter(770,100);
 			}else{
 				try{
-
 					boyfriend.x = 770;
 					boyfriend.y = 100;
 					boyfriend.playAnim('songStart');

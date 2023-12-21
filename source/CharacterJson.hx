@@ -158,7 +158,6 @@ typedef CharJsonAnimOffsets ={
 }
 typedef BoneChar = {
 	var anims:Array<BCAnim>;
-
 }
 
 typedef BCAnim = {

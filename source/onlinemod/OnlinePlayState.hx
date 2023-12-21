@@ -53,8 +53,7 @@ class OnlinePlayState extends PlayState
 
 	var originalSafeFrames:Int = SESave.data.frames;
 
-	public function new(customSong:Bool, voices:FlxSound, inst:Sound)
-	{
+	public function new(customSong:Bool, voices:FlxSound, inst:Sound) {
 		PlayState.stateType =3;
 		updateOverlay = false;
 		super();
@@ -64,8 +63,8 @@ class OnlinePlayState extends PlayState
 		this.loadedVoices = voices;
 		this.loadedInst = inst;
 		practiceMode = true;
-		FlxG.sound.playMusic(loadedInst, 1, false);
-
+		FlxG.sound.playMusic(loadedInst, SESave.data.instVol, false);
+		FlxG.sound.music.pause();
 	}
 
 	override function create()
@@ -207,10 +206,12 @@ class OnlinePlayState extends PlayState
 		waitMusic = SELoader.loadFlxSound('assets/shared/music/breakfast.ogg');
 		waitMusic.volume = 0;
 		waitMusic.play(false, FlxG.random.int(0, Std.int(waitMusic.length / 2)));
+		waitMusic.looped = true;
 		FlxG.sound.list.add(waitMusic);
 
 		FlxG.mouse.visible = false;
 		FlxG.autoPause = false;
+		canPause = true;
 	}catch(e){MainMenuState.handleError('Crash in "create" caught: ${e.message}');}}
 
 	override function startCountdown() if (ready) super.startCountdown();
@@ -237,8 +238,7 @@ class OnlinePlayState extends PlayState
 		}
 	}
 
-	override function popUpScore(daNote:Note):Void
-	{
+	override function popUpScore(daNote:Note):Void {
 		super.popUpScore(daNote);
 		clientsGroup.members[0].text = PlayState.songScore + "\n" + HelperFunctions.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
 
@@ -252,10 +252,8 @@ class OnlinePlayState extends PlayState
 		SendScore();
 	}
 
-	override function resyncVocals()
-	{
-		if (inPause)
-			return;
+	override function resyncVocals() {
+		if (inPause) return;
 
 		super.resyncVocals();
 	}
@@ -263,10 +261,12 @@ class OnlinePlayState extends PlayState
 	override function beatHit(){
 		super.beatHit();
 		CoolLeaderBoard.sort((a,b) -> Std.int(b[3].text.split(' ')[0]) - Std.int(a[3].text.split(' ')[0]));
-		var WhereME = 1;
-		for(Array in CoolLeaderBoard){
-			if(Array[2].text == OnlineNickState.nickname) break;
-			WhereME++;
+		var WhereME = 0;
+		for(Index => Array in CoolLeaderBoard){
+			if(Array[2].text == OnlineNickState.nickname){
+				WhereME = 1 + Index;
+				break;
+			}
 		}
 		if(CoolLeaderBoard.length > 1){
 			for(i in 0...CoolLeaderBoard.length){
@@ -286,8 +286,8 @@ class OnlinePlayState extends PlayState
 
 	override function finishSong(?win=true){endSong();}
 	override function endSong():Void{
-		clients[-1].score = PlayState.songScore;
-		clients[-1].scoreText = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + HelperFunctions.truncateFloat(PlayState.accuracy,2);
+		OnlineLobbyState.client.score = PlayState.songScore;
+		OnlineLobbyState.client.scoreText = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + HelperFunctions.truncateFloat(PlayState.accuracy,2);
 
 		canPause = false;
 		FlxG.sound.playMusic(loadedInst, SESave.data.instVol, true);
@@ -303,10 +303,7 @@ class OnlinePlayState extends PlayState
 
 
 	override function keyShit() {
-		if (inPause)
-			return;
-
-		super.keyShit();
+		if (!inPause) super.keyShit();
 	}
 
 	public override function pause(){
@@ -321,8 +318,7 @@ class OnlinePlayState extends PlayState
 		
 		canPause = false;
 	}
-	override function closeSubState()
-	{
+	override function closeSubState() {
 		if (paused) {
 			canPause = true;
 			inPause = false;

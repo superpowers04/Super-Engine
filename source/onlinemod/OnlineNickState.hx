@@ -52,6 +52,7 @@ class OnlineNickState extends MusicBeatState
 		if (OnlinePlayMenuState.socket != null && OnlinePlayMenuState.socket.connected){
 			var _Player = OnlineLobbyState.clients[-1] = new Player(SESave.data.nickname = nickname = nickField.text,-1);
 			_Player.self = true;
+			OnlineLobbyState.client = _Player; 
 			Sender.SendPacket(Packets.SEND_NICKNAME, [nickname], OnlinePlayMenuState.socket);
 		}else{
 			FlxG.switchState(new OnlinePlayMenuState('Socket closed unexpectedly?'));

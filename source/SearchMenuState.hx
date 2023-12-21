@@ -25,8 +25,7 @@ import flixel.math.FlxMath;
 
 using StringTools;
 
-class SearchMenuState extends ScriptMusicBeatState
-{
+class SearchMenuState extends ScriptMusicBeatState {
 	var curSelected:Int = 0;
 
 	var songs:Array<String> = []; // Is the character list, just too lazy to rename

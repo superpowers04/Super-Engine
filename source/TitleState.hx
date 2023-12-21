@@ -159,7 +159,7 @@ class TitleState extends MusicBeatState
 			if(retBF) return defaultChar;
 			return null;
 		}
-		if(!Math.isNaN(Std.parseInt(char))){
+		if(Std.parseInt(char) != null && !Math.isNaN(Std.parseInt(char))){
 			var e = Std.parseInt(char);
 			if(characters[e] != null){
 

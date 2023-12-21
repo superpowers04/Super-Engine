@@ -31,6 +31,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 	static inline var NAMES_SIZE:Int = 32;
 	static inline var NAMES_VERTICAL_SPACING:Int = 48;
 
+	public static var client:Player;
 	public static var clients:Map<Int, Player> = []; // Maps a player ID to the corresponding player
 	public static var clientsOrder:Array<Int> = []; // This array holds ID values in order of join time (including ID -1 for self)
 	public static var receivedPrevPlayers:Bool = false;
@@ -442,7 +443,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		clientsOrder.remove(id);
 	}
 
-  @:keep inline function removePlayerUI(id:Int){
+	@:keep inline function removePlayerUI(id:Int){
 		var n:Int = clientTexts[id];
 
 		for (i=>k in clientTexts){

@@ -35,8 +35,7 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 	var ServerList:Array<Array<Dynamic>> = [];
 	var AddServerButton:FlxUIButton;
 
-	public function new(?message:String="", ?color:FlxColor=FlxColor.RED)
-	{
+	public function new(?message:String="", ?color:FlxColor=FlxColor.RED) {
 		super();
 		PlayState.invertedChart = false;
 		PlayState.dadShow = true;
@@ -92,8 +91,7 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 		volumeDownKeys = FlxG.sound.volumeDownKeys;
 		SetVolumeControls(true);
 
-		if (socket != null && socket.connected)
-			socket.close();
+		disconnect();
 
 		if(SESave.data.savedServers.length == 0) openSubState(new onlinemod.OnlineAddServer());
 
@@ -162,21 +160,26 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 			FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
 	}
 
-	public static function RespondKeepAlive(packetId:Int)
-	{
-		if (packetId == Packets.KEEP_ALIVE)
-			Sender.SendPacket(Packets.KEEP_ALIVE, [], OnlinePlayMenuState.socket);
+	public static function RespondKeepAlive(packetId:Int) {
+		if (packetId == Packets.KEEP_ALIVE) Sender.SendPacket(Packets.KEEP_ALIVE, [], OnlinePlayMenuState.socket);
 	}
 
-	override function update(elapsed:Float)
-	{
-		if (controls.BACK)
-		{
-			if (socket != null)
-			{
+	@:keep inline public static function disconnect(){
+		if (socket != null){
+			try{
 				if(socket.connected) socket.close();
-				socket = null;
-			}
+			}catch(e){}
+			socket = null;
+			QuickOptionsSubState.setSetting("Song hscripts",true);
+			OnlineLobbyState.client = null;
+		}
+
+	}
+
+	override function update(elapsed:Float) {
+		if (controls.BACK) {
+			disconnect();
+
 			FlxG.switchState(new MainMenuState());
 		}
 		super.update(elapsed);
@@ -214,8 +217,7 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 	}
 
 	public static function Connect(IP:String,Port:String,?Password:String){
-		try
-		{ 
+		try { 
 			socket = new Socket();
 			socket.timeout = 10000;
 			socket.addEventListener(Event.CONNECT, (e:Event) -> {
