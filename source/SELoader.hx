@@ -18,6 +18,7 @@ import flixel.FlxG;
 import flixel.sound.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;
 import lime.media.AudioBuffer;
+import haxe.io.Bytes;
 // import vlc.VLCSound;
 using StringTools;
 
@@ -136,12 +137,12 @@ class SELoader {
 	}
 	@:keep inline public static function getContent(textPath:String):String{return loadText(textPath,false);}
 	@:keep inline public static function saveContent(textPath:String,content:String):String{return saveText(textPath,content,false);}
-	@:keep inline public static function getBytes(textPath:String):haxe.io.Bytes{return loadBytes(textPath,false);}
+	@:keep inline public static function getBytes(textPath:String):Bytes{return loadBytes(textPath,false);}
 	@:keep inline public static function gc(){
 		openfl.system.System.gc();
 	}
 
-	public static function loadBytes(textPath:String,?useCache:Bool = false):haxe.io.Bytes{
+	public static function loadBytes(textPath:String,?useCache:Bool = false):Bytes{
 		// No cache support atm
 
 		// if(cache.textArray[textPath] != null || useCache){
@@ -153,7 +154,12 @@ class SELoader {
 		}
 		return File.getBytes(getPath(textPath));
 	}
-
+	public static function saveBytes(textPath:String,contents:Bytes){ // If there's an error, it'll return the error, else it'll return null
+		try{
+			File.saveBytes(getPath(textPath),contents);
+		}catch(e){ return e; }
+		return null;
+	}
 	public static function saveText(textPath:String,contents:String = "",?useCache:Bool = false):Dynamic{ // If there's an error, it'll return the error, else it'll return null
 		try{
 			File.saveContent(getPath(textPath),contents);

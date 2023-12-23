@@ -25,6 +25,7 @@ class FuckState extends FlxUIState {
 	public static var currentStateName:String = "";
 	public static var FATAL:Bool = false;
 	public static var forced:Bool = false;
+	public static var showingError:Bool = false;
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
 	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown",_forced:Bool = false,_FATAL:Bool = false,_rawError:Bool=false){
@@ -179,37 +180,40 @@ class FuckState extends FlxUIState {
 			// Main.instance
 			trace('OpenFL error screen');
 			try{
-				var addChild=Main.instance.addChild;
-				var textField = new TextField();
-				addChild(textField);
-				textField.width = 1280;
-				textField.text = '${exception}\nThis happened in ${info}';
-				textField.y = 720 * 0.3;
-				var textFieldTop = new TextField();
-				addChild(textFieldTop);
-				textFieldTop.width = 1280;
-				textFieldTop.text = "A fatal error occured!";
-				textFieldTop.textColor = 0xFFFF0000;
-				textFieldTop.y = 30;
-				var textFieldBot = new TextField();
-				addChild(textFieldBot);
-				textFieldBot.width = 1280;
-				textFieldBot.text = "Please take a screenshot and report this";
-				textFieldBot.y = 720 * 0.8;
-				if(saved){
-					var dateNow:String = Date.now().toString();
+				if(!showingError){
 
-					dateNow = StringTools.replace(dateNow, " ", "_");
-					dateNow = StringTools.replace(dateNow, ":", ".");
-					textFieldBot.text = 'Saved crashreport to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\nPlease send this file when reporting this crash.';
+					var addChild=Main.instance.addChild;
+					showingError = true;
+					var textField = new TextField();
+					addChild(textField);
+					textField.width = 1280;
+					textField.text = '${exception}\nThis happened in ${info}';
+					textField.y = 720 * 0.3;
+					var textFieldTop = new TextField();
+					addChild(textFieldTop);
+					textFieldTop.width = 1280;
+					textFieldTop.text = "A fatal error occured!";
+					textFieldTop.textColor = 0xFFFF0000;
+					textFieldTop.y = 30;
+					var textFieldBot = new TextField();
+					addChild(textFieldBot);
+					textFieldBot.width = 1280;
+					textFieldBot.text = "Please take a screenshot and report this";
+					textFieldBot.y = 720 * 0.8;
+					if(saved){
+						var dateNow:String = Date.now().toString();
+
+						dateNow = StringTools.replace(dateNow, " ", "_");
+						dateNow = StringTools.replace(dateNow, ":", ".");
+						textFieldBot.text = 'Saved crashreport to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\nPlease send this file when reporting this crash.';
+					}
+
+					// textField.x = (1280 * 0.5);
+					var tf = new TextFormat(CoolUtil.font, 32, 0xFFFFFF);
+					tf.align = "center";
+					textFieldBot.embedFonts = textFieldTop.embedFonts = textField.embedFonts = true;
+					textFieldBot.defaultTextFormat =textFieldTop.defaultTextFormat =textField.defaultTextFormat = tf;
 				}
-
-				// textField.x = (1280 * 0.5);
-				var tf = new TextFormat(CoolUtil.font, 32, 0xFFFFFF);
-				tf.align = "center";
-				textFieldBot.embedFonts = textFieldTop.embedFonts = textField.embedFonts = true;
-				textFieldBot.defaultTextFormat =textFieldTop.defaultTextFormat =textField.defaultTextFormat = tf;
-					
 
 				// Main.instance.addChild(new se.ErrorSprite('${exception}\nThis happened in ${info}',saved));
 			}catch(e){trace('FUCK $e');}

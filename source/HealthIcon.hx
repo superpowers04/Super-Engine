@@ -50,13 +50,14 @@ class HealthIcon extends FlxSprite
 
 		var _path = "";
 		var _char = TitleState.findChar(char);
-		if(_char != null){
-			imgPath = _char.path + "/";
-			char = _char.folderName;
-		}else{
-			char = 'bf';
-			imgPath = "mods/characters/";
-
+		if(!chars.contains(char)){
+			if(_char == null){
+				char = 'bf';
+				imgPath = "mods/characters/";
+			}else{
+				imgPath = _char.path + "/";
+				char = _char.folderName;
+			}
 		}
 		
 		if (!chars.contains(char) && SELoader.exists(imgPath+char+"/healthicon.png")){
@@ -71,9 +72,7 @@ class HealthIcon extends FlxSprite
 			}else{
 				frameCount = Std.int(bitmapData.width / 150) - 1; // If this isn't an integer, fucking run
 				if(frameCount == 0) updateAnim = function(health:Float){return;};
-				else if(frameCount == 1) updateAnim = function(health:Float){
-					animation.curAnim.curFrame = ((health < 20) ? 1 : 0);
-				};
+				else if(frameCount == 1) updateAnim = function(health:Float){animation.curAnim.curFrame = ((health < 20) ? 1 : 0);};
 				else updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(animation.curAnim.numFrames * (health / 150));};
 			}
 			loadGraphic(FlxGraphic.fromBitmapData(bitmapData), true, bitmapData.height, bitmapData.height);

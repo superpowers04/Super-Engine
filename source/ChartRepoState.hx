@@ -62,10 +62,17 @@ class ChartRepoState extends SearchMenuState
 	var installedText:FlxText;
 
 	function unzip(from:String,to:String):Void{
+		from=SELoader.getPath(from);
+		to=SELoader.getPath(to);
 		Sys.command(unarExe,['x','-y',from,'-o${to}']);
 	}
 	override function ret(){
-		if(installing<=0){FlxG.mouse.enabled = false;FlxG.switchState(new MainMenuState());}else{installingText.color = FlxColor.RED;}
+		if(installingList.length<=0) {
+			FlxG.mouse.visible = false;
+			FlxG.switchState(new MainMenuState());
+		}else{
+			installingText.color = FlxColor.RED;
+		}
 	}
 	override function reloadList(?reload = false,?search=""){
 		curSelected = 0;
@@ -106,8 +113,7 @@ class ChartRepoState extends SearchMenuState
 			return;			
 		}
 
-		new FlxTimer().start(2, function(tmr:FlxTimer)
-		{
+		new FlxTimer().start(2, function(tmr:FlxTimer) {
 			
 			var http = new Http(repo);
 			
@@ -173,13 +179,11 @@ class ChartRepoState extends SearchMenuState
 			installing += 1;
 			installingList.push(char.name);
 			updateText();
-			new FlxTimer().start(2, function(tmr:FlxTimer)
-			{
+			new FlxTimer().start(2, function(tmr:FlxTimer) {
 				
 				var http = new Http(char.url);
 				
-				http.onBytes = function (data:Bytes)
-				{
+				http.onBytes = function (data:Bytes) {
 					finishDownload(data,char,sel);
 				}
 				
@@ -199,9 +203,9 @@ class ChartRepoState extends SearchMenuState
   	override function changeSelection(change:Int = 0)
 	{
 		if (songs[curSelected] != "" && repoArray.charts[curSelected].description != null && repoArray.charts[curSelected].description != ""){
-		  updateInfoText('Description: ' + repoArray.charts[curSelected].description);
+			updateInfoText('Description: ' + repoArray.charts[curSelected].description);
 		}else{
-		  updateInfoText('No description for this chart.');
+			updateInfoText('No description for this chart.');
 		}
 		super.changeSelection(change);
 		updateText();
@@ -214,12 +218,12 @@ class ChartRepoState extends SearchMenuState
 		if (FileSystem.exists('mods/charts/${repoArray.charts[curSelected].name}/')) installedText.color = FlxColor.GREEN;
 	}
 	function finishDownload(data:Bytes,char:RepoChartsJSON,sel:Int){
-		FileSystem.createDirectory('mods/charts/');
-		File.saveBytes(Sys.getCwd() + 'mods/charts/${char.name}.zip',data);
+		SELoader.createDirectory('mods/charts/');
+		File.saveBytes('mods/charts/${char.name}.zip',data);
 
-		var instDir = Sys.getCwd() + 'mods/charts/${char.name}/';
-		if(char.subFolder){ instDir = Sys.getCwd() + 'mods/charts/';}
-		unzip(Sys.getCwd() + 'mods/charts/${char.name}.zip',instDir);
+		var instDir = 'mods/charts/${char.name}/';
+		if(char.subFolder){ instDir = 'mods/charts/';}
+		unzip('mods/charts/${char.name}.zip',instDir);
 		installingList.remove(char.name);
 		installing-=1;
 		updateText();

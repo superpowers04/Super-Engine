@@ -134,7 +134,6 @@ class OnlineAddServer extends MusicBeatSubstate
 		volumeUpKeys = FlxG.sound.volumeUpKeys;
 		volumeDownKeys = FlxG.sound.volumeDownKeys;
 		for (i in members){
-
 			var i = cast (i,FlxSprite);
 			if(i != null){
 				var _y = i.y;
@@ -153,13 +152,10 @@ class OnlineAddServer extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
-		if (!(ipField.hasFocus || portField.hasFocus || pwdField.hasFocus))
-		{
+		if (!(ipField.hasFocus || portField.hasFocus || pwdField.hasFocus)) {
 			SetVolumeControls(true);
 			if (controls.BACK) close();
-		}
-		else
-		{
+		}else{
 			SetVolumeControls(false);
 		}
 		super.update(elapsed);

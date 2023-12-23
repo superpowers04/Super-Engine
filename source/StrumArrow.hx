@@ -10,7 +10,7 @@ import flixel.graphics.FlxGraphic;
 import flash.display.BitmapData;
 import sys.io.File;
 import NoteAssets;
-import tjson.Json;
+
 
 class StrumArrow extends FlxSprite{
 	public static var defColor:FlxColor = 0xFFFFFFFF;

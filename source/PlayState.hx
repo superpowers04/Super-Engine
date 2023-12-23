@@ -42,7 +42,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
-import tjson.Json;
+
 import lime.utils.Assets;
 import openfl.media.Sound;
 
@@ -1327,8 +1327,12 @@ class PlayState extends ScriptMusicBeatState
 
 					go.screenCenter();
 					add(go);
-					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 500, {
-						ease: FlxEase.cubeInOut,
+					FlxTween.tween(go, {y: go.y -= 50}, 0.1, {
+						ease: FlxEase.cubeOut,
+					});
+					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, 0.25, {
+						ease: FlxEase.cubeIn,
+						startDelay:0.2,
 						onComplete: function(twn:FlxTween){go.destroy();}
 					});
 				}

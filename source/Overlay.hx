@@ -222,6 +222,7 @@ class Console extends TextField
 				commandBox.selua = null;
 			}
 		#end
+		FlxG.keys.enabled = true;
 		if(showConsole){
 			wasMouseDisabled = FlxG.mouse.visible;
 			FlxG.mouse.visible = true;

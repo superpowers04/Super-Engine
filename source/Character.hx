@@ -11,7 +11,7 @@ import flixel.animation.FlxAnimationController;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxFramesCollection;
-import tjson.Json;
+
 
 import haxe.DynamicAccess;
 import lime.utils.Assets;

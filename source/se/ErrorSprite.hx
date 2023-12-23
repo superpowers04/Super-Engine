@@ -30,6 +30,7 @@ class ErrorSprite extends Sprite{
 			var textFieldBot = new TextField();
 			super.addChild(textFieldBot);
 			textFieldBot.width = 1280;
+			textFieldBot.height= 400;
 			textFieldBot.text = "Please take a screenshot and report this";
 			textFieldBot.y = 720 * 0.8;
 			if(saved){

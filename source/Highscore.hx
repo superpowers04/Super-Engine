@@ -2,7 +2,7 @@ package;
 
 import flixel.FlxG;
 import sys.io.File;
-import tjson.Json;
+
 
 typedef ScoreJson = {
 	var songNames:Array<String>;

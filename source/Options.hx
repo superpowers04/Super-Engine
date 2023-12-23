@@ -8,7 +8,7 @@ import flixel.FlxG;
 import openfl.display.FPS;
 import openfl.Lib;
 import hscript.Interp;
-import tjson.Json;
+
 import QuickOptionsSubState;
 
 using StringTools;

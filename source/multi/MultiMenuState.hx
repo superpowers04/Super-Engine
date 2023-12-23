@@ -13,7 +13,7 @@ import flixel.math.FlxMath;
 import Song;
 import sys.io.File;
 import sys.FileSystem;
-import tjson.Json;
+
 import flixel.sound.FlxSound;
 import Discord.DiscordClient;
 import flixel.ui.FlxBar;
@@ -670,6 +670,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			if(songInfo == null) {
 				curPlaying = "";
 				SickMenuState.musicHandle();
+				curPlaying = "SEMENUMUSIC";
+				if(voices != null){
+					voices.stop();
+					voices.destroy();
+				}
+				allowInput = true;
+				SELoader.gc();
 			}else{
 				#if (target.threaded)
 				sys.thread.Thread.create(() -> {

@@ -10,7 +10,7 @@ import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
-import tjson.Json;
+
 import flixel.math.FlxPoint;
 import sys.io.File;
 import sys.FileSystem;
@@ -466,12 +466,8 @@ class Note extends FlxSprite
 		visible = showNote;
 		var dad = PlayState.opponentCharacter;
 		if (mustPress) {
-			// ass
-			if (shouldntBeHit) {
-				if (strumTime - Conductor.songPosition <= (45 * Conductor.timeScale) && strumTime - Conductor.songPosition >= (-45 * Conductor.timeScale))
-					canBeHit = true;
-				else
-					canBeHit = false;
+			if (shouldntBeHit) { 
+				canBeHit = (strumTime - Conductor.songPosition <= (45 * Conductor.timeScale) && strumTime - Conductor.songPosition >= (-45 * Conductor.timeScale));
 			}else{
 
 				if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + ((Conductor.safeZoneOffset * 0.5) * Conductor.timeScale)) ) ||
@@ -508,10 +504,5 @@ class Note extends FlxSprite
 			destroy();
 		}
 		callInterp("noteUpdateAfter",[this]);
-
-		
-
-			
-		
 	}
 }

@@ -1,7 +1,7 @@
 package;
 
 import flixel.FlxG;
-import tjson.Json;
+
 import sys.io.File;
 // import flixel.util.FlxSave;
 using StringTools;
@@ -15,17 +15,22 @@ class SEFlxSaveWrapper{
 	}
 	public static function load():Void{
 		if(!SELoader.exists('SESETTINGS.json')) return;
-		var json = CoolUtil.cleanJSON(SELoader.loadText('SESETTINGS.json')).replace('"" :','" :').replace('"":','":');
-		var anon = Json.parse(json);
-		if(anon is SESave){
-			SESave.data = anon;
-			return;
-		}
-		SELoader.saveContent("SESETTINGS-OLD.json",json);
-		trace('Unable to load settings from an invalid format');
 		try{
-			MusicBeatState.instance.showTempmessage('Settings file is in an invalid format\n Your settings have been reset!',0xFFFF0000);
-		}catch(e){}
+
+			var json = CoolUtil.cleanJSON(SELoader.loadText('SESETTINGS.json')).replace('"" :','" :').replace('"":','":');
+			var anon = Json.parse(json);
+			if(anon is SESave){
+				SESave.data = anon;
+				return;
+			}
+			SELoader.saveContent("SESETTINGS-OLD.json",json);
+			trace('Unable to load settings from an invalid format');
+			try{
+				MusicBeatState.instance.showTempmessage('Settings file is in an invalid format\n Your settings have been reset!',0xFFFF0000);
+			}catch(e){}
+		}catch(e){
+			throw('Error while parsing SESettings.json:\n${e.message}');
+		}
 		
 		// Type.getInstanceFields(SESave)
 		// for(field in Reflect.fields(anon)){

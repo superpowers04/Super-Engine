@@ -13,7 +13,7 @@ class Ratings
 		{name:"Perfectly legit",accuracy:100.0001,color:0xFF00d4ff},
 		{name:"Perfect!",accuracy:100,color:0xffaaff},
 		{name:"SS",accuracy:99,color:0xFFDD88DD},
-		{name:"S",accuracy:95,color:0xFFAA55AA},
+		{name:"S",accuracy:95,color:0xFFCC77CC},
 		{name:"A",accuracy:90,color:0xFF00FF00},
 		{name:"A?",accuracy:89,color:0xFF74fc05},
 		{name:"B",accuracy:80,color:0xFF8dfc05},

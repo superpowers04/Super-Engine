@@ -18,7 +18,7 @@ import openfl.net.FileReference;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 
-import tjson.Json;
+
 
 import flixel.graphics.FlxGraphic;
 import SEInputText as FlxInputText;

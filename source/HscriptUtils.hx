@@ -47,7 +47,7 @@ import flixel.input.touch.FlxTouch;
 #end
 import sys.FileSystem;
 import sys.io.File;
-import tjson.Json;
+
 
 
 import haxe.iterators.StringIterator;

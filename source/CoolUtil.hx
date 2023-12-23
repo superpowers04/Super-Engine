@@ -9,8 +9,7 @@ import flixel.group.FlxGroup;
 
 using StringTools;
 
-class CoolUtil
-{
+class CoolUtil {
 	public static var fontName:String = "vcr.ttf";
 	public static var font:String = if(SELoader.exists('mods/font.ttf')) 'mods/font.ttf' else Paths.font(fontName);
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
@@ -18,6 +17,17 @@ class CoolUtil
 	public static var volKeysEnabled = true;
 	public static var Framerate:Float = 0;
 	public static var updateRate:Float = 120;
+	public static var activeObject(default,set):Dynamic = null;
+	public static function set_activeObject(vari){
+		toggleVolKeys(FlxG.keys.enabled = (vari == null)); // Why the fuck do i need to do this, what
+		return activeObject = vari;
+	}
+	public static function updateActiveObject(vari){
+		try{
+			activeObject.hasFocus = false;
+		}catch(e){}
+		return activeObject = vari;
+	}
 	public static function setFramerate(?fps:Float = 0,?update:Bool = false,?temp:Bool = false){
 		if(!temp){
 			if(fps != 0 && !update){
@@ -59,14 +69,11 @@ class CoolUtil
 		FlxG.sound.muteKeys = null;
 		FlxG.sound.volumeUpKeys = null;
 		FlxG.sound.volumeDownKeys = null;
-	
 	}
-	@:keep inline public static function coolTextFile(path:String):Array<String>
-	{
+	@:keep inline public static function coolTextFile(path:String):Array<String> {
 		var daList:Array<String> = Assets.getText(path).trim().split('\n');
 
-		for (i in 0...daList.length)
-		{
+		for (i in 0...daList.length) {
 			daList[i] = daList[i].trim().replace("\\n","\n");
 		}
 
@@ -109,14 +116,13 @@ class CoolUtil
 		});
 		return list;
 	}
-	public static function coolStringFile(path:String):Array<String>
-		{
-			var daList:Array<String> = path.trim().split('\n');
-	
-			for (i in 0...daList.length) daList[i] = daList[i].trim();
-	
-			return daList;
-		}
+	public static function coolStringFile(path:String):Array<String> {
+		var daList:Array<String> = path.trim().split('\n');
+
+		for (i in 0...daList.length) daList[i] = daList[i].trim();
+
+		return daList;
+	}
 
 	@:keep inline public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{

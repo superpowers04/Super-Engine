@@ -1,6 +1,6 @@
 package;
 
-import tjson.Json;
+
 
 // class CharacterJson {
 // 	@:publicFields

@@ -314,10 +314,7 @@ class FinishSubState extends MusicBeatSubstate
 				finishedText.scrollFactor.set();
 				var _oldScore = getScore();
 				var savedScore = saveScore();
-				if(savedScore){
-					finishedText.text += " | New Personal Best!";
-					FlxG.sound.play(SELoader.loadSound('assets/sounds/confirmMenu.ogg'));
-				}
+
 				finishedText.screenCenter(X);
 
 				var songText:FlxText = new FlxText(0,70,0, (PlayState.isStoryMode ? StoryMenuState.weekNames[StoryMenuState.curWeek] : (PlayState.stateType == 4 ? PlayState.actualSongName : '${PlayState.SONG.song} ${PlayState.songDiff}')) + ' ${PlayState.SONG.keyCount}K' );
@@ -335,7 +332,7 @@ class FinishSubState extends MusicBeatSubstate
 						+'\nGhost Taps - ${PlayState.ghostTaps}'
 						+'\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})'
 						+'\nMisses${if(SESave.data.ghost) "" else " + Ghost Taps"}${if(SESave.data.shittyMiss) ' + Shits' else ''}${if(SESave.data.badMiss) ' + Bads' else ''}${if(SESave.data.goodMiss) ' + Goods' else ''}: ${PlayState.misses}'
-						+'\n\nScore: ${(savedScore ? '${_oldScore} > ${PlayState.songScore}' : '${PlayState.songScore} / ${_oldScore}')}' // ' shitty haxe syntax highlighting strikes again :skull:
+						+(savedScore ? '\n\n!!Score: ${_oldScore} > ${PlayState.songScore}' : '\n\nScore: ${PlayState.songScore} / ${_oldScore}')
 						+'\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%');
 				comboText.size = 28;
 				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
@@ -369,6 +366,14 @@ class FinishSubState extends MusicBeatSubstate
 				letterText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				
 				letterText.scrollFactor.set();
+
+				if(savedScore || FlxG.keys.pressed.SHIFT){
+					finishedText.text += " | New Personal Best!";
+					FlxG.sound.play(SELoader.loadSound('assets/sounds/confirmMenu.ogg'));
+					// letterText.scale.x = letterText.scale.y = 1.3;
+					FlxTween.tween(letterText.scale,{x:1.1,y:1.1},0.2,{ease:FlxEase.bounceOut,startDelay:0.6});
+					FlxTween.tween(letterText.scale,{x:1,y:1},0.4,{ease:FlxEase.bounceOut,startDelay:0.8});
+				}
 
 				contText = new FlxText(FlxG.width - SESave.data.guiGap,FlxG.height - 90,0,
 				#if android
@@ -405,11 +410,16 @@ class FinishSubState extends MusicBeatSubstate
 				FlxTween.tween(finishedText, {y:(finishedText.y-=55) + 55},0.5,{ease: FlxEase.bounceOut});
 				FlxTween.tween(songText, {y:(songText.y-=55) + 55},0.5,{ease: FlxEase.bounceOut});
 				FlxTween.tween(comboText, {x:(comboText.x-=200) + 200},0.5,{ease: FlxEase.bounceOut});
-				// FlxTween.tween(contText, {y:(contText.y-=90) + 90},0.5,{ease: FlxEase.expoInOut});
-				FlxTween.tween(contText, {alpha:(contText.alpha=0) + 1},0.5,{ease: FlxEase.bounceOut});
 				FlxTween.tween(letterText, {x:(letterText.x+=300) - 300},0.5,{ease: FlxEase.bounceOut});
-				// FlxTween.tween(chartInfoText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
 				FlxTween.tween(settingsText, {x:(settingsText.x+=400)-400},0.5,{ease: FlxEase.bounceOut});
+				// for (obj in [finishedText,songText,comboText,settingsText,comboText]){
+				// 	obj.scale.x = obj.scale.y = 0;
+				// 	FlxTween.tween(obj.scale, {x:1,y:1},1,{ease: FlxEase.bounceOut,startDelay:0.2});
+				// }
+				// FlxTween.tween(contText, {y:(contText.y-=90) + 90},0.5,{ease: FlxEase.expoInOut});
+				// FlxTween.tween(chartInfoText, {y:FlxG.height - 35},0.5,{ease: FlxEase.expoInOut});
+				
+				FlxTween.tween(contText, {alpha:(contText.alpha=0) + 1},0.5,{ease: FlxEase.bounceOut});
 
 				if(PlayState.logGameplay){
 

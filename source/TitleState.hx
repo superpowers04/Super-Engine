@@ -26,7 +26,7 @@ import openfl.Assets;
 import sys.io.File;
 import sys.FileSystem;
 import flixel.math.FlxMath;
-import tjson.Json;
+
 import flash.display.Graphics;
 import flash.display.Sprite;
 import flash.Lib;
