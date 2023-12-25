@@ -2732,8 +2732,7 @@ class PlayState extends ScriptMusicBeatState
 					}
 				}else{ // upscroll
 					daNote.y = strumNote.y - daNote.distanceToSprite;
-					if(daNote.isSustainNote)
-					{
+					if(daNote.isSustainNote) {
 						// if(daNote.isSustainNoteEnd && daNote.parentNote != null){
 						// 	daNote.y = daNote.prevNote.y + Math.ceil(daNote.frameHeight * daNote.scale.y);
 						// }else
@@ -2778,7 +2777,7 @@ class PlayState extends ScriptMusicBeatState
 			
 		}
 	}
-	inline function updateNotePosition(daNote:Note,strumNote:FlxSprite){
+	@:keep inline function updateNotePosition(daNote:Note,strumNote:FlxSprite){
 		if ((daNote.mustPress || !daNote.wasGoodHit) && daNote.lockToStrum){
 			daNote.visible = strumNote.visible;
 			if(daNote.updateX) daNote.x = strumNote.x + (strumNote.width * 0.5);
