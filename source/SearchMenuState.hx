@@ -408,25 +408,10 @@ class SearchMenuState extends ScriptMusicBeatState {
 		FlxG.sound.volumeDownKeys = (enabled ? volumeDownKeys : null);
 	}
 	function HandleData(packetId:Int, data:Array<Dynamic>){
-		onlinemod.OnlinePlayMenuState.RespondKeepAlive(packetId);
 		var Chat = onlinemod.Chat;
 		var Packets = onlinemod.Packets;
 		var OnlineLobbyState = onlinemod.OnlineLobbyState;
-		switch (packetId)
-		{
-			case Packets.BROADCAST_NEW_PLAYER:
-				var id:Int = data[0];
-				var nickname:String = data[1];
-
-				// OnlineLobbyState.addPlayerUI(id, nickname);
-				OnlineLobbyState.addPlayer(id, nickname);
-				if (OnlineLobbyState.receivedPrevPlayers) Chat.PLAYER_JOIN(nickname);
-			case Packets.PLAYER_LEFT:
-				var id:Int = data[0];
-				Chat.PLAYER_LEAVE(OnlineLobbyState.clients[id].name);
-
-				OnlineLobbyState.removePlayer(id);
-				// createNamesUI();
+		switch (packetId) {
 			case Packets.GAME_START:
 				var jsonInput:String = data[0];
 				var folder:String = data[1];
@@ -434,22 +419,9 @@ class SearchMenuState extends ScriptMusicBeatState {
 				for (i in OnlineLobbyState.clients.keys()) count++;
 				TitleState.p2canplay = (count == 2 && TitleState.supported);
 				onlinemod.OnlineLobbyState.StartGame(jsonInput, folder);
-
-			case Packets.BROADCAST_CHAT_MESSAGE:
-				var id:Int = data[0];
-				var message:String = data[1];
-
-				Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
-			case Packets.REJECT_CHAT_MESSAGE:
-				Chat.SPEED_LIMIT();
-			case Packets.MUTED:
-				Chat.MUTED();
-			case Packets.SERVER_CHAT_MESSAGE:
-				if(StringTools.startsWith(data[0],"'32d5d167'")) OnlineLobbyState.handleServerCommand(data[0].toLowerCase(),0); else Chat.SERVER_MESSAGE(data[0]);
-
-			case Packets.DISCONNECT:
-				TitleState.p2canplay = false;
-				FlxG.switchState(new onlinemod.OnlinePlayMenuState("Disconnected from server"));
+			default:
+				return false;
 		}
+		return true;
 	}
 }

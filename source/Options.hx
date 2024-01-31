@@ -657,7 +657,7 @@ class HCIntOption extends Option{
 	override function getValue():String return '${Reflect.getProperty(SESave.data,id)}';
 
 	public override function left():Bool{
-		Reflect.setProperty(SESave.data,id,Math.max(Reflect.getProperty(SESave.data,id) - inc,min));
+		Reflect.setProperty(SESave.data,id,Math.min(Reflect.getProperty(SESave.data,id) - inc,min));
 		display = updateDisplay();
 		return true;
 	}

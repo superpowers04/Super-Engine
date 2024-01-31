@@ -90,6 +90,9 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Strum Buttons","Whether to split the screen into 4 buttons or use strums as buttons(Requires native Touch)","useStrumsAsButtons"),
 			
 			new HCBoolOption('Scroll Type',"Change the scroll direction between upscroll and downscroll",'downscroll','downscroll',"upscroll"),
+			new HCIntOption('Rotate Strumline','Rotate the strumline. May break with some scripts','rotateScroll',0,360,1),
+			new HCBoolOption('Flip Strumline X','Flip the strumline horizontally. May break with some scripts','flipScrollX'),
+			new HCBoolOption('Flip Strumline Y','Flip the strumline vertically. May break with some scripts','flipScrollY'),
 			new HCBoolOption('Center strumline',"Move the strumline to the middle of the screen",'middleScroll'),
 
 			new AccuracyDOption("Change how accuracy is calculated. ( Simple = Rating based, SE = Distance from note to time, Complex = Etterna(?) )"),

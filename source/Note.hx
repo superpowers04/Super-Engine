@@ -498,7 +498,13 @@ class Note extends FlxSprite
 
 			dad.holdTimer = 0;
 
-			if (dad.useVoices){dad.voiceSounds[noteData].play(1);dad.voiceSounds[noteData].time = 0;PlayState.instance.vocals.volume = 0;}else if (PlayState.SONG.needsVoices) PlayState.instance.vocals.volume = SESave.data.voicesVol;
+			if (dad.useVoices){
+				dad.voiceSounds[noteData].play(1);
+				dad.voiceSounds[noteData].time = 0;
+				PlayState.instance.vocals.volume = 0;
+			}else if (PlayState.instance.vocals != null){
+				PlayState.instance.vocals.volume = SESave.data.voicesVol;
+			}
 
 			PlayState.instance.notes.remove(this, true);
 			destroy();

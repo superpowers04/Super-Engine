@@ -290,7 +290,6 @@ class TitleState extends MusicBeatState
 		}
 		if(namespace == "" || namespace.toLowerCase() == "null") return findChar(char,retBF,true);
 		return findCharNS(char,namespace,nameSpaceType,retBF);
-
 	}
 	public static function retChar(char:String):String{
 		var char = findChar(char,false);

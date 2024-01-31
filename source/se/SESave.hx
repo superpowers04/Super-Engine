@@ -143,5 +143,9 @@ typedef YourMother = Dynamic;
 	var chart_waveform:Bool = true;
 
 
+	var rotateScroll:Int = 0;
+	var flipScrollX:Bool = false;
+	var flipScrollY:Bool = false;
+
 	public function new(){}
 }

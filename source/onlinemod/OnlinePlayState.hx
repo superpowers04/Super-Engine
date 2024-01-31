@@ -340,7 +340,7 @@ class OnlinePlayState extends PlayState
 		callInterp("packetRecieve",[packetId,data]);
 		if(!handleNextPacket){
 			handleNextPacket = true;
-			return;
+			return true;
 		}
 		switch (packetId)
 		{
@@ -364,11 +364,11 @@ class OnlinePlayState extends PlayState
 				if(Math.isNaN(id)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
 					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
-					return;
+					return true;
 				}
 				if(Math.isNaN(score)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score(${data[1]}) ');
-					return;
+					return true;
 				}
 
 				clients[id].score = score;
@@ -383,19 +383,19 @@ class OnlinePlayState extends PlayState
 				if(Math.isNaN(id)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
 					showTempmessage('Error for Packet BROADCAST_CURRENT_INFO: Invalid ID(${data[0]}) ');
-					return;
+					return true;
 				}
 				if(Math.isNaN(score)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Score(${data[1]}) ');
-					return;
+					return true;
 				}
 				if(Math.isNaN(misses)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Miss count(${data[2]}) ');
-					return;
+					return true;
 				}
 				if(Math.isNaN(accuracy)){
 					trace('Error for Packet BROADCAST_CURRENT_INFO, ID($id): Invalid Accuracy(${data[3]}) ');
-					return;
+					return true;
 				}
 
 				clients[id].score = score;
@@ -471,7 +471,7 @@ class OnlinePlayState extends PlayState
 										notes.remove(note, true);
 										note.destroy();
 									}
-									return;
+									return true;
 								}else{
 									var noteData:Int = noteData[data[0]][1];
 									switch (charID) {
@@ -542,7 +542,7 @@ class OnlinePlayState extends PlayState
 				clientsGroup.add(scoretext);
 			case Packets.DISCONNECT:
 				FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
-
+			default: return false;
 		}}catch(e){
 			var packetName = "Unknown";
 			if(PacketsShit.fields[packetId] != null){
@@ -560,6 +560,7 @@ class OnlinePlayState extends PlayState
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OnlineLobbyState(true));
 		}
+		return true;
 
 	}
 	

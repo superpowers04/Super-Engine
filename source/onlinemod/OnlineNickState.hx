@@ -81,22 +81,26 @@ class OnlineNickState extends MusicBeatState
   {
 	switch (packetId)
 	{
-	  case Packets.NICKNAME_CONFIRM:
-		switch (data[0])
-		{
-		  case 0:
-			SetErrorText("Nickname accepted", FlxColor.LIME);
-			FlxG.switchState(new OnlineLobbyState());
-		  case 1:
-			SetErrorText("Nickname already claimed");
-		  case 2:
-			SetErrorText("Game already in progress");
-		  case 3:
-			SetErrorText("Invalid nickname");
-		  case 4:
-			FlxG.switchState(new OnlinePlayMenuState("Game is already full"));
+		case Packets.NICKNAME_CONFIRM:{
+
+			switch (data[0]) {
+			  case 0:
+				SetErrorText("Nickname accepted", FlxColor.LIME);
+				FlxG.switchState(new OnlineLobbyState());
+			  case 1:
+				SetErrorText("Nickname already claimed");
+			  case 2:
+				SetErrorText("Game already in progress");
+			  case 3:
+				SetErrorText("Invalid nickname");
+			  case 4:
+				FlxG.switchState(new OnlinePlayMenuState("Game is already full"));
+			}
+			return true;
 		}
+
 	}
+	return false;
   }
 
   override function update(elapsed:Float)

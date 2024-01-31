@@ -187,7 +187,8 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		FlxG.mouse.enabled = FlxG.mouse.visible = true;
 	}
 	public static function handleDataGlobal(packetId:Int, data:Array<Dynamic>):Bool {
-		OnlinePlayMenuState.RespondKeepAlive(packetId);
+		if(OnlinePlayMenuState.RespondKeepAlive(packetId)) return true;
+		try{
 		switch (packetId) {
 			case Packets.BROADCAST_NEW_PLAYER:
 				var id:Int = data[0];
@@ -237,16 +238,25 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 			case Packets.DISCONNECT:
 				TitleState.p2canplay = false;
 				FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
+			default:
+				return false;
 		}
-		return false;
+		}catch(e){
+			Chat.OutputChatMessage("[Client] You had an error when receiving packet '" + '$packetId' + "':");
+			Chat.OutputChatMessage(e.message);
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.switchState(new OnlineLobbyState(true));
+		}
+		return true;
 	}
 	function HandleData(packetId:Int, data:Array<Dynamic>) {
 		
 		callInterp("packetRecieve",[packetId,data]);
 		if(!handleNextPacket){
 			handleNextPacket = true;
-			return;
+			return true;
 		}
+		return false;
 		switch (packetId) {
 			// case Packets.BROADCAST_NEW_PLAYER:
 			// 	var id:Int = data[0];

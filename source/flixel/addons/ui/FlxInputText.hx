@@ -324,7 +324,7 @@ class FlxInputText extends FlxText {
 	static var controlPressed = false;
 	private function onKeyUp(e:KeyboardEvent):Void {
 		if(e.keyCode == 17) controlPressed = false;
-		if (key == 13){
+		if(e.keyCode == 13){
 			trace('the enter');
 			return onChange('enter');
 		}

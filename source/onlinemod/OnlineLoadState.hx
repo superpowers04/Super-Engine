@@ -225,28 +225,30 @@ class OnlineLoadState extends MusicBeatState
 					FlxG.switchState(new OnlinePlayMenuState("Server couldn't send file"));
 
 				// Normal network handlers
-				case Packets.BROADCAST_CHAT_MESSAGE:
-					var id:Int = data[0];
-					var message:String = data[1];
+				// case Packets.BROADCAST_CHAT_MESSAGE:
+				// 	var id:Int = data[0];
+				// 	var message:String = data[1];
 
-					Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
-				case Packets.REJECT_CHAT_MESSAGE:
-					Chat.SPEED_LIMIT();
-				case Packets.SERVER_CHAT_MESSAGE:
-					Chat.SERVER_MESSAGE(data[0]);
+				// 	Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
+				// case Packets.REJECT_CHAT_MESSAGE:
+				// 	Chat.SPEED_LIMIT();
+				// case Packets.SERVER_CHAT_MESSAGE:
+				// 	Chat.SERVER_MESSAGE(data[0]);
 
-				case Packets.PLAYER_LEFT:
-					var id:Int = data[0];
-					var nickname:String = OnlineLobbyState.clients[id].name;
+				// case Packets.PLAYER_LEFT:
+				// 	var id:Int = data[0];
+				// 	var nickname:String = OnlineLobbyState.clients[id].name;
 
-					OnlineLobbyState.removePlayer(id);
-					Chat.PLAYER_LEAVE(nickname);
+				// 	OnlineLobbyState.removePlayer(id);
+				// 	Chat.PLAYER_LEAVE(nickname);
 
 				case Packets.FORCE_GAME_END:
 					FlxG.switchState(new OnlineLobbyState(true));
 
 				case Packets.DISCONNECT:
 					FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
+				default:
+					return false;
 			}
 		}catch(e){
 			Chat.OutputChatMessage("[Client] You had an error while trying to download a song:");
@@ -254,6 +256,7 @@ class OnlineLoadState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OnlineLobbyState(true));
 		}
+		return true;
 	}
 
 	function loadVoices(path:String)

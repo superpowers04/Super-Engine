@@ -948,6 +948,8 @@ class PlayState extends ScriptMusicBeatState
 		var noteSplash0:NoteSplash = new NoteSplash();
 		noteSplash0.setupNoteSplash(boyfriend, 0);
 
+		var downscroll = downscroll || SESave.data.flipScrollY; // Very dumb way of implementing it but fuck it
+
 		if (SONG.difficultyString != null && SONG.difficultyString != "") songDiff = SONG.difficultyString;
 		else songDiff = if(customDiff != "") customDiff else if(stateType == 4) "mods/charts" else if (stateType == 5) "osu! beatmap" else (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
 		playerStrums = new FlxTypedGroup<StrumArrow>();
@@ -1704,13 +1706,11 @@ class PlayState extends ScriptMusicBeatState
 		Conductor.changeBPM(songData.bpm);
 
 		curSong = songData.song;
-		if (vocals == null ){
-			if (SONG.needsVoices){
-				SONG.needsVoices = false;
-				trace("Song needs voices but none found! Automatically disabled");
-			}
-			vocals = new FlxSound();
-		}
+		// if ( ){
+		// 	if(SONG.needsVoices) trace("Song needs voices but none found! Automatically disabled");
+
+		SONG.needsVoices = (vocals == null);
+		vocals = vocals ?? new FlxSound();
 		vocals.looped = false;
 		FlxG.sound.list.add(vocals);
 
@@ -1742,6 +1742,9 @@ class PlayState extends ScriptMusicBeatState
 				
 				FlxG.cameras.add(playerNoteCamera,false);
 				playerNoteCamera.bgColor = 0x00000000;
+				if(SESave.data.rotateScroll != 0) playerNoteCamera.angle = SESave.data.rotateScroll;
+				if(SESave.data.flipScrollX) playerNoteCamera.flashSprite.scaleX = -1;
+				if(SESave.data.flipScrollY) playerNoteCamera.flashSprite.scaleY = -1;
 
 				readdCam(camHUD);
 				readdCam(camTOP);

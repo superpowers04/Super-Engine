@@ -21,9 +21,9 @@ class Receiver
 	var varSize:Int; // The byte-size of the size-specificator of the current variable-length datatype being analyzed.
 
 	var buffers:Array<ByteArray> = []; // Stores the data from each TCP message (these can contain only partial information, so we have to store them)
-	public var HandleData:Int->Array<Dynamic>->Void;
+	public var HandleData:Int->Array<Dynamic>->Bool;
 
-	public function new(HandleData:Int->Array<Dynamic>->Void) {this.HandleData = HandleData;}
+	public function new(HandleData:Int->Array<Dynamic>->Bool) {this.HandleData = HandleData;}
 	public var isServer:Bool = false;
 
 	public function OnData(data:ByteArray) {
@@ -76,7 +76,7 @@ class Receiver
 						}
 						trace('Handling $pktName with data $_data');
 					}
-					(HandleData ?? OnlineLobbyState.handleDataGlobal)(packetId, _data);
+					if(HandleData == null || !HandleData(packetId, _data)) OnlineLobbyState.handleDataGlobal(packetId, _data);
 					w = 0;
 					varLength = 0;
 					endedPacket = true;

@@ -30,8 +30,9 @@ import openfl.utils.Endian;
 }
 
 
-class OnlineHostMenu extends MusicBeatState
+class OnlineHostMenu extends ScriptMusicBeatState
 {
+	public static var instance:OnlinePlayMenuState;
 	var errorText:FlxText;
 	var portField:FlxInputText;
 	var pwdField:FlxInputText;
@@ -212,6 +213,7 @@ class OnlineHostMenu extends MusicBeatState
 
 
 	/* Packets, this should probably be handled elsewhere but whatever ig*/
+	/* TODO: ADD SCRIPT SUPPORT */
 	public static function HandleData(socketID:Int,packetId:Int, data:Array<Dynamic>) {	
 		var player = connectedPlayers[socketID];
 		var socket = player.socket;
@@ -234,17 +236,24 @@ class OnlineHostMenu extends MusicBeatState
 				case Packets.SEND_NICKNAME:
 					if(data[0] == "unspecified" || clientsFromNames[data[0]] != null){
 						Sender.SendPacket(Packets.NICKNAME_CONFIRM, [1], socket);
-						return;
+						return true;
 					}
 					clientsFromNames[data[0]] = socketID;
 					player.nick = data[0];
 					trace('${socketID}: registered as ${player.nick}');
 					Sender.SendPacket(Packets.NICKNAME_CONFIRM, [0], socket);
-					
+				case Packets.JOINED_LOBBY:
+					Sender.SendPacket(Packets.SERVER_CHAT_MESSAGE,['Hosting is not currently finished, nothing besides chatting is implemented at the moment..'],socket);
+				case Packets.SEND_CHAT_MESSAGE:{
+					for (playerObject in connectedPlayers){
+						if(playerObject.socket != null && playerObject != player) Sender.SendPacket(Packets.BROADCAST_CHAT_MESSAGE,data,playerObject.socket);
+					}
+				}
 			}
 		}catch(e){
 			trace('Error handling packet($pktName) from $socketID:${e.message}');
 		}
+		return true;
 	}
 	static function OnErrorSocket(sockID:Int,e:IOErrorEvent) {
 		// shutdownServer();

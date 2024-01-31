@@ -32,6 +32,7 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 	public static var scripts:Array<String> = [];
 	public static var rawScripts:Array<Array<String>> = [];
 
+
 	var ServerList:Array<Array<Dynamic>> = [];
 	var AddServerButton:FlxUIButton;
 
@@ -140,7 +141,9 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 					case 3:
 						SetErrorText("Game is already full");
 				}
+			default: return false;
 		}
+		return true;
 	}
 
 	public static function OnData(e:ProgressEvent){
@@ -165,8 +168,10 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 			FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
 	}
 
-	public static function RespondKeepAlive(packetId:Int) {
-		if (packetId == Packets.KEEP_ALIVE) Sender.SendPacket(Packets.KEEP_ALIVE, [], OnlinePlayMenuState.socket);
+	public static function RespondKeepAlive(packetId:Int,?force:Bool = false,?socket:Socket):Bool {
+		if (!force && packetId != Packets.KEEP_ALIVE) return false; 
+		Sender.SendPacket(Packets.KEEP_ALIVE, [], socket ?? OnlinePlayMenuState.socket);
+		return true;
 	}
 
 	@:keep inline public static function disconnect(){
