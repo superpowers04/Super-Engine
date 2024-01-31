@@ -36,6 +36,7 @@ class Conductor
 	public static var timeScale:Float = Conductor.safeZoneOffset / 166;
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
+	public static var bpmChangeMapSteps:Map<Int,BPMChangeEvent> = [];
 
 	public function new(){}
 
@@ -51,14 +52,14 @@ class Conductor
 		if(song == null) return;
 		offset = song.offset;
 
-		var curBPM:Float = Math.abs(song.bpm);
+		var curBPM:Float = 120;
 		var totalSteps:Int = 0;
 		var totalPos:Float = 0;
 		for (i in 0...song.notes.length) {
 			var v = song.notes[i];
 			if(v.changeBPM && v.bpm != curBPM) {
 				curBPM = Math.abs(v.bpm);
-				bpmChangeMap.push({
+				bpmChangeMap.push(bpmChangeMapSteps[totalSteps] = {
 					stepTime: totalSteps,
 					songTime: totalPos,
 					bpm: curBPM

@@ -76,7 +76,7 @@ class Receiver
 						}
 						trace('Handling $pktName with data $_data');
 					}
-					HandleData(packetId, _data);
+					(HandleData ?? OnlineLobbyState.handleDataGlobal)(packetId, _data);
 					w = 0;
 					varLength = 0;
 					endedPacket = true;

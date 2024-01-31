@@ -107,51 +107,48 @@ class StoryMenuState extends ScriptMusicBeatState
 		var curDir:String = "Unspecified";
 		try{
 			var i = weekData.length;
-			if (FileSystem.exists("mods/weeks/"))
-			{
-			  for (directory in FileSystem.readDirectory("mods/weeks/"))
-			  {
-			  	curDir = directory;
-				if (FileSystem.exists(Sys.getCwd() + "mods/weeks/"+directory+"/config.json"))
-				{
-					var json:WeekJSON = Json.parse(SELoader.loadText("mods/weeks/"+directory+"/config.json"));
-					var songList:Array<String> = [];
-					var chartList:Array<String> = [];
-					var si = 0;
-					if(json.songs != null && json.songs[0] != null) {
-						for (item in json.songs) {
-							if (Std.isOfType(item,String)){
-								songList[si] = item;
-								chartList[si] = item;
-								si++;
-							}else if (item.name != null){
-								songList[si] = item.name;
-								chartList[si] = item.chartName;
-								si++;
+			if (FileSystem.exists("mods/weeks/")) {
+				for (directory in FileSystem.readDirectory("mods/weeks/")) {
+					curDir = directory;
+					if (FileSystem.exists(Sys.getCwd() + "mods/weeks/"+directory+"/config.json")) {
+						var json:WeekJSON = Json.parse(SELoader.loadText("mods/weeks/"+directory+"/config.json"));
+						var songList:Array<String> = [];
+						var chartList:Array<String> = [];
+						var si = 0;
+						if(json.songs != null && json.songs[0] != null) {
+							for (item in json.songs) {
+								if (Std.isOfType(item,String)){
+									songList[si] = item;
+									chartList[si] = item;
+									si++;
+								}else if (item.name != null){
+									songList[si] = item.name;
+									chartList[si] = item.chartName;
+									si++;
+								}
 							}
 						}
-					}
-					if(json.songList != null && json.songList[0] != null) {
-						for (item in json.songList) {
-							if (item != null && item != ""){
-								songList[si] = item;
-								chartList[si] = item;
-								si++;
+						if(json.songList != null && json.songList[0] != null) {
+							for (item in json.songList) {
+								if (item != null && item != ""){
+									songList[si] = item;
+									chartList[si] = item;
+									si++;
+								}
 							}
 						}
-					}
-					// var char2 = ;
-					weekData[i] = songList;
-					weekCharacters[i] = (if(si > 0) ['bf','bf','gf'] else ['','','']);
-					weekNames[i] = if(json.name == null || json.name == "") directory else json.name;
-					weekChartNames[i] = chartList;
-					weekDirectories[i] = directory;
-					weekDialogue[i] = (if(json.dontLoadDialog) false else true);
-					weekEmbedded[i] = false;
+						// var char2 = ;
+						weekData[i] = songList;
+						weekCharacters[i] = (if(si > 0) ['bf','bf','gf'] else ['','','']);
+						weekNames[i] = if(json.name == null || json.name == "") directory else json.name;
+						weekChartNames[i] = chartList;
+						weekDirectories[i] = directory;
+						weekDialogue[i] = (if(json.dontLoadDialog) false else true);
+						weekEmbedded[i] = false;
 
-					i++;
+						i++;
+					}
 				}
-			  }
 			} 
 		}catch(e){
 			movedBack = true;
@@ -164,26 +161,13 @@ class StoryMenuState extends ScriptMusicBeatState
 
 			// if(isNew){
 			// 				}
-			PlayState.storyWeek = "-custom-" + weekNames[curWeek];
-			var selSong = "mods/weeks/" + weekDirectories[curWeek] + "/" + PlayState.storyPlaylist[0].toLowerCase();
-			if(!FileSystem.exists(selSong)){
-
-				if(FileSystem.exists('mods/charts/' + PlayState.storyPlaylist[0])){
-					selSong = 'mods/charts/' + PlayState.storyPlaylist[0];
-				}else if(FileSystem.exists('mods/charts/' + PlayState.storyPlaylist[0].toLowerCase() )){
-					selSong = 'mods/charts/' + PlayState.storyPlaylist[0].toLowerCase();
-				}else{
-					MainMenuState.handleError("Unable to find song '" + PlayState.storyPlaylist[0] + "'!");
-					return;
-				}
-
-			}
-			// songJSON = if(weekChartNames[curWeek][i] == null)
+			var weekName = weekNames[curWeek];
+			PlayState.storyWeek = "-custom-" + weekName;
 			var songJSON = "";
+			var selSong = "mods/weeks/" + weekDirectories[curWeek] + "/" + PlayState.storyPlaylist[0].toLowerCase();
 			var diffic = "";
 
-			switch (curDifficulty)
-			{
+			switch (curDifficulty) {
 				case 0:
 					diffic = 'easy';
 				case 1:
@@ -191,23 +175,49 @@ class StoryMenuState extends ScriptMusicBeatState
 				case 2:
 					diffic = 'hard';
 			}
-			for (i in [
-			     PlayState.storyPlaylist[0].toLowerCase() + "-" + diffic,
-			     PlayState.storyPlaylist[0] + "-" + diffic,
-			     diffic,
-			     PlayState.storyPlaylist[0].toLowerCase(),
-			     PlayState.storyPlaylist[0]
-			    ]) 
-			{
-				if(FileSystem.exists('${selSong}/${i}.json')){
-					songJSON = i + ".json";
-					if(PlayState.storyDifficulty != 1 && i == PlayState.storyPlaylist[0].toLowerCase() || i == PlayState.storyPlaylist[0]){
-						PlayState.storyDifficulty = 1;
-						PlayState.customDiff = 'Normal($diffic not found)';
+
+			if(!SELoader.exists(selSong)){
+
+				if(SELoader.exists('mods/charts/' + PlayState.storyPlaylist[0])){
+					selSong = 'mods/charts/' + PlayState.storyPlaylist[0];
+				}else if(SELoader.exists('mods/charts/' + PlayState.storyPlaylist[0].toLowerCase() )){
+					selSong = 'mods/charts/' + PlayState.storyPlaylist[0].toLowerCase();
+				}else{
+					songJSON = multi.MultiMenuState.findSongByName(PlayState.storyPlaylist[0].toLowerCase() + "-" + diffic,weekName);
+					if(songJSON == "") songJSON = multi.MultiMenuState.findSongByName(PlayState.storyPlaylist[0].toLowerCase() + "-" + diffic,weekName);
+					if(songJSON == ""){
+						MainMenuState.handleError("Unable to find song '" + PlayState.storyPlaylist[0] + "'!");
+						return;
 					}
-					break;
 				}
-			} 
+
+			}
+			// songJSON = if(weekChartNames[curWeek][i] == null)
+
+			if(songJSON == ""){
+
+				var fucked = [
+						PlayState.storyPlaylist[0].toLowerCase() + "-" + diffic,
+						PlayState.storyPlaylist[0] + "-" + diffic,
+						diffic,
+						PlayState.storyPlaylist[0].toLowerCase(),
+						PlayState.storyPlaylist[0]
+					];
+				for (i in fucked)
+				{
+					if(SELoader.exists('${selSong}/${i}.json')){
+						songJSON = i + ".json";
+						if(PlayState.storyDifficulty != 1 && i == PlayState.storyPlaylist[0].toLowerCase() || i == PlayState.storyPlaylist[0]){
+							PlayState.storyDifficulty = 1;
+							PlayState.customDiff = 'Normal($diffic not found)';
+						}
+						break;
+					}
+				}
+			}
+			// for (i in fucked) {
+			// 	songJSON=;
+			// }
 			if(songJSON == ""){
 				MainMenuState.handleError("Unable to find a valid chart for '" + PlayState.storyPlaylist[0] + "' on difficulty " + PlayState.storyDifficulty + "!",!inStoryMenu);
 				return;
@@ -333,7 +343,7 @@ class StoryMenuState extends ScriptMusicBeatState
 		difficultySelectors = new FlxGroup();
 		add(difficultySelectors);
 
-		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
+		leftArrow = new FlxSprite(1160, grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
 		leftArrow.animation.addByPrefix('idle', "arrow left");
 		leftArrow.animation.addByPrefix('press', "arrow push left");
@@ -356,6 +366,7 @@ class StoryMenuState extends ScriptMusicBeatState
 		rightArrow.animation.addByPrefix('press', "arrow push right", 24, false);
 		rightArrow.animation.play('idle');
 		difficultySelectors.add(rightArrow);
+		// difficultySelectors.x = grpWeekText.members[curWeek].x + grpWeekText.members[curWeek].width;
 
 
 		txtTracklist = new FlxText(FlxG.width * 0.05, 100, 0, "Tracks", 32);
@@ -377,7 +388,13 @@ class StoryMenuState extends ScriptMusicBeatState
 	override function update(elapsed:Float)
 	{
 		// scoreText.setFormat('VCR OSD Mono', 32);
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
+		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, elapsed));
+		{
+
+			var grp = grpWeekText.members[curWeek];
+			var x = Math.floor(FlxMath.lerp(leftArrow.x, grp.x + grp.width + 20, elapsed * 1.5));
+			rightArrow.x = (sprDifficulty.x = (leftArrow.x = x) + 130) + sprDifficulty.width + 50;
+		}
 
 		scoreText.text = "WEEK SCORE:" + lerpScore;
 

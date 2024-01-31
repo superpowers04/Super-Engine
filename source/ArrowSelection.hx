@@ -18,10 +18,10 @@ using StringTools;
 class ArrowSelection extends SearchMenuState
 {
 	public var playerStrums:FlxTypedGroup<StrumArrow> = new FlxTypedGroup<StrumArrow>();
-	function generateStaticArrows(player:Int):Void{
+	function generateStaticArrows(player:Int,?skin:String):Void{
 		for (i in 0...4){
 			// FlxG.log.add(i);
-			var babyArrow:StrumArrow = new StrumArrow(i,0, if (SESave.data.downscroll) FlxG.height - 165 else 50);
+			var babyArrow:StrumArrow = new StrumArrow(i,0, if (SESave.data.downscroll) FlxG.height - 165 else 50,skin);
 
 			babyArrow.init();
 			// babyArrow.x += Note.swagWidth * i + i;
@@ -31,6 +31,9 @@ class ArrowSelection extends SearchMenuState
 			babyArrow.alpha = 0;
 			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			playerStrums.add(babyArrow);
+			babyArrow.playStatic();
+			babyArrow.screenCenter(X);
+			babyArrow.x += ((babyArrow.width + 20) * babyArrow.id - 2); 
 		}
 	}
 	override function create()
@@ -39,10 +42,8 @@ class ArrowSelection extends SearchMenuState
 			searchList = ["default"];
 			var dataDir:String = Sys.getCwd() + "mods/noteassets/";
 			var customArrows:Array<String> = [];
-			if (SELoader.exists(dataDir))
-			{
-				for (file in SELoader.readDirectory(dataDir))
-				{
+			if (SELoader.exists(dataDir)) {
+				for (file in SELoader.readDirectory(dataDir)) {
 					if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("-splash.png")){
 						var name = file.substr(0,-4);
 						if (SELoader.exists('${dataDir}${name}.xml'))
@@ -55,17 +56,14 @@ class ArrowSelection extends SearchMenuState
 			}else{MainMenuState.handleError('mods/noteassets is not a folder. You need to create it to use custom arrow skins!');}
 			{
 				var dataDir = "mods/packs/";
-				for (_dir in SELoader.readDirectory(dataDir))
-				{
+				for (_dir in SELoader.readDirectory(dataDir)) {
 					var dataDir = 'mods/packs/$_dir/noteassets/';
-					if(SELoader.exists(dataDir)){
+					if(SELoader.exists(dataDir)) {
 
-						for (file in SELoader.readDirectory(dataDir))
-						{
-							if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("-splash.png")){
+						for (file in SELoader.readDirectory(dataDir)) {
+							if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("-splash.png")) {
 								var name = file.substr(0,-4);
-								if (SELoader.exists('${dataDir}${name}.xml'))
-								{
+								if (SELoader.exists('${dataDir}${name}.xml')) {
 									// Really shit but it works
 									customArrows.push('../packs/$_dir/noteassets/$name');
 
@@ -86,7 +84,7 @@ class ArrowSelection extends SearchMenuState
 			}
 		}
 
-		generateStaticArrows(1);
+		generateStaticArrows(1,'skin');
 		super.create();
 		infotext.text = "Hold shift to scroll faster, Press CTRL to toggle viewing the entire note asset";
 		add(playerStrums);
@@ -114,9 +112,9 @@ class ArrowSelection extends SearchMenuState
 	override function beatHit(){
 		super.beatHit();
 		if(playerStrums.members[curBeat % 4] != null) {
-			playerStrums.members[curBeat % 4].confirm();
-			playerStrums.members[(curBeat - 2) % 4].playStatic();
-			playerStrums.members[(curBeat - 1) % 4].press();
+			playerStrums.members[curBeat % 4]?.confirm();
+			playerStrums.members[(curBeat - 2) % 4]?.playStatic();
+			playerStrums.members[(curBeat - 1) % 4]?.press();
 		}
 
 	}
@@ -128,7 +126,7 @@ class ArrowSelection extends SearchMenuState
 	inline static var time = 100000000000;
 	public function updateArrowDisplay(){
 		if(playerStrums.members[0] == null) return;
-		if(arrowDisplay && notes.members[0] == null){
+		if(arrowDisplay && notes.members[0] == null) {
 
 			add(notes);
 			var note:FakeNote = null;
@@ -166,17 +164,16 @@ class ArrowSelection extends SearchMenuState
 		// 	}
 		// }
 	}
-	override function changeSelection(change:Int = 0){
+	override function changeSelection(change:Int = 0) {
 		super.changeSelection(change);
 		for (arrow in playerStrums.members){
-			arrow.changeSprite(songs[curSelected]);
-			arrow.playStatic();
-			arrow.screenCenter(X);
-			arrow.x += ((arrow.width + 20) * arrow.id - 2); 
+			playerStrums.remove(arrow);
+			arrow.destroy();
 		}
+		generateStaticArrows(1,songs[curSelected]);
 		updateArrowDisplay();
 	}
-	override function select(sel:Int = 0){
+	override function select(sel:Int = 0) {
 		SESave.data.noteAsset = songs[curSelected];
 
 	}

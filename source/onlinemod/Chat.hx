@@ -10,16 +10,16 @@ import flixel.util.FlxColor;
 
 class Chat
 {
-  public static var chatField:FlxInputText;
-  public static var chatMessagesList:FlxUIList;
-  public static var chatSendButton:FlxUIButton;
-  public static var chatMessages:Array<Array<Dynamic>>;
-  public static var chatId:Int = 0;
+	public static var chatField:FlxInputText;
+	public static var chatMessagesList:FlxUIList;
+	public static var chatSendButton:FlxUIButton;
+	public static var chatMessages:Array<Array<Dynamic>>;
+	public static var chatId:Int = 0;
 
-  public static var created:Bool = false;
+	public static var created:Bool = false;
 
 
-  public static inline var systemColor:FlxColor = FlxColor.YELLOW;
+	public static inline var systemColor:FlxColor = FlxColor.YELLOW;
 
 
 	@:keep public static inline function MESSAGE(nickname:String, message:String)
@@ -43,27 +43,26 @@ class Chat
 		Chat.OutputChatMessage('You\'re muted', FlxColor.RED);
 
 
-	public static function createChat(state:FlxUIState){
+	public static function createChat(state:FlxUIState,?canHide:Bool = false){
 		Chat.created = true;
 
 		Chat.chatMessagesList = new FlxUIList(10, FlxG.height - 120, FlxG.width, 175);
 		state.add(Chat.chatMessagesList);
-		for (chatMessage in Chat.chatMessages)
-		{
-		  Chat.OutputChatMessage(chatMessage[0], chatMessage[1], false);
-		}
-
+		for (chatMessage in Chat.chatMessages) Chat.OutputChatMessage(chatMessage[0], chatMessage[1], false);
 		Chat.chatField = new FlxInputText(10, FlxG.height - 70, 1152, 20);
 		chatField.maxLength = 81;
 		state.add(Chat.chatField);
 
 		Chat.chatSendButton = new FlxUIButton(1171, FlxG.height - 70, "Send", () -> {
-		  Chat.SendChatMessage();
-		  Chat.chatField.hasFocus = true;
+			Chat.SendChatMessage();
+			Chat.chatField.hasFocus = true;
 		});
 		Chat.chatSendButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
 		Chat.chatSendButton.resize(100, Chat.chatField.height);
 		state.add(Chat.chatSendButton);
+		Chat.chatField.callback = function(_:String,cb:String){
+			if(cb == "enter") Chat.chatSendButton.onUp.callback();
+		}
 	}
 
 	public static function OutputChatMessage(message:String, ?color:FlxColor=FlxColor.WHITE, ?register:Bool=true){
@@ -89,9 +88,8 @@ class Chat
 			while (message.length > 86){
 				RegisterChatMessage(message.substr(0,86),color,false);
 				message = message.substr(87);
+			}
 		}
-
-	}
 		Chat.chatMessages.push([message, color]);
 	}
 
@@ -101,7 +99,6 @@ class Chat
 		if (!StringTools.startsWith(chatField.text, " ")) {
 			Sender.SendPacket(Packets.SEND_CHAT_MESSAGE, [Chat.chatId, chatField.text], OnlinePlayMenuState.socket);
 			Chat.chatId++;
-
 			OutputChatMessage('<${OnlineNickState.nickname}> ${chatField.text}');
 		}
 

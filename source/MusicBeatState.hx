@@ -144,6 +144,8 @@ class MusicBeatState extends FlxUIState {
 		}
 		
 		if(trac) trace(str);
+		try{
+
 		var tempMessage = new FlxText(40,60,1000,str,24);
 		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		tempMessage.scrollFactor.set();
@@ -169,6 +171,7 @@ class MusicBeatState extends FlxUIState {
 			tempMessage.y = tempMessBacking.y + 2;
 		};
 		tempMessages.push([time,tempMessage,tempMessBacking]);
+		}catch(e){trace(e);}
 	}
 	public function showTempBanner(str:String,?color:FlxColor = FlxColor.LIME,?time:Float = 5,?center:Bool = true,?trac:Bool = true){
 		while(tempMessages.length > 0){
@@ -201,10 +204,9 @@ class MusicBeatState extends FlxUIState {
 		}
 	}
 	// Have to keep track of steps, else they'll try to hit multiple times
-	var oldBeat:Int = -10000;
-	var oldStep:Int = -10000;
-	override function update(elapsed:Float)
-	{
+	var oldBeat:Int = 0;
+	var oldStep:Int = 0;
+	override function update(elapsed:Float) {
 		if(tempMessages[0] != null && (tempMessages[0][0] -= elapsed) < 0){
 			try{
 				var msg = tempMessages.shift();
@@ -232,8 +234,22 @@ class MusicBeatState extends FlxUIState {
 		updateCurStep();
 		updateBeat();
 		if (oldStep != curStep && curStep > 0){
+			if(oldStep > curStep && Conductor.bpmChangeMap != null){ // Gotta resync the 
+				// var position = Conductor.songPosition;
+				var newStep = curStep;
+				for(ev in Conductor.bpmChangeMap){
+					if(ev.stepTime < newStep){
+						curStep = ev.stepTime;
+						updateCurStep();
+						updateBPMChange();
+					}else break;
+				}
+				curStep = newStep;
+				// Conductor.songPosition = position;
+			}
 			oldStep = curStep;
 			stepHit();
+			updateBPMChange();
 		}
 		if(FlxG.mouse.justPressed && checkInputFocus && FlxG.mouse.visible){
 			var hasPressed = false;
@@ -288,30 +304,35 @@ class MusicBeatState extends FlxUIState {
 	}
 
 	public static var currentColor = 0;
-	private function updateCurStep():Void
-	{
-		var lastChange:BPMChangeEvent = {
-			stepTime: 0,
-			songTime: 0,
-			bpm: 0
-		}
-		if(Conductor.bpmChangeMap != null){
+	public var lastBPMChange:BPMChangeEvent = {
+		stepTime: 0,
+		songTime: 0,
+		bpm: Conductor.bpm
+	};
+	private function updateCurStep():Void {
+		// if(Conductor.bpmChangeMap != null){
 			
-			for (i in 0...Conductor.bpmChangeMap.length)
-			{
-				if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime){
-					lastChange = Conductor.bpmChangeMap[i];
-				}else break;
-			}
-		}
+		// 	for (i in 0...Conductor.bpmChangeMap.length)
+		// 	{
+		// 		if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime){
+		// 			lastChange = Conductor.bpmChangeMap[i];
+		// 		}else break;
+		// 	}
+		// }
 
-		var prog = (Conductor.offset + Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet;
+
+		var prog = (Conductor.offset + Conductor.songPosition - lastBPMChange.songTime) / Conductor.stepCrochet;
 		curStepProgress = prog % 1;
-		curStep = lastChange.stepTime + Math.floor(prog);
+		curStep = lastBPMChange.stepTime + Math.floor(prog);
+		
+	}
+	@:keep inline function updateBPMChange(){
+		if(Conductor.songPosition > 0 && Conductor.bpmChangeMapSteps != null && Conductor.bpmChangeMapSteps[curStep] != null){
+			Conductor.changeBPM((lastBPMChange = Conductor.bpmChangeMapSteps[curStep]).bpm);
+		}
 	}
 
-	public function stepHit():Void
-	{
+	public function stepHit():Void {
 		if (curStep % 4 == 0 && oldBeat != curBeat){
 			oldBeat = curBeat;
 			beatHit();
@@ -322,14 +343,7 @@ class MusicBeatState extends FlxUIState {
 		//do literally nothing dumbass
 	}
 	
-	public function fancyOpenURL(schmancy:String)
-	{
-		#if linux
-		Sys.command('/usr/bin/xdg-open', [schmancy, "&"]);
-		#else
-		FlxG.openURL(schmancy);
-		#end
-	}
+	@:keep inline public function fancyOpenURL(schmancy:String) FlxG.openURL(schmancy);
 	override function switchTo(nextState:FlxState):Bool{
 		tranOut();
 		FlxG.mouse.visible = false;

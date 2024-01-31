@@ -36,7 +36,8 @@ class LoadingScreen extends Sprite{
 		"This engine is buggy as hell.\nFeel free to report any bugs you find on the Discord server.",
 		"Hey, look Mom! I'm on a loading screen!!!",
 		"I'm here to pad out the loading screen messages. How am I doing? :3",
-		"goober","l + bozo + ratio + skill issue + bruh",
+		"goober",
+		"l + bozo + ratio + skill issue + bruh",
 		"Never do drugs, you'll probably die",
 		"Lua >>> python, fight me",
 		'You opened the game at ${Date.now()}',
@@ -53,6 +54,7 @@ class LoadingScreen extends Sprite{
 		"Did you know that Content Creation Mode enables an object mover?\nYou can use Shift+F8 for it..",
 		"Did you know that missing a note will make you lose health?",
 		"If you have practice mode disabled, you will die at 0 health.\n Otherwise your score will just not save",
+		"For the first year or so, offsets were fucked. Then I removed Pico",
 		"your mother",
 		"your mother is a lesbian and thats a threat",
 		"qhar?!?!?!",
@@ -66,6 +68,9 @@ class LoadingScreen extends Sprite{
 		"This text is so long that it will probably fall off the screen\n and you will be unable to read it because I'm such a massive troll\n that likes to make text fall off the screen to troll people lmao lmao this is just padding to make the text even longer I got you so goooooooooddddddd ",
 		"sex",
 		"Some people call the 'Arrow keys' as 'Cursor keys'",
+		"have you touched grass recently? because i havent",
+		"2+2=fish",
+		"",
 		"You've been distracted",
 		"If you're under the age of 13...\nwhat the hell are you doing playing fnf? Go do your homework, play roblox or something"
 	];

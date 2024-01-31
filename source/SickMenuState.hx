@@ -96,7 +96,8 @@ class SickMenuState extends ScriptMusicBeatState
 		try{
 
 
-
+			Conductor.bpmChangeMap = null;
+			Conductor.bpmChangeMapSteps = null;
 			var time:Int = Date.now().getHours();
 			var curMusicTime = 1;
 			for (i in 0 ... SickMenuState.musicList.length) {

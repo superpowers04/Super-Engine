@@ -61,6 +61,8 @@ class Packets {
 	// [PacketName, PacketContents]
 	public static var CUSTOMPACKETSTRING(default, never) = new Packet("CUSTOMPACKETSTRING",[DataTypes.STRING,DataTypes.STRING]).id;
 	public static var CUSTOMPACKETINT(default, never) = new Packet("CUSTOMPACKETINT",[DataTypes.STRING,DataTypes.INT]).id;
+
+	public static var HOSTEDSERVER(default, never) = new Packet("HOSTEDSERVER",[]).id;
 }
 
 

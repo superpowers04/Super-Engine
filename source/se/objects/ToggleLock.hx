@@ -25,8 +25,8 @@ class ToggleLock extends Lock{
 class ToggleLock{
 	public function lock() return;
 	public var locked:Bool = false;
-	@:keep inline public function wait(?timeout:Float) return true;
+	@:keep inline public override function wait(?timeout:Float) return true;
 
-	@:keep inline public function release() return;
+	@:keep inline public override function release() return;
 }
 #end

@@ -20,7 +20,7 @@ import sys.io.File;
 
 using StringTools;
 class OnlineLobbyState extends ScriptMusicBeatState {
-
+	public static var instance:OnlineLobbyState;
 	var clientTexts:Map<Int, Int> = []; // Maps a player ID to the corresponding index in clientsGroup
 	var clientsGroup:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
 	var clientsGroupLeaderboard:FlxTypedGroup<FlxText>; // Stores all FlxText instances used to display names
@@ -47,6 +47,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
   // public static var loadedScripts:Bool = false;
 
 	public function new(keepClients:Bool=false,?_hasLeaderboard:Bool = false){
+		instance = this;
 		super();
 		scriptSubDirectory = "/onlinelobby/";
 		if(_hasLeaderboard){
@@ -171,79 +172,129 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		FlxG.mouse.visible = true;
 	}
 
-  function createNamesUI()
-  {
-	clientsGroup.clear();
-	clientTexts = [];
-	clientCount = 0;
+	function createNamesUI()
+	{
+		clientsGroup.clear();
+		clientTexts = [];
+		clientCount = 0;
 
-	for (i in clientsOrder){
-		addPlayerUI(i, i == -1 ? OnlineNickState.nickname : clients[i].name, i == -1 ? FlxColor.YELLOW : null);
+		for (i in clientsOrder){
+			addPlayerUI(i, i == -1 ? OnlineNickState.nickname : clients[i].name, i == -1 ? FlxColor.YELLOW : null);
+		}
 	}
-  }
-  override function onFocus(){
-  	super.onFocus();
-  	FlxG.mouse.enabled = FlxG.mouse.visible = true;
-  }
-  function HandleData(packetId:Int, data:Array<Dynamic>)
-  {
-	OnlinePlayMenuState.RespondKeepAlive(packetId);
-	callInterp("packetRecieve",[packetId,data]);
-	if(!handleNextPacket){
-		handleNextPacket = true;
-		return;
+	override function onFocus(){
+		super.onFocus();
+		FlxG.mouse.enabled = FlxG.mouse.visible = true;
 	}
-	switch (packetId) {
-		case Packets.BROADCAST_NEW_PLAYER:
-			var id:Int = data[0];
-			var nickname:String = data[1];
+	public static function handleDataGlobal(packetId:Int, data:Array<Dynamic>):Bool {
+		OnlinePlayMenuState.RespondKeepAlive(packetId);
+		switch (packetId) {
+			case Packets.BROADCAST_NEW_PLAYER:
+				var id:Int = data[0];
+				var nickname:String = data[1];
 
-			addPlayerUI(id, nickname);
-			addPlayer(id, nickname);
-			if (receivedPrevPlayers) Chat.PLAYER_JOIN(nickname);
-		case Packets.END_PREV_PLAYERS:
-			receivedPrevPlayers = true;
-			addPlayerUI(-1, OnlineNickState.nickname, FlxColor.YELLOW);
-			clientsOrder.push(-1);
-		case Packets.PLAYER_LEFT:
-			var id:Int = data[0];
-			var nickname:String = OnlineLobbyState.clients[id].name;
-			Chat.PLAYER_LEAVE(nickname);
+				if(instance != null) instance.addPlayerUI(id, nickname);
+				addPlayer(id, nickname);
+				if (receivedPrevPlayers) Chat.PLAYER_JOIN(nickname);
+			case Packets.END_PREV_PLAYERS:
+				receivedPrevPlayers = true;
+				if(instance != null) instance.addPlayerUI(-1, OnlineNickState.nickname, FlxColor.YELLOW);
+				clientsOrder.push(-1);
+			case Packets.PLAYER_LEFT:
+				var id:Int = data[0];
+				var nickname:String = OnlineLobbyState.clients[id].name;
+				Chat.PLAYER_LEAVE(nickname);
 
-			removePlayer(id);
-			createNamesUI();
-		case Packets.GAME_START:
-			var jsonInput:String = data[0];
-			var folder:String = data[1];
-			// var count = 0;
-			// for (i in clients.keys())
-			// {
-			//   count++;
-			// }
+				removePlayer(id);
+				if(instance != null) instance.createNamesUI();
+			case Packets.GAME_START:
+				var jsonInput:String = data[0];
+				var folder:String = data[1];
+				// var count = 0;
+				// for (i in clients.keys())
+				// {
+				//   count++;
+				// }
 
-			StartGame(jsonInput, folder);
+				StartGame(jsonInput, folder);
 
-		case Packets.BROADCAST_CHAT_MESSAGE:
-			var id:Int = data[0];
-			var message:String = data[1];
+			case Packets.BROADCAST_CHAT_MESSAGE:
+				var id:Int = data[0];
+				var message:String = data[1];
 
-			Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
-		case Packets.REJECT_CHAT_MESSAGE:
-			Chat.SPEED_LIMIT();
-		case Packets.MUTED:
-			Chat.MUTED();
-		case Packets.SERVER_CHAT_MESSAGE:
-			if(data[0] == "'ceabf544' This is a compatibility message, Ignore me!"){
-				TitleState.supported = true;
-				Sender.SendPacket(Packets.SUPPORTED, [], OnlinePlayMenuState.socket);
-				Chat.SERVER_MESSAGE("This server is compatible with extra features!");
-			}else if(StringTools.startsWith(data[0],"'32d5d167'")) handleServerCommand(data[0],0); else Chat.SERVER_MESSAGE(data[0]);
+				Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
+			case Packets.REJECT_CHAT_MESSAGE:
+				Chat.SPEED_LIMIT();
+			case Packets.MUTED:
+				Chat.MUTED();
+			case Packets.SERVER_CHAT_MESSAGE:
+				if(data[0] == "'ceabf544' This is a compatibility message, Ignore me!"){
+					TitleState.supported = true;
+					Sender.SendPacket(Packets.SUPPORTED, [], OnlinePlayMenuState.socket);
+					Chat.SERVER_MESSAGE("This server is compatible with extra features!");
+				}else if(StringTools.startsWith(data[0],"'32d5d167'")) handleServerCommand(data[0],0); else Chat.SERVER_MESSAGE(data[0]);
 
-		case Packets.DISCONNECT:
-			TitleState.p2canplay = false;
-			FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
+			case Packets.DISCONNECT:
+				TitleState.p2canplay = false;
+				FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
+		}
+		return false;
 	}
-  }
+	function HandleData(packetId:Int, data:Array<Dynamic>) {
+		
+		callInterp("packetRecieve",[packetId,data]);
+		if(!handleNextPacket){
+			handleNextPacket = true;
+			return;
+		}
+		switch (packetId) {
+			// case Packets.BROADCAST_NEW_PLAYER:
+			// 	var id:Int = data[0];
+			// 	var nickname:String = data[1];
+
+			// 	addPlayerUI(id, nickname);
+			// 	addPlayer(id, nickname);
+			// 	if (receivedPrevPlayers) Chat.PLAYER_JOIN(nickname);
+			// case Packets.END_PREV_PLAYERS:
+			// 	receivedPrevPlayers = true;
+			// 	addPlayerUI(-1, OnlineNickState.nickname, FlxColor.YELLOW);
+			// 	clientsOrder.push(-1);
+			// case Packets.PLAYER_LEFT:
+			// 	var id:Int = data[0];
+			// 	var nickname:String = OnlineLobbyState.clients[id].name;
+			// 	Chat.PLAYER_LEAVE(nickname);
+
+			// 	removePlayer(id);
+			// 	createNamesUI();
+			// case Packets.GAME_START:
+			// 	var jsonInput:String = data[0];
+			// 	var folder:String = data[1];
+			// 	// var count = 0;
+			// 	// for (i in clients.keys())
+			// 	// {
+			// 	//   count++;
+			// 	// }
+
+			// 	StartGame(jsonInput, folder);
+
+			// case Packets.BROADCAST_CHAT_MESSAGE:
+			// 	var id:Int = data[0];
+			// 	var message:String = data[1];
+
+			// 	Chat.MESSAGE(OnlineLobbyState.clients[id].name, message);
+
+			// case Packets.SERVER_CHAT_MESSAGE:
+			// 	if(data[0] == "'ceabf544' This is a compatibility message, Ignore me!"){
+			// 		TitleState.supported = true;
+			// 		Sender.SendPacket(Packets.SUPPORTED, [], OnlinePlayMenuState.socket);
+			// 		Chat.SERVER_MESSAGE("This server is compatible with extra features!");
+			// 	}else if(StringTools.startsWith(data[0],"'32d5d167'")) handleServerCommand(data[0],0); else Chat.SERVER_MESSAGE(data[0]);
+
+			// case Packets.DISCONNECT:
+			// 	TitleState.p2canplay = false;
+			// 	FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
+		}
+	}
 
 	public static function handleServerCommand(command:String,?version = 0){
 		try{ // Not sure if I'll ever actually use the version variable for anything
@@ -430,7 +481,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		OnlineLobbyState.clientsOrder.push(id);
 	}
 
-	function addPlayerUI(id:Int, nickname:String, ?color:FlxColor=FlxColor.WHITE) {
+	public function addPlayerUI(id:Int, nickname:String, ?color:FlxColor=FlxColor.WHITE) {
 		var text:FlxText = new FlxText((clientCount % NAMES_PER_ROW) * FlxG.width/NAMES_PER_ROW, FlxG.height*0.2 + Std.int(clientCount / NAMES_PER_ROW) * NAMES_VERTICAL_SPACING, FlxG.width/NAMES_PER_ROW, nickname);
 		text.setFormat(CoolUtil.font, NAMES_SIZE, color, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		clientTexts[id] = clientsGroup.length;
@@ -443,7 +494,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		clientsOrder.remove(id);
 	}
 
-	@:keep inline function removePlayerUI(id:Int){
+	@:keep inline public function removePlayerUI(id:Int){
 		var n:Int = clientTexts[id];
 
 		for (i=>k in clientTexts){

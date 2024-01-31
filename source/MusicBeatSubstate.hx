@@ -5,22 +5,16 @@ import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.tweens.FlxTween;
 
-class MusicBeatSubstate extends FlxSubState
-{
-	public function new()
-	{
-		super();
-	}
+class MusicBeatSubstate extends FlxSubState {
 
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
-	private var controls(get, never):Controls;
+	public var controls(get, never):Controls;
 
-	inline function get_controls():Controls
-		return PlayerSettings.player1.controls;
+	@:keep inline public function get_controls():Controls return PlayerSettings.player1.controls;
 	var hasTextInputFocus = false;
 	public var toggleVolKeys:Bool = true; 
 
@@ -47,8 +41,7 @@ class MusicBeatSubstate extends FlxSubState
 		if(Overlay.Console.showConsole) return; // trol
 		update(elapsed);
 	}
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		//everyStep();
 		var oldStep:Int = curStep;
 
@@ -99,8 +92,7 @@ class MusicBeatSubstate extends FlxSubState
 			songTime: 0,
 			bpm: 0
 		}
-		for (i in 0...Conductor.bpmChangeMap.length)
-		{
+		for (i in 0...Conductor.bpmChangeMap.length) {
 			if (Conductor.songPosition > Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];
 		}
@@ -108,8 +100,7 @@ class MusicBeatSubstate extends FlxSubState
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
-	public function stepHit():Void
-	{
+	public function stepHit():Void {
 		if (curStep % 4 == 0)
 			beatHit();
 	}

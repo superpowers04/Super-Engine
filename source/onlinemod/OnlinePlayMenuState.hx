@@ -22,7 +22,7 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 	var errorColor:FlxColor;
 
 	static var errorText:FlxText;
-	static var password:String;
+	static public var password:String;
 
 	public static var socket:Socket;
 	public static var receiver:Receiver;
@@ -105,10 +105,8 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 		super.closeSubState();
 	}
 
-	public static function HandleData(packetId:Int, data:Array<Dynamic>)
-	{
-		switch (packetId)
-		{
+	public static function HandleData(packetId:Int, data:Array<Dynamic>) {
+		switch (packetId) {
 			case Packets.SEND_SERVER_TOKEN:
 				// var serverToken:Int = data[0];
 				// if (serverToken == Tokens.serverToken)
@@ -122,11 +120,18 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 				// 	if (socket.connected)
 				// 		socket.close();
 				// }
+			case Packets.HOSTEDSERVER:
+				socket.endian = LITTLE_ENDIAN;
+				Sender.SendPacket(Packets.SEND_PASSWORD, [password], socket);
+				password = "";
+
 			case Packets.PASSWORD_CONFIRM:
 				switch (data[0])
 				{
 					case 0:
-						SetErrorText("Correct password", FlxColor.LIME);
+						if(OnlinePlayMenuState.errorText != null){
+							SetErrorText("Correct password", FlxColor.LIME);
+						}
 						FlxG.switchState(new OnlineNickState());
 					case 1:
 						SetErrorText("Game already in progress");

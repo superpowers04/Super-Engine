@@ -19,8 +19,7 @@ using StringTools;
 
 
 // Recreation of openfl.display.fps, with memory being listed
-class Overlay extends TextField
-{
+class Overlay extends TextField {
 	/**
 		The current frame rate, expressed using frames-per-second
 	**/
@@ -28,8 +27,8 @@ class Overlay extends TextField
 	static public var instance:Overlay = null;
 
 	@:noCompletion private var cacheCount:Int;
-	@:noCompletion private var currentTime:Float;
-	@:noCompletion private var times:Array<Float>;
+	@:noCompletion private var currentTime:Int;
+	@:noCompletion private var times:Array<Int>;
 	public static var debugVar:String = "";
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
@@ -66,20 +65,17 @@ class Overlay extends TextField
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
 		if(!visible) return;
-		#if sys
-			currentTime = Date.now().getTime();
-			times.push(currentTime);
+		// #if sys
+		currentTime = Std.int(haxe.Timer.stamp() * 1000);
+		times.push(currentTime);
 
-			while (times[0] < currentTime - 1000) times.shift();
-		#else
-			currentTime += flixel.FlxG.elapsed;
-			times.push(currentTime);
+		while (times[0] < currentTime - 1000) times.shift();
+		// #else
+		// 	currentTime += flixel.FlxG.elapsed;
+		// 	times.push(currentTime);
 
-			while (times[0] < currentTime - 1)
-			{
-				times.shift();
-			}
-		#end
+		// 	while (times[0] < currentTime - 1) times.shift();
+		// #end
 
 
 		scaleX = lime.app.Application.current.window.width / 1280;
@@ -87,16 +83,16 @@ class Overlay extends TextField
 		var currentCount = times.length;
 		currentFPS = Math.round(currentCount);
 
-			var mem:Float = Math.round((
+		var mem:Float = Math.round((
 			#if cpp
 			cpp.NativeGc.memInfo(0)
 			#else
 			System.totalMemory
 			#end
 			/ 1024) / 1000);
-			if (mem > memPeak)
-				memPeak = mem;
-			text = "" + currentFPS + " FPS/" + deltaTime + 
+		if (mem > memPeak)
+			memPeak = mem;
+		text = "" + currentFPS + " FPS/" + deltaTime + 
 			" MS\nMemory Usage/Peak: " + mem + "MB/" + memPeak + "MB"
 			#if cpp
 			+"\nMemory Reserved/Current: " + Math.round((cpp.NativeGc.memInfo(3) / 1024) / 1000) + "MB/" + Math.round((cpp.NativeGc.memInfo(2) / 1024) / 1000) + "MB" 
@@ -120,9 +116,6 @@ class Console extends TextField
 	**/
 	public var currentFPS(default, null):Int;
 
-	@:noCompletion private var cacheCount:Int;
-	@:noCompletion private var currentTime:Float;
-	@:noCompletion private var times:Array<Float>;
 	public static var debugVar:String = "";
 	var requestUpdate:Bool = false;
 	public static var showConsole:Bool = false;
@@ -480,6 +473,12 @@ class ConsoleInput extends TextField{
 		}else if(FlxG.keys.justPressed.DELETE){
 			actualText = actualText.substring(0,caretPos) + actualText.substring(caretPos + 1);
 			updateShownText();
+		}else if(FlxG.keys.justPressed.END){
+			caretPos = actualText.length;
+			updateShownText();
+		}else if(FlxG.keys.justPressed.HOME){
+			caretPos = 0;
+			updateShownText();
 		}else{
 
 			for(key => char in keyList){
@@ -546,6 +545,7 @@ class ConsoleInput extends TextField{
 		["reload",'Reloads current state'],
 		["switchstate",'Switch to a state, Case/path sensitive!'],
 		["defines",'Prints a bunch of defines, used for debugging purposes'],
+		["playsong (name)",'Jumps to a song matching the name'],
 
 		['-- Scripting --'],
 		["hs (code)",'Run hscript code'],

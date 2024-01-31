@@ -61,6 +61,8 @@ class FlxInputText extends FlxText {
 	 */
 	public var callback:String->String->Void;
 
+	public var keyPressCallbacks:Map<Int,()->Bool> = [];
+
 	/**
 	 * Whether or not the textbox has a background
 	 */
@@ -306,15 +308,12 @@ class FlxInputText extends FlxText {
 		if (FlxG.mouse.justPressed)
 		{
 			var hadFocus:Bool = hasFocus;
-			if (FlxG.mouse.overlaps(this))
-			{
+			if (FlxG.mouse.overlaps(this)) {
 				caretIndex = getCaretIndex();
 				hasFocus = true;
 				if (!hadFocus && focusGained != null)
 					focusGained();
-			}
-			else
-			{
+			} else {
 				hasFocus = false;
 				if (hadFocus && focusLost != null)
 					focusLost();
@@ -325,6 +324,10 @@ class FlxInputText extends FlxText {
 	static var controlPressed = false;
 	private function onKeyUp(e:KeyboardEvent):Void {
 		if(e.keyCode == 17) controlPressed = false;
+		if (key == 13){
+			trace('the enter');
+			return onChange('enter');
+		}
 	}
 	/**
 	 * Handles keypresses generated on the stage.
@@ -332,14 +335,17 @@ class FlxInputText extends FlxText {
 	private function onKeyDown(e:KeyboardEvent):Void {
 		if (!hasFocus) return;
 		var key:Int = e.keyCode;
-
+		if(keyPressCallbacks[key] != null){
+			if(keyPressCallbacks[key]()) return;
+		}
 		if (key == 17) controlPressed = true;
-		if (key == 220){
+		if (key == 220 || key == 0x0D){
 			hasFocus = false;
 			return;
 		}
 		// Do nothing for Shift, Ctrl, and flixel console hotkey
-		if (key == 16 || key == 17 || key == 27) return;
+		if (key == 16 || key == 17 || key == 27 || key == 13) return;
+
 		// Left arrow
 		#if macos
 		if (e.commandKey) {
@@ -394,8 +400,6 @@ class FlxInputText extends FlxText {
 			text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 			onChange(DELETE_ACTION);
 		}
-		// Enter
-		else if (key == 13) onChange(ENTER_ACTION);
 		// Actually add some text
 		else {
 			if (e.charCode == 0) return; // non-printable characters crash String.fromCharCode
@@ -403,19 +407,17 @@ class FlxInputText extends FlxText {
 
 			
 			if (newText.length <= 0 && (maxLength == 0 || (text.length + newText.length) > maxLength)) return;
-				text = insertSubstring(text, newText, caretIndex);
-				caretIndex++;
-				onChange(INPUT_ACTION);
+			text = insertSubstring(text, newText, caretIndex);
+			caretIndex++;
+			onChange(INPUT_ACTION);
 		}
 		
 	}
 
 	private function onChange(action:String):Void
 	{
-		if (callback != null)
-		{
-			callback(text, action);
-		}
+		if (callback == null) return;
+		callback(text, action);
 	}
 
 	/**

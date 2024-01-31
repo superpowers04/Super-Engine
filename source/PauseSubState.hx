@@ -356,7 +356,7 @@ class PauseSubState extends MusicBeatSubstate
 				ChartingState.charting = false;
 				MusicBeatState.returningFromClass = true;
 				var chart = PlayState.songDifficulties[currentChart];
-				multi.MultiMenuState.gotoSong(chart.substring(0,chart.lastIndexOf('/')),PlayState.songDifficulties[currentChart]);
+				multi.MultiMenuState.gotoSong(chart.substring(0,chart.lastIndexOf('/')),chart.substring(chart.lastIndexOf('/') + 1));
 				FlxG.resetState();
 			case "Import Chart":
 				SELoader.createDirectory('mods/packs/imported');

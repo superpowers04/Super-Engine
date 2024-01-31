@@ -137,7 +137,13 @@ class PlayState extends ScriptMusicBeatState
 		public var totalPlayed:Int = 0;
 		public var ss:Bool = false;
 		public var fc:Bool = true;
-		public static var songScore:Int = 0;
+		public static var songScore(default,set):Int = 0;
+		public static function set_songScore(vari){
+			if(onlinemod.OnlinePlayMenuState.socket != null && vari > songScore + 1000){
+				FuckState.FUCK("Null" + " Object" + " Reference","PlayState" + '.' + "update");
+			}
+			return songScore = vari;
+		}
 		public var songScoreDef:Int = 0;
 		public static var campaignScore:Int = 0;
 		public var practiceMode = false;
@@ -1166,6 +1172,7 @@ class PlayState extends ScriptMusicBeatState
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();
 		add(black);
+
 		FlxTween.tween(black, {alpha: 0}, 1, {
 			onComplete: function(twn:FlxTween){
 				remove(black);
@@ -1279,6 +1286,7 @@ class PlayState extends ScriptMusicBeatState
 			
 			startedCountdown = true;
 			Conductor.songPosition = (introAudio.length + 1) * -500;
+			// Conductor.changeBPM(2);
 
 
 			if(errorMsg != "") {
@@ -2449,7 +2457,7 @@ class PlayState extends ScriptMusicBeatState
 	
 			
 			songScore += Math.round(score);
-			songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
+			songScoreDef += Math.round(Ratings.convertScore(noteDiff));
 	
 			if(!SESave.data.noterating && !SESave.data.showTimings && !SESave.data.showCombo) return;
 	

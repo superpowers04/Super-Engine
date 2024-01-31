@@ -1,7 +1,6 @@
-23.12.24.2029;
-* A bunch of fixes
-* Clean up results screen
-* Include tutorial and the first week as examples. Complete with custom hard charts for all 4 songs :3
-* The game now actually autosaves the chart in the chart editor
-* Ditch FlxG.save.data, it's a dynamic variable which is slower and cring. Sadly this change will make you lose your settings
-* Make scrollbar work like other scrollbars(If you hold click, it'll scroll until you let go even if you're not hovering over it)
+24.01.25.1654;
+* Change how bg bouncing works in MultiMenuState
+* BPM change maps now work in all states
+* Work on hosting and stuff(Not released yet due to lack of motivation :sob:)
+* Implement several changes from Naytoon for multiplayer
+* Add pasting to text boxes and block input until you exit out of text box(Currently this breaks using enter to search)

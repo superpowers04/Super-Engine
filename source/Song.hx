@@ -120,7 +120,7 @@ class Song
 						"typeOfSection": 0,
 						"mustHitSection": true,
 						"changeBPM": false,
-						"bpm": 95
+						"bpm": 120
 					},
 					{
 						"lengthInSteps": 16,
@@ -128,7 +128,7 @@ class Song
 						"typeOfSection": 0,
 						"mustHitSection": false,
 						"changeBPM": false,
-						"bpm": 165
+						"bpm": 120
 					}
 				],
 				"player2": "bf",
@@ -138,7 +138,7 @@ class Song
 				"validScore": true,
 				"sections": 0,
 				"needsVoices": false,
-				"bpm": 150,
+				"bpm": 120,
 				"speed": 2.0,
 				"chartType":"FNF/Super"
 			}
@@ -233,7 +233,8 @@ class Song
 			swagShit.chartType = ChartingState.detectChartType(swagShit);
 			return swagShit;
 		#if !debug
-		}catch(e){MainMenuState.handleError(e,'Error parsing chart: ${e.message}');
+		}catch(e){
+			MainMenuState.handleError(e,'Error parsing chart: ${e.message}');
 			return getEmptySong();
 		}
 		#end

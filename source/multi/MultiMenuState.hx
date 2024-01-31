@@ -79,7 +79,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			voices.time = FlxG.sound.music.time;
 			voices.play();
 		}
-		if(shouldDraw && SESave.data.beatBouncing){
+		if(shouldDraw && SESave.data.beatBouncing && curPlaying != ""){
 			if(beatTween != null){
 				beatTween.cancel();
 				beatTween.destroy();
@@ -520,31 +520,26 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			onlinemod.OfflinePlayState.nameSpace = songInfo.namespace;
 			trace('Using namespace ${onlinemod.OfflinePlayState.nameSpace}');
 		}
+		var songLoc = songInfo.path;
 		if(charting){
-			var songLoc = songInfo.path;
+
+			
 			var chart = songInfo.charts[selMode];
 			var songName = songInfo.name;
-			loadScriptsFromSongPath(songLoc);
 			if(chart == null){
-				var e = '${songLoc}/${songName}.json';
-				if(onlinemod.OfflinePlayState.chartFile == e){
-					onlinemod.OfflinePlayState.chartFile = e;
-					var song = cast Song.getEmptySong();
-					song.song = songName;
+				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${chart = '$songName.json'}';
+				trace('New chart! ${onlinemod.OfflinePlayState.chartFile}  $chart');
+				var song = (PlayState.SONG = Song.parseJSONshit("",true));
+				song.song = songName;
+				try{
 					SELoader.saveContent(onlinemod.OfflinePlayState.chartFile,Json.stringify({song:song}));
-					
-					reloadList(true,searchField.text);
-					curSelected = sel;
-					changeSelection();
-					selSong(sel,true);
-					// showTempmessage('Generated blank chart for $songName');
-					return;
-				}
-				chart = e;
+				}catch(e){trace('Unable to save chart:$e');} // The player will be manually saving this later, this doesn't need to succeed
 			}else{
 				onlinemod.OfflinePlayState.chartFile = '${songLoc}/${chart}';
 				PlayState.SONG = Song.parseJSONshit(SELoader.loadText(onlinemod.OfflinePlayState.chartFile),true);
 			}
+			trace('Loading $songName  $chart');
+			loadScriptsFromSongPath(songLoc);
 			onlinemod.OfflinePlayState.voicesFile = (songInfo.voices ?? (SELoader.exists('${songLoc}/Voices.ogg') ? '${songLoc}/Voices.ogg' : ""));
 			PlayState.hsBrTools = new HSBrTools('${songLoc}');
 			onlinemod.OfflinePlayState.instFile = (songInfo.inst ?? '${songLoc}/Inst.ogg');
@@ -565,6 +560,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 			showTempmessage("Invalid song!",FlxColor.RED);
 			return;
 		}
+		loadScriptsFromSongPath(songLoc);
 
 		lastSel = sel;
 		lastSearch = searchField.text;
@@ -579,7 +575,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState
 	}
 
 	override function select(sel:Int = 0){
-		selSong(sel,false);
+		try{
+			selSong(sel,false);
+
+		}catch(e){
+			trace(e);
+			MainMenuState.handleError('Unable to load song ${e.message}');
+		}
 	}
 
 	var curPlaying = "";

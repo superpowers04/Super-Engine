@@ -173,8 +173,9 @@ class FuckState extends FlxUIState {
 		Main.renderLock.release();
 		if(Main.game == null || _rawError || !TitleState.initialized){
 			try{Main.instance.removeChild(Main.funniSprite);}catch(e){};
+			try{Main.funniSprite.removeChild(Main.game);}catch(e){};
 			if(Main.game != null){
-				Main.game.blockUpdate = Main.game.blockDraw = false;
+				Main.game.blockUpdate = Main.game.blockDraw = true;
 			}
 			Main.game = null;
 			// Main.instance
@@ -213,6 +214,7 @@ class FuckState extends FlxUIState {
 					tf.align = "center";
 					textFieldBot.embedFonts = textFieldTop.embedFonts = textField.embedFonts = true;
 					textFieldBot.defaultTextFormat =textFieldTop.defaultTextFormat =textField.defaultTextFormat = tf;
+					
 				}
 
 				// Main.instance.addChild(new se.ErrorSprite('${exception}\nThis happened in ${info}',saved));

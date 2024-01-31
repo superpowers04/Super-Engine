@@ -25,7 +25,6 @@ class Sender
 	  // For every element in the array, write the corresponding data to the socket.
 	  while (i < types.length)
 	  {
-	  	trace(arguments[i]);
 		switch (types[i].id)
 		{
 		  case DataTypes.UINT:

@@ -9,8 +9,7 @@ import flixel.util.FlxColor;
 import openfl.media.Sound;
 import sys.FileSystem;
 import sys.io.File;
-import sys.thread.Lock;
-import sys.thread.Thread;
+import se.ThreadedAction;
 import Overlay;
 
 
@@ -18,43 +17,42 @@ import Section.SwagSection;
 
 using StringTools;
 
-class OfflinePlayState extends PlayState
-{
+class OfflinePlayState extends PlayState {
 	public static var instanc:OfflinePlayState;
-  // public var loadedVoices:FlxSound;
-  public static var loadedVoices_:FlxSound;
-  public var loadedVoices(get,set):FlxSound;
-  public function get_loadedVoices(){
-	return loadedVoices_;
-  }
-  public function set_loadedVoices(vari){
-	return loadedVoices_ = vari;
-  }
-  public static var loadedInst_:Sound;
-  // public var loadedInst:Sound;
-  public var loadedInst(get,set):Sound;
-  public function get_loadedInst(){
-	return loadedInst_;
-  }
-  public function set_loadedInst(vari){
-	return loadedInst_ = vari;
-  }
-  var loadingtext:FlxText;
-  var shouldLoadJson:Bool = true;
-  var stateType = 2;
-  var shouldLoadSongs = true;
+	// public var loadedVoices:FlxSound;
+	public static var loadedVoices_:FlxSound;
+	public var loadedVoices(get,set):FlxSound;
+	public function get_loadedVoices(){
+		return loadedVoices_;
+	}
+	public function set_loadedVoices(vari){
+		return loadedVoices_ = vari;
+	}
+	public static var loadedInst_:Sound;
+	// public var loadedInst:Sound;
+	public var loadedInst(get,set):Sound;
+	public function get_loadedInst(){
+		return loadedInst_;
+	}
+	public function set_loadedInst(vari){
+		return loadedInst_ = vari;
+	}
+	var loadingtext:FlxText;
+	var shouldLoadJson:Bool = true;
+	var stateType = 2;
+	var shouldLoadSongs = true;
 	public static var voicesFile = "";
-  public static var instFile = "";
-  public static var lastInstFile = "";
-  public static var lastVoicesFile = "";
-  public static var chartFile:String = "";
-  public static var nameSpace:String = "";
-  public static var stateNames:Array<String> = ["","-freep","-Offl","","-Multi","-OSU","-Story","","",""];
-  var willChart:Bool = false;
-  override public function new(?charting:Bool = false){
-	willChart = charting;
-	super();
-  }
+	public static var instFile = "";
+	public static var lastInstFile = "";
+	public static var lastVoicesFile = "";
+	public static var chartFile:String = "";
+	public static var nameSpace:String = "";
+	public static var stateNames:Array<String> = ["","-freep","-Offl","","-Multi","-OSU","-Story","","",""];
+	var willChart:Bool = false;
+	override public function new(?charting:Bool = false){
+		willChart = charting;
+		super();
+	}
 
 	function loadSongs(){
 		LoadingScreen.loadingText = "Loading music";
@@ -62,8 +60,7 @@ class OfflinePlayState extends PlayState
 			loadedVoices.destroy();
 		}
 		#if(target.threaded)
-		var lock = new Lock();
-		sys.thread.Thread.create(() -> { // Offload to another thread for faster loading
+		var voicesThread = new ThreadedAction(() -> { // Offload to another thread for faster loading
 		#end
 			if(!(lastVoicesFile == voicesFile && loadedVoices != null)){
 				if(voicesFile == ""){
@@ -87,7 +84,6 @@ class OfflinePlayState extends PlayState
 
 			}
 		#if(target.threaded)
-			lock.release();
 		});
 		#end
 			if(!(lastInstFile == instFile && loadedInst != null)){ // This doesn't need to be threaded
@@ -105,7 +101,7 @@ class OfflinePlayState extends PlayState
 				loadedInst = SELoader.loadSound(instFile);
 			}
 		#if(target.threaded)
-		lock.wait();
+		voicesThread.wait();
 		#end
 		if(loadedVoices != null)loadedVoices.time = 0;
 
@@ -144,10 +140,10 @@ class OfflinePlayState extends PlayState
 		// if(FileSystem.exists(e)){
 		// 	var overrides:SwagSong = 
 		// }
-	}catch(e) MainMenuState.handleError('Error loading chart \'${chartFile}\': ${e.message}');
+	}catch(e) throw('Error loading chart \'${chartFile}\': ${e.message}');
   }
-  override function create()
-  {
+	override function create()
+	{
 	try{
 		instanc = this;
 		if (shouldLoadJson) loadJSON();
@@ -165,8 +161,8 @@ class OfflinePlayState extends PlayState
 
 
 		// Add XieneDev watermark
-		var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.1 - 50, FlxG.width, 'SuperEngine${stateNames[stateType]} ${MainMenuState.ver}(${MainMenuState.compileType})', 16);
-			xieneDevWatermark.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		var xieneDevWatermark:FlxText = new FlxText(-4, FlxG.height * 0.1 - 50, FlxG.width, 'SuperEngine${stateNames[stateType]} ${MainMenuState.ver}(${MainMenuState.compileType})', 16)
+			.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 			xieneDevWatermark.scrollFactor.set();
 			add(xieneDevWatermark);
 		xieneDevWatermark.cameras = [camHUD];
@@ -180,23 +176,13 @@ class OfflinePlayState extends PlayState
 		}
 	  }catch(e){MainMenuState.handleError(e,'Caught "create" crash: ${e.message}');}
 	}
-override function startCountdown(){
-	if(shouldLoadJson) FlxG.sound.playMusic(loadedInst, 1, false);
-	super.startCountdown();
-}
-  override function generateSong(?dataPath:String = "")
-  {
-  //   // I have to code the entire code over so that I can remove the offset thing
-  //   var songData = PlayState.SONG;
-		// Conductor.changeBPM(songData.bpm);
-
-		// curSong = songData.song;
-
-		if (PlayState.SONG.needsVoices && loadedVoices.length > Math.max(4000,loadedInst.length - 20000) && loadedVoices.length < loadedInst.length + 10000)
-			vocals = loadedVoices;
-		else
-			vocals = new FlxSound();
-	super.generateSong(dataPath);
+	override function startCountdown(){
+		if(shouldLoadJson) FlxG.sound.playMusic(loadedInst, 1, false);
+		super.startCountdown();
+	}
+	  override function generateSong(?dataPath:String = ""){
+		vocals = ((PlayState.SONG.needsVoices && Math.abs(loadedVoices.length - loadedInst.length) < 20000) ? loadedVoices : new FlxSound());
+		super.generateSong(dataPath);
 
   }
   // override function generateSong(dataPath:String)

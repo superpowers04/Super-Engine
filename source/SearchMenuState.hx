@@ -171,6 +171,9 @@ class SearchMenuState extends ScriptMusicBeatState {
 			searchButton.setLabelFormat(24, FlxColor.BLACK, CENTER);
 			searchButton.resize(100, searchField.height);
 			add(searchButton);
+			searchField.callback = function(_:String,cb:String){
+				if(cb == "enter") findButton();
+			}
 		}
 
 		infotext = new FlxText(5, FlxG.height - (20 * infoTextBoxSize ), FlxG.width - 5, "Hold shift to scroll faster", 16);

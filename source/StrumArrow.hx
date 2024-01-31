@@ -10,7 +10,7 @@ import flixel.graphics.FlxGraphic;
 import flash.display.BitmapData;
 import sys.io.File;
 import NoteAssets;
-
+ 
 
 class StrumArrow extends FlxSprite{
 	public static var defColor:FlxColor = 0xFFFFFFFF;
@@ -20,21 +20,20 @@ class StrumArrow extends FlxSprite{
 	public var updateStrumCenter:Bool = true;
 	public var strumCenterX:Float = 0;
 	public var strumCenterY:Float = 0;
+	public var DEFSkin:String = "skin";
 
-	override public function new(nid:Int = 0,?x:Float = 0,?y:Float = 0){
+	override public function new(nid:Int = 0,?x:Float = 0,?y:Float = 0,?skin:String = "skin"){
 		super(x,y);
-		id = nid;
-		ID = nid;
+		id = ID = nid;
+		DEFSkin = skin;
 	}
 
 	public function changeSprite(?name:String = "default",?_frames:FlxAtlasFrames,?anim:String = "",?setFrames:Bool = true,path_:String = "mods/noteassets",?noteJSON:NoteAssetConfig){
 		try{
 			var curAnim = if(anim == "" && animation.curAnim != null) animation.curAnim.name else anim;
-			if(noteJSON != null){
-				this.noteJSON = noteJSON;
-			}else{
-				this.noteJSON = null;
-			}
+
+			this.noteJSON = noteJSON ?? null;
+			
 			if(setFrames && (_frames != null || name != "")){
 				if(_frames == null){
 					if(name == "skin"){
@@ -90,7 +89,7 @@ class StrumArrow extends FlxSprite{
 	static var arrowIDs:Array<String> = ['left','down','up',"right"];
 	public function init(){
 		TitleState.loadNoteAssets();
-		changeSprite("skin","static",(frames == null));
+		changeSprite(DEFSkin,"static",(frames == null));
 		// if (frames == null) {
 		// 	frames = FlxAtlasFrames.fromSparrow(NoteAssets.image,NoteAssets.xml);
 		// }

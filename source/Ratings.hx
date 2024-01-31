@@ -160,4 +160,13 @@ class Ratings
 		}
 		return "miss";
 	}
+	@:keep inline public static function convertScore(noteDiff:Float):Int {
+		return {switch(Ratings.CalculateRating(noteDiff, 166)) {
+			case 'shit': -300;
+			case 'bad': 0;
+			case 'good': 200;
+			case 'sick': 350;
+			default: 0;
+		}}
+    }
 }

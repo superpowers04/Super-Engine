@@ -61,6 +61,7 @@ class SELoader {
 	
 
 	public static function loadText(textPath:String,?useCache:Bool = false):String{
+		textPath = getPath(textPath);
 		if(cache.textArray[textPath] != null || useCache){
 			return cache.loadText(textPath);
 		}
@@ -68,7 +69,7 @@ class SELoader {
 			handleError('${id}: Text "${textPath}" doesn\'t exist!');
 			return "";
 		}
-		return File.getContent(getPath(textPath));
+		return File.getContent(textPath);
 	}
 	public static function loadXML(textPath:String,?useCache:Bool = false):String{ // Automatically fixes UTF-16 encoded files
 		var text = loadText(textPath,useCache).replace("UTF-16","utf-8");
@@ -80,19 +81,20 @@ class SELoader {
 
 
 	public static function loadFlxSprite(x:Int = 0,y:Int = 0,pngPath:String,?useCache:Bool = false):FlxSprite{
-		if(!FileSystem.exists('${pngPath}')){
+		if(!SELoader.exists('${pngPath}')){
 			handleError('${id}: Image "${pngPath}" doesn\'t exist!');
 			return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
 		}
 		return new FlxSprite(x, y).loadGraphic(loadGraphic(pngPath,useCache));
 	}
 	public static function loadGraphic(pngPath:String,?useCache:Bool = false):FlxGraphic{
-		if(cache.spriteArray[pngPath] != null || useCache){
-			return cache.loadGraphic(pngPath);
-		}
+		// if(cache.spriteArray[pngPath] != null || useCache){
+		// 	return cache.loadGraphic(pngPath);
+		// }
 		return FlxGraphic.fromBitmapData(loadBitmap(pngPath));
 	}
 	public static function loadBitmap(pngPath:String,?useCache:Bool = false):BitmapData{
+		pngPath = getPath(pngPath);
 		if(pngPath.substr(-4) != ".png") pngPath += '.png';
 		if(cache.bitmapArray[pngPath] != null || useCache){
 			return cache.loadBitmap(pngPath);
@@ -101,10 +103,11 @@ class SELoader {
 			handleError('${id}: "${pngPath}" doesn\'t exist!');
 			return new BitmapData(0,0,false,0xFF000000); // Prevents the script from throwing a null error or something
 		}
-		return BitmapData.fromFile(getPath(pngPath));
+		return BitmapData.fromFile(pngPath);
 	}
 
 	public static function loadSparrowFrames(pngPath:String):FlxAtlasFrames{
+		pngPath = getPath(pngPath);
 		if(!exists('${pngPath}.png')){
 			handleError('${id}: SparrowFrame PNG "${pngPath}.png" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
@@ -116,7 +119,7 @@ class SELoader {
 		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath),loadXML('${pngPath}.xml'));
 	}
 	public static function loadSparrowSprite(x:Int,y:Int,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24,?useCache:Bool = false):FlxSprite{
-		
+		pngPath = getPath(pngPath);
 		var spr = new FlxSprite(x, y);
 		var _f = spr.frames;
 		try{
@@ -148,6 +151,7 @@ class SELoader {
 		// if(cache.textArray[textPath] != null || useCache){
 		// 	return cache.loadText(textPath);
 		// }
+		textPath = getPath(textPath);
 		if(!exists(textPath)){
 			handleError('${id}: Text "${textPath}" doesn\'t exist!');
 			return null;
@@ -161,8 +165,9 @@ class SELoader {
 		return null;
 	}
 	public static function saveText(textPath:String,contents:String = "",?useCache:Bool = false):Dynamic{ // If there's an error, it'll return the error, else it'll return null
+		textPath = getPath(textPath);
 		try{
-			File.saveContent(getPath(textPath),contents);
+			File.saveContent(textPath,contents);
 		}catch(e){ return e; }
 		if(cache.textArray[textPath] != null || useCache){
 			cache.textArray[textPath] = contents;
@@ -170,6 +175,7 @@ class SELoader {
 		return null;
 	}
 	public static function loadSound(soundPath:String,?useCache:Bool = false):Null<Sound>{
+		soundPath = getPath(soundPath);
 		if(cache.soundArray[soundPath] != null || useCache){
 			return cache.loadSound(soundPath);
 		}
