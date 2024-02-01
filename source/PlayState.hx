@@ -1709,7 +1709,7 @@ class PlayState extends ScriptMusicBeatState
 		// if ( ){
 		// 	if(SONG.needsVoices) trace("Song needs voices but none found! Automatically disabled");
 
-		SONG.needsVoices = (vocals == null);
+		SONG.needsVoices = (vocals != null);
 		vocals = vocals ?? new FlxSound();
 		vocals.looped = false;
 		FlxG.sound.list.add(vocals);

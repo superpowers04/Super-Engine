@@ -48,6 +48,7 @@ class Conductor
 
 	public static function mapBPMChanges(?song:SwagSong) {
 		bpmChangeMap = [];
+		bpmChangeMapSteps = [];
 		offset = 0;
 		if(song == null) return;
 		offset = song.offset;
