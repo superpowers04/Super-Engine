@@ -174,9 +174,11 @@ class HSBrTools {
 
 
 
-	public function loadSound(soundPath:String):FlxSound{
+	 public function loadSound(soundPath:String):FlxSound{
 		if(soundArray[soundPath] == null) soundArray[soundPath] = SELoader.loadFlxSound('${path}${soundPath}');
-		return soundArray[soundPath];
+		@:privateAccess{
+			return new FlxSound().loadEmbedded(soundArray[soundPath]._sound);
+		}
 	}
 	public function loadFlxSound(soundPath:String) return loadSound(soundPath);
 

@@ -83,7 +83,6 @@ class OfflinePlayState extends PlayState {
 				}
 
 			}
-			trace('Done with voices load');
 		#if(target.threaded)
 		});
 		#end
@@ -102,7 +101,6 @@ class OfflinePlayState extends PlayState {
 				loadedInst = SELoader.loadSound(instFile);
 			}
 		#if(target.threaded)
-		trace('waiting for voices');
 		voicesThread.wait();
 		#end
 		if(loadedVoices != null)loadedVoices.time = 0;

@@ -10,8 +10,8 @@ class Json {
 	 * @param String - The JSON string to parse
 	 * @param String the file name to whic the JSON code belongs. Used for generating nice error messages.
 	 */
-	public static function parse(json:String, ?fileName:String="JSON Data", ?stringProcessor:String->Dynamic = null):Dynamic{
-		var t = new TJSONParser(json, fileName, stringProcessor);
+	public static function parse(json:String, ?fileName:String="JSON Data", ?stringProcessor:String->Dynamic = null,?_class:Class<Any>):Dynamic{
+		var t = new TJSONParser(json, fileName, stringProcessor,_class);
 		return t.doParse();
 	}
 
@@ -42,8 +42,8 @@ class TJSON {
 	 * @param String - The JSON string to parse
 	 * @param String the file name to whic the JSON code belongs. Used for generating nice error messages.
 	 */
-	public static function parse(json:String, ?fileName:String="JSON Data", ?stringProcessor:String->Dynamic = null):Dynamic{
-		var t = new TJSONParser(json, fileName, stringProcessor);
+	public static function parse(json:String, ?fileName:String="JSON Data", ?stringProcessor:String->Dynamic = null,?_class:Class<Any>):Dynamic{
+		var t = new TJSONParser(json, fileName, stringProcessor,_class);
 		return t.doParse();
 	}
 
@@ -79,9 +79,9 @@ class TJSONParser{
 	var floatRegex:EReg;
 	var intRegex:EReg;
 	var strProcessor:String->Dynamic;
+	var baseClass:Class<Any>;
 
-	public function new(vjson:String, ?vfileName:String="JSON Data", ?stringProcessor:String->Dynamic = null)
-	{
+	public function new(vjson:String, ?vfileName:String="JSON Data", ?stringProcessor:String->Dynamic = null, _class:Class<Any>) {
 		json = vjson;
 		fileName = vfileName;
 		currentLine = 1;
@@ -91,6 +91,9 @@ class TJSONParser{
 		intRegex = ~/^-?[0-9]+$/;	
 		strProcessor = (stringProcessor==null? defaultStringProcessor : stringProcessor);
 		cache = new Array();
+		if(_class != null){
+			baseClass = _class;
+		}
 	}
 
 	public function doParse():Dynamic{
@@ -107,20 +110,23 @@ class TJSONParser{
 	}
 
 	private function doObject():Dynamic{
-		var o:Dynamic = { };
+		var o:Dynamic = (baseClass != null ? Type.createEmptyInstance(baseClass) : {});
 		var val:Dynamic ='';
 		var key:String;
-		var isClassOb:Bool = false;
+		var isClassOb:Bool = baseClass != null;
 		cache.push(o);
 		while(pos < json.length){
 			key=getNextSymbol();
-			if(key == "," && !lastSymbolQuoted)continue;
-			if(key == "}" && !lastSymbolQuoted){
-				//end of the object. Run the TJ_unserialize function if there is one
-				if( isClassOb && #if flash9 try o.TJ_unserialize != null catch( e : Dynamic ) false #elseif (cs || java) Reflect.hasField(o, "TJ_unserialize") #else o.TJ_unserialize != null #end  ) {
-					o.TJ_unserialize();
+			if(!lastSymbolQuoted){
+
+				if(key == ",")continue;
+				if(key == "}"){
+					//end of the object. Run the TJ_unserialize function if there is one
+					if( isClassOb && #if flash9 try o.TJ_unserialize != null catch( e : Dynamic ) false #elseif (cs || java) Reflect.hasField(o, "TJ_unserialize") #else o.TJ_unserialize != null #end  ) {
+						o.TJ_unserialize();
+					}
+					return o;
 				}
-				return o;
 			}
 
 			var seperator = getNextSymbol();
@@ -131,24 +137,34 @@ class TJSONParser{
 			var v = getNextSymbol();
 
 			if(key == '_hxcls'){
-				if(v.startsWith('Date@')) {
-					o = Date.fromTime(Std.parseInt(v.substr(5)));
-				} else {
-					var cls =Type.resolveClass(v);
-					if(cls==null) throw "Invalid class name - "+v;
-					o = Type.createEmptyInstance(cls);
+				if(isClassOb){
+					if(v.startsWith('Date@')) {
+						o = Date.fromTime(Std.parseInt(v.substr(5)));
+					} else {
+						var cls =Type.resolveClass(v);
+						if(cls==null) throw "Invalid class name - "+v;
+						o = Type.createEmptyInstance(cls);
+					}
+					cache.pop();
+					cache.push(o);
+				}else{
+					cache.pop();
+					cache.push(o);
 				}
-				cache.pop();
-				cache.push(o);
+
 				isClassOb = true;
 				continue;
 			}
 
+			if(!lastSymbolQuoted){
 
-			if(v == "{" && !lastSymbolQuoted){
-				val = doObject();
-			}else if(v == "[" && !lastSymbolQuoted){
-				val = doArray();
+				if(v == "{"){
+					val = doObject();
+				}else if(v == "["){
+					val = doArray();
+				}else{
+					val = convertSymbolToProperType(v);
+				}
 			}else{
 				val = convertSymbolToProperType(v);
 			}
@@ -163,17 +179,19 @@ class TJSONParser{
 		var val:Dynamic;
 		while(pos < json.length){
 			val=getNextSymbol();
-			if(val == ',' && !lastSymbolQuoted){
+			if(lastSymbolQuoted){
+				a.push(val = convertSymbolToProperType(val));
 				continue;
 			}
-			else if(val == ']' && !lastSymbolQuoted){
+			if(val == ',') {
+				continue;
+			}else if(val == ']') {
 				return a;
-			}
-			else if(val == "{" && !lastSymbolQuoted){
+			}else if(val == "{") {
 				val = doObject();
-			}else if(val == "[" && !lastSymbolQuoted){
+			}else if(val == "[") {
 				val = doArray();
-			}else{
+			}else {
 				val = convertSymbolToProperType(val);
 			}
 			a.push(val);
@@ -191,20 +209,14 @@ class TJSONParser{
 			}
 			return symbol; //just a normal string so return it
 		}
-		if(looksLikeFloat(symbol)){
-			return Std.parseFloat(symbol);
+		var n = getNumberFromString(symbol);
+		if(n != null){
+			return n;
 		}
-		if(looksLikeInt(symbol)){
-			return Std.parseInt(symbol);
-		}
-		if(symbol.toLowerCase() == "true"){
-			return true;
-		}
-		if(symbol.toLowerCase() == "false"){
-			return false;
-		}
-		if(symbol.toLowerCase() == "null"){
-			return null;
+		switch(symbol.toLowerCase()){
+			case "true": return true;
+			case "false": return false;
+			case "null": return null;
 		}
 		
 		return symbol;
@@ -227,10 +239,27 @@ class TJSONParser{
 			if(f>2147483647.0) return true;
 			else if (f<-2147483648) return true;
 			
-		} 
+		}
 		return false;	
 	}
+	private function getNumberFromString(s:String):Dynamic{
+		if(floatRegex.match(s)) return Std.parseFloat(s);
 
+		if(intRegex.match(s)){
+			if({
+				var intStr = intRegex.matched(0);
+				if (intStr.charCodeAt(0) == "-".code)
+					intStr > "-2147483648";
+				else
+					intStr > "2147483647";
+			} ) return Std.parseFloat(s);
+
+			var f:Float = Std.parseFloat(s);
+			if(f>2147483647.0 || f<-2147483648) return f;
+			return Std.parseInt(s);
+		}
+		return null;
+	}
 	private function looksLikeInt(s:String):Bool{
 		return intRegex.match(s);
 	}

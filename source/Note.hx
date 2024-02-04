@@ -10,7 +10,7 @@ import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
-
+import tjson.Json;
 import flixel.math.FlxPoint;
 import sys.io.File;
 import sys.FileSystem;
@@ -446,6 +446,13 @@ class Note extends FlxSprite
 		}
 		super.destroy();
 	}
+	public function updateCanHit():Bool{
+		if(shouldntBeHit){
+			return canBeHit = (strumTime - Conductor.songPosition <= (45 * Conductor.timeScale) && strumTime - Conductor.songPosition >= (-45 * Conductor.timeScale));
+		}
+		return canBeHit = ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + ((Conductor.safeZoneOffset * 0.5) * Conductor.timeScale)) ) ||
+				strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * Conductor.timeScale) && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  );
+	}
 	override function update(elapsed:Float) {
 		// super.update(elapsed);
 		animation.update(elapsed);
@@ -467,12 +474,10 @@ class Note extends FlxSprite
 		var dad = PlayState.opponentCharacter;
 		if (mustPress) {
 			if (shouldntBeHit) { 
-				canBeHit = (strumTime - Conductor.songPosition <= (45 * Conductor.timeScale) && strumTime - Conductor.songPosition >= (-45 * Conductor.timeScale));
+				updateCanHit();
 			}else{
 
-				if ((isSustainNote && (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + ((Conductor.safeZoneOffset * 0.5) * Conductor.timeScale)) ) ||
-				    strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * Conductor.timeScale) && strumTime < Conductor.songPosition + Conductor.safeZoneOffset  )
-						canBeHit = true;
+				updateCanHit();
 
 				if (!wasGoodHit && strumTime < Conductor.songPosition - (Conductor.safeZoneOffset * Conductor.timeScale)){
 					canBeHit = false;

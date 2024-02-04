@@ -2814,7 +2814,7 @@ class PlayState extends ScriptMusicBeatState
 			while(i < notes.members.length){
 				daNote = notes.members[i];
 				i++;
-				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.canBeHit) continue;
+				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.updateCanHit()) continue;
 				if(!SESave.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition - 50) // Only destroy the note when properly hit
 					{goodNoteHit(daNote);continue;}
 				// Tell note to be clipped to strumline
@@ -2910,7 +2910,7 @@ class PlayState extends ScriptMusicBeatState
 			while(i < notes.members.length){
 				daNote = notes.members[i];
 				i++;
-				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.canBeHit) continue;
+				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.updateCanHit()) continue;
 				if(!acns || daNote.strumTime <= Conductor.songPosition - (50 * Conductor.timeScale) || daNote.isSustainNoteEnd) // Only destroy the note when properly hit
 					{goodNoteHit(daNote);continue;}
 				// Tell note to be clipped to strumline
@@ -2931,7 +2931,7 @@ class PlayState extends ScriptMusicBeatState
 			if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) continue;
 			
 			if (!onScreenNote) onScreenNote = true;
-			if (!pressArray[daNote.noteData] || !daNote.canBeHit || daNote.tooLate || daNote.wasGoodHit) continue;
+			if (!pressArray[daNote.noteData] || !daNote.updateCanHit() || daNote.tooLate || daNote.wasGoodHit) continue;
 			var coolNote = possibleNotes[daNote.noteData];
 			if (coolNote != null){
 				if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7 * Conductor.timeScale)){
@@ -3005,7 +3005,7 @@ class PlayState extends ScriptMusicBeatState
 		while(i < notes.members.length){
 			daNote = notes.members[i];
 			i++;
-			if(daNote == null || !daNote.mustPress || !daNote.canBeHit || daNote.shouldntBeHit || !daNote.aiShouldPress) continue;
+			if(daNote == null || !daNote.mustPress || !daNote.updateCanHit() || daNote.shouldntBeHit || !daNote.aiShouldPress) continue;
 			
 			if(daNote.strumTime <= Conductor.songPosition){playerCharacter.holdTimer = 0;pressArray[daNote.noteData] = true;goodNoteHit(daNote);continue;}
 			if(!daNote.isSustainNote) continue;
@@ -3089,7 +3089,7 @@ class PlayState extends ScriptMusicBeatState
 			while(i < notes.members.length){
 				daNote = notes.members[i];
 				i++;
-				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.canBeHit) continue;
+				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.updateCanHit()) continue;
 				if(!SESave.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition - 50 || daNote.isSustainNoteEnd) // Only destroy the note when properly hit
 					{goodNoteHit(daNote);continue;}
 				hitArray[daNote.noteData] = true;

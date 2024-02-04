@@ -18,7 +18,7 @@ class SEFlxSaveWrapper{
 		try{
 
 			var json = CoolUtil.cleanJSON(SELoader.loadText('SESETTINGS.json')).replace('"" :','" :').replace('"":','":');
-			var anon = Json.parse(json);
+			var anon = Json.parse(json,SESave);
 			if(anon is SESave){
 				SESave.data = anon;
 				return;

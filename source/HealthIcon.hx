@@ -71,7 +71,7 @@ class HealthIcon extends FlxSprite
 				width = Std.int(bitmapData.width * 0.5);
 			}else{
 				frameCount = Std.int(bitmapData.width / 150) - 1; // If this isn't an integer, fucking run
-				if(frameCount == 0) updateAnim = function(health:Float){return;};
+				if(frameCount < 1) updateAnim = function(health:Float){return;};
 				else if(frameCount == 1) updateAnim = function(health:Float){animation.curAnim.curFrame = ((health < 20) ? 1 : 0);};
 				else updateAnim = function(health:Float){animation.curAnim.curFrame = Math.round(animation.curAnim.numFrames * (health / 150));};
 			}
@@ -102,7 +102,7 @@ class HealthIcon extends FlxSprite
 				animation.add('bf-car', [0, 1], 0, false, isPlayer);
 				animation.add('bf-christmas', [0, 1], 0, false, isPlayer);
 				if(graphic.width > 451){ // Old icon grid
-					trace('You are using a really old iconGrid, this is usually caused by updating from a really really old version of the game\nPlease reinstall the game');
+					MainMenuState.errorMessage += ('You are using a really old iconGrid, this is usually caused by updating from a really old version of the game\nPlease reinstall the game');
 				}else{ // Based icon grid
 					animation.add('gf', [2], 0, false, isPlayer);
 					animation.add('INTERNAL|gf', [2], 0, false, isPlayer);

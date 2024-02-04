@@ -295,15 +295,10 @@ class MainMenuState extends SickMenuState {
 			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.","Run a script in a completely scriptable blank state",'Customise your experience to fit you'];
 		#if !mobile
 		}else{
-			options = ['modded songs','join FNF\'br server',
-			#if !ghaction
-				'host br server',
-			#end
+			options = ['modded songs','join FNF\'br server', 'host br server',
 				'online songs',"story mode",'other',"scripted states", 'open mods folder','options'];
 			descriptions = ["Play songs from your mods/charts folder, packs or weeks","Join and play online with other people on a Battle Royale compatible server.",
-			#if !ghaction
 			'Host a server so people can join locally, via ngrok or from your IP using portforwarding',
-			#end
 			"Play songs that have been downloaded during online games.","Play a vanilla or custom week",'Freeplay, Osu beatmaps, and download characters or songs',"Run a script in a completely scriptable blank state",'Open your mods folder in your File Manager','Customise your experience to fit you'];
 
 		}

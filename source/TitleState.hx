@@ -328,11 +328,9 @@ class TitleState extends MusicBeatState
 		if (SELoader.exists("assets/characters/")){
 			var dir = "assets/characters";
 			trace('Checking ${dir} for characters');
-			for (char in SELoader.readDirectory(dir))
-			{
+			for (char in SELoader.readDirectory(dir)) {
 				if (!SELoader.isDirectory(dir+"/"+char)){continue;}
-				if (SELoader.exists(dir+"/"+char+"/config.json"))
-				{
+				if (SELoader.exists(dir+"/"+char+"/config.json")) {
 					customCharacters.push(char);
 					var desc = 'Assets character';
 					if (FileSystem.exists('${dir}/${char}/description.txt'))
@@ -358,44 +356,41 @@ class TitleState extends MusicBeatState
 		}
 
 		if (SELoader.exists("mods/characters/")){
-		  for (directory in SELoader.readDirectory("mods/characters/"))
-		  {
-			if (!SELoader.isDirectory("mods/characters/"+directory)){continue;}
-			if (SELoader.exists("mods/characters/"+directory+"/config.json"))
-			{
-				var desc = null;
-				if (SELoader.exists("mods/characters/"+directory+"/description.txt"))
-					desc = SELoader.getContent('mods/characters/${directory}/description.txt');
+			for (directory in SELoader.readDirectory("mods/characters/")) {
+				if (!SELoader.isDirectory("mods/characters/"+directory)){continue;}
+				if (SELoader.exists("mods/characters/"+directory+"/config.json")) {
+					var desc = null;
+					if (SELoader.exists("mods/characters/"+directory+"/description.txt"))
+						desc = SELoader.getContent('mods/characters/${directory}/description.txt');
 
-				characters.push({
-					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
-					folderName:directory,
-					nameSpace:"SECharactersFolder",
-					description:desc
-				});
-			}else if (SELoader.exists("mods/characters/"+directory+"/script.hscript"))
-			{
-				var desc = null;
-				if (SELoader.exists("mods/characters/"+directory+"/description.txt"))
-					desc = SELoader.getContent('mods/characters/${directory}/description.txt');
+					characters.push({
+						id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+						folderName:directory,
+						nameSpace:"SECharactersFolder",
+						description:desc
+					});
+				}else if (SELoader.exists("mods/characters/"+directory+"/script.hscript")) {
+					var desc = null;
+					if (SELoader.exists("mods/characters/"+directory+"/description.txt"))
+						desc = SELoader.getContent('mods/characters/${directory}/description.txt');
 
-				characters.push({
-					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
-					folderName:directory,
-					description:desc,
-					nameSpace:"SECharactersFolder",
-					type:1
-				});
-			}else if (SELoader.exists("mods/characters/"+directory+"/character.png") && (SELoader.exists("mods/characters/"+directory+"/character.xml") || SELoader.exists("mods/characters/"+directory+"/character.json"))){
-				// invalidCharacters.push([directory,'mods/characters']);
-				invalidCharacters.push({
-					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
-					folderName:directory,
-					nameSpace:"SECharactersFolder",
-					path:'mods/characters'
-				});
+					characters.push({
+						id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+						folderName:directory,
+						description:desc,
+						nameSpace:"SECharactersFolder",
+						type:1
+					});
+				}else if (SELoader.exists("mods/characters/"+directory+"/character.png") && (SELoader.exists("mods/characters/"+directory+"/character.xml") || SELoader.exists("mods/characters/"+directory+"/character.json"))){
+					// invalidCharacters.push([directory,'mods/characters']);
+					invalidCharacters.push({
+						id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+						folderName:directory,
+						nameSpace:"SECharactersFolder",
+						path:'mods/characters'
+					});
+				}
 			}
-		  }
 		}
 
 		
