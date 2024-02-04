@@ -27,21 +27,21 @@ import flixel.util.FlxTimer;
  * @link http://creativecommons.org/licenses/by/3.0/us/
  */
 class FlxInputText extends FlxText {
-	public static inline var NO_FILTER:Int = 0;
-	public static inline var ONLY_ALPHA:Int = 1;
-	public static inline var ONLY_NUMERIC:Int = 2;
-	public static inline var ONLY_ALPHANUMERIC:Int = 3;
-	public static inline var CUSTOM_FILTER:Int = 4;
+	@:keep public static inline var NO_FILTER:Int = 0;
+	@:keep public static inline var ONLY_ALPHA:Int = 1;
+	@:keep public static inline var ONLY_NUMERIC:Int = 2;
+	@:keep public static inline var ONLY_ALPHANUMERIC:Int = 3;
+	@:keep public static inline var CUSTOM_FILTER:Int = 4;
 
-	public static inline var ALL_CASES:Int = 0;
-	public static inline var UPPER_CASE:Int = 1;
-	public static inline var LOWER_CASE:Int = 2;
+	@:keep public static inline var ALL_CASES:Int = 0;
+	@:keep public static inline var UPPER_CASE:Int = 1;
+	@:keep public static inline var LOWER_CASE:Int = 2;
 
-	public static inline var BACKSPACE_ACTION:String = "backspace"; // press backspace
-	public static inline var DELETE_ACTION:String = "delete"; // press delete
-	public static inline var ENTER_ACTION:String = "enter"; // press enter
-	public static inline var INPUT_ACTION:String = "input"; // manually edit
-	public static inline var PASTE_ACTION:String = "paste"; // manually edit
+	@:keep public static inline var BACKSPACE_ACTION:String = "backspace"; // press backspace
+	@:keep public static inline var DELETE_ACTION:String = "delete"; // press delete
+	@:keep public static inline var ENTER_ACTION:String = "enter"; // press enter
+	@:keep public static inline var INPUT_ACTION:String = "input"; // manually edit
+	@:keep public static inline var PASTE_ACTION:String = "paste"; // manually edit
 
 	/**
 	 * This regular expression will filter out (remove) everything that matches.
@@ -49,8 +49,7 @@ class FlxInputText extends FlxText {
 	 */
 	public var customFilterPattern(default, set):EReg;
 
-	function set_customFilterPattern(cfp:EReg)
-	{
+	function set_customFilterPattern(cfp:EReg) {
 		customFilterPattern = cfp;
 		filterMode = CUSTOM_FILTER;
 		return customFilterPattern;
@@ -324,8 +323,9 @@ class FlxInputText extends FlxText {
 	static var controlPressed = false;
 	private function onKeyUp(e:KeyboardEvent):Void {
 		if(e.keyCode == 17) controlPressed = false;
+		if(!hasFocus) return;
 		if(e.keyCode == 13){
-			trace('the enter');
+			hasFocus = false;
 			return onChange('enter');
 		}
 	}
@@ -339,7 +339,7 @@ class FlxInputText extends FlxText {
 			if(keyPressCallbacks[key]()) return;
 		}
 		if (key == 17) controlPressed = true;
-		if (key == 220 || key == 0x0D){
+		if (key == 27){
 			hasFocus = false;
 			return;
 		}

@@ -203,6 +203,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Miss Sounds","Play a sound when you miss",'playMisses'),
 			new HCBoolOption("Hit Sounds","Play a click when you hit a note. Uses osu!'s sounds or your mods/hitsound.ogg",'hitSound'),
 			new HCBoolOption("Play Character Voices","Plays the voices a character has when you press a note.","playVoices"),
+			new HCBoolOption("Resync Music","Automatically resync voices if they fall out of sync. Might cause lag",'resyncVoices'),
 		],"Toggle some sounds and change the volume of things"),
 	];
 

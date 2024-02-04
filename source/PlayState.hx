@@ -948,7 +948,7 @@ class PlayState extends ScriptMusicBeatState
 		var noteSplash0:NoteSplash = new NoteSplash();
 		noteSplash0.setupNoteSplash(boyfriend, 0);
 
-		var downscroll = downscroll || SESave.data.flipScrollY; // Very dumb way of implementing it but fuck it
+		var downscroll = downscroll || (SESave.data.flipScrollY && !downscroll); // Very dumb way of implementing it but fuck it
 
 		if (SONG.difficultyString != null && SONG.difficultyString != "") songDiff = SONG.difficultyString;
 		else songDiff = if(customDiff != "") customDiff else if(stateType == 4) "mods/charts" else if (stateType == 5) "osu! beatmap" else (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy");
@@ -1819,8 +1819,8 @@ class PlayState extends ScriptMusicBeatState
 						babyArrow.screenCenter(X);
 						babyArrow.x += (strumWidth * i) + i + (strumWidth * 0.5);
 					}else{
-							// babyArrow.screenCenter(X);
-							babyArrow.x = (FlxG.width * (if(babyArrow.ID > halfKeyCount)0.75 else 0.25)) + (strumWidth * i + i) - (strumWidth * 2 + 2);
+						// babyArrow.screenCenter(X);
+						babyArrow.x = (FlxG.width * (if(babyArrow.ID > halfKeyCount)0.75 else 0.25)) + (strumWidth * i + i) - (strumWidth * 2 + 2);
 					}
 
 				}else{
@@ -1948,7 +1948,9 @@ class PlayState extends ScriptMusicBeatState
 	override function closeSubState() {
 		if (!paused) return super.closeSubState();
 		
-		if (FlxG.sound.music != null && !startingSong) vocals.time = Conductor.songPosition = FlxG.sound.music.time;
+		if (FlxG.sound.music != null && !startingSong){
+			resyncVocals();
+		}
 
 		if (!startTimer.finished) startTimer.active = true;
 		canPause = true;
@@ -1959,16 +1961,14 @@ class PlayState extends ScriptMusicBeatState
 	}
 	
 	var resyncCount:Int = 0;
-	function resyncVocals():Void{
-
+	function resyncVocals():Void {
 		Conductor.songPosition = FlxG.sound.music.time;
 		FlxG.sound.music.play();
-		if(SONG.needsVoices && (!vocals.playing || vocals.time > Conductor.songPosition + 5 || vocals.time < Conductor.songPosition - 5)){
+		if(vocals != null && (!vocals.playing || vocals.time > Conductor.songPosition + 5 || vocals.time < Conductor.songPosition - 5)){
 			vocals.time = FlxG.sound.music.time;
 			vocals.play();
 		}
 		resyncCount++;
-
 	}
 
 	private var paused:Bool = false;
@@ -3287,16 +3287,15 @@ class PlayState extends ScriptMusicBeatState
 
 
 	inline function updateAccuracy(){
-			totalPlayed += 1;
-			accuracy = Math.max(0,totalNotesHit / totalPlayed * 100);
-			accuracyDefault = Math.max(0, totalNotesHitDefault / totalPlayed * 100);
-		}
+		totalPlayed += 1;
+		accuracy = Math.max(0,totalNotesHit / totalPlayed * 100);
+		accuracyDefault = Math.max(0, totalNotesHitDefault / totalPlayed * 100);
+	}
 
 	override function stepHit(){
-		if(lastStep == curStep) return;
 		super.stepHit();
 		// lastStep = curStep;
-		if (handleTimes && (FlxG.sound.music.time > Conductor.songPosition + 5 || FlxG.sound.music.time < Conductor.songPosition - 5) && generatedMusic)
+		if (SESave.data.resyncVoices && handleTimes && (FlxG.sound.music.time > Conductor.songPosition + 5 || FlxG.sound.music.time < Conductor.songPosition - 5) && generatedMusic)
 			resyncVocals();
 		
 

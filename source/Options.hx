@@ -657,12 +657,20 @@ class HCIntOption extends Option{
 	override function getValue():String return '${Reflect.getProperty(SESave.data,id)}';
 
 	public override function left():Bool{
-		Reflect.setProperty(SESave.data,id,Math.min(Reflect.getProperty(SESave.data,id) - inc,min));
+		var ince:Float = inc;
+		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) ince *= 0.01;
+		else if(FlxG.keys.pressed.SHIFT) ince *= 10;
+		else if(FlxG.keys.pressed.CONTROL) ince *= 0.1;
+		Reflect.setProperty(SESave.data,id,Math.max(cast (Reflect.getProperty(SESave.data,id),Int) - Std.int(ince),min));
 		display = updateDisplay();
 		return true;
 	}
 	public override function right():Bool{
-		Reflect.setProperty(SESave.data,id,Math.max(Reflect.getProperty(SESave.data,id) + inc,max));
+		var ince:Float = inc;
+		if(FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT) ince *= 0.01;
+		else if(FlxG.keys.pressed.SHIFT) ince *= 10;
+		else if(FlxG.keys.pressed.CONTROL) ince *= 0.1;
+		Reflect.setProperty(SESave.data,id,Math.min(cast (Reflect.getProperty(SESave.data,id),Int) + Std.int(ince),max));
 		display = updateDisplay();
 		return true;
 	}

@@ -1,4 +1,6 @@
-24.01.31.2157;
+24.02.02.0132;
+* Fix a bunch of bugs
+24.01.31.2157 ---
 * Change how bg bouncing works in MultiMenuState
 * BPM change maps now work in all states
 * Work on hosting and stuff(Not released yet due to lack of motivation :sob:)

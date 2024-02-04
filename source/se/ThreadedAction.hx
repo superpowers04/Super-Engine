@@ -3,25 +3,23 @@ package se;
 import sys.thread.Thread;
 import se.objects.ToggleLock;
 
-class ThreadedAction{
-	#if(sys.thread)
-	var lock:ToggleLock = new ToggleLock();
+#if(target.threaded)
+class ThreadedAction extends ToggleLock{
 	public function new(func:()->Void){
-		lock.lock();
+		super();
+		lock();
+
 		Thread.create(function(){
 			func();
-			lock.release();	
+			release();	
 		});
 	}
-
-	public function wait(?timeout:Float):Bool{
-		return lock.wait(timeout);
-	}
-	#else
-	public function new(func:()->Void){
-		Thread.create(func);
-	}
-
-	public function wait(?timeout:Float):Bool {return true;}
-	#end
 }
+#else
+class ThreadedAction{
+	public function new(func:()->Void){
+		func();
+	}
+	public function wait():Bool {return true;}
+}
+#end

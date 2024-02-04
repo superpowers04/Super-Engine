@@ -146,6 +146,7 @@ typedef YourMother = Dynamic;
 	var rotateScroll:Int = 0;
 	var flipScrollX:Bool = false;
 	var flipScrollY:Bool = false;
+	var resyncVoices:Bool = true;
 
 	public function new(){}
 }

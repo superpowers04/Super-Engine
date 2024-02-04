@@ -27,8 +27,6 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 
 class MusicBeatState extends FlxUIState {
 	public static var instance:MusicBeatState;
-	private var lastBeat:Float = 0;
-	private var lastStep:Float = 0;
 
 	public var curStep:Int = 0;
 	public var curStepProgress:Float = 0;
@@ -203,6 +201,8 @@ class MusicBeatState extends FlxUIState {
 			uiMap[i] = null;
 		}
 	}
+
+	public static var currentColor = 0;
 	// Have to keep track of steps, else they'll try to hit multiple times
 	var oldBeat:Int = 0;
 	var oldStep:Int = 0;
@@ -231,26 +231,7 @@ class MusicBeatState extends FlxUIState {
 			throw("Manually triggered error");
 		}
 		
-		updateCurStep();
-		updateBeat();
-		if (oldStep != curStep && curStep > 0){
-			if(oldStep > curStep && Conductor.bpmChangeMap != null){ // Gotta resync the 
-				// var position = Conductor.songPosition;
-				var newStep = curStep;
-				for(ev in Conductor.bpmChangeMap){
-					if(ev.stepTime < newStep){
-						curStep = ev.stepTime;
-						updateCurStep();
-						updateBPMChange();
-					}else break;
-				}
-				curStep = newStep;
-				// Conductor.songPosition = position;
-			}
-			oldStep = curStep;
-			stepHit();
-			updateBPMChange();
-		}
+		updateSteps();
 		if(FlxG.mouse.justPressed && checkInputFocus && FlxG.mouse.visible){
 			var hasPressed = false;
 
@@ -297,13 +278,34 @@ class MusicBeatState extends FlxUIState {
 
 		super.update(elapsed);
 	}
-
+	@:keep inline public function updateSteps(){
+		updateCurStep();
+		updateBeat();
+		if (oldStep != curStep && curStep > 0){
+			if(oldStep > curStep && Conductor.bpmChangeMap != null){ // Gotta resync the 
+				// var position = Conductor.songPosition;
+				var newStep = curStep;
+				for(ev in Conductor.bpmChangeMap){
+					if(ev.stepTime < newStep){
+						curStep = ev.stepTime;
+						updateCurStep();
+						updateBPMChange();
+					}else break;
+				}
+				curStep = newStep;
+				// Conductor.songPosition = position;
+			}
+			oldStep = curStep;
+			stepHit();
+			updateBPMChange();
+		}
+	}
 	private function updateBeat():Void {
-		lastBeat = curStep;
+		oldBeat = curStep;
 		curBeat = Math.floor(curStep / 4);
 	}
 
-	public static var currentColor = 0;
+
 	public var lastBPMChange:BPMChangeEvent = {
 		stepTime: 0,
 		songTime: 0,

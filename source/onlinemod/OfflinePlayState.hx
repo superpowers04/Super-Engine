@@ -62,7 +62,7 @@ class OfflinePlayState extends PlayState {
 		#if(target.threaded)
 		var voicesThread = new ThreadedAction(() -> { // Offload to another thread for faster loading
 		#end
-			if(!(lastVoicesFile == voicesFile && loadedVoices != null)){
+			if(loadedVoices == null || lastVoicesFile != voicesFile){
 				if(voicesFile == ""){
 					for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Voices.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Voices.ogg']) {
 						if (FileSystem.exists('${Sys.getCwd()}/$i')){
@@ -83,10 +83,11 @@ class OfflinePlayState extends PlayState {
 				}
 
 			}
+			trace('Done with voices load');
 		#if(target.threaded)
 		});
 		#end
-			if(!(lastInstFile == instFile && loadedInst != null)){ // This doesn't need to be threaded
+			if(loadedInst == null || lastInstFile != instFile){ // This doesn't need to be threaded
 				if(instFile == ""){
 
 					for (i in ['assets/onlinedata/songs/${PlayState.actualSongName.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.songDir.toLowerCase()}/Inst.ogg','assets/onlinedata/songs/${PlayState.SONG.song.toLowerCase()}/Inst.ogg']) {
@@ -101,6 +102,7 @@ class OfflinePlayState extends PlayState {
 				loadedInst = SELoader.loadSound(instFile);
 			}
 		#if(target.threaded)
+		trace('waiting for voices');
 		voicesThread.wait();
 		#end
 		if(loadedVoices != null)loadedVoices.time = 0;
