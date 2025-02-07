@@ -2549,10 +2549,7 @@ class PlayState extends ScriptMusicBeatState
 			rating.updateHitbox();
 			FlxTween.tween(rating, {alpha: 0}, 0.3, {
 				startDelay: Conductor.crochet * 0.001,
-				onComplete: function(tween:FlxTween)
-				{
-					rating.destroy();
-				}
+				onComplete: function(tween:FlxTween) { rating.destroy(); }
 			});
 			rating.cameras = defaultScoreCameras;
 			add(rating);
@@ -2561,8 +2558,8 @@ class PlayState extends ScriptMusicBeatState
 
 		var currentTimingShown:FlxText=null;
 		if(SESave.data.showTimings){
-			var _dist = Math.round(Conductor.songPosition - daNote.strumTime);
-			currentTimingShown = new FlxText(0,0,100,Std.string(noteDiff) + "ms " + ((_dist == 0) ? "=" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "^" : "v")));
+			var _dist = Std.int(Conductor.songPosition - daNote.strumTime);
+			currentTimingShown = new FlxText(0,0,100,Std.string(Std.int(noteDiff)) + "ms " + ((_dist == 0) ? "=" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "^" : "v")));
 			timeShown = 0;
 			switch(daRating){
 				case 'shit': currentTimingShown.color = FlxColor.RED;
