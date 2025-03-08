@@ -18,7 +18,7 @@ jobs:
     
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: krdlab/setup-haxe@master
         with:
@@ -31,7 +31,7 @@ jobs:
           key: HaxelibLin
       # Cache to prevent 30 minute compile time for smallest of changes
       - name: Cache FNFBRBIN
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             /tmp/fnfbrbin
@@ -67,20 +67,20 @@ jobs:
     
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.4
       - name: Cache HaxeLib
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             C:/haxelib
           key: Haxelib
       # Cache to prevent 30 minute compile time for smallest of changes
       - name: Cache FNFBRBIN
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             C:/fnfbrbin
