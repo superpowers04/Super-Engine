@@ -491,7 +491,7 @@ class Note extends FlxSprite
 					canBeHit = false;
 					tooLate = true;
 					skipNote = true;
-					if (!shouldntBeHit) {
+					if (!shouldntBeHit && !isSustainNoteEnd) {
 						PlayState.instance.health += PlayState.SONG.noteMetadata.tooLateHealth;
 						PlayState.instance.vocals.setVolume(0,0);
 						PlayState.instance.noteMiss(noteData, this);

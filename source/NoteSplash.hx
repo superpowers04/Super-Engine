@@ -15,8 +15,7 @@ using StringTools;
 class NoteSplash extends FlxSprite
 {  
 	public var data:Int = 0;
-	override public function new()
-	{
+	override public function new() {
 		try{
 
 			super();
@@ -79,12 +78,12 @@ class NoteSplash extends FlxSprite
 				}
 			}
 			animation.play(anim, true);
-			animation.finishCallback = finished;
 			if(animation.curAnim == null){
 				animation.play("note" + note + "-0", true);
 
 			}
 			animation.curAnim.frameRate = 24;
+			animation.finishCallback = finished;
 
 			updateHitbox();
 			centerOffsets();

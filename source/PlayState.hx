@@ -2559,30 +2559,38 @@ class PlayState extends ScriptMusicBeatState
 		var currentTimingShown:FlxText=null;
 		if(SESave.data.showTimings){
 			var _dist = Std.int(Conductor.songPosition - daNote.strumTime);
-			currentTimingShown = new FlxText(0,0,100,Std.string(Std.int(noteDiff)) + "ms " + ((_dist == 0) ? "=" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "^" : "v")));
-			timeShown = 0;
-			switch(daRating){
-				case 'shit': currentTimingShown.color = FlxColor.RED;
-				case 'bad': currentTimingShown.color = FlxColor.ORANGE;
-				case 'good': currentTimingShown.color = FlxColor.GREEN;
-				case 'sick': currentTimingShown.color = FlxColor.CYAN;
+			// Std.string(Std.int(noteDiff)) + "ms " + ((_dist == 0) ? "=" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "^" : "v")));
+
+			var comboSplit:Array<String> = ('${((_dist == 0) ? "S" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "U" : "D"))}$combo').split('');
+
+			var comboSize = 0.5-(comboSplit.length * 0.1);
+			var comboPixelSize = (50 * comboSize);
+			var offsetX = strum.x;
+			for (i => num in comboSplit) {
+				// var num:Int = Std.parseInt(comboSplit[i]);
+				var numScore:FlxSprite = new FlxSprite().loadGraphic(SELoader.cache.loadGraphic('assets/images/num$num.png'));
+				// numScore.screenCenter();
+				numScore.x = offsetX;
+				offsetX+=(numScore.width+2) * comboSize;
+				numScore.y = daNote.y + (daNote.height * 0.5);
+				numScore.cameras = defaultScoreCameras;
+				numScore.antialiasing = true;
+				numScore.setGraphicSize(Std.int((numScore.width * comboSize)));
+
+				numScore.updateHitbox();
+	
+				// numScore.acceleration.y = FlxG.random.int(200, 300);
+				// numScore.velocity.y -= FlxG.random.int(140, 160);
+				// numScore.velocity.x = FlxG.random.float(-5, 5);
+				// numScore.angularVelocity = numScore.velocity.x;
+				add(numScore);
+				// scoreObjs.push(numScore);
+				FlxTween.tween(numScore, {alpha: 0,y:numScore.y - 60}, 0.8, {
+					onComplete: function(tween:FlxTween) {numScore.destroy();},
+					startDelay: Conductor.crochet * 0.001
+				});
+	
 			}
-			currentTimingShown.borderStyle = OUTLINE;
-			currentTimingShown.borderSize = 1;
-			currentTimingShown.borderColor = FlxColor.BLACK;
-			// This if statement is shit but it should work
-			currentTimingShown.size = 20;
-			currentTimingShown.alignment=CENTER;
-			// currentTimingShown.screenCenter();
-			currentTimingShown.updateHitbox();
-			currentTimingShown.x = (strum.x + (strum.width * 0.5)) - (currentTimingShown.width * 0.5);
-			currentTimingShown.y = daNote.y + (daNote.height * 0.5);
-			currentTimingShown.cameras = defaultScoreCameras; 
-			FlxTween.tween(currentTimingShown, {alpha: 0,y:currentTimingShown.y - 60}, 0.8, {
-				onComplete: function(tween:FlxTween) {currentTimingShown.destroy();},
-				startDelay: Conductor.crochet * 0.001,
-			});
-			add(currentTimingShown);
 		}
 
 
@@ -2807,7 +2815,6 @@ class PlayState extends ScriptMusicBeatState
 							swagRect.y = (strumNote.y + swagWidth - daNote.y) / daNote.scale.y;
 							if(daNote.parentNote != null && daNote.childNotes[0] != null){
 								swagRect.height = Math.abs(daNote.y - daNote.childNotes[0].y);
-
 							}
 							swagRect.height -= swagRect.y;
 							if(daNote.mustPress && swagRect.height <= 0 ) {goodNoteHit(daNote);continue;}
@@ -3667,17 +3674,17 @@ class PlayState extends ScriptMusicBeatState
 			{
 				downscroll = !downscroll;
 				for (i in playerStrums.members){
-					FlxTween.tween(i,{y:(if(downscroll)FlxG.height - 165 else 50)},0.3);
+					FlxTween.tween(i,{y:(downscroll ? FlxG.height - 165 : 50)},0.3);
 				}
 				for (i in cpuStrums.members){
-					FlxTween.tween(i,{y:(if(downscroll)FlxG.height - 165 else 50)},0.3);
+					FlxTween.tween(i,{y:(downscroll ? FlxG.height - 165 : 50)},0.3);
 				}
 			}
 			if (FlxG.keys.justPressed.SEVEN ){
 				ChartingState.gotoCharter();
 			}
 			if (FlxG.keys.pressed.SHIFT && (FlxG.keys.justPressed.LBRACKET || FlxG.keys.justPressed.RBRACKET) ){
-				SESave.data.scrollSpeed += (if(FlxG.keys.justPressed.LBRACKET) -0.05 else 0.05);
+				SESave.data.scrollSpeed += (FlxG.keys.justPressed.LBRACKET ?  -0.05 : 0.05);
 				showTempmessage('Changed scrollspeed to ${SESave.data.scrollSpeed}');
 			}
 		}

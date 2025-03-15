@@ -119,8 +119,6 @@ class TitleState extends MusicBeatState
 	var textGroup:FlxTypedGroup<FlxSprite>;
 	var superLogo:FlxSprite;
 	public static var p2canplay = true;
-	// public static var choosableStages:Array<String> = ["default","stage","nothing"];
-	// public static var choosableStagesLower:Map<String,String> = [];
 
 	public static var characters:Array<CharInfo> = [];
 	static var defaultChar:CharInfo;
