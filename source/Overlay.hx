@@ -589,7 +589,7 @@ class ConsoleInput extends TextField{
 				return null;
 			case 'hst' :
 				if(!QuickOptionsSubState.getSetting("Song hscripts")){Console.error('Scripts are currently disabled!');return null;}
-				return runHscript("trace(" + text.substring(3) + ");");
+				return runHscript('trace(${text.substring(3)});');
 			case 'playsong' | 'play':
 				var song = text.substring(text.indexOf(' ') + 1);
 				if(song != "" && multi.MultiMenuState.playSongByName(song)){
