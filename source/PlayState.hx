@@ -2557,11 +2557,12 @@ class PlayState extends ScriptMusicBeatState
 		
 
 		var currentTimingShown:FlxText=null;
+		//  TODO ADD SEPERATE MS SPRITE
 		if(SESave.data.showTimings){
 			var _dist = Std.int(Conductor.songPosition - daNote.strumTime);
 			// Std.string(Std.int(noteDiff)) + "ms " + ((_dist == 0) ? "=" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "^" : "v")));
 
-			var comboSplit:Array<String> = ('${((_dist == 0) ? "S" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "U" : "D"))}$combo').split('');
+			var comboSplit:Array<String> = ('${((_dist == 0) ? "S" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "U" : "D"))}$noteDiff').split('');
 
 			var comboSize = 0.5-(comboSplit.length * 0.1);
 			var comboPixelSize = (50 * comboSize);
