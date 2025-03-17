@@ -1120,7 +1120,7 @@ class TitleState extends MusicBeatState
 				#end
 					// Get current version of FNFBR, Uses kade's update checker 
 	
-					var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/Super-Engine/" + (if(MainMenuState.nightly == "") "master" else "nightly") + "/version.downloadMe"); // It's recommended to change this if forking
+					var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/Super-Engine/" + (MainMenuState.nightly == "" ?  "master" : "nightly") + "/version.downloadMe"); // It's recommended to change this if forking
 					var returnedData:Array<String> = [];
 					
 					http.onData = function (data:String)
@@ -1133,9 +1133,7 @@ class TitleState extends MusicBeatState
 						OutdatedSubState.needVer = updatedVer;
 						OutdatedSubState.currChanges = returnedData[1];
 						if (MainMenuState.ver < updatedVer || (MainMenuState.nightly != "")) {
-							// trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.ver);
 							outdated = true;
-							
 						}
 						if(skipMM) return;
 						skipMM = true;
