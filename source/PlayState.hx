@@ -2562,13 +2562,13 @@ class PlayState extends ScriptMusicBeatState
 			var _dist = Std.int(Conductor.songPosition - daNote.strumTime);
 			// Std.string(Std.int(noteDiff)) + "ms " + ((_dist == 0) ? "=" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "^" : "v")));
 
-			var comboSplit:Array<String> = ('${((_dist == 0) ? "S" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "U" : "D"))}${std.int(noteDiff)}').split('');
+			var comboSplit:Array<String> = ('${((_dist == 0) ? "S" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "U" : "D"))}${Std.int(noteDiff)}').split('');
 
 			var comboSize = 0.5-(comboSplit.length * 0.1);
 			var comboPixelSize = (50 * comboSize);
 			var offsetX = strum.x;
-			for (i => num in comboSplit) {
-				// var num:Int = Std.parseInt(comboSplit[i]);
+			for (i in 0...comboSplit.length) {
+				var num:Int = Std.parseInt(comboSplit[i]);
 				var numScore:FlxSprite = new FlxSprite().loadGraphic(SELoader.cache.loadGraphic('assets/images/num$num.png'));
 				// numScore.screenCenter();
 				numScore.x = offsetX;
