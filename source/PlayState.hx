@@ -1596,24 +1596,26 @@ class PlayState extends ScriptMusicBeatState
 	}
 
 	var debugNum:Int = 0;
-	@:keep inline public function loadEvents(songData:SwagSong){
+	@:keep public function loadEvents(songData:Dynamic){
 		try{
-
-			if(songData.events.length > 0){
-				var i=0;
-				while(i < songData.events.length) {
-					i++;
-					var event = songData.events[i];
-					if(event == null) continue;
-					if(event[1] is Array){
-						for (e in cast (event[1],Array<Dynamic>)) {
-							eventNotes.push(new Note(event[0], -1, null,false,false,e[0],e,false));
-						}
-					}else{
-						eventNotes.push(new Note(event[0], -1, null,false,false,event[0],event,false));
+			if(songData.events == null) throw('songData is missing an events array');
+			if(!(songData.events is Array)) throw('songData has an invalid events array');
+			var events:Array<Dynamic> = songData.events;
+			if(events.length == 0) return;
+			var i=0;
+			while(i < events.length) {
+				i++;
+				var event = events[i];
+				if(event == null) continue;
+				if(event[1] is Array){
+					for (e in cast (event[1],Array<Dynamic>)) {
+						eventNotes.push(new Note(event[0], -1, null,false,false,e[0],e,false));
 					}
+				}else{
+					eventNotes.push(new Note(event[0], -1, null,false,false,event[0],event,false));
 				}
 			}
+			
 		}catch(e){
 			trace('Error when loading events: ${e.message} ${e.stack}');
 		}

@@ -33,7 +33,6 @@ class SEList extends SEGroup{
 				hoveredIndex=i;
 				member.color = hoveredColor;
 			}else{
-
 				member.color = inactiveColor;
 			}
 		}

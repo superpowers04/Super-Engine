@@ -326,7 +326,14 @@ class SELoader {
 			textPath = textPath.substring(0,colonIndex);
 		}
 		if(!(textPath.lastIndexOf('-metadata') != -1 || textPath.lastIndexOf('-chart') != -1)){
-			return Song.parseJSONshit(loadText(oldPath,false));
+			var s:SwagSong = Song.parseJSONshit(loadText(oldPath,false));
+			if(SESave.data.loadPsychEvents){
+				var events = oldPath.substring(0,oldPath.lastIndexOf('/'))+'/events.json';
+				if(exists(events)){
+					Song.loadEvents(s,loadText(events,false));
+				}
+			}
+			return s;
 		}
 
 		textPath = textPath.replace('-metadata','_FILE_').replace('-chart','_FILE_');

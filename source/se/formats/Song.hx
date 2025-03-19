@@ -9,8 +9,7 @@ import se.formats.VSliceSongMeta;
 
 using StringTools;
 
-typedef SwagSong =
-{
+typedef SwagSong = {
 	// Vanilla Shit
 		var song:String;
 		var notes:Array<SwagSection>;
@@ -93,6 +92,7 @@ class Song
 	public var noteStyle:String = 'normal';
 	public var stage:String = 'stage';
 	public var keyCount:Int = 4;
+	public var events:Array<Dynamic>;
 	public static final maniaToKeyMap:Array<Int> = [4, 6, 7, 9, 5, 8, 1, 2, 3, 10, 11, 12, 13, 14, 15, 16 ,17, 18, 21];
 	public static final defNoteMetadata:NoteMetadata = {
 				badnoteHealth : -0.24,
@@ -253,8 +253,20 @@ class Song
 		// }
 		#end
 	}
-	public static function parseJSONshit(rawJson:String,charting:Bool = false):SwagSong
-	{
+	public static function loadEvents(song:SwagSong,rawJson:String) {
+		var rawJson:Dynamic = Json.parse(rawJson.substr(0, rawJson.lastIndexOf("}") + 1));
+		if(rawJson.song != null) rawJson = rawJson.song;
+		if(rawJson.events == null) throw('Json does not contain an events array!');
+		var events:Array<Dynamic> = rawJson.events;
+		if(events == null) throw('Json contains an invalid events array!');
+		if(song.events == null) {song.events = events; return;}
+		for(event in events){
+			song.events.push(event);
+		}
+
+
+	}
+	public static function parseJSONshit(rawJson:String,charting:Bool = false):SwagSong {
 		#if !debug
 		try{
 		#end

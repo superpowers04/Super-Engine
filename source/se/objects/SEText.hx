@@ -16,7 +16,7 @@ import flixel.util.FlxColor;
 /*
 	A basic class that auto-initialises a FlxText with the right font and shit
 */
-class SEText extends FlxText{
+@:NullSafety(StrictThreaded) class SEText extends FlxText{
 	public function new(x:Float = 0, y:Float = 0, fieldwidth:Float = 0, ?text:String, 
 						size:Int = 8,lockScrollFactor:Bool = true,?color:FlxColor = FlxColor.WHITE,alignment:FlxTextAlign = LEFT,borderStyle:FlxTextBorderStyle = OUTLINE, outlineColor:FlxColor =FlxColor.BLACK){
 		super(x,y,fieldwidth,text,size,true);

@@ -932,10 +932,10 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		if(path.contains('/data/') && attempt < 1){
 			return path.substr(0,path.lastIndexOf('/data/'));
 		}
-		if(path.contains('/assets/')  && attempt < 2){
+		if(path.contains('/assets/') && attempt < 2){
 			return upToString(path,'/assets/');
 		}
-		if(path.contains('/mods/')  && attempt < 3){
+		if(path.contains('/mods/') && attempt < 3){
 			return upToString(path,'/mods/');
 		}
 		var i = attempt - 3;

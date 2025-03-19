@@ -27,8 +27,7 @@ import haxe.CallStack;
 import sys.FileSystem;
 import sys.io.File;
 
-class Main extends Sprite
-{
+@:NullSafety(StrictThreaded) class Main extends Sprite {
 	public static var errorMessage = "";
 	public static var instance:Main;
 	public static var funniSprite:Sprite;

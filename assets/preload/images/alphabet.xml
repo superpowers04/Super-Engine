@@ -2,7 +2,7 @@
 <TextureAtlas imagePath="bold.png">
 	<!-- Created with Adobe Animate version 19.2.1.408 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-<!-- 	<SubTexture name="# bold0000" x="2" y="2" width="50" height="56"/>
+	<SubTexture name="# bold0000" x="2" y="2" width="50" height="56"/>
 	<SubTexture name="# bold0001" x="2" y="2" width="50" height="56"/>
 	<SubTexture name="# bold0002" x="54" y="2" width="50" height="56"/>
 	<SubTexture name="# bold0003" x="54" y="2" width="50" height="56"/>
@@ -33,7 +33,7 @@
 	<SubTexture name="+ bold0000" x="140" y="80" width="42" height="39"/>
 	<SubTexture name="+ bold0001" x="140" y="80" width="42" height="39"/>
 	<SubTexture name="+ bold0002" x="184" y="80" width="42" height="39"/>
-	<SubTexture name="+ bold0003" x="184" y="80" width="42" height="39"/> -->
+	<SubTexture name="+ bold0003" x="184" y="80" width="42" height="39"/>
 	<SubTexture name="-angry faic- bold0000" x="228" y="80" width="54" height="54"/>
 	<SubTexture name="-angry faic- bold0001" x="228" y="80" width="54" height="54"/>
 	<SubTexture name="-angry faic- bold0002" x="284" y="80" width="54" height="54"/>

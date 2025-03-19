@@ -136,7 +136,6 @@ class OfflinePlayState extends PlayState {
 				PlayState.SONG = smTools.SMFile.loadFile(chartFile).convertToFNF();
 			}else{
 				PlayState.SONG = SELoader.getChart(chartFile);
-// Song.parseJSONshit(SELoader.getContent(chartFile))
 			}
 				// if(nameSpace != ""){
 				// 	if(TitleState.retChar(nameSpace + "|" + PlayState.player2) != null){

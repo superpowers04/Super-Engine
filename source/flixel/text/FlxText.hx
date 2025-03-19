@@ -42,7 +42,7 @@ import openfl.utils.AssetType;
  * By default `FlxText` is autosized to fit it's text. 
  * To set a fixed size, use the `fieldWidth`, `fieldHeight` and `autoSize` fields.
  */
-class FlxText extends FlxSprite
+@:NullSafety(StrictThreaded) class FlxText extends FlxSprite
 {
 	/**
 	 * 4px gutter at the bottom when the field has automatic height

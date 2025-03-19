@@ -31,7 +31,8 @@
 	<window if="mobile" fullscreen="true" resizable="false"/>
 
 
-	<assets path="assets/preload/alsoft.ini" rename="assets/preload/alsoft.conf" unless="windows"/>
+	<assets path="assets/alsoft.ini" rename="assets/alsoft.conf" unless="windows"/>
+	<assets path="assets/alsoft.ini" if="windows"/>
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/release" unless="debug ghaction"/>
