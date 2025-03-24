@@ -87,7 +87,19 @@ class FuckState extends FlxUIState {
 					'super engine moment',
 					'Another one bites the dust',
 					"https://www.youtube.com/watch?v=dQw4w9WgXcQt",
-					"It's fine, everything is good. What do you mean this is a crash report?"
+					"Dude, she's a lesbian",
+					"snrk",
+					"This message was brought to you by CRASH REPORT",
+					"Unable to cast Dragon to Note",
+					"Unable to cast Mouse to Sound",
+					"Unable to cast Human to Integer",
+					"Unable to cast Character to FlxColor",
+					"Unable to cast File to PlayState",
+					"Unable to cast Note to Character",
+					"It's fine, everything is good. What do you mean this is a crash report?",
+					"What're you looking at? It wasn't me",
+					"Unable to cast Integer '4' to String",
+					"guh"
 					
 				];
 				funnyQuip = jokes[Std.int(Math.random() * jokes.length - 1) ]; // I know, this isn't FlxG.random but fuck you the game just crashed

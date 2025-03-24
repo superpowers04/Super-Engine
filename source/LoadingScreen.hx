@@ -50,6 +50,7 @@ import se.SEProfiler;
 	static var tips:Array<String> = [
 		"You can drag a PNG or XML of a character into the game to import them.",
 		"Unfortunately, your mother",
+		"Fun fact, most of the text that appears here is UTTERLY USELESS",
 		"You can drag any FNF json chart into the game and play it.\n Some weird engines might not work though..",
 		"With threaded loading, this loading screen has a chance of crashing\nbecause of Flixel trying to make an FlxText at the wrong time...",
 		"By default, the only characters available are GF and BF.",
@@ -68,7 +69,7 @@ import se.SEProfiler;
 		#elseif !mobile
 		"Totally real error! Run 'sudo rm -rf /' to fix!!!! hah got you so good...\nNote that will delete your entire drive. Do not run it",
 		#end
-		'You\'re currently on ${MainMenuState.ver}. You probably knew that though...',
+		'You\'re currently on ${MainMenuState.ver}.... Am I helping??',
 		'Also try Terraria. I mean it\'s a different genre but the game\'s still cool',
 		"This game can still crash on stupid shit even though it has so much error checking...",
 		// 'This game\'s native resolution is 1280x720. You started the game with ${Application.current.window.width}x${Application.current.window.height}.',
@@ -92,9 +93,15 @@ import se.SEProfiler;
 		"Some people call the 'Arrow keys' as 'Cursor keys'",
 		"have you touched grass recently? because i havent",
 		"2+2=fish",
-		"",
+		"Who the fuck is Ada? You mean the Brawlhalla<sub>tm</sub> character??",
 		"You've been distracted",
 		"If you're under the age of 13...\nwhat the hell are you doing playing fnf? Go do your homework, play roblox or something"
+		"A red dragon just flew by- WAIT WHAT",
+		"What do you mean you saw a-\n Rat in a dress holding a cup of tea?",
+
+		"snrk",
+		"Dude, she's a lesbian",
+		""
 	];
 	static var currentTip:Int = 0;
 
@@ -244,7 +251,7 @@ import se.SEProfiler;
 	} 
 	function updateText(){
 		textField.htmlText =  '$loadingText';
-		tipTextField.text = tips[currentTip] ?? "your mother";
+		tipTextField.htmlText = tips[currentTip] ?? "your mother";
 		if(loadingIcon != null) vel += 0.15;
 		if(SESave.data.doCoolLoading){
 			Main.renderLockButCooler.release();

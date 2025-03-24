@@ -327,11 +327,16 @@ class SELoader {
 		}
 		if(!(textPath.lastIndexOf('-metadata') != -1 || textPath.lastIndexOf('-chart') != -1)){
 			var s:SwagSong = Song.parseJSONshit(loadText(oldPath,false));
-			if(SESave.data.loadPsychEvents){
-				var events = oldPath.substring(0,oldPath.lastIndexOf('/'))+'/events.json';
-				if(exists(events)){
-					Song.loadEvents(s,loadText(events,false));
+			try{
+
+				if(SESave.data.loadPsychEvents){
+					var events = oldPath.substring(0,oldPath.lastIndexOf('/'))+'/events.json';
+					if(exists(events)){
+						Song.loadEvents(s,loadText(events,false));
+					}
 				}
+			}catch(e){
+				trace('Unable to load events: $e')
 			}
 			return s;
 		}
