@@ -95,10 +95,12 @@ import se.SEProfiler;
 		"2+2=fish",
 		"Who the fuck is Ada? You mean the Brawlhalla<sub>tm</sub> character??",
 		"You've been distracted",
-		"If you're under the age of 13...\nwhat the hell are you doing playing fnf? Go do your homework, play roblox or something"
+		"If you're under the age of 13...\nwhat the hell are you doing playing fnf? Go do your homework, play roblox or something",
 		"A red dragon just flew by- WAIT WHAT",
 		"What do you mean you saw a-\n Rat in a dress holding a cup of tea?",
-
+		"Attempt to call a nil value",
+		"Attempt to index a nil value",
+		"attempt to add a 'nil' with a 'Class'",
 		"snrk",
 		"Dude, she's a lesbian",
 		""

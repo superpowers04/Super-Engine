@@ -336,7 +336,7 @@ class SELoader {
 					}
 				}
 			}catch(e){
-				trace('Unable to load events: $e')
+				trace('Unable to load events: $e');
 			}
 			return s;
 		}

@@ -1687,8 +1687,8 @@ class PlayState extends ScriptMusicBeatState
 				var _susNote:Float = 0;
 				if(susLength > 0.1){
 
+					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 					for (susNote in 0...Math.floor(susLength)){
-						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
 						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,false,songNotes[3],songNotes,gottaHitNote);
 						if(sustainNote.killNote){sustainNote.destroy();continue;}
@@ -1697,13 +1697,14 @@ class PlayState extends ScriptMusicBeatState
 						unspawnNotes.push(sustainNote);
 						lastSusNote = true;
 						_susNote = susNote;
+						oldNote = sustainNote;
 					}
 					if(susLength % 1 > 0.1){ // Allow for float note lengths, hopefully
-						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susLength), daNoteData, oldNote, true,false,songNotes[3],songNotes,gottaHitNote);
 						sustainNote.scrollFactor.set();
 						sustainNote.sustainLength = susLength;
 						unspawnNotes.push(sustainNote);
+						oldNote = sustainNote;
 						lastSusNote = true;
 
 					}
@@ -2273,11 +2274,16 @@ class PlayState extends ScriptMusicBeatState
 			SEProfiler.qStamp('Add Notes');
 		}
 	}
+ 	public static inline function byTime(Order:Int, Obj1:Note, Obj2:Note):Int {
+		var a = Obj1.strumTime;
+		var b = Obj2.strumTime;
+		return (a < b) ? Order : (a > b) ? -Order : 0;
+	}
 	override function draw(){
 		try{noteShit();}catch(e){handleError('Error during noteShit: ${e.message}\n ${e.stack}}');}
 		callInterp("draw",[]);
 		try{
-			if(!SESave.data.preformance) notes.sort(FlxSort.byY,(downscroll ? FlxSort.DESCENDING : FlxSort.ASCENDING));
+			if(!SESave.data.preformance) notes.sort(FlxSort.byY,(FlxSort.ASCENDING));
 		}catch(e){}
 		super.draw();
 		callInterp("drawAfter",[]);
