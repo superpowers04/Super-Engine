@@ -496,7 +496,7 @@ class OptionsMenu extends MusicBeatState
 
 	function changeSelection(change:Int = 0) {
 
-		if (change != 0 ) FlxG.sound.play(Paths.sound("scrollMenu"), 0.4); // sobbing
+		if (change != 0 ) SELoader.playSound("assets/sounds/scrollMenu.ogg", true); // sobbing
 
 		curSelected += change;
 

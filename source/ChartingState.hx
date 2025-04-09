@@ -67,6 +67,10 @@ using StringTools;
 	}
 }
 
+class SustainVisual extends FlxSprite{
+	public var parentNote:Note;
+}
+
 class ChartingState extends ScriptMusicBeatState
 {
 	var _file:FileReference;
@@ -102,7 +106,7 @@ class ChartingState extends ScriptMusicBeatState
 	var dummyArrow:FlxSprite;
 
 	var curRenderedNotes:FlxTypedGroup<Note>;
-	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
+	var curRenderedSustains:FlxTypedGroup<SustainVisual>;
 	var waveformSprite:FlxSprite;
 	var waveformEnabled:FlxUICheckBox;
 	var waveformUseInstrumental:FlxUICheckBox;
@@ -185,13 +189,16 @@ class ChartingState extends ScriptMusicBeatState
 	static var snapSound:Sound;
 	static var clapSound:Sound;
 	static var noteKeyCharting:Bool = false;
+	static var snapSoundTransform:openfl.media.SoundTransform = new openfl.media.SoundTransform(1);
 	public static function playSnap(){
 		if(snapSound == null) snapSound= SELoader.loadSound('./assets/shared/sounds/SNAP.ogg',true);
-		snapSound.play(new openfl.media.SoundTransform(SESave.data.hitVol));
+		snapSoundTransform.volume = SESave.data.hitVol;
+		snapSound.play(snapSoundTransform);
 	}
 	public static function playClap(){
 		if(clapSound == null)clapSound= SELoader.loadSound('./assets/shared/sounds/CLAP.ogg',true);
-		clapSound.play(new openfl.media.SoundTransform(SESave.data.hitVol));
+		snapSoundTransform.volume = SESave.data.hitVol;
+		clapSound.play(snapSoundTransform);
 	}
 	public static function gotoCharter(){
 		// if(SESave.data.legacyCharter){
@@ -239,7 +246,7 @@ class ChartingState extends ScriptMusicBeatState
 		add(gridBlackLine2);
 
 		curRenderedNotes = new FlxTypedGroup<Note>();
-		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
+		curRenderedSustains = new FlxTypedGroup<SustainVisual>();
 
 		FlxG.mouse.visible = true;
 
@@ -347,8 +354,8 @@ class ChartingState extends ScriptMusicBeatState
 		addNoteUI();
 		updateWaveform();
 
-		add(curRenderedNotes);
 		add(curRenderedSustains);
+		add(curRenderedNotes);
 
 		gridBlackLine.x = GRID_SIZE + (GRID_SIZE * _song.keyCount) - (gridBlackLine.width * 0.5);
 		gridBlackLine2.x = GRID_SIZE - (gridBlackLine.width * 0.5);
@@ -1427,7 +1434,7 @@ class ChartingState extends ScriptMusicBeatState
 				updateGrid();
 				showTempmessage((FlxG.keys.pressed.SHIFT) ? "Reset sections and readded them" : "Reordered chart");
 			}else if(FlxG.keys.justPressed.S){
-				saveLevel();
+				saveLevel(FlxG.keys.pressed.SHIFT);
 			}
 		}
 		var pressingNote = false;
@@ -1480,6 +1487,19 @@ class ChartingState extends ScriptMusicBeatState
 								modifyingNote = true;
 							}
 						}
+					}
+					if(!overlaps){
+
+						for(note in curRenderedSustains.members){
+							if (FlxG.mouse.overlaps(note)){
+								overlaps = true;
+								deselectNotes();
+								selectNote(note.parentNote);
+								// modifyingNote = true;
+								
+							}
+						}
+
 					}
 				}
 				if(!overlaps){
@@ -1900,8 +1920,8 @@ class ChartingState extends ScriptMusicBeatState
 	}
 
 	inline function updateHeads():Void {
-		(if(check_mustHitSection.checked) leftIcon else rightIcon).x = 40;
-		(if(check_mustHitSection.checked) rightIcon else leftIcon).x = 207;
+		(check_mustHitSection.checked ? leftIcon : rightIcon).x = 40;
+		(check_mustHitSection.checked ? rightIcon : leftIcon).x = 207;
 
 		evNote.x = 18;
 		evNote.y = -80;
@@ -1914,7 +1934,7 @@ class ChartingState extends ScriptMusicBeatState
 		if (curSelectedNote != null) stepperSusLength.value = curSelectedNote[2];
 	}
 	inline function regNote(note,i) {rawToNote[i] = note; return noteToRaw[note] = i;}
-	function updateNote(note:Note,i:Array<Dynamic>,?sect:Int = 1){
+	function updateNote(note:Note,i:Array<Dynamic>,?sect:Int = 1):Note{
 		if(note != null && noteToRaw[note] != null && noteToRaw[note] != i){
 			var raw = noteToRaw[note];
 			while(raw.length > 0){
@@ -1963,6 +1983,7 @@ class ChartingState extends ScriptMusicBeatState
 
 		callInterp('updateNote',[note,i]);
 		curRenderedNotes.add(note);
+		return note;
 	}
 	function updateGrid(?updateNotes:Bool = true):Void
 	{
@@ -1976,8 +1997,9 @@ class ChartingState extends ScriptMusicBeatState
 
 		
 		CoolUtil.clearFlxGroup(curRenderedSustains);
-
-		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;
+		var section = _song.notes[curSection];
+		if(section == null) trace('$curSection doesn\'t fucking exist??');
+		var sectionInfo:Array<Dynamic> = section?.sectionNotes ?? [];
 
 		var lastSectionInfo:Array<Dynamic> = null;
 		if (_song.notes[curSection - 1] != null)
@@ -2001,19 +2023,6 @@ class ChartingState extends ScriptMusicBeatState
 			Conductor.changeBPM(daBPM);
 		}
 
-		/* // PORT BULLSHIT, INCASE THERE'S NO SUSTAIN DATA FOR A NOTE
-			for (sec in 0..._song.notes.length)
-			{
-				for (notesse in 0..._song.notes[sec].sectionNotes.length)
-				{
-					if (_song.notes[sec].sectionNotes[notesse][2] == null)
-					{
-						trace('SUS NULL');
-						_song.notes[sec].sectionNotes[notesse][2] = 0;
-					}
-				}
-			}
-		 */
 		for (secID => sectionInfo in [lastSectionInfo,sectionInfo,nextSectionInfo]){
 			// secID += 1;
 			if(sectionInfo == null || sectionInfo[0] == null) {continue;}
@@ -2026,8 +2035,9 @@ class ChartingState extends ScriptMusicBeatState
 				id++;
 				if(i == null || i[0] == null){continue;}
 				var daSus = i[2];
+				var noteObject:Note = null;
 				if(rawToNote[i] == null){
-					updateNote(null,i,secID);
+					noteObject = updateNote(null,i,secID);
 				}
 
 				if (!Math.isNaN(daSus) && daSus > 0){
@@ -2035,8 +2045,9 @@ class ChartingState extends ScriptMusicBeatState
 					var daNoteInfo = i[1];
 					var daStrumTime = i[0];
 					var daType = i[3];
-					var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
-						note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * _song.notes[curSection].lengthInSteps, 0, gridBG.height)));
+					var sustainVis:SustainVisual = new SustainVisual(note.x+1, note.y + (GRID_SIZE*0.5));
+					sustainVis.makeGraphic(GRID_SIZE - 2, Std.int(GRID_SIZE*0.5)+Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * _song.notes[curSection].lengthInSteps, 0, gridBG.height)));
+					sustainVis.parentNote = noteObject;
 					if(sustainColors[note.noteData] != null) sustainVis.color = sustainColors[note.noteData];
 					curRenderedSustains.add(sustainVis);
 				}
@@ -2203,37 +2214,21 @@ class ChartingState extends ScriptMusicBeatState
 			var type:Dynamic = null;
 			var params:Array<String> = [];
 			if(noteTypeInput.text != ""){
-
 				if(useNoteTypeBox.checked){
 					type = noteTypeInput.text;
 					params = noteTypeInputcopy.text.split(",");
 				}
 			}
-			if(noteData == -1){
-				if (n != null)
-					_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData]);
-				else
-					_song.notes[curSection].sectionNotes.push([noteStrum, noteData]);
-
-			}else{
-
-				if (n != null)
-					_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.sustainLength]);
-				else
-					_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
+			var thingy:Array<Dynamic> = (n != null) ? [n.strumTime, n.noteData] : [noteStrum, noteData];
+			_song.notes[curSection].sectionNotes.push(thingy);
+			if(noteData != -1){
+				thingy.push((n != null) ? n.sustainLength : noteSus);
 			}
-
-			var thingy:Array<Dynamic> = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
 			if (n != null && n.type != null && n.type != "") thingy.push(n.type);
 			else if (type != null && type != "") thingy.push(type);
 			for (_ => v in params) {
-				if(Math.isNaN(Std.parseFloat(v))){
-					thingy.push(v);
-				}else{
-					thingy.push(Std.parseFloat(v));
-
-				}
+				thingy.push(Math.isNaN(Std.parseFloat(v)) ? v : Std.parseFloat(v));
 			}
 
 			curSelectedNote = thingy;
@@ -2362,7 +2357,7 @@ class ChartingState extends ScriptMusicBeatState
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 	}
 	public static var lastPath:String;
-	private function saveLevel()
+	private function saveLevel(?showDialog:Bool = false)
 	{
 		// var json:Dynamic = {
 		// 	"song": _song
@@ -2374,32 +2369,33 @@ class ChartingState extends ScriptMusicBeatState
 			_song.rawJSON = null; // It's a good idea to not include 2 copies of the json
 			var data:String = Json.stringify(_song);
 			_song.rawJSON = _raw; // It's a good idea to not include 2 copies of the json
-			if ((data != null) && (data.length > 0))
-			{// Not copied from FunkinVortex, dunno what you mean
-				fd = new FileDialog();
-				fd.onSelect.add(function(path){
-				// for (sid => section in swagShit.notes) { // Sort sections for the funni
-				// 	if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
-					
-				// 	haxe.ds.ArraySort.sort(section.sectionNotes, function(a, b) {
-				// 		if(a[0] < b[0]) return -1;
-				// 		else if(b[0] > a[0]) return 1;
-				// 		else return 0;
-				// 	});
+			if ((data != null) && (data.length > 0)) {// Not copied from FunkinVortex, dunno what you mean
+				if(showDialog){
 
-				// }
-				try{
-					lastPath = onlinemod.OfflinePlayState.chartFile = path;}catch(e){return;}
+					fd = new FileDialog();
+					fd.onSelect.add(function(path){
+						try{
+							lastPath = onlinemod.OfflinePlayState.chartFile = path;}catch(e){return;}
+							//Bodgey as hell but doesn't work otherwise
+							sys.io.File.saveContent(path,'{"song":' + data + "}");
+							se.objects.SaveIcon.show();
+
+							callInterp('saveChart',[path]);
+							showTempmessage('Saved chart to ${path}');
+						
+
+						}
+					);
+					fd.browse(FileDialogType.SAVE, 'json', sys.FileSystem.absolutePath(lastPath), "Save chart");
+				}else{
 					//Bodgey as hell but doesn't work otherwise
-					sys.io.File.saveContent(path,'{"song":' + data + "}");
+					sys.io.File.saveContent(onlinemod.OfflinePlayState.chartFile,'{"song":' + data + "}");
 					se.objects.SaveIcon.show();
 
-					callInterp('saveChart',[path]);
-					showTempmessage('Saved chart to ${path}');
-				
+					callInterp('saveChart',[onlinemod.OfflinePlayState.chartFile]);
+					showTempmessage('Saved chart to ${onlinemod.OfflinePlayState.chartFile}');
 
-				});
-				fd.browse(FileDialogType.SAVE, 'json', sys.FileSystem.absolutePath(lastPath), "Save chart");
+				}
 			}
 		}catch(e){showTempmessage('Something error while saving chart: ${e.message}');}
 		saveReminder.reset();

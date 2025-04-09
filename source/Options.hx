@@ -561,7 +561,7 @@ class ScrollSpeedOption extends HCFloatOption{
 				strum.playStatic();
 				strum.x = 1000;
 				note.x = strum.x + (strum.width * 0.5);
-				strum.y = SESave.data.downscroll ? 500 : 120;
+				strum.y = SESave.data.downscroll ? 360 : 120;
 			}catch(e){
 				trace('Failed to load note for Scroll Speed ${e}');
 			}
@@ -580,9 +580,9 @@ class ScrollSpeedOption extends HCFloatOption{
 		var dist = ((Conductor.songPosition+FlxG.elapsed*0.001) - note.strumTime);
 		var _scrollSpeed = SESave.data.scrollSpeed;
 		Conductor.update();
-		if(dist > 1000 || pressed){
+		if(dist > 1000 || dist < -3000 || pressed){
 			pressed = false;
-			note.strumTime = Conductor.songPosition + 500;
+			note.strumTime = (Std.int(Conductor.songPosition / Conductor.crochet)+2)*Conductor.crochet;
 		}
 		if(!pressed && dist > -20 && dist < 100){
 			strum.confirm();
@@ -595,7 +595,7 @@ class ScrollSpeedOption extends HCFloatOption{
 
 		note.distanceToSprite = (0.45 * dist * _scrollSpeed);
 		if(SESave.data.downscroll){
-			strum.y = 680;
+			strum.y = 360;
 			note.y = strum.y + note.distanceToSprite;
 		}else{
 			strum.y = 120;

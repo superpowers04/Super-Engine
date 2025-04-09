@@ -758,7 +758,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 								FlxTween.tween(songProgress,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
 								FlxTween.tween(songProgressText,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
 								FlxTween.tween(songProgressText,{x:songProgress.x + songProgress.width + 10},0.7,{ease:FlxEase.expoOut});
-								songProgressText.text = "Playing Inst";
+								songProgressText.text = "Playing Inst. Loading voices";
 							}catch(e){}
 
 							#if discord_rpc
@@ -777,32 +777,36 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 								if(SELoader.exists(songInfo.voices)){
 									voices = new FlxSound();
 									voices.loadEmbedded(SELoader.loadSound(songInfo.voices),true);
-									voices.volume = SESave.data.voicesVol;
-									voices.looped = false;
-									voices.play(FlxG.sound.music.time);
+									// voices.volume = SESave.data.voicesVol;
+									// voices.looped = false;
+									// voices.play(FlxG.sound.music.time);
 									FlxG.sound.list.add(voices);
-									songProgressText.text = "Playing Inst and Voices";
+									songProgressText.text = "Playing Full song";
 								}else{
-									songProgressText.text = "Playing Inst. No Voices available";
+									songProgressText.text = "Playing Instrumental. No Vocals available";
 								}
 								shouldVoicesPlay = false;
-							}else{
-								shouldVoicesPlay = !(voices.volume == 0);
-								if(!voices.playing){voices.play();}
+							}
+							if(voices != null){
+								shouldVoicesPlay = !voices.playing;
 								if(shouldVoicesPlay){
 
-									songProgressText.text = "Playing Inst and Voices";
+									songProgressText.text = "Playing Full song";
 									voices.time = FlxG.sound.music.time = Conductor.songPosition;
 									voices.volume = SESave.data.voicesVol * FlxG.sound.volume;
 									voices.looped = false;
+									voices.play();
 								}else{
-									songProgressText.text = "Playing Inst";
-									voices.volume = 0;
+									songProgressText.text = "Playing Instrumental";
+									// voices.volume = 0;
+									voices.pause();
 									// voices.stop();
 								}
+
 							}
 						}catch(e){
 							showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
+							songProgressText.text = "Playing Instrumental";
 						}
 						if(FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.destroy(); // Prevents the song from muting itself
 						// FlxG.sound.music.volume = SESave.data.instVol;

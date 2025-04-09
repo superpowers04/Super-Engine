@@ -41,7 +41,7 @@ class OutdatedSubState extends MusicBeatState
 		kadeLogo.alpha = 0.8;
 		kadeLogo.angle = 10;
 		add(kadeLogo);
-		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,if(TitleState.outdated) 'Super Engine is outdated, Your version: ${MainMenuState.ver} latest: ${needVer}' else 'Up to date: ${MainMenuState.ver}' , 32);
+		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0, TitleState.outdated ? 'Super Engine is outdated, Your version: ${MainMenuState.ver} latest: ${needVer}' : 'Up to date: ${MainMenuState.ver}' , 32);
 		outdatedLMAO.setFormat(CoolUtil.font, 32, TitleState.outdated ?  FlxColor.RED : FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		outdatedLMAO.scrollFactor.set();
 		outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
