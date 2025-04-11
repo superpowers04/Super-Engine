@@ -26,6 +26,7 @@ typedef VSliceChartCharacters = {
 	var player:String;
 	var girlfriend:String;
 	var opponent:String;
+	var instrumental:String;
 }
 typedef TimeChange = {
 	var t:Float;

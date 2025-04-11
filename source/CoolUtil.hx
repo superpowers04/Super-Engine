@@ -65,14 +65,10 @@ class CoolUtil {
 				FlxG.sound.muteKeys = [FlxKey.fromStringMap[SESave.data.keys[0][9]]];
 				FlxG.sound.volumeDownKeys = [FlxKey.fromStringMap[SESave.data.keys[0][10]]];
 				FlxG.sound.volumeUpKeys = [FlxKey.fromStringMap[SESave.data.keys[0][11]]];
+				return;
 			}catch(e){
-				FlxG.sound.muteKeys = null;
-				FlxG.sound.volumeDownKeys = null;
-				FlxG.sound.volumeUpKeys = null;
 				trace('Unable to bind sound keys? ${e.details()}');
 			}
-
-			return;
 		}
 		FlxG.sound.muteKeys = null;
 		FlxG.sound.volumeUpKeys = null;
@@ -92,12 +88,10 @@ class CoolUtil {
 	}
 
 	public inline static function getFilenameFromPath(str:String):String{
-		if(str.lastIndexOf("/") == -1) return str;
-		return str.substr(str.lastIndexOf("/") + 1);
+		return (str.lastIndexOf("/") == -1) ? str : str.substr(str.lastIndexOf("/") + 1);
 	}
 	public inline static function removeFileFromPath(str:String):String{
-		if(str.lastIndexOf("/") == -1) return str;
-		return str.substr(0,str.lastIndexOf("/"));
+		return (str.lastIndexOf("/") == -1) ? str : str.substr(0,str.lastIndexOf("/"));
 	}
 	public static function coolFormat(text:String){
 		var daList:Array<String> = text.trim().split('\n');
@@ -110,11 +104,10 @@ class CoolUtil {
 
 		if(!str.contains(' ')) str = (~/[-_ ]/g).replace(str,' '); // If the string contains spaces, probably already formatted to remove _ and -
 		var e = str.split(' ');
-		str = "";
-		for (item in e){
-			str+=' ' + item.substring(0,1).toUpperCase() + item.substring(1);
+		for (i=>item in e){
+			e[i] = (item.substring(0,1).toUpperCase() + item.substring(1));
 		}
-		return str.trim();
+		return e.join(' ').trim();
 	}
 
 	@:keep inline public static function orderList(list:Array<String>):Array<String>{
@@ -131,9 +124,7 @@ class CoolUtil {
 	}
 
 	@:keep inline public static function numberArray(max:Int, ?min = 0):Array<Int> {
-		var dumbArray:Array<Int> = [];
-		for (i in min...max) dumbArray.push(i);
-		return dumbArray;
+		return [for (i in min...max) i];
 	}
 	@:keep inline public static function multiInt(?int:Int = 0) return (int==1?'':'s');
 

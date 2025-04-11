@@ -594,6 +594,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 				diffList.push(songInfo.path + "/" + v);
 			}
 		}
+		PlayState.songInfo = songInfo;
 		gotoSong(SELoader.getPath(songInfo.path),songInfo.charts[selMode],songInfo.name,songInfo.voices,songInfo.inst);
 	}
 
@@ -664,7 +665,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		}
 		if((FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)){
 			if(FlxG.mouse.screenY < 35 && FlxG.mouse.screenX < 1115){
-				changeDiff(if(FlxG.mouse.screenX > 640) 1 else -1);
+				changeDiff((FlxG.mouse.screenX > 640) ?  1 : -1);
 			}
 			else if(!FlxG.mouse.overlaps(blackBorder)){
 				var curSel= grpSongs.members[curSelected];
@@ -970,6 +971,24 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 			var dir = file.substr(0,file.lastIndexOf("/"));
 			var json = file.substr(file.lastIndexOf("/") + 1);
 			var name = json.substr(0,json.lastIndexOf("."));
+			if(name.lastIndexOf('-metadata') != -1) name=name.substr(0,name.lastIndexOf('-metadata'));
+			if(dir.indexOf('/assets/') != -1){
+				var _dir = dir.substr(0,dir.lastIndexOf('/assets/')+8);
+				for (song in SELoader.getSongsFromFolder(_dir,json)){
+					if(song.name == name){
+						importedSong = true;
+						{
+							var diffList:Array<String> = PlayState.songDifficulties = [];
+							for(i => v in song.charts){
+								diffList.push(dir + "/" + v);
+							}
+						}
+						PlayState.songInfo = song;
+						gotoSong(dir,song.charts[0],song.name,song.voices,song.inst);
+						return;
+					}
+				}
+			}
 			var chartName = "";
 			var content = File.getContent(file);
 			if(content != null && content != ""){
@@ -982,6 +1001,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 				}
 				chartName = songName;
 			}
+
 			var attempts = 0;
 			if(FileSystem.exists('${dir}/Inst.ogg')){ 
 				inst = '${dir}/Inst.ogg';

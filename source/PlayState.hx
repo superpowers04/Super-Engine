@@ -2756,8 +2756,7 @@ class PlayState extends ScriptMusicBeatState
 	function SENoteShit(){
 		if (!generatedMusic) return;
 		SEProfiler.qStart('note updating');
-		var _scrollSpeed = Math.floor((SESave.data.scrollSpeed == 1 ? SONG.speed : SESave.data.scrollSpeed)*1000)*0.001; // Probably better to calculate this beforehand
-		if(currentSpeed != 1) _scrollSpeed /= currentSpeed;
+		final _scrollSpeed = (Math.floor((SESave.data.scrollSpeed == 1 ? SONG.speed : SESave.data.scrollSpeed)*1000)*0.001) / (currentSpeed); // Probably better to calculate this beforehand
 		var strumNote:FlxSprite;
 		var i = notes.members.length - 1;
 		var daNote:Note;
@@ -2773,10 +2772,10 @@ class PlayState extends ScriptMusicBeatState
 				daNote.kill();
 				notes.remove(daNote, true);
 				continue;
-			}else{
-				daNote.visible = true;
-				daNote.active = true;
 			}
+			daNote.visible = true;
+			daNote.active = true;
+			
 			strumNote = (
 						(daNote.parentSprite != null) ? daNote.parentSprite :
 						(daNote.mustPress ? playerStrums.members[daNote.noteData] :
@@ -2835,7 +2834,6 @@ class PlayState extends ScriptMusicBeatState
 							var swagRect = daNote.clipRect ?? new FlxRect(0, 0, 0, 0);
 							swagRect.height = Math.abs(daNote.y - daNote.childNotes[0].y);
 							daNote.clipRect = swagRect;
-
 						}
 					}
 					
@@ -2938,16 +2936,7 @@ class PlayState extends ScriptMusicBeatState
 			for(i => v in arr){
 				SEIKeyMap[FlxKey.fromStringMap[v]] = i; 
 			}
-
 		}
-		// SEIKeyMap[FlxKey.fromStringMap[SESave.data.leftBind]] =		0;
-		// SEIKeyMap[FlxKey.fromStringMap[SESave.data.AltleftBind]] =	0;
-		// SEIKeyMap[FlxKey.fromStringMap[SESave.data.downBind]] =		1;
-		// SEIKeyMap[FlxKey.fromStringMap[SESave.data.AltdownBind]] =	1;
-		// SEIKeyMap[FlxKey.fromStringMap[SESave.data.upBind]] =		2;
-		// SEIKeyMap[FlxKey.fromStringMap[SESave.data.AltupBind]] =		2;
-		// SEIKeyMap[FlxKey.fromStringMap[SESave.data.rightBind]] =		3;
-		// SEIKeyMap[FlxKey.fromStringMap[SESave.data.AltrightBind]] =	3;
 		callInterp('registerKeysAfter',[SEIKeyMap]);
 	}
 	var possibleNotes:Array<Note> = [];
@@ -2962,8 +2951,7 @@ class PlayState extends ScriptMusicBeatState
 			if(playerStrums == null || !generatedMusic || !generatedArrows) return;
 			SEProfiler.qStart('KeyPress');
 			SEIBlockInput = false;
-			for(i in 0 ... pressArray.length) pressArray[i] = false;
-			for(i in 0 ... releaseArray.length) releaseArray[i] = false;
+			for(i in 0 ... pressArray.length) pressArray[i] = releaseArray[i] = false;
 			callInterp('keyPress',[event.keyCode]);
 			if (!SEIKeyMap.exists(event.keyCode)|| SEIBlockInput || cancelCurrentFunction || !acceptInput || playerCharacter.isStunned || subState != null || paused ) return SEProfiler.qStamp('KeyPress');
 			
@@ -2987,23 +2975,6 @@ class PlayState extends ScriptMusicBeatState
 			}
 			if(holdArray.contains(true)){
 				playerCharacter.isPressingNote = true;
-				// var daNote = null;
-				// var i = notes.members.length;
-				// var acns = SESave.data.accurateNoteSustain;
-				// while(i < notes.members.length){
-				// 	daNote = notes.members[i];
-				// 	i++;
-				// 	if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.updateCanHit()) continue;
-				// 	if(!acns || daNote.strumTime <= Conductor.songPosition - (50 * Conductor.timeScale) || daNote.isSustainNoteEnd) {// Only destroy the note when properly hit
-				// 		goodNoteHit(daNote);
-				// 		continue;
-				// 	}
-				// 	// Tell note to be clipped to strumline
-				// 	daNote.isPressed = true;
-				// 	hitArray[daNote.noteData] = true;
-				// 	daNote.susHit(0,daNote);
-				// 	callInterp("susHit",[daNote]);
-				// }
 			}
 			while(possibleNotes.pop() != null){}
 			
@@ -3043,11 +3014,8 @@ class PlayState extends ScriptMusicBeatState
 					ghostTaps += 1;
 					if(!ghostTapping) {
 						queuedNotes.push({
-							// time:(Conductor.songPosition + ((Sys.time() * 1000) - lastMusicUpdate)),
 							direction:i,
 							hitState:false
-							// ,
-							// note:daNote
 						});
 					}
 					continue;
@@ -3420,7 +3388,7 @@ class PlayState extends ScriptMusicBeatState
 		SEProfiler.qStart('StepHit');
 		super.stepHit();
 		// lastStep = curStep;
-		if (SESave.data.resyncVoices && handleTimes && (FlxG.sound.music.time > Conductor.songPosition + 10 || FlxG.sound.music.time < Conductor.songPosition - 10) && generatedMusic)
+		if (SESave.data.resyncVoices && handleTimes && Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 1000 && generatedMusic)
 			resyncVocals();
 		
 
@@ -3531,8 +3499,9 @@ class PlayState extends ScriptMusicBeatState
 			var e = FlxTween.tween(v, {alpha:0}, FlxG.random.float(0.3, 0.6), {
 				onComplete: function(tween:FlxTween) {v.destroy();}});
 		}
-		while(notes.members.pop() != null){}
-		while(unspawnNotes.pop() != null){}
+		var n:Note = null;
+		while((n = notes.members.pop()) != null){n?.destroy();}
+		while((n = unspawnNotes.pop()) != null){n?.destroy();}
 		if(inputMode == 1){
 		// 	for(key => data in SEIKeyMap){
 		// 		if(SEIKeyHeld[key]) SEIKeyRelease(key);
@@ -3548,9 +3517,9 @@ class PlayState extends ScriptMusicBeatState
 		addNotes();
 		handleTimes = acceptInput = true;
 		hasDied=false;
-		
 		FlxG.sound.music.pause();
 		vocals.pause();
+		SELoader.gc();
 		callInterp('restartSongAfter',[]);
 		startCountdownFirst();
 		resetScore();

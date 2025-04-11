@@ -606,27 +606,28 @@ class SELoader {
 		});
 		return list;
 	}
-	public static function getSongsFromFolder(path:String):Array<SongInfo>{
+	public static function getSongsFromFolder(path:String,?query:String = ""):Array<SongInfo>{
 		var path=new SEDirectory(path);
 		var returnArray:Array<SongInfo> = [];
 		if(!path.isDirectory()) return returnArray;
 		var blockedFiles = multi.MultiMenuState.blockedFiles;
 		if(path.isDirectory('assets/')){ // subfolder
-			var stuff:Array<SongInfo> = getSongsFromFolder(path.appendPath('assets/'));
+			var stuff:Array<SongInfo> = getSongsFromFolder(path.appendPath('assets/'),query);
 			if(stuff.length > 0){
 				for(i in stuff) returnArray.push(i);
 			}
 		}
 		if(path.isDirectory('mods/')){ // subfolder
-			var stuff:Array<SongInfo> = getSongsFromFolder(path.appendPath('mods/'));
+			var stuff:Array<SongInfo> = getSongsFromFolder(path.appendPath('mods/'),query);
 			if(stuff.length > 0){
 				for(i in stuff) returnArray.push(i);
 			}
 		}
+
 		if(path.isDirectory('charts/')){ // SE
 			for (folder in path.readDirectory('charts/')){
 				var path = path.newDirectory('charts/$folder');
-				if(!path.exists('Inst.ogg') && !path.exists('ignoreMissingInst')) continue;
+				if((!path.exists('Inst.ogg') && !path.exists('ignoreMissingInst'))) continue;
 				var song:SongInfo = {
 					name:folder,
 					charts:[],
@@ -654,11 +655,10 @@ class SELoader {
 					var path = data.newDirectory('$folder');
 					if(!path.isDirectory() || !songsFolder.exists('$folder/Inst.ogg')) continue;
 					for (file in orderList(path.readDirectory())){
-						if(file.lastIndexOf('-metadata') == -1) continue;
+						if((query == "" || file.lastIndexOf(query) != 0) || file.lastIndexOf('-metadata') == -1) continue;
 						var e:VSliceSongMeta = Json.parse(SELoader.getContent(path.appendPath(file)));
 						var folder = songsFolder.newDirectory(folder);
-						var name = file.replace('-metadata','');
-						name=name.substring(0,name.lastIndexOf('.'));
+						var name = file.substr(0,file.lastIndexOf('-metadata'));
 						var song:SongInfo = {
 							name:name,
 							charts:[],
@@ -666,7 +666,11 @@ class SELoader {
 
 							path:path.toString()
 						};
-						var t = name.indexOf('-') == -1 ? "" : name.substring(name.indexOf('-'));
+
+						var ie = e.playData.characters.instrumental?? "";
+						if(ie != "") ie='-$ie';
+
+						var t = ie != "" ? ie : name.indexOf('-') == -1 ? "" : name.substring(name.indexOf('-'));
 						var pe = e.playData.characters.player;
 						var p = pe;
 						song.voices = folder.appendPath('Voices-$p$t.ogg');
@@ -683,7 +687,7 @@ class SELoader {
 
 						var oe = e.playData.characters.opponent;
 						var opponentVoices = folder.appendPath('Voices-$oe$t.ogg');
-						while(!exists(song.voices)){
+						while(!exists(opponentVoices)){
 							var index = oe.lastIndexOf('-');
 							if(index == -1){
 								opponentVoices=folder.appendPath('Voices-$oe.ogg');
@@ -693,6 +697,7 @@ class SELoader {
 							opponentVoices=folder.appendPath('Voices-$oe$t.ogg');
 						}
 						if(exists(opponentVoices)) song.extraVoices.push(opponentVoices);
+
 
 						song.inst = folder.appendPath('Inst$t.ogg');
 						if(!exists(song.inst)) song.inst = folder.appendPath('Inst.ogg');

@@ -63,6 +63,8 @@ class OfflinePlayState extends PlayState {
 		if(lastVoicesFile != voicesFile && loadedVoices != null){
 			loadedVoices.destroy();
 		}
+		final songInfo = PlayState.songInfo;
+		if(songInfo != null && songInfo.inst.length > 0) instFile = songInfo.inst;
 		#if(target.threaded)
 		var voicesThread = new ThreadedAction(() -> { // Offload to another thread for faster loading
 		#end
