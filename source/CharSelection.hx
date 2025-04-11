@@ -234,7 +234,7 @@ class CharSelection extends SearchMenuState
 		if(char != null){
 			if(char[4] != null){
 				if(char[4].nameSpace == "" || char[4].nameSpace == null || char[4].nameSpace == "SECharactersFolder") text+="Provided by your characters folder;\n";
-				else if(char[4].nameSpace == "INTERNAL") text+="Provided by the base game;\n";
+				else if(char[4].nameSpace == "INTERNAL") text+="Built into Super Engine;\n";
 				else text+='Provided by ${char[4].nameSpace};\n';
 			}
 			if(char[1] == 1){
@@ -246,7 +246,7 @@ class CharSelection extends SearchMenuState
 			}
 		}
 		updateInfoText(text);
-		updateName((if(char == null || char[0] == null) "Unknown?!?!?" else char[0]));
+		updateName((char == null || char[0] == null) ?  "Unknown?!?!?" : char[0]);
 		if(!SESave.data.performance){
 			if(chars[curSelected][4] == null){
 				// ((char == null || char[4] == null ) ? null : chars[curSelected][4].path)

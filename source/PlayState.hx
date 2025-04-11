@@ -2797,10 +2797,10 @@ class PlayState extends ScriptMusicBeatState
 						// Only clip sustain notes when properly hit
 						if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote)){
 							// Clip to strumline
+							if(daNote.mustPress && Conductor.songPosition > daNote.strumTime) {goodNoteHit(daNote);continue;}
 							var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
 							swagRect.height = (strumNote.y + swagWidth - daNote.y) / daNote.scale.y;
 							swagRect.y = (daNote.height / daNote.scale.y) - swagRect.height;
-							if(daNote.mustPress && swagRect.height <= 0 ) {goodNoteHit(daNote);continue;}
 
 							daNote.clipRect = swagRect;
 							daNote.susHit((daNote.mustPress) ? 0 : 1,daNote);
@@ -2818,6 +2818,7 @@ class PlayState extends ScriptMusicBeatState
 						if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote))
 						{
 							// Clip to strumline
+							if(daNote.mustPress && Conductor.songPosition > daNote.strumTime) {goodNoteHit(daNote);continue;}
 							var swagRect = daNote.clipRect ?? new FlxRect(0, 0, 0, 0);
 							swagRect.height = daNote.height / daNote.scale.y;
 							swagRect.width = daNote.width / daNote.scale.x;
@@ -2826,7 +2827,6 @@ class PlayState extends ScriptMusicBeatState
 								swagRect.height = Math.abs(daNote.y - daNote.childNotes[0].y);
 							}
 							swagRect.height -= swagRect.y;
-							if(daNote.mustPress && swagRect.height <= 0 ) {goodNoteHit(daNote);continue;}
 
 							daNote.clipRect = swagRect;
 							daNote.susHit((daNote.mustPress) ? 0 : 1,daNote);
@@ -3173,13 +3173,11 @@ class PlayState extends ScriptMusicBeatState
 						// 	touch.screenX > obj.y && touch.screenX < obj.y + obj.height){
 							pressArray[i] = touch.justPressed;
 							holdArray[i] = touch.pressed;
-
 						}
 					}
 				}
 
 			}else{
-
 				for(spr in noteButtons){
 					spr.alpha = 0.1;
 				}
@@ -3189,7 +3187,7 @@ class PlayState extends ScriptMusicBeatState
 						pressArray[pos] = touch.justPressed;
 						holdArray[pos] = touch.pressed;
 						if(noteButtons[pos] != null){
-							noteButtons[pos].alpha = (if(touch.justPressed) 0.25 else 0.2);
+							noteButtons[pos].alpha = (touch.justPressed ?  0.25 : 0.2);
 						}
 					}
 				}
