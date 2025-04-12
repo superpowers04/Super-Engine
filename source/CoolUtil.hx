@@ -41,9 +41,9 @@ class CoolUtil {
 				var fr = Application.current.window.frameRate;
 				Framerate = SESave.data.fpsCap = (rf > 30 ? rf : (fr > 30 ? fr : 30 ));
 			}
-			// if(Framerate > 300){
-				// Framerate = SESave.data.fpsCap = 300;
-			// }
+			if(Framerate > 999){
+				Framerate = SESave.data.fpsCap = 999;
+			}
 		}
 		Main.instance.setFPSCap(Framerate);
 		FlxG.updateFramerate = (FlxG.drawFramerate = Std.int(Framerate));

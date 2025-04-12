@@ -655,7 +655,7 @@ class SELoader {
 					var path = data.newDirectory('$folder');
 					if(!path.isDirectory() || !songsFolder.exists('$folder/Inst.ogg')) continue;
 					for (file in orderList(path.readDirectory())){
-						if((query == "" || file.lastIndexOf(query) != 0) || file.lastIndexOf('-metadata') == -1) continue;
+						if((query != "" && file.lastIndexOf(query) == -1) || file.lastIndexOf('-metadata') == -1) continue;
 						var e:VSliceSongMeta = Json.parse(SELoader.getContent(path.appendPath(file)));
 						var folder = songsFolder.newDirectory(folder);
 						var name = file.substr(0,file.lastIndexOf('-metadata'));
