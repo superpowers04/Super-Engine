@@ -220,7 +220,7 @@ class FPSCapOption extends Option
 
 	override function getValue():String
 	{
-		return "Current FPS Cap: " + CoolUtil.Framerate + (if(CoolUtil.Framerate == Application.current.window.displayMode.refreshRate) " (Refresh Rate)" else if(CoolUtil.Framerate == Application.current.window.frameRate) " (Frame Rate)" else " (Software)");
+		return "Current FPS Cap: " + CoolUtil.Framerate + ((CoolUtil.Framerate == Application.current.window.displayMode.refreshRate) ? " (Refresh Rate)" : (CoolUtil.Framerate == Application.current.window.frameRate) ? " (Frame Rate)" : " (Software)");
 	}
 }
 

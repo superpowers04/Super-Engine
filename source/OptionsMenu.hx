@@ -169,7 +169,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Ignore Errors","Ignore some errors and save a report instead","ignoreErrors"),
 		],'Toggle compatibility with specific features from mods/engines'),
 		new OptionCategory("Performance", [
-			new FPSCapOption("Cap your Frames Per Second, This controls how fast the game will update your screen"),
+			new FPSCapOption("Cap your Frames Per Second.\nThis controls how fast the game will update your screen. The FPS counter will read FPS*1.03"),
 			// new UPSCapOption("Cap your Updates Per Second, This controls how responsive the game is"),
 			new HCBoolOption("Hurt note texture","Use custom arrow texture instead of coloring normal notes black","useBadArrowTex"),
 
