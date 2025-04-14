@@ -49,6 +49,7 @@ class HealthIcon extends FlxSprite
 		var charInfo:CharInfo = ( (char is String) ? TitleState.findChar(char) : ((char is CharInfo) ? cast(char) : null) );
 		if(char == hichar) return;
 		if(charInfo == null || char == null || charInfo.id == "lonely" || char == "lonely" || char == "face"){
+			// if(charInfo.id == "lonely" || char == "lonely") visible = false;
 			trace('Empty icon provided, defaulting to face');
 			loadBlankIcon();
 			return;
@@ -57,6 +58,10 @@ class HealthIcon extends FlxSprite
 		if (!SELoader.exists(imgPath)){
 			imgPath = '${char.path}/healthicon.png';
 			if(!SELoader.exists(imgPath)){
+				if(char.id.startsWith('bf-')) {
+					fromCharInfo(TitleState.findChar("bf"));
+					return;
+				}
 				loadBlankIcon();
 				return;
 			}

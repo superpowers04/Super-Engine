@@ -109,7 +109,7 @@ class ErrorSubState extends MusicBeatSubstate {
 		add(errText);
 		add(contText);
 		add(reportText);
-		SELoader.playSound('assets/sounds/cancelMenu.ogg',true);
+		SELoader.playSound('assets:sounds/cancelMenu.ogg',true);
 		FlxG.camera.zoom = 1;
 				
 			

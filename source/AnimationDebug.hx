@@ -601,7 +601,7 @@ class AnimationDebug extends MusicBeatState
 				charJson = Json.parse(e);
 				chara.loadedFrom = "output.json";
 			}
-			if(charJson == null) {FlxG.sound.play(Paths.sound('cancelMenu'));showTempmessage("Can't save, Character has no JSON?",FlxColor.RED);return;}
+			if(charJson == null) {SELoader.playSound('assets:sounds/cancelMenu.ogg');showTempmessage("Can't save, Character has no JSON?",FlxColor.RED);return;}
 			errorStage = 1; // Offsets
 			var animOffsetsJSON:String = "[";
 			var animOffsets:Map<String, Map<String,Array<Float>>> = [];
@@ -691,12 +691,11 @@ class AnimationDebug extends MusicBeatState
 			SELoader.triggerSave(chara.loadedFrom,Json.stringify(charJson, "fancy"));
 			showTempmessage('Saved to ${if (chara.loadedFrom.length > 20) '...' + chara.loadedFrom.substring(-20) else chara.loadedFrom} successfully.' + (if(backed) "Old json was backed up to -bak.json." else ""));
 			// FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-			SELoader.playSound('assets/sounds/scrollMenu.ogg',0.4);
+			SELoader.playSound('assets:sounds/scrollMenu.ogg',0.4);
 			spawnChar(true);
 
 
-		}catch(e){FlxG.sound.play(
-			Paths.sound('cancelMenu'));
+		}catch(e){SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			showTempmessage('Error: ${e.message} Debug Info: ${errorStage}',FlxColor.RED);
 			trace('ERROR: ${e.message}');
 			return;

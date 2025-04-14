@@ -284,7 +284,7 @@ class FinishSubState extends MusicBeatSubstate
 					finishedText.text += " | New Personal Best!";
 					finishedText.screenCenter(X);
 					// se.objects.SaveIcon.show();
-					SELoader.playSound('assets/sounds/confirmMenu.ogg',true);
+					SELoader.playSound('assets:sounds/confirmMenu.ogg',true);
 					// letterText.scale.x = letterText.scale.y = 1.3;
 					FlxTween.tween(letterText.scale,{x:1.1,y:1.1},0.2,{ease:FlxEase.bounceOut,startDelay:0.1});
 					FlxTween.tween(letterText,{angle:40},0.2,{ease:FlxEase.bounceInOut,startDelay:0.3});

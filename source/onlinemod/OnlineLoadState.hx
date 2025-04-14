@@ -236,7 +236,7 @@ class OnlineLoadState extends MusicBeatState
 		}catch(e){
 			Chat.OutputChatMessage("[Client] You had an error while trying to download a song:");
 			Chat.OutputChatMessage(e.message);
-			SELoader.playSound('assets/sounds/cancelMenu',true);
+			SELoader.playSound('assets:sounds/cancelMenu',true);
 			FlxG.switchState(new OnlineLobbyState(true));
 		}
 		return true;

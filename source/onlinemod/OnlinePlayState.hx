@@ -575,7 +575,7 @@ class OnlinePlayState extends PlayState
 				Chat.OutputChatMessage('||${_e}');
 
 			}
-			SELoader.playSound('assets/sounds/cancelMenu.ogg');
+			SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			FlxG.switchState(new OnlineLobbyState(true));
 		}
 		return true;

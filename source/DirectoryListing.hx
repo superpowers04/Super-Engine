@@ -22,7 +22,7 @@ class DirectoryListing extends SearchMenuState{
 	override function findButton(){
 		var nextDir:String = searchField.text;
 		if (!FileSystem.exists(nextDir) || !FileSystem.isDirectory(nextDir)){
-			// FlxG.sound.play(Paths.sound('cancelMenu'));
+			// SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			reloadList(true,nextDir);
 			searchField.hasFocus = false;
 			changeSelection(0);

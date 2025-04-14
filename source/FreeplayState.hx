@@ -289,7 +289,7 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		// NGio.logEvent('Fresh');
-		SELoader.playSound('assets/sounds/scrollMenu');
+		SELoader.playSound('assets:sounds/scrollMenu');
 
 		curSelected += change;
 

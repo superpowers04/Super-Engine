@@ -255,7 +255,7 @@ class GameplayCustomizeState extends PlayState
 		{
 			FlxG.mouse.enabled = false;
 			// SESave.data.playStateObjectLocations = cast SAVDATA;
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			FlxG.switchState(new OptionsMenu());
 		}
 

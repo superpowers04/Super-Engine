@@ -170,10 +170,10 @@ class ChartRepoState extends SearchMenuState
 	override function select(sel:Int = 0){
 		var char:RepoChartsJSON = repoArray.charts[sel];
 		if(installingList.contains(char.name)){
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			return;
 		}
-		FlxG.sound.play(Paths.sound('confirmMenu'));
+		SELoader.playSound('assets:sounds/confirmMenu.ogg');
 		try{
 			// var characterZip:Bytes;
 			installing += 1;
@@ -228,6 +228,6 @@ class ChartRepoState extends SearchMenuState
 		installing-=1;
 		updateText();
 
-		FlxG.sound.play(Paths.sound('confirmMenu'));
+		SELoader.playSound('assets:sounds/confirmMenu.ogg');
 	}
 }

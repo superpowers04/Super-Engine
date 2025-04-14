@@ -33,15 +33,15 @@ class MainMenuState extends SickMenuState {
 	
 	public static var firstStart:Bool = true;
 	public static var nightly(default,never):String = "X" + SEMacros.buildDate;
-	public static var ver(default,never):String = "1.0.0" + ((nightly != "") ? "-" + nightly : "");
+	public static final ver:String = "1.0.0" + ((nightly != "") ? "-" + nightly : "");
 	// This should be incremented every update, this'll be sequential so you can just compare it to another version identifier
-	public static var versionIdentifier:Int = 3;
+	public static final versionIdentifier:Int = 3;
 	public static var lastVersionIdentifier:Int = 0;
 
 	public static var compileType(default,never):String =
-	#if ghaction
+	#if(ghaction)
 		"Github action"
-	#elseif debug
+	#elseif(debug)
 		"Manual debug build"
 	#else
 		"Manual build"
@@ -135,7 +135,7 @@ class MainMenuState extends SickMenuState {
 			bg.color = MainMenuState.bgcolor;
 			onlinemod.OnlinePlayMenuState.disconnect();
 			if(lastVersionIdentifier != versionIdentifier){
-				var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'Super Engine has been updated since last start.\n You are now on ${ver}!', 32);
+				final outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,'Super Engine has been updated since last start.\n You are now on ${ver}!', 32);
 				outdatedLMAO.setFormat(CoolUtil.font, 32, if(nightly == "") FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				outdatedLMAO.scrollFactor.set();
 	 			outdatedLMAO.screenCenter(FlxAxes.X);
@@ -145,7 +145,7 @@ class MainMenuState extends SickMenuState {
 				// var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,(if(nightly == "") 'SE is outdated, Latest: ${TitleState.updatedVer}, Check Changelog for more info' else 'Latest nightly: ${TitleState.updatedVer}. You are on ${ver}'), 32);
 				// outdatedLMAO.setFormat(CoolUtil.font, 32, if(nightly == "") FlxColor.RED else FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				// outdatedLMAO.scrollFactor.set();
-				var outdatedLMAO = new SEText(0, FlxG.height * 0.05,0,(nightly == "" ? 'SE is outdated, Latest update:${TitleState.updatedVer}, Check Changelog for more info' : ((TitleState.updatedVer == ver) ? 'You are on $ver; The latest nightly.' : 'Latest nightly: ${TitleState.updatedVer}. You are on ${ver}')),
+				final outdatedLMAO = new SEText(0, FlxG.height * 0.05,0,(nightly == "" ? 'SE is outdated, Latest update:${TitleState.updatedVer}, Check Changelog for more info' : ((TitleState.updatedVer == ver) ? 'You are on $ver; The latest nightly.' : 'Latest nightly: ${TitleState.updatedVer}. You are on ${ver}')),
 					32,(nightly==""?FlxColor.RED:FlxColor.WHITE),CENTER);
 	 			outdatedLMAO.screenCenter(FlxAxes.X);
 				add(outdatedLMAO);
@@ -192,14 +192,13 @@ class MainMenuState extends SickMenuState {
 				hasWarnedNightly = true;
 			} 
 
-			var versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, '${(TitleState.easterEgg == 0x1) ? "Lesbian" : "Super"}-Engine ${ver} ${buildType} ${compileType}', 12);
+			final versionShit:FlxText = new FlxText(5, FlxG.height - 50, 0, '${(TitleState.easterEgg == 0x1) ? "Lesbian" : "Super"}-Engine ${ver} ${buildType} ${compileType}', 12);
 			versionShit.setFormat(CoolUtil.font, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			versionShit.borderSize = 2;
 			versionShit.scrollFactor.set();
 			add(versionShit);
 			if (MainMenuState.errorMessage != ""){
-
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				SELoader.playSound('assets:sounds/cancelMenu.ogg');
 				var errorText =  new FlxText(2, 90, 0, MainMenuState.errorMessage, 12);
 				errorText.scrollFactor.set();
 				errorText.wordWrap = true;
@@ -240,7 +239,7 @@ class MainMenuState extends SickMenuState {
 
 	override function goBack(){
 		#if !mobile
-		if (otherMenu) {mmSwitch(true);FlxG.sound.play(Paths.sound('cancelMenu'));return;} else
+		if (otherMenu) {mmSwitch(true);SELoader.playSound('assets:sounds/cancelMenu.ogg');return;} else
 		#end
 			escapePress();
 		// FlxG.switchState(new TitleState());
@@ -363,7 +362,7 @@ class MainMenuState extends SickMenuState {
 		if (selected){return;}
 		selected = true;
 		var daChoice:String = grpControls.members[sel].menuValue.toLowerCase();
-		SELoader.playSound('assets/sounds/confirmMenu',true);
+		SELoader.playSound('assets:sounds/confirmMenu',true);
 		triedChar = false;
 		if(daChoice != "other" && daChoice != 'mainmenu' && daChoice != 'back' && daChoice != 'open mods folder'){
 			var _obj = grpControls.members[sel];

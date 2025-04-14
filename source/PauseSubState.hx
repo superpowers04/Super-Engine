@@ -390,7 +390,7 @@ class PauseSubState extends MusicBeatSubstate {
 				PlayState.instance.generateNotes();
 				countdown();
 			case "Swap Charts":
-				if(currentChart < 0 || PlayState.songDifficulties[currentChart] == null) {SELoader.playSound('assets/sounds/cancelMenu');return;}
+				if(currentChart < 0 || PlayState.songDifficulties[currentChart] == null) {SELoader.playSound('assets:sounds/cancelMenu');return;}
 				ChartingState.charting = false;
 				MusicBeatState.returningFromClass = true;
 				var chart = PlayState.songDifficulties[currentChart];
@@ -485,7 +485,7 @@ class PauseSubState extends MusicBeatSubstate {
 						ease: FlxEase.cubeInOut,
 						// onComplete: function(twn:FlxTween) {ready.destroy();}
 					});
-					SELoader.playSound('assets/sounds/intro2' + altSuffix,0.6);
+					SELoader.playSound('assets:sounds/intro2' + altSuffix,0.6);
 				case 2:
 					var set:FlxSprite = spr.loadGraphic(Paths.image(introAlts[1]));
 					tween.cancel();
@@ -500,7 +500,7 @@ class PauseSubState extends MusicBeatSubstate {
 						ease: FlxEase.cubeInOut,
 						// onComplete: function(twn:FlxTween) {set.destroy();}
 					});
-					SELoader.playSound('assets/sounds/intro1' + altSuffix,0.6);
+					SELoader.playSound('assets:sounds/intro1' + altSuffix,0.6);
 				case 3:
 					var go:FlxSprite = spr.loadGraphic(Paths.image(introAlts[2]));
 					tween.cancel();
@@ -514,7 +514,7 @@ class PauseSubState extends MusicBeatSubstate {
 						ease: FlxEase.cubeInOut,
 						onComplete: function(twn:FlxTween) {go.destroy();}
 					});
-					SELoader.playSound('assets/sounds/introGo' + altSuffix,0.6);
+					SELoader.playSound('assets:sounds/introGo' + altSuffix,0.6);
 				case 4:
 					backToPlaystate();
 

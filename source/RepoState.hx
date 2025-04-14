@@ -149,10 +149,10 @@ class RepoState extends SickMenuState
 	override function select(sel:Int){
 		var char:RepoCharsJSON = repoArray.characters[sel];
 		if(installingList.contains(char.name)){
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			return;
 		}
-		FlxG.sound.play(Paths.sound('confirmMenu'));
+		SELoader.playSound('assets:sounds/confirmMenu.ogg');
 		try{
 			// var characterZip:Bytes;
 			installing += 1;
@@ -200,6 +200,6 @@ class RepoState extends SickMenuState
 		installing-=1;
 		updateText();
 
-		FlxG.sound.play(Paths.sound('confirmMenu'));
+		SELoader.playSound('assets:sounds/confirmMenu.ogg');
 	}
 }

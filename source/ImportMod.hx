@@ -265,7 +265,7 @@ class ImportModFromFolder extends MusicBeatState
 			// done = selectedLength = true;
 			// changedText = '${folder} doesn\'t have a assets folder!';
 			// loadingText.color = FlxColor.RED;
-			// FlxG.sound.play(Paths.sound('cancelMenu'));
+			// SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			// return;
 		// changeText('Finding songs');
 		sys.thread.Thread.create(() -> {
@@ -273,7 +273,7 @@ class ImportModFromFolder extends MusicBeatState
 				acceptInput = done = selectedLength = true;
 				changeText('You\'re trying to import songs from me!');
 				loadingText.color = FlxColor.RED;
-				SELoader.playSound('assets/sounds/cancelMenu.ogg');
+				SELoader.playSound('assets:sounds/cancelMenu.ogg');
 				return;
 			}
 			var _songList = SELoader.getSongsFromFolder(folder);
@@ -295,7 +295,7 @@ class ImportModFromFolder extends MusicBeatState
 			}
 			acceptInput = done = selectedLength = true;
 			loadingText.color = FlxColor.RED;
-			SELoader.playSound('assets/sounds/cancelMenu.ogg');
+			SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			// trace(folder);
 			changeText('${folder.substr(-17)} doesn\'t contain any songs!' + (if(!importExisting) "\nMaybe try allowing vanilla songs to be imported?\n*(Press 1 to toggle importing vanilla songs in the list)" else ""));
 

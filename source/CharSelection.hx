@@ -159,7 +159,7 @@ class CharSelection extends SearchMenuState
 		if (chars[curSelected] != null && chars[curSelected][1] != -1 && onlinemod.OnlinePlayMenuState.socket == null){
 			var _char = formatChar(chars[curSelected]);
 			if(chars[curSelected][4].type == 1 && (FlxG.keys.justPressed.ONE || FlxG.keys.justPressed.TWO || FlxG.keys.justPressed.THREE)){
-				SELoader.playSound('assets/sounds/cancelMenu.ogg');
+				SELoader.playSound('assets:sounds/cancelMenu.ogg');
 				FlxTween.tween(grpSongs.members[curSelected], {x: grpSongs.members[curSelected].x + 100}, 0.4, {ease: FlxEase.bounceInOut,onComplete: function(twn:FlxTween){return;}});
 				FlxTween.tween(infotext, {alpha:0}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){FlxTween.tween(infotext, {alpha:1}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){return;}});}});
 				
@@ -273,7 +273,7 @@ class CharSelection extends SearchMenuState
 			return;
 		}
 		if(chars[curSelected][1] == 1){
-			SELoader.playSound('assets/sounds/cancelMenu.ogg');
+			SELoader.playSound('assets:sounds/cancelMenu.ogg');
 			FlxTween.tween(grpSongs.members[curSelected], {x: grpSongs.members[curSelected].x + 100}, 0.4, {ease: FlxEase.bounceInOut,onComplete: function(twn:FlxTween){return;}});
 			FlxTween.tween(infotext, {alpha:0}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){FlxTween.tween(infotext, {alpha:1}, 0.2, {ease: FlxEase.quadInOut,onComplete: function(twn:FlxTween){return;}});}});
 			if(grpSongs.members[curSelected].x > 300){

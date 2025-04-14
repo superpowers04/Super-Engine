@@ -244,7 +244,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		}catch(e){
 			Chat.OutputChatMessage("[Client] You had an error when receiving packet '" + '$packetId' + "':");
 			Chat.OutputChatMessage(e.message);
-			SELoader.playSound('assets/sounds/cancelMenu',true);
+			SELoader.playSound('assets:sounds/cancelMenu',true);
 			FlxG.switchState(new OnlineLobbyState(true));
 		}
 		return true;

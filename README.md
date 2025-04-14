@@ -14,22 +14,22 @@ A custom engine based on [Funkin Battle Royale](https://github.com/XieneDev/Funk
 - Multikey support
 
 All without recompiling the game at all or editing source code.
-<br>Infact, editing source code is discouraged unless you're going to directly contribute to the engine or make a fork of the engine.
+<br>I highly recommend against editing source code if it can be done with a script. If you do have any source code improvements you want to make, you should PR them or push them to a fork.
 
 This is powered by a modded version of [Kade Engine](https://github.com/KadeDev/Kade-Engine) with a hint of [FPSPlus](https://github.com/ThatRozebudDude/FPS-Plus-Public/) added in and with some inspiration from [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine)/[FNF Multi](https://shadowmario.itch.io/funkinmulti) <br>
 I do not own Friday Night Funkin, Kade Engine or Funkin Battle Royale, I'd highly recommend checking them out.
 
 
 <br>You can find downloads, custom content, get help and more at the [Super Engine Discord server](https://discord.gg/28GPGTRuuR)
-<br><br>Note that due to the setup on my end, I push commits all at once, so pull requests and other things might be out of date and need to be merged manually
 # Modding information
 Read the [mods/readme.txt](https://github.com/superpowers04/Super-Engine/blob/nightly/example_mods/readme.txt) for info about installing/making custom characters, charts, stages and more. 
 <br>**Anything beyond bf and gf SHOULD NOT be hardcoded into this engine.** This engine is meant to be a 1 time install with updates, Please do not package this engine inside of a mod. 
-<br>If you *have* to include an engine/exe in your mod, [Crowplexus' fork of Forever Engine](https://github.com/crowplexus/Forever-Engine), [Forever Engine Legacy](https://github.com/crowplexus/Forever-Engine-Legacy) and [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) are far more fit for this
+<br>If you *have* to include an engine/exe in your mod, [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine), [Codename Engine](https://github.com/CodenameCrew/CodenameEngine),  are far more fit for this. 
 
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide. 
   Although you will also need to use the installDeps.bat file. While it is a bat file, it works on Windows, Mac and Linux. I only named it .bat so it can work properly on Windows machines or whatever
+  **Do note this file installs dependancies globally.** Super Engine specifically tells Lime/Haxe what versions of libraries to use so no global settings should need to be changed
 
 # Information
 ## Friday Night Funkin'
@@ -57,7 +57,8 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 ## Super Engine
 - [Superpowers04](https://github.com/superpowers04) - Pretty much everything specific to Super Engine/Lead Developer
 - [NayToon](https://github.com/cartoon032) - Some help and providing early Windows builds
-- [XieneDev](https://github.com/XieneDev/) - Made Battle Royale. This engine actually wouldn't exist if it wasn't for this pog FNF mod
+- [XieneDev](https://github.com/XieneDev/) - Made Battle Royale. Super Engine wouldn't exist if it wasn't for FNF Battle Royale
+- [Contributors to the repository](https://github.com/superpowers04/Super-Engine/graphs/contributors) - This is here as a catchall for anyone that has contributed to Super Engine but I forgot to mention here
 ## Kade Engine (The base engine)
 - [KadeDeveloper](https://twitter.com/KadeDeveloper) - Maintainer and lead programmer
 - [The contributors](https://github.com/KadeDev/Kade-Engine/graphs/contributors)

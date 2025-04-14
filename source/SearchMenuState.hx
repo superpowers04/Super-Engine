@@ -149,14 +149,7 @@ class SearchMenuState extends ScriptMusicBeatState {
 	{try{
 		if(doReset)resetVars();
 		if(bg == null){
-			// if(FileSystem.exists("mods/bg.png")){
-			// 	bg = new FlxSprite().loadGraphic(Paths.getImageDirect("mods/bg.png"));
-			// }else{
-			// 	bg = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
-
-			// }
 			bg = new FlxSprite().loadGraphic(SearchMenuState.background); 
-			// bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
 			bg.color = bgColor;
 		}
 		bg.scrollFactor.set(0.2,0.2);
@@ -197,7 +190,7 @@ class SearchMenuState extends ScriptMusicBeatState {
 		infoTextBorder.alpha = 0.5;
 		overLay.add(infoTextBorder);
 		overLay.add(infotext);
-		var _sbbgy:Int = Std.int(blackBorder == null ? 0 : blackBorder.y + blackBorder.height);
+		final _sbbgy:Int = Std.int(blackBorder == null ? 0 : blackBorder.y + blackBorder.height);
 		scrollBarBG = new FlxSprite(FlxG.width - 20,_sbbgy).makeGraphic(18,Std.int(FlxG.height) - _sbbgy,0xFF220022);
 		scrollBarBG.alpha = 0.9;
 		scrollBarBG.scrollFactor.set();
@@ -367,9 +360,7 @@ class SearchMenuState extends ScriptMusicBeatState {
 			}
 			// }
 	}
-	function extraKeys(){
-		return;
-	}
+	function extraKeys(){ return; }
 	var curTween:FlxTween;
 	var showBeatBouncing(get,default):Bool = true;
 	function get_showBeatBouncing(){
@@ -380,60 +371,43 @@ class SearchMenuState extends ScriptMusicBeatState {
 		if(showBeatBouncing && grpSongs != null && grpSongs.members[curSelected] != null){
 			
 			grpSongs.members[curSelected].scale.set(1.1,1.1);
-			if(curTween != null)curTween.cancel();
+			if(curTween != null) curTween.cancel();
 			curTween = FlxTween.tween(grpSongs.members[curSelected],{"scale.x":1,"scale.y":1},Conductor.stepCrochet * 0.003,{ease:FlxEase.circOut});
 		}
 	}
 	function ret(){
 		FlxG.mouse.visible = false;
-		FlxG.sound.play(Paths.sound('cancelMenu'));
-		// if (onlinemod.OnlinePlayMenuState.socket != null){
-		// 	FlxG.switchState(new onlinemod.OnlineOptionsMenu());}else{
+		SELoader.playSound('assets:sounds/cancelMenu.ogg');
 		goToLastClass();
-			// }
 	}
 	function changeSelection(change:Int = 0)
 	{try{
-		if (change != 0) SELoader.playSound('assets/sounds/scrollMenu.ogg',true);
+		if (change != 0) SELoader.playSound('assets:sounds/scrollMenu.ogg',true);
 		callInterp('changeSelection',[change]);
 		if(cancelCurrentFunction) return;
-		var start = curSelected;
 
 		curSelected += change;
-		change = change > 0 ? 1 : -1;
-		// while(true){
-			if (curSelected < 0) curSelected = grpSongs.members.length - 1;
-			if (curSelected >= grpSongs.members.length) curSelected = 0;
-		// 	if (curSelected != 0 && !grpSongs.members[curSelected].visible){
-		// 		curSelected += change;
-		// 		continue;
-		// 	}
-		// 	break;
-
-		// }
-
-		var bullShit:Int = 0;
-		
+		if (curSelected < 0) curSelected = grpSongs.members.length - 1;
+		if (curSelected >= grpSongs.members.length) curSelected = 0;
 
 
-		for (item in grpSongs.members){
-			var onScreen = ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10));
-			if (onScreen){ // If item is onscreen, then actually move and such
+		for (bullShit => item in grpSongs.members){
+			if ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10)){ // If item is onscreen, then actually move and such
+				item.targetY = bullShit - curSelected;
 				if (!item.alive){
 					item.revive();
-					if (change < 0 ) item.y = -500; else item.y = FlxG.height + 300;
+					item.y = (item.targetY < 0 ) ? -500 : FlxG.height + 500;
 				}
-				item.targetY = bullShit - curSelected;
 				if(item.adjustAlpha){
-					item.alpha = 0.6;
-					if(!useAlphabet) item.color = idleColor;
 					if (item.targetY == 0){
 						item.alpha = 1;
 						if(!useAlphabet) item.color = hoverColor;
+					}else{
+						item.alpha = 0.6;
+						if(!useAlphabet) item.color = idleColor;
 					}
 				} 
 			}else if(item.alive) item.kill(); // Else, try to kill it to lower the amount of sprites loaded
-			bullShit++;
 		}
 		callInterp('changeSelectionAfter',[change]);
 	}catch(e) MainMenuState.handleError('Error with searchmenu "chgsel" ${e.message}');}

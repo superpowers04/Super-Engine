@@ -149,10 +149,10 @@ class KeyBindMenu extends FlxSubState
 
 			case "select":
 				if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.UP){
-					SELoader.playSound('assets/sounds/scrollMenu.ogg',true);
+					SELoader.playSound('assets:sounds/scrollMenu.ogg',true);
 					changeItem(-1);
 				}else if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.DOWN){
-					SELoader.playSound('assets/sounds/scrollMenu.ogg',true);
+					SELoader.playSound('assets:sounds/scrollMenu.ogg',true);
 					changeItem(1);
 				}
 				#if !mobile
@@ -160,25 +160,25 @@ class KeyBindMenu extends FlxSubState
 					lastLength = -1;
 					if(keyText[keyMode - 1] == null){
 						
-						SELoader.playSound('assets/sounds/cancelMenu.ogg',true);
+						SELoader.playSound('assets:sounds/cancelMenu.ogg',true);
 					}else{
 						keyMode--;
-						SELoader.playSound('assets/sounds/scrollMenu.ogg',true);
+						SELoader.playSound('assets:sounds/scrollMenu.ogg',true);
 					}
 					
 				}else if (FlxG.keys.justPressed.D || FlxG.keys.justPressed.RIGHT){
 					lastLength = -1;
 					if(keyText[keyMode + 1] == null){
-						SELoader.playSound('assets/sounds/cancelMenu.ogg',true);
+						SELoader.playSound('assets:sounds/cancelMenu.ogg',true);
 					}else{
 						keyMode++;
-						SELoader.playSound('assets/sounds/scrollMenu.ogg',true);
+						SELoader.playSound('assets:sounds/scrollMenu.ogg',true);
 					}
 				}
 				#end
 
 				if (FlxG.keys.justPressed.ENTER){
-					SELoader.playSound('assets/sounds/scrollMenu.ogg',true);
+					SELoader.playSound('assets:sounds/scrollMenu.ogg',true);
 					state = "input";
 				}else if(FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE #if(mobile) || FlxG.mouse.justReleased #end){
 					quit();
@@ -194,7 +194,7 @@ class KeyBindMenu extends FlxSubState
 				if(FlxG.keys.justPressed.ESCAPE){
 					keys[keyMode][curSelected] = tempKey;
 					state = "select";
-					SELoader.playSound('assets/sounds/confirmMenu');
+					SELoader.playSound('assets:sounds/confirmMenu');
 				}else if(FlxG.keys.justPressed.ENTER){
 					addKey(KeyBinds.defaultKeys[keyMode][curSelected]);
 					save();
@@ -329,7 +329,7 @@ class KeyBindMenu extends FlxSubState
 		if (blacklist.contains(r)){
 			keys[keyMode][curSelected] = tempKey;
 			lastKey = r;
-			SELoader.playSound('assets/sounds/cancelMenu');
+			SELoader.playSound('assets:sounds/cancelMenu');
 			return;
 		}
 		
@@ -346,7 +346,7 @@ class KeyBindMenu extends FlxSubState
 
 		if(shouldReturn){
 			keys[keyMode][curSelected] = r;
-			SELoader.playSound('assets/sounds/scrollMenu');
+			SELoader.playSound('assets:sounds/scrollMenu');
 			changeItem(1);
 		}
 
