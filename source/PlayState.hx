@@ -223,7 +223,7 @@ class PlayState extends ScriptMusicBeatState
 		public static var hurtSoundEff:Sound;
 		static var vanillaHurtSounds:Array<Sound> = [];
 		public var vocals:SEJoinedSound = new SEJoinedSound();
-		var hitSound:Bool = false;
+		final hitSound:Bool = SESave.data.hitSound;
 
 	/* Script Shite*/
 		public static var stateType=0;
@@ -1138,7 +1138,6 @@ class PlayState extends ScriptMusicBeatState
 		if(dad.lonely) iconP2.visible = false;
 		kadeEngineWatermark.cameras = [camHUD];
 
-		hitSound = SESave.data.hitSound;
 		if(SESave.data.hitSound && hitSoundEff == null) 
 			hitSoundEff = (SELoader.exists('mods/hitSound.ogg') ? SELoader.loadSound('mods/hitSound.ogg') : SELoader.loadSound('assets/shared/sounds/Normal_hit.ogg',true));
 
@@ -2671,7 +2670,7 @@ class PlayState extends ScriptMusicBeatState
 			return;
 		}
 		inputMode = SESave.data.inputEngine;
-		var inputEngines = ["SE-LEGACY" + (SESave.data.accurateNoteSustain ? "-ACNS" : ""),
+		final inputEngines = ["SE-LEGACY" + (SESave.data.accurateNoteSustain ? "-ACNS" : ""),
 							'SE'+ (SESave.data.accurateNoteSustain ? "-ACNS" : "")
 		];
 		// noteShit handles moving notes around and opponent hitting them
@@ -2681,7 +2680,6 @@ class PlayState extends ScriptMusicBeatState
 		switch(inputMode){
 			case 0:
 				noteShit = SENoteShit;
-
 				doKeyShit = kadeBRKeyShit;
 				goodNoteHit = kadeBRGoodNote;
 			case 1:
@@ -2700,7 +2698,7 @@ class PlayState extends ScriptMusicBeatState
 
 	}
 	public function DadStrumPlayAnim(id:Int,?anim:String = "confirm") {
-		var spr:StrumArrow= cpuStrums.members[id];
+		final spr:StrumArrow= cpuStrums.members[id];
 		if(spr == null) return;
 		switch(anim.toLowerCase()){
 			case "confirm":
@@ -2713,7 +2711,7 @@ class PlayState extends ScriptMusicBeatState
 		
 	}
 	public function BFStrumPlayAnim(id:Int,anim:String = 'confirm') {
-		var spr:StrumArrow= playerStrums.members[id];
+		final spr:StrumArrow= playerStrums.members[id];
 		if(spr == null) return;
 		switch(anim.toLowerCase()){
 			case "confirm":
@@ -2903,7 +2901,7 @@ class PlayState extends ScriptMusicBeatState
 			}
 			noteMiss(queuedNote.direction,queuedNote.note);
 		}
-		var player = playerCharacter;
+		final player = playerCharacter;
  		callInterp("holdShitAfter",[holdArray]);
  		charCall("holdShitAfter",[holdArray],true);
 		if (player.currentAnimationPriority == 10 && (player.holdTimer > Conductor.stepCrochet * player.dadVar * 0.001 || player.isDonePlayingAnim()) && !player.isPressingNote) {
@@ -2923,7 +2921,7 @@ class PlayState extends ScriptMusicBeatState
 		if(SONG.keyCount == 0 || SONG.keyCount == 1){
 			SEIKeyMap[FlxKey.fromStringMap['ANY']] = 0;
 		}else if(SONG.keyCount == 4){
-			var arr:Array<String> = cast SESave.data.keys[3];
+			final arr:Array<String> = cast SESave.data.keys[3];
 			SEIKeyMap[FlxKey.fromStringMap[arr[0]]] = SEIKeyMap[FlxKey.fromStringMap[arr[4]]] = 0;
 			SEIKeyMap[FlxKey.fromStringMap[arr[1]]] = SEIKeyMap[FlxKey.fromStringMap[arr[5]]] = 1;
 			SEIKeyMap[FlxKey.fromStringMap[arr[2]]] = SEIKeyMap[FlxKey.fromStringMap[arr[6]]] = 2;
@@ -2932,7 +2930,7 @@ class PlayState extends ScriptMusicBeatState
 
 			
 		}else{
-			var arr:Array<String> = cast SESave.data.keys[SONG.keyCount - 1];
+			final arr:Array<String> = cast SESave.data.keys[SONG.keyCount - 1];
 			for(i => v in arr){
 				SEIKeyMap[FlxKey.fromStringMap[v]] = i; 
 			}
@@ -2962,6 +2960,7 @@ class PlayState extends ScriptMusicBeatState
 				var strum = playerStrums.members[data];
 				SEIKeyHeld[event.keyCode] = true;
 				if(strum != null) strum.press();
+				playerCharacter.isPressingNote = true;
 			}
 			callInterp('keyShit',[pressArray,holdArray]);
 			charCall("keyShit",[pressArray,holdArray]);
@@ -2973,14 +2972,11 @@ class PlayState extends ScriptMusicBeatState
 				var i = hitArray.length+1;
 				while(i > 0){hitArray[i--]=false;}
 			}
-			if(holdArray.contains(true)){
-				playerCharacter.isPressingNote = true;
-			}
 			while(possibleNotes.pop() != null){}
 			
 			// var possibleNotes:Array<Note> = [null,null,null,null]; // notes that can be hit
 			var onScreenNote:Bool = false;
-			var members = notes.members;
+			final members = notes.members;
 			var i = members.length;
 			var daNote:Note;
 			while (i >= 0) {
@@ -2989,8 +2985,8 @@ class PlayState extends ScriptMusicBeatState
 				if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) continue;
 				
 				if (!onScreenNote) onScreenNote = true;
-				if (!pressArray[daNote.noteData] || !daNote.updateCanHit(Conductor.songPosition + ((Sys.time() * 1000) - lastMusicUpdate)) || daNote.tooLate || daNote.wasGoodHit) continue;
-				var coolNote = possibleNotes[daNote.noteData];
+				if (daNote.isSustainNote || !pressArray[daNote.noteData] || !daNote.updateCanHit(Conductor.songPosition + ((Sys.time() * 1000) - lastMusicUpdate)) || daNote.tooLate || daNote.wasGoodHit) continue;
+				final coolNote = possibleNotes[daNote.noteData];
 				if (coolNote != null){
 					if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7)){
 						notes.remove(daNote);
@@ -3005,7 +3001,7 @@ class PlayState extends ScriptMusicBeatState
 			if(onScreenNote) timeSinceOnscreenNote = 0.5;
 			i = pressArray.length;
 			daNote = null;
-			var ghostTapping = SESave.data.ghost;
+			final ghostTapping = SESave.data.ghost;
 			while(i > 0) {
 				i--;
 				daNote = possibleNotes[i];
@@ -3062,8 +3058,8 @@ class PlayState extends ScriptMusicBeatState
 			// }
 			for(id => bool in holdArray){
 				if(bool) continue;
-				var strum = playerStrums.members[id];
-				if(strum == null) return;
+				final strum = playerStrums.members[id];
+				if(strum == null) break;
 				strum.playStatic();
 			}
 			SEProfiler.qStamp('KeyRelease');
@@ -3130,7 +3126,7 @@ class PlayState extends ScriptMusicBeatState
 		holdArray = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 		pressArray = [controls.LEFT_P,controls.DOWN_P,controls.UP_P,controls.RIGHT_P];
 		releaseArray = [controls.LEFT_R,controls.DOWN_R,controls.UP_R,controls.RIGHT_R];
-		var hitArray:Array<Bool> = [false,false,false,false];
+		final hitArray:Array<Bool> = [false,false,false,false];
 		if(SESave.data.useTouch){
 			if(SESave.data.useStrumsAsButtons){
 				for(touch in FlxG.touches.list){
@@ -3195,7 +3191,7 @@ class PlayState extends ScriptMusicBeatState
 		if (generatedMusic && pressArray.contains(true)) {
 			playerCharacter.holdTimer = 0;
  
-			var possibleNotes:Array<Note> = [null,null,null,null]; // notes that can be hit
+			final possibleNotes:Array<Note> = [null,null,null,null]; // notes that can be hit
  			var onScreenNote:Bool = false;
  			var i = notes.members.length;
  			var daNote:Note;
@@ -3206,7 +3202,7 @@ class PlayState extends ScriptMusicBeatState
 
 				if (!onScreenNote) onScreenNote = true;
 				if (!pressArray[daNote.noteData] || !daNote.canBeHit || daNote.tooLate || daNote.wasGoodHit) continue;
-				var coolNote = possibleNotes[daNote.noteData];
+				final coolNote = possibleNotes[daNote.noteData];
 				if (coolNote != null) {
 					if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7)){notes.remove(daNote);daNote.destroy();continue;}
 					if((daNote.strumTime > coolNote.strumTime)) continue;
@@ -3233,7 +3229,7 @@ class PlayState extends ScriptMusicBeatState
 		}
  		callInterp("keyShitAfter",[pressArray,holdArray,hitArray]);
  		charCall("keyShitAfter",[pressArray,holdArray,hitArray]);
- 		var player = playerCharacter;
+ 		final player = playerCharacter;
 		player.isPressingNote = holdArray.contains(true);
 		if (player.currentAnimationPriority == 10 && (player.holdTimer > Conductor.stepCrochet * player.dadVar * 0.001 || player.isDonePlayingAnim()) && !player.isPressingNote) {
 			player.dance(true,curBeat % 2 == 1);
@@ -3254,7 +3250,7 @@ class PlayState extends ScriptMusicBeatState
 	}
 
 	function kadeBRGoodNote(note:Note, ?resetMashViolation = true, ?time:Float = -1):Void {
-		var noteDiff:Float = Math.abs(note.strumTime - (time == -1 ? (Conductor.songPosition + ((Sys.time() * 1000) - lastMusicUpdate)) : time)) ;
+		final noteDiff:Float = Math.abs(note.strumTime - (time == -1 ? (Conductor.songPosition + ((Sys.time() * 1000) - lastMusicUpdate)) : time)) ;
 		note.hitDistance = Ratings.getDistanceFloat(noteDiff);
 		note.rating = Ratings.ratingFromDistance(note.hitDistance);
 
@@ -3330,7 +3326,7 @@ class PlayState extends ScriptMusicBeatState
 			daNote.destroy();
 
 		}
-		var player = playerCharacter;
+		final player = playerCharacter;
 		playMissSound(player,direction);
 		// FlxG.sound.play(hurtSoundEff, 1);
 		if(calcStats && handleHealth) health += SONG.noteMetadata.missHealth;
@@ -3399,7 +3395,7 @@ class PlayState extends ScriptMusicBeatState
 		try{
 			for (i => v in stepAnimEvents) {
 				for (anim => ifState in v) {
-					var variable:Dynamic = Reflect.field(this,ifState.variable);
+					final variable:Dynamic = Reflect.field(this,ifState.variable);
 					var play:Bool = false;
 					if (ifState.type == "contains"){
 						if (ifState.value.contains(variable)){play = true;}
@@ -3429,11 +3425,11 @@ class PlayState extends ScriptMusicBeatState
 			
 		}catch(e){handleError('A animation event caused an error: ${e.message}\n ${e.stack}');}
 		if (generatedMusic){
-			var nextSection = Std.int(Math.floor(curStep / 16));
+			final nextSection = Std.int(Math.floor(curStep / 16));
 			if(curSection != nextSection && SONG.notes[nextSection] != null){
 
 				curSection = nextSection;
-				var sect = SONG.notes[curSection];
+				final sect = SONG.notes[curSection];
 				if (sect.changeBPM && !Math.isNaN(sect.bpm)){
 					Conductor.changeBPM(sect.bpm);
 				}
@@ -3443,7 +3439,7 @@ class PlayState extends ScriptMusicBeatState
 
 				PlayState.canUseAlts = sect.altAnim;
 				if(controlCamera){
-					var locked = (sect.centerCamera || !SESave.data.camMovement || camLocked || 
+					final locked = (sect.centerCamera || !SESave.data.camMovement || camLocked || 
 						(notes.length == 0 && (unspawnNotes[0] == null || (unspawnNotes[0].strumTime - Conductor.songPosition > 4000))));
 
 					followChar((chartIsInverted ? (sect.mustHitSection ? 1 : 0) : (sect.mustHitSection ? 0 : 1)),locked);
@@ -3494,9 +3490,8 @@ class PlayState extends ScriptMusicBeatState
 			v.skipNote=true;
 			v.doUpdate=true;
 			add(v);
-			var X = FlxG.random.int(-160, 160);
 			
-			var e = FlxTween.tween(v, {alpha:0}, FlxG.random.float(0.3, 0.6), {
+			FlxTween.tween(v, {alpha:0}, FlxG.random.float(0.3, 0.6), {
 				onComplete: function(tween:FlxTween) {v.destroy();}});
 		}
 		var n:Note = null;
@@ -3576,13 +3571,11 @@ class PlayState extends ScriptMusicBeatState
 			camHUD.zoom -= camZoomAmount;
 		}
 		
-		// iconP1.bounce(Conductor.crochetSecs);
-		// iconP2.bounce(Conductor.crochetSecs);
 
 		try{
 			for (i => v in beatAnimEvents) {
 				for (anim => ifState in v) {
-					var variable:Dynamic = Reflect.field(this,ifState.variable);
+					final variable:Dynamic = Reflect.field(this,ifState.variable);
 					var play:Bool = false;
 					if (ifState.type == "contains"){
 						if (ifState.value.contains(variable)){play = true;}
@@ -3607,8 +3600,8 @@ class PlayState extends ScriptMusicBeatState
 			}
 		}catch(e){handleError('A animation event caused an error ${e.message}\n ${e.stack}');}
 
-		var player = playerCharacter;
-		var opponent = opponentCharacter;
+		final player = playerCharacter;
+		final opponent = opponentCharacter;
 		if(gf != null  && player != gf && opponent != gf && gf.currentAnimationPriority != 10){
 			gf.dance(true,curBeat % 2 == 0,true);
 		}

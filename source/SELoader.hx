@@ -82,9 +82,8 @@ class SELoader {
 	public static var ignoreMods = false;
 	public static var id = "SELoader";
 	public static var namespace = "";
-
 	inline public static function handleError(e:String){
-		e = '${id}: '+e;
+		e = '${id}: $e';
 		trace(e);
 		throw(e);
 		// if((cast (FlxG.state)).handleError != null) (cast (FlxG.state)).handleError(e); else MainMenuState.handleError(e);
@@ -137,13 +136,13 @@ class SELoader {
 		// Remove library
 		if(path.indexOf(':') > 2) path = path.substring(path.indexOf(":") + 1);
 		if(path.startsWith('assets/')) path = path.substring(7);
-		var modsFolder = new SEDirectory(getRawPath('mods/'));
-		var packsFolder = modsFolder.newDirectory('packs/');
+		final modsFolder = new SEDirectory(getRawPath('mods/'));
+		final packsFolder = modsFolder.newDirectory('packs/');
 		if(namespace=="") namespace=SELoader.namespace;
 		if(namespace!=""){ // We always want to check the namespace first, It has top priority
-			var packFolder = (namespace == "INTERNAL" || namespace == "assets") ? getPath() : packsFolder+namespace;
+			final packFolder = (namespace == "INTERNAL" || namespace == "assets") ? getPath() : packsFolder+namespace;
 			SELoader.ignoreMods = true;
-			var the = SELoader.anyExists([
+			final the = SELoader.anyExists([
 				packFolder+'/'+path,
 				packFolder+'/shared/'+path,
 				packFolder+'/assets/'+path,
@@ -154,11 +153,11 @@ class SELoader {
 			if(the!=null) return the;
 		}
 		{ // If the path has already been found before, just use that. No need to re-scan
-			var PATH = AssetPathCache[path];
+			final PATH = AssetPathCache[path];
 			if(PATH!=null) return PATH == "" ? SELoader.getRawPath("assets/"+path,false) :PATH; 
 		}
 		{ // Mods folder
-			var the = SELoader.anyExists([
+			final the = SELoader.anyExists([
 				'mods/'+path,
 				'mods/shared/'+path,
 				'mods/assets/'+path,
@@ -174,9 +173,9 @@ class SELoader {
 		if(!exists(p)){ // I am honestly too lazy at the moment to add a proper mods menu
 			AssetPathCache[path]=null;
 			{
-				var rawAssets = getRawPath('assets/');
+				final rawAssets = getRawPath('assets/');
 				rawMode=defaultRawMode=true;
-				var the = SELoader.anyExists([
+				final the = SELoader.anyExists([
 					rawAssets+'/'+path,
 					rawAssets+'/shared/'+path,
 				]);
@@ -186,8 +185,8 @@ class SELoader {
 			if(!SESave.data.HDDMode){
 				if(SELoader.exists(modsFolder + path)) return AssetPathCache[path]=modsFolder+path;
 				for (directory in orderList(SELoader.readDirectory(packsFolder.toString()))){
-					var packFolder = packsFolder+directory;
-					var the = SELoader.anyExists([
+					final packFolder = packsFolder+directory;
+					final the = SELoader.anyExists([
 						packFolder+'/'+path,
 						packFolder+'/shared/'+path,
 						packFolder+'/assets/'+path,
@@ -215,15 +214,14 @@ class SELoader {
 	}
 	public static function loadXML(textPath:String,?useCache:Bool = false):String{ // Automatically fixes UTF-16 encoded files
 		if(textPath.lastIndexOf('.') == -1) textPath+='.xml';
-		var text = loadText(textPath,useCache);
-		return cleanXML(text);
+		return cleanXML(loadText(textPath,useCache));
 	}
 	public static function cleanXML(text:String):String{ // Automatically fixes UTF-16 encoded files
 		
-		var text = text.replace("UTF-16","utf-8");
+		final text = text.replace("UTF-16","utf-8");
 		// final nul = String.fromCharCode(0);
 		if(text.substr(2).contains("U\x00T\x00F\x00-\x001\x006")){ // Flash CS6 outputs a UTF-16 xml even though no UTF-16 characters are usually used. This reformats the file to be UTF-8 *hopefully*
-			text = '<?' + text.substr(2).replace(String.fromCharCode(0),'').replace('UTF-16','utf-8');
+			return '<?' + text.substr(2).replace(String.fromCharCode(0),'').replace('UTF-16','utf-8');
 		}
 		return text;
 	}
@@ -236,14 +234,12 @@ class SELoader {
 		return new FlxSprite(x, y).loadGraphic(loadGraphic(pngPath,useCache));
 	}
 	public static function loadGraphic(pngPath:String,?useCache:Bool = false):FlxGraphic{
-		if(useCache){
-			return cache.loadGraphic(pngPath);
-		}
+		if(useCache) return cache.loadGraphic(pngPath);
 		return FlxGraphic.fromBitmapData(loadBitmap(pngPath));
 	}
 	public static function loadBitmap(pngPath:String,?useCache:Bool = false):BitmapData{
-		pngPath = getPath(pngPath);
 		if(pngPath.substr(-4) != ".png") pngPath += '.png';
+		final pngPath = getPath(pngPath);
 		if(cache.bitmapArray[pngPath] != null || useCache){
 			return cache.loadBitmap(pngPath);
 		}
@@ -265,13 +261,13 @@ class SELoader {
 			handleError(' SparrowFrame XML "${pngPath}.xml" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
-		var atlas = FlxAtlasFrames.fromSparrow(loadGraphic('$pngPath.png',cache),loadXML('${pngPath}',cache));
+		final atlas = FlxAtlasFrames.fromSparrow(loadGraphic('$pngPath.png',cache),loadXML('${pngPath}',cache));
 		var i = 1;
 		while(exists('${pngPath}-$i.png') && exists('${pngPath}-$i.xml')){
-			var pngPath ='${pngPath}-$i' ;
+			final pngPath ='${pngPath}-$i' ;
 			trace(pngPath);
 			i++;
-			var nextAtlas = FlxAtlasFrames.fromSparrow(loadGraphic('$pngPath.png',cache),loadXML('${pngPath}',cache));
+			final nextAtlas = FlxAtlasFrames.fromSparrow(loadGraphic('$pngPath.png',cache),loadXML('${pngPath}',cache));
 			@:privateAccess{
 				if(!atlas.usedGraphics.contains(atlas.parent)){
 					atlas.usedGraphics.push(atlas.parent);
@@ -295,8 +291,8 @@ class SELoader {
 	}
 	public static function loadSparrowSprite(x:Float,y:Float,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24,?useCache:Bool = false):FlxSprite{
 		pngPath = getPath(pngPath);
-		var spr = new FlxSprite(x, y);
-		var _f = spr.frames;
+		final spr = new FlxSprite(x, y);
+		final _f = spr.frames;
 		try{
 			spr.frames=loadSparrowFrames(pngPath);
 		}catch(e){
@@ -319,18 +315,18 @@ class SELoader {
 	public static function getChart(textPath:String,?difficulty:String="normal"):SwagSong{
 		// return Song.parseJSONshit(loadText(textPath,false));
 
-		var colonIndex = textPath.lastIndexOf(':');
-		var oldPath = textPath;
+		final colonIndex = textPath.lastIndexOf(':');
+		final oldPath = textPath;
 		if(colonIndex > 4) {
 			difficulty = textPath.substring(colonIndex+1);
 			textPath = textPath.substring(0,colonIndex);
 		}
 		if(!(textPath.lastIndexOf('-metadata') != -1 || textPath.lastIndexOf('-chart') != -1)){
-			var s:SwagSong = Song.parseJSONshit(loadText(oldPath,false));
+			final s:SwagSong = Song.parseJSONshit(loadText(oldPath,false));
 			try{
 
 				if(SESave.data.loadPsychEvents){
-					var events = oldPath.substring(0,oldPath.lastIndexOf('/'))+'/events.json';
+					final events = oldPath.substring(0,oldPath.lastIndexOf('/'))+'/events.json';
 					if(exists(events)){
 						Song.loadEvents(s,loadText(events,false));
 					}
@@ -342,11 +338,9 @@ class SELoader {
 		}
 
 		textPath = textPath.replace('-metadata','_FILE_').replace('-chart','_FILE_');
-		var rawJson = loadText(textPath.replace('_FILE_','-chart'),false);
-		var metaJson = loadText(textPath.replace('_FILE_','-metadata'),false);
-
-		rawJson = '{"meta":'+metaJson+','+rawJson.substring(rawJson.indexOf('{')+1,rawJson.lastIndexOf('}')+1);
-		return Song.fromVSlice(rawJson,difficulty);
+		final rawJson = loadText(textPath.replace('_FILE_','-chart'),false);
+		final metaJson = loadText(textPath.replace('_FILE_','-metadata'),false);
+		return Song.fromVSlice('{"meta":$metaJson,'+rawJson.substring(rawJson.indexOf('{')+1,rawJson.lastIndexOf('}'))+'}',difficulty);
 
 
 		// if(textPath.lastIndexOf('-metadata.json') != -1){
@@ -607,26 +601,20 @@ class SELoader {
 		return list;
 	}
 	public static function getSongsFromFolder(path:String,?query:String = ""):Array<SongInfo>{
-		var path=new SEDirectory(path);
-		var returnArray:Array<SongInfo> = [];
+		final path=new SEDirectory(path);
+		final returnArray:Array<SongInfo> = [];
 		if(!path.isDirectory()) return returnArray;
-		var blockedFiles = multi.MultiMenuState.blockedFiles;
+		final blockedFiles = multi.MultiMenuState.blockedFiles;
 		if(path.isDirectory('assets/')){ // subfolder
-			var stuff:Array<SongInfo> = getSongsFromFolder(path.appendPath('assets/'),query);
-			if(stuff.length > 0){
-				for(i in stuff) returnArray.push(i);
-			}
+			for(i in getSongsFromFolder(path.appendPath('assets/'),query)) returnArray.push(i);
 		}
 		if(path.isDirectory('mods/')){ // subfolder
-			var stuff:Array<SongInfo> = getSongsFromFolder(path.appendPath('mods/'),query);
-			if(stuff.length > 0){
-				for(i in stuff) returnArray.push(i);
-			}
+			for(i in getSongsFromFolder(path.appendPath('mods/'),query)) returnArray.push(i);
 		}
 
 		if(path.isDirectory('charts/')){ // SE
 			for (folder in path.readDirectory('charts/')){
-				var path = path.newDirectory('charts/$folder');
+				final path = path.newDirectory('charts/$folder');
 				if((!path.exists('Inst.ogg') && !path.exists('ignoreMissingInst'))) continue;
 				var song:SongInfo = {
 					name:folder,
@@ -643,39 +631,37 @@ class SELoader {
 			}
 		}
 		if(path.isDirectory('data/')){ // Normal FNF
-			var songsFolder = path.newDirectory('songs/');
+			final songsFolder = path.newDirectory('songs/');
 			var data = path.newDirectory('data/');
 			if(data.exists('songData')){ // Legacy psych
 				data = data.newDirectory('songData');
 			}
 			if(data.exists('songs')){ // VSlice
-				var data = data.newDirectory('songs');
-				var list = data.readDirectory();
-				for (folder in list){
-					var path = data.newDirectory('$folder');
+				final data = data.newDirectory('songs');
+				for (folder in data.readDirectory()){
+					final path = data.newDirectory('$folder');
 					if(!path.isDirectory() || !songsFolder.exists('$folder/Inst.ogg')) continue;
 					for (file in orderList(path.readDirectory())){
 						if((query != "" && file.lastIndexOf(query) == -1) || file.lastIndexOf('-metadata') == -1) continue;
-						var e:VSliceSongMeta = Json.parse(SELoader.getContent(path.appendPath(file)));
-						var folder = songsFolder.newDirectory(folder);
-						var name = file.substr(0,file.lastIndexOf('-metadata'));
-						var song:SongInfo = {
-							name:name,
+						final e:VSliceSongMeta = Json.parse(SELoader.getContent(path.appendPath(file)));
+						final folder = songsFolder.newDirectory(folder);
+						final name = file.substr(0,file.lastIndexOf('-metadata'));
+						final song:SongInfo = {
+							name:file.substr(0,file.lastIndexOf('.')).replace('-metadata',''),
 							charts:[],
 							namespace:null,
 
 							path:path.toString()
 						};
-
 						var ie = e.playData.characters.instrumental?? "";
 						if(ie != "") ie='-$ie';
 
-						var t = ie != "" ? ie : name.indexOf('-') == -1 ? "" : name.substring(name.indexOf('-'));
+						final t = ie != "" ? ie : name.indexOf('-') == -1 ? "" : name.substring(name.indexOf('-'));
 						var pe = e.playData.characters.player;
 						var p = pe;
 						song.voices = folder.appendPath('Voices-$p$t.ogg');
 						while(!exists(song.voices)){
-							var index = p.lastIndexOf('-');
+							final index = p.lastIndexOf('-');
 							if(index == -1){
 								song.voices=folder.appendPath('Voices-$p.ogg');
 								break;
@@ -688,7 +674,7 @@ class SELoader {
 						var oe = e.playData.characters.opponent;
 						var opponentVoices = folder.appendPath('Voices-$oe$t.ogg');
 						while(!exists(opponentVoices)){
-							var index = oe.lastIndexOf('-');
+							final index = oe.lastIndexOf('-');
 							if(index == -1){
 								opponentVoices=folder.appendPath('Voices-$oe.ogg');
 								break;
