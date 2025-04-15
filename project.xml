@@ -84,6 +84,7 @@
 
 	<haxedef name='usingcppia' if='cppia'/>
 	<define  name='message.no-color'/>
+	<haxedef  name='message.no-color'/>
 	<haxedef name="message.reporting" value="pretty" />
 
 

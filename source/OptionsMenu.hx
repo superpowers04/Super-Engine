@@ -177,6 +177,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Persistant BF","Doesn't destroy the Player when you exit a song. Makes loading quicker but uses more ram and might cause issues","persistBF"),
 			new HCBoolOption("Persistant GF","Doesn't destroy GF when you exit a song. Makes loading quicker but uses more ram and might cause issues","persistGF"),
 			// new HCBoolOption("Cache Modded Songs list", "Toggle whether the song list entirely reloads every time it's opened",'cacheMultiList'),
+			new HCBoolOption("GPU Caching","Whether to cache textures on the GPU or not. May break some mods or cause issues on lower end graphics cards","gpuCaching"),
 			new HCBoolOption("Threaded loading screen","Makes the loading screen use threads and show loading progress but is buggy and can cause crashes","doCoolLoading"),
 			new HCBoolOption("Pause screen transparency","Toggle the pause screen using transparency. Can help with lag on some machines","transparentPause"),
 			new HCBoolOption("Hard Drive Mode","Changes some loading routines to work better with slower drives.\nMay increase ram usage, disables stuff like pack asset replacing and disables hot reloading","HDDMode"),

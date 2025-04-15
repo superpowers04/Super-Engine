@@ -249,7 +249,7 @@ class PlayState extends ScriptMusicBeatState
 		public var camBeat:Bool = true;
 		public var cachedChars:Array<Map<String,Character>> = [[],[],[]];
 		public var controlCamera:Bool = true;
-		public var camMoveSpeed(default,set):Float = 0.01;
+		public var camMoveSpeed(default,set):Float = 0.15;
 		public function set_camMoveSpeed(v):Float{
 			moveCamera = moveCamera;
 			return camMoveSpeed = v;
@@ -3399,8 +3399,9 @@ class PlayState extends ScriptMusicBeatState
 						callInterp(ifState.value,[]);
 					}else{
 						var ret:Int = Reflect.compare(variable,ifState.value);
-						play = (ifState.type == "equals" && ret == 0) || (ifState.type == "more" && ret == 1) || (ifState.type == "less" && ret == 0);
-
+						play = (ifState.type == "equals" && ret == 0) || 
+								(ifState.type == "more" && ret == 1) || 
+								(ifState.type == "less" && ret == 0);
 					}
 					if (play){
 						trace("Custom animation, Playing anim");

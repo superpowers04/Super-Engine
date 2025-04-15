@@ -237,6 +237,23 @@ class SELoader {
 		if(useCache) return cache.loadGraphic(pngPath);
 		return FlxGraphic.fromBitmapData(loadBitmap(pngPath));
 	}
+
+	@:access(openfl.display.BitmapData)
+	public static function cacheOnGPU(bitmap:BitmapData):BitmapData{ // I didn't steal this from Psych Engine, naaaahhhh
+		if (!SESave.data.gpuCaching || bitmap?.image == null) return bitmap;
+		bitmap.lock();
+		if (bitmap.__texture == null) {
+			bitmap.image.premultiplied = true;
+			bitmap.getTexture(FlxG.stage.context3D);
+		}
+		bitmap.getSurface();
+		bitmap.disposeImage();
+		bitmap.image.data = null;
+		bitmap.image = null;
+		bitmap.readable = true;
+		return bitmap;
+		
+	}
 	public static function loadBitmap(pngPath:String,?useCache:Bool = false):BitmapData{
 		if(pngPath.substr(-4) != ".png") pngPath += '.png';
 		final pngPath = getPath(pngPath);
@@ -819,7 +836,7 @@ class InternalCache{
 			return new BitmapData(0,0,false,0xFF000000); // Prevents the script from throwing a null error or something
 		}
 		if(bitmapArray[pngPath] == null) cacheBitmap(pngPath);
-		return bitmapArray[pngPath];
+		return SELoader.cacheOnGPU(bitmapArray[pngPath]);
 	}
 
 	public function loadSparrowFrames(pngPath:String):FlxAtlasFrames{

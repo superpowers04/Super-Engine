@@ -13,6 +13,7 @@ import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxStringUtil;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.FlxObject;
@@ -242,7 +243,11 @@ class FinishSubState extends MusicBeatSubstate
 				
 			}else{
 
-				var finishedText:FlxText = new FlxText(0,20,0, (PlayState.isStoryMode ? "Week" : "Song") + " " + (win ? "Won!" : "Failed...  " + FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + FlxStringUtil.formatTime(Math.floor((FlxG.sound.music.length) / 1000), false)) );
+				var finishedText:FlxText = new FlxText(0,20,0, (PlayState.isStoryMode ? "Week" : "Song") + " " 
+					+(win ? "Won!" : ("Failed...  " +
+					FlxStringUtil.formatTime(Math.floor(Conductor.songPosition  / 1000), false)+"/"+
+					FlxStringUtil.formatTime(Math.floor(FlxG.sound.music.length / 1000), false)
+					)));
 				finishedText.size = 34;
 				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				finishedText.color = FlxColor.WHITE;
@@ -260,8 +265,8 @@ class FinishSubState extends MusicBeatSubstate
 				songText.screenCenter(X);
 				var comboText:FlxText = new FlxText(20 + SESave.data.guiGap,120,0,''
 						+((PlayState.instance.botPlay) ? "Botplay " : "") + (!PlayState.isStoryMode ? 'Song performance' : "Week performance")
-						+('\n\nSicks - ${PlayState.sicks}').rpad(' ',12) +' Goods - ${PlayState.goods}'
-						+('\nBads - ${PlayState.bads}').rpad(' ',12) +' Shits - ${PlayState.shits}'
+						+('\n\nSicks - ${PlayState.sicks}').rpad(' ',15) +' Goods - ${PlayState.goods}'
+						+('\nBads - ${PlayState.bads}').rpad(' ',15) +' Shits - ${PlayState.shits}'
 						+'\nGhost Taps - ${PlayState.ghostTaps}'
 						+'\nMissed Notes: ${PlayState.noteMisses}'
 						+'\n\nLast Combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})'

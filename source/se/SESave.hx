@@ -173,6 +173,7 @@ typedef YourMother = Dynamic;
 	var optionsMusic:Bool=true;
 	var ignoreErrors:Bool=false;
 	var repoURL:String="";
+	var gpuCaching:Bool=false;
 
 	public function new(){}
 }
