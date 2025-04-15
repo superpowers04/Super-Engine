@@ -59,7 +59,7 @@ import flixel.FlxG;
 		if(!sound.playing) {
 			var i = sounds.length-1;
 			while(i > 0){
-				var s = sounds[i];
+				final s = sounds[i];
 				i--;
 				if(syncPlaying && s.playing){
 					s.pause();
@@ -69,14 +69,15 @@ import flixel.FlxG;
 		}
 		var i = sounds.length-1;
 		while(i > 0){
-			var s = sounds[i];
+			final s = sounds[i];
 			i--;
 			if(syncVolume) s.volume = sound.volume;
 			if(syncPlaying && s.playing != sound.playing){
 				if(sound.playing) s.play();
 				else s.pause();
 			}
-			if(s.playing && syncTime && sound.time <= s.length && Math.abs(s.time-sound.time) > maxTimeDifference) s.time = sound.time;
+			if(s.playing && syncTime && sound.time <= s.length && Math.abs(s.time-sound.time) > maxTimeDifference) 
+				s.time = sound.time;
 
 		}
 	}
@@ -93,6 +94,10 @@ import flixel.FlxG;
 	}
 	@:keep inline function load(path:String):FlxSound{
 		return add(SELoader.loadFlxSound(path));
+	}
+	function loadFromArray(sounds:Array<String>):Array<FlxSound>{
+		if(sounds != null && sounds.length > 0) for(path in sounds) add(SELoader.loadFlxSound(path));
+		return this.sounds;
 	}
 	function add(s:FlxSound):FlxSound{
 		sounds.push(s);

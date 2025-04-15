@@ -152,7 +152,7 @@ class FinishSubState extends MusicBeatSubstate
 	public function saveScore(forced:Bool = false):Bool{
 
 		if(canSaveScore() != "Yes") return false;
-		return (Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)],forced));
+		return (Highscore.setScore('${PlayState.nameSpace}-${PlayState.actualSongName}${(if(PlayState.invertedChart) "-inverted" else "")}',PlayState.songScore,[PlayState.songScore,'${CoolUtil.truncateFloat(PlayState.accuracy,2)}%',Ratings.GenerateLetterRank(PlayState.accuracy)],forced));
 		
 	}
 	@:keep inline public static function getScore(forced:Bool = false):Int{
@@ -242,7 +242,7 @@ class FinishSubState extends MusicBeatSubstate
 				
 			}else{
 
-				var finishedText:FlxText = new FlxText(0,20,0, (PlayState.isStoryMode ? "Week" : "Song") + " " + (win ? "Won!" : "Failed...") );
+				var finishedText:FlxText = new FlxText(0,20,0, (PlayState.isStoryMode ? "Week" : "Song") + " " + (win ? "Won!" : "Failed...  " + FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + FlxStringUtil.formatTime(Math.floor((FlxG.sound.music.length) / 1000), false)) );
 				finishedText.size = 34;
 				finishedText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				finishedText.color = FlxColor.WHITE;
@@ -260,15 +260,15 @@ class FinishSubState extends MusicBeatSubstate
 				songText.screenCenter(X);
 				var comboText:FlxText = new FlxText(20 + SESave.data.guiGap,120,0,''
 						+((PlayState.instance.botPlay) ? "Botplay " : "") + (!PlayState.isStoryMode ? 'Song performance' : "Week performance")
-						+'\n\nSicks - ${PlayState.sicks}'
-						+'\nGoods - ${PlayState.goods}'
-						+'\nBads - ${PlayState.bads}'
-						+'\nShits - ${PlayState.shits}'
+						+('\n\nSicks - ${PlayState.sicks}').rpad(' ',12) +' Goods - ${PlayState.goods}'
+						+('\nBads - ${PlayState.bads}').rpad(' ',12) +' Shits - ${PlayState.shits}'
 						+'\nGhost Taps - ${PlayState.ghostTaps}'
-						+'\n\nLast combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})'
-						+'\nMisses${if(SESave.data.ghost) "" else " + Ghost Taps"}${SESave.data.shittyMiss ? ' + Shits' : ''}${SESave.data.badMiss ? ' + Bads' : ''}${SESave.data.goodMiss ? ' + Goods' : ''}: ${PlayState.misses}'
-						+(savedScore ? '\n\n!!Score: ${_oldScore} > ${PlayState.songScore}' : '\n\nScore: ${PlayState.songScore} / ${_oldScore}')
-						+'\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.accuracy,2)}%');
+						+'\nMissed Notes: ${PlayState.noteMisses}'
+						+'\n\nLast Combo: ${PlayState.combo} (Max: ${PlayState.maxCombo})'
+						+'\nMisses${SESave.data.ghost ? "" : " + Ghost Taps"}${SESave.data.shittyMiss ? ' + Shits' : ''}${SESave.data.badMiss ? ' + Bads' : ''}${SESave.data.goodMiss ? ' + Goods' : ''}: ${PlayState.misses}'
+						+'\nAccuracy: ${CoolUtil.truncateFloat(PlayState.accuracy,2)}%'
+						+(savedScore ? '\n\n!! Score: ${_oldScore} > ${PlayState.songScore} !!' : '\n\nScore: ${PlayState.songScore} / ${_oldScore}')
+					);
 				comboText.size = 28;
 				comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
 				comboText.color = FlxColor.WHITE;
@@ -313,7 +313,7 @@ class FinishSubState extends MusicBeatSubstate
 				+'\n HitWindows: ${Ratings.ratingMS("sick")},${Ratings.ratingMS("good")},${Ratings.ratingMS("bad")},${Ratings.ratingMS("shit")} MS'
 				+'\n Input Engine: ${PlayState.inputEngineName}'
 				+'\n Version: ${MainMenuState.nightly == "" ? MainMenuState.ver : MainMenuState.nightly}'
-				+'\n Song Offset: ${HelperFunctions.truncateFloat(SESave.data.offset + PlayState.songOffset,2)}ms'
+				+'\n Song Offset: ${CoolUtil.truncateFloat(SESave.data.offset + PlayState.songOffset,2)}ms'
 				);
 				settingsText.size = 8;
 				settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);

@@ -82,6 +82,7 @@ class StoryMenuState extends ScriptMusicBeatState
 
 	public static var weekScore:Int = 0;
 	public static var weekMisses:Int = 0;
+	public static var weekNoteMisses:Int = 0;
 	public static var weekSicks:Int = 0;
 	public static var weekGoods:Int = 0;
 	public static var weekBads:Int = 0;

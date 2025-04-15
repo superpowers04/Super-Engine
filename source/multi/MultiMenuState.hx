@@ -63,11 +63,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 	}
 	override function beatHit(){
 		super.beatHit();
-		if (voices != null && shouldVoicesPlay && (!voices.playing || (voices.time > FlxG.sound.music.time + 1 || voices.time < FlxG.sound.music.time - 1))){
-			voices.time = FlxG.sound.music.time;
-			voices.play();
+		if ((voices != null && shouldVoicesPlay) && 
+		    (!voices.playing || (voices.time > FlxG.sound.music.time + 50 || voices.time < FlxG.sound.music.time - 50))
+		    ){
+			voices.syncToSound(FlxG.sound.music);
+			voices.playing = shouldVoicesPlay;
 		}
-		if(shouldDraw && SESave.data.beatBouncing && curPlaying != ""){
+		if(shouldDraw && SESave.data.beatBouncing && curPlaying != null){
 			if(beatTween != null){
 				beatTween.cancel();
 				beatTween.destroy();
@@ -75,8 +77,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 			beatTween = FlxTween.tween(bg.scale.set(1.01,1.01),{x:1,y:1},Conductor.stepCrochet * 0.003);
 		}
 		if(curBeat < 1 && voices != null){
-			voices.time = FlxG.sound.music.time;
-
+			voices.syncToSound(FlxG.sound.music);
+			voices.playing = shouldVoicesPlay;
 		}
 	}
 	override function findButton(){
@@ -92,7 +94,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		return super.switchTo(nextState);
 	}
 	override function create(){try{
-
+		add(voices);
 		retAfter = false;
 		importedSong = false;
 		SearchMenuState.doReset = true;
@@ -157,7 +159,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 	}
 	function favChart(){
 		var songInfo = grpSongs.members[curSelected].menuValue;
-		if(songInfo == null) return showTempmessage('This is not a song!',FlxColor.RED);
+		if(songInfo == null) return showTempmessage('You can only favourite songs!',FlxColor.RED);
 		if(songInfo.favouriteID > 0){
 			SESave.data.favourites.remove(SESave.data.favourites[songInfo.favouriteID-1]);
 			curSelected = 0; 
@@ -323,7 +325,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 				for (song in missingSongs){SESave.data.favourites.remove(song);}
 			}
 			if (SELoader.exists(dataDir)){
-				var dirs = orderList(SELoader.readDirectory(dataDir));
+				final dirs = orderList(SELoader.readDirectory(dataDir));
 				var catID = 0;
 				var containsSong = false;
 				LoadingScreen.loadingText = 'Scanning mods/charts';
@@ -608,8 +610,8 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		}
 	}
 
-	var curPlaying = "";
-	var voices:FlxSound;
+	var curPlaying:Dynamic = null;
+	var voices:SEJoinedSound = new SEJoinedSound();
 	var playCount:Int = 0;
 	var curVol:Float = 2;
 	var SCORETXT:String = "";
@@ -692,7 +694,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 			curVol = 2; // Resync audio volume
 			var songInfo:SongInfo = grpSongs.members[curSelected]?.menuValue;
 			if(songInfo == null) {
-				curPlaying = "";
+				curPlaying = null;
 				SickMenuState.musicHandle();
 				curPlaying = "SEMENUMUSIC";
 				if(voices != null){
@@ -705,7 +707,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 				#if (target.threaded)
 				sys.thread.Thread.create(() -> {
 				#end
-					if(curPlaying != songInfo.name){
+					if(curPlaying != songInfo){
 						if(songProgressParent != null){
 							try{
 								songProgressParent.remove(songProgress);
@@ -714,12 +716,11 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 						}
 						FlxG.sound.music.fadeOut(0.4);
 
-						curPlaying = songInfo.name;
+						curPlaying = songInfo;
 						if(voices != null){
 							voices.stop();
-							voices.destroy();
+							voices.clear();
 						}
-						voices = null;
 
 						try{
 							FlxG.sound.playMusic(SELoader.loadSound(songInfo.inst),SESave.data.instVol,true);
@@ -767,42 +768,38 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 								DiscordClient.changePresence('Listening to a song in menus',CoolUtil.formatChartName(songInfo.name),listeningTime);
 							#end
 						}else{
-							curPlaying = "";
+							curPlaying = null;
 							SickMenuState.musicHandle();
 						}
 						SELoader.gc();
 					}
-					if(curPlaying == songInfo.name){
+					if(curPlaying == songInfo){
 						try{
-							if(voices == null){
+							if(voices.length == 0){
 								if(SELoader.exists(songInfo.voices)){
-									voices = new FlxSound();
-									voices.loadEmbedded(SELoader.loadSound(songInfo.voices),true);
+									voices = new SEJoinedSound(SELoader.loadFlxSound(songInfo.voices));
+									voices.loadFromArray(songInfo.extraVoices);
 									// voices.volume = SESave.data.voicesVol;
 									// voices.looped = false;
 									// voices.play(FlxG.sound.music.time);
-									FlxG.sound.list.add(voices);
 									songProgressText.text = "Playing Full song";
 								}else{
 									songProgressText.text = "Playing Instrumental. No Vocals available";
 								}
 								shouldVoicesPlay = false;
 							}
-							if(voices != null){
+							if(voices.length > 0){
 								shouldVoicesPlay = !voices.playing;
 								if(shouldVoicesPlay){
-
 									songProgressText.text = "Playing Full song";
-									voices.time = FlxG.sound.music.time = Conductor.songPosition;
+									FlxG.sound.music.time = Conductor.songPosition;
+									voices.syncToSound(FlxG.sound.music);
 									voices.volume = SESave.data.voicesVol * FlxG.sound.volume;
 									voices.looped = false;
-									voices.play();
 								}else{
 									songProgressText.text = "Playing Instrumental";
-									// voices.volume = 0;
-									voices.pause();
-									// voices.stop();
 								}
+								voices.playing=shouldVoicesPlay;
 
 							}
 						}catch(e){
@@ -817,9 +814,9 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 						FlxG.sound.music.onComplete = function(){
 							Conductor.songPosition=0;
 							if(this != null && voices != null){
-
 								voices.time = 0;
-								voices.play();
+								voices.syncToSound(FlxG.sound.music);
+								voices.playing=shouldVoicesPlay;
 							}
 						}
 					}

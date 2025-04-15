@@ -56,9 +56,10 @@ class HealthIcon extends FlxSprite
 		}
 		imgPath = charInfo.iconLocation;
 		if (!SELoader.exists(imgPath)){
-			imgPath = '${char.path}/healthicon.png';
+			if(charInfo.iconLocation != null) trace('"${charInfo.iconLocation}" does not exist!');
+			imgPath = '${charInfo.path}/healthicon.png';
 			if(!SELoader.exists(imgPath)){
-				if(char.id.startsWith('bf-')) {
+				if(charInfo.id.startsWith('bf-')) {
 					fromCharInfo(TitleState.findChar("bf"));
 					return;
 				}

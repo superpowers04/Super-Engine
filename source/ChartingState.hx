@@ -1648,7 +1648,7 @@ class ChartingState extends ScriptMusicBeatState
 			+ '${FlxMath.roundDecimal(Conductor.songPosition / 1000, 2)} / ${FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2)}'
 			+ '\nSection: $curSection'
 			+ '\nCurStep: $curStep'
-			+ '\nSpeed: ${HelperFunctions.truncateFloat(speed, 1)}'
+			+ '\nSpeed: ${CoolUtil.truncateFloat(speed, 1)}'
 			+ '\nChartType: ${chartType}'
 			+ '\nSnap: ${notesnap}'
 			// + '\n${if(playBeatClaps)"Play clap on beat; " else ""}${if(playClaps)"Play snap on note" else ""}'

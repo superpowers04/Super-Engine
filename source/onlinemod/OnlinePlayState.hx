@@ -241,14 +241,14 @@ class OnlinePlayState extends PlayState
 
 	override function popUpScore(daNote:Note):Void {
 		super.popUpScore(daNote);
-		clientsGroup.members[0].text = PlayState.songScore + "\n" + HelperFunctions.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
+		clientsGroup.members[0].text = PlayState.songScore + "\n" + CoolUtil.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
 
 		SendScore();
 	}
 
 	override function noteMiss(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void{
 		super.noteMiss(direction, daNote,forced,calcStats);
-		clientsGroup.members[0].text = PlayState.songScore + "\n" + HelperFunctions.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
+		clientsGroup.members[0].text = PlayState.songScore + "\n" + CoolUtil.truncateFloat(PlayState.accuracy,2) + "%  " + PlayState.misses;
 
 		SendScore();
 	}
@@ -305,7 +305,7 @@ class OnlinePlayState extends PlayState
 	override function finishSong(?win=true){endSong();}
 	override function endSong():Void{
 		OnlineLobbyState.client.score = PlayState.songScore;
-		OnlineLobbyState.client.scoreText = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + HelperFunctions.truncateFloat(PlayState.accuracy,2);
+		OnlineLobbyState.client.scoreText = "S:" + PlayState.songScore + " M:" + PlayState.misses + " A:" + CoolUtil.truncateFloat(PlayState.accuracy,2);
 
 		canPause = false;
 		FlxG.sound.playMusic(loadedInst, SESave.data.instVol, true);

@@ -306,7 +306,7 @@ class OptionsMenu extends MusicBeatState
 
 		currentDescription = "none";
 
-		versionShit = new FlxText(2, FlxG.height - 38, 0, "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(SESave.data.offset,2) + " | " + se.translation.Lang.get(currentDescription), 12);
+		versionShit = new FlxText(2, FlxG.height - 38, 0, "Offset (Left, Right, Shift for slow): " + CoolUtil.truncateFloat(SESave.data.offset,2) + " | " + se.translation.Lang.get(currentDescription), 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat(CoolUtil.font, 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		
@@ -469,10 +469,10 @@ class OptionsMenu extends MusicBeatState
 	function updateOffsetText(){
 		// versionShit.color = FlxColor.WHITE;
 		if (isCat)
-			versionShit.text = (if(currentSelectedCat.getOptions()[curSelected].acceptValues) currentSelectedCat.getOptions()[curSelected].getValue() + " | " else "") + 
+			versionShit.text = ((currentSelectedCat.getOptions()[curSelected].acceptValues) ? currentSelectedCat.getOptions()[curSelected].getValue() + " | " : "") + 
 				se.translation.Lang.get(currentDescription);
 		else
-			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(SESave.data.offset,2) + " | " + se.translation.Lang.get(currentDescription);
+			versionShit.text = "Offset (Left, Right, Shift for slow): " + CoolUtil.truncateFloat(SESave.data.offset,2) + " | " + se.translation.Lang.get(currentDescription);
 	}
 	public function new(){
 		super();

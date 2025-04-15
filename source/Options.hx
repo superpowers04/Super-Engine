@@ -170,11 +170,11 @@ class Judgement extends Option{
 
 	override function getValue():String {
 		return "Safe Frames: " + Conductor.safeFrames +
-		" TOTAL:" + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms" +
-		" | SICK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
-		"ms, GOOD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
-		"ms, BAD: " + HelperFunctions.truncateFloat(125 * Conductor.timeScale, 0) + 
-		"ms, SHIT: " + HelperFunctions.truncateFloat(156 * Conductor.timeScale, 0) +
+		" TOTAL:" +    CoolUtil.truncateFloat(Conductor.safeZoneOffset,0) + "ms" +
+		" | SICK: " +  CoolUtil.truncateFloat(45 * Conductor.timeScale, 0) +
+		"ms, GOOD: " + CoolUtil.truncateFloat(90 * Conductor.timeScale, 0) +
+		"ms, BAD: " +  CoolUtil.truncateFloat(125 * Conductor.timeScale, 0) + 
+		"ms, SHIT: " + CoolUtil.truncateFloat(156 * Conductor.timeScale, 0) +
 		"ms";
 	}
 
@@ -226,32 +226,27 @@ class FPSCapOption extends Option
 
 
 
-class AccuracyDOption extends Option
-{
+class AccuracyDOption extends Option {
+	final names:Array<String> = ["Simple","Etterna",'SE'];
 	public function new(desc:String)
 	{
 		super();
 		description = desc;
 	}
 	
-	public override function press():Bool
-	{
+	public override function press():Bool {
 		SESave.data.accuracyMod++;
-		if(SESave.data.accuracyMod > 2) SESave.data.accuracyMod = 0;
+		if(SESave.data.accuracyMod > names.length) SESave.data.accuracyMod = 0;
 		display = updateDisplay();
 		return true;
 	}
 
-	override function updateDisplay():String
-	{
-		return "Accuracy Mode: " + (if(SESave.data.accuracyMod == 0) "Simple" else if(SESave.data.accuracyMod == 2) "SE" else "Etterna");
-	}
+	override function updateDisplay():String return "Accuracy Mode: " + names[SESave.data.accuracyMod];
 }
 
 class CustomizeGameplay extends Option
 {
-	public function new(desc:String)
-	{
+	public function new(desc:String) {
 		super();
 		description = desc;
 		display = "Customize Gameplay";
@@ -342,8 +337,7 @@ class GUIGapOption extends Option
 		display = "GUI Gap";
 	}
 
-	public override function press():Bool
-	{
+	public override function press():Bool {
 		SESave.data.guiGap = 0;
 		return true;
 	}
@@ -853,7 +847,7 @@ class BackTransOption extends Option
 		return true;
 	}
 
-	override function getValue():String return "Underlay opacity: " + HelperFunctions.truncateFloat(SESave.data.undlaTrans,1);
+	override function getValue():String return "Underlay opacity: " + CoolUtil.truncateFloat(SESave.data.undlaTrans,1);
 	
 
 	override function left():Bool {
@@ -931,7 +925,7 @@ class VolumeOption extends Option
 				FlxG.sound.music.volume = SESave.data.instVol;
 			}
 		}
-		return opt + " Volume: " + (HelperFunctions.truncateFloat(Reflect.field(SESave.data,opt+"Vol"),2) * 100) + "%"; // Multiplied by 100 to appear as 0-100 instead of 0-1
+		return opt + " Volume: " + (CoolUtil.truncateFloat(Reflect.field(SESave.data,opt+"Vol"),2) * 100) + "%"; // Multiplied by 100 to appear as 0-100 instead of 0-1
 
 	}
 
@@ -1003,10 +997,8 @@ class LanguageOption extends Option{
 
 	}
 	override function getValue():String return "";
-			
 	override function right():Bool return false;
 	override function left():Bool return false;
-	
 	override function press():Bool {
 		se.translation.Lang.loadTranslations(SESave.data.lang = name);
 		return true;

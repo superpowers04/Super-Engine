@@ -496,17 +496,12 @@ class Note extends FlxSprite
 						PlayState.instance.vocals.setVolume(0,0);
 						PlayState.instance.noteMiss(noteData, this);
 					}
-					// color.saturation = 0;
-					// FlxTween.tween(this,{alpha:0},0.2,{onComplete:(_)->{
-					// PlayState.instance.notes.remove(this, true);
 					PlayState.instance.notes.remove(this, true);
 					destroy();
-					// destroy();
-					// }});
 				}
-				// }
 			}
-		}else if (aiShouldPress && (dad == null || !dad.isStunned) && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition) {
+		}else if (aiShouldPress && (dad == null || !dad.isStunned) 
+		          && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition) {
 			dadNotePress();
 		}
 		callInterp("noteUpdateAfter",[this]);
@@ -515,7 +510,6 @@ class Note extends FlxSprite
 		var dad = PlayState.opponentCharacter;
 		hit(1,this);
 		callInterp("noteHitDad",[dad,this]);
-		
 
 		dad.holdTimer = 0;
 

@@ -91,12 +91,6 @@ using StringTools;
 	public var note:Note = null;
 }
 
-/* TODO
-
-MOVE NOTE HIT REGISTRATION TO UPDATE
-
-*/
-
 class PlayState extends ScriptMusicBeatState
 {
 	public static var instance:PlayState = null;
@@ -131,10 +125,12 @@ class PlayState extends ScriptMusicBeatState
 		public static var goods(default,set):Int = 0;
 		public static var sicks(default,set):Int = 0;
 		public static var misses(default,set):Int = 0;
+		public static var noteMisses(default,set):Int = 0;
 		public static function set_shits(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return shits = vari;} // Prevent cheating that easily lmao
 		public static function set_bads(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return bads = vari;}
 		public static function set_goods(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return goods = vari;}
 		public static function set_sicks(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return sicks = vari;}
+		public static function set_noteMisses(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return noteMisses = vari;}
 		public static function set_misses(vari:Int):Int{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return misses = vari;}
 		public static function set_accuracy(vari:Float):Float{ if(Overlay.Console.showConsole && instance != null){instance.canSaveScore = false;} return accuracy = vari;}
 		public static var accuracy(default,set):Float = 0.00;
@@ -566,6 +562,7 @@ class PlayState extends ScriptMusicBeatState
 		shits = 0;
 		goods = 0;
 		misses = 0;
+		noteMisses = 0;
 		maxCombo = 0;
 		combo = 0;
 		ghostTaps = 0;
@@ -578,6 +575,7 @@ class PlayState extends ScriptMusicBeatState
 			goods = StoryMenuState.weekGoods;
 			ghostTaps = StoryMenuState.weekGT;
 			misses = StoryMenuState.weekMisses;
+			noteMisses = StoryMenuState.weekNoteMisses;
 			maxCombo = StoryMenuState.weekMaxCombo;
 			songScore = StoryMenuState.weekScore;
 			accuracy = StoryMenuState.weekAccuracy;
@@ -1702,6 +1700,7 @@ class PlayState extends ScriptMusicBeatState
 						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susLength), daNoteData, oldNote, true,false,songNotes[3],songNotes,gottaHitNote);
 						sustainNote.scrollFactor.set();
 						sustainNote.sustainLength = susLength;
+						sustainNote.scale.y = susLength % 1;
 						unspawnNotes.push(sustainNote);
 						oldNote = sustainNote;
 						lastSusNote = true;
@@ -2421,6 +2420,7 @@ class PlayState extends ScriptMusicBeatState
 				StoryMenuState.weekShits = shits;
 				StoryMenuState.weekGoods = goods;
 				StoryMenuState.weekMisses = misses;
+				StoryMenuState.weekNoteMisses = noteMisses;
 				StoryMenuState.weekMaxCombo = maxCombo;
 				StoryMenuState.weekScore = songScore;
 				StoryMenuState.weekAccuracy = accuracy;
@@ -2729,15 +2729,6 @@ class PlayState extends ScriptMusicBeatState
 	public var doKeyShit:()->Void = function():Void{throw("I can't handle key inputs? Please report this!");};
 	public var noteShit:()->Void = function():Void{throw("I can't handle input for some reason, Please report this!");};
 	public var goodNoteHit:(Note, ?Bool, ?Float)->Void = function(note:Note, ?resetMashViolation:Bool = true, ?timeHit:Float):Void{throw("I cant register any note hits!");};
-
-
-
-	inline function badNoteHit():Void {
-		var controlArray:Array<Bool> = [controls.LEFT_P, controls.DOWN_P, controls.UP_P, controls.RIGHT_P];
-		for (i in 0...controlArray.length) {
-			if(controlArray[i]) noteMiss(i,null);
-		}
-	}
 
 
 
@@ -3318,54 +3309,59 @@ class PlayState extends ScriptMusicBeatState
 	}
 	dynamic function noteMissdyn(direction:Int = 1, daNote:Note,?forced:Bool = false,?calcStats:Bool = true):Void
 	{
-		if(daNote != null && daNote.shouldntBeHit && !forced) return;
-		if(daNote != null && forced && daNote.shouldntBeHit){ // Only true on hurt arrows
-			FlxG.sound.play(hurtSoundEff, SESave.data.missVol);
-			daNote.kill();
-			notes.remove(daNote, true);
-			daNote.destroy();
+		if(daNote != null){
+			if(daNote.shouldntBeHit && !forced) return;
 
-		}
+			if(daNote != null && forced && daNote.shouldntBeHit){ // Only true on hurt arrows
+				FlxG.sound.play(hurtSoundEff, SESave.data.missVol);
+				daNote.kill();
+				notes.remove(daNote, true);
+				daNote.destroy();
+
+			}
+		} 
 		final player = playerCharacter;
 		playMissSound(player,direction);
 		// FlxG.sound.play(hurtSoundEff, 1);
 		if(calcStats && handleHealth) health += SONG.noteMetadata.missHealth;
-		if (combo > 5 && gf.animOffsets.exists('sad')) gf.playAnim('sad');
+		if(combo > 5 && gf.animOffsets.exists('sad')) gf.playAnim('sad');
 		if(calcStats){
 			combo = 0;
-			misses += 1;
+			misses++;
+			songScore -= 10;
 		}
 		if(flippy){
 			practiceMode = false;
 			health = 0;
 		}
-		if(daNote != null) daNote.miss(0,daNote); else player.playAnim("singDOWNmiss",true);
-		if(logGameplay) {eventLog.push ({
-				rating:if(daNote == null) "Missed without note" else "Missed a note",
+		if(logGameplay) {
+			eventLog.push ({
+				rating:(daNote == null ? "Missed without note" : "Missed a note"),
 				direction:direction,
-				strumTime:(if(daNote != null) daNote.strumTime else 0 ),
-				isSustain:if(daNote != null) daNote.isSustainNote else false,
+				strumTime:(daNote == null ? 0 :daNote.strumTime),
+				isSustain:(daNote != null && daNote.isSustainNote),
 				time:Conductor.songPosition
 			});
 		}
 
 
-		if (SESave.data.accuracyMod == 1 && calcStats) totalNotesHit -= 1;
+		if (SESave.data.accuracyMod == 1 && calcStats) totalNotesHit--;
 
-		if(calcStats) songScore -= 10;
-		// Having it insta kill, not a good idea 
-		if (daNote != null && daNote.shouldntBeHit) {
-			songScore += SONG.noteMetadata.badnoteScore;
-			if(handleHealth) health += SONG.noteMetadata.badnoteHealth;
-		}
-		if(daNote == null){
+		if (daNote == null) {
+			player.playAnim("singDOWNmiss",true);
 			callInterp("miss",[player,direction,calcStats]);
 			player.callInterp('miss',[direction,calcStats]);
-		}else {
+		}else{
+			daNote.miss(0,daNote);
+			if(daNote.rating == "miss" || daNote.tooLate) noteMisses++;
+			if(daNote.shouldntBeHit){ // Having it insta kill, not a good idea 
+				songScore += SONG.noteMetadata.badnoteScore;
+				if(handleHealth) health += SONG.noteMetadata.badnoteHealth;
+			}
 			callInterp("noteMiss",[player,daNote,direction,calcStats]);
 			player.callInterp('noteMiss',[daNote,direction,calcStats]);
 		}
-		onlineNoteHit((daNote == null) ? -1 : daNote.noteID,direction + 1);
+		onlineNoteHit(daNote?.noteID ?? -1,direction + 1);
 
 
 

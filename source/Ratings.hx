@@ -100,20 +100,20 @@ class Ratings
 				" | Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				" | Combo:" + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
 				" | Combo Breaks:" + PlayState.misses + 																				// Misses/Combo Breaks
-				"\n | Accuracy:" + (SESave.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
+				"\n | Accuracy:" + (SESave.data.botplay ? "N/A" : CoolUtil.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
 				"| " + GenerateLetterRank(accuracy) + " |";
 			case 1:(SESave.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
 				"\nScore: " + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				"\nCombo: " + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
 				"\nCombo Breaks: " + PlayState.misses + 																				// Misses/Combo Breaks
-				"\nAccuracy: " + (SESave.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
+				"\nAccuracy: " + (SESave.data.botplay ? "N/A" : CoolUtil.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
 				"\nRank: " + GenerateLetterRank(accuracy); 
 			case 2:(SESave.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
 				"\nScore: " + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
 				"\nCombo: " + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
 				"\nCombo Breaks/Misses: " + PlayState.misses + 																				// Misses/Combo Breaks
 				'\nSicks: ${PlayState.sicks}\nGoods: ${PlayState.goods}\nBads: ${PlayState.bads}\nShits: ${PlayState.shits}'+
-				"\nAccuracy: " + (SESave.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
+				"\nAccuracy: " + (SESave.data.botplay ? "N/A" : CoolUtil.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
 				"\nRank: " + GenerateLetterRank(accuracy); 
 			case 3:'Misses:${PlayState.misses}    Score:' + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score);
 			default:"";

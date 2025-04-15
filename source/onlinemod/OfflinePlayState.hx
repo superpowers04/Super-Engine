@@ -88,11 +88,8 @@ class OfflinePlayState extends PlayState {
 					trace('Voices.ogg didn\'t load properly. Try converting to MP3 and then into OGG Vorbis');
 				}
 				final songInfo = PlayState.songInfo;
-				if(songInfo != null && songInfo.extraVoices.length > 0){
-					for(path in songInfo.extraVoices){
-						trace('Loading extra voices $path');
-						vocals.load(path);
-					}
+				if(songInfo != null){
+					vocals.loadFromArray(songInfo.extraVoices);
 				}
 
 			// }

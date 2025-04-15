@@ -131,6 +131,9 @@ class CoolUtil {
 	@:keep inline public static function cleanJSON(input:String):String{ // Haxe doesn't filter out comments?
 		return (~/\/\*[\s\S]*?\*\/|\/\/.*/g).replace(input.trim(),'');
 	}
+	@:keep inline public static function truncateFloat( number : Float, precision : Int): Float {
+		return Math.round( number * Math.pow(10, precision) ) / Math.pow(10, precision);
+	}
 	public static function applyAnonToObject(obj:Dynamic,anon:Dynamic,?logErrors:Bool = false):Bool{
 		if(anon == null) return false;
 		var type = Type.typeof(obj);
