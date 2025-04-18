@@ -799,13 +799,22 @@ class InternalCache{
 		trace('New cache $id');
 	}
 	public function clear(){
-		for (v in spriteArray) if(v != null && v.destroy != null) v.destroy();
-		for (v in bitmapArray) if(v != null && v.dispose != null) v.dispose();
-		for (v in soundArray) if(v != null && v.close != null) v.close();
-		bitmapArray = [];
-		xmlArray = [];
-		textArray = [];
-		soundArray = [];
+		for (id=>v in spriteArray){spriteArray[id]=null;}
+		for (id=>v in bitmapArray){bitmapArray[id]=null;}
+		for (id=>v in textArray){textArray[id]=null;}
+		for (id=>v in xmlArray){xmlArray[id]=null;}
+		for (id=>v in soundArray){soundArray[id]=null;}
+		for (id=>v in audioBufferArray){audioBufferArray[id]=null;}
+		openfl.system.System.gc();
+	}
+	// clear USED to destroy objects. now it just removes them- what the fuck was I smoking :sob:
+	public function clearAndDestroy(){
+		for (id=>v in spriteArray){if(v?.destroy != null) v.destroy();spriteArray[id]=null;}
+		for (id=>v in bitmapArray){if(v?.dispose != null) v.dispose();bitmapArray[id]=null;}
+		for (id=>v in textArray){textArray[id]=null;}
+		for (id=>v in xmlArray){xmlArray[id]=null;}
+		for (id=>v in soundArray){if(v?.close != null) v.close();soundArray[id]=null;}
+		for (id=>v in audioBufferArray){audioBufferArray[id]=null;}
 		openfl.system.System.gc();
 	}
 	inline public function handleError(e:String){
@@ -844,15 +853,15 @@ class InternalCache{
 		// 	handleError(' SparrowFrame PNG "${pngPath}.png" doesn\'t exist!');
 		// 	return FlxAtlasFrames.fromSparrow(FlxGraphic.fromRectangle(1,1,0),""); // Prevents the script from throwing a null error or something
 		// }
-		var _txt = "";
-		if(exists('${pngPath}.xml')){
-			_txt = loadText(pngPath + ".xml");
-		}else{
+		final xmlPath = '${pngPath}.xml';
+		if(!exists(xmlPath)){
 			handleError(' SparrowFrame XML "${pngPath}.xml" doesn\'t exist!');
-			// return FlxAtlasFrames.fromSparrow(FlxGraphic.fromRectangle(1,1,0),""); // Prevents the script from throwing a null error or something
+			return FlxAtlasFrames.fromSparrow(FlxGraphic.fromRectangle(1,1,0),""); // Prevents the script from throwing a null error or something
 		}
+		// else{
+		// }
 
-		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath + ".png"),_txt);
+		return FlxAtlasFrames.fromSparrow(loadGraphic(pngPath + ".png"),loadXML(xmlPath));
 	}
 	public function loadSparrowSprite(x:Float,y:Float,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24):FlxSprite{
 		var spr = new FlxSprite(x, y);

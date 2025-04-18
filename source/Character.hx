@@ -93,7 +93,7 @@ class CharAnimController extends FlxAnimationController{
 		// 10 is used for any sing animations, like dodge, hurt, sing or attack animations
 		// 15 is used for missing notes
 		// 100  
-		public static var animCaseInsensitive:Map<String,String> = [
+		public static final animCaseInsensitive:Map<String,String> = [
 			"singleft-alt" => "singLEFT-alt",
 			"singdown-alt" => "singDOWN-alt",
 			"singup-alt" => "singUP-alt",
@@ -190,7 +190,7 @@ class CharAnimController extends FlxAnimationController{
 		public var charInfo:CharInfo;
 		public var curCharacter:String = 'bf';
 		public var namespace:String = "";
-		public function getNamespacedName():String{return (if(namespace != null && namespace != "") '$namespace|' else "") + curCharacter;}
+		public function getNamespacedName():String{return (namespace != null && namespace != "" ? '$namespace|' : "") + curCharacter;}
 		public var camPos:Array<Int> = [0,0];
 		public var charX:Float = 0;
 		public var charY:Float = 0;
@@ -229,6 +229,8 @@ class CharAnimController extends FlxAnimationController{
 		var interp:Interp;
 
 	/* Misc */
+		var baseColor = 0xffffff;
+		var tintColor = 0x330066;
 		var danced:Bool = false;
 		public var lonely:Bool = false;
 		public var tex:FlxAtlasFrames = null;
@@ -647,7 +649,7 @@ class CharAnimController extends FlxAnimationController{
 			// if ((charProperties == null || charProperties.animations == null || charProperties.animations[0] == null) && amPreview){
 
 			
-			if(charProperties.healthicon != null) charInfo.iconLocation = SELoader.getAssetPath('assets/images/icons/'+charProperties.healthicon+'.png');
+			if(charProperties.healthicon != null) charInfo.iconLocation = SELoader.getAssetPath('assets:images/icons/'+charProperties.healthicon+'.png');
 			if(frames == null){
 				var pngName = SELoader.getAssetPath('assets:images/'+charProperties.image+".png");
 				var xmlName = SELoader.getAssetPath('assets:images/'+charProperties.image+".xml");
@@ -663,7 +665,6 @@ class CharAnimController extends FlxAnimationController{
 					throw('Unable to find xml "${charProperties.image}" for $curCharacter');
 					return;
 				}
-				var forced:Int = 0;
 
 
 				if (tex == null){
@@ -689,7 +690,7 @@ class CharAnimController extends FlxAnimationController{
 					charProperties.cam_pos[1]*=-1;
 					switch(charType) {
 						case 0:charProperties.cam_pos[1]+=200;
-						case 1:charProperties.cam_pos[1]-=300;
+						// case 1:charProperties.cam_pos[1]-=300;
 						// case 2:charProperties.cam_pos[0]+=100;
 					}
 					useMidpoint = false;
@@ -882,7 +883,6 @@ class CharAnimController extends FlxAnimationController{
 
 
 	public function new(?x:Float = 0, ?y:Float = 0, ?character:String = "", ?isPlayer:Bool = false,?charType:Int = 0,?preview:Bool = false,?exitex:FlxAtlasFrames = null,?charJson:CharacterJson = null,?useHscript:Bool = true,?charPath:String = "",?charInfo:Null<CharInfo> = null) { // CharTypes: 0=BF 1=Dad 2=GF 
-		var part = "super call";
 		var CURRENTNAMESPACE = SELoader.namespace;
 		#if !debug 
 		try{
@@ -914,14 +914,12 @@ class CharAnimController extends FlxAnimationController{
 		definingColor = (preview ? definingColor : (charType == 1 ? FlxColor.RED : FlxColor.GREEN));
 		
 		antialiasing = true;
-		part = "Loading Character";
 		loadChar();
 		if(frames == null){throw('$curCharacter is missing frames?');}
 		// var alloffset = animOffsets.get("all");
 
-		part = "Fake miss generation";
 		for (i in ['RIGHT','UP','LEFT','DOWN']) { // Add main animations over miss if miss isn't present
-			var miss = 'sing${i}miss';
+			final miss = 'sing${i}miss';
 			if (animation.getByName(miss) == null){
 				cloneAnimation(miss, animation.getByName('sing$i'));
 				tintedAnims.push(miss);
@@ -930,23 +928,19 @@ class CharAnimController extends FlxAnimationController{
 		this.y += charY;
 		this.x += charX;
 		SELoader.namespace = CURRENTNAMESPACE;
-		part = "Flipping sing animations";
 		if (isPlayer && flip && flipNotes) {
 			flipX = !flipX;
-			part = "Flipping sing animations flipx";
 			if(!(charInfo?.psychChar)){ // Psych Characters don't use the same animation definitions for both sides, SE characters do
-				part = "Flipping sing animations normal";
 
-				var oldRight = animation.getByName('singRIGHT')?.frames;
-				var oldLeft = animation.getByName('singLEFT')?.frames;
+				final oldRight = animation.getByName('singRIGHT')?.frames;
+				final oldLeft = animation.getByName('singLEFT')?.frames;
 				if(oldRight != null && oldLeft != null){
 					animation.getByName('singRIGHT').frames = oldLeft;
 					animation.getByName('singLEFT').frames = oldRight;
 
 					// IF THEY HAVE MISS ANIMATIONS??
-					part = "Flipping sing animations miss";
-					var oldMissRight = animation.getByName('singRIGHTmiss')?.frames;
-					var oldMissLeft = animation.getByName('singLEFTmiss')?.frames;
+					final oldMissRight = animation.getByName('singRIGHTmiss')?.frames;
+					final oldMissLeft = animation.getByName('singLEFTmiss')?.frames;
 					if (oldMissRight != null && oldMissLeft != null) {
 						animation.getByName('singRIGHTmiss').frames = oldMissLeft;
 						animation.getByName('singLEFTmiss').frames = oldMissRight;
@@ -954,13 +948,10 @@ class CharAnimController extends FlxAnimationController{
 				}
 			}
 		}
-		part = "Dance";
 		dance();
-		part = "Calling interpeter New";
 
 		callInterp("new",[]);
 		if (animation.curAnim != null) setOffsets(animName); // Ensures that offsets are properly applied
-		part = "Animation callbacks";
 		animation.finishCallback = function(name:String){
 			animHasFinished = true;
 			callInterp("animFinish",[animation.curAnim]);
@@ -970,7 +961,6 @@ class CharAnimController extends FlxAnimationController{
 		};
 
 		if(animation.curAnim == null && !lonely && !amPreview){throw('$curCharacter is missing an idle/dance animation!');}
-		part = "Finishing up";
 		if(animation.getByName('songStart') != null && !lonely && !amPreview) playAnim('songStart',true);
 		if(!charProperties.editableSprite){
 			// graphic.canBeDumped = true;
@@ -981,7 +971,7 @@ class CharAnimController extends FlxAnimationController{
 			SELoader.namespace = CURRENTNAMESPACE;
 
 			trace(e.details());
-			return handleError('Error with $curCharacter at $part: ${e.details()}');
+			return handleError('Error with $curCharacter: ${e.details()}');
 		}
 		#end
 		loaded=true;
@@ -1058,23 +1048,19 @@ class CharAnimController extends FlxAnimationController{
 		playAnim('danceRight', true, false, animation.getByName('danceRight').numFrames - 1);
 
 	}
-	var baseColor = 0xffffff;
-	var tintColor = 0x330066;
 	public function setOffsets(?AnimName:String = "",?offsetX:Float = 0,?offsetY:Float = 0){
 		if (tintedAnims.contains(animation.curAnim.name) && this.color != tintColor){
 			baseColor = color;
 			color = tintColor;
 		}else if(this.color == tintColor) this.color = baseColor;
 		
-		var x = offsetX;
-		var y = offsetY;
-		var daOffset = animOffsets.get(AnimName); // Get offsets
+		var x = offsetX+animOffsets["all"][0];
+		var y = offsetY+animOffsets["all"][1];
+		final daOffset = animOffsets.get(AnimName); // Get offsets
 		if (daOffset != null){ // Set offsets if animation has any
 			x+=daOffset[0];
 			y+=daOffset[1];
 		}
-		x+=animOffsets["all"][0]; // Add "all" offsets
-		y+=animOffsets["all"][1];
 		offset.set(x, y); // Set offsets
 	}
 	// function setSprite(?id:Int = 0){
@@ -1096,7 +1082,6 @@ class CharAnimController extends FlxAnimationController{
 	public var currentAnimationPriority:Int = -100;
 	public var forceNextAnim:Bool = false;
 	public dynamic function playAnim(AnimName:String = "idle", ?Force:Bool = false, ?Reversed:Bool = false, ?Frame:Float = 0,?offsetX:Float = 0,?offsetY:Float = 0):Bool{
-		var lastAnim = "";
 		if(AnimName.contains('/')){
 			return playAnimAvailable(AnimName.split('/'),Force,Reversed,Frame);
 		}
@@ -1112,7 +1097,8 @@ class CharAnimController extends FlxAnimationController{
 			AnimName = nextAnimation;
 			nextAnimation = "";
 		}
-		var curAnim = animation.curAnim;
+		final curAnim = animation.curAnim;
+		var lastAnim = "";
 		if (curAnim != null){
 			lastAnim = animName;
 			if(!forceNextAnim && !isDonePlayingAnim()){
@@ -1128,18 +1114,7 @@ class CharAnimController extends FlxAnimationController{
 				}
 			} 
 		}
-		// if (animation.curAnim != null){
-		// 	lastAnim = animName;
-		// 	if(forceNextAnim){
-
-		// 	}else if(lastAnim == AnimName){
-		// 		if(replayAnims.contains(AnimName) && (!animLoops[AnimName] || !isDonePlayingAnim()))return false;
-		// 	}else if(!isDonePlayingAnim()){
-		// 		if (currentAnimationPriority > animationPriorities[AnimName] || oneShotAnims.contains(animation.curAnim.name) && !oneShotAnims.contains(AnimName) ){return false;} // Skip if current animation has a higher priority or if it's oneshot
-		// 	}
-		// }
-		// setSprite(animGraphics[AnimName.toLowerCase()]);
-		var anim = animation.getByName(AnimName);
+		final anim = animation.getByName(AnimName);
 		if (anim == null) return false;
 		if(AnimName == lastAnim && loopAnimFrames[AnimName] != null){
 			if(curAnim != null && curAnim.curFrame < loopAnimFrames[AnimName]){
@@ -1235,7 +1210,7 @@ class CharAnimController extends FlxAnimationController{
 
 
 	// Shortcut functions
-	@:keep inline public static function isValidInt(num:Null<Int>,?def:Int = 0) {return if (num == null) def else num;}
+	@:keep inline public static function isValidInt(num:Null<Int>,?def:Int = 0) {return (num == null) ? def : num;}
 	@:keep inline public function isDonePlayingAnim(){return animation.finished || animation.curAnim.finished || animHasFinished || animation.curAnim.curFrame >= numFrames;}
 	public function getScriptOption(path:String = ""):Dynamic{
 		if(charProperties.scriptOptions == null || charProperties.scriptOptions[path] == null) return null;
@@ -1275,7 +1250,7 @@ class CharAnimController extends FlxAnimationController{
 
 	public var animName(get,set):String; // Shorthand for either playing an animation or grabbing the name
 	public function get_animName():Null<String>{ // Instead of erroring due to curAnim being shit, just return null
-		return if(animation.curAnim != null && animation.curAnim.name != null) animation.curAnim.name else null;
+		return (animation.curAnim != null && animation.curAnim.name != null) ? animation.curAnim.name : null;
 	}
 	public function set_animName(str:String):String{
 		playAnim(str,true);
@@ -1301,7 +1276,7 @@ class CharAnimController extends FlxAnimationController{
 		return (TitleState.retChar(char) != "");
 	}
 
-	public static var BFJSON(default,null):String = CoolUtil.cleanJSON('{
+	public static final BFJSON:String = CoolUtil.cleanJSON('{
 	"embedded": true,
 	"path": "characters/BOYFRIEND",
 	"animations_offsets": [
@@ -1572,7 +1547,7 @@ class CharAnimController extends FlxAnimationController{
 	],
 	"editableSprite":true
 }');
-	public static var GFJSON(default,null) = CoolUtil.cleanJSON('{
+	public static final GFJSON:String = CoolUtil.cleanJSON('{
 	"animations_offsets": [
 		{
 			"player1": [0, 0],

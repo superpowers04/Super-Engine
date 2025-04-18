@@ -31,6 +31,7 @@ class MusicBeatState extends FlxUIState {
 
 	public var curStep:Int = 0;
 	public var curStepProgress:Float = 0;
+	public var curBeatProgress:Float = 0;
 	public var curBeat:Int = 0;
  
 	public var lastUpdateTime:Float = 0;
@@ -183,8 +184,8 @@ class MusicBeatState extends FlxUIState {
 		}catch(e){trace(e);}
 	}
 	public function showTempBanner(str:String,?color:FlxColor = FlxColor.LIME,?time:Float = 5,?center:Bool = true,?trac:Bool = true){
-		while(tempMessages.length > 0){
-			var e = tempMessages.pop();
+		var e;
+		while((e = tempMessages.pop())!= null){
 			e[2].destroy();
 			e[1].destroy();
 		}
@@ -339,6 +340,7 @@ class MusicBeatState extends FlxUIState {
 		var prog = (Conductor.offset + Conductor.songPosition - lastBPMChange.songTime) / Conductor.stepCrochet;
 		curStepProgress = prog % 1;
 		curStep = lastBPMChange.stepTime + Math.floor(prog);
+		curBeatProgress = (prog % 4) / 4;
 		
 	}
 	@:keep inline function updateBPMChange(){
@@ -365,7 +367,7 @@ class MusicBeatState extends FlxUIState {
 		FlxG.mouse.enabled = true;
 		return super.switchTo(nextState);
 	}
-	public static function switchState(nextState:FlxState){
+	@:keep inline public static function switchState(nextState:FlxState){
 		return FlxG.switchState(nextState);
 	}
 	public var shouldTransitionIn:Bool = true;

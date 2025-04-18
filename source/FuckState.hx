@@ -340,7 +340,7 @@ class FuckState extends FlxUIState {
 		txt.screenCenter();
 		add(txt);
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Please take a screenshot and report this, " +(if(FATAL)"P" else "Press enter to attempt to return to the main menu or P")+ "ress Escape to close the game",32);
+			"Please take a screenshot and report this, " +((FATAL) ? "" : "Press enter to attempt to return to the main menu or")+ "Press Escape to close the game",32);
 		
 		txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
 		txt.borderColor = FlxColor.BLACK;
@@ -358,6 +358,9 @@ class FuckState extends FlxUIState {
 			txt.text = 'Crash report saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\n Please send this file when reporting this crash.' + txt.text.substring(41);
 		}
 		useOpenFL = true;
+		try{
+			SELoader.cache.clear();
+		}catch(e){}
 	}
 
 	override function update(elapsed:Float) { try{

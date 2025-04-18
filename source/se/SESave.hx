@@ -174,6 +174,7 @@ typedef YourMother = Dynamic;
 	var ignoreErrors:Bool=false;
 	var repoURL:String="";
 	var gpuCaching:Bool=false;
+	var allowTracing:Bool=true;
 
 	public function new(){}
 }

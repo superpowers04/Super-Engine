@@ -121,16 +121,23 @@ class Console extends TextField
 	public static var showConsole:Bool = false;
 	var isShowingConsole:Bool = true;
 	var wasMouseDisabled:Bool = false;
-
+	public static function trace(msg:String,?infos:haxe.PosInfos){
+		var str = haxe.Log.formatOutput(msg,infos);
+		Sys.println(str);
+		if(Console.instance != null) Console.instance.log(str);
+	}
+	public static function traceToConsole(msg:String,?infos:haxe.PosInfos){
+		if(Console.instance == null) return;
+		Console.instance.log(haxe.Log.formatOutput(msg,infos));
+	}
+	public static function toggleTracing(?state:Bool = false){
+		haxe.Log.trace = state ? trace : traceToConsole;
+	}
 	public function new(x:Float = 20, y:Float = 20, color:Int = 0xFFFFFFFF)
 	{
 		super();
 		instance = this;
-		haxe.Log.trace = function(v, ?infos) {
-			var str = haxe.Log.formatOutput(v,infos);
-			Sys.println(str);
-			if(Console.instance != null) Console.instance.log(str);
-		}
+		toggleTracing(SESave.data.allowTracing);
 
 
 		this.x = x;

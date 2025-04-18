@@ -60,7 +60,7 @@ using StringTools;
 
 class AnimationDebug extends MusicBeatState
 {
-	static var INTERNALANIMATIONLIST:Array<String> = ["idle","danceLeft","danceRight","singLEFT","singDOWN","singUP","singRIGHT","singLEFTmiss","singDOWNmiss","singUPmiss","singRIGHTmiss","idle-alt","singLEFT-alt","singDOWN-alt","singUP-alt","singRIGHT-alt","songStart","hey"
+	static final INTERNALANIMATIONLIST:Array<String> = ["idle","danceLeft","danceRight","singLEFT","singDOWN","singUP","singRIGHT","singLEFTmiss","singDOWNmiss","singUPmiss","singRIGHTmiss","idle-alt","singLEFT-alt","singDOWN-alt","singUP-alt","singRIGHT-alt","songStart","hey"
 	,"scared","win","cheer","lose","dodge"
 	,"hurt","hurtLEFT","hurtRIGHT","hurtUP","hurtDOWN"
 	,"dodgeLeft","dodgeRight","dodgeUp","dodgeDown"
@@ -82,8 +82,8 @@ class AnimationDebug extends MusicBeatState
 
 	var camFollow:FlxObject;
 	var pressArray:Array<Bool> = [];
-	private var camHUD:FlxCamera;
-	private var camGame:FlxCamera;
+	var camHUD:FlxCamera;
+	var camGame:FlxCamera;
 	var offset:Map<String, Array<Float>> = [];
 	var offsetText:Map<String, FlxText> = [];
 	var offsetList:Array<String> = [];
@@ -153,7 +153,7 @@ class AnimationDebug extends MusicBeatState
 		file = FileSystem.absolutePath(file);
 		if(FileSystem.isDirectory(file)){
 			if(file.substring(-1) != "/") file +="/";
-			var name = file.substring(0,file.lastIndexOf("/"));
+			final name = file.substring(0,file.lastIndexOf("/"));
 			FlxG.switchState(new ImportModFromFolder(file + '/',name.substring(name.lastIndexOf('/'))));
 			return;
 			

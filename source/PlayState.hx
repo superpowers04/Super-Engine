@@ -418,13 +418,11 @@ class PlayState extends ScriptMusicBeatState
 				return false;
 			}
 			if (SELoader.exists('mods/${v}') || SELoader.exists('mods/scripts/${v}/script.hscript')){
-				var parser = new hscript.Parser();
+				final parser = new hscript.Parser();
 				try{
 					parser.allowTypes = parser.allowJSON = parser.allowMetadata = true;
 
-					var program;
-					// parser.parseModule(songScript);
-					program = parser.parseString(SELoader.loadText('mods/scripts/${v}/script.hscript'));
+					final program = parser.parseString(SELoader.loadText('mods/scripts/${v}/script.hscript'));
 					interps[nameSpace].execute(program);
 				}catch(e){
 					errorHandle('Unable to load $v for $nameSpace:${e.message}');
@@ -435,7 +433,7 @@ class PlayState extends ScriptMusicBeatState
 			return ((interps['${nameSpace}-${v}'] == null));
 		}
 		public override function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String,?_interp:Dynamic = null):Dynamic {
-			var e = super.callSingleInterp(func_name,args,id,_interp);
+			final e = super.callSingleInterp(func_name,args,id,_interp);
 			if(e is FakeException) throw e;
 			return e;
 		}
@@ -468,10 +466,10 @@ class PlayState extends ScriptMusicBeatState
 					for (name => interp in interps) {
 						callSingleInterp(func_name,args,name,interp);
 					}
-					if(Console.instance != null && Console.instance.commandBox != null){
-						if(Console.instance.commandBox.interp != null) callSingleInterp(func_name,args,'console-hx',Console.instance.commandBox.interp);
+					if(Console.instance?.commandBox != null){
+						if(Console.instance.commandBox?.interp != null) callSingleInterp(func_name,args,'console-hx',Console.instance.commandBox.interp);
 						#if linc_luajit
-							if(Console.instance.commandBox.selua != null) callSingleInterp(func_name,args,'console-lua',Console.instance.commandBox.selua);
+							if(Console.instance.commandBox?.selua != null) callSingleInterp(func_name,args,'console-lua',Console.instance.commandBox.selua);
 						#end
 					}
 				}else callSingleInterp(func_name,args,id);
@@ -600,16 +598,16 @@ class PlayState extends ScriptMusicBeatState
 		botPlay = QuickOptionsSubState.getSetting("BotPlay") && (onlinemod.OnlinePlayMenuState.socket == null);
 		practiceMode = (SESave.data.practiceMode || ChartingState.charting || onlinemod.OnlinePlayMenuState.socket != null || botPlay);
 		introAudio = [
-			SELoader.loadSound('assets/shared/sounds/intro3.ogg',true),
-			SELoader.loadSound('assets/shared/sounds/intro2.ogg',true),
-			SELoader.loadSound('assets/shared/sounds/intro1.ogg',true),
-			SELoader.loadSound('assets/shared/sounds/introGo.ogg',true),
+			SELoader.loadSound('assets:shared/sounds/intro3.ogg'),
+			SELoader.loadSound('assets:shared/sounds/intro2.ogg'),
+			SELoader.loadSound('assets:shared/sounds/intro1.ogg'),
+			SELoader.loadSound('assets:shared/sounds/introGo.ogg'),
 		];
 		introGraphics = [
 			"",
-			SELoader.loadGraphic('assets/shared/images/ready.png',true),
-			SELoader.loadGraphic("assets/shared/images/set.png",true),
-			SELoader.loadGraphic("assets/shared/images/go.png",true),
+			SELoader.loadGraphic('assets:shared/images/ready.png'),
+			SELoader.loadGraphic("assets:shared/images/set.png"),
+			SELoader.loadGraphic("assets:shared/images/go.png"),
 		];
 		songStarted = false;
 	}
@@ -621,7 +619,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 		FlxG.sound.music.pause();
 		if(vocals != null) vocals.pause();
-		var time = Conductor.songPosition;
+		final time = Conductor.songPosition;
 		callInterp('reload',[false]);
 		callInterp('unload',[]);
 		FlxTimer.globalManager.clear();
@@ -774,7 +772,7 @@ class PlayState extends ScriptMusicBeatState
 					}else{
 						curStage = stage;
 						stageTags = [];
-						var stagePath:String = '${stageInfo.path}/${stageInfo.folderName}';
+						final stagePath:String = '${stageInfo.path}/${stageInfo.folderName}';
 						var stage:Stage = null;
 						var loadedFromConf = false;
 						if (SELoader.exists('$stagePath/config.json')){
@@ -790,15 +788,15 @@ class PlayState extends ScriptMusicBeatState
 						if(stage == null){
 							stageObject=stage = new Stage();
 						}
-						var brTool = getBRTools(stagePath);
+						final brTool = getBRTools(stagePath);
 						for (i in CoolUtil.orderList(SELoader.readDirectory(stagePath))) {
 							if(i.endsWith(".hscript")){
-								var interp = parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
+								final interp = parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
 								if(stage != null) interp.variables.set('stage',stage);
 							}
 							#if linc_luajit
 							else if(i.endsWith(".lua")){
-								var interp = parseLua(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
+								final interp = parseLua(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
 								if(stage != null) interp.variables.set('stage',stage);
 							}
 							#end
@@ -832,15 +830,13 @@ class PlayState extends ScriptMusicBeatState
 				parseHScript(onlinemod.OnlinePlayMenuState.rawScripts[i][1],hsBrTools,onlinemod.OnlinePlayMenuState.rawScripts[i][0],'onlineScript:$i');
 			}
 		}
-		var bfShow = SESave.data.bfShow;
 		if(PlayState.player1 == "") PlayState.player1 = SONG.player1;
 		if(PlayState.player2 == "") PlayState.player2 = SONG.player2;
 		if(PlayState.player3 == "") PlayState.player3 = SONG.gfVersion;
-		if(PlayState.player1 == "" || PlayState.player1.toLowerCase() == "lonely" || PlayState.player1.toLowerCase() == "hidden" || PlayState.player1.toLowerCase() == "nothing") bfShow = false;
+
+		final bfShow = !(PlayState.player1 == "" || PlayState.player1.toLowerCase() == "lonely" || PlayState.player1.toLowerCase() == "hidden" || PlayState.player1.toLowerCase() == "nothing") && SESave.data.bfShow;
 		if(PlayState.player2 == "" || PlayState.player2.toLowerCase() == "lonely" || PlayState.player2.toLowerCase() == "hidden" || PlayState.player2.toLowerCase() == "nothing") _dadShow = false;
 		if(PlayState.player3 == "" || PlayState.player3.toLowerCase() == "lonely" || PlayState.player3.toLowerCase() == "hidden" || PlayState.player3.toLowerCase() == "nothing") gfShow = false;
-		var player1CharInfo = null;
-		var player2CharInfo = null;
 		callInterp("afterStage",[]);
 
 		if(!(SONG.forceCharacters || PlayState.isStoryMode || ChartingState.charting || isStoryMode)){
@@ -854,10 +850,12 @@ class PlayState extends ScriptMusicBeatState
 				PlayState.player3 = "gf";
 	    	}
 		}
+		var player1CharInfo = null;
+		var player2CharInfo = null;
 		var player3CharInfo;
 		{
-			var p1List:Array<String> = [SESave.data.playerChar];
-			var p2List:Array<String> = [SESave.data.opponent];
+			final p1List:Array<String> = [SESave.data.playerChar];
+			final p2List:Array<String> = [SESave.data.opponent];
 			for(id in PlayState.player1.split('/')) p1List.push(id);
 			for(id in PlayState.player2.split('/')) p2List.push(id);
 
@@ -869,7 +867,7 @@ class PlayState extends ScriptMusicBeatState
 			PlayState.player3 = player3CharInfo.getNamespacedName();
 		}
 
-		if(loadChars && (SESave.data.gfShow || _dadShow || SESave.data.bfShow)){
+		if(loadChars && (SESave.data.gfShow || _dadShow || bfShow)){
 			LoadingScreen.loadingText = "Loading GF";
 			if(gf== null || !SESave.data.persistGF || (!SESave.data.gfShow && !Std.isOfType(gf,EmptyCharacter)) || gf.getNamespacedName() != player2){
 				if (SESave.data.gfShow && gfShow)
@@ -926,7 +924,7 @@ class PlayState extends ScriptMusicBeatState
 			gf = new EmptyCharacter(400, 100);
 		}
 		if(gf == null || (!gf.lonely && (dad == gf || bf == gf))) gf = new EmptyCharacter(400,100);
-		var camPos:FlxPoint = new FlxPoint(gf.getGraphicMidpoint().x, gf.getGraphicMidpoint().y);
+		final camPos:FlxPoint = new FlxPoint(gf.getGraphicMidpoint().x, gf.getGraphicMidpoint().y);
 
 		camPos.set(camPos.x + gf.camX, camPos.y + gf.camY);
 		cachedChars[0][bf.curCharacter] = cachedChars[0]['default'] = cachedChars[0]['_song'] = bf;
@@ -970,10 +968,10 @@ class PlayState extends ScriptMusicBeatState
 
 		add(strumLineNotes = new FlxTypedGroup<StrumArrow>());
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>(10);
-		var noteSplash0:NoteSplash = new NoteSplash();
+		final noteSplash0:NoteSplash = new NoteSplash();
 		noteSplash0.setupNoteSplash(boyfriend, 0);
 
-		var downscroll = downscroll || (SESave.data.flipScrollY && !downscroll); // Very dumb way of implementing it but fuck it
+		final downscroll = downscroll || (SESave.data.flipScrollY && !downscroll); // Very dumb way of implementing it but fuck it
 
 		if (SONG.difficultyString != null && SONG.difficultyString != "") songDiff = SONG.difficultyString;
 		else songDiff = (customDiff != "" ? customDiff : (stateType == 4 ? "mods/charts" : (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy")));
@@ -1115,16 +1113,14 @@ class PlayState extends ScriptMusicBeatState
 			}
 			// }
 			healthBar.visible = healthBarBG.visible = false;
-			var iconOffset = 26;
 			if(middlescroll){
 				iconP2.x = FlxG.width * 0.05;
 				iconP1.x = FlxG.width * 0.95 - iconP1.width;
 			}else{
-				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
-				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01) - iconOffset);
+				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01)) - (iconP2.width - 26);
+				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01) - 26);
 			}
-			var y = (downscroll ? FlxG.height * 0.9 : FlxG.height * 0.1);
-			iconP2.y = iconP1.y = y - (iconP1.height * 0.5);
+			iconP2.y = iconP1.y = (downscroll ? FlxG.height * 0.9 : FlxG.height * 0.1) - (iconP1.height * 0.5);
 		}
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
@@ -1270,8 +1266,10 @@ class PlayState extends ScriptMusicBeatState
 	public function startCountdown():Void{
 		dialogue = [];
 		inCutscene = false;
-
 		if(!songStarted){
+			if(errorMsg != null && errorMsg != ""){
+				while(introAudio.pop() != null){}
+			}
 			SENotification.showSong(SONG);
 			if (!generatedArrows){
 				generateStaticArrows(0);
@@ -1975,7 +1973,7 @@ class PlayState extends ScriptMusicBeatState
 	
 	var resyncCount:Int = 0;
 	function resyncVocals():Void {
-		Conductor.songPosition = FlxG.sound.music.time;
+		FlxG.sound.music.time = Conductor.songPosition;
 		FlxG.sound.music.play();
 		vocals.syncedSound = FlxG.sound.music;
 		if(!vocals.playing) vocals.play();
@@ -2052,8 +2050,7 @@ class PlayState extends ScriptMusicBeatState
 			#end
 		}
 	}
-	override public function update(elapsed:Float)
-	{
+	override public function update(elapsed:Float) {
 		#if !debug
 		try{
 		#end
@@ -3380,7 +3377,7 @@ class PlayState extends ScriptMusicBeatState
 		SEProfiler.qStart('StepHit');
 		super.stepHit();
 		// lastStep = curStep;
-		if (SESave.data.resyncVoices && handleTimes && Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 1000 && generatedMusic)
+		if (SESave.data.resyncVoices && handleTimes && Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 100 && generatedMusic)
 			resyncVocals();
 		
 
@@ -3627,14 +3624,14 @@ class PlayState extends ScriptMusicBeatState
 	public function testanimdebug(){
 		if (SESave.data.animDebug && onlinemod.OnlinePlayMenuState.socket == null) {
 			if (FlxG.keys.justPressed.ONE && boyfriend != null && !boyfriend.lonely){
-				FlxG.switchState(new AnimationDebug(boyfriend.curCharacter,true,0));
+				FlxG.switchState(new AnimationDebug(boyfriend.charInfo?.getNamespacedName() ?? boyfriend.curCharacter,true,0));
 			}
 			if (FlxG.keys.justPressed.TWO && dad != null && !dad.lonely){
-				FlxG.switchState(new AnimationDebug(dad.curCharacter,false,1));
+				FlxG.switchState(new AnimationDebug(dad.charInfo?.getNamespacedName() ?? dad.curCharacter,false,1));
 			}
 
 			if (FlxG.keys.justPressed.THREE && gf != null && !gf.lonely){
-				FlxG.switchState(new AnimationDebug(gf.curCharacter,false,2));
+				FlxG.switchState(new AnimationDebug(gf.charInfo?.getNamespacedName() ?? gf.curCharacter,false,2));
 			}
 			if (FlxG.keys.justPressed.FIVE)
 			{

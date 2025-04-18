@@ -173,6 +173,7 @@ class QuickOptionsSubState extends MusicBeatSubstate
 	function changeSelection(?change:Int = 0)
 	{
 		curSelected += change;
+		if(change != 0) SELoader.playSound('assets:sounds/scrollMenu.ogg');
 
 		if (curSelected < 0) curSelected = menuItems.length - 1;
 		else if (curSelected >= menuItems.length) curSelected = 0;

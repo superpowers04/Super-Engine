@@ -41,7 +41,7 @@ class ArrowSelection extends SearchMenuState
 			
 			searchList = ["default"];
 
-			var dataDir:String = "mods/noteassets/";
+			final dataDir:String = "mods/noteassets/";
 			var customArrows:Array<String> = [];
 			if (SELoader.exists(dataDir)) {
 				for (file in SELoader.readDirectory(dataDir)) {
@@ -56,30 +56,25 @@ class ArrowSelection extends SearchMenuState
 				}
 			}else{MainMenuState.handleError('mods/noteassets is not a folder. You need to create it to use custom arrow skins!');}
 			{
-				var dataDir = "mods/packs/";
+				final dataDir = "mods/packs/";
 				for (_dir in SELoader.readDirectory(dataDir)) {
-					var dataDir = 'mods/packs/$_dir/noteassets/';
-					if(SELoader.exists(dataDir)) {
+					final dataDir = 'mods/packs/$_dir/noteassets/';
+					if(!SELoader.exists(dataDir)) continue;
+					for (file in SELoader.readDirectory(dataDir)) {
+						if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("-splash.png")) {
+							final name = file.substr(0,-4);
+							if (SELoader.exists('${dataDir}${name}.xml')) {
+								// Really shit but it works
+								customArrows.push('../packs/$_dir/noteassets/$name');
 
-						for (file in SELoader.readDirectory(dataDir)) {
-							if (file.endsWith(".png") && !file.endsWith("-bad.png") && !file.endsWith("-splash.png")) {
-								var name = file.substr(0,-4);
-								if (SELoader.exists('${dataDir}${name}.xml')) {
-									// Really shit but it works
-									customArrows.push('../packs/$_dir/noteassets/$name');
-
-								}
 							}
 						}
 					}
+					
 				}
 			}
 			// customCharacters.sort((a, b) -> );
-			haxe.ds.ArraySort.sort(customArrows, function(a, b) {
-						 if(a < b) return -1;
-						 else if(b > a) return 1;
-						 else return 0;
-					});
+			haxe.ds.ArraySort.sort(customArrows, function(a, b) { return (a<b ? -1 : b>a ? 1 : 0);});
 			for (char in customArrows){
 				searchList.push(char);
 			}
@@ -98,11 +93,10 @@ class ArrowSelection extends SearchMenuState
 		if(char.indexOf('packs/') != -1){
 			char = char.substr(char.indexOf('packs/') + 6).replace('noteassets/',"");
 		}
-		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false,false,useAlphabet);
+		final controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, char, true, false,false,useAlphabet);
 		controlLabel.isMenuItem = true;
 		controlLabel.targetY = i;
-		if (i != 0)
-			controlLabel.alpha = 0.6;
+		if (i != 0) controlLabel.alpha = 0.6;
 		grpSongs.add(controlLabel);
 	}
 	override function update(e){ // This is shit but I don't want these to update
@@ -130,10 +124,10 @@ class ArrowSelection extends SearchMenuState
 		if(arrowDisplay && notes.members[0] == null) {
 
 			add(notes);
-			var note:FakeNote = null;
-			var noteSus:FakeNote = null;
-			var noteSusEnd:FakeNote = null;
-			var strumNote:StrumArrow = null;
+			// var note:FakeNote = null;
+			// var noteSus:FakeNote = null;
+			// var noteSusEnd:FakeNote = null;
+			// var strumNote:StrumArrow = null;
 			// for (i in 0 ... 4) {
 			// 	strumNote = playerStrums.members[i];
 			// 	note = new FakeNote(time,i,null,false);

@@ -23,6 +23,7 @@ import flixel.sound.FlxSound;
 import sys.FileSystem;
 import sys.io.File;
 import OptionsFileDef;
+import Overlay;
 import Reflect;
 using StringTools;
 
@@ -181,6 +182,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Threaded loading screen","Makes the loading screen use threads and show loading progress but is buggy and can cause crashes","doCoolLoading"),
 			new HCBoolOption("Pause screen transparency","Toggle the pause screen using transparency. Can help with lag on some machines","transparentPause"),
 			new HCBoolOption("Hard Drive Mode","Changes some loading routines to work better with slower drives.\nMay increase ram usage, disables stuff like pack asset replacing and disables hot reloading","HDDMode"),
+			new HCBoolOption("Write to CMD","Disables trace from writing to CMD/Terminal. The console(F10) will still be printed to if it has been opened.","allowTracing",()->{Console.toggleTracing();}),
 
 			// new HCBoolOption("Doesn't destroy the opponent when you exit a song. Makes loading quicker but uses more ram and might cause issues","Persistant Opponent","persistOpp"),
 			// new UnloadSongOption("Unload the song when exiting the game"),
