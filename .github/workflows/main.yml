@@ -47,7 +47,7 @@ jobs:
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
-        run: haxelib run lime build linux --app-version="4.3.0-${{ github.run_id}}" -Dghaction
+        run: haxelib run lime build linux --app-version="${{github.run_id}}" -Dghaction
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -56,7 +56,7 @@ jobs:
       - name: Publish without changed assets as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: linuxBuild-Minimal
+          name: linux-Update
           path: |
                 /tmp/fnfbrbin/linux/bin/FNF Super Engine
                 /tmp/fnfbrbin/linux/bin/manifest
@@ -96,16 +96,16 @@ jobs:
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
-        run: haxelib run lime build windows --app-version="4.3.0-${{ github.run_id}}" -Dghaction
+        run: haxelib run lime build windows --app-version="${{ github.run_id}}" -Dghaction
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windowsBuild
-          path: C:/fnfbrbin/windows/bin      
+          path: C:/fnfbrbin/windows/bin
       - name: Publish without changed assets as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windowsBuild-Minimal
+          name: windows-Update
           path: |
                 C:/fnfbrbin/windows/bin/FNF Super Engine.exe
                 C:/fnfbrbin/windows/bin/manifest
