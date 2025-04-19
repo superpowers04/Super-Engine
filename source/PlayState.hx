@@ -388,8 +388,6 @@ class PlayState extends ScriptMusicBeatState
 				type:type
 			};
 		}
-
-
 	/*Interpeter shit*/
 		public override function addVariablesToHScript(interp:Interp){
 			interp.variables.set("state",cast (this)); 
@@ -428,6 +426,7 @@ class PlayState extends ScriptMusicBeatState
 					errorHandle('Unable to load $v for $nameSpace:${e.message}');
 					return false;
 				}
+
 				// parseHScript(,new HSBrTools('mods/scripts/${v}',v),'${nameSpace}-${v}');
 			}else{showTempmessage('Unable to load $v for $nameSpace: Script doesn\'t exist');}
 			return ((interps['${nameSpace}-${v}'] == null));

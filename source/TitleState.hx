@@ -691,9 +691,6 @@ class TitleState extends MusicBeatState
 		LoadingScreen.loadingText = 'Loading TitleState';
 		if (!initialized){
 			
-			// var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-			// diamond.persist = true;
-			// diamond.destroyOnNoUse = false;
 
 			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(-1, 0));
 			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(1, 0));
