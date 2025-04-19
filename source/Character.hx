@@ -37,11 +37,8 @@ import hscriptfork.InterpSE;
 
 using StringTools;
 class CharAnimController extends FlxAnimationController{
-	#if(flixel > "5.3.0")
-	override function findByPrefix(AnimFrames:Array<FlxFrame>, Prefix:String,logError:Bool = true):Void
-	#else
-	override function findByPrefix(AnimFrames:Array<FlxFrame>, Prefix:String):Void
-	#end
+	
+	override function findByPrefix(AnimFrames:Array<FlxFrame>, Prefix:String,#if(flixel > "5.3.0") logError:Bool = true #end):Void
 	{
 		if(Prefix == "FORCEALLLMAOTHISISSHIT"){
 			fuckinAddAll(AnimFrames);

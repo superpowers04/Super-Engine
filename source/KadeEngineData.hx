@@ -42,7 +42,6 @@ class KadeEngineData {
 		PlayerSettings.init();
 		
 
-		Main.watermarks = SESave.data.watermark;
 
 		Main.instance.setFPSCap(SESave.data.fpsCap);
 	}

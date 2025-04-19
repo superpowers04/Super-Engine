@@ -53,15 +53,15 @@ jobs:
         with:
           name: linuxBuild
           path: /tmp/fnfbrbin/linux/bin/      
-      - name: Publish without changed assets as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-Update
-          path: |
-                /tmp/fnfbrbin/linux/bin/FNF Super Engine
-                /tmp/fnfbrbin/linux/bin/manifest
-                /tmp/fnfbrbin/linux/bin/mods/readme.txt
-                /tmp/fnfbrbin/linux/bin/mods/docs.md
+      # - name: Publish without changed assets as Artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: linux-Update
+      #     path: |
+      #           /tmp/fnfbrbin/linux/bin/FNF Super Engine
+      #           /tmp/fnfbrbin/linux/bin/manifest
+      #           /tmp/fnfbrbin/linux/bin/mods/readme.txt
+      #           /tmp/fnfbrbin/linux/bin/mods/docs.md
   buildWindows:
     runs-on: windows-latest
     
@@ -102,12 +102,12 @@ jobs:
         with:
           name: windowsBuild
           path: C:/fnfbrbin/windows/bin
-      - name: Publish without changed assets as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-Update
-          path: |
-                C:/fnfbrbin/windows/bin/FNF Super Engine.exe
-                C:/fnfbrbin/windows/bin/manifest
-                C:/fnfbrbin/windows/bin/mods/readme.txt
-                C:/fnfbrbin/windows/bin/mods/docs.md
+      # - name: Publish without changed assets as Artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: windows-Update
+      #     path: |
+      #           C:/fnfbrbin/windows/bin/FNF Super Engine.exe
+      #           C:/fnfbrbin/windows/bin/manifest
+      #           C:/fnfbrbin/windows/bin/mods/readme.txt
+      #           C:/fnfbrbin/windows/bin/mods/docs.md

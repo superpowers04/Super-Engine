@@ -44,8 +44,6 @@ import sys.io.File;
 		public static var grantedPerms:Array<String> = [];
 	#end
 
-	public static var watermarks = true; // Whether to put Kade Engine liteartly anywhere
-
 	public static var game:FlxGameEnhanced;
 
 	public static var fpsCounter:Overlay;
