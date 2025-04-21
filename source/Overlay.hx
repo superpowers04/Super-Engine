@@ -325,7 +325,7 @@ class ConsoleInput extends TextField{
 		}catch(e){
 			var _line = '${parser.line}';
 			try{
-				var _split = songScript.split('\n');
+				final _split = songScript.split('\n');
 				_line = '${parser.line};"${_split[parser.line - 1]}"';
 			}catch(e){_line = '${parser.line}';}
 			trace('Error parsing hscript\nLine:${_line}\n ${e.message}');
@@ -458,7 +458,7 @@ class ConsoleInput extends TextField{
 				lime.system.Clipboard.text = actualText;
 				Console.print('Copied input text to clipboard');
 			}else if(FlxG.keys.justPressed.V){
-				var text = lime.system.Clipboard.text;
+				final text = lime.system.Clipboard.text;
 				addTextAtCaret(text);
 				caretPos+=text.length;
 				updateShownText();

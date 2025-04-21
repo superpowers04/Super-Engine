@@ -163,10 +163,8 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 
 	public static function OnClose(e:Event)
 	{
-		if (Type.getClass(FlxG.state) == OnlinePlayMenuState)
-			OnlinePlayMenuState.SetErrorText("Disconnected from server");
-		else
-			FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
+		if (Type.getClass(FlxG.state) == OnlinePlayMenuState) OnlinePlayMenuState.SetErrorText("Disconnected from server");
+		else FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
 	}
 
 	public static function RespondKeepAlive(packetId:Int,?force:Bool = false,?socket:Socket):Bool {
@@ -221,7 +219,7 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 
 	public static function AddXieneText(state:FlxState)
 	{
-		var xieneText = new FlxText(0, FlxG.height - 30, "XieneDev");
+		final xieneText = new FlxText(0, FlxG.height - 30, "XieneDev");
 		xieneText.setFormat(CoolUtil.font, 28, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		xieneText.screenCenter(FlxAxes.X);
 		state.add(xieneText);
@@ -291,9 +289,9 @@ class OnlinePlayMenuState extends ScriptMusicBeatState {
 
 				if(serverInfo[2] != null && serverInfo[2] != ""){
 					var hide = true;
-					var TogglePassword = new FlxUIButton(DeleteButton.x + DeleteButton.width + 25, ConnectButton.y, 'Toggle Password', () -> {
+					final TogglePassword = new FlxUIButton(DeleteButton.x + DeleteButton.width + 25, ConnectButton.y, 'Toggle Password', () -> {
 						hide = !hide;
-						ServerIP.text = 'Server: ${serverInfo[0]}:${serverInfo[1]}\nPassword: ${(if(hide) ('').rpad('*',serverInfo[2].length) else serverInfo[2])}';
+						ServerIP.text = 'Server: ${serverInfo[0]}:${serverInfo[1]}\nPassword: ${((hide) ? ('').rpad('*',serverInfo[2].length) : serverInfo[2])}';
 					});
 					TogglePassword.setLabelFormat(18, FlxColor.BLACK, CENTER);
 					TogglePassword.resize(110, 50);

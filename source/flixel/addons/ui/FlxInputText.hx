@@ -354,7 +354,7 @@ class FlxInputText extends FlxText {
 		#end
 			// Paste, no copying atm
 			if(key == 25){
-				var newText:String = filter(lime.system.Clipboard.text);
+				final newText:String = filter(lime.system.Clipboard.text);
 				if (newText.length <= 0 && (maxLength == 0 || (text.length + newText.length) > maxLength)) return;
 				text = insertSubstring(text, newText, caretIndex);
 				caretIndex+=newText.length;

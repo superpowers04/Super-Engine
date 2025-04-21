@@ -40,21 +40,14 @@ class OnlineResultState extends MusicBeatState {
     orderedKeys.sort((a, b) -> OnlinePlayState.clientScores[b] - OnlinePlayState.clientScores[a]);
 
     var x:Int = 0;
-    for (i in orderedKeys)
-    {
-      var name:String = clients[i];
-      var score = OnlinePlayState.clientText[i];
-      if (score == null) score = "N/A";
-      if (name == null) name = "N/A";
-      var text:FlxText = new FlxText(0, FlxG.height*0.2 + 30*x, '${x+1}. $name: $score');
+    for (i in orderedKeys) {
+      final name:String = clients[i] ?? "N/A";
+      final score = OnlinePlayState.clientText[i] ?? "N/A";
+      final text:FlxText = new FlxText(0, FlxG.height*0.2 + 30*x, '${x+1}. $name: $score');
 
-      if (i == -1)
-        text.text += " (YOU)";
+      if (i == -1) text.text += " (YOU)";
 
-      var color:FlxColor = FlxColor.WHITE;
-      if (!OnlineLobbyState.clients.exists(i) && i != -1)
-        color = FlxColor.RED;
-
+      var color:FlxColor = (!OnlineLobbyState.clients.exists(i) && i != -1) ? FlxColor.RED : FlxColor.WHITE;
       text.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
       text.screenCenter(FlxAxes.X);
       add(text);

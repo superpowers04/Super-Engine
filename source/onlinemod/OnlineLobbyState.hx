@@ -86,7 +86,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		add(bg);
 
 
-		var topText:FlxText = new FlxText(0, FlxG.height * 0.05, "Lobby");
+		final topText:FlxText = new FlxText(0, FlxG.height * 0.05, "Lobby");
 		topText.setFormat(CoolUtil.font, 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		topText.screenCenter(FlxAxes.X);
 		add(topText);
@@ -97,24 +97,16 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		add(clientsGroup);
 		if(hasLeaderboard){
 
-			var orderedKeys:Array<Int> = [for(k in clients.keys()) k];
-			orderedKeys.sort((a, b) -> clients[b].score - clients[a].score);
+			final orderedKeys:Array<Player> = [for(k in clients) k];
+			orderedKeys.sort((a, b) -> b.score - a.score);
+			for (id => player in orderedKeys){
+				final score = player.scoreText ?? "N/A";
+				final name = player.name ?? "N/A";
+				final text:FlxText = new FlxText(0, FlxG.height*0.2 + 30*id, '${id+1}. $name: $score ${player.self ? " (YOU)" : ""}');
 
-			var x:Int = 0;
-			for (i in orderedKeys){
-				var player:Player = clients[i];
-				var score = player.scoreText ?? "N/A";
-				var name = "N/A";
-				var text:FlxText = new FlxText(0, FlxG.height*0.2 + 30*x, '${x+1}. $name: $score');
-
-				if (player.self) text.text += " (YOU)";
-
-				var color:FlxColor = (player.disconnected ? FlxColor.RED : FlxColor.WHITE);
-
-				text.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				text.setFormat(CoolUtil.font, 24, (player.disconnected ? FlxColor.RED : FlxColor.WHITE), LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				text.screenCenter(FlxAxes.X);
 				clientsGroupLeaderboard.add(text);
-				x++;
 			}
 			backButton = new FlxUIButton(10, 10, "Show Player List", () -> {
 				toggleLeaderboard();
@@ -124,9 +116,11 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 			add(backButton);
 			toggleLeaderboard();
 		}
-		var dced:Array<Int> = [];
-		for (i => v in clients) if(v.disconnected) dced.push(i);
-		for (i in dced) clients[i]=null;
+		{
+			final dced:Array<Int> = [];
+			for (i => v in clients) if(v.disconnected) dced.push(i);
+			for (i in dced) clients[i]=null;
+		}
 
 		createNamesUI();
 
@@ -134,7 +128,6 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		Chat.createChat(this);
 
 
-		if (!keepClients) Chat.PLAYER_JOIN(OnlineNickState.nickname);
 
 
 		OnlinePlayMenuState.AddXieneText(this);
@@ -144,7 +137,10 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		FlxG.autoPause = false;
 
 		OnlinePlayMenuState.receiver.HandleData = HandleData;
-		if (!keepClients) Sender.SendPacket(Packets.JOINED_LOBBY, [], OnlinePlayMenuState.socket);
+		if (!keepClients){
+			Chat.PLAYER_JOIN(OnlineNickState.nickname);
+			Sender.SendPacket(Packets.JOINED_LOBBY, [], OnlinePlayMenuState.socket);
+		}
 
 		optionsButton = new FlxUIButton(1100, 30, "Quick Options", () -> {
 			Chat.created = false;
@@ -172,14 +168,13 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		FlxG.mouse.visible = true;
 	}
 
-	function createNamesUI()
-	{
+	function createNamesUI() {
 		clientsGroup.clear();
 		clientTexts = [];
 		clientCount = 0;
 
 		for (i in clientsOrder){
-			addPlayerUI(i, i == -1 ? OnlineNickState.nickname : clients[i].name, i == -1 ? FlxColor.YELLOW : null);
+			addPlayerUI(i, clients[i]?.name ?? (i==-1 ? OnlineNickState.nickname : "N/A"), i == -1 ? FlxColor.YELLOW : null);
 		}
 	}
 	override function onFocus(){
@@ -191,8 +186,8 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		try{
 		switch (packetId) {
 			case Packets.BROADCAST_NEW_PLAYER:
-				var id:Int = data[0];
-				var nickname:String = data[1];
+				final id:Int = data[0];
+				final nickname:String = data[1];
 
 				if(instance != null) instance.addPlayerUI(id, nickname);
 				addPlayer(id, nickname);
@@ -202,15 +197,14 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 				if(instance != null) instance.addPlayerUI(-1, OnlineNickState.nickname, FlxColor.YELLOW);
 				clientsOrder.push(-1);
 			case Packets.PLAYER_LEFT:
-				var id:Int = data[0];
-				var nickname:String = OnlineLobbyState.clients[id].name;
-				Chat.PLAYER_LEAVE(nickname);
+				final id:Int = data[0];
+				Chat.PLAYER_LEAVE(OnlineLobbyState.clients[id].name);
 
 				removePlayer(id);
 				if(instance != null) instance.createNamesUI();
 			case Packets.GAME_START:
-				var jsonInput:String = data[0];
-				var folder:String = data[1];
+				final jsonInput:String = data[0];
+				final folder:String = data[1];
 				// var count = 0;
 				// for (i in clients.keys())
 				// {
@@ -257,7 +251,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 			return true;
 		}
 		return false;
-		switch (packetId) {
+		// switch (packetId) {
 			// case Packets.BROADCAST_NEW_PLAYER:
 			// 	var id:Int = data[0];
 			// 	var nickname:String = data[1];
@@ -303,19 +297,19 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 			// case Packets.DISCONNECT:
 			// 	TitleState.p2canplay = false;
 			// 	FlxG.switchState(new OnlinePlayMenuState("Disconnected from server"));
-		}
+		// }
 	}
 
 	public static function handleServerCommand(command:String,?version = 0){
 		try{ // Not sure if I'll ever actually use the version variable for anything
 			// All responses start with '32d5d168'
-			var args:Array<String> = command.split(' ');
-			var argsLower:Array<String> = command.toLowerCase().split(' ');
+			final args:Array<String> = command.split(' ');
+			final argsLower:Array<String> = command.toLowerCase().split(' ');
 			if(args[1] == null) throw('Command is empty!');
 			switch (argsLower[1]){
 				case "set":{
 					if (argsLower[3] == "true" || argsLower[3] == "on" || argsLower[3] == "false" || argsLower[3] == "off"){ 
-						var bool = (args[3] == "true" || args[3] == "on");
+						final bool = (args[3] == "true" || args[3] == "on");
 						switch(args[2]){
 							case "invertnotes":
 								PlayState.invertedChart = bool;
@@ -371,9 +365,9 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 					if(args[2] == null) throw('No name for script specified!');
 					if(args[3] == null) throw('Script contents are empty!');
 					if(argsLower[2].startsWith("temp-")){
-						var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
+						final scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
 						args.splice(0,3);
-						var script = args.join(" ");
+						final script = args.join(" ");
 						OnlinePlayMenuState.rawScripts.push([scriptName,script]);
 						Chat.CLIENT_MESSAGE('Server has temporarily enabled ${scriptName} with ${script.length} characters, This script will be unloaded when you leave');
 
@@ -381,13 +375,12 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 						return;
 					}
 
-					var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
-					scriptName = "serv-" + scriptName;
+					final scriptName = "serv-" +(~/[^_a-zA-Z0-9\-]/g.replace(args[2],""));
 					Chat.CLIENT_MESSAGE('Server is attempting to install hscript ${scriptName}');
 				
 					if(FileSystem.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script Already exists!",true);return;}
 					args.splice(0,3);
-					var script = args.join(" ");
+					final script = args.join(" ");
 					Chat.CLIENT_MESSAGE('Installing hscript of ${script.length} characters');
 					SELoader.createDirectory('mods/scripts/${scriptName}/');
 					SELoader.saveContent('mods/scripts/${scriptName}/script.hscript',script);
@@ -402,8 +395,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 						sendResponse("Client has scripts disabled",false);
 						return;
 					}
-					var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
-					scriptName = "serv-" + scriptName;
+					final scriptName = "serv-" + (~/[^_a-zA-Z0-9\-]/g.replace(args[2],""));
 					if(OnlinePlayMenuState.scripts.contains(scriptName)){
 						OnlinePlayMenuState.scripts.remove(scriptName);
 						sendResponse("Script removed!");return;
@@ -430,8 +422,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 						sendResponse("Client has scripts disabled",false);
 						return;
 					}
-					var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
-					scriptName = "serv-" + scriptName;
+					final scriptName =  "serv-" +(~/[^_a-zA-Z0-9\-]/g.replace(args[2],""));
 					if(OnlinePlayMenuState.scripts.contains(scriptName)){sendResponse("Script already loaded!");return;}
 					if(!FileSystem.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script doesn't exist!");return;}
 					OnlinePlayMenuState.scripts.push(scriptName);
@@ -446,8 +437,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 						sendResponse("Client has scripts disabled",false);
 						return;
 					}
-					var scriptName = ~/[^_a-zA-Z0-9\-]/g.replace(args[2],"");
-					scriptName = "serv-" + scriptName;
+					final scriptName = "serv-" + (~/[^_a-zA-Z0-9\-]/g.replace(args[2],""));
 					if(OnlinePlayMenuState.scripts.contains(scriptName)){sendResponse("Script is loaded!");return;}
 					if(!FileSystem.exists('mods/scripts/${scriptName}/script.hscript')) {sendResponse("Script doesn't exist!");return;}
 
@@ -456,13 +446,12 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 				case "get":{ // Anything sent from this has to be filtered by the server, All responses start with '32d5d168'
 					switch(argsLower[2]){
 						case "info":{
-							var clientInfo = {
+
+							sendResponse("info:" + Json.stringify({
 								version: MainMenuState.ver,
 								versionSplit: MainMenuState.ver.split("."),
 								supported: ["inputsync","invertnotes","p2show","clientscript","setchar","sendscript","enablescript","removescript","tempscript"],
-							};
-
-							sendResponse("info:" + Json.stringify(clientInfo));
+							}));
 						}
 						case "character" | "char":{
 							sendResponse("character:" + SESave.data.playerChar);
@@ -492,7 +481,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 	}
 
 	public function addPlayerUI(id:Int, nickname:String, ?color:FlxColor=FlxColor.WHITE) {
-		var text:FlxText = new FlxText((clientCount % NAMES_PER_ROW) * FlxG.width/NAMES_PER_ROW, FlxG.height*0.2 + Std.int(clientCount / NAMES_PER_ROW) * NAMES_VERTICAL_SPACING, FlxG.width/NAMES_PER_ROW, nickname);
+		final text:FlxText = new FlxText((clientCount % NAMES_PER_ROW) * FlxG.width/NAMES_PER_ROW, FlxG.height*0.2 + Std.int(clientCount / NAMES_PER_ROW) * NAMES_VERTICAL_SPACING, FlxG.width/NAMES_PER_ROW, nickname);
 		text.setFormat(CoolUtil.font, NAMES_SIZE, color, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		clientTexts[id] = clientsGroup.length;
 		clientsGroup.add(text);
@@ -529,9 +518,7 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 		quitHeldBar.visible = false;
 		quitHeldBG.visible = false;
 	}
-	if (Chat.chatField.hasFocus){
-		if (FlxG.keys.justPressed.ENTER) Chat.SendChatMessage();
-	}
+	if (Chat.chatField.hasFocus && FlxG.keys.justPressed.ENTER) Chat.SendChatMessage();
 	if (FlxG.keys.pressed.ESCAPE){
 		quitHeld += 5;
 		quitHeldBar.visible = true;
