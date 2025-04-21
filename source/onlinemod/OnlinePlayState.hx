@@ -68,7 +68,7 @@ class OnlinePlayState extends PlayState
 	}
 
 	override function create()
-	{try{
+	{
 		handleNextPacket = true;
 		OnlinePlayMenuState.SetVolumeControls(true); // Make sure volume is enabled
 		if (customSong){
@@ -213,7 +213,7 @@ class OnlinePlayState extends PlayState
 		FlxG.mouse.visible = false;
 		FlxG.autoPause = false;
 		canPause = true;
-	}catch(e){MainMenuState.handleError('Crash in "create" caught: ${e.message}');}}
+	}
 
 	override function startCountdown() if (ready) super.startCountdown();
 
@@ -225,6 +225,8 @@ class OnlinePlayState extends PlayState
 		// curSong = songData.song;
 
 		// vocals = (PlayState.SONG.needsVoices ? loadedVoices : new FlxSound());
+		vocals.clear();
+		if(PlayState.SONG.needsVoices) vocals.add(loadedVoices);
 		super.generateSong(dataPath);
 
 		// Instantly get note id's, if this isn't done now, a note might not get added to the list

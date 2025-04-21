@@ -143,6 +143,7 @@
 	<icon path="art/iconOG.png" />
 
 	<config:android permission="android.permission.INTERNET"/>
+	<config:android permission="android.permission.ACCESS_NETWORK_STATE" />
 	<config:android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<config:android permission="android.permission.READ_EXTERNAL_STORAGE"/>
 

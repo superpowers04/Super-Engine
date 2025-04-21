@@ -341,7 +341,7 @@ class AnimationDebug extends MusicBeatState
 			add(camFollow);
 
 
-			camGame.follow(camFollow);
+			camGame.follow(camFollow,NO_DEAD_ZONE,1);
 			updateTxt();
 			spawnChar();
 			updateTxt();

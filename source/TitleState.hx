@@ -708,11 +708,15 @@ class TitleState extends MusicBeatState
 				if(!grantedPerms.contains('android.permission.WRITE_EXTERNAL_STORAGE')){
 					android.Permissions.requestPermission('android.permission.WRITE_EXTERNAL_STORAGE',1);
 					android.Permissions.requestPermission('android.permission.INTERNET',1);
+					android.Permissions.requestPermission('android.permission.ACCESS_NETWORK_STATE',1);
 					throw('Please reload. Permissions are required for the mods folder.\nIf you do not see a dialogue asking for accessing files then please add it manually in your settings');
 				}else{
 
 					if(!grantedPerms.contains('android.permission.INTERNET')){
 						android.Permissions.requestPermission('android.permission.INTERNET',1);
+					}
+					if(!grantedPerms.contains('android.permission.ACCESS_NETWORK_STATE')){
+						android.Permissions.requestPermission('android.permission.ACCESS_NETWORK_STATE',1);
 					}
 					if(!FileSystem.exists('${android.os.Environment.getExternalStorageDirectory()}/Superpowers04/SuperEngine/')){
 						try{

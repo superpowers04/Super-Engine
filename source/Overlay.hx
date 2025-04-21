@@ -28,8 +28,8 @@ class Overlay extends TextField {
 	static public var instance:Overlay = null;
 
 	@:noCompletion private var cacheCount:Int;
-	@:noCompletion private var currentTime:Int;
-	@:noCompletion private var times:Array<Int>;
+	@:noCompletion private var currentTime:Float;
+	@:noCompletion private var times:Array<Float>;
 	public static var debugVar:String = "";
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
@@ -54,10 +54,7 @@ class Overlay extends TextField {
 		times = [];
 
 		#if flash
-		addEventListener(Event.ENTER_FRAME, function(e)
-		{
-			__enterFrame(e);
-		});
+		addEventListener(Event.ENTER_FRAME, __enterFrame);
 		#end
 	}
 	var memPeak:Float = 0;
@@ -67,10 +64,12 @@ class Overlay extends TextField {
 	{
 		if(!visible) return;
 		// #if sys
-		currentTime = Std.int(haxe.Timer.stamp() * 1000);
+		final ct = currentTime;
+		currentTime = Sys.time();
+		final timeDiff = currentTime-ct;
 		times.push(currentTime);
 
-		while (times[0] < currentTime - 1000) times.shift();
+		while (times[0] < currentTime - 1) times.shift();
 		// #else
 		// 	currentTime += flixel.FlxG.elapsed;
 		// 	times.push(currentTime);
@@ -81,26 +80,23 @@ class Overlay extends TextField {
 
 		scaleX = lime.app.Application.current.window.width / 1280;
 		scaleY = lime.app.Application.current.window.height / 720;
-		var currentCount = times.length;
-		currentFPS = Math.round(currentCount);
+		currentFPS = times.length;
 
-		var mem:Float = (
+		final mem:Float = (
 			#if cpp
 			cpp.NativeGc.memInfo(0)
 			#else
 			System.totalMemory
 			#end);
-		if (mem > memPeak)
-			memPeak = mem;
-		text = "" + currentFPS + " FPS/" + deltaTime + 
-			" MS\nMemory Usage/Peak: " + FlxStringUtil.formatBytes(mem) + "/" + FlxStringUtil.formatBytes(memPeak)
+		if (mem > memPeak) memPeak = mem;
+		text = '$currentFPS FPS/$deltaTime MS/FrameDiff: ${(timeDiff > 1 ? Math.floor(timeDiff) : timeDiff)}\nMemory Usage/Peak: ${FlxStringUtil.formatBytes(mem)}/${FlxStringUtil.formatBytes(memPeak)}'
 			#if cpp
-			+"\nMemory Reserved/Current: " + FlxStringUtil.formatBytes(cpp.NativeGc.memInfo(3)) + "/" + FlxStringUtil.formatBytes(cpp.NativeGc.memInfo(2))
+			+'\nMemory Reserved/Current: ${FlxStringUtil.formatBytes(cpp.NativeGc.memInfo(3))}/${FlxStringUtil.formatBytes(cpp.NativeGc.memInfo(2))}'
 			#end
 			+ debugVar + SEProfiler.getString();
 		// }
 
-		cacheCount = currentCount;
+		cacheCount = currentFPS;
 	}
 }
 // Clone of Overlay but to show a console sort of thing instead
@@ -122,7 +118,7 @@ class Console extends TextField
 	var isShowingConsole:Bool = true;
 	var wasMouseDisabled:Bool = false;
 	public static function trace(msg:String,?infos:haxe.PosInfos){
-		var str = haxe.Log.formatOutput(msg,infos);
+		final str = haxe.Log.formatOutput(msg,infos);
 		Sys.println(str);
 		if(Console.instance != null) Console.instance.log(str);
 	}
