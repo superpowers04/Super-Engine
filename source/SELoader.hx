@@ -38,6 +38,10 @@ using StringTools;
 	@:keep inline function appendPath(?part:String){
 		return part == null ? path : path + part;
 	}
+	@:keep inline function cd(part:String):SEDirectory{
+		path+='/$part';
+		return this;
+	}
 	function exists(?path:String):Bool{
 		SELoader.rawMode=true;
 		return SELoader.exists(appendPath(path));
@@ -166,7 +170,7 @@ class SELoader {
 			]);
 			if(the!=null) return AssetPathCache[path]=the;
 		}
-		var p = SELoader.getRawPath("assets/"+path);
+		final p = SELoader.getRawPath("assets/"+path);
 		// Cache as an empty string, literally no fucking reason to store the same string twice in memory
 		AssetPathCache[path]="";
 
@@ -385,6 +389,90 @@ class SELoader {
 		// 	rawJson = '{"meta":'+meta+','+rawJson.substring(1);
 		// }
 	}
+
+	public static function registerCharactersInFolder(ID:Int=0,path:String,?nameSpace:String="UNKNOWN",?recurse:Bool = true){
+		final ADDPE:Bool=SESave.data.PECharSeperate;
+		final LOADPE:Bool=SESave.data.PECharLoading;
+		final _dir = new SEDirectory(path);
+		if(!_dir.exists('characters/')) {
+			if(!recurse || !LOADPE || ID==0) return;
+			if(_dir.exists('assets/shared/characters')){
+				registerCharactersInFolder(ID,_dir.appendPath('assets/shared/'),nameSpace,false);
+			}
+			if(_dir.exists('assets/characters')){
+				registerCharactersInFolder(ID,_dir.appendPath('assets/'),nameSpace,false);
+			}
+			final modsFolder = _dir.newDirectory('mods/');
+			if(modsFolder.exists()){
+				if(modsFolder.exists('characters')){
+					registerCharactersInFolder(ID,modsFolder.toString(),nameSpace,false);
+				}else{
+					for(mod in modsFolder.readDirectory()){
+						registerCharactersInFolder(ID,modsFolder.appendPath(mod),nameSpace);
+					}
+				}
+			}
+
+			return;
+		}
+		_dir.cd('characters/');
+		// trace('Checking ${dir} for characters');
+		for (char in _dir.readDirectory()) {
+			if (LOADPE && !_dir.isDirectory(char)){
+				if (char.substring(char.length-5) == ".json"){ // Psych characters
+					TitleState.characters.push({
+						id:char.substring(0,char.length-5).replace(' ',"-").replace('_',"-").toLowerCase()+(ADDPE?"-pe":""),
+						folderName:char,
+						description:'Psych Engine character',
+						jsonLocation:'$_dir/$char',
+						psychChar:true,
+						path:'$_dir',
+						nameSpaceType:ID,
+						nameSpace:nameSpace
+					});
+				}
+				continue;
+			}
+			final charPath = _dir.newDirectory(char);
+			if (charPath.exists("config.json")) {
+				TitleState.characters.push({
+					id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
+					folderName:char,
+					description:(charPath.exists('description.txt') ? ';${SELoader.getContent('${charPath}/description.txt')}' : null),
+					path:'${_dir}',
+					nameSpaceType:ID,
+					nameSpace:nameSpace
+				});
+				continue;
+
+			}
+			if (charPath.exists("script.hscript")) {
+				TitleState.characters.push({
+					id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
+					folderName:char,
+					description:(charPath.exists('description.txt') ? ';${SELoader.getContent('${charPath}/description.txt')}' : null),
+					path:'${_dir}',
+					nameSpaceType:ID,
+					type:1,
+					nameSpace:nameSpace
+				});
+				continue;
+			}
+			if (charPath.exists("character.png") && (charPath.exists("character.xml") || charPath.exists("config.json"))){
+				TitleState.invalidCharacters.push({
+					id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
+					folderName:char,
+					path:'${_dir}',
+					nameSpaceType:ID,
+					nameSpace:nameSpace
+				});
+				continue;
+			}
+		}
+		  
+		
+	}
+
 	@:keep inline public static function triggerSave(textPath:String,content:String):Dynamic{
 		se.objects.SaveIcon.show();
 		return saveText(textPath,content,false);
@@ -526,9 +614,9 @@ class SELoader {
 			if(AssetPathListingCache[path] != null){
 				return AssetPathListingCache[path].copy();
 			}
-			var modsFolder = new SEDirectory(getRawPath('mods/'));
-			var packsFolder = modsFolder.newDirectory('packs/');
-			var listing:Map<String,Bool> = [];
+			final modsFolder = new SEDirectory(getRawPath('mods/'));
+			final packsFolder = modsFolder.newDirectory('packs/');
+			final listing:Map<String,Bool> = [];
 			for (pack in orderList(SELoader.readDirectory(packsFolder.toString()))){
 				if(exists('$packsFolder/$pack/assets/$path')){
 					for(p in readDirectory('$packsFolder/$pack/assets/$path')){
@@ -541,16 +629,14 @@ class SELoader {
 					}
 				}
 			}
-			var list = AssetPathListingCache[path] = [];
-			for(key in listing.keys()) list.push(key);
-			return list.copy();
+			return (AssetPathListingCache[path] = [for(key in listing.keys()) key]).copy();
 		}
 		return FileSystem.readDirectory(getPath(path));
 	}
 	public static function readDirectories(paths:Array<String>):Array<String>{
-		var ret = [];
+		final ret = [];
 		for(path in paths){
-			var _path = getPath(path,false);
+			final _path = getPath(path,false);
 			if(exists(_path) && isDirectory(_path)){
 				for(item in readDirectory(_path)){
 					ret.push('$path/$item');
@@ -563,9 +649,9 @@ class SELoader {
 		return new SEDirectory(path);
 	}
 	public static function readDirectoriesAsPaths(paths:Array<String>):Array<SEDirectory>{
-		var ret = [];
+		final ret = [];
 		for(path in paths){
-			var _path = new SEDirectory(path);
+			final _path = new SEDirectory(path);
 			if(_path.exists() && _path.isDirectory()){
 				for(item in _path.readDirectory()){
 					ret.push(_path.newDirectory(item));
@@ -626,7 +712,14 @@ class SELoader {
 			for(i in getSongsFromFolder(path.appendPath('assets/'),query)) returnArray.push(i);
 		}
 		if(path.isDirectory('mods/')){ // subfolder
-			for(i in getSongsFromFolder(path.appendPath('mods/'),query)) returnArray.push(i);
+			final modsFolder:SEDirectory = path.newDirectory('mods/');
+			if(modsFolder.isDirectory('images')){ // Treat as a seperate assets folder
+				for(i in getSongsFromFolder(modsFolder.toString(),query)) returnArray.push(i);
+			}else{
+				for(i in modsFolder.readDirectory()){ // Treat as a folder of mods
+					for(i in getSongsFromFolder(modsFolder.appendPath(i),query)) returnArray.push(i);
+				}
+			}
 		}
 
 		if(path.isDirectory('charts/')){ // SE

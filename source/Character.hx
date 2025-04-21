@@ -681,7 +681,6 @@ class CharAnimController extends FlxAnimationController{
 				}
 
 				if(charProperties.position != null){
-
 					charProperties.cam_pos= charProperties.camera_position;
 					charProperties.cam_pos[0]*=-1;
 					charProperties.cam_pos[1]*=-1;

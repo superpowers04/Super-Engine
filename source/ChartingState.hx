@@ -874,8 +874,7 @@ class ChartingState extends ScriptMusicBeatState
 		UI_box.addGroup(tab_group_song);
 		// UI_box.addGroup(tab_group_assets);
 		UI_box.scrollFactor.set();
-
-		FlxG.camera.follow(strumLine);
+		FlxG.camera.follow(strumLine,NO_DEAD_ZONE,1);
 	}
 
 	var stepperLength:FlxUINumericStepper;
@@ -1629,7 +1628,7 @@ class ChartingState extends ScriptMusicBeatState
 			if (FlxG.keys.pressed.W || FlxG.keys.pressed.S){
 				FlxG.sound.music.pause();
 				vocals.pause();
-				claps.splice(0, claps.length);
+				claps.resize(0);
 				var daTime:Float = (FlxG.keys.pressed.SHIFT ? Conductor.stepCrochet * 2 : 700 * FlxG.elapsed);
 				if (FlxG.keys.pressed.W) FlxG.sound.music.time -= daTime;
 				else FlxG.sound.music.time += daTime;
@@ -1840,7 +1839,7 @@ class ChartingState extends ScriptMusicBeatState
 			if(FlxG.sound.music.playing){
 				FlxG.sound.music.pause();
 				vocals.pause();
-				claps.splice(0, claps.length);
+				claps.resize(0);
 				requestMusicPlay = true;
 			}
 			Conductor.songPosition = 0;
@@ -1876,7 +1875,7 @@ class ChartingState extends ScriptMusicBeatState
 			if(FlxG.sound.music.playing){
 				FlxG.sound.music.pause();
 				vocals.pause();
-				claps.splice(0, claps.length);
+				claps.resize(0);
 				requestMusicPlay = true;
 			}
 			Conductor.songPosition = sectionStartTime(curSection);

@@ -132,11 +132,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 	override function onFocus() {
 		shouldDraw = true;
 		super.onFocus();
+		CoolUtil.setFramerate(0,false,false);
 		bg.alpha = 0;
 		inTween = FlxTween.tween(bg,{alpha:1},0.7);
 	}
 	override function onFocusLost(){
 		shouldDraw = false;
+		CoolUtil.setFramerate(30,false,true);
 		super.onFocusLost();
 		if(inTween != null){
 			inTween.cancel();
@@ -158,7 +160,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		return controlLabel;
 	}
 	function favChart(){
-		var songInfo = grpSongs.members[curSelected].menuValue;
+		final songInfo = grpSongs.members[curSelected].menuValue;
 		if(songInfo == null) return showTempmessage('You can only favourite songs!',FlxColor.RED);
 		if(songInfo.favouriteID > 0){
 			SESave.data.favourites.remove(SESave.data.favourites[songInfo.favouriteID-1]);

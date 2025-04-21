@@ -126,10 +126,6 @@ class OnlineLobbyState extends ScriptMusicBeatState {
 
 
 		Chat.createChat(this);
-
-
-
-
 		OnlinePlayMenuState.AddXieneText(this);
 
 

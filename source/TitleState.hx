@@ -355,7 +355,7 @@ class TitleState extends MusicBeatState
 		#if sys
 		// Loading like this is probably not a good idea
 		
-		var customCharacters:Array<String> = [];
+		final customCharacters:Array<String> = [];
 
 		// TODO: MOVE TO SELOADER
 		if (SELoader.exists("mods/characters/")){
@@ -397,70 +397,14 @@ class TitleState extends MusicBeatState
 		}
 
 		
-		var ADDPE=SESave.data.PECharSeperate;
-		var LOADPE=SESave.data.PECharLoading;
+		// final ADDPE=SESave.data.PECharSeperate;
+		final LOADPE=SESave.data.PECharLoading;
 		for (ID => dataDir in ['mods/weeks/','mods/packs/']) {
-			var e = new SEDirectory(dataDir);
-			if (SELoader.exists(dataDir)) {
-			  for (nameSpace in SELoader.readDirectory(dataDir)) {
-				var _dir=e.newDirectory(nameSpace);
-				if(!_dir.exists("characters/")) continue;
-				_dir = _dir.newDirectory('characters/');
-				// trace('Checking ${dir} for characters');
-				for (char in _dir.readDirectory()) {
-
-					if (!_dir.isDirectory(char) && LOADPE){
-						if (char.substring(char.length-5) == ".json"){ // Psych characters
-							characters.push({
-								id:char.substring(0,char.length-5).replace(' ',"-").replace('_',"-").toLowerCase()+(ADDPE?"-pe":""),
-								folderName:char,
-								description:'Psych Engine character',
-								jsonLocation:'$_dir/$char',
-								psychChar:true,
-								path:'$_dir',
-								nameSpaceType:ID,
-								nameSpace:nameSpace
-							});
-						}
-						continue;
-					}
-					var charPath = _dir.newDirectory(char);
-					if (charPath.exists("config.json")) {
-						var desc = null;
-						if (charPath.exists('description.txt')) desc = ";" +SELoader.getContent('${charPath}/description.txt');
-						characters.push({
-							id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
-							folderName:char,
-							description:desc,
-							path:'${_dir}',
-							nameSpaceType:ID,
-							nameSpace:nameSpace
-						});
-
-					}else if (charPath.exists("script.hscript")) {
-						var desc = null;
-						if (charPath.exists('description.txt')) desc = ";" +SELoader.getContent('${charPath}/description.txt');
-						characters.push({
-							id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
-							folderName:char,
-							description:desc,
-							path:'${_dir}',
-							nameSpaceType:ID,
-							type:1,
-							nameSpace:nameSpace
-						});
-
-					}else if (charPath.exists("character.png") && (charPath.exists("character.xml") || charPath.exists("config.json"))){
-						invalidCharacters.push({
-							id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
-							folderName:char,
-							path:'${_dir}',
-							nameSpaceType:ID,
-							nameSpace:nameSpace
-						});
-					}
+			final dir = new SEDirectory(dataDir);
+			if (dir.exists()) {
+				for(pack in dir.readDirectory()){
+					SELoader.registerCharactersInFolder(ID,dir.appendPath(pack),pack,LOADPE);
 				}
-			  }
 			}
 		}
 		if(easterEgg == 0x1){
