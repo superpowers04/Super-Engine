@@ -908,7 +908,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		var i:Int = curSelected;
 		final members = grpSongs.members;
 		final l = members.length-1;
-		while(i => 0 && i < l){
+		while((i >= 0 && i < l)){
 			if(direction) i++; else i--;
 			if(members[i]?.menuValue == categories){
 				changeSelection(i-curSelected);
