@@ -68,6 +68,24 @@ using StringTools;
 }
 
 class SELoader {
+	static final normalFolders:Map<String,Bool> = [
+		'assets'=>true,
+		'characters'=>true,
+		'custom_events'=>true,
+		'custom_notetypes'=>true,
+		'data'=>true,
+		'dialogue'=>true,
+		'fonts'=>true,
+		'images'=>true,
+		'music'=>true,
+		'scripts'=>true,
+		'shaders'=>true,
+		'songs'=>true,
+		'sounds'=>true,
+		'stages'=>true,
+		'videos'=>true,
+		'weeks'=>true,
+	];
 
 	static public var cache:InternalCache = new InternalCache();
 	public static var AssetPathCache:Map<String,String>=[];
@@ -217,7 +235,7 @@ class SELoader {
 		return File.getContent(textPath);
 	}
 	public static function loadXML(textPath:String,?useCache:Bool = false):String{ // Automatically fixes UTF-16 encoded files
-		if(textPath.lastIndexOf('.') == -1) textPath+='.xml';
+		if(textPath.substring(textPath.length-4) != ".xml") textPath+='.xml';
 		return cleanXML(loadText(textPath,useCache));
 	}
 	public static function cleanXML(text:String):String{ // Automatically fixes UTF-16 encoded files
@@ -298,7 +316,7 @@ class SELoader {
 		}
 		return atlas;
 	}
-	public static function loadSparrowFrames(pngPath:String,?cache:Bool=false):FlxAtlasFrames{
+	public static function loadSparrowFrames(pngPath:String,?cache:Bool=false,?xml:String = ""):FlxAtlasFrames{
 		pngPath = getPath(pngPath);
 		if(!exists('${pngPath}.png')){
 			handleError(' SparrowFrame PNG "${pngPath}.png" doesn\'t exist!');
@@ -308,7 +326,7 @@ class SELoader {
 			handleError(' SparrowFrame XML "${pngPath}.xml" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
-		return FlxAtlasFrames.fromSparrow(loadGraphic('$pngPath.png',cache),loadXML('${pngPath}',cache));
+		return FlxAtlasFrames.fromSparrow(loadGraphic('$pngPath.png',cache),xml == "" ? loadXML('${pngPath}',cache) : xml);
 	}
 	public static function loadSparrowSprite(x:Float,y:Float,pngPath:String,?anim:String = "",?loop:Bool = false,?fps:Int = 24,?useCache:Bool = false):FlxSprite{
 		pngPath = getPath(pngPath);
@@ -648,6 +666,9 @@ class SELoader {
 	@:keep inline public static function getAsDirectory(path:String):SEDirectory{
 		return new SEDirectory(path);
 	}
+	@:keep inline public static function upDirectory(path:String):String{
+		return path.substring(0,path.substring(0,path.length-1).lastIndexOf('/')+1);
+	}
 	public static function readDirectoriesAsPaths(paths:Array<String>):Array<SEDirectory>{
 		final ret = [];
 		for(path in paths){
@@ -713,12 +734,12 @@ class SELoader {
 		}
 		if(path.isDirectory('mods/')){ // subfolder
 			final modsFolder:SEDirectory = path.newDirectory('mods/');
-			if(modsFolder.isDirectory('images')){ // Treat as a seperate assets folder
-				for(i in getSongsFromFolder(modsFolder.toString(),query)) returnArray.push(i);
-			}else{
-				for(i in modsFolder.readDirectory()){ // Treat as a folder of mods
-					for(i in getSongsFromFolder(modsFolder.appendPath(i),query)) returnArray.push(i);
-				}
+			// if(modsFolder.isDirectory('images')){ // Treat as a seperate assets folder
+			// }
+			for(i in getSongsFromFolder(modsFolder.toString(),query)) returnArray.push(i);
+			for(i in modsFolder.readDirectory()){ // Treat as a folder of mods
+				if(normalFolders.get(i) == true) continue;
+				for(i in getSongsFromFolder(modsFolder.appendPath(i),query)) returnArray.push(i);
 			}
 		}
 

@@ -282,6 +282,11 @@ class PlayState extends ScriptMusicBeatState
 			public var camGame:FlxCamera;
 			public var camFollow:FlxObject;
 			private static var prevCamFollow:FlxObject;
+			public var defaultCamPositions:Array<Array<Float>> =[
+				[850,425],
+				[600,425],
+				[650,320]
+			];
 
 		/* UI */
 
@@ -2169,7 +2174,7 @@ class PlayState extends ScriptMusicBeatState
 		}catch(e){trace('Error adding notes to pool? ${e.message}');}
 
 		if(realtimeCharCam){
-			var f = getDefaultCamPos();
+			final f = getDefaultCamPos();
 
 			camFollow.x = f[0] + additionCamPos[0];
 			camFollow.y = f[1] + additionCamPos[1];
@@ -2285,7 +2290,7 @@ class PlayState extends ScriptMusicBeatState
 	@:keep inline public function followChar(?char:Int = 0,?locked:Bool = true){
 		focusedCharacter = char;
 		camIsLocked = (locked || cameraPositions[char] == null);
-		var f = getDefaultCamPos();
+		final f = getDefaultCamPos();
 		camFollow.x = f[0] + additionCamPos[0];
 		camFollow.y = f[1] + additionCamPos[1];
 	}
@@ -2293,15 +2298,8 @@ class PlayState extends ScriptMusicBeatState
 		if(!moveCamera) return [camFollow.x,camFollow.y];
 		if(canLocked && camIsLocked) return lockedCamPos; 
 		if(realtimeCharCam){
-			var char:Character = switch(focusedCharacter){case 1: dad;case 2:gf;default: boyfriend;};
-			if(char.lonely || char.curCharacter == "" || char.curCharacter == "lonely"){
-				cameraPositions[focusedCharacter] = lockedCamPos.copy();
-				camIsLocked = true;
-				return lockedCamPos;
-			}else{
-				var x:Float = switch(focusedCharacter){case 2: 0;case 1: 150;default:-100;};
-				cameraPositions[focusedCharacter] = [char.getMidpoint().x + x + char.camX,char.getMidpoint().y - 100 + char.camY];
-			}
+			final char:Character = getCharFromID(focusedCharacter);
+			cameraPositions[focusedCharacter] = char.getCameraPosition(focusedCharacter);
 		} 
 		return cameraPositions[focusedCharacter];
 	}
@@ -2340,32 +2338,7 @@ class PlayState extends ScriptMusicBeatState
 	public var focusedCharacter:Int = 0;
 	@:keep inline public function updateCharacterCamPos(){ // Resets all camera positions
 		
-		cameraPositions = [
-			[boyfriend.getMidpoint().x - 100 + boyfriend.camX,boyfriend.getMidpoint().y - 100 + boyfriend.camY],
-			[dad.getMidpoint().x + 150 + dad.camX,dad.getMidpoint().y - 100 + dad.camY],
-			[gf.getMidpoint().x + gf.camX,gf.getMidpoint().y - 100 + gf.camY]
-		];
-		if(boyfriend.lonely || boyfriend.curCharacter == "" || boyfriend.curCharacter == "lonely"){
-			cameraPositions[0][0] = defLockedCamPos[0];
-			cameraPositions[0][1] = defLockedCamPos[1];
-		}else if(!boyfriend.useMidpoint){
-			cameraPositions[0][0] = boyfriend.x + boyfriend.camX;
-			cameraPositions[0][1] = boyfriend.y + boyfriend.camY;
-		}
-		if(dad.lonely || dad.curCharacter == "" || dad.curCharacter == "lonely"){
-			cameraPositions[1][0] = defLockedCamPos[0];
-			cameraPositions[1][1] = defLockedCamPos[1];
-		}else if(!dad.useMidpoint){
-			cameraPositions[0][0] = dad.x + dad.camX;
-			cameraPositions[0][1] = dad.y + dad.camY;
-		}
-		if(gf.lonely || gf.curCharacter == "" || gf.curCharacter == "lonely"){
-			cameraPositions[2][0] = defLockedCamPos[0];
-			cameraPositions[2][1] = defLockedCamPos[1];
-		}else if(!gf.useMidpoint){
-			cameraPositions[0][0] = gf.x + gf.camX;
-			cameraPositions[0][1] = gf.y + gf.camY;
-		}
+		cameraPositions = [boyfriend.getCameraPosition(0),dad.getCameraPosition(1),gf.getCameraPosition(2)];
 		if(swappedChars){
 			cameraPositions[0][0] -= 50;
 			cameraPositions[0][1] += 50;

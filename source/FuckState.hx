@@ -32,6 +32,7 @@ class FuckState extends FlxUIState {
 	public static var lastERROR = "";
 	public static var allowLogWrite:Bool = true;
 	public static var errorCount = 0;
+	public static var quip = "";
 	public static function generateReport(error:String = "UNKNOWN ERROR?",type:String = "CRASH"):Bool{
 		var callstack = "UNSET";
 		try{
@@ -108,6 +109,7 @@ class FuckState extends FlxUIState {
 			if(!SELoader.exists('crashReports/')){
 				SELoader.createDirectory('crashReports/');
 			}
+			quip = funnyQuip;
 
 			dateNow = StringTools.replace(StringTools.replace(_date.toString(), " ", "_"), ":", ".");
 			try{
@@ -218,6 +220,8 @@ class FuckState extends FlxUIState {
 			saved = generateReport('${exception}\nThis happened in ${info}','CRASH');
 
 		}
+
+		exception='$quip\n$exception';
 		Main.renderLock.release();
 		if(Main.game == null || _rawError || !TitleState.initialized || useOpenFL){
 			// trace(Main.game == null);

@@ -69,15 +69,17 @@ class ScriptableStateManager {
 		var interp = _subState.loadSingleScript(currentPath+path);
 		if(interp == null) return null;
 	// 		interp.variables.set("id",id);
+		#if linc_luajit
 		if(interp is SELua){
-			var interp:SELua = cast interp;
+			final interp:SELua = cast interp;
 			interp.variables.set("close",function(){ FlxG.switchState(new SelectScriptableState()); }); // Closes a script
 			interp.variables.set("Manager",ScriptableStateManager);
 			interp.variables.set("ScriptableStateManager",ScriptableStateManager);
 			interp.variables.set("FlxG",FlxG);
 		}
+		#end
 		if(interp is Interp){
-			var interp:Interp = cast interp;
+			final interp:Interp = cast interp;
 			interp.variables.set("close",function(){ FlxG.switchState(new SelectScriptableState()); }); // Closes a script
 			interp.variables.set("Manager",ScriptableStateManager);
 			interp.variables.set("ScriptableStateManager",ScriptableStateManager);

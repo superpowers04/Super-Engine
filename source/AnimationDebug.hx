@@ -227,7 +227,7 @@ class AnimationDebug extends MusicBeatState
 			}
 			Conductor.changeBPM(137);
 		}
-		trace('Animation debug with ${daAnim},${if(isPlayer) "true" else "false"},${charType}');
+		trace('Animation debug with ${daAnim},${isPlayer ?  "true" : "false"},${charType}');
 
 	}
 	var dragdrop = false;
@@ -529,16 +529,15 @@ class AnimationDebug extends MusicBeatState
 				offset[animName][1] += amountY;
 			}
 			if (offsetText[animName] == null){
-				var text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
+				final text:FlxText = new FlxText(30,30 + (offsetTextSize * offsetCount),0,"");
 				text.setFormat(CoolUtil.font, 24, FlxColor.BLACK, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.WHITE);
 				text.scrollFactor.set();
 				text.visible = showOffsets;
 				text.cameras = [camHUD];
-				add(text);
-				offsetText[animName] = text;
+				add(offsetText[animName] =  text);
 				offsetList.push(animName);
 			}
-			chara.playAnim(animName, true,false,0,offset[animName][0],offset[animName][1]);
+			chara.playAnim(animName, true,0,offset[animName][0],offset[animName][1]);
 			offsetText[animName].text = '${animName}: [${offset[animName][0]}, ${offset[animName][1]}]';
 		}catch(e) MainMenuState.handleError('Error while handling offsets: ${e.message}');
 		
@@ -759,7 +758,7 @@ class AnimationDebug extends MusicBeatState
 			return;
 
 		}
-		var frame = chara.frames.frames[chara.animation.frameIndex];
+		final frame = chara.frames.frames[chara.animation.frameIndex];
 		if (frame == null){
 			offsetTopText.text = 'Per frame offsetting, No frame selected??';
 			return;
@@ -784,14 +783,14 @@ class AnimationDebug extends MusicBeatState
 			updateCameraPos(false,720, 500);
 		}
 	}
-	inline function get_chara_X(){return chara.getMidpoint().x + (if (charType == 0) -100 else if (charType == 2) 0 else 150) + chara.camX;}
-	inline function get_chara_Y(){return chara.getMidpoint().y - 100 + chara.camY;}
+	inline function get_chara_X(){return chara.getCameraPosition()[0];}
+	inline function get_chara_Y(){return chara.getCameraPosition()[1];}
 
 	function playAnim(?animName:String = ""){
 		if (animName == "") animName = animToPlay;
 		var localOffsets:Array<Float>=[0,0];
 		if(offset[animName] != null) localOffsets = offset[animName];
-		chara.playAnim(animName, true, false, 0, localOffsets[0], localOffsets[1]);
+		chara.playAnim(animName, true, 0, localOffsets[0], localOffsets[1]);
 		animToPlay = "";
 		if(animDropDown != null) animDropDown.selectedLabel = animName;
 	}
@@ -802,7 +801,8 @@ class AnimationDebug extends MusicBeatState
 			if (ctrlPress){x=x*0.1;y=y*0.1;}
 			chara.camX += x;
 			chara.camY += y;
-			camFollow.setPosition(get_chara_X(), get_chara_Y());
+			final arr = chara.getCameraPosition();
+			camFollow.setPosition(arr[0], arr[1]);
 			return;
 		}
 		camFollow.setPosition(x,y);

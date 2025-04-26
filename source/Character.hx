@@ -83,6 +83,7 @@ class CharAnimController extends FlxAnimationController{
 		public var replayAnims:Array<String> = [];
 		public var loopAnimFrames:Map<String,Int> = [];
 		public var loopAnimTo:Map<String,String> = [];
+
 		// Anim priorities, can be used so animations can override others
 		// 0 is used for idle animations
 		// 5 is used for hey, cheer and scared
@@ -239,6 +240,7 @@ class CharAnimController extends FlxAnimationController{
 		public var isStunned:Bool = false;
 		public var isPressingNote:Bool = false; // Only used for the player. True if the player is currently pressing any notes keys
 		public var isNew:Bool = false;
+		public var ignoreCamera:Bool = false;
 
 	// public var spriteArr:Array<FlxSprite> = [];
 	// public var animArr:Array<FlxAnimationController> = [];
@@ -648,18 +650,22 @@ class CharAnimController extends FlxAnimationController{
 			
 			if(charProperties.healthicon != null) charInfo.iconLocation = SELoader.getAssetPath('assets:images/icons/'+charProperties.healthicon+'.png');
 			if(frames == null){
-				var pngName = SELoader.getAssetPath('assets:images/'+charProperties.image+".png");
-				var xmlName = SELoader.getAssetPath('assets:images/'+charProperties.image+".xml");
-				if(pngName == "" || !SELoader.exists(pngName)){
-					pngName = SELoader.getAssetPath('assets:'+charProperties.image+".png");
-					xmlName = SELoader.getAssetPath('assets:'+charProperties.image+".xml");
-				}
-				if(pngName == ""){
-					throw('Unable to find image "${charProperties.image}" for $curCharacter');
+				// var pngName = SELoader.getAssetPath('assets:images/'+charProperties.image+".png");
+				// var xmlName = SELoader.getAssetPath('assets:images/'+charProperties.image+".xml");
+				final pngName:String = SELoader.anyExists([
+					SELoader.getAssetPath('assets:images/'+charProperties.image+".png"),
+					SELoader.getAssetPath('assets:'+charProperties.image+".png"),
+					charInfo.path+charProperties.image+".png",
+					SELoader.upDirectory(charInfo.path)+charProperties.image+".png",
+					SELoader.upDirectory(charInfo.path)+'images/'+charProperties.image+".png"
+				]);
+				if(pngName == "" || pngName == null || !SELoader.exists(pngName)){
+					throw('Unable to find image "${charProperties.image}" / $pngName for $curCharacter');
 					return;
 				}
-				if(xmlName == ""){
-					throw('Unable to find xml "${charProperties.image}" for $curCharacter');
+				final xmlName = pngName.substring(0,pngName.length-3)+"xml";
+				if(!SELoader.exists(xmlName)){
+					throw('Unable to find xml "${charProperties.image}" / $xmlName for $curCharacter');
 					return;
 				}
 
@@ -674,7 +680,7 @@ class CharAnimController extends FlxAnimationController{
 					} else {
 						charXml = SELoader.loadXML(xmlName); // Loads the XML as a string. 
 						if (charXml == null){throw('$curCharacter is missing their XML!');} // Boot to main menu if character's XML can't be loaded
-						frames=tex = SELoader.loadSparrowFrames(pngName.substring(0,pngName.length-4));
+						frames=tex = SELoader.loadSparrowFrames(pngName.substring(0,pngName.length-4),charXml);
 						// SEFlxFrames.fromSparrow(SELoader.loadGraphic(pngName), charXml);
 					}
 					if (tex == null){throw('$curCharacter is missing their XML!');} // Boot to main menu if character's texture can't be loaded
@@ -689,6 +695,7 @@ class CharAnimController extends FlxAnimationController{
 						// case 1:charProperties.cam_pos[1]-=300;
 						// case 2:charProperties.cam_pos[0]+=100;
 					}
+					if(!SESave.data.PECharCamPos) ignoreCamera = true;
 					useMidpoint = false;
 					
 					charProperties.offset_flip=3;
@@ -850,10 +857,10 @@ class CharAnimController extends FlxAnimationController{
 	public function handleError(error:String,?pos:haxe.PosInfos){
 		thrownError++;
 		if(thrownError>1){
-			trace('$curCharacter Error $thrownError:$error');
+			trace('${getNamespacedName()} Error $thrownError:$error');
 			return;
 		}
-		trace('$curCharacter:$error');
+		trace('${getNamespacedName()}:$error');
 		interp = null;
 		// if(!loaded){
 		// 	try{
@@ -868,7 +875,8 @@ class CharAnimController extends FlxAnimationController{
 		// 	PlayState.instance.errorHandle(error);
 		// 	// throw error;
 		// }else{
-		MainMenuState.handleError(error,pos);
+		throw('${getNamespacedName()}:$error');
+		// MainMenuState.handleError(error,pos);
 		// }
 	}
 
@@ -886,7 +894,7 @@ class CharAnimController extends FlxAnimationController{
 		super(x, y);
 		if(lonely || character == "lonely") return;
 		if(charInfo != null) character = (this.charInfo = charInfo).folderName;
-		trace('Loading ${character}');
+		trace('Loading ${character} ');
 		animOffsets = ["all" => [0,0] ];
 		// animOffsets['all'] = [0.0, 0.0];
 		if (character == "") character = (charType == 2 ? "gf" : "bf");
@@ -1071,6 +1079,22 @@ class CharAnimController extends FlxAnimationController{
 	// 		// frames = graphicsArr[id];
 	// 	}
 	// }
+	@:keep inline public function getBaseCameraPosition(?id:Null<Int> = null){
+		final arr:Array<Float> = [(switch(id ?? charType){case 2: 0;case 1: 150;default:-100;}) + 150 + camX,100 + camY];
+		if(useMidpoint){
+			arr[0]+=getMidpoint().x;
+			arr[1]-=getMidpoint().y;
+		}
+		return arr;
+	}
+	public function getCameraPosition(?id:Null<Int> = null){
+		if(ignoreCamera && PlayState.instance != null) return PlayState.instance.defaultCamPositions[id ?? charType];
+		final arr:Array<Float> = getBaseCameraPosition(id);
+		arr[0]+=camX;
+		arr[1]+=camY;
+		return arr;
+	}
+
 	override function draw(){
 		callInterp("draw",[]);
 		super.draw();

@@ -21,8 +21,7 @@ import SELoader;
 
 using StringTools;
 
-class ImportMod extends DirectoryListing
-{
+class ImportMod extends DirectoryListing {
 	var importExisting = false;
 	var curReg:EReg = ~/.+\/(.*?)\//g;
 
@@ -81,6 +80,7 @@ class ImportModFromFolder extends MusicBeatState
 			}catch(e){
 				throw('Unable to read zip: $e');
 			}
+			trace('Reading $path');
 			var metadata:haxe.zip.Entry = null;
 			var subfolder:String = "";
 			var canBreakMeta=false;
@@ -117,7 +117,7 @@ class ImportModFromFolder extends MusicBeatState
 					continue;
 				}
 				if(!canBreakSubfolder && entry.fileName.contains('/')){
-					var sub = entry.fileName.substring(0,entry.fileName.indexOf('/'));
+					final sub = entry.fileName.substring(0,entry.fileName.indexOf('/'));
 					if(subfolder == ""){
 						subfolder = sub;
 					}else if(subfolder != sub){
@@ -131,7 +131,7 @@ class ImportModFromFolder extends MusicBeatState
 				}
 
 			}
-
+			trace('Checking for metadata');
 			var metaContent:Map<String,String> = [];
 			if(metadata != null){
 

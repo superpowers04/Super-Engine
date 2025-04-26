@@ -160,7 +160,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		return controlLabel;
 	}
 	function favChart(){
-		final songInfo = grpSongs.members[curSelected].menuValue;
+		final songInfo:SongInfo = grpSongs.members[curSelected].menuValue;
 		if(songInfo == null) return showTempmessage('You can only favourite songs!',FlxColor.RED);
 		if(songInfo.favouriteID > 0){
 			SESave.data.favourites.remove(SESave.data.favourites[songInfo.favouriteID-1]);
@@ -178,7 +178,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 	function addCategory(name:String,i:Int,addToCats:Bool = true):Alphabet{
 		callInterp('addCategory',[name,i]);
 		if(cancelCurrentFunction) return null;
-		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
+		final controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, name, true, false,true);
 		controlLabel.adjustAlpha = false;
 		controlLabel.x = 20;
 		if(controlLabel.border != null) {
@@ -191,7 +191,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		controlLabel.targetY = i;
 		controlLabel.alpha = 1;
 		grpSongs.add(controlLabel);
-		if(addToCats) categories.push(name);
+		if(addToCats) (controlLabel.menuValue = categories).push(name);
 		callInterp('addCategoryAfter',[controlLabel,name,i]);
 		return controlLabel;
 	}
@@ -288,12 +288,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		songInfoArray=[];
 		callInterp('generateList',[reload,search,query]);
 		if(!cancelCurrentFunction){
-			var emptyCats:Array<String> = [];
+			final emptyCats:Array<String> = [];
 			var _packCount:Int = 0;
 
 			if(SESave.data.favourites != null && SESave.data.favourites.length > 0){
 				var containsSong = false;
-				var missingSongs:Array<Dynamic> = [];
+				final missingSongs:Array<Dynamic> = [];
 				_packCount++;
 				for (i => osong in SESave.data.favourites){
 					var song:SongInfo = null;
@@ -536,12 +536,12 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 	}
 
 	function selSong(sel:Int = 0,charting:Bool = false){
-		if (grpSongs.members[sel].menuValue == null){ // Actually check if the song is a song, if not then error
+		if (!(grpSongs.members[sel].menuValue is SongInfo)){ // Actually check if the song is a song, if not then error
 			SELoader.playSound("assets/sounds/cancelMenu.ogg");
 			showTempmessage("Invalid song!",FlxColor.RED);
 			return;
 		}
-		var songInfo:SongInfo = cast grpSongs.members[sel].menuValue;
+		final songInfo:SongInfo = cast grpSongs.members[sel].menuValue;
 		onlinemod.OfflinePlayState.nameSpace = "";
 		PlayState.songInfo = songInfo;
 		if(songInfo.namespace != null){
@@ -662,8 +662,18 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 	}
 	var listeningTime:Float = 0;
 	override function extraKeys(){
-		if(controls.LEFT_P){changeDiff(-1);}
-		if(controls.RIGHT_P){changeDiff(1);}
+		if(controls.LEFT_P){
+			if(grpSongs.members[curSelected]?.menuValue == categories){
+				changeCategory(false);
+			}
+			changeDiff(-1);
+		}
+		if(controls.RIGHT_P){
+			if(grpSongs.members[curSelected]?.menuValue == categories){
+				changeCategory(true);
+			}
+			changeDiff(1);
+		}
 		if (FlxG.keys.justPressed.SEVEN && SESave.data.animDebug){
 			selSong(curSelected,true);
 		}
@@ -694,7 +704,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 			playCount++;
 			allowInput = false;
 			curVol = 2; // Resync audio volume
-			var songInfo:SongInfo = grpSongs.members[curSelected]?.menuValue;
+			final songInfo:SongInfo = grpSongs.members[curSelected]?.menuValue;
 			if(songInfo == null) {
 				curPlaying = null;
 				SickMenuState.musicHandle();
@@ -863,21 +873,22 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 			// score = Highscore.getScoreUnformatted();
 		
 	}
-	function changeDiff(change:Int = 0,?forcedInt:Int= -100){ // -100 just because it's unlikely to be used
-		var songInfo = grpSongs.members[curSelected]?.menuValue;
+	function changeDiff(change:Int = 0,?forcedInt:Null<Int>= null){ // -100 just because it's unlikely to be used
+		final songInfo:SongInfo = grpSongs.members[curSelected]?.menuValue;
 		if (songInfo == null) {
 			diffText.text = 'No song selected';
 			diffText.screenCenter(X);
 			updateScore();
 			return;
 		}
+		final songInfo:SongInfo = cast songInfo;
 		if(twee != null)twee.cancel();
 		diffText.scale.set(1.2,1.2);
 		twee = FlxTween.tween(diffText.scale,{x:1,y:1},(30 / Conductor.bpm));
-		var charts = songInfo.charts;
+		final charts = songInfo.charts;
 		lastSong = charts[selMode] + songInfo.name;
 
-		if (forcedInt == -100) selMode += change; else selMode = forcedInt;
+		if (forcedInt == null) selMode += change; else selMode = forcedInt;
 		if (selMode >= charts.length) selMode = 0;
 		if (selMode < 0) selMode = charts.length - 1;
 		// var e:Dynamic = TitleState.getScore(4);
@@ -889,6 +900,22 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		// diffText.centerOffsets();
 		diffText.screenCenter(X);
 		updateScore(songInfo,charts[selMode]);
+
+		// diffText.x = (FlxG.width) - 20 - diffText.width;
+
+	}
+	function changeCategory(?direction:Bool = true){
+		var i:Int = curSelected;
+		final members = grpSongs.members;
+		final l = members.length-1;
+		while(i => 0 && i < l){
+			if(direction) i++; else i--;
+			if(members[i]?.menuValue == categories){
+				changeSelection(i-curSelected);
+				return;
+			}
+		}
+		changeSelection(direction ? 1 : -1);
 
 		// diffText.x = (FlxG.width) - 20 - diffText.width;
 

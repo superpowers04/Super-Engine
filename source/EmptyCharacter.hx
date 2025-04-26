@@ -31,6 +31,7 @@ class EmptyCharacter extends Character
 		this.lonely = true;
 		animOffsets = new Map<String, Array<Float>>();
 		animOffsets['all'] = [0.0, 0.0];
+		this.ignoreCamera=true;
 
 		curCharacter = character = "lonely";
 		charType = char_type;
@@ -90,4 +91,5 @@ class EmptyCharacter extends Character
 	override public function draw(){
 		return;
 	}
+
 }

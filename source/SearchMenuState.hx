@@ -382,9 +382,9 @@ class SearchMenuState extends ScriptMusicBeatState {
 	}
 	function changeSelection(change:Int = 0)
 	{try{
-		if (change != 0) SELoader.playSound('assets:sounds/scrollMenu.ogg',true);
 		callInterp('changeSelection',[change]);
 		if(cancelCurrentFunction) return;
+		if (change != 0) SELoader.playSound('assets:sounds/scrollMenu.ogg',true);
 
 		curSelected += change;
 		if (curSelected < 0) curSelected = grpSongs.members.length - 1;
@@ -392,8 +392,8 @@ class SearchMenuState extends ScriptMusicBeatState {
 
 
 		for (bullShit => item in grpSongs.members){
-			if ((item.y > 0 && item.y < FlxG.height) || (bullShit - curSelected < 10 &&  bullShit - curSelected > -10)){ // If item is onscreen, then actually move and such
-				item.targetY = bullShit - curSelected;
+			item.targetY = bullShit - curSelected;
+			if ((item.y > -100 && item.y < FlxG.height+100) || (item.targetY < 10 &&  item.targetY > -10)){ // If item is onscreen, then actually move and such
 				if (!item.alive){
 					item.revive();
 					item.y = (item.targetY < 0 ) ? -500 : FlxG.height + 500;
