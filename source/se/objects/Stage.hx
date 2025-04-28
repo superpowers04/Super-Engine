@@ -3,24 +3,74 @@ import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.FlxState;
 import flixel.FlxSprite;
+import TitleState;
 
-class Stage extends FlxGroup{
-	public var objects:Array<Dynamic<FlxObject>> = [];
-	public var bfPos:Array<Float> =  [0,0];
-	public var dadPos:Array<Float> = [0,0];
-	public var gfPos:Array<Float> =  [0,0];
-	public var tags:Array<String> = [];
-	public var jsonFile:String;
-	public var showGF:Bool = true;
-	public var defaultCamZoom:Float = 1.05;
-	public var name:String = "";
-	public function apply(state:FlxState){
-		// state.add(this);
+@:publicFields class Stage extends FlxGroup{
+	var objects:Array<Dynamic<FlxObject>> = [];
+	var bfPos:Array<Float> =  [0,0];
+	var dadPos:Array<Float> = [0,0];
+	var gfPos:Array<Float> =  [0,0];
+	var tags:Array<String> = [];
+	var jsonFile:String;
+	var showGF:Bool = true;
+	var defaultCamZoom:Float = 1.05;
+	var name:String = "";
+	var interps:Array<Dynamic> = []; 
+	var stageInfo:StageInfo;
+	// TODO MAKE LESS SHIT
+	function callInterp(state:ScriptMusicBeatState, name:String,args:Array<Dynamic>){
+		for (interp in interps){
+			state.callSingleInterp(name,args,this.name,interp);
+		}
+	}
+	function apply(state:FlxState,boyfriend:Character,dad:Character,gf:Character){
+		if(boyfriend != null) {
+			boyfriend.x+=bfPos[0];
+			boyfriend.y+=bfPos[1];
+		}
+		if(dad != null) {
+			dad.x+=dadPos[0];
+			dad.y+=dadPos[1];
+		}
+		if(gf != null) {
+			gf.x+=gfPos[0];
+			gf.y+=gfPos[1];
+		}
+		if(state is PlayState){
+			final state:PlayState = cast state;
+			state.defaultCamZoom = defaultCamZoom;
+			PlayState.stageTags = tags;
+			PlayState.curStage = name;
+			PlayState.stageInfo = stageInfo;
+		}
+		if(state is ScriptMusicBeatState){
+			
+			callInterp(cast state,'apply',[this]);
+		}
 
 	}
-}
-class BaseStage extends Stage{
+	function unload(state:FlxState, boyfriend:Character, dad:Character, gf:Character){
+		if(boyfriend != null) {
+			boyfriend.x-=bfPos[0];
+			boyfriend.y-=bfPos[1];
+		}
+		if(dad != null) {
+			dad.x-=dadPos[0];
+			dad.y-=dadPos[1];
+		}
+		if(gf != null) {
+			gf.x-=gfPos[0];
+			gf.y-=gfPos[1];
+		}
+		if(state is ScriptMusicBeatState){
+			callInterp(cast state,'unload',[this]);
+		}
+	}
 
+}
+/* TODO REMOVE Paths REFERENCES*/
+class BaseStage extends Stage{
+	override function callInterp(state:ScriptMusicBeatState, name:String,args:Array<Dynamic>){}
 	public function new(?simple:Bool = false){
 		super();
 		defaultCamZoom = 0.9;
@@ -30,13 +80,13 @@ class BaseStage extends Stage{
 			tags.push('performance');
 			tags.push('simple');
 		}else {
-			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+			final bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
 			bg.antialiasing = true;
 			bg.scrollFactor.set(0.9, 0.9);
 			bg.active = false;
 			add(bg);
 		}
-		var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+		final stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
 		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 		stageFront.updateHitbox();
 		stageFront.antialiasing = true;
@@ -44,7 +94,7 @@ class BaseStage extends Stage{
 		stageFront.active = false;
 		add(stageFront);
 		if(!simple){
-			var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+			final stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
 			stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 			stageCurtains.updateHitbox();
 			stageCurtains.antialiasing = true;

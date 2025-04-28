@@ -1080,12 +1080,9 @@ class CharAnimController extends FlxAnimationController{
 	// 	}
 	// }
 	@:keep inline public function getBaseCameraPosition(?id:Null<Int> = null){
-		final arr:Array<Float> = [(switch(id ?? charType){case 2: 0;case 1: 150;default:-100;}) + 150 + camX,100 + camY];
-		if(useMidpoint){
-			arr[0]+=getMidpoint().x;
-			arr[1]-=getMidpoint().y;
-		}
-		return arr;
+		return (useMidpoint) ? 
+			[getMidpoint().x + (switch(id ?? charType){case 2: 0;case 1: 150;default:-100;}),getMidpoint().y - 100]
+			: [x,y];
 	}
 	public function getCameraPosition(?id:Null<Int> = null){
 		if(ignoreCamera && PlayState.instance != null) return PlayState.instance.defaultCamPositions[id ?? charType];

@@ -90,7 +90,7 @@ using StringTools;
 	public var hitState:Null<Bool> = null;
 	public var note:Note = null;
 }
-
+// TODO MOVE ALL REDUNDANT STATIC VARIABLES TO NEW CLASS AND MOVE ALL VARIABLES TO CLASS INSTANCE
 class PlayState extends ScriptMusicBeatState
 {
 	public static var instance:PlayState = null;
@@ -674,10 +674,70 @@ class PlayState extends ScriptMusicBeatState
 		PlayState.player1 = PlayState.player2 = PlayState.player3 = "";
 	}
 	inline function loadBaseStage(?simple:Bool = false){
-		stageObject = new BaseStage(simple);
-		stageTags = stageObject.tags;
-		curStage = stageObject.name;
-		stageObject.apply(this);
+		return new BaseStage(simple);
+	}
+	public function loadStage(?name:String,?nameSpace:String = null,?stageInfo:StageInfo = null):Stage{
+		if (SESave.data.preformance) return loadBaseStage(true);
+		// Stage management
+
+		if(stageInfo == null) stageInfo = TitleState.findStageByNamespace(name,nameSpace);
+		if(stageInfo == null) stageInfo = TitleState.findStageByNamespace(name);
+		
+		var stage = stageInfo.folderName;
+		if(stage == 'stage' || stage == 'default') return loadBaseStage();
+
+		final stage = TitleState.retStage(stage);
+		if(stage == "nothing" || stage == "empty"){
+			defaultCamZoom = 0.9;
+			final stageObject = new Stage();
+			stageObject.tags = ["empty"];
+			stageObject.name = 'nothing';
+			return stageObject;
+
+		}
+		if(stage == "" || !SELoader.exists('${stageInfo.path}/${stageInfo.folderName}')){
+			trace('"${stage}" not found, using "Stage"!');
+			return loadBaseStage();
+		}
+
+		curStage = stage;
+		stageTags = [];
+		final stagePath:String = '${stageInfo.path}/${stageInfo.folderName}';
+		var stage:Stage = (SELoader.exists('$stagePath/config.json') ? StageEditor.loadStage('$stagePath/config.json') : null) ?? new Stage();
+		if(stage == null) stage = new Stage();
+		stage.stageInfo = stageInfo;
+		final brTool = getBRTools(stagePath);
+		for (i in SELoader.readDirectoryOrdered(stagePath)) {
+			if(i.endsWith(".hscript")){
+				final interp = parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
+				stage.interps.push(interp);
+				if(stage != null) interp.variables.set('stage',stage);
+			}
+			#if linc_luajit
+			else if(i.endsWith(".lua")){
+				final interp = parseLua(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
+				stage.interps.push(interp);
+				if(stage != null) interp.variables.set('stage',stage);
+			}
+			#end
+		}
+		return stage;
+
+		
+	}
+	public function setStage(stage:Stage){
+		final oldStage = stageObject;
+		if(oldStage != null){
+			oldStage.unload(this,boyfriend,dad,gf);
+		}
+		PlayState.stage=stage.name;
+		stageObject = stage;
+		stage.apply(this,boyfriend,dad,gf);
+		if(oldStage != null){
+			replace(oldStage,stage);
+		}else{
+			add(stage);
+		}
 	}
 	
 	override public function create(){
@@ -738,82 +798,19 @@ class PlayState extends ScriptMusicBeatState
 		if(PSignoreScripts){
 			showTempmessage('Song scripts are currently disabled',FlxColor.RED);
 		}else if(QuickOptionsSubState.getSetting("Song hscripts") && SELoader.exists(hsBrTools.path)){
-			
 			LoadingScreen.loadingText = 'Loading song scripts';
 			loadScript(hsBrTools.path,'','SONG',hsBrTools);
 		}
 		
 		//dialogue shit
 		LoadingScreen.loadingText = "Loading stage";
-		// Stage management
-		var bfPos:Array<Float> = [0,0]; 
-		var gfPos:Array<Float> = [0,0]; 
-		var dadPos:Array<Float> = [0,0];
-		stageInfo = TitleState.findStageByNamespace(SESave.data.selStage,onlinemod.OfflinePlayState.nameSpace);
-		if(SESave.data.stageAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || SESave.data.selStage == "default")
-			stageInfo = TitleState.findStageByNamespace(SONG.stage,onlinemod.OfflinePlayState.nameSpace,null,false);
-		
-		if(stageInfo == null) stageInfo = TitleState.findStageByNamespace(SESave.data.selStage);
-		
-		stage = stageInfo.folderName;
-		if (SESave.data.preformance){
-			loadBaseStage(true);
-		}else{
-			switch(stage.toLowerCase()){
-				case 'stage','default':{
-					loadBaseStage();
-				} default:{
-					stage = TitleState.retStage(stage);
-					if(stage == "nothing" || stage == "empty"){
-						defaultCamZoom = 0.9;
-						stageObject = new Stage();
-						stageObject.tags = ["empty"];
-						stageObject.name = curStage = 'nothing';
-
-					}else if(stage == "" || !SELoader.exists('${stageInfo.path}/${stageInfo.folderName}')){
-						trace('"${stage}" not found, using "Stage"!');
-						loadBaseStage();
-					}else{
-						curStage = stage;
-						stageTags = [];
-						final stagePath:String = '${stageInfo.path}/${stageInfo.folderName}';
-						var stage:Stage = null;
-						var loadedFromConf = false;
-						if (SELoader.exists('$stagePath/config.json')){
-							stage = StageEditor.loadStage('$stagePath/config.json');
-							stage.apply(this);
-							// add(stage);
-							stageObject=stage;
-							loadedFromConf =true;
-							 // This doesn't have to be provided, doing it this way
-
-							if(gfShow) gfShow = stage.showGF;
-						}
-						if(stage == null){
-							stageObject=stage = new Stage();
-						}
-						final brTool = getBRTools(stagePath);
-						for (i in CoolUtil.orderList(SELoader.readDirectory(stagePath))) {
-							if(i.endsWith(".hscript")){
-								final interp = parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
-								if(stage != null) interp.variables.set('stage',stage);
-							}
-							#if linc_luajit
-							else if(i.endsWith(".lua")){
-								final interp = parseLua(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
-								if(stage != null) interp.variables.set('stage',stage);
-							}
-							#end
-						}
-					}
-				}
-			}
-		}
-		bfPos = stageObject.bfPos;
-		dadPos = stageObject.dadPos;
-		gfPos = stageObject.gfPos;
-		stageTags = stageObject.tags;
-		defaultCamZoom = stageObject.defaultCamZoom;
+		final nextStage = loadStage((SESave.data.stageAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || SESave.data.selStage == "default") ?
+		          SESave.data.selStage : SONG.stage,onlinemod.OfflinePlayState.nameSpace);
+		// bfPos = stageObject.bfPos;
+		// dadPos = stageObject.dadPos;
+		// gfPos = stageObject.gfPos;
+		// stageTags = stageObject.tags;
+		// defaultCamZoom = stageObject.defaultCamZoom;
 
 		LoadingScreen.loadingText = "Loading scripts";
 		
@@ -856,7 +853,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 		var player1CharInfo = null;
 		var player2CharInfo = null;
-		var player3CharInfo;
+		var player3CharInfo = null;
 		{
 			final p1List:Array<String> = [SESave.data.playerChar];
 			final p2List:Array<String> = [SESave.data.opponent];
@@ -874,9 +871,7 @@ class PlayState extends ScriptMusicBeatState
 		if(loadChars && (SESave.data.gfShow || _dadShow || bfShow)){
 			LoadingScreen.loadingText = "Loading GF";
 			if(gf== null || !SESave.data.persistGF || (!SESave.data.gfShow && !Std.isOfType(gf,EmptyCharacter)) || gf.getNamespacedName() != player2){
-				if (SESave.data.gfShow && gfShow)
-					gf = {x:400, y:100,charInfo:player3CharInfo,isPlayer:false,charType:2};
-				else gf =  new EmptyCharacter(400, 100);
+				gf = (SESave.data.gfShow && gfShow) ? {x:400, y:100,charInfo:player3CharInfo,isPlayer:false,charType:2} : new EmptyCharacter(400, 100);
 			}else{
 				try{
 					gf.x = 400;
@@ -938,13 +933,15 @@ class PlayState extends ScriptMusicBeatState
 		LoadingScreen.loadingText = "Adding characters";
 
 		// REPOSITIONING PER STAGE
+		setStage(nextStage);
 
-		boyfriend.x+=bfPos[0];
-		boyfriend.y+=bfPos[1];
-		dad.x+=dadPos[0];
-		dad.y+=dadPos[1];
-		gf.x+=gfPos[0];
-		gf.y+=gfPos[1];
+
+		// boyfriend.x+=bfPos[0];
+		// boyfriend.y+=bfPos[1];
+		// dad.x+=dadPos[0];
+		// dad.y+=dadPos[1];
+		// gf.x+=gfPos[0];
+		// gf.y+=gfPos[1];
 		
 
 		add(gf);

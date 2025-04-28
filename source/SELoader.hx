@@ -626,6 +626,9 @@ class SELoader {
 	public static function exists(path:String):Bool{
 		return FileSystem.exists(getPath(path));
 	}
+	@:keep inline public static function readDirectoryOrdered(path:String):Array<String>{
+		return inline CoolUtil.orderList(readDirectory(path));
+	}
 	public static function readDirectory(path:String):Array<String>{
 		if(!SESave.data.HDDMode && (path.startsWith('assets/') || path.startsWith('assets:'))){
 			path = path.substring(7);
