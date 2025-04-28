@@ -3,7 +3,11 @@ local f = string.format
 local patt = '%s([^%s]-)callInterp%(["\']([^\n]-)["\'],%[(.-)%]%);(.-)\n' 
 print("Test patt",string.match(' PlayState.instance.callInterp("setupNoteSplashAfter",[this])',patt))
 
-local functions = {"# This file is just a compilation of every `callInterp` function call\n# Proper UP TO DATE documentation IS planned. Just bear with me for now\n#LINE | CALL"}
+local functions = {[[
+# This file is just a compilation of every `callInterp` function call
+# In songs, PlayState will pass itself as the first argument for backwards compatibility reasons
+# Proper UP TO DATE documentation IS planned. Just bear with me for now
+#LINE | CALL]]}
 local findOp,findContents = io.popen('find ./source/ -type "f" | grep "\\.hx"'),nil
 findContents = findOp:read('*a')
 for i in findContents:gmatch('[^\n]+') do
@@ -14,7 +18,7 @@ for i in findContents:gmatch('[^\n]+') do
 	for line in file:read('*a'):gmatch('[^\n]+') do
 		lineCount = lineCount+1
 		-- for i in line:gmatch('%s[^%s]-(callInterp%(["\'][^\n]-["\'],%[(.-)%]%);.-)') do
-		local s= line:find('callInterp%(') 
+		local s= line:find('callInterp%(%s-[\'"]') 
 		if(s and not line:find('function callInterp')) then
 			f = f + 1
 			functions[#functions+1] = ("%5i: %s"):format(lineCount,line:sub(s))
