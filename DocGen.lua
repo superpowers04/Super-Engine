@@ -1,0 +1,31 @@
+local f = string.format
+--[[ TODO ADD COMMENTS TO ALL CALL INTERPS]]
+local patt = '%s([^%s]-)callInterp%(["\']([^\n]-)["\'],%[(.-)%]%);(.-)\n' 
+print("Test patt",string.match(' PlayState.instance.callInterp("setupNoteSplashAfter",[this])',patt))
+
+local functions = {"# This file is just a compilation of every `callInterp` function call\n# Proper UP TO DATE documentation IS planned. Just bear with me for now\n#LINE | CALL"}
+local findOp,findContents = io.popen('find ./source/ -type "f" | grep "\\.hx"'),nil
+findContents = findOp:read('*a')
+for i in findContents:gmatch('[^\n]+') do
+	functions[#functions+1] = ("# %s"):format(i:sub(10))
+	local file = io.open(i,'r')
+	local f = 0
+	local lineCount = 0
+	for line in file:read('*a'):gmatch('[^\n]+') do
+		lineCount = lineCount+1
+		-- for i in line:gmatch('%s[^%s]-(callInterp%(["\'][^\n]-["\'],%[(.-)%]%);.-)') do
+		local s= line:find('callInterp%(') 
+		if(s and not line:find('function callInterp')) then
+			f = f + 1
+			functions[#functions+1] = ("%5i: %s"):format(lineCount,line:sub(s))
+		end
+		-- end
+
+	end
+	if(f == 0) then functions[#functions]=nil end
+	file:close()
+
+end
+
+local output = table.concat(functions, "\n")
+io.open("example_mods/autogen_docs.md","w"):write(output);
