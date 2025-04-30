@@ -1,6 +1,6 @@
 package;
-#if (flixel > "5.6.2")
-#error "Super Engine is not compatible with Flixel 5.7 or above";
+#if (flixel > "5.7.2")
+#error "Super Engine is not compatible with Flixel 5.8 or above";
 #end
 import openfl.display.BlendMode;
 import openfl.text.TextFormat;

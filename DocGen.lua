@@ -21,7 +21,7 @@ for i in findContents:gmatch('[^\n]+') do
 		local s= line:find('callInterp%(%s-[\'"]') 
 		if(s and not line:find('function callInterp')) then
 			f = f + 1
-			functions[#functions+1] = ("%5i: %s"):format(lineCount,line:sub(s))
+			functions[#functions+1] = ("%6i: %s"):format(lineCount,line:sub(s))
 		end
 		-- end
 
