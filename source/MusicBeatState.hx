@@ -361,6 +361,8 @@ class MusicBeatState extends FlxUIState {
 	}
 	
 	@:keep inline public function fancyOpenURL(schmancy:String) FlxG.openURL(schmancy);
+	
+	@:haxe.warning('-WDeprecated')
 	override function switchTo(nextState:FlxState):Bool{
 		tranOut();
 		FlxG.mouse.visible = false;
@@ -648,7 +650,7 @@ class DebugOverlay extends FlxTypedGroup<FlxSprite>{
 	}
 	@:keep inline function updateObjPosText(){
 		objectPosBack.visible = objectPosText.visible = true;
-		objectPosText.text = '${Std.int(obj.x * 100) * 0.001},${Std.int(obj.y * 100) * 0.001}';
+		objectPosText.text = '${Std.int(obj.x * 1000) * 0.001},${Std.int(obj.y * 1000) * 0.001}';
 		objectPosBack.x = (objectPosText.x = FlxG.mouse.screenX + 20) - 2;
 		objectPosBack.y = (objectPosText.y = FlxG.mouse.screenY + 20) - 2;
 		objectPosBack.lockGraphicSize((Std.int(objectPosText.width) + 4),Std.int(objectPosText.height) + 4);
