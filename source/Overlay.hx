@@ -315,6 +315,8 @@ class ConsoleInput extends TextField{
 			interp.variables.set("BRtools", hsbrtools);
 			interp.variables.set("t",Console.instance.log);
 			interp.variables.set("log",Console.instance.log);
+			interp.variables.set("console",Console.instance);
+			interp.variables.set("Console",Console);
 		}
 		try{
 			@:privateAccess
@@ -333,7 +335,7 @@ class ConsoleInput extends TextField{
 		return interp;
 	}
 	var CURRENTCMDHISTORY = -1;
-	var keyList:Map<FlxKey,String> = [ // I hate my life
+	final keyList:Map<FlxKey,String> = [ // I hate my life
 		A => "a",
 		B => "b",
 		C => "c",
@@ -396,7 +398,7 @@ class ConsoleInput extends TextField{
 		MINUS => "-",
 		PLUS => "=", 
 	];
-	var keyListUpper:Map<FlxKey,String> = [ // I hate my life*@ (get it, because it's shif- I'll see myself out)
+	final keyListUpper:Map<FlxKey,String> = [ // I hate my life*@ (get it, because it's shif- I'll see myself out)
 		ZERO => ")",
 		ONE => "!",
 		TWO => "@",
