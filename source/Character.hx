@@ -657,7 +657,9 @@ class CharAnimController extends FlxAnimationController{
 					SELoader.getAssetPath('assets:'+charProperties.image+".png"),
 					charInfo.path+charProperties.image+".png",
 					SELoader.upDirectory(charInfo.path)+charProperties.image+".png",
-					SELoader.upDirectory(charInfo.path)+'images/'+charProperties.image+".png"
+					SELoader.upDirectory(charInfo.path)+'images/'+charProperties.image+".png",
+					SELoader.upDirs(charInfo.path,2)+'mods/images/'+charProperties.image+".png",
+					SELoader.upDirs(charInfo.path,2)+'assets/images/'+charProperties.image+".png",
 				]);
 				if(pngName == "" || pngName == null || !SELoader.exists(pngName)){
 					throw('Unable to find image "${charProperties.image}" / $pngName for $curCharacter');

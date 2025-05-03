@@ -168,6 +168,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Psych Char Camera","Attempts to load camera offsets from Psych Characters\n(Buggy)","PECharCamPos"),
 			new HCBoolOption("Load Psych Events","Attempts to load Psych events from songs(Experimental)","loadPsychEvents"),
 			new HCBoolOption("Quick reloading songs","Allows songs to quick-reload when you restart. This can break some songs or scripts","QuickReloading"),
+			new HCBoolOption("Allow non SE Scripts","Disable the checking if scripts are made for Super Engine\n NOTE: THIS MIGHT CAUSE CRASHES","allowNonSEScripts"),
 			new HCBoolOption("Ignore Errors","Ignore some errors and save a report instead","ignoreErrors"),
 		],'Toggle compatibility with specific features from mods/engines'),
 		new OptionCategory("Performance", [

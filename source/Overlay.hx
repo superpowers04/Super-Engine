@@ -836,7 +836,7 @@ class ConsoleUtils{
 		if(value is String){
 			if(value.substring(0,1) == "[[" || value.substring(0,1) == "]]"){
 				value = value.substring(3,-2);
-			}else if(value.substring(0,1) == "'" || value.substring(0,1) == '"'){
+			}else if(value.charAt(0) == "'" || value.charAt(0) == '"'){
 				value = value.substring(2,-1);
 			}else if(!Math.isNaN(Std.parseFloat(value))){
 				value = Std.parseFloat(value);
@@ -844,10 +844,12 @@ class ConsoleUtils{
 			}else if(!Math.isNaN(Std.parseInt(value))){
 				value = Std.parseInt(value);
 				type = 1;
+			}else if(value.indexOf('.') != -1){
+				value = getValueFromPath(null,value,true);
 			}
 		}
-		var lastPath = splitPath.pop();
-		var field = Reflect.field(obj,lastPath);
+		final lastPath = splitPath.pop();
+		final field = Reflect.field(obj,lastPath);
 		if(field != null){
 			if((field is Int || field is Float) && type != 1) {
 				throw('Field of type ${Type.typeof(field)} is incompatible with ${Type.typeof(value)}');

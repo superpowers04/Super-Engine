@@ -448,6 +448,15 @@ class PsychLuaCompat{
 	// 	end
 	// 	");
 	// }
+
+	/*TODO ACTUALLY IMPLEMENT THESE*/
+	public static final Function_Stop:String = "##PSYCHLUA_FUNCTIONSTOP";
+	public static final Function_Continue:String = "##PSYCHLUA_FUNCTIONCONTINUE";
+	public static final Function_StopLua:String = "##PSYCHLUA_FUNCTIONSTOPLUA";
+	public static final Function_StopHScript:String = "##PSYCHLUA_FUNCTIONSTOPHSCRIPT";
+	public static final Function_StopAll:String = "##PSYCHLUA_FUNCTIONSTOPALL";
+
+
 	public function new(par:SELua){
 		parent = par;
 		parent.set('psychCompat',false);
@@ -457,6 +466,15 @@ class PsychLuaCompat{
 			return luaCompat(Reflect.callMethod(obj,Reflect.field(obj,func),Args));
 		});
 
+		parent.set('Function_StopLua', Function_StopLua);
+		parent.set('Function_StopHScript', Function_StopHScript);
+		parent.set('Function_StopAll', Function_StopAll);
+		parent.set('Function_Stop', Function_Stop);
+		parent.set('Function_Continue', Function_Continue);
+		parent.set('luaDebugMode', false);
+		parent.set('luaDeprecatedWarnings', true);
+		parent.set('version', MainMenuState.ver);
+		parent.set('modFolder', SELoader.getPath('mods'));
 
 
 		parent.set('loadFlxSprite',function(tag:String,path:String,x:Float=0,y:Float=0){
@@ -484,6 +502,17 @@ class PsychLuaCompat{
 				return;
 			}
 			obj.animation.play(name, forced, reverse, startFrame);
+		});
+		parent.set('addCharacterToList',function(addedCharacter:String,characterID:String){ // This is stupid but shut up
+			final note = new EventNote(10,"changechar",[10,-1,"changechar",addedCharacter,characterID]);
+			EventNote.applyEvent(note);
+			note.destroy();
+		});
+		parent.set('triggerEvent',function(name:String,val1:String,val2:String){ // This is stupid but shut up
+			final note = new EventNote(0,name,[0,-1,name,val1,val2]);
+			EventNote.applyEvent(note);
+			note.hit(note);
+			note.destroy();
 		});
 		// parent.set('addAnimation',function(tag:String,name:String, forced:Bool = false, ?reverse:Bool = false, ?startFrame:Int = 0){
 		// 	var obj = getValueFromPath(tag);

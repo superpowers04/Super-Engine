@@ -168,6 +168,7 @@ typedef YourMother = Dynamic;
 	var PECharSeperate:Bool = false;
 	var PECharLoading:Bool = false;
 	var PECharCamPos:Bool = true;
+	var allowNonSEScripts:Bool = false;
 	var QuickReloading:Bool = false;
 	var loadPsychEvents:Bool = false;
 	var animDebugMusic:Bool=true;

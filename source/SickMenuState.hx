@@ -261,8 +261,7 @@ class SickMenuState extends ScriptMusicBeatState
 				#end
 			}
 			if(FlxG.mouse.wheel != 0){
-				var move = -FlxG.mouse.wheel;
-				changeSelection(Std.int(move));
+				changeSelection(-FlxG.mouse.wheel);
 			}
 		#if !mobile
 		}

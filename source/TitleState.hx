@@ -1174,14 +1174,14 @@ class TitleState extends MusicBeatState
 			if(tweensy != null)tweensy.cancel();
 			if(tweeny != null)tweeny.cancel();
 			if(tweenr != null)tweenr.cancel();
-			var amount = 0.9 + beatIntensity;
+			final amount = 0.9 + beatIntensity;
 			logoBl.scale.set(amount,amount);
 			// FlxTween.tween(logoBl.scale,{x:1,y:1},0.1);
-			tweensy = FlxTween.tween(logoBl.scale,{x:0.9,y:0.9},(60 / Conductor.bpm),{ease:FlxEase.expoOut});
-			tweenr = FlxTween.tween(logoBl,{angle:curBeat % 2 == 0 ? 15 : -15},(60 / Conductor.bpm),{ease:FlxEase.expoOut});
+			tweensy = FlxTween.tween(logoBl.scale,{x:0.9,y:0.9},(120 / Conductor.bpm),{ease:FlxEase.expoOut});
+			tweenr = FlxTween.tween(logoBl,{angle:curBeat % 2 == 0 ? 2 : -2},(120 / Conductor.bpm),{ease:FlxEase.expoOut});
 			if(ttBounce != null)ttBounce.cancel();
 			titleText.scale.set(0.1 + amount,0.1 + amount);
-			ttBounce = FlxTween.tween(titleText.scale,{x:1,y:1},(60 / Conductor.bpm),{ease:FlxEase.expoOut});
+			ttBounce = FlxTween.tween(titleText.scale,{x:1,y:1},(120 / Conductor.bpm),{ease:FlxEase.expoOut});
 		} 
 		// logoBl.animation.play('bump');
 		danceLeft = !danceLeft;

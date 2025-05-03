@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -33,6 +34,7 @@ class FuckState extends FlxUIState {
 	public static var allowLogWrite:Bool = true;
 	public static var errorCount = 0;
 	public static var quip = "";
+	public static var lastState:Class<FlxState>;
 	public static function generateReport(error:String = "UNKNOWN ERROR?",type:String = "CRASH"):Bool{
 		var callstack = "UNSET";
 		try{
@@ -41,6 +43,10 @@ class FuckState extends FlxUIState {
 		var dateNow:String = "";
 		var err = "";
 		errorCount++;
+		try{
+			if(!(FlxG.state is FuckState)) lastState = Type.getClass(FlxG.state);
+		}catch(e){lastState = null;}
+
 		try{
 			var funnyQuip = "insert funny line here";
 			var _date = Date.now();
@@ -100,8 +106,8 @@ class FuckState extends FlxUIState {
 					"It's fine, everything is good. What do you mean this is a crash report?",
 					"What're you looking at? It wasn't me",
 					"Unable to cast Integer '4' to String",
-					"guh"
-					
+					"guh",
+					'BALD BALD BALD- MY EYEEEEEEESSSS'
 				];
 				funnyQuip = jokes[Std.int(Math.random() * jokes.length - 1) ]; // I know, this isn't FlxG.random but fuck you the game just crashed
 			}catch(e){}
@@ -221,7 +227,7 @@ class FuckState extends FlxUIState {
 
 		}
 
-		exception='$quip\n$exception';
+		exception='# $quip\n\n$exception';
 		Main.renderLock.release();
 		if(Main.game == null || _rawError || !TitleState.initialized || useOpenFL){
 			// trace(Main.game == null);
@@ -313,45 +319,38 @@ class FuckState extends FlxUIState {
 	override function create() {
 		super.create();
 		LoadingScreen.forceHide();
-		// var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(if(Math.random() > 0.5) 'week54prototype' else "zzzzzzzz", 'shared'));
-		// bg.scale.x *= 1.55;
-		// bg.scale.y *= 1.55;
-		// bg.screenCenter();
-		// add(bg);
-		
-		// var kadeLogo:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.image('KadeEngineLogo'));
-		// kadeLogo.scale.y = 0.3;
-		// kadeLogo.scale.x = 0.3;
-		// kadeLogo.x -= kadeLogo.frameHeight;
-		// kadeLogo.y -= 180;
-		// kadeLogo.alpha = 0.8;
-		// add(kadeLogo);
-		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0,(if(FATAL) 'Fatal' else 'Potentially recoverable') + ' error caught' , 32);
+		try{
 
-		outdatedLMAO.screenCenter(flixel.util.FlxAxes.X);
-		add(outdatedLMAO);
-		trace("-------------------------\nERROR:\n\n"
-			+ err + "\n\n-------------------------");
-		var txt:FlxText = new FlxText(0, 0, FlxG.width,
+		final bg:FlxSprite = SELoader.loadFlxSprite(0,0,"./assets/images/crash.png");
+		bg.screenCenter();
+		add(bg);
+		}catch(e){}
+		
+		final header:FlxText = new FlxText(0, FlxG.height * 0.05, 0,((FATAL) ? 'Fatal' : 'Potentially recoverable') + ' error caught' , 32);
+
+		header.screenCenter(flixel.util.FlxAxes.X);
+		add(header);
+		trace("-------------------------\nERROR:\n\n" + err + "\n\n-------------------------");
+		var txt:FlxText = new FlxText(40, 160, FlxG.width - 60,
 			"\n\nError/Stack:\n\n"
 			+ err,
-			16);
+			18);
 		
-		txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
+		txt.setFormat(CoolUtil.font, 18, 0xFFffddFF, LEFT);
 		txt.borderColor = FlxColor.BLACK;
-		txt.borderSize = 3;
+		txt.borderSize = 2;
 		txt.borderStyle = FlxTextBorderStyle.OUTLINE;
-		txt.screenCenter();
+		// txt.screenCenter();
 		add(txt);
-		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Please take a screenshot and report this, " +((FATAL) ? "" : "Press enter to attempt to return to the main menu or")+ "Press Escape to close the game",32);
-		
-		txt.setFormat(CoolUtil.font, 16, FlxColor.fromRGB(200, 200, 200), CENTER);
+
+		txt = new FlxText(50, 135, 1000,
+			"Please take a screenshot and report this\n" +((FATAL) ? "" : (lastState != null ? " Press R to reload the last state\n P" : " P") + "ress ENTER to attempt to return to the main menu\n")+ " Press ESCAPE to close the game",32);
+
+		txt.setFormat(CoolUtil.font, 16, 0xFFFFaaaa, LEFT);
 		txt.borderColor = FlxColor.BLACK;
-		txt.borderSize = 3;
+		txt.borderSize = 2;
 		txt.borderStyle = FlxTextBorderStyle.OUTLINE;
-		txt.screenCenter(X);
-		txt.y = 680;
+		// txt.screenCenter(X);
 		add(txt);
 		if(saved) {
 			txt.y -= 30;
@@ -359,7 +358,7 @@ class FuckState extends FlxUIState {
 
 			dateNow = StringTools.replace(dateNow, " ", "_");
 			dateNow = StringTools.replace(dateNow, ":", ".");
-			txt.text = 'Crash report saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\n Please send this file when reporting this crash.' + txt.text.substring(41);
+			txt.text = 'Crash report saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\nPlease send this file when reporting this crash.\n' + txt.text.substring(41);
 		}
 		useOpenFL = true;
 		try{
@@ -368,18 +367,30 @@ class FuckState extends FlxUIState {
 	}
 
 	override function update(elapsed:Float) { try{
-
-			if (FlxG.keys.justPressed.ENTER && !FATAL) {
-				// var _main = Main.instance;
-				forced = false;
-				LoadingScreen.canShow = true;
-				LoadingScreen.show();
-				// TitleState.initialized = false;
-				MainMenuState.firstStart = true;
-				FlxG.switchState(new MainMenuState());
-				useOpenFL = false;
-				errorCount=0;
-				return;
+			if(!FATAL){
+				if (FlxG.keys.justPressed.R && lastState != null) {
+					forced = false;
+					LoadingScreen.canShow = true;
+					LoadingScreen.show();
+					// TitleState.initialized = false;
+					// MainMenuState.firstStart = true;
+					useOpenFL = false;
+					errorCount=0;
+					FlxG.switchState(Type.createInstance(lastState, []));
+					return;
+				}
+				if (FlxG.keys.justPressed.ENTER) {
+					// var _main = Main.instance;
+					forced = false;
+					LoadingScreen.canShow = true;
+					LoadingScreen.show();
+					// TitleState.initialized = false;
+					MainMenuState.firstStart = true;
+					FlxG.switchState(new MainMenuState());
+					useOpenFL = false;
+					errorCount=0;
+					return;
+				}
 			}
 			if (FlxG.keys.justPressed.ESCAPE){
 				trace('Exit requested!');

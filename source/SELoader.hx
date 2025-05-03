@@ -116,9 +116,9 @@ class SELoader {
 		// Absolute paths should just return themselves without anything changed
 		if( rawMode ||
 			#if windows
-				path.substring(1,2) == ':' || 
+				path.charAt(1) == ':' || 
 			#end
-				path.substring(0,1) == "/" || path.substring(0,2) == "./"){
+				path.charAt(0) == "/" || path.substring(0,2) == "./"){
 			rawMode = defaultRawMode;
 			return path.replace('//','/');
 		}
@@ -139,9 +139,9 @@ class SELoader {
 		// Absolute paths should just return themselves without anything changed
 		if(rawMode || 
 			#if windows
-				path.substring(1,2) == ':' || 
+				path.charAt(1) == ':' || 
 			#end
-				path.substring(0,1) == "/" || path.substring(0,2) == "./"){
+				path.charAt(0) == "/" || path.substring(0,2) == "./"){
 			rawMode = defaultRawMode;
 			return path.replace('//','/');
 		}
@@ -151,7 +151,7 @@ class SELoader {
 		return (PATH + path).replace('//','/'); // Fixes paths having //'s in them
 	}
 	public static function getAssetPath(path:String,?namespace:String = ""):String{
-		if(#if windows path.substring(1,2) == ':' || #end path.substring(0,1) == "/" || rawMode){
+		if(#if windows path.charAt(1) == ':' || #end path.charAt(0) == "/" || rawMode){
 			rawMode=false;
 			return path.replace('//','/');
 		}
@@ -408,28 +408,40 @@ class SELoader {
 		// }
 	}
 
+	/* TODO ADD SUPPORT FOR JUST FINDING CHARACTER PNGS */
 	public static function registerCharactersInFolder(ID:Int=0,path:String,?nameSpace:String="UNKNOWN",?recurse:Bool = true){
 		final ADDPE:Bool=SESave.data.PECharSeperate;
 		final LOADPE:Bool=SESave.data.PECharLoading;
 		final _dir = new SEDirectory(path);
 		if(!_dir.exists('characters/')) {
 			if(!recurse || !LOADPE || ID==0) return;
+			var foundCharacterFolder:Bool = false;
 			if(_dir.exists('assets/shared/characters')){
 				registerCharactersInFolder(ID,_dir.appendPath('assets/shared/'),nameSpace,false);
+				foundCharacterFolder=true;
 			}
 			if(_dir.exists('assets/characters')){
 				registerCharactersInFolder(ID,_dir.appendPath('assets/'),nameSpace,false);
+				foundCharacterFolder=true;
 			}
 			final modsFolder = _dir.newDirectory('mods/');
 			if(modsFolder.exists()){
 				if(modsFolder.exists('characters')){
 					registerCharactersInFolder(ID,modsFolder.toString(),nameSpace,false);
+					foundCharacterFolder=true;
 				}else{
 					for(mod in modsFolder.readDirectory()){
 						registerCharactersInFolder(ID,modsFolder.appendPath(mod),nameSpace);
 					}
 				}
 			}
+			// if(!foundCharacterFolder){
+			// 	if(_dir.exists('assets/shared/characters')){
+			// 		registerCharactersInFolder(ID,_dir.appendPath('assets/shared/'),nameSpace,false);
+			// 		foundCharacterFolder=true;
+			// 	}
+
+			// }
 
 			return;
 		}
@@ -594,7 +606,7 @@ class SELoader {
 
 	public static function anyExists(paths:Array<String>,?returnOriginal:Bool = false,?defaultValue:String = null):String{
 		for(i in paths) {
-			var path = getPath(i);
+			final path = getPath(i);
 			if(exists(path)) return returnOriginal ? i : path;
 		}
 		return defaultValue;
@@ -624,35 +636,37 @@ class SELoader {
 	}
 	#end
 	public static function exists(path:String):Bool{
-		return FileSystem.exists(getPath(path));
+		try{
+			return FileSystem.exists(getPath(path));
+		}catch(e){trace('$path is an invalid path!');return false;}
 	}
 	@:keep inline public static function readDirectoryOrdered(path:String):Array<String>{
 		return inline CoolUtil.orderList(readDirectory(path));
 	}
 	public static function readDirectory(path:String):Array<String>{
-		if(!SESave.data.HDDMode && (path.startsWith('assets/') || path.startsWith('assets:'))){
-			path = path.substring(7);
-			if(AssetPathListingCache[path] != null){
-				return AssetPathListingCache[path].copy();
-			}
-			final modsFolder = new SEDirectory(getRawPath('mods/'));
-			final packsFolder = modsFolder.newDirectory('packs/');
-			final listing:Map<String,Bool> = [];
-			for (pack in orderList(SELoader.readDirectory(packsFolder.toString()))){
-				if(exists('$packsFolder/$pack/assets/$path')){
-					for(p in readDirectory('$packsFolder/$pack/assets/$path')){
-						listing[p]=true;
-					}
-				}
-				if(exists('$packsFolder/$pack/assets/shared/$path')){
-					for(p in readDirectory('$packsFolder/$pack/assets/shared/$path')){
-						listing[p]=true;
-					}
-				}
-			}
-			return (AssetPathListingCache[path] = [for(key in listing.keys()) key]).copy();
+		if(SESave.data.HDDMode || (!path.startsWith('assets/') && !path.startsWith('assets:'))) return FileSystem.readDirectory(getPath(path));
+		
+		path = path.substring(7);
+		if(AssetPathListingCache[path] != null){
+			return AssetPathListingCache[path].copy();
 		}
-		return FileSystem.readDirectory(getPath(path));
+		final modsFolder = new SEDirectory(getRawPath('mods/'));
+		final packsFolder = modsFolder.newDirectory('packs/');
+		final listing:Map<String,Bool> = [];
+		for (pack in orderList(SELoader.readDirectory(packsFolder.toString()))){
+			if(exists('$packsFolder/$pack/assets/$path')){
+				for(p in readDirectory('$packsFolder/$pack/assets/$path')){
+					listing[p]=true;
+				}
+			}
+			if(exists('$packsFolder/$pack/assets/shared/$path')){
+				for(p in readDirectory('$packsFolder/$pack/assets/shared/$path')){
+					listing[p]=true;
+				}
+			}
+		}
+		return (AssetPathListingCache[path] = [for(key in listing.keys()) key]).copy();
+		
 	}
 	public static function readDirectories(paths:Array<String>):Array<String>{
 		final ret = [];
@@ -670,7 +684,12 @@ class SELoader {
 		return new SEDirectory(path);
 	}
 	@:keep inline public static function upDirectory(path:String):String{
-		return path.substring(0,path.substring(0,path.length-1).lastIndexOf('/')+1);
+		return path.substring(0,path.lastIndexOf('/',path.length-2)+1);
+	}
+	@:keep inline public static function upDirs(path:String,count:Int = 2):String{
+		var i = path.length-2;
+		while (count >= 0){ count--; i = path.lastIndexOf('/',i); }
+		return path.substring(0,i+1);
 	}
 	public static function readDirectoriesAsPaths(paths:Array<String>):Array<SEDirectory>{
 		final ret = [];
@@ -711,8 +730,8 @@ class SELoader {
 		return File.copy(getPath(from),getPath(to));
 	}
 	public static function importFile(from:String,to:String){
-		var path = getPath(to);
-		FileSystem.createDirectory(path.substring(0,path.lastIndexOf('/')));
+		final path = getPath(to);
+		FileSystem.createDirectory(upDirectory(path));
 		return File.copy(from,path);
 	}
 	public static function exportFile(from:String,to:String){
@@ -750,7 +769,7 @@ class SELoader {
 			for (folder in path.readDirectory('charts/')){
 				final path = path.newDirectory('charts/$folder');
 				if((!path.exists('Inst.ogg') && !path.exists('ignoreMissingInst'))) continue;
-				var song:SongInfo = {
+				final song:SongInfo = {
 					name:folder,
 					charts:[],
 					namespace:null,
@@ -766,9 +785,9 @@ class SELoader {
 		}
 		if(path.isDirectory('data/')){ // Normal FNF
 			final songsFolder = path.newDirectory('songs/');
-			var data = path.newDirectory('data/');
+			final data = path.newDirectory('data/');
 			if(data.exists('songData')){ // Legacy psych
-				data = data.newDirectory('songData');
+				data.cd('songData');
 			}
 			if(data.exists('songs')){ // VSlice
 				final data = data.newDirectory('songs');
@@ -837,14 +856,14 @@ class SELoader {
 					
 				}
 			}
-			var list = data.readDirectory();
+			final list = data.readDirectory();
 			// for (chart in list){
 			// 	if(chart.contains(''))
 			// }
 			for (folder in list){
-				var path = data.newDirectory('$folder');
+				final path = data.newDirectory('$folder');
 				if(!path.isDirectory() || !songsFolder.exists('$folder/Inst.ogg')) continue;
-				var song:SongInfo = {
+				final  song:SongInfo = {
 					name:folder,
 					charts:[],
 					namespace:null,

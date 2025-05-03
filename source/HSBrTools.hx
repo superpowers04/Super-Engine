@@ -70,8 +70,11 @@ class HSBrTools {
 	}
 
 
-	@:keep inline public function getPath(?str:String = ""){
-		return SELoader.getPath(path + str);
+	public function getPath(?str:String = ""){
+		if( #if windows str.charAt(1) == ':' || #end str.charAt(0) == "/" || str.substring(0,2) == "./"){
+			return str;
+		}
+		return SELoader.anyExists([path + str,path,"assets:"+path],null,path + str);
 	}
 	public function loadFlxSprite(x:Float,y:Float,pngPath:String):FlxSprite{
 		// if(!SELoader.exists('${path}${pngPath}')){
@@ -79,7 +82,7 @@ class HSBrTools {
 		// 	return new FlxSprite(x, y); // Prevents the script from throwing a null error or something
 		// }
 		if(!pngPath.endsWith('.png')) pngPath+=".png";
-		return cache.loadFlxSprite(x,y,'${path}${pngPath}');
+		return cache.loadFlxSprite(x,y,getPath(pngPath));
 	}
 	@:keep inline public function loadGraphic(pngPath:String):FlxGraphic{
 		// if(!SELoader.exists('${path}${pngPath}')){
@@ -87,16 +90,16 @@ class HSBrTools {
 		// 	return FlxGraphic.fromRectangle(0,0,0); // Prevents the script from throwing a null error or something
 		// }
 		if(!pngPath.endsWith('.png')) pngPath+=".png";
-		return cache.loadGraphic('${path}${pngPath}');
+		return cache.loadGraphic(getPath(pngPath));
 	}
 
 	public function loadSparrowFrames(pngPath:String):FlxAtlasFrames{
 		if(!exists('${pngPath}.png')){
-			handleError('${id}: SparrowFrame PNG "${path}${pngPath}.png" doesn\'t exist!');
+			handleError('${id}: SparrowFrame PNG "${pngPath}.png" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
 		if(!exists('${pngPath}.xml')){
-			handleError('${id}: SparrowFrame XML "${path}${pngPath}.xml" doesn\'t exist!');
+			handleError('${id}: SparrowFrame XML "${pngPath}.xml" doesn\'t exist!');
 			return new FlxAtlasFrames(FlxGraphic.fromRectangle(0,0,0)); // Prevents the script from throwing a null error or something
 		}
 
@@ -148,15 +151,15 @@ class HSBrTools {
 	}
 
 	@:keep inline public function exists(textPath:String):Bool{
-		return SELoader.exists('${path}${textPath}');
+		return SELoader.exists(getPath(textPath));
 	}
 	@:keep inline public function loadText(textPath:String):String{
 		if(!exists(textPath)) handleError(' Text "${textPath}" doesn\'t exist!');
-		return cache.loadText('${path}${textPath}');
+		return cache.loadText(getPath(textPath));
 	}
 	@:keep inline public function loadXML(textPath:String):String{
 		if(!exists(textPath)) handleError(' xml "${textPath}" doesn\'t exist!');
-		return cache.loadXML('${path}${textPath}');
+		return cache.loadXML(getPath(textPath));
 	}
 	public function loadShader(textPath:String,?glslVersion:Dynamic = 120)#if(FLXRUNTIMESHADER) :Null<FlxRuntimeShader> #end{
 		// #if !FLXRUNTIMESHADER
@@ -198,24 +201,24 @@ class HSBrTools {
 	}
 
 	public function unloadSound(soundPath:String){
-		cache.unloadSound('${path}$soundPath');
+		cache.unloadSound(getPath(soundPath));
 	}
 	public function unloadShader(pngPath:String){
 		// textArray[pngPath + ".vert"] = null;
 		// textArray[pngPath + ".frag"] = null;
 	}
 	public function unloadText(pngPath:String){
-		cache.unloadText('${path}$pngPath');
+		cache.unloadText(getPath(pngPath));
 	}
 	public function unloadXml(pngPath:String){
-		cache.unloadText('${path}$pngPath');
+		cache.unloadText(getPath(pngPath));
 	}
 	public function unloadSprite(pngPath:String){
-		cache.unloadText('${path}$pngPath');
+		cache.unloadText(getPath(pngPath));
 	}
 
 	public function cacheSound(soundPath:String){
-		cache.cacheSound('${path}${soundPath}');
+		cache.cacheSound(getPath(soundPath));
 	}
 	public function cacheGraphic(pngPath:String,?dumpGraphic:Bool = false){ // DOES NOT CHECK IF FILE IS VALID!
 		
@@ -224,12 +227,12 @@ class HSBrTools {
 		// if(spriteArray[pngPath] == null) spriteArray[pngPath] = FlxGraphic.fromBitmapData(bitmapArray[pngPath]);
 		// if(cache.cacheGraphic(pngPath) == null) return handleError('${id} : cacheGraphic: Unable to load $pngPath into a FlxGraphic!');
 		// spriteArray[pngPath].destroyOnNoUse = false;
-		cache.cacheGraphic('${path}$pngPath');
+		cache.cacheGraphic(getPath(pngPath));
 		// if(dumpGraphic || dumpGraphics) spriteArray[pngPath].dump();
 
 	}
 	public function cacheSprite(pngPath:String,?dump:Bool = false){
-		cache.cacheSprite('${path}$pngPath');
+		cache.cacheSprite(getPath(pngPath));
 		// if(spriteArray[pngPath] == null) {
 		// 	if(!SELoader.exists('${path}${pngPath}.png')){
 		// 		handleError('${id} : CacheSprite: "${path}${pngPath}.png" doesn\'t exist!');

@@ -235,7 +235,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 			// Scripts are forced with weeks, otherwise, don't load any scripts if scripts are disabled
 			if(!parseMoreInterps || !SESave.data.luaScripts) return null;
 
-			if(songScript == "" || songScript.startsWith('ignoreScript') || (!songScript.contains('isSE = true') && !songScript.contains('function initScript'))) {
+			if(songScript == "" || songScript.startsWith('ignoreScript') || (SESave.data.allowNonSEScripts && (!songScript.contains('isSE = true') && !songScript.contains('function initScript')))) {
 				try{
 					if(songScript.startsWith('ignoreScript')){
 						trace('$file ignored as it starts with ignoreScript');
