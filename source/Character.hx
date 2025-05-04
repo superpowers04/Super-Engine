@@ -630,7 +630,7 @@ class CharAnimController extends FlxAnimationController{
 
 			if (charProperties == null) {
 				try{
-					var file = SELoader.exists(charInfo.jsonLocation+"-SE") ? charInfo.jsonLocation+"-SE" : charInfo.jsonLocation;
+					final file = SELoader.exists(charInfo.jsonLocation+"-SE") ? charInfo.jsonLocation+"-SE" : charInfo.jsonLocation;
 					charProperties= Json.parse(CoolUtil.cleanJSON(charPropJson = SELoader.loadText(file)));
 					if(amPreview && !file.endsWith('-SE')) 
 						loadedFrom=file+"-SE";
@@ -856,6 +856,8 @@ class CharAnimController extends FlxAnimationController{
 	}
 	var thrownError:Int = 0;
 	var loaded:Bool=false;
+	public var thrownError:Int = 0;
+	public var loaded:Bool=false;
 	public function handleError(error:String,?pos:haxe.PosInfos){
 		thrownError++;
 		if(thrownError>1){

@@ -867,11 +867,19 @@ class PlayState extends ScriptMusicBeatState
 			PlayState.player2 = player2CharInfo.getNamespacedName();
 			PlayState.player3 = player3CharInfo.getNamespacedName();
 		}
-
+		/*TODO MAKE THIS LESS OF A MESS*/
 		if(loadChars && (SESave.data.gfShow || _dadShow || bfShow)){
 			LoadingScreen.loadingText = "Loading GF";
 			if(gf== null || !SESave.data.persistGF || (!SESave.data.gfShow && !Std.isOfType(gf,EmptyCharacter)) || gf.getNamespacedName() != player2){
-				gf = (SESave.data.gfShow && gfShow) ? {x:400, y:100,charInfo:player3CharInfo,isPlayer:false,charType:2} : new EmptyCharacter(400, 100);
+				try{
+					gf = (SESave.data.gfShow && gfShow) ? {x:400, y:100,charInfo:player3CharInfo,isPlayer:false,charType:2} : new EmptyCharacter(400, 100);
+				}catch(e){
+					gf = new Character(400,100,"internal|gf",false,2);
+					gf.thrownError = 1;
+					gf.color = 0xFF000000;
+					gf.alpha = 0.5;
+					handleError('Unable to load GF:${e.message}\n${e.stack}');
+				}
 			}else{
 				try{
 					gf.x = 400;
@@ -891,10 +899,17 @@ class PlayState extends ScriptMusicBeatState
 			}
 
 			// if(dad == null || !SESave.data.persistOpp || (!(dadShow || SESave.data.dadShow) && !Std.isOfType(dad,EmptyCharacter)) || dad.getNamespacedName() != player2){
-
-			dad = (player2 == "gf" || player2 == gf.curCharacter || player2CharInfo.id == gf.curCharacter) ? gf 
-				: _dadShow ? {x:100, y:100, charInfo:player2CharInfo,isPlayer:false,charType:1}
-				: new EmptyCharacter(100, 100);
+			try{
+				dad = (player2 == "gf" || player2 == gf.curCharacter || player2CharInfo.id == gf.curCharacter) ? gf 
+					: _dadShow ? {x:100, y:100, charInfo:player2CharInfo,isPlayer:false,charType:1}
+					: new EmptyCharacter(100, 100);
+			}catch(e){
+				dad = new Character(100,100,"internal|dad",false,1);
+				dad.thrownError = 1;
+				dad.color = 0xFF000000;
+				dad.alpha = 0.5;
+				handleError('Unable to load BF:${e.message}\n${e.stack}');
+			}
 			dad.playAnim("songStart");
 			// }else{
 				// dad.x = 100;
@@ -905,8 +920,16 @@ class PlayState extends ScriptMusicBeatState
 			if(player1 == "gf"){
 				bf = gf;
 			}else if(boyfriend == null || !SESave.data.persistBF || (!SESave.data.bfShow && !Std.isOfType(boyfriend,EmptyCharacter)) || boyfriend.getNamespacedName() != player1){
-				boyfriend = bfShow ? {x:770, y:100, charInfo:player1CharInfo,isPlayer:true,charType:0} 
-					: new EmptyCharacter(770,100);
+				try{
+					boyfriend = bfShow ? {x:770, y:100, charInfo:player1CharInfo,isPlayer:true,charType:0} 
+						: new EmptyCharacter(770,100);
+				}catch(e){
+					bf = new Character(770,100,"internal|bf",true,0);
+					bf.thrownError = 1;
+					bf.color = 0xFF000000;
+					bf.alpha = 0.5;
+					handleError('Unable to load BF:${e.message}\n${e.stack}');
+				}
 			}else{
 				try{
 					boyfriend.x = 770;

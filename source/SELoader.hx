@@ -453,7 +453,6 @@ class SELoader {
 					TitleState.characters.push({
 						id:char.substring(0,char.length-5).replace(' ',"-").replace('_',"-").toLowerCase()+(ADDPE?"-pe":""),
 						folderName:char,
-						description:'Psych Engine character',
 						jsonLocation:'$_dir/$char',
 						psychChar:true,
 						path:'$_dir',

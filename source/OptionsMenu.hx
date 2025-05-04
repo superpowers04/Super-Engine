@@ -259,6 +259,7 @@ class OptionsMenu extends MusicBeatState
 		titleText = new FlxText(FlxG.width * 0.5 - (str.length * 10), 20, 0, se.translation.Lang.get(str), 12);
 		titleText.scrollFactor.set();
 		titleText.setFormat(CoolUtil.font, 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		titleText.borderSize=2;
 		titleText.screenCenter(X);
 		add(titleText);	
 	}
@@ -313,7 +314,7 @@ class OptionsMenu extends MusicBeatState
 
 		versionShit = new FlxText(2, FlxG.height - 38, 0, "Offset (Left, Right, Shift for slow): " + CoolUtil.truncateFloat(SESave.data.offset,2) + " | " + se.translation.Lang.get(currentDescription), 12);
 		versionShit.scrollFactor.set();
-		versionShit.setFormat(CoolUtil.font, 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.setFormat(CoolUtil.font, 18, FlxColor.WHITE, LEFT, NONE);
 		
 		blackBorder = new FlxSprite(versionShit.x-10,versionShit.y - 3 ).makeGraphic(FlxG.width+10,100,FlxColor.BLACK);
 		blackBorder.alpha = 0.5;

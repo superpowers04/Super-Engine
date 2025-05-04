@@ -1,4 +1,4 @@
-25.05.03.0229;
+25.05.04.0327;
 * Better Psych character support(Still kinda experimental but should be more stable)
 * Fix some small errors
 * Fix characters not loading due to using ID instead of folderName

@@ -1,7 +1,4 @@
 package;
-// #if (flixel > "5.7.2")
-// #error "Super Engine is not compatible with Flixel 5.8 or above";
-// #end
 import openfl.display.BlendMode;
 import openfl.text.TextFormat;
 import openfl.display.Application;
@@ -26,7 +23,6 @@ import Overlay;
 import haxe.CallStack;
 import sys.FileSystem;
 import sys.io.File;
-
 @:NullSafety(StrictThreaded) class Main extends Sprite {
 	public static var errorMessage = "";
 	public static var instance:Main;

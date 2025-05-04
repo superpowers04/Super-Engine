@@ -185,7 +185,7 @@ class SearchMenuState extends ScriptMusicBeatState {
 		infotext = new FlxText(5, FlxG.height - (20 * infoTextBoxSize ), FlxG.width - 5, "Hold shift to scroll faster", 16);
 		infotext.wordWrap = true;
 		infotext.scrollFactor.set();
-		infotext.setFormat(CoolUtil.font, 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		infotext.setFormat(CoolUtil.font, 18, FlxColor.WHITE, LEFT, NONE);
 		infoTextBorder = new FlxSprite(-30,FlxG.height - (20 * infoTextBoxSize )).makeGraphic((Std.int(FlxG.width + 40)),(20 * infoTextBoxSize),FlxColor.BLACK);
 		infoTextBorder.alpha = 0.5;
 		overLay.add(infoTextBorder);

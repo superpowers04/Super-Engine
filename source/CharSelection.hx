@@ -128,8 +128,8 @@ class CharSelection extends SearchMenuState
 		titleText.screenCenter(X);
 		if (onlinemod.OnlinePlayMenuState.socket == null) defText = "Use shift to scroll faster;\nCharacter Editor keys: 1=bf, 2=dad, 3=gf;\n";
 		uiIcon = new HealthIcon("face",Options.PlayerOption.playerEdit == 0);
-		var uiIconPosX= infoTextBorder.x + (infoTextBorder.width * 0.5)-(uiIcon.width * 0.5);
-		var uiIconPosY=infoTextBorder.y + 50;
+		final uiIconPosX= infoTextBorder.x + (infoTextBorder.width * 0.5)-(uiIcon.width * 0.5);
+		final uiIconPosY=infoTextBorder.y + 50;
 		uiIcon.updateAnim(100);
 		uiIcon.x = uiIconPosX;
 		uiIcon.y = uiIconPosY;
@@ -144,10 +144,10 @@ class CharSelection extends SearchMenuState
 		// exampleImage.visible = false;
 		// overLay.add(exampleImage);
 
-		charNameText = new FlxText(5, uiIconPosY, 0, "yes", 20);
+		charNameText = new FlxText(5, uiIconPosY-30, 0, "yes", 20);
 		charNameText.wordWrap = false;
 		charNameText.scrollFactor.set();
-		charNameText.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		charNameText.setFormat(CoolUtil.font, 24, FlxColor.WHITE, LEFT, NONE);
 		overLay.add(charNameText);
 
 		// FlxTween.angle(uiIcon, -40, 40, 1.12, {ease: FlxEase.quadInOut, type: PINGPONG});  
@@ -189,13 +189,13 @@ class CharSelection extends SearchMenuState
 
 	}
 	override function updateInfoText(str:String = ""){
-		if(infotext != null){
-			infotext.text = str;
-			infotext.wordWrap = true;
-			infotext.scrollFactor.set();
-			infotext.y = uiIcon.y + uiIcon.height + 50;
-			infotext.x = infoTextBorder.x + 10;
-		}
+		if(infotext == null) return;
+		infotext.text = str;
+		infotext.wordWrap = true;
+		infotext.scrollFactor.set();
+		infotext.y = charNameText.y + 230;
+		infotext.x = infoTextBorder.x + 10;
+		
 	}
 	override function changeSelection(change:Int = 0){
 		var _oldSel = curSelected;
@@ -204,8 +204,8 @@ class CharSelection extends SearchMenuState
 		// 	grpSongs.members[_oldSel].cutOff = 12;
 		// }
 		retAfter = true;
-		var curSelected =getChar();
-		var char = chars[curSelected];
+		final curSelected =getChar();
+		final char = chars[curSelected];
 		// if(!SESave.data.performance){
 		// 	try{
 		// 		if(char != null && char[4] != null && SELoader.exists('${char[4].path}/${char[4].folderName}/charSel.png')){
@@ -238,7 +238,7 @@ class CharSelection extends SearchMenuState
 				else text+='Provided by ${char[4].nameSpace};\n';
 			}
 			if(char[1] == 1){
-				text+="This character is invalid, you need to set them up in the Character Editor.\nTo set them up now:\n Press 1 for a Player\n Press 2 for an Opponent\n or Press 3 for a GF.\nIf you need help please ask on my Discord" + #if(!mobile) ", you can access it from the changelog screen" + #end ";\n";
+				text+="\nThis character still needs to be set up in the Character Editor and won't work until you do!\nTo set them up now:\n Press 1 for a Player\n Press 2 for an Opponent\n or Press 3 for a GF.\nIf you need help please ask on my Discord" + #if(!mobile) ", you can access it from the changelog screen" + #end ";\n";
 			}else if(char[3] == null){
 				text+='\nThis character has no description.\n\nYou can provide one by making a description.txt inside of the characters folder with the description';
 			}else{
@@ -251,7 +251,6 @@ class CharSelection extends SearchMenuState
 			if(chars[curSelected][4] == null){
 				// ((char == null || char[4] == null ) ? null : chars[curSelected][4].path)
 				uiIcon.changeSprite(formatChar(chars[curSelected]));
-
 			}else{
 				uiIcon.fromCharInfo(chars[curSelected][4]); 
 			}
@@ -283,7 +282,7 @@ class CharSelection extends SearchMenuState
 			return;
 		}
 
-		var _char =formatChar(chars[curSelected]);
+		final _char =formatChar(chars[curSelected]);
 
 		switch (Options.PlayerOption.playerEdit){
 			case 0:

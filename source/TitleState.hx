@@ -49,14 +49,19 @@ using StringTools;
 	var songs:Array<String>;
 	var funniNumber:Float;
 }
-@:structInit class CharInfo{
+@:structInit @:publicFields class CharInfo{
 	public var id:String = "";
 	public var path(get,default):String = null;
 	public function get_path(){
 		return ((path == "" || path == null) ? "mods/characters/" : path);
 	}
 	public var folderName:String = "";
-	public var description:String = null;
+	public var description(get,default):String = null;
+	public function get_description(){
+		return description ??(
+		 psychChar ? "Psych Engine character\nIf edited and saved, a copy of the character's Psych Engine json file will be created beside it with a -SE suffix and that will be loaded by Super Engine from now on.\nThe Psych Engine version of the character should still work in Psych engine"
+		: null);
+	}
 	public var nameSpace:String = null;
 	public var nameSpaceType:Int = 0; // 0: mods/characters, 1: mods/weeks, 2: mods/packs 
 	public var internal:Bool = false;
@@ -165,7 +170,7 @@ class TitleState extends MusicBeatState
 		if(char.startsWith('null|')) char = char.replace('null|','');
 		if(!ignoreNSCheck && char.contains('|')){
 
-			var _e = char.split('|');
+			final _e = char.split('|');
 			return findCharNS(_e[1],_e[0],-1,retBF,fuzzySearch);
 		}
 		if(!ignoreNSCheck && SELoader.namespace != ""){
@@ -178,7 +183,7 @@ class TitleState extends MusicBeatState
 			if(retBF) return defaultChar;
 			return null;
 		}
-		var charID = Std.parseInt(char);
+		final charID = Std.parseInt(char);
 		if(charID != null && !Math.isNaN(charID)){
 			var char = characters[charID];
 			if(char != null){
@@ -192,8 +197,8 @@ class TitleState extends MusicBeatState
 		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
 		
 		if(char.contains("-") && fuzzySearch){
-			var splitChar = char.split('-');
-			var splitCharMap:Map<String,Int> = [];
+			final splitChar = char.split('-');
+			final splitCharMap:Map<String,Int> = [];
 			var curStr = "";
 			for(index => split in splitChar){
 				curStr +=(index == 0 ? split : '-$split');

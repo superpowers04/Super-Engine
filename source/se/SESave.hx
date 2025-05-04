@@ -104,13 +104,16 @@ typedef YourMother = Dynamic;
 	var savedServers:Array<Array<Dynamic>> = [];
 	var favourites(get,default):Array<Dynamic> = [];
 	function get_favourites() {
-		if(favourites == null){favourites = [];} 
-		return favourites;
+		return favourites ?? (favourites = []);
 	}
 	var discordDRP:Bool = true;
 	var doCoolLoading:Bool = false;
 	var transparentPause:Bool = true;
-	var fullscreen:Bool = false;
+	var fullscreen(default,set):Bool = false;
+	function set_fullscreen(f){
+		if(flixel.FlxG.fullscreen == f) return fullscreen = f;
+		return fullscreen = flixel.FlxG.fullscreen = f;
+	}
 	var persistBF:Bool = false;
 	var persistGF:Bool = false;
 	var menuScripts:Bool = false;
@@ -177,6 +180,11 @@ typedef YourMother = Dynamic;
 	var repoURL:String="";
 	var gpuCaching:Bool=false;
 	var allowTracing:Bool=true;
+	// var flashStageQuality:openfl.display.StageQuality=openfl.display.StageQuality.BEST;
+	// function set_flashStageQuality(f){
+	// 	return flashStageQuality = flixel.FlxG.stage.quality = f;
+	// }
+
 
 	public function new(){}
 }

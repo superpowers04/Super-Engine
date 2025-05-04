@@ -336,17 +336,17 @@ class FuckState extends FlxUIState {
 			+ err,
 			18);
 		
-		txt.setFormat(CoolUtil.font, 18, 0xFFffddFF, LEFT);
+		txt.setFormat(CoolUtil.font, 18, 0xFFffddFF, LEFT, NONE);
 		txt.borderColor = FlxColor.BLACK;
 		txt.borderSize = 2;
 		txt.borderStyle = FlxTextBorderStyle.OUTLINE;
 		// txt.screenCenter();
 		add(txt);
 
-		txt = new FlxText(50, 135, 1000,
+		txt = new FlxText(50, 125, 1000,
 			"Please take a screenshot and report this\n" +((FATAL) ? "" : (lastState != null ? " Press R to reload the last state\n P" : " P") + "ress ENTER to attempt to return to the main menu\n")+ " Press ESCAPE to close the game",32);
 
-		txt.setFormat(CoolUtil.font, 16, 0xFFFFaaaa, LEFT);
+		txt.setFormat(CoolUtil.font, 16, 0xFFFFaaaa, LEFT, NONE);
 		txt.borderColor = FlxColor.BLACK;
 		txt.borderSize = 2;
 		txt.borderStyle = FlxTextBorderStyle.OUTLINE;
