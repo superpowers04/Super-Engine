@@ -74,8 +74,8 @@
 	
 
 
-	<!--In case you want to use the addons package-->
 	<haxelib name="lime"/>
+	<!-- <haxelib name="hxcpp"/> -->
 	<haxelib name="openfl"/>
 	<haxelib name="flixel" version="6.1.0"/>
 	<haxelib name="flixel-addons" version="3.3.2"/>
@@ -84,7 +84,7 @@
 
 	<haxedef name='usingcppia' if='cppia'/>
 	<define  name='message.no-color'/>
-	<haxedef  name='message.no-color'/>
+	<haxedef name='message.no-color'/>
 	<haxedef name="message.reporting" value="pretty" />
 
 
@@ -98,7 +98,7 @@
 
 	<!-- Expects https://github.com/superpowers04/linc_luajit, Nebula's fork will not work!-->
 	<haxelib name="linc_luajit" if="cpp" />
-	<haxelib name="discord_rpc" if="desktop cpp" />
+	<haxelib name="linc_discord-rpc" if="desktop cpp" />
 
 	<haxelib name="extension-androidtools" if="android" /> <!-- I am not reimplementing this shit myself -->
 
