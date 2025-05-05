@@ -43,6 +43,8 @@ class FuckState extends FlxUIState {
 		var dateNow:String = "";
 		var err = "";
 		errorCount++;
+
+		try{Overlay.debugVar="";}
 		try{
 			if(!(FlxG.state is FuckState)) lastState = Type.getClass(FlxG.state);
 		}catch(e){lastState = null;}
@@ -336,10 +338,10 @@ class FuckState extends FlxUIState {
 			+ err,
 			18);
 		
-		txt.setFormat(CoolUtil.font, 18, 0xFFffddFF, LEFT, NONE);
+		txt.setFormat(CoolUtil.font, 18, 0xFFFFFFee, LEFT, NONE);
 		txt.borderColor = FlxColor.BLACK;
 		txt.borderSize = 2;
-		txt.borderStyle = FlxTextBorderStyle.OUTLINE;
+		txt.borderStyle = NONE;
 		// txt.screenCenter();
 		add(txt);
 

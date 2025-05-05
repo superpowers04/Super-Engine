@@ -941,10 +941,10 @@ import openfl.utils.AssetType;
 			applyBorderStyle();
 			applyBorderTransparency();
 			applyFormats(_formatAdjusted, false);
+			_regen = false;
 
 			drawTextFieldTo(graphic.bitmap);
-		}
-		_regen = false;
+		}else _regen = false;
 		resetFrame();
 	}
 
@@ -981,7 +981,19 @@ import openfl.utils.AssetType;
 		// graphic.draw(textField, _matrix);
 		// // _matrix.translate(1, 1); // return to center
 		#else
-		graphic.draw(textField, _matrix);
+		try{
+			graphic.draw(textField, _matrix);
+		}catch(e){
+			trace('Failed to draw FlxText, trying again? ${e.message}:\n${e.details()}');
+			try{
+				graphic.draw(textField, _matrix);
+			}catch(e){
+				trace('Failed to draw FlxText! Marking as dirty for next frame draw ${e.message}:\n${e.details()}');
+				_regen = true;
+
+			}
+
+		}
 		#end
 	}
 
