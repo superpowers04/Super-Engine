@@ -44,7 +44,7 @@ class FuckState extends FlxUIState {
 		var err = "";
 		errorCount++;
 
-		try{Overlay.debugVar="";}
+		try{Overlay.debugVar="";}catch(e){}
 		try{
 			if(!(FlxG.state is FuckState)) lastState = Type.getClass(FlxG.state);
 		}catch(e){lastState = null;}

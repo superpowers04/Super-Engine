@@ -60,6 +60,7 @@ class FinishSubState extends MusicBeatSubstate
 		instance = this;
 		super();
 		endingMusic = null;
+		try{Overlay.debugVar="";}catch(e){}
 		if (error != ""){
 			isError = true;
 			errorMsg = error;

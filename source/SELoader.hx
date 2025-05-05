@@ -66,7 +66,6 @@ using StringTools;
 		return path;
 	}
 }
-
 class SELoader {
 	static final normalFolders:Map<String,Bool> = [
 		'assets'=>true,

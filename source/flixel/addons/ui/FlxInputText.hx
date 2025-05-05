@@ -692,11 +692,6 @@ class FlxInputText extends FlxText {
 			var caretKey:String = "caret" + cw + "x" + ch + "c:" + caretC + "b:" + borderStyle + "," + borderSize + "," + borderC;
 			switch (borderStyle)
 			{
-				case NONE:
-					// No border, just make the caret
-					caret.makeGraphic(cw, ch, caretC, false, caretKey);
-					caret.offset.x = caret.offset.y = 0;
-
 				case SHADOW:
 					// Shadow offset to the lower-right
 					cw += Std.int(borderSize);
@@ -717,6 +712,10 @@ class FlxInputText extends FlxText {
 					caret.pixels.fillRect(r, caretC); // draw caret
 					// we need to offset caret's drawing position since the caret is now larger than normal
 					caret.offset.x = caret.offset.y = borderSize;
+				default:
+					// No border, just make the caret
+					caret.makeGraphic(cw, ch, caretC, false, caretKey);
+					caret.offset.x = caret.offset.y = 0;
 			}
 			// Update width/height so caret's dimensions match its pixels
 			caret.width = cw;
