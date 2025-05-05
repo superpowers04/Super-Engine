@@ -1065,17 +1065,17 @@ class PlayState extends ScriptMusicBeatState
 
 		
 		if (SESave.data.songInfo == 0 || SESave.data.songInfo == 3) {
-			scoreTxt = new FlxText(50, healthBarBG.y + 30 - SESave.data.guiGap, 0, (SESave.data.npsDisplay ? "NPS: 0000 (Max 0000)" : "") +                // NPS Toggle
-				" | Score:00000000"+                               // Score
-				" | Combo:00000000"+
-				" | Combo Breaks:0000000" + PlayState.misses + 																				// Misses/Combo Breaks
-				"\n | Accuracy:000.000%" +  				// Accuracy
-				" | F", 20);
+			scoreTxt = new FlxText(50, healthBarBG.y + 30 - SESave.data.guiGap, 0, (SESave.data.npsDisplay ? 'NPS: $nps (Max $maxNPS) | ' : '')
+				+   'Score: 0000 ${Conductor.safeFrames != 10 ? ' (00000)' : ''}'
+				+' | Combo: 0000/0000'
+				+' | Breaks: 0000'
+				+' | 00.00% N/A', 20);
 			scoreTxt.autoSize = false;
 			scoreTxt.wordWrap = false;
 			scoreTxt.alignment = "center";
 			scoreTxt.width = 350;
 			scoreTxt.height = 350;
+			scoreTxt.setFormat(CoolUtil.font, 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		}else {
 			scoreTxt = new FlxText(10 + SESave.data.guiGap, FlxG.height * 0.46 , 600, "NPS: 000000\nScore:00000000\nCombo:00000 (Max 00000)\nCombo Breaks:00000\nAccuracy:0000 %\n Unknown", 20); // Long ass text to make sure it's sized correctly
 			// scoreTxt.autoSize = true;
@@ -1085,12 +1085,12 @@ class PlayState extends ScriptMusicBeatState
 			scoreTxt.screenCenter(X);
 			scoreTxt.width = 350;
 			scoreTxt.height = 350;
+			scoreTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		}
 
 		
 		// if (!SESave.data.accuracyDisplay)
 		// 	scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
-		scoreTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 
 		// Literally copy-paste of the above, fu

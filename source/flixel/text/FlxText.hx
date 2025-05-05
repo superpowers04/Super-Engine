@@ -984,8 +984,8 @@ import openfl.utils.AssetType;
 		try{
 			graphic.draw(textField, _matrix);
 		}catch(e){
-			trace('Failed to draw FlxText! Marking as dirty for next frame draw ${e.message}:\n${e.details()}');
-			_regen = true;
+			trace('Failed to draw FlxText as usual....');
+			throw(e);
 
 			
 

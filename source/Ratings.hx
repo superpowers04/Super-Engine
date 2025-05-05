@@ -29,57 +29,32 @@ class Ratings
 		{name:"FUCK",accuracy:10,color:0xFFfc6805},
 		{name:"afk",accuracy:1,color:0xFFfc0505},
 		{name:"N/A",accuracy:-1,color:0xFFFF0000},
-		{name:"actual bot moment",accuracy:-100,color:0xFFFF0000}
+		{name:"actually a bot ong",accuracy:-100,color:0xFFFF0000}
 	];
 	@:keep public static function getRank(?accuracy:Float = 0) {// Grab ranking from accuracy
-		var retRanking = rankings[rankings.length - 1];
-		for (ranking in rankings){
-			if(accuracy < ranking.accuracy) continue;
-			retRanking = ranking;
-			break;
-			
-		}
-		return retRanking;
+		for (ranking in rankings) if(accuracy > ranking.accuracy) return ranking;
+		return rankings[rankings.length - 1];
 	}
 	@:keep public static inline function getLetterRankFromAcc(?accuracy:Float = 0) {// generate a letter ranking
 		return getRank(accuracy).name;
 	}
-	public static function GenerateLetterRank(accuracy:Float) // generate a letter ranking
-	{
-		var ranking:String = "N/A";
-		if(SESave.data.botplay)
-			ranking = "BotPlay";
-
-		// These ratings are pretty self explanatory
-		if (PlayState.misses > 10)
-			ranking = "(Clear) ";
-		else if (PlayState.misses > 0) // Single Digit Combo Breaks
-			ranking = "(SDCB) ";
-		else if (PlayState.shits > 0) 
-			ranking = "(ShitFC) ";
-		else if (PlayState.bads > 0)
-			ranking = "(BadFC) ";
-		else if (PlayState.goods > 0)
-			ranking = "(GoodFC) ";
-		else
-			ranking = "(SickFC) ";
-
-		// WIFE TIME :)))) (based on Wife3)
-		ranking += getLetterRankFromAcc(accuracy);
-
-		if (accuracy == 0)
-			ranking = "N/A";
-
-		return ranking;
+	public static function GenerateLetterRank(accuracy:Float) { // generate a letter ranking
+		if(SESave.data.botplay) return "BotPlay";
+		if (accuracy == 0) return "N/A";
+		return getLetterRankFromAcc(accuracy) + (
+		  (PlayState.misses > 10) ? " (Clear)"
+		: (PlayState.misses > 0)  ? " (SDCB)"
+		: (PlayState.shits > 0)   ? " (ShitFC)"
+		: (PlayState.bads > 0)    ? " (BadFC)"
+		: (PlayState.goods > 0)   ? " (GoodFC)"
+		:                           " (SickFC)"
+		);
 	}
 	
 	public static function CalculateRating(noteDiff:Float, ?customSafeZone:Float):String // Generate a judgement through some timing shit
 	{
 		noteDiff = Math.abs(noteDiff);
-		var customTimeScale = Conductor.timeScale;
-
-		if (customSafeZone != null)
-			customTimeScale = customSafeZone / 166;
+		final customTimeScale = customSafeZone == null ? Conductor.timeScale : customSafeZone / 166;
 
 		if (noteDiff > 156 * customTimeScale) // so god damn early its a miss
 			return "miss";
@@ -96,27 +71,27 @@ class Ratings
 	public static function CalculateRanking(score:Int,scoreDef:Int,nps:Int,maxNPS:Int,accuracy:Float):String
 	{
 		return switch(SESave.data.songInfo){
-			case 0:(SESave.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
-				" | Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
-				" | Combo:" + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
-				" | Combo Breaks:" + PlayState.misses + 																				// Misses/Combo Breaks
-				"\n | Accuracy:" + (SESave.data.botplay ? "N/A" : CoolUtil.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
-				"| " + GenerateLetterRank(accuracy) + " |";
-			case 1:(SESave.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
-				"\nScore: " + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
-				"\nCombo: " + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
-				"\nCombo Breaks: " + PlayState.misses + 																				// Misses/Combo Breaks
-				"\nAccuracy: " + (SESave.data.botplay ? "N/A" : CoolUtil.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
-				"\nRank: " + GenerateLetterRank(accuracy); 
-			case 2:(SESave.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" : "") +                // NPS Toggle
-				"\nScore: " + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) +                               // Score
-				"\nCombo: " + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? " (Max " + PlayState.maxCombo + ")" : "") +
-				"\nCombo Breaks/Misses: " + PlayState.misses + 																				// Misses/Combo Breaks
+			case 0:(SESave.data.npsDisplay ? 'NPS: $nps (Max $maxNPS) | ' : '')
+				+'Score: $score ${Conductor.safeFrames != 10 ? '($scoreDef)' : ''}'
+				+' | Combo: ${PlayState.combo}/${PlayState.maxCombo}'
+				+' | Breaks: ${PlayState.misses}'
+				+'\n| ${CoolUtil.truncateFloat(accuracy, 2)}% ${GenerateLetterRank(accuracy)} |';
+			case 1:
+				(SESave.data.npsDisplay ? 'NPS: $nps (Max $maxNPS)' : '')
+				+'\nScore: $score ${Conductor.safeFrames != 10 ? ' ($scoreDef)' : ''}'
+				+'\nCombo: ${PlayState.combo}/${PlayState.maxCombo}'
+				+'\nBreaks: ${PlayState.misses}'
+				+'\nAccuracy: ${CoolUtil.truncateFloat(accuracy, 2)}%'
+				+'\nRank: ${GenerateLetterRank(accuracy)}';
+			case 2:(SESave.data.npsDisplay ? 'NPS: ' + nps + ' (Max ' + maxNPS + ')' : '') +                // NPS Toggle
+				'\nScore: ' + (Conductor.safeFrames != 10 ? score + ' (' + scoreDef + ')' : '' + score) +                               // Score
+				'\nCombo: ' + PlayState.combo + (PlayState.combo < PlayState.maxCombo ? ' (Max ' + PlayState.maxCombo + ')' : '') +
+				'\nCombo Breaks/Misses: ' + PlayState.misses + 																				// Misses/Combo Breaks
 				'\nSicks: ${PlayState.sicks}\nGoods: ${PlayState.goods}\nBads: ${PlayState.bads}\nShits: ${PlayState.shits}'+
-				"\nAccuracy: " + (SESave.data.botplay ? "N/A" : CoolUtil.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
-				"\nRank: " + GenerateLetterRank(accuracy); 
-			case 3:'Misses:${PlayState.misses}    Score:' + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score);
-			default:"";
+				'\nAccuracy: ' + (SESave.data.botplay ? 'N/A' : CoolUtil.truncateFloat(accuracy, 2) + ' %') +  				// Accuracy
+				'\nRank: ' + GenerateLetterRank(accuracy); 
+			case 3:'Misses:${PlayState.misses}    Score:$score${Conductor.safeFrames != 10 ? ' ($scoreDef)' : ''}';
+			default:'';
 
 		}
 	}
