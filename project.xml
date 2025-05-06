@@ -122,6 +122,7 @@
 		<haxedef name="HXCPP_GC_GENERATIONAL"/>
 		<haxedef name="HXCPP_TELEMETRY"/>
 		<haxedef name="HXCPP_CATCH_SEGV"/>
+		<haxedef name="HXCPP_CPP11"/>
 		<haxedef name='HXCPP_DEBUG_LINK' if='desktop'/>
 	</section>
 	<!-- <haxedef name="HXCPP_DEBUGGER"/> -->

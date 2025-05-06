@@ -333,10 +333,10 @@ class OptionsMenu extends MusicBeatState
 	var isCat:Bool = false;
 	function isHovering(obj1:Dynamic,obj2:Dynamic):Bool{
 		if(obj1 == null || obj2 == null) return false;
-		var width:Float = obj2.width;
-		var height:Float = obj2.height;
-		var x:Float = obj2.x;
-		var y:Float = obj2.y;
+		final width:Float = obj2.width;
+		final height:Float = obj2.height;
+		final x:Float = obj2.x;
+		final y:Float = obj2.y;
 		return (obj1.x > x && obj1.x < x + width) && (obj1.y > y && obj1.y < y + height);
 	}
 	override function update(elapsed:Float) {

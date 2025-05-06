@@ -19,10 +19,10 @@ class SEMacrosBuild{
 		#end
 			var _year = time.getFullYear(); 
 			_year -= Math.floor(_year * 0.001) * 1000;
-			var _month = zeroPad(time.getMonth()+1);
-			var _date = zeroPad(time.getDate());
-			var _min = zeroPad(time.getMinutes());
-			var _hour = zeroPad(time.getHours());
+			final _month = zeroPad(time.getMonth()+1);
+			final _date = zeroPad(time.getDate());
+			final _min = zeroPad(time.getMinutes());
+			final _hour = zeroPad(time.getHours());
 			_buildTime = '$_year.$_month.$_date.$_hour$_min';
 			trace('Building SE Version:${_buildTime}');
 			if(FileSystem.exists('version.downloadMe')){
@@ -42,6 +42,9 @@ class SEMacrosBuild{
 		});
 		fields.push({name:"buildTime",access:[Access.APublic, Access.AStatic, Access.AFinal],pos:Context.currentPos(),
 			kind:FieldType.FVar(macro:Float, macro $v{time.getTime()}), 
+		});
+		fields.push({name:"defines",access:[Access.APublic, Access.AStatic, Access.AFinal],pos:Context.currentPos(),
+			kind:FieldType.FVar(macro:Map<String,String>, macro $v{haxe.macro.Context.getDefines()}), 
 		});
 		#if linc_luajit
 		fields.push({name:"PsychLuaCompatScript",access:[Access.AInline, Access.APublic, Access.AStatic, Access.AFinal],pos:Context.currentPos(),

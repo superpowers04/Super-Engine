@@ -1642,7 +1642,7 @@ class PlayState extends ScriptMusicBeatState
 
 	@:keep inline public function generateNotes(){
 		callInterp("generateNotes",[]);
-		var songData = SONG;
+		var songData:SwagSong = SONG;
 		if (notes == null) notes = new FlxTypedGroup<Note>();
 		eventNotes = [];
 		CoolUtil.clearFlxGroup(notes);
@@ -1746,14 +1746,14 @@ class PlayState extends ScriptMusicBeatState
 		params.unshift(type);
 		params.unshift(-1);
 		params.unshift(time);
-		var swagNote:Note = new Note(time, -1, null,false,false,params[3],params,false);
+		final swagNote:Note = new Note(time, -1, null,false,false,params[3],params,false);
 		if(swagNote.killNote){swagNote.destroy();return;}
 		eventNotes.push(swagNote);
 		eventNotes.sort(sortByShit);
 	}
 	public function generateSong(?dataPath:String = ""){
 
-		final songData = SONG;
+		final songData:SwagSong = SONG;
 		Conductor.changeBPM(songData.bpm);
 
 		curSong = songData.song;

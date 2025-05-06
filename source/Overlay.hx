@@ -697,37 +697,39 @@ class ConsoleInput extends TextField{
 		return null;
 	}
 	@:keep inline function getDefs(){
-		return "-- normal defs --"
-		#if(windows)				+"\n windows" #end
-		#if(macos)					+"\n macos" #end
-		#if(linux)					+"\n linux" #end
-		#if(android)				+"\n android" #end
-		#if(web)					+"\n web" #end
-		#if(flash)					+"\n flash" #end
-		#if(sys)					+"\n sys" #end
-		#if(target.sys)				+"\n target.sys" #end
-		#if(target.static)			+"\n target.static" #end
-		#if(target.threaded)		+"\n target.threaded" #end
-		#if(ghaction)				+"\n ghaction" #end
-		+"\n-- compiler defs --"
-		#if(HXCPP_M64)				+"\n HXCPP_M64" #end
-		#if(HXCPP_M32)				+"\n HXCPP_M32" #end
-		#if(HXCPP_CHECK_POINTER)	+"\n HXCPP_CHECK_POINTER" #end
-		#if(HXCPP_STACK_LINE)		+"\n HXCPP_STACK_LINE" #end
-		#if(HXCPP_GC_GENERATIONAL)	+"\n HXCPP_GC_GENERATIONAL" #end
-		#if(dce)					+"\n dce" #end
-		#if(debug)					+"\n debug" #end
-		+"\n-- flixel defs --"
-		#if(FLX_DEBUG)				+"\n FLX_DEBUG" #end
-		#if(FLX_NO_DEBUG)			+"\n FLX_NO_DEBUG" #end
-		#if(FLX_NO_GAMEPAD)			+"\n FLX_NO_GAMEPAD" #end
-		#if(FLX_NO_TOUCH)			+"\n FLX_NO_TOUCH" #end
-		#if(FLX_NO_MOUSE)			+"\n FLX_NO_MOUSE" #end
-		#if(FLX_NO_KEYBOARD)		+"\n FLX_NO_KEYBOARD" #end
-		+"\n-- package defs --"
-		#if(linc_luajit)			+"\n linc_luajit" #end
-		#if(hscript)				+"\n hscript" #end
-		#if(discord_rpc)			+"\n discord_rpc" #end
+		
+		return ([for(i=>v in se.utilities.SEMacros.defines) '$i = $v']).join('\n')
+		// "-- normal defs --"
+		// #if(windows)				+"\n windows" #end
+		// #if(macos)					+"\n macos" #end
+		// #if(linux)					+"\n linux" #end
+		// #if(android)				+"\n android" #end
+		// #if(web)					+"\n web" #end
+		// #if(flash)					+"\n flash" #end
+		// #if(sys)					+"\n sys" #end
+		// #if(target.sys)				+"\n target.sys" #end
+		// #if(target.static)			+"\n target.static" #end
+		// #if(target.threaded)		+"\n target.threaded" #end
+		// #if(ghaction)				+"\n ghaction" #end
+		// +"\n-- compiler defs --"
+		// #if(HXCPP_M64)				+"\n HXCPP_M64" #end
+		// #if(HXCPP_M32)				+"\n HXCPP_M32" #end
+		// #if(HXCPP_CHECK_POINTER)	+"\n HXCPP_CHECK_POINTER" #end
+		// #if(HXCPP_STACK_LINE)		+"\n HXCPP_STACK_LINE" #end
+		// #if(HXCPP_GC_GENERATIONAL)	+"\n HXCPP_GC_GENERATIONAL" #end
+		// #if(dce)					+"\n dce" #end
+		// #if(debug)					+"\n debug" #end
+		// +"\n-- flixel defs --"
+		// #if(FLX_DEBUG)				+"\n FLX_DEBUG" #end
+		// #if(FLX_NO_DEBUG)			+"\n FLX_NO_DEBUG" #end
+		// #if(FLX_NO_GAMEPAD)			+"\n FLX_NO_GAMEPAD" #end
+		// #if(FLX_NO_TOUCH)			+"\n FLX_NO_TOUCH" #end
+		// #if(FLX_NO_MOUSE)			+"\n FLX_NO_MOUSE" #end
+		// #if(FLX_NO_KEYBOARD)		+"\n FLX_NO_KEYBOARD" #end
+		// +"\n-- package defs --"
+		// #if(linc_luajit)			+"\n linc_luajit" #end
+		// #if(hscript)				+"\n hscript" #end
+		// #if(discord_rpc)			+"\n discord_rpc" #end
 		;
 	}
 }

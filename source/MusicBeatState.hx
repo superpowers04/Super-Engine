@@ -33,7 +33,12 @@ class MusicBeatState extends FlxUIState {
 	public var curStepProgress:Float = 0;
 	public var curBeatProgress:Float = 0;
 	public var curBeat:Int = 0;
- 
+	public var lostFocusMouse:Bool = false;
+	public var lostFocusKeyboard:Bool = false;
+	public var lastCursorMove:Float = 0;
+	public var lastUpdateMouseX:Float = 0;
+	public var lastUpdateMouseY:Float = 0;
+
 	public var lastUpdateTime:Float = 0;
 
 	private var controls(get, never):Controls;
@@ -112,17 +117,24 @@ class MusicBeatState extends FlxUIState {
 	public function onFileDrop(file:String):Null<Bool>{
 		return true;
 	}
-	var mouseEnabledTmr:FlxTimer;
 	override function onFocus() {
 		super.onFocus();
 		CoolUtil.setFramerate(true);
-		// mouseEnabledTmr = new FlxTimer().start(0.25,function(_){FlxG.mouse.enabled = true;});
+		if(lostFocusMouse) {
+			lostFocusMouse = false;
+			FlxG.mouse.enabled = true;
+		}
+		if(lostFocusKeyboard) {
+			lostFocusKeyboard = false;
+			FlxG.keys.enabled = true;
+		}
 	}
 	override function onFocusLost(){
 		super.onFocusLost();
 		CoolUtil.setFramerate(24,false,true);
-		if(mouseEnabledTmr != null)mouseEnabledTmr.cancel();
 		// FlxG.mouse.enabled = false;
+		lostFocusMouse = FlxG.mouse.enabled;
+		lostFocusKeyboard = FlxG.keys.enabled;
 	}
 	@:keep inline function get_controls():Controls return PlayerSettings.player1.controls;
 	override function create()
@@ -146,41 +158,36 @@ class MusicBeatState extends FlxUIState {
 	// var tempMessTimer:FlxTimer;
 	var tempMessages:Array<Array<Dynamic>> = [];
 	public function showTempmessage(str:String,?color:FlxColor = FlxColor.LIME,?time:Float = 5,?center:Bool = true,?trac:Bool = true){
-		var moveDown = false;
-		var lastBacking = null;
-		if (tempMessages.length > 0){
-			moveDown = true;
-			lastBacking = tempMessages[tempMessages.length - 1][2];
-		}
+		final lastBacking = (tempMessages.length > 0) ? tempMessages[tempMessages.length - 1][2] :null;
 		
 		if(trac) trace(str);
 		try{
 
-		var tempMessage = new FlxText(40,60,1000,str,24);
-		tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		tempMessage.scrollFactor.set();
-		tempMessage.autoSize = false;
-		tempMessage.width = 1280;
-		tempMessage.height = 720;
-		tempMessage.textField.width = 1280;
-		tempMessage.textField.height = 720;
-		if(center){
-			tempMessage.alignment = CENTER;
-			tempMessage.screenCenter(X);
-		}
-		// tempMessage.wordWrap = false;
-		var tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
-		tempMessBacking.scrollFactor.set();
-		if(FlxG.cameras.list[FlxG.cameras.list.length - 1] != null){
-			tempMessBacking.cameras = tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-		}
-		// add(tempMessBacking);
-		// add(tempMessage);
-		if(moveDown){
-			tempMessBacking.y = lastBacking.y + lastBacking.height;
-			tempMessage.y = tempMessBacking.y + 2;
-		};
-		tempMessages.push([Sys.time() + time,tempMessage,tempMessBacking]);
+			final tempMessage = new FlxText(40,60,1000,str,24);
+			tempMessage.setFormat(CoolUtil.font, 24, color, LEFT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			tempMessage.scrollFactor.set();
+			tempMessage.autoSize = false;
+			tempMessage.width = 1280;
+			tempMessage.height = 720;
+			tempMessage.textField.width = 1280;
+			tempMessage.textField.height = 720;
+			if(center){
+				tempMessage.alignment = CENTER;
+				tempMessage.screenCenter(X);
+			}
+			// tempMessage.wordWrap = false;
+			final tempMessBacking = new FlxSprite(tempMessage.x - 2,tempMessage.y - 2).loadGraphic(FlxGraphic.fromRectangle(Std.int(tempMessage.width + 4),Std.int(tempMessage.height + 4),0xaa000000));
+			tempMessBacking.scrollFactor.set();
+			if(FlxG.cameras.list[FlxG.cameras.list.length - 1] != null){
+				tempMessBacking.cameras = tempMessage.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+			}
+			// add(tempMessBacking);
+			// add(tempMessage);
+			if(lastBacking != null){
+				tempMessBacking.y = lastBacking.y + lastBacking.height;
+				tempMessage.y = tempMessBacking.y + 2;
+			};
+			tempMessages.push([Sys.time() + time,tempMessage,tempMessBacking]);
 		}catch(e){trace(e);}
 	}
 	public function showTempBanner(str:String,?color:FlxColor = FlxColor.LIME,?time:Float = 5,?center:Bool = true,?trac:Bool = true){
@@ -219,10 +226,26 @@ class MusicBeatState extends FlxUIState {
 	var oldBeat:Int = 0;
 	var oldStep:Int = 0;
 	override function update(elapsed:Float) {
+		if(FlxG.mouse.enabled){
+
+			if(FlxG.mouse.visible){
+				lastCursorMove+=elapsed;
+				if(lastCursorMove > 5){
+					FlxG.mouse.visible = false;
+				}
+			}
+			if(FlxG.mouse.wheel != 0 || FlxG.mouse.x != lastUpdateMouseX || FlxG.mouse.y != lastUpdateMouseY || FlxG.mouse.pressed || FlxG.mouse.pressedRight){
+				lastCursorMove=elapsed;
+				FlxG.mouse.visible = true;
+				lastUpdateMouseX = FlxG.mouse.x;
+				lastUpdateMouseY = FlxG.mouse.y;
+
+			}
+		}
 		lastUpdateTime = Sys.time();
 		if(tempMessages[0] != null && (tempMessages[0][0] < lastUpdateTime)){
 			try{
-				var msg = tempMessages.shift();
+				final msg = tempMessages.shift();
 				remove(msg[1]);
 				remove(msg[2]);
 				msg[1].destroy();
@@ -236,7 +259,7 @@ class MusicBeatState extends FlxUIState {
 			}catch(e){}
 		}
 		if(FlxG.keys.justPressed.F3){
-			var mess = 'Global Mouse pos: ${FlxG.mouse.x},${FlxG.mouse.y}; Screen mouse pos: ${FlxG.mouse.screenX},${FlxG.mouse.screenY}; member count: ${members.length}'; 
+			final mess = 'Global Mouse pos: ${FlxG.mouse.x},${FlxG.mouse.y}; Screen mouse pos: ${FlxG.mouse.screenX},${FlxG.mouse.screenY}; member count: ${members.length}'; 
 			// trace(mess);
 			showTempmessage(mess);
 		}
@@ -337,7 +360,7 @@ class MusicBeatState extends FlxUIState {
 		// }
 
 
-		var prog = (Conductor.offset + Conductor.songPosition - lastBPMChange.songTime) / Conductor.stepCrochet;
+		final prog = (Conductor.offset + Conductor.songPosition - lastBPMChange.songTime) / Conductor.stepCrochet;
 		curStepProgress = prog % 1;
 		curStep = lastBPMChange.stepTime + Math.floor(prog);
 		curBeatProgress = (prog % 4) / 4;

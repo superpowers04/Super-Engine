@@ -64,8 +64,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 	override function beatHit(){
 		super.beatHit();
 		if ((voices != null && shouldVoicesPlay) && 
-		    (!voices.playing || (voices.time > FlxG.sound.music.time + 50 || voices.time < FlxG.sound.music.time - 50))
-		    ){
+		    (!voices.playing || (Math.abs(voices.time - FlxG.sound.music.time) > 100) )){
 			voices.syncToSound(FlxG.sound.music);
 			voices.playing = shouldVoicesPlay;
 		}
@@ -76,7 +75,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 			}
 			beatTween = FlxTween.tween(bg.scale.set(1.01,1.01),{x:1,y:1},Conductor.stepCrochet * 0.003);
 		}
-		if(curBeat < 1 && voices != null){
+		if(curBeat == 1 && voices != null){
 			voices.syncToSound(FlxG.sound.music);
 			voices.playing = shouldVoicesPlay;
 		}
@@ -744,7 +743,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 							if(songInfo.charts[selMode] != null && SELoader.exists(songInfo.path + "/" + songInfo.charts[selMode])){
 								try{
 
-									var song:SwagSong = cast Json.parse(SELoader.getContent(songInfo.path + "/" + songInfo.charts[selMode])).song;
+									final song:SwagSong = cast Json.parse(SELoader.getContent(songInfo.path + "/" + songInfo.charts[selMode])).song;
 									// if(e.bpm > 0) Conductor.changeBPM(e.bpm);
 									if(song.bpm > 0) Conductor.changeBPM(song.bpm);
 									try{
@@ -783,7 +782,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 							curPlaying = null;
 							SickMenuState.musicHandle();
 						}
-						SELoader.gc();
+						// SELoader.gc();
 					}
 					if(curPlaying == songInfo){
 						try{
