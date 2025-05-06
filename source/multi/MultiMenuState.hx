@@ -21,6 +21,7 @@ import flixel.ui.FlxBar;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import se.formats.SongInfo;
+import se.utilities.SEThread;
 
 using StringTools;
 
@@ -771,7 +772,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 								FlxTween.tween(songProgress,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
 								FlxTween.tween(songProgressText,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
 								FlxTween.tween(songProgressText,{x:songProgress.x + songProgress.width + 10},0.7,{ease:FlxEase.expoOut});
-								songProgressText.text = "Playing Inst. Loading voices";
+								songProgressText.queuedText = "Playing Inst. Loading voices";
 							}catch(e){}
 
 							#if discord_rpc
@@ -793,29 +794,29 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 									// voices.volume = SESave.data.voicesVol;
 									// voices.looped = false;
 									// voices.play(FlxG.sound.music.time);
-									songProgressText.text = "Playing Full song";
+									songProgressText.queuedText = "Playing Full song";
 								}else{
-									songProgressText.text = "Playing Instrumental. No Vocals available";
+									songProgressText.queuedText = "Playing Instrumental. No Vocals available";
 								}
 								shouldVoicesPlay = false;
 							}
 							if(voices.length > 0){
 								shouldVoicesPlay = !voices.playing;
 								if(shouldVoicesPlay){
-									songProgressText.text = "Playing Full song";
+									songProgressText.queuedText = "Playing Full song";
 									FlxG.sound.music.time = Conductor.songPosition;
 									voices.syncToSound(FlxG.sound.music);
 									voices.volume = SESave.data.voicesVol * FlxG.sound.volume;
 									voices.looped = false;
 								}else{
-									songProgressText.text = "Playing Instrumental";
+									songProgressText.queuedText = "Playing Instrumental";
 								}
 								voices.playing=shouldVoicesPlay;
 
 							}
 						}catch(e){
 							showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
-							songProgressText.text = "Playing Instrumental";
+							songProgressText.queuedText = "Playing Instrumental";
 						}
 						if(FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.destroy(); // Prevents the song from muting itself
 						// FlxG.sound.music.volume = SESave.data.instVol;

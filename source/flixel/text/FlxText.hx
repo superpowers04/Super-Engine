@@ -55,6 +55,11 @@ import openfl.utils.AssetType;
 	public var text(default, set):String = "";
 
 	/**
+	 * The text queued to display next draw.
+	 */
+	public var queuedText:String = "";
+
+	/**
 	 * The size of the text being displayed in pixels.
 	 */
 	public var size(get, set):Int;
@@ -1012,6 +1017,10 @@ import openfl.utils.AssetType;
 
 	override public function draw():Void
 	{
+		if(queuedText!=""){
+			text = queuedText;
+			queuedText = "";
+		}
 		regenGraphic();
 		super.draw();
 	}

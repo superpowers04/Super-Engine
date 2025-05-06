@@ -58,6 +58,12 @@ using StringTools;
 		SELoader.rawMode=true;
 		return SELoader.readDirectory(appendPath(path));
 	}
+	function readDirectoryAppend(?path:String){
+		SELoader.rawMode=true;
+		final arr = SELoader.readDirectory(appendPath(path));
+		for(i=>p in arr) arr[i] = appendPath(p);
+		return arr;
+	}
 	function getContent(?path:String):String{
 		SELoader.rawMode=true;
 		return SELoader.getContent(appendPath(path));
@@ -406,7 +412,101 @@ class SELoader {
 		// 	rawJson = '{"meta":'+meta+','+rawJson.substring(1);
 		// }
 	}
+	public static function registerStages(){
 
+		LoadingScreen.loadingText = 'Updating stage list';
+		
+		final stages = TitleState.stages = [
+			{id:"nothing",folderName:"nothing",path:"assets/",},
+			{id:"stage",folderName:"stage",path:"assets/",},
+		];
+		#if sys
+		// Loading like this is probably not a good idea
+		var dataDir:String = "mods/stages/";
+
+		if (SELoader.exists(dataDir))
+		{
+		  for (directory in SELoader.readDirectory(dataDir))
+		  {
+			if (!SELoader.isDirectory(dataDir+"/"+directory)){continue;}
+			if (SELoader.exists(dataDir+"/"+directory+"/"))
+			{
+				stages.push({
+					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
+					folderName:directory,
+				});
+			}
+		  }
+		}
+
+
+		for (ID => dataDir in ['','mods/weeks/','mods/packs/']) {
+			if (!SELoader.isDirectory(dataDir)) continue;
+			final dataDir = new SEDirectory(dataDir);
+			for (mod in dataDir.readDirectory()){
+				if(!dataDir.isDirectory('$mod')) continue;
+				if(dataDir.isDirectory('$mod/stages')) findStagesInFolder(dataDir.appendPath('$mod/stages'),mod,ID);
+				if(dataDir.isDirectory('$mod/assets/stages')) findStagesInFolder(dataDir.appendPath('$mod/assets/stages'),mod,ID);
+				if(dataDir.isDirectory('$mod/assets/shared/stages')) findStagesInFolder(dataDir.appendPath('$mod/assets/shared/stages'),mod,ID);
+			}
+			
+			  // for (_dir in SELoader.readDirectory(dataDir))
+			  // {
+			// 	if (!SELoader.isDirectory(dataDir + _dir)){continue;}
+			// 	// trace(_dir);
+			// 	if (SELoader.exists(dataDir + _dir + "/stages/"))
+			// 	{
+			// 		var dir = dataDir + _dir + "/stages/";
+			// 		// trace('Checking ${dir} for characters');
+			// 		for (char in SELoader.readDirectory(dir))
+			// 		{
+			// 			if (!SELoader.isDirectory(dir+"/"+char)){continue;}
+			// 			stages.push({
+			// 				id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
+			// 				folderName:char,
+			// 				path:dir,
+			// 				nameSpaceType:ID,
+			// 				nameSpace:_dir
+			// 			});
+			// 		}
+			// 	}		
+			  // }
+			// }
+		}
+		trace('Found ${stages.length} stages');
+		#end
+	}
+	public static function findStagesInFolder(path:String,nameSpace:String,ID:Int){
+		final stages = TitleState.stages;
+		final dataDir = new SEDirectory(path);
+		for (stage in dataDir.readDirectory()){
+			if(dataDir.isDirectory(stage)){
+				stages.push({
+					id:stage.replace(' ',"-").replace('_',"-").toLowerCase(),
+					folderName:stage,
+					path:cast dataDir,
+					nameSpaceType:ID,
+					nameSpace:nameSpace
+				});
+				continue;
+			}
+			#if linc_luajit
+			if(!stage.endsWith('.json')) continue;
+			final stageName = stage.substring(0,stage.length-5);
+			final stageLua = '$stageName.lua';
+			if(!dataDir.exists(stageLua)) continue;
+			stages.push({
+				id:stageName.replace(' ',"-").replace('_',"-").toLowerCase(),
+				folderName:stage,
+				path:cast dataDir,
+				scriptPath:stageLua,
+				nameSpaceType:ID,
+				nameSpace:nameSpace
+			});
+			#end
+
+		}
+	}
 	/* TODO ADD SUPPORT FOR JUST FINDING CHARACTER PNGS */
 	public static function registerCharactersInFolder(ID:Int=0,path:String,?nameSpace:String="UNKNOWN",?recurse:Bool = true){
 		final ADDPE:Bool=SESave.data.PECharSeperate;
@@ -452,7 +552,7 @@ class SELoader {
 					TitleState.characters.push({
 						id:char.substring(0,char.length-5).replace(' ',"-").replace('_',"-").toLowerCase()+(ADDPE?"-pe":""),
 						folderName:char,
-						jsonLocation:'$_dir/$char',
+						jsonLocation:_dir.appendPath(char),
 						psychChar:true,
 						path:'$_dir',
 						nameSpaceType:ID,
@@ -642,7 +742,8 @@ class SELoader {
 		return inline CoolUtil.orderList(readDirectory(path));
 	}
 	public static function readDirectory(path:String):Array<String>{
-		if(SESave.data.HDDMode || (!path.startsWith('assets/') && !path.startsWith('assets:'))) return FileSystem.readDirectory(getPath(path));
+		if(SESave.data.HDDMode || (!path.startsWith('assets/') && !path.startsWith('assets:'))) 
+			return FileSystem.readDirectory(getPath(path));
 		
 		path = path.substring(7);
 		if(AssetPathListingCache[path] != null){

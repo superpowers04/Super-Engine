@@ -102,6 +102,7 @@ using StringTools;
 	}
 	public var folderName:String = "";
 	public var nameSpace:String = null;
+	public var scriptPath:String = null;
 	public var nameSpaceType:Int = 0; // 0: mods/stages, 1: mods/weeks, 2: mods/packs 
 
 	public function toString(){
@@ -436,7 +437,7 @@ class TitleState extends MusicBeatState
 
 
 		if(SESave.data.scripts != null){
-			var scripts:Array<String> = [];
+			final scripts:Array<String> = [];
 			for (v in SESave.data.scripts) {
 				if(!SELoader.exists('mods/scripts/${v}/')){
 					trace('Script $v doesn\'t exist! Disabling');
@@ -523,64 +524,7 @@ class TitleState extends MusicBeatState
 		}
 		return currentstage;
 	}
-	public static function checkStages(){
-
-		LoadingScreen.loadingText = 'Updating stage list';
-		stages = [
-			{id:"nothing",folderName:"nothing",path:"assets/",},
-			{id:"stage",folderName:"stage",path:"assets/",},
-		];
-		#if sys
-		// Loading like this is probably not a good idea
-		var dataDir:String = "mods/stages/";
-
-		if (SELoader.exists(dataDir))
-		{
-		  for (directory in SELoader.readDirectory(dataDir))
-		  {
-			if (!SELoader.isDirectory(dataDir+"/"+directory)){continue;}
-			if (SELoader.exists(dataDir+"/"+directory+"/"))
-			{
-				stages.push({
-					id:directory.replace(' ','-').replace('_','-').toLowerCase(),
-					folderName:directory,
-				});
-			}
-		  }
-		}
-
-		
-
-		for (ID => dataDir in ['mods/weeks/','mods/packs/']) {
-			
-			if (SELoader.exists(dataDir))
-			{
-			  for (_dir in SELoader.readDirectory(dataDir))
-			  {
-				if (!SELoader.isDirectory(dataDir + _dir)){continue;}
-				// trace(_dir);
-				if (SELoader.exists(dataDir + _dir + "/stages/"))
-				{
-					var dir = dataDir + _dir + "/stages/";
-					// trace('Checking ${dir} for characters');
-					for (char in SELoader.readDirectory(dir))
-					{
-						if (!SELoader.isDirectory(dir+"/"+char)){continue;}
-						stages.push({
-							id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
-							folderName:char,
-							path:dir,
-							nameSpaceType:ID,
-							nameSpace:_dir
-						});
-					}
-				}		
-			  }
-			}
-		}
-		trace('Found ${stages.length} stages');
-		#end
-	}
+	@:deprecated inline public static function checkStages() return SELoader.registerStages();
 
 	override public function create():Void
 	{
