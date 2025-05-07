@@ -254,14 +254,14 @@ class Note extends FlxSprite
 			case 1:if (SESave.data.cpuStrums) {PlayState.instance.DadStrumPlayAnim(noteData);}
 		}; // Strums
 		if(noteAnimation != null){
-			(if(char == null) PlayState.getCharFromID(charID,true) else char).playAnim((if(noteAnimation == "") getNoteAnim(noteData) else noteAnimation),true); // Play animation
+			(char ?? PlayState.getCharFromID(charID,true)).playAnim(noteAnimation == "" ? getNoteAnim(noteData) : noteAnimation,true); // Play animation
 		}
 	}
-	@:keep inline function getNoteAnim(noteData){return (if (noteAnims[noteData] == null) _noteAnimsBackup[noteData % 4] else noteAnims[noteData]);}
+	@:keep inline function getNoteAnim(noteData){return ((noteAnims[noteData] == null) : _noteAnimsBackup[noteData % 4] ? noteAnims[noteData]);}
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		if(noteAnimationMiss != null){
-			(if(char == null) PlayState.getCharFromID(charID,true) else char).playAnim((if(noteAnimationMiss == "") getNoteAnim(noteData) + "miss" else noteAnimationMiss),true); // Play animation
+			(char ?? PlayState.getCharFromID(charID,true)).playAnim(((noteAnimationMiss == "") ? getNoteAnim(noteData) + "miss" : noteAnimationMiss),true); // Play animation
 		}
 	}
 	// Array of animations, to be used above
@@ -431,7 +431,7 @@ class Note extends FlxSprite
 				else if(isSustainNote) if(noteJSON.offsetHold != null){offset.x+=noteJSON.offsetHold[0];offset.y+=noteJSON.offsetHold[1];}
 				else if(noteJSON.offsetScroll != null){offset.x+=noteJSON.offsetStatic[0];offset.y+=noteJSON.offsetStatic[1];}
 			}
-			if (SESave.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
+			if(SESave.data.downscroll && isSustainNote && isSustainNoteEnd) flipY = !flipY;
 			if(shouldntBeHit && noteAnimation == ""){
 				noteAnimationMiss = noteAnimation = 'hurt${noteDirections[noteData]}/hurt/sing${noteDirections[noteData]}miss';
 			}
@@ -440,11 +440,9 @@ class Note extends FlxSprite
 	}catch(e){MainMenuState.handleError(e,'Caught "Note create" crash: ${e.message}\n${e.stack}');}}
 
 	override function draw(){
-		// if(!(eventNote && !inCharter) && showNote && visible){
 		if(!inCharter && (!showNote || !visible || eventNote)) return;
 		super.draw();
 		if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
-		// }
 	}
 	override function destroy(){
 		if(PlayState.instance != null){

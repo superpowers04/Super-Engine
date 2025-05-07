@@ -1680,6 +1680,7 @@ class PlayState extends ScriptMusicBeatState
 		// 	}
 		// }
 		if(SESave.data.loadPsychEvents) loadEvents(songData);
+		var bpm = Conductor.bpm;
 		var daBeats:Int = 0; // Current section ID, ig
 		var section:SwagSection = null;
 		var halfCount = (songData.keyCount * 2);
@@ -1689,7 +1690,9 @@ class PlayState extends ScriptMusicBeatState
 				daBeats += 1;
 				continue;
 			}
-			var coolSection:Int = Std.int(section.lengthInSteps / 4);
+			if(section.changeBPM) Conductor.changeBPM(section.bpm);
+
+			final coolSection:Int = Std.int(section.lengthInSteps / 4);
 			var daStrumTime:Float = 0;
 			for (songNotes in section.sectionNotes){
 				daStrumTime = songNotes[0] + SESave.data.offset;
@@ -1699,7 +1702,7 @@ class PlayState extends ScriptMusicBeatState
 				var daNoteData:Int = songNotes[1];
 
 
-				var gottaHitNote:Bool = (if (daNoteData % halfCount > songData.keyCount - 1) !section.mustHitSection else section.mustHitSection);
+				var gottaHitNote:Bool = ((daNoteData % halfCount > songData.keyCount - 1) ?  !section.mustHitSection : section.mustHitSection);
 				if(chartIsInverted) gottaHitNote = !gottaHitNote;
 				var oldNote:Note = (unspawnNotes.length > 0 ? unspawnNotes[Std.int(unspawnNotes.length - 1)] : null);
 				if(!opponentNotes && !gottaHitNote) continue;
@@ -1750,6 +1753,7 @@ class PlayState extends ScriptMusicBeatState
 
 			daBeats += 1;
 		}
+		Conductor.changeBPM(bpm);
 
 		unspawnNotes.sort(sortByShit);
 		eventNotes.sort(sortByShit);
