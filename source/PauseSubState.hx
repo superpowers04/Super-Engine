@@ -254,9 +254,10 @@ class PauseSubState extends MusicBeatSubstate {
 
 			if (upP) changeSelection(-1);
 			else if (downP) changeSelection(1);
+			else if (FlxG.mouse.wheel != 0) changeSelection(FlxG.mouse.wheel);
 
-			var daSelected:String = menuItems[curSelected];
 			if(controls.LEFT || controls.RIGHT){
+				final daSelected:String = menuItems[curSelected];
 
 				#if !mobile
 				if(daSelected.startsWith('Swap Charts')){
@@ -334,7 +335,7 @@ class PauseSubState extends MusicBeatSubstate {
 		return;
 	}
 	function select(sel:Int){
-		var sel =menuItems[sel];
+		final sel =menuItems[sel];
 		switch (sel){
 			case "Resume":
 				countdown();

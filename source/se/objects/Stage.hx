@@ -13,7 +13,7 @@ import TitleState;
 	var tags:Array<String> = [];
 	var jsonFile:String;
 	var showGF:Bool = true;
-	var defaultCamZoom:Float = 1.05;
+	var defaultCamZoom:Float = 0.9;
 	var name:String = "";
 	var interps:Array<Dynamic> = []; 
 	var stageInfo:StageInfo;

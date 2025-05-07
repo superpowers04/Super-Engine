@@ -333,8 +333,8 @@ class FuckState extends FlxUIState {
 		header.screenCenter(flixel.util.FlxAxes.X);
 		add(header);
 		trace("-------------------------\nERROR:\n\n" + err + "\n\n-------------------------");
-		var txt:FlxText = new FlxText(40, 160, FlxG.width - 60,
-			"\n\nError/Stack:\n\n"
+		var txt:FlxText = new FlxText(40, 125, FlxG.width - 60,
+			"# Error/Stack:\n\n"
 			+ err,
 			18);
 		
@@ -345,7 +345,7 @@ class FuckState extends FlxUIState {
 		// txt.screenCenter();
 		add(txt);
 
-		txt = new FlxText(50, 125, 1000,
+		txt = new FlxText(50, 640, 1000,
 			"Please take a screenshot and report this\n" +((FATAL) ? "" : (lastState != null ? " Press R to reload the last state\n P" : " P") + "ress ENTER to attempt to return to the main menu\n")+ " Press ESCAPE to close the game",32);
 
 		txt.setFormat(CoolUtil.font, 16, 0xFFFFaaaa, LEFT, NONE);

@@ -518,6 +518,7 @@ class PlayState extends ScriptMusicBeatState
 			try { camHUD.visible = false; } catch(e){}
 			try { playerNoteCamera.visible=false; } catch(e){}
 			try { opponentNoteCamera.visible=false; } catch(e){}
+			try { vocals.pause(); } catch(e){}
 
 			generatedMusic = persistentUpdate = false;
 			persistentDraw = true;
@@ -821,8 +822,14 @@ class PlayState extends ScriptMusicBeatState
 		
 		//dialogue shit
 		LoadingScreen.loadingText = "Loading stage";
-		final nextStage = loadStage((SESave.data.stageAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || SESave.data.selStage == "default") ?
+		var nextStage;
+		try{
+			nextStage= loadStage((SESave.data.stageAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || SESave.data.selStage == "default") ?
 		          SONG.stage : SESave.data.selStage,onlinemod.OfflinePlayState.nameSpace);
+		}catch(e){
+			handleError('Error while loading stage:$e');
+			nextStage = loadBaseStage();
+		}
 		// bfPos = stageObject.bfPos;
 		// dadPos = stageObject.dadPos;
 		// gfPos = stageObject.gfPos;
@@ -2190,7 +2197,7 @@ class PlayState extends ScriptMusicBeatState
 			Overlay.debugVar += '\nResync count:${resyncCount}'
 				+'\nCond/Music/Vocals time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}/${vt}'
 				+'\nHealth:${health}'
-				+'\nCamFocus: ${Std.int(camFollow.x * 10) * 0.1},${Std.int(camFollow.y * 10) * 0.1}/${Std.int(e[0] * 10) * 0.1},${Std.int(e[1] * 10) * 0.1}   | ${if(!moveCamera) "Locked by script" else if(!SESave.data.camMovement || camLocked) "Locked" else '${focusedCharacter}' } ' //' // extra ' to prevent bad syntaxes interpeting the entire file as a string
+				+'\nCamFocus: ${Std.int(camFollow.x * 10) * 0.1},${Std.int(camFollow.y * 10) * 0.1}/${Std.int(e[0] * 10) * 0.1},${Std.int(e[1] * 10) * 0.1}   | ${(!moveCamera) ? "Locked by script" : (!SESave.data.camMovement || camLocked) ? "Locked" : '${focusedCharacter}' } ' //' // extra ' to prevent bad syntaxes interpeting the entire file as a string
 				+'\nScript Count:${interpCount}'
 				+'\nChartType: ${SONG.chartType}';
 		}

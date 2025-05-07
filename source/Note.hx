@@ -257,7 +257,7 @@ class Note extends FlxSprite
 			(char ?? PlayState.getCharFromID(charID,true)).playAnim(noteAnimation == "" ? getNoteAnim(noteData) : noteAnimation,true); // Play animation
 		}
 	}
-	@:keep inline function getNoteAnim(noteData){return ((noteAnims[noteData] == null) : _noteAnimsBackup[noteData % 4] ? noteAnims[noteData]);}
+	@:keep inline function getNoteAnim(noteData){return (noteAnims[noteData] ?? _noteAnimsBackup[noteData % 4]);}
 
 	dynamic public function miss(?charID:Int = 0,?note:Null<Note> = null){
 		if(noteAnimationMiss != null){
