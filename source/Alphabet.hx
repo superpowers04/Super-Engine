@@ -393,7 +393,7 @@ class AlphaCharacter extends FlxSprite {
 				animation._animations[anim] = new FlxAnimation(animation,anim,alphabetAnims[anim],24);
 				return true;
 			}
-			animation.addByPrefix(anim, anim ?? letter, 24);
+			animation.addByPrefix(anim, letter ?? anim, 24);
 			if(!animation.exists(anim)) return false;
 			if(frames == Alphabet.Frames){
 				alphabetAnims[anim] = animation._animations[anim].frames;

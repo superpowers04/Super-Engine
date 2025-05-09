@@ -772,7 +772,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 								FlxTween.tween(songProgress,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
 								FlxTween.tween(songProgressText,{alpha:1,y:songProgress.y + 20},0.4,{ease:FlxEase.expoOut});
 								FlxTween.tween(songProgressText,{x:songProgress.x + songProgress.width + 10},0.7,{ease:FlxEase.expoOut});
-								songProgressText.queuedText = "Playing Inst. Loading voices";
+								songProgressText.text = "Playing Inst. Loading voices";
 							}catch(e){}
 
 							#if discord_rpc
@@ -794,29 +794,29 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 									// voices.volume = SESave.data.voicesVol;
 									// voices.looped = false;
 									// voices.play(FlxG.sound.music.time);
-									songProgressText.queuedText = "Playing Full song";
+									songProgressText.text = "Playing Full song";
 								}else{
-									songProgressText.queuedText = "Playing Instrumental. No Vocals available";
+									songProgressText.text = "Playing Instrumental. No Vocals available";
 								}
 								shouldVoicesPlay = false;
 							}
 							if(voices.length > 0){
 								shouldVoicesPlay = !voices.playing;
 								if(shouldVoicesPlay){
-									songProgressText.queuedText = "Playing Full song";
+									songProgressText.text = "Playing Full song";
 									FlxG.sound.music.time = Conductor.songPosition;
 									voices.syncToSound(FlxG.sound.music);
 									voices.volume = SESave.data.voicesVol * FlxG.sound.volume;
 									voices.looped = false;
 								}else{
-									songProgressText.queuedText = "Playing Instrumental";
+									songProgressText.text = "Playing Instrumental";
 								}
 								voices.playing=shouldVoicesPlay;
 
 							}
 						}catch(e){
 							showTempmessage('Unable to play voices! ${e.message}',FlxColor.RED);
-							songProgressText.queuedText = "Playing Instrumental";
+							songProgressText.text = "Playing Instrumental";
 						}
 						if(FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.destroy(); // Prevents the song from muting itself
 						// FlxG.sound.music.volume = SESave.data.instVol;

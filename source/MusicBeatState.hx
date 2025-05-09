@@ -234,11 +234,11 @@ class MusicBeatState extends FlxUIState {
 					FlxG.mouse.visible = false;
 				}
 			}
-			if(FlxG.mouse.wheel != 0 || FlxG.mouse.x != lastUpdateMouseX || FlxG.mouse.y != lastUpdateMouseY || FlxG.mouse.pressed || FlxG.mouse.pressedRight){
-				lastCursorMove=elapsed;
+			if(FlxG.mouse.wheel != 0 || FlxG.mouse.screenX != lastUpdateMouseX || FlxG.mouse.screenY != lastUpdateMouseY || FlxG.mouse.pressed || FlxG.mouse.pressedRight){
+				lastCursorMove=0;
 				FlxG.mouse.visible = true;
-				lastUpdateMouseX = FlxG.mouse.x;
-				lastUpdateMouseY = FlxG.mouse.y;
+				lastUpdateMouseX = FlxG.mouse.screenX;
+				lastUpdateMouseY = FlxG.mouse.screenY;
 
 			}
 		}
@@ -259,9 +259,7 @@ class MusicBeatState extends FlxUIState {
 			}catch(e){}
 		}
 		if(FlxG.keys.justPressed.F3){
-			final mess = 'Global Mouse pos: ${FlxG.mouse.x},${FlxG.mouse.y}; Screen mouse pos: ${FlxG.mouse.screenX},${FlxG.mouse.screenY}; member count: ${members.length}'; 
-			// trace(mess);
-			showTempmessage(mess);
+			showTempmessage('Global Mouse pos: ${FlxG.mouse.x},${FlxG.mouse.y}; Screen mouse pos: ${FlxG.mouse.screenX},${FlxG.mouse.screenY}; member count: ${members.length}');
 		}
 		if(FlxG.keys.justPressed.F4 && forceQuit){
 			throw("Manually triggered error");

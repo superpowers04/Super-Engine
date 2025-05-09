@@ -254,7 +254,7 @@ class PauseSubState extends MusicBeatSubstate {
 
 			if (upP) changeSelection(-1);
 			else if (downP) changeSelection(1);
-			else if (FlxG.mouse.wheel != 0) changeSelection(FlxG.mouse.wheel);
+			else if (FlxG.mouse.wheel != 0) changeSelection(-FlxG.mouse.wheel);
 
 			if(controls.LEFT || controls.RIGHT){
 				final daSelected:String = menuItems[curSelected];
@@ -287,19 +287,26 @@ class PauseSubState extends MusicBeatSubstate {
 				}
 			}
 			if (accepted) select(curSelected);
-			#if android
+			// #if android
 				if(FlxG.mouse.justPressed){
-					for(i in 0...grpMenuShit.members.length){
-						var obj = grpMenuShit.members[i];
+					for(i => obj in grpMenuShit.members){
 						if(	FlxG.mouse.screenX > obj.x - 10 && FlxG.mouse.screenX < obj.x + 600 &&
 							FlxG.mouse.screenY > obj.y && FlxG.mouse.screenY < obj.y + obj.members[0].height){
 							select(i);
 						}
 					}
 				}
-			#end
+			// #end
 
 		}else{
+			if(FlxG.mouse.justPressed){
+				for(i => obj in grpMenuShit.members){
+					if(obj.text == "Exit to menu" && FlxG.mouse.screenX > obj.x - 10 && FlxG.mouse.screenX < obj.x + 600 &&
+						FlxG.mouse.screenY > obj.y && FlxG.mouse.screenY < obj.y + obj.members[0].height){
+						quit();
+					}
+				}
+			}
 			if (controls.ACCEPT && menuItems[curSelected] == "Exit to menu") quit();
 		}
 	}

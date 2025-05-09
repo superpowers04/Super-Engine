@@ -1,7 +1,7 @@
 haxelib install hxcpp
 haxelib install lime
 haxelib install openfl
-haxelib install flixel 5.7.2
+haxelib install flixel 5.6.2
 haxelib run lime setup flixel
 haxelib run lime setup
 haxelib install flixel-tools

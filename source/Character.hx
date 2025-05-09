@@ -698,7 +698,7 @@ class CharAnimController extends FlxAnimationController{
 						// case 2:charProperties.cam_pos[0]+=100;
 					}
 					if(!SESave.data.PECharCamPos) ignoreCamera = true;
-					useMidpoint = false;
+					useMidpoint = true;
 					
 					charProperties.offset_flip=3;
 					charProperties.char_pos = charProperties.position;
@@ -854,8 +854,23 @@ class CharAnimController extends FlxAnimationController{
 		e.hscriptGen = true;
 		return e;
 	}
-	var thrownError:Int = 0;
-	var loaded:Bool=false;
+	// var lastCharacterError:String = "";
+	// public static function newCharacter(?group:FlxGroup,?x:Float, ?y:Float, ?character:String, ?isPlayer:Bool,?charType:Int,?preview:Bool,?exitex:FlxAtlasFrames,?charJson:CharacterJson,?useHscript:Bool,?charPath:String,?charInfo:Null<CharInfo>):Character{
+	// 	final CURRENTNAMESPACE = SELoader.namespace;
+	// 	try{
+	// 		final ret = new Character(x,y,character,isPlayer,charType,exitex,charJson);
+	// 		SELoader.namespace = CURRENTNAMESPACE;
+	// 		return ret;
+	// 	}catch(e){
+	// 		lastCharacterError = e;
+	// 		final ret = new Character(x,y,"internal|bf",isPlayer,charType);
+	// 		ret.thrownError = 1;
+	// 		ret.color = 0xFF000000;
+	// 		ret.alpha = 0.5;
+	// 		SELoader.namespace = CURRENTNAMESPACE;
+	// 		return ret;
+	// 	}
+	// }
 	public var thrownError:Int = 0;
 	public var loaded:Bool=false;
 	public function handleError(error:String,?pos:haxe.PosInfos){
@@ -1089,8 +1104,10 @@ class CharAnimController extends FlxAnimationController{
 			: [x,y];
 	}
 	public function getCameraPosition(?id:Null<Int> = null){
-		if(ignoreCamera && PlayState.instance != null) return PlayState.instance.defaultCamPositions[id ?? charType];
+		if(ignoreCamera && PlayState.instance != null) 
+			return PlayState.instance.defaultCamPositions[id ?? charType];
 		final arr:Array<Float> = getBaseCameraPosition(id);
+			// return arr; 
 		arr[0]+=camX;
 		arr[1]+=camY;
 		return arr;

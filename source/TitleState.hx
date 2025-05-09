@@ -720,8 +720,7 @@ class TitleState extends MusicBeatState
 				}
 			}else{
 				try{
-					var musicList:Array<MusicTime> = Json.parse(SELoader.getContent("mods/menuTimes.json"));
-					SickMenuState.musicList = musicList;
+					SickMenuState.musicList = Json.parse(SELoader.getContent("mods/menuTimes.json"));
 				}catch(e){
 					MusicBeatState.instance.showTempmessage("Unable to load Music Timing: " + e.message,FlxColor.RED);
 				}
@@ -1020,7 +1019,7 @@ class TitleState extends MusicBeatState
 						checkedUpdate = true;
 						returnedData[0] = data.substring(0, data.indexOf(';'));
 						returnedData[1] = data.substring(data.indexOf('-'), data.length);
-						updatedVer = returnedData[0];
+						updatedVer = returnedData[0].rtrim().ltrim();
 						OutdatedSubState.needVer = updatedVer;
 						OutdatedSubState.currChanges = returnedData[1];
 						if (MainMenuState.ver < updatedVer || (MainMenuState.nightly != "")) {
@@ -1138,7 +1137,7 @@ class TitleState extends MusicBeatState
 		#if discord_rpc
 			if(drpcansend != DiscordClient.canSend){
 				drpcansend = DiscordClient.canSend;
-				shiftSkip.color = (if(FlxG.keys.pressed.SHIFT) 0x00aa00 else 0x5865F2);
+				shiftSkip.color = (FlxG.keys.pressed.SHIFT ? 0x00aa00 : 0x5865F2);
 				shiftSkip.x = shiftSkip.x + 10;
 				FlxTween.tween(shiftSkip,{x:shiftSkip.x - 10},0.5,{ease:FlxEase.bounceInOut});
 				shiftSkip.text = "DRP connected! - Hold shift to go to the options menu after title screen";
@@ -1296,9 +1295,13 @@ class TitleState extends MusicBeatState
 		var coolText:Alphabet = new Alphabet(0, 0, "_", true, false);
 		coolText.screenCenter(X);
 		coolText.forceFlxText = true;
-		coolText.text = 'PRECACHING TEXT: ABCDEFGHIJKLMNOPQRSTUVWXYZbcfgijkmpqrstvxz1234567890~#$%&()*+:;<=>@[|]^.,\'!?/unholywader';
+		coolText.text = 'PRECACHING BOLD TEXT: ABCDEFGHIJKLMNOPQRSTUVWXYZbcfgijkmpqrstvxz1234567890~#$%&()*+:;<=>@[|]^.,\'!?/';
 		coolText.bounce();
 		add(cachingText = coolText);
+		var coolText:Alphabet = new Alphabet(0, 0, "_", false, false);
+		coolText.screenCenter(X);
+		coolText.forceFlxText = true;
+		coolText.text = 'PRECACHING NORMAL TEXT: ABCDEFGHIJKLMNOPQRSTUVWXYZbcfgijkmpqrstvxz1234567890~#$%&()*+:;<=>@[|]^.,\'!?/';
 
 		_sound = FlxG.sound.load(Assets.getSound("flixel/sounds/flixel." + flixel.system.FlxAssets.defaultSoundExtension,false),SESave.data.instVol - 0.2); // Put the volume down by 0.2 for safety of eardrums
 		_sound.play();

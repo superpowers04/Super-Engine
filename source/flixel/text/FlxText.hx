@@ -42,7 +42,7 @@ import openfl.utils.AssetType;
  * By default `FlxText` is autosized to fit it's text. 
  * To set a fixed size, use the `fieldWidth`, `fieldHeight` and `autoSize` fields.
  */
-@:NullSafety(StrictThreaded) class FlxText extends FlxSprite
+class FlxText extends FlxSprite
 {
 	/**
 	 * 4px gutter at the bottom when the field has automatic height
@@ -53,11 +53,6 @@ import openfl.utils.AssetType;
 	 * The text being displayed.
 	 */
 	public var text(default, set):String = "";
-
-	/**
-	 * The text queued to display next draw.
-	 */
-	public var queuedText:String = "";
 
 	/**
 	 * The size of the text being displayed in pixels.
@@ -210,15 +205,21 @@ import openfl.utils.AssetType;
 	 * @param   Size           The font size for this text object.
 	 * @param   EmbeddedFont   Whether this text field uses embedded fonts or not.
 	 */
-	public function new(X:Float = 0, Y:Float = 0, FieldWidth:Float = 0, ?Text:String = "", Size:Int = 8, EmbeddedFont:Bool = true)
+	public function new(X:Float = 0, Y:Float = 0, FieldWidth:Float = 0, ?Text:String, Size:Int = 8, EmbeddedFont:Bool = true)
 	{
 		super(X, Y);
 
-		if (Text == "") {
+		if (Text == null || Text == "")
+		{
+			// empty texts have a textHeight of 0, need to
+			// prevent initializing with "" before the first calcFrame() call
 			text = "";
 			Text = " ";
-		} else text = Text;
-		Main.renderLock.wait();
+		}
+		else
+		{
+			text = Text;
+		}
 
 		textField = new TextField();
 		textField.selectable = false;
@@ -233,7 +234,7 @@ import openfl.utils.AssetType;
 		fieldWidth = FieldWidth;
 		textField.embedFonts = EmbeddedFont;
 		textField.sharpness = 100;
-		textField.height = 10;
+		textField.height = (Text.length <= 0) ? 1 : 10;
 
 		allowCollisions = NONE;
 		moves = false;
@@ -857,26 +858,32 @@ import openfl.utils.AssetType;
 		if (colorTransform == null)
 			colorTransform = new ColorTransform();
 
-		if (useColorTransform = (alpha != 1))
+		if (alpha != 1)
 		{
 			colorTransform.alphaMultiplier = alpha;
-		} else {
+			useColorTransform = true;
+		}
+		else
+		{
 			colorTransform.alphaMultiplier = 1;
+			useColorTransform = false;
 		}
 
 		dirty = true;
 	}
 
-	function regenGraphic():Void {
+	function regenGraphic():Void
+	{
 		if (textField == null || !_regen)
 			return;
 
 		var oldWidth:Int = 0;
 		var oldHeight:Int = VERTICAL_GUTTER;
 
-		if (graphic != null) {
-			oldWidth = Std.int(graphic.width);
-			oldHeight = Std.int(graphic.height);
+		if (graphic != null)
+		{
+			oldWidth = graphic.width;
+			oldHeight = graphic.height;
 		}
 
 		var newWidth:Int = Math.ceil(textField.width);
@@ -886,50 +893,33 @@ import openfl.utils.AssetType;
 		var newHeight:Int = Math.ceil(textfieldHeight) + vertGutter;
 
 		// prevent text height from shrinking on flash if text == ""
-		if (textField.textHeight == 0) {
+		if (textField.textHeight == 0)
+		{
 			newHeight = oldHeight;
 		}
 
-		if (oldWidth != newWidth || oldHeight != newHeight) {
+		if (oldWidth != newWidth || oldHeight != newHeight)
+		{
 			// Need to generate a new buffer to store the text graphic
-			height = newHeight;
-			width = newWidth;
-			var key:String = graphic?.key ?? FlxG.bitmap.getUniqueKey("text");
-			// @:privateAccess FlxG.bitmap.removeKey(key);
-			// if(graphic == null){
-			// @:privateAccess FlxG.bitmap.removeKey(key);
-			// graphic?.bitmap.dispose();
-			frames = FlxG.bitmap.create(newWidth, newHeight, FlxColor.TRANSPARENT, true, key).imageFrame;
-			// var _old=graphic;
-			// if(_old != null)_old.destroy();
-			// graphic = FlxGraphic.fromRectangle(newWidth,newHeight,FlxColor.TRANSPARENT,key);
-			// FlxG.bitmap.remove(graphic);
-			// }else{
-				// graphic.bitmap.dispose();
-				// _regen = false;
-				// return;
-				// graphic.bitmap = new BitmapData(newWidth, newHeight,true,0x00000000);
-			// }
-			// makeGraphic(newWidth, newHeight, FlxColor.TRANSPARENT, false, key);
+			var key:String = FlxG.bitmap.getUniqueKey("text");
+			makeGraphic(newWidth, newHeight, FlxColor.TRANSPARENT, false, key);
 
-		
-			if (_borderPixels != null) _borderPixels.dispose();
-			if (_hasBorderAlpha) {
+			if (_hasBorderAlpha)
 				_borderPixels = graphic.bitmap.clone();
-			}
 
-			if (_autoHeight) textField.height = newHeight;
-			
-			frameHeight = newHeight;
-			// _textField.height = height * 1.2;
+			if (_autoHeight)
+				textField.height = newHeight;
+
 			_flashRect.x = 0;
 			_flashRect.y = 0;
 			_flashRect.width = newWidth;
 			_flashRect.height = newHeight;
-		} else { // Else just clear the old buffer before redrawing the text
-		
+		}
+		else // Else just clear the old buffer before redrawing the text
+		{
 			graphic.bitmap.fillRect(_flashRect, FlxColor.TRANSPARENT);
-			if (_hasBorderAlpha) {
+			if (_hasBorderAlpha)
+			{
 				if (_borderPixels == null)
 					_borderPixels = new BitmapData(frameWidth, frameHeight, true);
 				else
@@ -937,7 +927,8 @@ import openfl.utils.AssetType;
 			}
 		}
 
-		if (textField != null && textField.text != null) {
+		if (textField != null && textField.text != null)
+		{
 			// Now that we've cleared a buffer, we need to actually render the text to it
 			copyTextFormat(_defaultFormat, _formatAdjusted);
 
@@ -946,10 +937,11 @@ import openfl.utils.AssetType;
 			applyBorderStyle();
 			applyBorderTransparency();
 			applyFormats(_formatAdjusted, false);
-			_regen = false;
 
 			drawTextFieldTo(graphic.bitmap);
-		}else _regen = false;
+		}
+
+		_regen = false;
 		resetFrame();
 	}
 
@@ -963,12 +955,16 @@ import openfl.utils.AssetType;
 		{
 			var h:Int = 0;
 			var tx:Float = _matrix.tx;
-			for (i in 0...textField.numLines) {
+			for (i in 0...textField.numLines)
+			{
 				var lineMetrics = textField.getLineMetrics(i);
 
 				// Workaround for blurry lines caused by non-integer x positions on flash
 				var diff:Float = lineMetrics.x - Std.int(lineMetrics.x);
-				if (diff != 0) _matrix.tx = tx + diff;
+				if (diff != 0)
+				{
+					_matrix.tx = tx + diff;
+				}
 				_textFieldRect.setTo(0, h, textField.width, lineMetrics.height + lineMetrics.descent);
 
 				graphic.draw(textField, _matrix, null, null, _textFieldRect, false);
@@ -979,23 +975,15 @@ import openfl.utils.AssetType;
 
 			return;
 		}
+		#elseif !web
+		// Fix to render desktop and mobile text in the same visual location as web
+		_matrix.translate(-1, -1); // left and up
 		graphic.draw(textField, _matrix);
-		// #elseif !web
-		// // Fix to render desktop and mobile text in the same visual location as web
-		// // _matrix.translate(-1, -1); // left and up
-		// graphic.draw(textField, _matrix);
-		// // _matrix.translate(1, 1); // return to center
-		#else
-		try{
-			graphic.draw(textField, _matrix);
-		}catch(e){
-			trace('Failed to draw FlxText as usual....');
-			throw(e);
-
-			
-
-		}
+		_matrix.translate(1, 1); // return to center
+		return;
 		#end
+
+		graphic.draw(textField, _matrix);
 	}
 
 	#if flash
@@ -1007,7 +995,8 @@ import openfl.utils.AssetType;
 		for (i in 0...textField.numLines)
 		{
 			var lineMetricsX = textField.getLineMetrics(i).x;
-			if (lineMetricsX - Std.int(lineMetricsX) != 0) {
+			if (lineMetricsX - Std.int(lineMetricsX) != 0)
+			{
 				return true;
 			}
 		}
@@ -1017,10 +1006,6 @@ import openfl.utils.AssetType;
 
 	override public function draw():Void
 	{
-		if(queuedText!=""){
-			text = queuedText;
-			queuedText = "";
-		}
 		regenGraphic();
 		super.draw();
 	}
@@ -1032,7 +1017,10 @@ import openfl.utils.AssetType;
 	 */
 	override function calcFrame(RunOnCpp:Bool = false):Void
 	{
-		if ((textField == null) || (FlxG.renderTile && !RunOnCpp))
+		if (textField == null)
+			return;
+
+		if (FlxG.renderTile && !RunOnCpp)
 			return;
 
 		regenGraphic();
@@ -1041,27 +1029,35 @@ import openfl.utils.AssetType;
 
 	function applyBorderStyle():Void
 	{
-		if(borderStyle == NONE) return;
 		var iterations:Int = Std.int(borderSize * borderQuality);
-		if (iterations <= 0) iterations = 1;
+		if (iterations <= 0)
+		{
+			iterations = 1;
+		}
 		var delta:Float = borderSize / iterations;
-		applyFormats(_formatAdjusted, true);
+
 		switch (borderStyle)
 		{
 			case SHADOW:
 				// Render a shadow beneath the text
 				// (do one lower-right offset draw call)
+				applyFormats(_formatAdjusted, true);
 
-				for (i in 0...iterations) copyTextWithOffset(delta, delta);
+				for (i in 0...iterations)
+				{
+					copyTextWithOffset(delta, delta);
+				}
 
 				_matrix.translate(-shadowOffset.x * borderSize, -shadowOffset.y * borderSize);
 
 			case OUTLINE:
 				// Render an outline around the text
 				// (do 8 offset draw calls)
+				applyFormats(_formatAdjusted, true);
 
 				var curDelta:Float = delta;
-				for (i in 0...iterations) {
+				for (i in 0...iterations)
+				{
 					copyTextWithOffset(-curDelta, -curDelta); // upper-left
 					copyTextWithOffset(curDelta, 0); // upper-middle
 					copyTextWithOffset(curDelta, 0); // upper-right
@@ -1079,6 +1075,7 @@ import openfl.utils.AssetType;
 				// Render an outline around the text
 				// (do 4 diagonal offset draw calls)
 				// (this method might not work with certain narrow fonts)
+				applyFormats(_formatAdjusted, true);
 
 				var curDelta:Float = delta;
 				for (i in 0...iterations)
@@ -1091,7 +1088,8 @@ import openfl.utils.AssetType;
 					_matrix.translate(curDelta, -curDelta); // return to center
 					curDelta += delta;
 				}
-			default:
+
+			case NONE:
 		}
 	}
 
@@ -1128,17 +1126,23 @@ import openfl.utils.AssetType;
 		// Apply other formats
 		for (formatRange in _formatRanges)
 		{
-			if (textField.text.length - 1 < formatRange.range.start) break;
-
-			var textFormat:TextFormat = formatRange.format.format;
-			copyTextFormat(textFormat, FormatAdjusted, false);
-			FormatAdjusted.color = UseBorderColor ? formatRange.format.borderColor.to24Bit() : textFormat.color;
+			if (textField.text.length - 1 < formatRange.range.start)
+			{
+				// we can break safely because the array is ordered by the format start value
+				break;
+			}
+			else
+			{
+				var textFormat:TextFormat = formatRange.format.format;
+				copyTextFormat(textFormat, FormatAdjusted, false);
+				FormatAdjusted.color = UseBorderColor ? formatRange.format.borderColor.to24Bit() : textFormat.color;
+			}
 
 			textField.setTextFormat(FormatAdjusted, formatRange.range.start, Std.int(Math.min(formatRange.range.end, textField.text.length)));
 		}
 	}
 
-	@:keep inline function copyTextFormat(from:TextFormat, to:TextFormat, withAlign:Bool = true):Void
+	function copyTextFormat(from:TextFormat, to:TextFormat, withAlign:Bool = true):Void
 	{
 		to.font = from.font;
 		to.bold = from.bold;

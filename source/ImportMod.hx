@@ -212,7 +212,7 @@ class ImportModFromFolder extends MusicBeatState
 	public static function extractContent(input:sys.io.FileInput,entries:ZipEntries,startPath:String,subFolder:String){
 		startPath = SELoader.cleanPath(SELoader.getPath(startPath));
 		if(SELoader.exists(startPath) || SELoader.isDirectory(startPath)){
-			startPath+=Date.now().getTime();
+			startPath+='-'+Date.now().getTime();
 		}
 		if(SELoader.exists(startPath) || SELoader.isDirectory(startPath)){
 			throw('$startPath already exists, unable to extract!');

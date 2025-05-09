@@ -77,12 +77,11 @@
 	<haxelib name="lime"/>
 	<!-- <haxelib name="hxcpp"/> -->
 	<haxelib name="openfl"/>
-	<haxelib name="flixel" version="5.7.2"/> <!-- Note, if this is set to 6.X, SE will get stupidly unstable for some reason -->
-	<haxelib name="flixel-addons" version="3.3.2"/>
+	<haxelib name="flixel" version="5.6.2"/> <!-- Note, if this is set to 6.X, SE will get stupidly unstable for some reason -->
+	<haxelib name="flixel-addons" version="3.2.3"/>
 	<!--In case you want to use the ui package-->
-	<haxelib name="flixel-ui" version="2.6.4" />
+	<haxelib name="flixel-ui" version="2.6.3" />
 
-	<haxedef name='usingcppia' if='cppia'/>
 	<define  name='message.no-color'/>
 	<haxedef name='message.no-color'/>
 	<haxedef name="message.reporting" value="pretty" />

@@ -979,6 +979,7 @@ class PlayState extends ScriptMusicBeatState
 
 		LoadingScreen.loadingText = "Adding characters";
 
+		callInterp("addStage",[nextStage]);
 		// REPOSITIONING PER STAGE
 		setStage(nextStage);
 
@@ -1292,6 +1293,7 @@ class PlayState extends ScriptMusicBeatState
 				for (i in playerStrums.members) {
 					plStrumX[i.ID] = i.x;
 				}
+
 				for (i in cpuStrums.members) {
 					oppStrumX[i.ID] = i.x;
 				}

@@ -33,14 +33,6 @@ class OutdatedSubState extends MusicBeatState
 		bg.screenCenter();
 		add(bg);
 		
-		var kadeLogo:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.image('logoBumpin'));
-		kadeLogo.scale.y = 0.3;
-		kadeLogo.scale.x = 0.3;
-		kadeLogo.x -= kadeLogo.frameHeight;
-		kadeLogo.y -= 180;
-		kadeLogo.alpha = 0.8;
-		kadeLogo.angle = 10;
-		add(kadeLogo);
 		var outdatedLMAO:FlxText = new FlxText(0, FlxG.height * 0.05, 0, TitleState.outdated ? 'Super Engine is outdated, Your version: ${MainMenuState.ver} latest: ${needVer}' : 'Up to date: ${MainMenuState.ver}' , 32);
 		outdatedLMAO.setFormat(CoolUtil.font, 32, TitleState.outdated ?  FlxColor.RED : FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		outdatedLMAO.scrollFactor.set();
@@ -61,25 +53,8 @@ class OutdatedSubState extends MusicBeatState
 		add(txt);
 		
 		FlxTween.color(bg, 2, bg.color, FlxColor.fromString(bgColors[colorRotation]));
-		FlxTween.angle(kadeLogo, kadeLogo.angle, -10, 2, {ease: FlxEase.quartInOut});
 		
-		new FlxTimer().start(2, function(tmr:FlxTimer)
-		{
-			FlxTween.color(bg, 2, bg.color, FlxColor.fromString(bgColors[colorRotation]));
-			if(colorRotation < (bgColors.length - 1)) colorRotation++;
-			else colorRotation = 0;
-		}, 0);
 		
-		new FlxTimer().start(Conductor.crochet * 0.001, function(tmr:FlxTimer)
-		{
-			FlxTween.angle(kadeLogo, kadeLogo.angle, -kadeLogo.angle, Conductor.crochet * 0.001, {ease: FlxEase.quartInOut});
-		}, 0);
-		
-		new FlxTimer().start(Conductor.crochet * 0.001, function(tmr:FlxTimer)
-		{
-			FlxTween.tween(kadeLogo, {alpha: (kadeLogo.alpha == 0.8) ? 1 : 0.8}, Conductor.crochet * 0.001, {ease: FlxEase.quartInOut});
-			
-		}, 0);
 	}
 	var allowInput = true;
 	override function update(elapsed:Float)
