@@ -42,7 +42,7 @@ class DialogueBox extends FlxSpriteGroup
 		super();
 		if(dialogueList == null || dialogueList[0] == null) return;
 
-		FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
+		FlxG.sound.playMusic(SELoader.loadSound('assets/music/GiveaLilBitBack.ogg'), 0);
 		FlxG.sound.music.fadeIn(1, 0, 0.8);
 		
 

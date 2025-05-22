@@ -119,22 +119,22 @@ class MusicBeatState extends FlxUIState {
 	}
 	override function onFocus() {
 		super.onFocus();
-		CoolUtil.setFramerate(true);
-		if(lostFocusMouse) {
-			lostFocusMouse = false;
-			FlxG.mouse.enabled = true;
-		}
-		if(lostFocusKeyboard) {
-			lostFocusKeyboard = false;
-			FlxG.keys.enabled = true;
-		}
+		// CoolUtil.setFramerate(true);
+		// if(lostFocusMouse) {
+		// 	lostFocusMouse = false;
+		// 	FlxG.mouse.enabled = true;
+		// }
+		// if(lostFocusKeyboard) {
+		// 	lostFocusKeyboard = false;
+		// 	FlxG.keys.enabled = true;
+		// }
 	}
 	override function onFocusLost(){
 		super.onFocusLost();
-		CoolUtil.setFramerate(24,false,true);
+		// CoolUtil.setFramerate(24,false,true);
 		// FlxG.mouse.enabled = false;
-		lostFocusMouse = FlxG.mouse.enabled;
-		lostFocusKeyboard = FlxG.keys.enabled;
+		// lostFocusMouse = FlxG.mouse.enabled;
+		// lostFocusKeyboard = FlxG.keys.enabled;
 	}
 	@:keep inline function get_controls():Controls return PlayerSettings.player1.controls;
 	override function create()

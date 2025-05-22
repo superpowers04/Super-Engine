@@ -202,11 +202,9 @@ typedef RepoAsset = {
 		}
 		infoTextBorder.alpha=1;
 		var value = alpha.menuValue;
-
-		var text = 'Author: ${value.author ?? "N/A"}\n'
+		updateInfoText('Author: ${value.author ?? "N/A"}\n'
 			+(value.description ?? "No description provided")
-			+'\n\nID: ${value.id}\nType: ${value.type}\n';
-		updateInfoText(text);
+			+'\n\nID: ${value.id}\nType: ${value.type}\n');
 		updateName(value.name ?? value.id);
 
 	}
