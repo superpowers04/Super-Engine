@@ -12,6 +12,7 @@ import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxFramesCollection;
 
 
+import haxe.ds.Vector;
 import haxe.DynamicAccess;
 import lime.utils.Assets;
 import lime.graphics.Image;
@@ -1098,19 +1099,32 @@ class CharAnimController extends FlxAnimationController{
 	// 		// frames = graphicsArr[id];
 	// 	}
 	// }
+	/* Fuck it*/
+	public var cameraPosition:Vector<Float> = null;
+
 	@:keep inline public function getBaseCameraPosition(?id:Null<Int> = null){
-		return (useMidpoint) ? 
-			[getMidpoint().x + (switch(id ?? charType){case 2: 0;case 1: 150;default:-100;}),getMidpoint().y - 100]
-			: [x,y];
+		final vec:Vector<Float> = new Vector(3);
+		if(useMidpoint){
+			vec[0] = getMidpoint().x + (switch(id ?? charType){case 2: 0;case 1: 150;default:-100;});
+			vec[1] = getMidpoint().y - 100;
+		}else{
+			vec[0]=x;
+			vec[1]=y;
+		}
+		vec[3] = id ?? charType;
+
+		return vec;
 	}
 	public function getCameraPosition(?id:Null<Int> = null){
 		if(ignoreCamera && PlayState.instance != null) 
 			return PlayState.instance.defaultCamPositions[id ?? charType];
-		final arr:Array<Float> = getBaseCameraPosition(id);
-			// return arr; 
+		if(cameraPosition != null && cameraPosition[3] == (id ?? charType))
+			return cast cameraPosition;
+
+		final arr:Vector<Float> = cameraPosition = getBaseCameraPosition(id);
 		arr[0]+=camX;
 		arr[1]+=camY;
-		return arr;
+		return cast arr;
 	}
 
 	override function draw(){
