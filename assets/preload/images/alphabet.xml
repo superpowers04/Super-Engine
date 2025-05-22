@@ -647,7 +647,7 @@
 	<SubTexture name="\\ bold0001" x="369" y="940" width="44" height="65" />
 	<SubTexture name="* bold0001" x="971" y="905" width="32" height="37" />
 	<SubTexture name="~ bold0001" x="858" y="858" width="53" height="28" />
-	<SubTexture name="| bold0001" x="836" y="851" width="18" height="49" />
+	<SubTexture name="| bold0001" x="453" y="795" width="21" height="73" />
 	<SubTexture name="= bold0001" x="912" y="900" width="45" height="37" />
 	<SubTexture name="+ bold0001" x="913" y="847" width="48" height="44" />
 	<SubTexture name="& bold0001" x="967" y="837" width="43" height="64" />
