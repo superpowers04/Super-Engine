@@ -70,6 +70,7 @@ import StageJson;
 import TitleState;
 import se.objects.Stage;
 import se.objects.SEJoinedSound;
+import se.objects.SESingularText;
 import se.formats.SongInfo;
 
 
@@ -307,8 +308,8 @@ class PlayState extends ScriptMusicBeatState
 			public var iconP1:HealthIcon;
 			public var iconP2:HealthIcon;
 			public var songName:FlxText;
-			public var songTimeTxt:FlxText;
-			public var scoreTxt:FlxText;
+			public var songTimeTxt:SESingularText;
+			public var scoreTxt:SESingularText;
 			public var noteButtons:Array<FlxSprite>;
 
 		/* Stage Shite */
@@ -827,7 +828,7 @@ class PlayState extends ScriptMusicBeatState
 			nextStage= loadStage((SESave.data.stageAuto || PlayState.isStoryMode || ChartingState.charting || SONG.forceCharacters || isStoryMode || SESave.data.selStage == "default") ?
 		          SONG.stage : SESave.data.selStage,onlinemod.OfflinePlayState.nameSpace);
 		}catch(e){
-			handleError('Error while loading stage:$e');
+			handleError('Error while loading stage:${e.details()}');
 			nextStage = loadBaseStage();
 		}
 		// bfPos = stageObject.bfPos;
@@ -1057,7 +1058,7 @@ class PlayState extends ScriptMusicBeatState
 			songPosBG_ = new FlxSprite(0, 10 + SESave.data.guiGap).loadGraphic(SELoader.loadGraphic('assets/shared/images/healthBar.png',true));
 			songPosBar_ = new FlxBar(0,0, LEFT_TO_RIGHT, Std.int(songPosBG_.width - 8), Std.int(songPosBG_.height - 8), this, 'songPositionBar', 0, 1);
 			songName = new FlxText(0,0,0,SONG.song, 16);
-			songTimeTxt = new FlxText(0,0,0,"00:00/00:00", 16);
+			songTimeTxt = new SESingularText("");
 		}
 
 		healthBarBG = new FlxSprite(0, (downscroll ? 50 + SESave.data.guiGap : FlxG.height * 0.9 - SESave.data.guiGap)).loadGraphic(SELoader.loadGraphic('assets/shared/images/healthBar.png',true));
@@ -1090,33 +1091,38 @@ class PlayState extends ScriptMusicBeatState
 
 		
 		if (SESave.data.songInfo == 0 || SESave.data.songInfo == 3) {
-			scoreTxt = new FlxText(50, healthBarBG.y + 30 - SESave.data.guiGap, 0, (SESave.data.npsDisplay ? 'NPS: $nps (Max $maxNPS) | ' : '')
+			scoreTxt = new SESingularText((SESave.data.npsDisplay ? 'NPS: $nps (Max $maxNPS) | ' : '')
 				+   'Score: 0000 ${Conductor.safeFrames != 10 ? ' (00000)' : ''}'
 				+' | Combo: 0000/0000'
 				+' | Breaks: 0000'
 				+' | 00.00% N/A', 20);
-			scoreTxt.autoSize = false;
-			scoreTxt.wordWrap = false;
-			scoreTxt.alignment = "center";
+			scoreTxt.y = healthBarBG.y + 10;
+			// scoreTxt.autoSize = false;
+			// scoreTxt.wordWrap = false;
+			// scoreTxt.alignment = "center";
+			scoreTxt.x=640;
+			scoreTxt.xAlign=-0.5;
 			scoreTxt.width = 350;
 			scoreTxt.height = 350;
-			scoreTxt.setFormat(CoolUtil.font, 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			// scoreTxt.setFormat(CoolUtil.font, 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		}else {
-			scoreTxt = new FlxText(10 + SESave.data.guiGap, FlxG.height * 0.46 , 600, "NPS: 000000\nScore:00000000\nCombo:00000 (Max 00000)\nCombo Breaks:00000\nAccuracy:0000 %\n Unknown", 20); // Long ass text to make sure it's sized correctly
+			scoreTxt = new SESingularText("NPS: 000000\nScore:00000000\nCombo:00000 (Max 00000)\nCombo Breaks:00000\nAccuracy:0000 %\n Unknown", 20); // Long ass text to make sure it's sized correctly
 			// scoreTxt.autoSize = true;
-			// scoreTxt.width += 300;
-			scoreTxt.wordWrap = false;
-			scoreTxt.alignment = "left";
-			scoreTxt.screenCenter(X);
+			scoreTxt.width += 300;
+			// scoreTxt.wordWrap = false;
+			// scoreTxt.alignment = "left";
+			scoreTxt.x = 10 + SESave.data.guiGap;
+			scoreTxt.y = FlxG.height * 0.46;
+			// scoreTxt.screenCenter(X);
 			scoreTxt.width = 350;
 			scoreTxt.height = 350;
-			scoreTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			// scoreTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		}
+		scoreTxt.scrollFactor.set();
 
 		
 		// if (!SESave.data.accuracyDisplay)
 		// 	scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
-		scoreTxt.scrollFactor.set();
 
 		// Literally copy-paste of the above, fu
 
@@ -1610,13 +1616,16 @@ class PlayState extends ScriptMusicBeatState
 		songName.y = songPosBG_.y + 1;
 		songName.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		songName.scrollFactor.set();
-		if (songTimeTxt == null) songTimeTxt = new FlxText(0,0,0,"00:000/00:000", 16);
-		songTimeTxt.x = songPosBG_.x + songPosBG_.width - (20 + songTimeTxt.width);
+		if (songTimeTxt == null) songTimeTxt = new SESingularText("00:000/00:000",16);
+		songTimeTxt.x = songPosBG_.x + songPosBG_.width - 20;
 		songTimeTxt.y = songPosBG_.y + 1;
 		// if (downscroll) songName.y -= 3;
 		songTimeTxt.text = "00:00/" + songLengthTxt;
-		songTimeTxt.x -= songTimeTxt.width;
-		songTimeTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		songTimeTxt.xAlign=-1;
+
+		// songTimeTxt.x -= songTimeTxt.width;
+
+		// songTimeTxt.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		songTimeTxt.scrollFactor.set();
 
 
@@ -3572,11 +3581,11 @@ class PlayState extends ScriptMusicBeatState
 		callInterp("beatHit",[]);
 		charCall("beatHit",[curBeat]);
 
-		if (SESave.data.songInfo == 0 || SESave.data.songInfo == 3) {
-			scoreTxt.screenCenter(X);
-		}else{
-			scoreTxt.x = 5;
-		}
+		// if (SESave.data.songInfo == 0 || SESave.data.songInfo == 3) {
+		// 	scoreTxt.screenCenter(X);
+		// }else{
+		// 	scoreTxt.x = 5;
+		// }
 
 
 

@@ -186,8 +186,8 @@ class RepoState extends SickMenuState
 		updateText();
 	}
 	function updateText(){
-		installingText.text = 'Installing ${installing} mod${if (installing != 1) 's' else '' }';
-		installedText.text = if (TitleState.retChar(repoArray.characters[curSelected].name) != "") "Installed" else "Not Installed";
+		installingText.text = 'Installing ${installing} mod${(installing == 1) ? '' : 's' }';
+		installedText.text = TitleState.retChar(repoArray.characters[curSelected].name) == "" ? "Not Installed" : "Installed";
 	}
 	function finishDownload(data:Bytes,char:RepoCharsJSON,sel:Int){
 		File.saveBytes(Sys.getCwd() + 'mods/characters/${char.name}.zip',data);

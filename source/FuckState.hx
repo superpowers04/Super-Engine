@@ -36,10 +36,7 @@ class FuckState extends FlxUIState {
 	public static var quip = "";
 	public static var lastState:Class<FlxState>;
 	public static function generateReport(error:String = "UNKNOWN ERROR?",type:String = "CRASH"):Bool{
-		var callstack = "UNSET";
-		try{
-			callstack = Std.string(CallStack.callStack());
-		}catch(e){}
+		var callstack = CallStack.exceptionStack(true) ?? CallStack.callStack() ?? [];
 		var dateNow:String = "";
 		var err = "";
 		errorCount++;
@@ -132,7 +129,7 @@ class FuckState extends FlxUIState {
 					+'\n Arguments: ${Sys.args()}'
 					+"\n # ---------- GAME INFORMATION ----------"
 					+'\n Fatal, forced, Shown thru OpenFL, errorCount: ${FATAL}, ${forced}, ${useOpenFL}, ${errorCount}'
-					+'\n Callstack: $callstack'
+					+'\n Callstack: ${CallStack.toString(callstack)}'
 					+'\n Version: ${MainMenuState.ver}'
 					+'\n Buildtype: ${MainMenuState.compileType}'
 					+'\n Debug: ${SESave.data.animDebug}'
@@ -182,15 +179,7 @@ class FuckState extends FlxUIState {
 
 			var errMsg:String = "";
 			if(callStack.length > 0){
-				_stack+='\nhaxe Stack:\n';
-				for (stackItem in callStack) {
-					switch (stackItem) {
-						case FilePos(s, file, line, column):
-							_stack += '\n$file:${line}:${column}';
-						default:
-							_stack += '$stackItem';
-					}
-				}
+				_stack+='\nhaxe Stack:\n${CallStack.toString(callStack)}';
 			}
 		}catch(e){}
 		var exception = "Unable to grab exception!";
