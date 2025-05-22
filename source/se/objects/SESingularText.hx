@@ -1,5 +1,10 @@
 package se.objects;
 
+
+/* An "improvement" over FlxBitmapText and others to use a single FlxSprite that's moved around a bunch instead of several hundred FlxSprites
+	Originally made for Super Engine
+*/
+
 import flixel.FlxSprite;
 import Alphabet;
 import flixel.graphics.frames.FlxFrame;
@@ -7,7 +12,6 @@ import flixel.graphics.frames.FlxFrame;
 using StringTools;
 
 /* TODO MAKE LESS DEPENDANT ON ALPHABET AND BOLD TEXT*/
-/* TODO ADD PROPER ALIGNMENT*/
 
 @:structInit @:publicFields class SESTLetter {
 	var frame:FlxFrame;
@@ -35,7 +39,7 @@ using StringTools;
 	@:noCompletion private var seperatedText:Array<String> = [];
 	@:noCompletion private var textFrames:Array<SESTLetter> = [];
 	@:noCompletion private var newLineWidths:Array<Float> = [];
-	function setTextSize(s:Float = 40){
+	function setTextSize(s:Float = LETTERSIZE){
 		scale.x=scale.y=s/LETTERSIZE;
 		recalculate();
 	}
@@ -51,13 +55,9 @@ using StringTools;
 	}
 	function recalculate(){
 		width = 0;
-		height = 50*scale.y;
-		// var lineWidth:Float = 0
+		height = LETTERSIZE*scale.y;
 
 		while(newLineWidths.pop() != null){}
-		{
-			final L = seperatedText.length;
-		}
 		var x:Float = 0;
 		var y:Float = 0;
 		var frame:FlxFrame;
@@ -65,14 +65,13 @@ using StringTools;
 		var chars:Int = 0;
 
 		for (curChar => char in seperatedText){
-			// if(AlphaCharacter.symbols.contains(char)){
-			// 	char+=(char.toLowerCase() == char ? " lowercase" : ' capital');
-			// }
 			final name = (bold ? char.toUpperCase() + " bold"
 				 :char.toLowerCase() == char ? '$char lowercase' : '$char capital');
 			seperatedText[curChar] = name;
+			/* TODO Make this a proper Map<String,FlxFrame> instead of relying on SE's alphabet loader*/
 			final anim = AlphaCharacter.alphabetAnims.get(name);
 			frame = anim == null ? null : frames.frames[anim[0]];
+
 			if(frame != null){
 				if(textFrames[chars] != null){
 					final textFrame = textFrames[chars];
@@ -80,7 +79,6 @@ using StringTools;
 					textFrame.y=y;
 					textFrame.frame=frame;
 					textFrame.line=newLine;
-
 				}else{
 					textFrames[chars] = {x:x,y:y,frame:frame,line:newLine};
 				}
@@ -89,15 +87,15 @@ using StringTools;
 			}else{
 				x+=spacing+(40*scale.x);
 			}
+			newLineWidths[newLine]=x;
+			if(x > width) width=x;
 			// textFrames[curChar] = frame;
 			if(charWrap != 0 && curChar % charWrap == 1 || char == "\n" || widthWrap != 0 && x > widthWrap){
 				x=0;
 				newLine++;
-				y+=65*scale.y;
-				height+=65*scale.y;
+				y+=LETTERSIZE*scale.y;
+				height+=LETTERSIZE*scale.y;
 			}
-			newLineWidths[newLine]=x;
-			if(x > width) width=x;
 		}
 		while(textFrames.length >= chars){textFrames.pop();}
 	}
