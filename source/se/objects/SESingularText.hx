@@ -12,12 +12,15 @@ import flixel.graphics.frames.FlxFrame;
 using StringTools;
 
 /* TODO MAKE LESS DEPENDANT ON ALPHABET AND BOLD TEXT*/
+/* TODO ADD PROPER ANGLE SUPPORT*/
+/* TODO ADD MIN CHARACTER COUNT TO ALLOW LETTTER CACHING FOR LESS RAM FLUCTUATION*/
 
 @:structInit @:publicFields class SESTLetter {
 	var frame:FlxFrame;
 	var x:Float = 0;
 	var y:Float = 0;
 	var line:Int = 0;
+	// var hide:Bool = false;
 }
 
 @:structInit @:publicFields class SESingularText extends FlxSprite{
@@ -43,7 +46,7 @@ using StringTools;
 		scale.x=scale.y=s/LETTERSIZE;
 		recalculate();
 	}
-	function new(?x:Float=0,?y:Float=0,?text:String = "",?textSize:Float = 12,?bold:Bool = true,?charWrap:Int = 0,?widthWrap:Int = 0,?spacing:Float=2){
+	function new(?x:Float=0,?y:Float=0,?text:String = "",?textSize:Float = 16,?bold:Bool = true,?charWrap:Int = 0,?widthWrap:Int = 0,?spacing:Float=2){
 		super(x,y);
 		frames = Alphabet.Frames;
 		scale.x=scale.y=textSize/LETTERSIZE;
@@ -79,6 +82,7 @@ using StringTools;
 					textFrame.y=y;
 					textFrame.frame=frame;
 					textFrame.line=newLine;
+					// textFrame.hide = false;
 				}else{
 					textFrames[chars] = {x:x,y:y,frame:frame,line:newLine};
 				}
@@ -89,7 +93,6 @@ using StringTools;
 			}
 			newLineWidths[newLine]=x;
 			if(x > width) width=x;
-			// textFrames[curChar] = frame;
 			if(charWrap != 0 && curChar % charWrap == 1 || char == "\n" || widthWrap != 0 && x > widthWrap){
 				x=0;
 				newLine++;

@@ -1616,9 +1616,9 @@ class PlayState extends ScriptMusicBeatState
 		songName.y = songPosBG_.y + 1;
 		songName.setFormat(CoolUtil.font, 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		songName.scrollFactor.set();
-		if (songTimeTxt == null) songTimeTxt = new SESingularText("00:000/00:000",16);
+		if (songTimeTxt == null) songTimeTxt = new SESingularText("00:000/00:000",18);
 		songTimeTxt.x = songPosBG_.x + songPosBG_.width - 20;
-		songTimeTxt.y = songPosBG_.y;
+		songTimeTxt.y = songPosBG_.y-(songPosBG_.height-2); /*FIXME*/
 		// if (downscroll) songName.y -= 3;
 		songTimeTxt.text = "00:00/" + songLengthTxt;
 		songTimeTxt.xAlign=-1;
