@@ -76,15 +76,10 @@ class SEProfiler{
 		_start = Sys.time();
 		ticksSinceUpdate=0;
 	}
-	// TODO If this doesn't do anything extra soon, i'll remove the useless if and just make it return the check
 	@:keep inline function update():Bool{
 		if(!SEProfiler.decay) return false;
 		ticksSinceUpdate++;
-		if(!keep && ticksSinceUpdate > 120){
-			return true;
-		}
-		// average = Math.lerp(average,end,0.5);
-		return false;
+		return (!keep && ticksSinceUpdate > 180);
 	}
 	@:keep inline function stamp(){
 		ticksSinceUpdate=0;

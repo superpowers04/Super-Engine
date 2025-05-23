@@ -80,13 +80,13 @@ class BaseStage extends Stage{
 			tags.push('performance');
 			tags.push('simple');
 		}else {
-			final bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+			final bg:FlxSprite = SELoader.loadFlxSprite(-600, -200,'assets/shared/images/stageback.png');
 			bg.antialiasing = true;
 			bg.scrollFactor.set(0.9, 0.9);
 			bg.active = false;
 			add(bg);
 		}
-		final stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+		final stageFront:FlxSprite = SELoader.loadFlxSprite(-650, 600,'assets/shared/images/stagefront.png');
 		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 		stageFront.updateHitbox();
 		stageFront.antialiasing = true;
@@ -94,7 +94,7 @@ class BaseStage extends Stage{
 		stageFront.active = false;
 		add(stageFront);
 		if(!simple){
-			final stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+			final stageCurtains:FlxSprite = SELoader.loadFlxSprite(-500, -300,'assets/shared/images/stagecurtains.png');
 			stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 			stageCurtains.updateHitbox();
 			stageCurtains.antialiasing = true;

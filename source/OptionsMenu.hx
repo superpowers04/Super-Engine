@@ -312,7 +312,7 @@ class OptionsMenu extends MusicBeatState
 
 		currentDescription = "none";
 
-		versionShit = new FlxText(2, FlxG.height - 38, 0, "Offset (Left, Right, Shift for slow): " + CoolUtil.truncateFloat(SESave.data.offset,2) + " | " + se.translation.Lang.get(currentDescription), 12);
+		versionShit = new FlxText(2, FlxG.height - 38, 0, "Offset (Left, Right, Shift for fast): " + CoolUtil.truncateFloat(SESave.data.offset,2) + " | " + se.translation.Lang.get(currentDescription), 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat(CoolUtil.font, 18, FlxColor.WHITE, LEFT, NONE);
 		

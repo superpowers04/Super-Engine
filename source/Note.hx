@@ -476,10 +476,8 @@ class Note extends FlxSprite
 			return;
 		}
 		callInterp("noteUpdate",[this]);
-		if(PlayState.instance.cancelCurrentFunction) return;
-		if(skipNote) return;
+		if(skipNote || PlayState.instance.cancelCurrentFunction) return;
 		visible = showNote;
-		var dad = PlayState.opponentCharacter;
 		if (mustPress) {
 			updateCanHit();
 			if (!shouldntBeHit) { 
@@ -488,7 +486,6 @@ class Note extends FlxSprite
 				if (!wasGoodHit && strumTime < Conductor.songPosition - (Conductor.safeZoneOffset * Conductor.timeScale)){
 					canBeHit = false;
 					tooLate = true;
-					skipNote = true;
 					if (!shouldntBeHit && !isSustainNoteEnd) {
 						PlayState.instance.health += PlayState.SONG.noteMetadata.tooLateHealth;
 						PlayState.instance.vocals.setVolume(0,0);
@@ -505,7 +502,7 @@ class Note extends FlxSprite
 		callInterp("noteUpdateAfter",[this]);
 	}
 	@:keep inline public function dadNotePress(?kill:Bool=true){
-		var dad = PlayState.opponentCharacter;
+		final dad = PlayState.opponentCharacter;
 		hit(1,this);
 		callInterp("noteHitDad",[dad,this]);
 

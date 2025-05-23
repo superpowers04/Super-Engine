@@ -14,7 +14,6 @@ using StringTools;
 /* TODO MAKE LESS DEPENDANT ON ALPHABET AND BOLD TEXT*/
 /* TODO ADD PROPER ANGLE SUPPORT*/
 /* TODO ADD MIN CHARACTER COUNT TO ALLOW LETTTER CACHING FOR LESS RAM FLUCTUATION*/
-
 @:structInit @:publicFields class SESTLetter {
 	var frame:FlxFrame;
 	var x:Float = 0;
@@ -35,7 +34,7 @@ using StringTools;
 
 	var text(default,set):String = "";
 	function set_text(s){
-		seperatedText = (text = s).split('');
+		seperatedText = (text = s+" ").split(''); /* FIXME  THIS SHOULD NOT REQUIRE A SPACE AT THE END*/
 		recalculate();
 		return s;
 	}
@@ -43,13 +42,15 @@ using StringTools;
 	@:noCompletion private var textFrames:Array<SESTLetter> = [];
 	@:noCompletion private var newLineWidths:Array<Float> = [];
 	function setTextSize(s:Float = LETTERSIZE){
-		scale.x=scale.y=s/LETTERSIZE;
+		scale.x=s/LETTERSIZE;
+		scale.y=s/LETTERSIZE;
 		recalculate();
 	}
 	function new(?x:Float=0,?y:Float=0,?text:String = "",?textSize:Float = 16,?bold:Bool = true,?charWrap:Int = 0,?widthWrap:Int = 0,?spacing:Float=2){
 		super(x,y);
 		frames = Alphabet.Frames;
-		scale.x=scale.y=textSize/LETTERSIZE;
+		scale.x=textSize/LETTERSIZE;
+		scale.y=textSize/LETTERSIZE;
 		this.bold = bold;
 		this.charWrap = charWrap;
 		this.widthWrap = widthWrap;
