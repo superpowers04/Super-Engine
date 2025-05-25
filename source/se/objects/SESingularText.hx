@@ -36,7 +36,7 @@ using StringTools;
 
 	var text(default,set):String = "";
 	function set_text(s){
-		seperatedText = (text = s+" ").split(''); /* FIXME  THIS SHOULD NOT REQUIRE A SPACE AT THE END*/
+		seperatedText = (text = s).split('');
 		recalculate();
 		return s;
 	}
@@ -103,7 +103,7 @@ using StringTools;
 				height+=LETTERSIZE*scale.y;
 			}
 		}
-		while(textFrames.length >= chars){textFrames.pop();}
+		while(textFrames.length > chars){textFrames.pop();}
 	}
 	override function draw(){
 		final baseX = x;

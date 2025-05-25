@@ -771,7 +771,8 @@ class PlayState extends ScriptMusicBeatState
 		LoadingScreen.loadingText = 'Loading playstate variables';
 		parseMoreInterps = (QuickOptionsSubState.getSetting("Song hscripts") || isStoryMode);
 		instance?.destroy();
-		ScriptMusicBeatState.instance=cast(instance=this);
+		ScriptMusicBeatState.instance=cast(this);
+		instance=this;
 		downscroll = SESave.data.downscroll;
 		middlescroll = SESave.data.middleScroll;
 		instance = this;
@@ -788,12 +789,13 @@ class PlayState extends ScriptMusicBeatState
 
 		setInputHandlers(); // Sets all of the handlers for input
 		TitleState.loadNoteAssets(); // Make sure note assets are actually loaded
-		// var gameCam:FlxCamera = FlxG.camera;
+
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camTOP = new FlxCamera();
 		camGame.bgColor = 0xFF000000;
-		camHUD.bgColor = camTOP.bgColor = 0x00000000;
+		camHUD.bgColor = 0x00000000;
+		camTOP.bgColor = 0x00000000;
 		defaultScoreCameras=[camHUD];
 
 
@@ -1149,12 +1151,12 @@ class PlayState extends ScriptMusicBeatState
 
 		callInterp("addUI",[]);
 		charCall("addUI",[],-1);
-
-		strumLineNotes.cameras = [camHUD];
-		grpNoteSplashes.cameras = [camHUD];
-		notes.cameras = [camHUD];
-		healthBar.cameras = [camHUD];
-		healthBarBG.cameras = [camHUD];
+		final hudCamera = [camHUD];
+		strumLineNotes.cameras = hudCamera.copy();
+		grpNoteSplashes.cameras = hudCamera.copy();
+		notes.cameras = hudCamera.copy();
+		healthBar.cameras = hudCamera.copy();
+		healthBarBG.cameras = hudCamera.copy();
 		iconP1.isTracked = iconP2.isTracked = !practiceMode;
 		if(practiceMode){
 			// if(practiceMode ){
@@ -1178,15 +1180,15 @@ class PlayState extends ScriptMusicBeatState
 			}
 			iconP2.y = iconP1.y = (downscroll ? FlxG.height * 0.9 : FlxG.height * 0.1) - (iconP1.height * 0.5);
 		}
-		iconP1.cameras = [camHUD];
-		iconP2.cameras = [camHUD];
-		scoreTxt.cameras = [camHUD];
+		iconP1.cameras = hudCamera.copy();
+		iconP2.cameras = hudCamera.copy();
+		scoreTxt.cameras = hudCamera.copy();
 		scoreTxt.alpha = 0;
 		iconP1.y = healthBarBG.y - (iconP1.height / 2);
 		iconP2.y = healthBarBG.y - (iconP2.height / 2);
 		if(boyfriend.lonely) iconP1.visible = false;
 		if(dad.lonely) iconP2.visible = false;
-		kadeEngineWatermark.cameras = [camHUD];
+		kadeEngineWatermark.cameras = hudCamera.copy();
 
 		if(SESave.data.hitSound && hitSoundEff == null) 
 			hitSoundEff = (SELoader.exists('mods/hitSound.ogg') ? SELoader.loadSound('mods/hitSound.ogg') : SELoader.loadSound('assets/shared/sounds/Normal_hit.ogg',true));
@@ -1836,7 +1838,7 @@ class PlayState extends ScriptMusicBeatState
 				if(SESave.data.flipScrollX) playerNoteCamera.flashSprite.scaleX = -1;
 				if(SESave.data.flipScrollY) playerNoteCamera.flashSprite.scaleY = -1;
 				defaultScoreCameras=[playerNoteCamera];
-				// readdCam(camHUD);
+				readdCam(camHUD);
 				readdCam(camTOP);
 			}else{
 				if(opponentNoteCamera != null) opponentNoteCamera.destroy();
@@ -1845,22 +1847,19 @@ class PlayState extends ScriptMusicBeatState
 				opponentNoteCamera.color = 0xAAFFFFFF;
 
 				if(middlescroll) opponentNoteCamera.setScale(0.5,0.5);
-				if(SESave.data.oppStrumline) FlxG.cameras.add(opponentNoteCamera,false);
-				
-				// readdCam(camHUD,false);
-				// readdCam(camHUD);
-				readdCam(camTOP);
-				
+				if(SESave.data.oppStrumline) {
+					FlxG.cameras.add(opponentNoteCamera,false);
+				}
 
 			}
 		}
-		var scale = 1 - ((SONG.keyCount / 4) * 0.1);
+		var scale = 1 - (SONG.keyCount / 40);
 		var strumWidth = Note.swagWidth;
 		var halfKeyCount = Std.int(Math.floor(SONG.keyCount * 0.5));
 		for (i in 0...SONG.keyCount){
 			var babyArrow:StrumArrow = new StrumArrow(i,0, strumLine.y);
 
-			charCall("strumNoteLoad",[babyArrow,player],if (player == 1) 0 else 1,true);
+			charCall("strumNoteLoad",[babyArrow,player],player == 1 ? 0 :  1,true);
 			callInterp("strumNoteLoad",[babyArrow,player == 1]);
 			if(cancelCurrentFunction) continue;
 			babyArrow.init();
@@ -2143,9 +2142,7 @@ class PlayState extends ScriptMusicBeatState
 		callInterp("update",[elapsed]);
 		SEProfiler.qStart('Misc');
 
-		
-		if (!SESave.data.accuracyDisplay) scoreTxt.text = "Score: " + songScore;
-		else scoreTxt.text = Ratings.CalculateRanking(songScore,songScoreDef,nps,maxNPS,accuracy);
+		scoreTxt.text = SESave.data.accuracyDisplay ? Ratings.CalculateRanking(songScore,songScoreDef,nps,maxNPS,accuracy) : "Score: " + songScore;
 
 		if (updateTime) songTimeTxt.text = FlxStringUtil.formatTime(Math.floor(Conductor.songPosition / 1000), false) + "/" + songLengthTxt;
 		
@@ -2564,8 +2561,31 @@ class PlayState extends ScriptMusicBeatState
 		
 		songScore += Math.round(score);
 		songScoreDef += Math.round(Ratings.convertScore(noteDiff));
+		untyped __cpp__("
+			if(!::se::SESave_obj::data->noterating && !::se::SESave_obj::data->showTimings && !::se::SESave_obj::data->showCombo) return;
+		");
+		// if(!SESave.data.noterating && !SESave.data.showTimings && !SESave.data.showCombo) return;
+	// WHAT THE FUCK IS THIS HXCPP?
+/*HXLINE(2565)		bool _hx_tmp17;
+HXDLIN(2565)		bool _hx_tmp18;
+HXDLIN(2565)		if (!(::se::SESave_obj::data->noterating)) {
+HXLINE(2565)			_hx_tmp18 = !(::se::SESave_obj::data->showTimings);
+            		}
+            		else {
+HXLINE(2565)			_hx_tmp18 = false;
+            		}
+HXDLIN(2565)		if (_hx_tmp18) {
+HXLINE(2565)			_hx_tmp17 = !(::se::SESave_obj::data->showCombo);
+            		}
+            		else {
+HXLINE(2565)			_hx_tmp17 = false;
+            		}
+HXDLIN(2565)		if (_hx_tmp17) {
+HXLINE(2565)			return;
+            		}*/
 
-		if(!SESave.data.noterating && !SESave.data.showTimings && !SESave.data.showCombo) return;
+
+
 
 		var rating:FlxSprite=null;
 		final strum =playerStrums.members[daNote.noteData];
@@ -2589,9 +2609,9 @@ class PlayState extends ScriptMusicBeatState
 
 			FlxTween.tween(rating, {alpha: 0}, 0.3, {
 				startDelay: Conductor.crochet * 0.001,
-				onComplete: function(tween:FlxTween) { remove(rating); rating.kill(); }
+				onComplete: function(tween:FlxTween) { remove(rating,false); rating.kill(); }
 			});
-			rating.cameras = defaultScoreCameras;
+			rating.cameras[0] = defaultScoreCameras[0];
 			add(rating);
 		}
 		
@@ -2601,37 +2621,43 @@ class PlayState extends ScriptMusicBeatState
 		if(SESave.data.showTimings){
 			var _dist = Std.int(Conductor.songPosition - daNote.strumTime);
 			// Std.string(Std.int(noteDiff)) + "ms " + ((_dist == 0) ? "=" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "^" : "v")));
+/*(((_dist == 0) ? "S" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "U" : "D"))+'${Std.int(noteDiff)}').split('')*/
+			var comboSplit:String = '${Std.int(noteDiff)}';
+			// ${untyped __cpp__('((_dist == 0) ? "S" :((this->downscroll && _dist < 0 || !this->downscroll && _dist > 0) ? "U" : "D"))')}
+			untyped __cpp__('
+				comboSplit = ((_dist == 0) ? HX_CSTRING("=") :((this->downscroll && _dist < 0 || !this->downscroll && _dist > 0) ? HX_CSTRING("^") : HX_CSTRING("v")))+comboSplit;
+			'); /* I am totally not going to start doing this to avoid hxcpp generating some weird ass if statements*/
 
-			var comboSplit:Array<String> = (((_dist == 0) ? "S" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "U" : "D"))+'${Std.int(noteDiff)}').split('');
-
-			var comboSize = 0.5-(comboSplit.length * 0.1);
-			var comboPixelSize = (50 * comboSize);
-			var offsetX = strum.x;
-			for (i in 0...comboSplit.length) {
-				var numScore:FlxSprite = comboRecycler.get().loadGraphic(SELoader.cache.loadGraphic('assets/images/num${comboSplit[i]}.png'));
+			var comboPixelSize = (40 * (1-(comboSplit.length * 0.1)));
+			// var offsetX = strum.x;
+			// for (i in 0...comboSplit.length) {
+				// var numScore:FlxSprite = comboRecycler.get().loadGraphic(SELoader.cache.loadGraphic('assets/images/num${comboSplit[i]}.png'));
+			var numScore:SESingularText = new SESingularText(strum.x,daNote.y + (daNote.height * 0.5),comboSplit,comboPixelSize);
+			numScore.yAlign=0.5;
 				// numScore.screenCenter();
-				numScore.x = offsetX;
-				offsetX+=(numScore.width+2) * comboSize;
-				numScore.y = daNote.y + (daNote.height * 0.5);
-				numScore.cameras = defaultScoreCameras;
-				numScore.antialiasing = true;
-				numScore.setGraphicSize(Std.int((numScore.width * comboSize)));
-				numScore.alpha=1;
+			// numScore.x = offsetX;
+				// offsetX+=(numScore.width+2) * comboSize;
+			// numScore.y = daNote.y + (daNote.height * 0.5);
+			numScore.cameras[0] = defaultScoreCameras[0];
+			numScore.antialiasing = true;
+			// numScore.setGraphicSize(Std.int((numScore.width * comboSize)));
 
-				numScore.updateHitbox();
+			// numScore.alpha=1;
+
+			numScore.updateHitbox();
 	
-				numScore.acceleration.y = 0;
-				numScore.velocity.y = 0;
-				numScore.velocity.x = 0;
-				numScore.angularVelocity =0;
-				add(numScore);
+				// numScore.acceleration.y = 0;
+				// numScore.velocity.y = 0;
+				// numScore.velocity.x = 0;
+				// numScore.angularVelocity =0;
+			add(numScore);
 				// scoreObjs.push(numScore);
-				FlxTween.tween(numScore, {alpha: 0,y:numScore.y - 60}, 0.8, {
-					onComplete: function(tween:FlxTween) {remove(numScore);numScore.kill();},
-					startDelay: Conductor.crochet * 0.001
-				});
+			FlxTween.tween(numScore, {alpha: 0,y:numScore.y - 60}, 0.8, {
+				onComplete: function(tween:FlxTween) {remove(numScore,true);},
+				startDelay: Conductor.crochet * 0.001
+			});
 	
-			}
+			// }
 		}
 
 
@@ -2645,8 +2671,7 @@ class PlayState extends ScriptMusicBeatState
 			var comboSize = 1.20 - (comboSplit.length * 0.1);
 			var lastStrum = playerStrums.members[playerStrums.members.length - 1];
 			for (i in 0...comboSplit.length) {
-				var num:Int = Std.parseInt(comboSplit[i]);
-				var numScore:FlxSprite = ratingRecycler.get().loadGraphic(SELoader.cache.loadGraphic('assets/images/num${Std.parseInt(comboSplit[i])}.png'));
+				var numScore:FlxSprite = ratingRecycler.get().loadGraphic(SELoader.cache.loadGraphic('assets/images/num${comboSplit[i]}.png'));
 				// numScore.screenCenter();
 				numScore.x = lastStrum.x + (lastStrum.width) + ((43 * comboSize) * i);
 
@@ -2666,7 +2691,7 @@ class PlayState extends ScriptMusicBeatState
 				add(numScore);
 				scoreObjs.push(numScore);
 				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
-					onComplete: function(tween:FlxTween) {remove(numScore);numScore.kill();},
+					onComplete: function(tween:FlxTween) {remove(numScore,false);numScore.kill();},
 					startDelay: Conductor.crochet * 0.002
 				});
 	
@@ -2684,9 +2709,9 @@ class PlayState extends ScriptMusicBeatState
 	@:keep inline public function NearlyEquals(value1:Float, value2:Float, unimportantDifference:Float = 10):Bool return Math.abs(FlxMath.roundDecimal(value1, 1) - FlxMath.roundDecimal(value2, 1)) < unimportantDifference;
 
 	@:keep inline private function fromBool(input:Bool):Int{
-		return input ? 1 : 0; 
+		return untyped __cpp__('input ? 1 : 0 '); 
 	}
-	@:keep inline private function fromInt(?input:Int = 0):Bool{
+	@:keep inline private function fromInt(?input:Int):Bool{
 		return (input == 1);
 	}
 
