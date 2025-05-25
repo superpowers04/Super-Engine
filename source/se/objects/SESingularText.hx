@@ -8,6 +8,8 @@ package se.objects;
 import flixel.FlxSprite;
 import Alphabet;
 import flixel.graphics.frames.FlxFrame;
+import flixel.FlxBasic;
+import flixel.FlxCamera;
 
 using StringTools;
 
@@ -117,5 +119,16 @@ using StringTools;
 		x=baseX;
 		y=baseY - (yAlign == 0 ? 0 : height * yAlign );
 		dirty=false;
+	}
+	override public function overlaps(objectOrGroup:FlxBasic, inScreenSpace:Bool = false, ?camera:FlxCamera){
+		if(xAlign == 0 && yAlign == 0) return overlaps(objectOrGroup,inScreenSpace,camera);
+		final baseX = x;
+		final baseY = y;
+		if(xAlign != 0)x+=height * xAlign;
+		if(yAlign != 0)y+=height * yAlign;
+		final ret = overlaps(objectOrGroup,inScreenSpace,camera);
+		x=baseX;
+		y=baseY;
+		return ret;
 	}
 }

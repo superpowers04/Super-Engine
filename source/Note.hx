@@ -495,9 +495,12 @@ class Note extends FlxSprite
 					destroy();
 				}
 			}
-		}else if (aiShouldPress && (dad == null || !dad.isStunned) 
+		}else{
+			final dad = PlayState.opponentCharacter;
+			if (aiShouldPress && (dad == null || !dad.isStunned) 
 		          && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition) {
-			dadNotePress();
+				dadNotePress();
+			}
 		}
 		callInterp("noteUpdateAfter",[this]);
 	}

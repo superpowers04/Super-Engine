@@ -1836,7 +1836,7 @@ class PlayState extends ScriptMusicBeatState
 				if(SESave.data.flipScrollX) playerNoteCamera.flashSprite.scaleX = -1;
 				if(SESave.data.flipScrollY) playerNoteCamera.flashSprite.scaleY = -1;
 				defaultScoreCameras=[playerNoteCamera];
-				readdCam(camHUD);
+				// readdCam(camHUD);
 				readdCam(camTOP);
 			}else{
 				if(opponentNoteCamera != null) opponentNoteCamera.destroy();
@@ -1848,7 +1848,7 @@ class PlayState extends ScriptMusicBeatState
 				if(SESave.data.oppStrumline) FlxG.cameras.add(opponentNoteCamera,false);
 				
 				// readdCam(camHUD,false);
-				readdCam(camHUD);
+				// readdCam(camHUD);
 				readdCam(camTOP);
 				
 
@@ -1932,7 +1932,7 @@ class PlayState extends ScriptMusicBeatState
 						spr.x = underlay.x + 4 + (underWidth * index);
 					}
 				}else{
-					var endNote = playerStrums.members[playerStrums.members.length - 1];
+					final endNote = playerStrums.members[playerStrums.members.length - 1];
 					var underlay = new FlxSprite(-100,-100);
 					underlay.makeGraphic(Std.int((endNote.x + endNote.width + 8)- playerStrums.members[0].x),1280,0xFF100010);
 					underlay.cameras = playerStrums.members[0].cameras;
@@ -2327,7 +2327,7 @@ class PlayState extends ScriptMusicBeatState
 				}// we add note lmao
 					callInterp('noteSpawn',[dunceNote]);
 					notes.add(dunceNote);
-					updateNotePosition(dunceNote,dunceNote.parentSprite ?? ((dunceNote.mustPress) ? playerStrums : strumLineNotes).members[Math.floor(Math.abs(dunceNote.noteData))]));
+					updateNotePosition(dunceNote,dunceNote.parentSprite ?? ((dunceNote.mustPress) ? playerStrums : strumLineNotes).members[Math.floor(Math.abs(dunceNote.noteData))]);
 				
 			}
 			SEProfiler.qStamp('Add Notes');
@@ -2342,7 +2342,7 @@ class PlayState extends ScriptMusicBeatState
 		try{noteShit();}catch(e){handleError('Error during noteShit: ${e.message}\n ${e.stack}}');}
 		callInterp("draw",[]);
 		try{
-			if(!SESave.data.preformance) notes.sort(FlxSort.byY,(FlxSort.ASCENDING));
+			if(!SESave.data.preformance) notes.sort(byTime,(FlxSort.ASCENDING));
 		}catch(e){}
 		super.draw();
 		callInterp("drawAfter",[]);
@@ -2992,7 +2992,6 @@ class PlayState extends ScriptMusicBeatState
 			if(!pressArray.contains(true) || SEIBlockInput || !acceptInput) return SEProfiler.qStamp('KeyPress');
 
 			playerCharacter.holdTimer = 0;
-			// var hitArray = [false,false,false,false];
 			{
 				var i = hitArray.length+1;
 				while(i > 0){hitArray[i--]=false;}
