@@ -23,6 +23,7 @@ import flixel.group.FlxGroup;
 		spr.velocity.y = 0;
 		spr.velocity.x = 0;
 		spr.angularVelocity = 0;
+		spr.revive();
 		return spr;
 	}
 	function get(){

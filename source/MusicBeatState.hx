@@ -315,7 +315,6 @@ class MusicBeatState extends FlxUIState {
 	}
 	@:keep inline public function updateSteps(){
 		updateCurStep();
-		updateBeat();
 		if (oldStep != curStep && curStep > 0){
 			if(oldStep > curStep && Conductor.bpmChangeMap != null){ // Gotta resync the 
 				// var position = Conductor.songPosition;
@@ -330,13 +329,14 @@ class MusicBeatState extends FlxUIState {
 				curStep = newStep;
 				// Conductor.songPosition = position;
 			}
-			oldStep = curStep;
-			stepHit();
 			updateBPMChange();
+			updateBeat();
+			stepHit();
+			oldStep = curStep;
 		}
 	}
 	private function updateBeat():Void {
-		oldBeat = curStep;
+		oldBeat = curBeat;
 		curBeat = Math.floor(curStep / 4);
 	}
 
@@ -347,17 +347,6 @@ class MusicBeatState extends FlxUIState {
 		bpm: Conductor.bpm
 	};
 	private function updateCurStep():Void {
-		// if(Conductor.bpmChangeMap != null){
-			
-		// 	for (i in 0...Conductor.bpmChangeMap.length)
-		// 	{
-		// 		if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime){
-		// 			lastChange = Conductor.bpmChangeMap[i];
-		// 		}else break;
-		// 	}
-		// }
-
-
 		final prog = (Conductor.offset + Conductor.songPosition - lastBPMChange.songTime) / Conductor.stepCrochet;
 		curStepProgress = prog % 1;
 		curStep = lastBPMChange.stepTime + Math.floor(prog);

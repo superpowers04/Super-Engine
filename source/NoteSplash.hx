@@ -94,7 +94,7 @@ class NoteSplash extends FlxSprite
 			if(obj != null){
 				@:privateAccess
 				{
-					cameras = obj.cameras;
+					cameras = obj.cameras.copy();
 				}
 				scrollFactor.set(obj.scrollFactor.x,obj.scrollFactor.y);
 				screenCenter();

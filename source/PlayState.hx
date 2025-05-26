@@ -529,7 +529,8 @@ class PlayState extends ScriptMusicBeatState
 			openSubState(new ErrorSubState(0,0,error,true));
 			// openSubState(new FinishSubState(0,0,error,true));
 		}catch(e){
-			trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
+			trace('${e.message}\n${e.stack}');
+			MainMenuState.handleError(error);
 		}
 	}
 
@@ -796,15 +797,14 @@ class PlayState extends ScriptMusicBeatState
 		camGame.bgColor = 0xFF000000;
 		camHUD.bgColor = 0x00000000;
 		camTOP.bgColor = 0x00000000;
-		defaultScoreCameras=[camHUD];
 
 
 
 		FlxG.cameras.reset(camGame);
-		FlxG.cameras.add(camHUD);
-		FlxG.cameras.add(camTOP);
 		FlxG.cameras.setDefaultDrawTarget(camGame,true);
-		// FlxCamera.defaultCameras = [camGame];
+		FlxG.cameras.add(camHUD,false);
+		FlxG.cameras.add(camTOP,false);
+		FlxCamera.defaultCameras = [camGame];
 
 
 
@@ -1151,7 +1151,7 @@ class PlayState extends ScriptMusicBeatState
 
 		callInterp("addUI",[]);
 		charCall("addUI",[],-1);
-		final hudCamera = [camHUD];
+		final hudCamera:Array<FlxCamera> = [camHUD];
 		strumLineNotes.cameras = hudCamera.copy();
 		grpNoteSplashes.cameras = hudCamera.copy();
 		notes.cameras = hudCamera.copy();
@@ -1163,7 +1163,7 @@ class PlayState extends ScriptMusicBeatState
 			practiceText = new FlxText(0,healthBar.y - 64,(botPlay ?  "Botplay" : flippy ? "Flippy Mode" : (ChartingState.charting) ? "Testing Chart" : "Practice mode"),16);
 			if(onlinemod.OnlinePlayMenuState.socket == null){
 				practiceText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-				practiceText.cameras = [camHUD];
+				practiceText.cameras = hudCamera.copy();
 				practiceText.screenCenter(X);
 				if(downscroll) practiceText.y += 20;
 				insert(members.indexOf(healthBar),practiceText);
@@ -1426,7 +1426,7 @@ class PlayState extends ScriptMusicBeatState
 		}, introAudio.length + 1);
 	}
 
-	@:keep inline function charCall(func:String,args:Array<Dynamic>,?char:Int = -1,applyInvert:Bool = false){
+	function charCall(func:String,args:Array<Dynamic>,?char:Int = -1,applyInvert:Bool = false){
 		currentInterp.isActive = true;
 		currentInterp.name = 'char: ${char}';
 		currentInterp.currentFunction = func;
@@ -1542,8 +1542,9 @@ class PlayState extends ScriptMusicBeatState
 		}
 		if(!_validNote){
 			skipPos = _validUnspawn - 5000; // -5000 is to make sure all of the notes actually appear and don't blindside the player
-			jumpToText = new FlxText(0,0,1000,"Press a note button to skip to " + Math.floor(skipPos * 0.001) + " seconds");
-			jumpToText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			// jumpToText = new FlxText(0,0,1000,"Press a note button to skip to " + Math.floor(skipPos * 0.001) + " seconds");
+			// jumpToText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			jumpToText = new SESingularText(0,0,"Press a note button to skip to " + Math.floor(skipPos * 0.001) + " seconds",40);
 			jumpToText.cameras = [camHUD];
 			jumpToText.screenCenter(XY);
 			jumpToText.y -= 20;
@@ -1592,7 +1593,7 @@ class PlayState extends ScriptMusicBeatState
 
 	}
 	public var skipPos:Float = 0;
-	public static var jumpToText:FlxText;
+	public static var jumpToText:SESingularText;
 	var jumpToTimer:FlxTween;
 
 	@:keep inline function addSongBar(?minimal:Bool = false){
@@ -1825,30 +1826,30 @@ class PlayState extends ScriptMusicBeatState
 	function generateStaticArrows(player:Int):Void{
 
 		cpuStrums.visible = SESave.data.oppStrumline;
+		var camera:FlxCamera = null;
 		if(useNoteCameras){
 			// var camList = FlxG.cameras.list;
 			if(player == 1){
 				if(playerNoteCamera != null)playerNoteCamera.destroy();
-				playerNoteCamera = new FlxCamera(0,0,  FlxG.width,FlxG.height);
+				playerNoteCamera = camera = new FlxCamera(0,0,  FlxG.width,FlxG.height);
 				
 				
-				FlxG.cameras.add(playerNoteCamera,false);
-				playerNoteCamera.bgColor = 0x00000000;
-				if(SESave.data.rotateScroll != 0) playerNoteCamera.angle = SESave.data.rotateScroll;
-				if(SESave.data.flipScrollX) playerNoteCamera.flashSprite.scaleX = -1;
-				if(SESave.data.flipScrollY) playerNoteCamera.flashSprite.scaleY = -1;
-				defaultScoreCameras=[playerNoteCamera];
-				readdCam(camHUD);
-				readdCam(camTOP);
+				FlxG.cameras.add(camera,false);
+				camera.bgColor = 0x00000000;
+				if(SESave.data.rotateScroll != 0) camera.angle = SESave.data.rotateScroll;
+				if(SESave.data.flipScrollX) camera.flashSprite.scaleX = -1;
+				if(SESave.data.flipScrollY) camera.flashSprite.scaleY = -1;
+				// readdCam(camHUD);
+				// readdCam(camTOP);
 			}else{
 				if(opponentNoteCamera != null) opponentNoteCamera.destroy();
-				opponentNoteCamera = new FlxCamera(0,0,FlxG.width,(middlescroll ?  FlxG.height*2 : FlxG.height));
-				opponentNoteCamera.bgColor = 0x00000000;
-				opponentNoteCamera.color = 0xAAFFFFFF;
+				opponentNoteCamera = camera = new FlxCamera(0,0,FlxG.width,(middlescroll ?  FlxG.height*2 : FlxG.height));
+				camera.bgColor = 0x00000000;
+				camera.color = 0xAAFFFFFF;
 
-				if(middlescroll) opponentNoteCamera.setScale(0.5,0.5);
+				if(middlescroll) camera.setScale(0.5,0.5);
 				if(SESave.data.oppStrumline) {
-					FlxG.cameras.add(opponentNoteCamera,false);
+					FlxG.cameras.add(camera,false);
 				}
 
 			}
@@ -1894,7 +1895,7 @@ class PlayState extends ScriptMusicBeatState
 				}else{
 					babyArrow.x += (strumWidth * i) + i - strumWidth + (strumWidth * 0.5) ;
 				}
-				babyArrow.cameras = [player == 1 ? playerNoteCamera : opponentNoteCamera];
+				babyArrow.cameras = [camera];
 			}else{
 
 				if(middlescroll){
@@ -1919,37 +1920,26 @@ class PlayState extends ScriptMusicBeatState
 		}
 		if(useNoteCameras){
 			if(player == 1){
-				if(underlay != null && SESave.data.undlaSize == 0){
-					final endNote = playerStrums.members[playerStrums.members.length - 1];
-
-					underlay.makeGraphic(Std.int((endNote.x + endNote.width + 8)- playerStrums.members[0].x),1280,0xFF100010);
-					underlay.cameras = playerStrums.members[0].cameras;
-					underlay.screenCenter(X);
-					final underWidth = ((underlay.width - 8) * underlay.scale.x) / playerStrums.members.length;
-					
-					for(index=>spr in playerStrums.members){
-						spr.x = underlay.x + 4 + (underWidth * index);
-					}
-				}else{
-					final endNote = playerStrums.members[playerStrums.members.length - 1];
-					var underlay = new FlxSprite(-100,-100);
-					underlay.makeGraphic(Std.int((endNote.x + endNote.width + 8)- playerStrums.members[0].x),1280,0xFF100010);
-					underlay.cameras = playerStrums.members[0].cameras;
-					underlay.screenCenter(X);
-					var underWidth = ((underlay.width - 8) * underlay.scale.x) / playerStrums.members.length;
-					
-					for(index=>spr in playerStrums.members){
-						spr.x = underlay.x + 4 + (underWidth * index);
-					}
-					underlay.destroy();
+				final endNote = playerStrums.members[playerStrums.members.length - 1];
+				final underlay = (underlay != null && SESave.data.undlaSize == 0) ? underlay : new FlxSprite(-100,-100);
+			
+				underlay.makeGraphic(Std.int((endNote.x + endNote.width + 8)- playerStrums.members[0].x),1280,0xFF100010);
+				underlay.cameras = endNote.cameras;
+				underlay.screenCenter(X);
+				final underWidth = ((underlay.width - 8) * underlay.scale.x) / playerStrums.members.length;
+				
+				for(index=>spr in playerStrums.members){
+					spr.x = underlay.x + 4 + (underWidth * index);
 				}
-				playerNoteCamera.x = Std.int(FlxG.width * (middlescroll ? 0 : 0.20));
+				if(PlayState.underlay != underlay) underlay.destroy();
+				
+				camera.x = Std.int(FlxG.width * (middlescroll ? 0 : 0.20));
 			}else{
-				opponentNoteCamera.visible = SESave.data.oppStrumline;
-				opponentNoteCamera.x = Std.int(FlxG.width * -0.30);
+				camera.visible = SESave.data.oppStrumline;
+				camera.x = Std.int(FlxG.width * -0.30);
 				if(middlescroll){
-					opponentNoteCamera.y = Std.int(FlxG.height * -0.25);
-					opponentNoteCamera.x -= 100;
+					camera.y = Std.int(FlxG.height * -0.25);
+					camera.x -= 100;
 				}
 					// if(underlay != null && SESave.data.undlaSize == 0) 
 			}
@@ -2499,7 +2489,6 @@ class PlayState extends ScriptMusicBeatState
 	var timeShown = 0;
 	var currentTimingShown:FlxText = null;
 	var lastNoteSplash:NoteSplash;
-	var defaultScoreCameras:Array<FlxCamera>=[];
 	var ratingRecycler:FlxSpriteRecycler = new FlxSpriteRecycler(10);
 	var comboRecycler:FlxSpriteRecycler = new FlxSpriteRecycler(30);
 	private function popUpScore(daNote:Note){
@@ -2509,7 +2498,7 @@ class PlayState extends ScriptMusicBeatState
 		vocals.setVolume(0,SESave.data.voicesVol);
 		
 		final placement:String = Std.string(combo);
-		final camHUD = useNoteCameras ?  playerNoteCamera : camHUD;
+		final cameraUsed:FlxCamera = useNoteCameras ? playerNoteCamera : camHUD;
 		
 		var score:Float = 350;
 
@@ -2611,7 +2600,7 @@ HXLINE(2565)			return;
 				startDelay: Conductor.crochet * 0.001,
 				onComplete: function(tween:FlxTween) { remove(rating,false); rating.kill(); }
 			});
-			rating.cameras[0] = defaultScoreCameras[0];
+			rating.cameras = [cameraUsed];
 			add(rating);
 		}
 		
@@ -2623,10 +2612,10 @@ HXLINE(2565)			return;
 			// Std.string(Std.int(noteDiff)) + "ms " + ((_dist == 0) ? "=" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "^" : "v")));
 /*(((_dist == 0) ? "S" :((downscroll && _dist < 0 || !downscroll && _dist > 0) ? "U" : "D"))+'${Std.int(noteDiff)}').split('')*/
 			var comboSplit:String = '${Std.int(noteDiff)}';
-			// ${untyped __cpp__('((_dist == 0) ? "S" :((this->downscroll && _dist < 0 || !this->downscroll && _dist > 0) ? "U" : "D"))')}
+			/* I am totally not going to start doing this to avoid hxcpp generating some weird ass if statements*/
 			untyped __cpp__('
 				comboSplit = ((_dist == 0) ? HX_CSTRING("=") :((this->downscroll && _dist < 0 || !this->downscroll && _dist > 0) ? HX_CSTRING("^") : HX_CSTRING("v")))+comboSplit;
-			'); /* I am totally not going to start doing this to avoid hxcpp generating some weird ass if statements*/
+			'); 
 
 			var comboPixelSize = (40 * (1-(comboSplit.length * 0.1)));
 			// var offsetX = strum.x;
@@ -2638,7 +2627,7 @@ HXLINE(2565)			return;
 			// numScore.x = offsetX;
 				// offsetX+=(numScore.width+2) * comboSize;
 			// numScore.y = daNote.y + (daNote.height * 0.5);
-			numScore.cameras[0] = defaultScoreCameras[0];
+			numScore.cameras = [cameraUsed];
 			numScore.antialiasing = true;
 			// numScore.setGraphicSize(Std.int((numScore.width * comboSize)));
 
@@ -2677,7 +2666,7 @@ HXLINE(2565)			return;
 
 				numScore.alpha=1;
 				numScore.y = lastStrum.y;
-				numScore.cameras = defaultScoreCameras;
+				numScore.cameras = [cameraUsed];
 
 				numScore.antialiasing = true;
 				numScore.setGraphicSize(Std.int((numScore.width * comboSize) * 0.5));
@@ -2703,10 +2692,9 @@ HXLINE(2565)			return;
 		callInterp('popUpScore',[rating,scoreObjs,currentTimingShown]);
 
 
-
 	}
 
-	@:keep inline public function NearlyEquals(value1:Float, value2:Float, unimportantDifference:Float = 10):Bool return Math.abs(FlxMath.roundDecimal(value1, 1) - FlxMath.roundDecimal(value2, 1)) < unimportantDifference;
+	@:keep inline public function NearlyEquals(value1:Float, value2:Float, unimportantDifference:Float = 10):Bool return Math.abs(value1 - value2) < unimportantDifference;
 
 	@:keep inline private function fromBool(input:Bool):Int{
 		return untyped __cpp__('input ? 1 : 0 '); 
@@ -2943,14 +2931,17 @@ HXLINE(2565)			return;
 				callInterp("susHit",[daNote]);
 			}
 		}
-		var queuedNote:QueuedNote = null;
-		while((queuedNote = queuedNotes.pop()) != null){
-			if(queuedNote.hitState){
-				goodNoteHit(queuedNote.note,queuedNote.time);
+		
+		untyped __cpp__("
+		::QueuedNote queuedNote;
+		while(::hx::IsNotNull(queuedNote = this->queuedNotes->pop().StaticCast<::QueuedNote >() )){
+			if (queuedNote->hitState) {
+				this->goodNoteHit(queuedNote->note,null(),queuedNote->time);
 				continue;
 			}
-			noteMiss(queuedNote.direction,queuedNote.note);
+			this->noteMiss(queuedNote->direction,queuedNote->note,null(),null());
 		}
+		");
 		final player = playerCharacter;
  		callInterp("holdShitAfter",[holdArray]);
  		charCall("holdShitAfter",[holdArray],true);

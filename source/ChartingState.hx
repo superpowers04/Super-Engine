@@ -874,7 +874,7 @@ class ChartingState extends ScriptMusicBeatState
 		UI_box.addGroup(tab_group_song);
 		// UI_box.addGroup(tab_group_assets);
 		UI_box.scrollFactor.set();
-		FlxG.camera.follow(strumLine,NO_DEAD_ZONE,1);
+		// FlxG.camera.follow(strumLine,NO_DEAD_ZONE,1);
 	}
 
 	var stepperLength:FlxUINumericStepper;
@@ -1659,6 +1659,7 @@ class ChartingState extends ScriptMusicBeatState
 			FlxG.sound.music.play();
 			requestMusicPlay = false;
 		}
+		FlxG.camera.scroll.set(strumLine.x-10,strumLine.y-340);
 	// }catch(e){MainMenuState.handleError(e,"chart editor did a fucky: " + e.message);
 		
 	}

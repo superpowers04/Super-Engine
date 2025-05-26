@@ -10,12 +10,14 @@ import Alphabet;
 import flixel.graphics.frames.FlxFrame;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
+import flixel.graphics.frames.FlxFrame;
 
 using StringTools;
 
-/* TODO MAKE LESS DEPENDANT ON ALPHABET AND BOLD TEXT*/
-/* TODO ADD PROPER ANGLE SUPPORT*/
-/* TODO ADD MIN CHARACTER COUNT TO ALLOW LETTTER CACHING FOR LESS RAM FLUCTUATION*/
+/* TODO - MAKE LESS DEPENDANT ON ALPHABET AND BOLD TEXT*/
+/* TODO - ADD PROPER ANGLE SUPPORT*/
+/* TODO - ADD MIN CHARACTER COUNT TO ALLOW LETTTER CACHING FOR LESS RAM FLUCTUATION*/
+/* FIXME - X,Y VALUES ARE INCORRECT WHEN ACTUALLY RENDERING*/
 @:structInit @:publicFields class SESTLetter {
 	var frame:FlxFrame;
 	var x:Float = 0;
@@ -36,7 +38,8 @@ using StringTools;
 
 	var text(default,set):String = "";
 	function set_text(s){
-		seperatedText = (text = s).split('');
+		text = s;
+		seperatedText = (s).split('');
 		recalculate();
 		return s;
 	}
@@ -58,6 +61,7 @@ using StringTools;
 		this.widthWrap = widthWrap;
 		this.spacing = spacing;
 		if(text != "") this.text=text;
+		offset.set(0,0);
 	}
 	function recalculate(){
 		width = 0;
@@ -78,7 +82,7 @@ using StringTools;
 			final anim = AlphaCharacter.alphabetAnims.get(name);
 			frame = anim == null ? null : frames.frames[anim[0]];
 
-			if(frame != null){
+			if(frame != null && frame.type != FlxFrameType.EMPTY){
 				if(textFrames[chars] != null){
 					final textFrame = textFrames[chars];
 					textFrame.x=x;
@@ -106,29 +110,98 @@ using StringTools;
 		while(textFrames.length > chars){textFrames.pop();}
 	}
 	override function draw(){
+		if(!visible || alpha == 0) return;
+		#if FLX_DEBUG
+		FlxBasic.visibleCount++;
+		#end
+		final xAlign = xAlign;
+		final yAlign = yAlign;
+		final w = width;
+		final h = height;
+
 		final baseX = x;
-		final baseY = y = y + (yAlign == 0 ? 0 : height * yAlign );
+		final baseY = y = y + (yAlign == 0 ? 0 : h * yAlign );
+		offset.x=0;
+		offset.y=0;
 		// var newLine:Int = 0;
 		if(xAlign != 0) x+=(newLineWidths[0] * xAlign);
 		for (curChar => char in textFrames){
 			frame = char.frame;
-			x=baseX+(xAlign == 0 ? 0 : (newLineWidths[char.line] ?? width) * xAlign)+char.x;
+			x=baseX+(xAlign == 0 ? 0 : (newLineWidths[char.line] ?? w) * xAlign)+char.x;
 			y=baseY+char.y;
-			super.draw();
+			// updateHitbox();
+			draw_frame();
 		}
+		width = w;
+		height = h;
 		x=baseX;
-		y=baseY - (yAlign == 0 ? 0 : height * yAlign );
+		y=baseY - (yAlign == 0 ? 0 : h * yAlign );
 		dirty=false;
 	}
-	override public function overlaps(objectOrGroup:FlxBasic, inScreenSpace:Bool = false, ?camera:FlxCamera){
-		if(xAlign == 0 && yAlign == 0) return overlaps(objectOrGroup,inScreenSpace,camera);
-		final baseX = x;
-		final baseY = y;
-		if(xAlign != 0)x+=height * xAlign;
-		if(yAlign != 0)y+=height * yAlign;
-		final ret = overlaps(objectOrGroup,inScreenSpace,camera);
-		x=baseX;
-		y=baseY;
-		return ret;
+	/**
+	 * Called by game loop, updates then blits or renders current frame of animation to the screen.
+	 */
+	function draw_frame():Void {
+		if(useFramePixels) calcFrame(useFramePixels);
+
+		for (camera in cameras)
+		{
+			if (!camera.visible || !camera.exists || !isOnScreen(camera))
+				continue;
+
+			if (isSimpleRender(camera))
+				drawSimple(camera);
+			else
+				drawComplex(camera);
+
+
+		}
+
+		#if FLX_DEBUG
+		if (FlxG.debugger.drawDebug)
+			drawDebug();
+		#end
 	}
+
+	@:noCompletion
+	override function drawSimple(camera:FlxCamera):Void
+	{
+		getScreenPosition(_point, camera);
+		if (isPixelPerfectRender(camera))
+			_point.floor();
+
+		_point.copyToFlash(_flashPoint);
+		camera.copyPixels(_frame, framePixels, _flashRect, _flashPoint, colorTransform, blend, antialiasing);
+	}
+
+	@:noCompletion
+	override function drawComplex(camera:FlxCamera):Void
+	{
+		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
+		_matrix.translate(-origin.x, -origin.y);
+		_matrix.scale(scale.x, scale.y);
+
+		getScreenPosition(_point, camera);
+		_point.add(origin.x, origin.y);
+		_matrix.translate(_point.x, _point.y);
+
+		if (isPixelPerfectRender(camera))
+		{
+			_matrix.tx = Math.floor(_matrix.tx);
+			_matrix.ty = Math.floor(_matrix.ty);
+		}
+
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
+	}
+	// override public function overlaps(objectOrGroup:FlxBasic, inScreenSpace:Bool = false, ?camera:FlxCamera){
+	// 	if(xAlign == 0 && yAlign == 0) return overlaps(objectOrGroup,inScreenSpace,camera);
+	// 	final baseX = x;
+	// 	final baseY = y;
+	// 	if(xAlign != 0)x+=height * xAlign;
+	// 	if(yAlign != 0)y+=height * yAlign;
+	// 	final ret = overlaps(objectOrGroup,inScreenSpace,camera);
+	// 	x=baseX;
+	// 	y=baseY;
+	// 	return ret;
+	// }
 }

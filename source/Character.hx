@@ -1113,7 +1113,7 @@ class CharAnimController extends FlxAnimationController{
 		}
 		vec[3] = id ?? charType;
 
-		return vec;
+		return vec.copy();
 	}
 	public function getCameraPosition(?id:Null<Int> = null){
 		if(ignoreCamera && PlayState.instance != null) 

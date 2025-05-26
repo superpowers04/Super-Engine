@@ -38,8 +38,8 @@ class SENotification extends SEGroup{
 	var bg:FlxSprite;
 	public function new(title:String="you've been distracted",content:String="",duration:Float=5,direction:Int = 1){
 		super();
-		var txt = new SEText(10,10,title,32,direction == 1 ? LEFT : direction == 0 ? CENTER : RIGHT);
-		var content = new SEText(15,38,content,24,direction == 1 ? LEFT : direction == 0 ? CENTER : RIGHT);
+		var txt = new SESingularText(0,0,title,28);
+		var content = new SESingularText(2,25,content,20);
 		bg = new FlxSprite().loadGraphic(FlxGraphic.fromRectangle(
 						Std.int(Math.max(txt.width,content.width) + 10),
 						Std.int(content.y+content.height+20),0xAA440033));
