@@ -39,16 +39,16 @@ class Conductor {
 	public function new(){}
 	public static var lastFrameTime:Float = 0;
 	public static function update(){
-		inline updateElapsed(FlxG.elapsed);
+		updateElapsed(FlxG.elapsed);
 	}
 	public static function updateElapsed(elapsed:Float){
-		if(FlxG.sound.music != null){
-			if(lastFrameTime == FlxG.sound.music.time){
-				songPosition += elapsed * 1000;
-			}else{
-				lastFrameTime = songPosition = FlxG.sound.music.time;
-			}
+		if(FlxG.sound.music == null) return;
+		if(lastFrameTime == FlxG.sound.music.time){
+			songPosition += elapsed * 1000;
+		}else{
+			lastFrameTime = songPosition = FlxG.sound.music.time;
 		}
+		
 	}
 
 	@:keep inline public static function recalculateTimings() {

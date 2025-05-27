@@ -879,9 +879,9 @@ class PlayState extends ScriptMusicBeatState
 				PlayState.player3 = "gf";
 	    	}
 		}
-		var player1CharInfo = null;
-		var player2CharInfo = null;
-		var player3CharInfo = null;
+		var player1CharInfo:CharInfo = null;
+		var player2CharInfo:CharInfo = null;
+		var player3CharInfo:CharInfo = null;
 		{
 			final p1List:Array<String> = [SESave.data.playerChar];
 			final p2List:Array<String> = [SESave.data.opponent];
@@ -2192,9 +2192,10 @@ class PlayState extends ScriptMusicBeatState
 
 		var e = getDefaultCamPos();
 		if(SESave.data.animDebug && updateOverlay){
+			var sp = Std.int(Conductor.songPosition);
 			var vt = (vocals == null) ? 0 : Std.int(vocals.time);
 			Overlay.debugVar += '\nResync count:${resyncCount}'
-				+'\nCond/Music/Vocals time:${Std.int(Conductor.songPosition)}/${Std.int(FlxG.sound.music.time)}/${vt}'
+				+'\nCond+Music+Vocals time:${sp}+${Std.int(FlxG.sound.music.time-sp)}+${Std.int(vt-FlxG.sound.music.time)}'
 				+'\nHealth:${health}'
 				+'\nCamFocus: ${Std.int(camFollow.x * 10) * 0.1},${Std.int(camFollow.y * 10) * 0.1}/${Std.int(e[0] * 10) * 0.1},${Std.int(e[1] * 10) * 0.1}   | ${(!moveCamera) ? "Locked by script" : (!SESave.data.camMovement || camLocked) ? "Locked" : '${focusedCharacter}' } ' //' // extra ' to prevent bad syntaxes interpeting the entire file as a string
 				+'\nScript Count:${interpCount}'
@@ -2793,12 +2794,11 @@ HXLINE(2565)			return;
 		if (!generatedMusic) return;
 		SEProfiler.qStart('note updating');
 		final _scrollSpeed = (Math.floor((SESave.data.scrollSpeed == 1 ? SONG.speed : SESave.data.scrollSpeed)*1000)*0.001) / (currentSpeed); // Probably better to calculate this beforehand
-		var strumNote:FlxSprite;
 		var i = notes.members.length - 1;
-		var daNote:Note;
+		final songPosition = Conductor.songPosition;
 		final swagWidth = (Note.swagWidth * 0.5);
 		while (i > -1){
-			daNote = notes.members[i];
+			final daNote:Note = notes.members[i];
 			i--;
 			if(daNote == null || !daNote.alive) continue;
 
@@ -2812,12 +2812,12 @@ HXLINE(2565)			return;
 			daNote.visible = true;
 			daNote.active = true;
 			
-			strumNote = (
+			final strumNote:FlxSprite = (
 						(daNote.parentSprite != null) ? daNote.parentSprite :
 						(daNote.mustPress ? playerStrums.members[daNote.noteData] :
 						 strumLineNotes.members[daNote.noteData])
 					);
-			daNote.distanceToSprite = 0.45 * (Conductor.songPosition - daNote.strumTime) * _scrollSpeed;
+			daNote.distanceToSprite = 0.45 * (songPosition - daNote.strumTime) * _scrollSpeed;
 			
 			if(daNote.updateY){
 				if(downscroll){ // Downscroll
@@ -2832,7 +2832,7 @@ HXLINE(2565)			return;
 						// Only clip sustain notes when properly hit
 						if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote)){
 							// Clip to strumline
-							if(daNote.mustPress && Conductor.songPosition > daNote.strumTime) {goodNoteHit(daNote);continue;}
+							if(daNote.mustPress && songPosition > daNote.strumTime) {goodNoteHit(daNote);continue;}
 							var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
 							swagRect.height = (strumNote.y + swagWidth - daNote.y) / daNote.scale.y;
 							swagRect.y = (daNote.height / daNote.scale.y) - swagRect.height;
@@ -2853,7 +2853,7 @@ HXLINE(2565)			return;
 						if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote))
 						{
 							// Clip to strumline
-							if(daNote.mustPress && Conductor.songPosition > daNote.strumTime) {goodNoteHit(daNote);continue;}
+							if(daNote.mustPress && songPosition > daNote.strumTime) {goodNoteHit(daNote);continue;}
 							var swagRect = daNote.clipRect ?? new FlxRect(0, 0, 0, 0);
 							swagRect.height = daNote.height / daNote.scale.y;
 							swagRect.width = daNote.width / daNote.scale.x;

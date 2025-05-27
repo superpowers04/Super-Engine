@@ -318,6 +318,9 @@ class SearchMenuState extends ScriptMusicBeatState {
 			select(curSelected);
 			if(retAfter) ret();
 		}
+		if(FlxG.keys.justPressed.TAB && searchField != null && !searchField.hasFocus){
+			searchField.hasFocus = !searchField.hasFocus;
+		}
 		// if(supportMouse){
 			if(!scrollHover && FlxG.mouse.justReleased){
 				if(titleText != null && FlxG.mouse.overlaps(titleText)){

@@ -353,7 +353,10 @@ class Note extends FlxSprite
 			
 		y = 1300; // Prevents the note from being seen when it first gets added to PlayState.notes 
 
-		if (this.strumTime < 0 && !eventNote) this.strumTime = 0;
+		if (this.strumTime < 0 && !eventNote) {
+			trace('Note has a time of ${this.strumTime}! Setting to 0!');
+			this.strumTime = 0;
+		}
 		if(shouldntBeHit && PlayState.SONG != null && PlayState.SONG.inverthurtnotes) mustPress=!mustPress;
 
 		callInterp("noteCreate",[this,rawNote]); 
@@ -452,13 +455,24 @@ class Note extends FlxSprite
 		}
 		super.destroy();
 	}
-	public function updateCanHit(?comparisonTime:Float = -1):Bool{
-		if(comparisonTime == -1) comparisonTime = Conductor.songPosition;
-		if(shouldntBeHit){
-			return canBeHit = (strumTime - comparisonTime <= (45 * Conductor.timeScale) && strumTime - comparisonTime >= (-45 * Conductor.timeScale));
-		}
-		return canBeHit = ((isSustainNote && (strumTime > comparisonTime - Conductor.safeZoneOffset && strumTime < comparisonTime + ((Conductor.safeZoneOffset * 0.5) * Conductor.timeScale)) ) ||
-				strumTime > comparisonTime - (Conductor.safeZoneOffset * Conductor.timeScale) && strumTime < comparisonTime + Conductor.safeZoneOffset  );
+
+	public function updateCanHit(?comparisonTime:Null<Float>):Bool{
+		untyped __cpp__("
+            ::Float _comparisonTime;
+			if (::hx::IsNull(comparisonTime)) _comparisonTime = ::Conductor_obj::songPosition;
+			else _comparisonTime = (Float) comparisonTime;
+			::Float diff = this->strumTime - _comparisonTime;
+			::Float timeScale = ::Conductor_obj::timeScale;
+			if(this->shouldntBeHit) {
+				return this->canBeHit = ::Math_obj::abs(diff) <= (45 * timeScale);
+			}
+			::Float safeZone = ::Conductor_obj::safeZoneOffset;
+			this->canBeHit = (diff < (safeZone * timeScale));
+		");
+		return canBeHit;
+		// return canBeHit = ((isSustainNote && (strumTime > comparisonTime - Conductor.safeZoneOffset && strumTime < comparisonTime + ((Conductor.safeZoneOffset * 0.5) * Conductor.timeScale)) ) ||
+		// 		strumTime > comparisonTime - (Conductor.safeZoneOffset * Conductor.timeScale) && strumTime < comparisonTime + Conductor.safeZoneOffset  );
+
 	}
 	public var doUpdate:Bool = false;
 	override function update(elapsed:Float) {
@@ -466,7 +480,7 @@ class Note extends FlxSprite
 		animation.update(elapsed);
 		if(inCharter){
 			wasGoodHit = (strumTime <= Conductor.songPosition && strumTime + 100 >= Conductor.songPosition);
-			alpha = (wasGoodHit ? 0.7 : 1);
+			alpha = untyped __cpp__(" (this->wasGoodHit ? 0.7 : 1) ");
 			if(wasGoodHit && !tooLate && ChartingState.playClaps){
 				ChartingState.playSnap();
 			}

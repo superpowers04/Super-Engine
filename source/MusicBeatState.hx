@@ -230,7 +230,7 @@ class MusicBeatState extends FlxUIState {
 
 			if(FlxG.mouse.visible){
 				lastCursorMove+=elapsed;
-				if(lastCursorMove > 5){
+				if(lastCursorMove > 2.5){
 					FlxG.mouse.visible = false;
 				}
 			}
