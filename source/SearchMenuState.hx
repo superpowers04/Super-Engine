@@ -299,7 +299,10 @@ class SearchMenuState extends ScriptMusicBeatState {
 	}
 	function handleInput(){
 		callInterp('handleInput',[]);
-		if (controls.BACK || FlxG.keys.justPressed.ESCAPE){
+		if(FlxG.keys.justPressed.ESCAPE ){
+			if(searchField != null && searchField.hasFocus) searchField.hasFocus = false;
+			else ret();
+		}else if (controls.BACK){
 			ret();
 		}
 		if(!grpSongs.visible || songs.length <= 0 || !allowInput || cancelCurrentFunction) return;
@@ -319,8 +322,9 @@ class SearchMenuState extends ScriptMusicBeatState {
 			if(retAfter) ret();
 		}
 		if(FlxG.keys.justPressed.TAB && searchField != null && !searchField.hasFocus){
-			searchField.hasFocus = !searchField.hasFocus;
+			searchField.hasFocus = true;
 		}
+
 		// if(supportMouse){
 			if(!scrollHover && FlxG.mouse.justReleased){
 				if(titleText != null && FlxG.mouse.overlaps(titleText)){

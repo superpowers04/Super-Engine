@@ -55,7 +55,7 @@ class MainMenuState extends SickMenuState {
 	public static var triedChar:Bool = false;
 	public static var lastError = "";
 	
-	@:keep inline public static function handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true,?pos:haxe.PosInfos):Void{
+	public static function handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true,?pos:haxe.PosInfos):Void{
 		trace('Refer to below:\n${pos.fileName}:${pos.lineNumber}: MainMenuState.HandleError called');
 		// 
 		ScriptableStateManager.lastState = "";
