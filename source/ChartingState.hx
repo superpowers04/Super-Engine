@@ -401,72 +401,103 @@ class ChartingState extends ScriptMusicBeatState
 		var currentBPMSel:Int = 0;
 		var _time:Float = 0;
 		Conductor.songPosition = 0;
-		for (ii in 0..._song.notes.length) {
-			if(FlxG.keys.pressed.SHIFT){
-
-				if(_song.notes[ii].changeBPM){
-					currentBPM = _song.notes[ii].bpm;
-				}
-				Conductor.songPosition = _time += ((60 / currentBPM) * 1000 / 4) * 16;
+		var sections = _song.notes;
+		for (ii in 0...sections.length){
+			var section = _song.notes[ii];
+			var n:Array<Dynamic>;
+			while((n=section.sectionNotes.pop()) != null) notes.push(n);
+		}
+		var n:Array<Dynamic>;
+		while((n=notes.pop()) != null){
+			Conductor.songPosition = Math.abs(n[0]);
+			{
 				updateCurStep();
-				curStep = recalculateSteps();
-				updateSection();
-
-				if(currentMustHit != _song.notes[ii].mustHitSection){
-					mustHitChanges.push(curStep);
-					currentMustHit = !currentMustHit;
+				if(oldStep > curStep && Conductor.bpmChangeMap != null){ // Gotta resync the 
+					// var position = Conductor.songPosition;
+					for(ev in Conductor.bpmChangeMap){
+						if(ev.stepTime < curStep){
+							curStep = ev.stepTime;
+							updateCurStep();
+							updateBPMChange();
+						}else break;
+					}
+					updateCurStep();
+					// Conductor.songPosition = position;
 				}
-				_song.notes[ii].lengthInMS = ((60 / currentBPM) * 1000 / 4) * 16;
+				updateBPMChange();
+				updateBeat();
+				oldStep = curStep;
 			}
-			for (i in 0..._song.notes[ii].sectionNotes.length) {
-				notes.push(_song.notes[ii].sectionNotes[i]);
-			}
-			_song.notes[ii].sectionNotes = [];
+			while(sections[curStep] == null) addSection();
+			sections[curStep].sectionNotes.push(n);
 		}
-		if(FlxG.keys.pressed.SHIFT){ // FNF's chart format sucks
-			_song.notes = [];
-			var loopAttempts = 0;
-			Conductor.songPosition = 0;
-			currentMustHit = !false;
-			var bpmChanges = Conductor.bpmChangeMap;
-			Conductor.bpmChangeMap = [];
-			currentBPM = 0;
-			while (Conductor.songPosition < FlxG.sound.music.length && loopAttempts < 10000000){ // Loop Attempts to prevent softlocking or crashing. 10000000 should be fucking plenty
-				loopAttempts--;
-				var section = addSection();
-				Conductor.songPosition += ((60 / currentBPM) * 1000 / 4) * 16;
-				curStep = recalculateSteps();
-				updateSection();
+
+		// for (ii in 0..._song.notes.length) {
+		// 	if(FlxG.keys.pressed.SHIFT){
+
+		// 		if(_song.notes[ii].changeBPM){
+		// 			currentBPM = _song.notes[ii].bpm;
+		// 		}
+		// 		Conductor.songPosition = _time += ((60 / currentBPM) * 1000 / 4) * 16;
+		// 		updateCurStep();
+		// 		curStep = recalculateSteps();
+		// 		updateSection();
+
+		// 		if(currentMustHit != _song.notes[ii].mustHitSection){
+		// 			mustHitChanges.push(curStep);
+		// 			currentMustHit = !currentMustHit;
+		// 		}
+		// 		_song.notes[ii].lengthInMS = ((60 / currentBPM) * 1000 / 4) * 16;
+		// 	}
+		// 	for (i in 0..._song.notes[ii].sectionNotes.length) {
+		// 		notes.push(_song.notes[ii].sectionNotes[i]);
+		// 	}
+		// 	_song.notes[ii].sectionNotes = [];
+		// }
+		// if(FlxG.keys.pressed.SHIFT){ // FNF's chart format sucks
+		// 	_song.notes = [];
+		// 	var loopAttempts = 0;
+		// 	Conductor.songPosition = 0;
+		// 	currentMustHit = !false;
+		// 	var bpmChanges = Conductor.bpmChangeMap;
+		// 	Conductor.bpmChangeMap = [];
+		// 	currentBPM = 0;
+		// 	while (Conductor.songPosition < FlxG.sound.music.length && loopAttempts < 10000000){ // Loop Attempts to prevent softlocking or crashing. 10000000 should be fucking plenty
+		// 		loopAttempts--;
+		// 		var section = addSection();
+		// 		Conductor.songPosition += ((60 / currentBPM) * 1000 / 4) * 16;
+		// 		curStep = recalculateSteps();
+		// 		updateSection();
 				
-				if(mustHitChanges[currentMHSel] != null && mustHitChanges[currentMHSel] <= curStep){ // Handles mustHitSections
-					currentMustHit = !currentMustHit;
-					currentMHSel++;
-				}
-				if(bpmChanges[currentBPMSel] != null && bpmChanges[currentBPMSel].stepTime <= curStep){ // Handles BPM's
-					section.changeBPM = true;
-					section.bpm = currentBPM = bpmChanges[currentBPMSel].bpm;
-					currentBPMSel++;
-				}
-				section.mustHitSection = currentMustHit;
-			}
-		}
-		notes.sort(function(o:Array<Dynamic>,o2:Array<Dynamic>){
-			if(o[0] < o2[0]) return -1;
-			else if(o[0] > o2[0]) return 1;
-			else return 0;
-		});
+		// 		if(mustHitChanges[currentMHSel] != null && mustHitChanges[currentMHSel] <= curStep){ // Handles mustHitSections
+		// 			currentMustHit = !currentMustHit;
+		// 			currentMHSel++;
+		// 		}
+		// 		if(bpmChanges[currentBPMSel] != null && bpmChanges[currentBPMSel].stepTime <= curStep){ // Handles BPM's
+		// 			section.changeBPM = true;
+		// 			section.bpm = currentBPM = bpmChanges[currentBPMSel].bpm;
+		// 			currentBPMSel++;
+		// 		}
+		// 		section.mustHitSection = currentMustHit;
+		// 	}
+		// }
+		// notes.sort(function(o:Array<Dynamic>,o2:Array<Dynamic>){
+		// 	if(o[0] < o2[0]) return -1;
+		// 	else if(o[0] > o2[0]) return 1;
+		// 	else return 0;
+		// });
 
-		Conductor.songPosition = 0;
-		currentBPM = 0;
-		var _time:Float = 0;
-		var note = notes.shift();
-		for (ii in 0..._song.notes.length) {
-			_time += _song.notes[ii].lengthInMS;
-			while(note[0] < _time){
-				_song.notes[ii].sectionNotes.push(note);
-				note = notes.pop();
-			}
-		}
+		// Conductor.songPosition = 0;
+		// currentBPM = 0;
+		// var _time:Float = 0;
+		// var note = notes.shift();
+		// for (ii in 0..._song.notes.length) {
+		// 	_time += _song.notes[ii].lengthInMS;
+		// 	while(note[0] < _time){
+		// 		_song.notes[ii].sectionNotes.push(note);
+		// 		note = notes.pop();
+		// 	}
+		// }
 
 		// for (index => note in notes) {
 		// 	_time = Conductor.songPosition;
@@ -566,7 +597,7 @@ class ChartingState extends ScriptMusicBeatState
 			[saveButton],[reloadSong],[restart],[reloadChartEditor]
 		]});
 		// var loadAutosaveBtn:FlxButton = new FlxButton(reloadSong.x, reloadSong.y + 30, 'load autosave', loadAutosave);
-		// var fixchart:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 40, 'Reorder notes to sections', sectionRestructure);
+		// var fixchart:FlxButton = new FlxButton(0, 0, 'Fix Sections', sectionRestructure);
 
 		var check_voices = new FlxUICheckBox(0,0, null, null, "Voices track", 100);
 		check_voices.checked = _song.needsVoices;
@@ -726,6 +757,7 @@ class ChartingState extends ScriptMusicBeatState
 		uiMap["UI_songTitle"] = UI_songTitle;
 		uiMap["restart"] = restart;
 		uiMap["check_voices"] = check_voices;
+		uiMap["check_voices"] = check_voices;
 		uiMap["saveButton"] = saveButton;
 		uiMap["reloadSong"] = reloadSong;
 		uiMap["reloadChartEditor"] = reloadChartEditor;
@@ -840,8 +872,8 @@ class ChartingState extends ScriptMusicBeatState
 			null,
 			[null,shiftNoteLabel],
 			[shiftNoteDialLabel,null,null,null,null,shiftNoteDialLabel2,null,null,null,null,shiftNoteDialLabel3],
-			[stepperShiftNoteDial,stepperShiftNoteDialstep,stepperShiftNoteDialms],
-			[shiftNoteButton,null,invertChartButton,null,invertSectionsButton],
+			[stepperShiftNoteDial,stepperShiftNoteDialstep,stepperShiftNoteDialms/*,fixchart*/],
+			[shiftNoteButton,null,invertChartButton,null,invertSectionsButton,null,],
 		]});
 		// tab_group_assets.name = "Assets";
 		// tab_group_assets.add(player1DropDown);

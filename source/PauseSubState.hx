@@ -22,6 +22,7 @@ import flixel.util.FlxTimer;
 import flixel.ui.FlxBar;
 import flixel.util.FlxStringUtil;
 import se.utilities.SEUIUtilities;
+import flash.media.Sound;
 #if discord_rpc
 	import Discord.DiscordClient;
 #end
@@ -311,7 +312,7 @@ class PauseSubState extends MusicBeatSubstate {
 		}
 	}
 	function disappearMenu(?time:Float = 0.3){
-		for (_ => v in grpMenuShit.members)
+		for (i => v in grpMenuShit.members)
 		{
 			ready = false;
 			FlxTween.tween(v,{x : -(100 + v.width)},time,{ease:FlxEase.quartIn});
@@ -402,11 +403,11 @@ class PauseSubState extends MusicBeatSubstate {
 				ChartingState.charting = false;
 				MusicBeatState.returningFromClass = true;
 				var chart = PlayState.songDifficulties[currentChart];
-				if(chart.lastIndexOf(':') > 2){
-					onlinemod.OfflinePlayState.chartFile = chart;
-				}else{
+				if(chart.lastIndexOf(':') <= 2){
 					multi.MultiMenuState.gotoSong(chart.substring(0,chart.lastIndexOf('/')),chart.substring(chart.lastIndexOf('/') + 1));
+					return;
 				}
+					onlinemod.OfflinePlayState.chartFile = chart;
 
 				FlxG.resetState();
 			case "Import Chart":
@@ -446,22 +447,19 @@ class PauseSubState extends MusicBeatSubstate {
 		}
 	}
 	var _tween:FlxTween;
-	public function countdown(){try{
+	public function countdown(){
 		if(FlxG.keys.pressed.SHIFT){
 			backToPlaystate();
 			return;
 		}
 		ready = false;
-		var swagCounter:Int = 1;
 		try{
 			_tween = FlxTween.tween(FlxG.sound.music,{volume:0},0.5);
 		}catch(e){}
 		if(perSongOffset != null)perSongOffset.destroy();
 		for (i in [levelDifficulty,levelInfo,restarts]) {
 			if(i == null) continue;
-			FlxTween.tween(i,{x:FlxG.width + 10},0.3,{ease:FlxEase.quartIn,
-				onComplete:function(_){i.destroy();}
-			});
+			FlxTween.tween(i,{x:FlxG.width + 10},0.3,{ease:FlxEase.quartIn});
 		}
 		FlxG.sound.music.pause();
 		Conductor.songPosition = FlxG.sound.music.time = time;
@@ -470,68 +468,126 @@ class PauseSubState extends MusicBeatSubstate {
 		if(SESave.data.transparentPause) FlxTween.tween(bg,{alpha:0},2.5,{ease:FlxEase.quartOut});
 
 
-		var spr = new FlxSprite();
-		var tween:FlxTween = null;
-		startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer) {
-
-			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
-			introAssets.set('default', ['ready', "set", "go"]);
-
-			var introAlts:Array<String> = introAssets.get('default');
-			var altSuffix:String = "";
-			switch (swagCounter) {
-				case 1:
-					var ready:FlxSprite = spr.loadGraphic(Paths.image(introAlts[0]));
-					ready.scrollFactor.set();
-					ready.updateHitbox();
-					ready.screenCenter();
-					ready.alpha = 1;
 
 
-					add(ready);
-					tween = FlxTween.tween(ready, {y: ready.y + 100, alpha: 0}, 0.4, {
-						ease: FlxEase.cubeInOut,
-						// onComplete: function(twn:FlxTween) {ready.destroy();}
-					});
-					SELoader.playSound('assets:sounds/intro2' + altSuffix,0.6);
-				case 2:
-					var set:FlxSprite = spr.loadGraphic(Paths.image(introAlts[1]));
-					tween.cancel();
-					set.updateHitbox();
-					set.alpha = 1;
-
-
-
-					set.screenCenter();
-					add(set);
-					tween = FlxTween.tween(set, {y: set.y + 100, alpha: 0}, 0.4, {
-						ease: FlxEase.cubeInOut,
-						// onComplete: function(twn:FlxTween) {set.destroy();}
-					});
-					SELoader.playSound('assets:sounds/intro1' + altSuffix,0.6);
-				case 3:
-					var go:FlxSprite = spr.loadGraphic(Paths.image(introAlts[2]));
-					tween.cancel();
-					go.scrollFactor.set();
-					go.updateHitbox();
-					go.alpha = 1;
-
-					go.screenCenter();
-					add(go);
-					tween = FlxTween.tween(go, {y: go.y + 100, alpha: 0}, 0.4, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween) {go.destroy();}
-					});
-					SELoader.playSound('assets:sounds/introGo' + altSuffix,0.6);
-				case 4:
-					backToPlaystate();
-
+		var introGraphics:Array<Dynamic> = PlayState.introGraphics.copy() ;
+		var introAudio:Array<Dynamic> = PlayState.introAudio.copy() ;
+		if(introGraphics == null || introGraphics.length == 0){
+			introGraphics = [
+				"",
+				SELoader.loadGraphic('assets:shared/images/ready.png'),
+				SELoader.loadGraphic("assets:shared/images/set.png"),
+				SELoader.loadGraphic("assets:shared/images/go.png"),
+			];
+		}
+		if(introAudio == null || introAudio.length == 0){
+			introAudio = [
+				SELoader.loadSound('assets:shared/sounds/intro3.ogg'),
+				SELoader.loadSound('assets:shared/sounds/intro2.ogg'),
+				SELoader.loadSound('assets:shared/sounds/intro1.ogg'),
+				SELoader.loadSound('assets:shared/sounds/introGo.ogg'),
+			];
+		}
+		var c = introAudio.length;
+		var swagCounter = 0;
+		startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer){
+			if(swagCounter == c){
+				
+				backToPlaystate();
+				return;
 			}
+			if(introGraphics[swagCounter] is FlxGraphic){
+				
+				var go:FlxSprite = new FlxSprite().loadGraphic(introGraphics[swagCounter]);
+				go.scrollFactor.set();
+				go.updateHitbox();
+				go.screenCenter();
+				go.alpha = 1;
+				add(go);
+				FlxTween.tween(go, {y: go.y -= 50}, 0.1, {
+					ease: FlxEase.cubeOut,
+				});
+				FlxTween.tween(go, {y: go.y += 100, alpha: 0}, 0.25, {
+					ease: FlxEase.cubeIn,
+					startDelay:0.2,
+					onComplete:(_)->{go.destroy();}
+				});
+			}
+			var sound:Dynamic = introAudio[swagCounter];
+			if(sound != null && sound != ""){
+				if(Std.isOfType(sound,FlxSound)){
+					FlxG.sound.list.add(sound);
+					sound.play();
 
-			swagCounter += 1;
+				}else if (sound is Sound){
+					try{
+						FlxG.sound.play(sound,SESave.data.otherVol);
+					}catch(e){
+						
+					}
+				}
+			}
+			swagCounter++;
+			
+
 			// generateSong('fresh');
-		}, 5);
-	}catch(e){MainMenuState.handleError(e,'Something went wrong on countdown ${e.message}');}}
+		}, c+1);
+		// startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+
+
+		// 	switch (swagCounter) {
+		// 		case 1:
+		// 			var ready:FlxSprite = spr.loadGraphic(Paths.image(introAlts[0]));
+		// 			ready.scrollFactor.set();
+		// 			ready.updateHitbox();
+		// 			ready.screenCenter();
+		// 			ready.alpha = 1;
+
+
+		// 			add(ready);
+		// 			tween = FlxTween.tween(ready, {y: ready.y + 100, alpha: 0}, 0.4, {
+		// 				ease: FlxEase.cubeInOut,
+		// 				// onComplete: function(twn:FlxTween) {ready.destroy();}
+		// 			});
+		// 			SELoader.playSound('assets:sounds/intro2' + altSuffix,0.6);
+		// 		case 2:
+		// 			var set:FlxSprite = spr.loadGraphic(Paths.image(introAlts[1]));
+		// 			tween.cancel();
+		// 			set.updateHitbox();
+		// 			set.alpha = 1;
+
+
+
+		// 			set.screenCenter();
+		// 			add(set);
+		// 			tween = FlxTween.tween(set, {y: set.y + 100, alpha: 0}, 0.4, {
+		// 				ease: FlxEase.cubeInOut,
+		// 				// onComplete: function(twn:FlxTween) {set.destroy();}
+		// 			});
+		// 			SELoader.playSound('assets:sounds/intro1' + altSuffix,0.6);
+		// 		case 3:
+		// 			var go:FlxSprite = spr.loadGraphic(Paths.image(introAlts[2]));
+		// 			tween.cancel();
+		// 			go.scrollFactor.set();
+		// 			go.updateHitbox();
+		// 			go.alpha = 1;
+
+		// 			go.screenCenter();
+		// 			add(go);
+		// 			tween = FlxTween.tween(go, {y: go.y + 100, alpha: 0}, 0.4, {
+		// 				ease: FlxEase.cubeInOut,
+		// 				onComplete: function(twn:FlxTween) {go.destroy();}
+		// 			});
+		// 			SELoader.playSound('assets:sounds/introGo' + altSuffix,0.6);
+		// 		case 4:
+		// 			backToPlaystate();
+
+		// 	}
+
+		// 	swagCounter += 1;
+		// 	// generateSong('fresh');
+		// }, 5);
+	}
 	
 	override function destroy() {
 		if (pauseMusic != null){pauseMusic.destroy();}

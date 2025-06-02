@@ -57,6 +57,16 @@ class SEProfiler{
 		return ret;
 
 	}
+	public static function getStringMaxes():String{
+		if(!enabled) return "";
+		var ret = "\nProfilerTime";
+		for(index => profiler in list){
+			if(profiler == null) continue;
+			ret+='\n $index - ${profiler.max}';
+		}
+		return ret;
+
+	}
 }
 @:publicFields class Profiler {
 	var name:String = "";

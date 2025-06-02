@@ -47,6 +47,7 @@ typedef SwagSong = {
 		var ?noteStyle:String; // Psych
 		var ?splashStyle:String; // Psych
 		var ?arrowStyle:String; // Psych
+		var ?format:String; // Psych
 		var ?events:Array<Dynamic>; // Psych
 		var ?eventObjects:Array<Event>; // Kade
 		var ?mania:Null<Int>; // Multikey
@@ -160,12 +161,26 @@ class Song
 
 
 	static function modifyChart(swagShit:SwagSong,charting:Bool = false):SwagSong{
+
 		if(swagShit.keyCount == null){
 			swagShit.keyCount = (swagShit.mania != null && swagShit.mania != 0 ? maniaToKeyMap[swagShit.mania] : 4);
 		}
 		var hurtArrows = (QuickOptionsSubState.getSetting("Custom Arrows") || onlinemod.OnlinePlayMenuState.socket != null || charting);
 		var useHurtArrows = SESave.data.useHurtArrows;
 		var maxKeys = (swagShit.keyCount * 2) - 1;
+		if(swagShit.format is String && swagShit.format.indexOf('psych') != -1){
+			var keyCount = swagShit.keyCount;
+			swagShit.format = null;
+			for (section in swagShit.notes) {
+				if(!section.mustHitSection){
+					var notes = section.sectionNotes;
+					for (nid in 0 ... notes.length){
+						if(notes[nid][1] >= 0) notes[nid][1]+=keyCount%maxKeys;
+					}
+				}
+			}
+
+		}
 		for (sid => section in swagShit.notes) {
 			if(section.sectionNotes == null || section.sectionNotes[0] == null) continue;
 			if(section.bpm != null) section.bpm = Math.abs(section.bpm);
@@ -180,7 +195,6 @@ class Song
 
 			for (nid in 0 ... section.sectionNotes.length){ // Edit section
 				var note:Array<Dynamic> = section.sectionNotes[nid];
-				var modified = false;
 				// Removes opponent arrows 
 				// if (!opponentArrows && (section.mustHitSection && note[1] >= swagShit.keyCount || !section.mustHitSection && note[1] < swagShit.keyCount)){
 				// 	sN.push(nid);
@@ -190,12 +204,11 @@ class Song
 				if (hurtArrows){ // Weird if statement to prevent the game from removing hurt arrows unless they should be removed
 					if(useHurtArrows && Std.isOfType(note[3],Int) && note[3] == 0 && (note[4] == 1 || note[1] > maxKeys )) {
 						note[3] = 1;
-						modified = true;
 					} // Support for Andromeda and tricky notes
 				}else{
-					note[3] = null;modified = true;
+					note[3] = null;
 				}
-				if(modified)section.sectionNotes[nid] = note;
+				
 
 			}
 			for (_ => v in sN) {

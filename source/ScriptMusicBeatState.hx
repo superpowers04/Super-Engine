@@ -45,7 +45,9 @@ using StringTools;
 	function reset(){
 		name = "";
 		currentFunction = '';
-		args = [];
+		untyped __cpp__(' 
+			while(::hx::IsNotNull(this->args->pop())){}
+		');
 		type = "";
 		isActive = false;
 	}
@@ -112,30 +114,44 @@ class ScriptMusicBeatState extends MusicBeatState{
 		];
 		public var currentInterp:InterpInfo = new InterpInfo();
 
-		public function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String,?_interp:Dynamic = null):Dynamic{
-			cancelCurrentFunction = false;
+		public function callSingleInterp(func_name:String, ?args:Array<Dynamic>,id:String,?_interp:Dynamic = null):Dynamic{
 			if(_interp == null) _interp = interps[id];
+			cancelCurrentFunction = false;
+
 			try{
 				if (_interp == null) {throw('Interpter ${id} doesn\'t exist!');return null;}
+				var method = null;
+				if(_interp is Interp) {
+					method = _interp.variables.get(func_name);
+					if(method == null) return null;
+				}
+				var currentInterp = currentInterp;
 				currentInterp.isActive = true;
 				currentInterp.name = id;
 				currentInterp.currentFunction = func_name;
-				currentInterp.args = args;
 				currentInterp.interp = _interp;
+				untyped __cpp__('
+				if(::hx::IsNotNull(args)){
+					cpp::VirtualArray interpArgs = currentInterp->args;
+					int i = args->__length();
+					while (i > 0){ interpArgs->set(--i,args->__get(i)); }
+				}
+				');
+
 				if(_interp is Interp){
 					currentInterp.type = 'hscript';
 
-					var method = _interp.variables.get(func_name);
 					if (method == null) {return null;}
 					// trace('$func_name:$id $args');
-					var _ret = Reflect.callMethod(_interp,method,args);
+					var _ret = Reflect.callMethod(_interp,method,currentInterp.args);
 					currentInterp.reset();
 					return _ret;
 				}
 				#if linc_luajit
-				if(_interp is SELua){
+				/* TODO actually check if the interpeter HAS the function before setup*/
+				else if(_interp is SELua){
 					currentInterp.type = 'lua';
-					_interp.call(func_name,args);
+					_interp.call(func_name,currentInterp.args);
 
 					currentInterp.reset();
 					return null;
@@ -161,15 +177,22 @@ class ScriptMusicBeatState extends MusicBeatState{
 			instance.unloadInterp(id);
 		}
 
-		public function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
+		public function callInterp(func_name:String, ?args:Array<Dynamic>,?id:String) { // Modified from Modding Plus, I am too dumb to figure this out myself
 				cancelCurrentFunction = false;
 				if(!parseMoreInterps) return;
 				try{
-					if (id == "") {
-						for (name in interps.keys()) {
-							callSingleInterp(func_name,args,name);
-							if(cancelCurrentFunction) return;
-						}
+					if (id == null) {
+						untyped __cpp__('
+							::Dynamic interps = this->interps;
+							::Dynamic interps_keys = ::haxe::IMap_obj::keys(interps);
+							::Dynamic hasNext = interps_keys->__Field(HX_CSTRING("hasNext"),::hx::paccDynamic);
+							::Dynamic next = interps_keys->__Field(HX_CSTRING("next"),::hx::paccDynamic);
+							while((bool)hasNext()){
+								::String name = next();
+								this->callSingleInterp(func_name,args,name,::haxe::IMap_obj::get(interps,name));
+								if(this->cancelCurrentFunction) return;
+							}
+						');
 
 						if(Console.instance != null && Console.instance.commandBox != null){
 							if(Console.instance.commandBox.interp != null) callSingleInterp(func_name,args,'console-hx',Console.instance.commandBox.interp);

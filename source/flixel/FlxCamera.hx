@@ -1183,7 +1183,6 @@ class FlxCamera extends FlxBasic
 		}
 		else
 		{
-			var edge:Float;
 			var targetX:Float = target.x + targetOffset.x;
 			var targetY:Float = target.y + targetOffset.y;
 
@@ -1212,7 +1211,7 @@ class FlxCamera extends FlxBasic
 			}
 			else
 			{
-				edge = targetX - deadzone.x;
+				var edge:Float = targetX - deadzone.x;
 				if (_scrollTarget.x > edge)
 				{
 					_scrollTarget.x = edge;
@@ -1264,6 +1263,7 @@ class FlxCamera extends FlxBasic
 	 */
 	public function updateScroll():Void
 	{
+		if(minScrollX == null && maxScrollX == null && minScrollY == null && maxScrollY == null) return;
 		var minX:Null<Float> = minScrollX == null ? null : minScrollX - (zoom - 1) * width / (2 * zoom);
 		var maxX:Null<Float> = maxScrollX == null ? null : maxScrollX + (zoom - 1) * width / (2 * zoom);
 		var minY:Null<Float> = minScrollY == null ? null : minScrollY - (zoom - 1) * height / (2 * zoom);
@@ -1290,7 +1290,6 @@ class FlxCamera extends FlxBasic
 		}
 		else
 		{
-			var edge:Float;
 			var targetX:Float = target.x + targetOffset.x;
 			var targetY:Float = target.y + targetOffset.y;
 
@@ -1316,7 +1315,7 @@ class FlxCamera extends FlxBasic
 			}
 			else
 			{
-				edge = targetX - deadzone.x;
+				var edge:Float = targetX - deadzone.x;
 				if (_scrollTarget.x > edge)
 				{
 					_scrollTarget.x = edge;
@@ -1468,20 +1467,19 @@ class FlxCamera extends FlxBasic
 	 */
 	function updateScrollRect():Void
 	{
-		var rect:Rectangle = (_scrollRect != null) ? _scrollRect.scrollRect : null;
+		var rect:Rectangle = _scrollRect?.scrollRect;
 
-		if (rect != null)
-		{
-			rect.x = rect.y = 0;
+		if (rect == null) return;
+		rect.x = rect.y = 0;
 
-			rect.width = width * initialZoom * FlxG.scaleMode.scale.x;
-			rect.height = height * initialZoom * FlxG.scaleMode.scale.y;
+		rect.width = width * initialZoom * FlxG.scaleMode.scale.x;
+		rect.height = height * initialZoom * FlxG.scaleMode.scale.y;
 
-			_scrollRect.scrollRect = rect;
+		_scrollRect.scrollRect = rect;
 
-			_scrollRect.x = -0.5 * rect.width;
-			_scrollRect.y = -0.5 * rect.height;
-		}
+		_scrollRect.x = -0.5 * rect.width;
+		_scrollRect.y = -0.5 * rect.height;
+		
 	}
 
 	/**
@@ -1637,11 +1635,9 @@ class FlxCamera extends FlxBasic
 			return;
 
 		_fxFadeColor = Color;
-		if (Duration <= 0)
-			Duration = 0.000001;
 
 		_fxFadeIn = FadeIn;
-		_fxFadeDuration = Duration;
+		_fxFadeDuration = (Duration <= 0) ? Duration : 0.000001;
 		_fxFadeComplete = OnComplete;
 
 		_fxFadeAlpha = _fxFadeIn ? 0.999999 : 0.000001;
@@ -1703,21 +1699,13 @@ class FlxCamera extends FlxBasic
 
 		target = Camera.target;
 
-		if (target != null)
-		{
-			if (Camera.deadzone == null)
-			{
-				deadzone = null;
-			}
-			else
-			{
-				if (deadzone == null)
-				{
-					deadzone = FlxRect.get();
-				}
-				deadzone.copyFrom(Camera.deadzone);
-			}
+		if (target == null) return this;
+		if (Camera.deadzone == null) {
+			deadzone = null; 
+			return this;
 		}
+		
+		(deadzone ?? (deadzone = FlxRect.get())).copyFrom(Camera.deadzone);
 		return this;
 	}
 
@@ -1729,31 +1717,26 @@ class FlxCamera extends FlxBasic
 	 */
 	public function fill(Color:FlxColor, BlendAlpha:Bool = true, FxAlpha:Float = 1.0, ?graphics:Graphics):Void
 	{
-		if (FlxG.renderBlit)
-		{
-			if (BlendAlpha)
-			{
+		if (FlxG.renderBlit) {
+			if (BlendAlpha) {
 				_fill.fillRect(_flashRect, Color);
 				buffer.copyPixels(_fill, _flashRect, _flashPoint, null, null, BlendAlpha);
-			}
-			else
-			{
-				buffer.fillRect(_flashRect, Color);
-			}
-		}
-		else
-		{
-			if (FxAlpha == 0)
 				return;
-
-			var targetGraphics:Graphics = (graphics == null) ? canvas.graphics : graphics;
-
-			targetGraphics.beginFill(Color, FxAlpha);
-			// i'm drawing rect with these parameters to avoid light lines at the top and left of the camera,
-			// which could appear while cameras fading
-			targetGraphics.drawRect(viewMarginLeft - 1, viewMarginTop - 1, viewWidth + 2, viewHeight + 2);
-			targetGraphics.endFill();
+			}
+			buffer.fillRect(_flashRect, Color);
+			
+			return;
 		}
+		if (FxAlpha == 0) return;
+
+		var targetGraphics:Graphics = (graphics == null) ? canvas.graphics : graphics;
+
+		targetGraphics.beginFill(Color, FxAlpha);
+		// i'm drawing rect with these parameters to avoid light lines at the top and left of the camera,
+		// which could appear while cameras fading
+		targetGraphics.drawRect(viewMarginLeft - 1, viewMarginTop - 1, viewWidth + 2, viewHeight + 2);
+		targetGraphics.endFill();
+		
 	}
 
 	/**
@@ -1798,24 +1781,22 @@ class FlxCamera extends FlxBasic
 	@:allow(flixel.system.frontEnds.CameraFrontEnd)
 	function checkResize():Void
 	{
-		if (FlxG.renderBlit)
-		{
-			if (width != buffer.width || height != buffer.height)
-			{
-				var oldBuffer:FlxGraphic = screen.graphic;
-				buffer = new BitmapData(width, height, true, 0);
-				screen.pixels = buffer;
-				screen.origin.set();
-				_flashBitmap.bitmapData = buffer;
-				_flashRect.width = width;
-				_flashRect.height = height;
-				_fill = FlxDestroyUtil.dispose(_fill);
-				_fill = new BitmapData(width, height, true, FlxColor.TRANSPARENT);
-				FlxG.bitmap.removeIfNoUse(oldBuffer);
-			}
-
-			updateBlitMatrix();
+		if (!FlxG.renderBlit) return;
+		if (width != buffer.width || height != buffer.height) {
+			var oldBuffer:FlxGraphic = screen.graphic;
+			buffer = new BitmapData(width, height, true, 0);
+			screen.pixels = buffer;
+			screen.origin.set();
+			_flashBitmap.bitmapData = buffer;
+			_flashRect.width = width;
+			_flashRect.height = height;
+			_fill = FlxDestroyUtil.dispose(_fill);
+			_fill = new BitmapData(width, height, true, FlxColor.TRANSPARENT);
+			FlxG.bitmap.removeIfNoUse(oldBuffer);
 		}
+
+		updateBlitMatrix();
+		
 	}
 
 	inline function updateBlitMatrix():Void
@@ -1901,8 +1882,8 @@ class FlxCamera extends FlxBasic
 		scaleX = X;
 		scaleY = Y;
 
-		totalScaleX = scaleX * FlxG.scaleMode.scale.x;
-		totalScaleY = scaleY * FlxG.scaleMode.scale.y;
+		totalScaleX = X * FlxG.scaleMode.scale.x;
+		totalScaleY = Y * FlxG.scaleMode.scale.y;
 
 		if (FlxG.renderBlit)
 		{
@@ -2035,15 +2016,8 @@ class FlxCamera extends FlxBasic
 	function set_alpha(Alpha:Float):Float
 	{
 		alpha = FlxMath.bound(Alpha, 0, 1);
-		if (FlxG.renderBlit)
-		{
-			_flashBitmap.alpha = Alpha;
-		}
-		else
-		{
-			canvas.alpha = Alpha;
-		}
-		return Alpha;
+		if (FlxG.renderBlit) return _flashBitmap.alpha = alpha;
+		return canvas.alpha = alpha;
 	}
 
 	function set_angle(Angle:Float):Float

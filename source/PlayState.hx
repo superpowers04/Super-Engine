@@ -438,12 +438,12 @@ class PlayState extends ScriptMusicBeatState
 			}else{showTempmessage('Unable to load $v for $nameSpace: Script doesn\'t exist');}
 			return ((interps['${nameSpace}-${v}'] == null));
 		}
-		public override function callSingleInterp(func_name:String, args:Array<Dynamic>,id:String,?_interp:Dynamic = null):Dynamic {
+		public override function callSingleInterp(func_name:String, ?args:Array<Dynamic>,id:String,?_interp:Dynamic = null):Dynamic {
 			final e = super.callSingleInterp(func_name,args,id,_interp);
 			if(e is FakeException) throw e;
 			return e;
 		}
-		public override function callInterp(func_name:String, args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
+		public override function callInterp(func_name:String, ?args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
 			
 			try{
 				switch(func_name){
@@ -469,9 +469,19 @@ class PlayState extends ScriptMusicBeatState
 			try{
 				args.insert(0,this);
 				if (id == "") {
-					for (name => interp in interps) {
-						callSingleInterp(func_name,args,name,interp);
-					}
+					untyped __cpp__('
+						::Dynamic interps = this->interps;
+						::Dynamic interps_keys = ::haxe::IMap_obj::keys(interps);
+						::Dynamic hasNext = interps_keys->__Field(HX_CSTRING("hasNext"),::hx::paccDynamic);
+						::Dynamic next = interps_keys->__Field(HX_CSTRING("next"),::hx::paccDynamic);
+						while((bool)hasNext()){
+							::String name = next();
+							this->callSingleInterp(func_name,args,name,::haxe::IMap_obj::get(interps,name));
+						}
+					');
+					// for (name => interp in interps) {
+					// 	callSingleInterp(func_name,args,name,interp);
+					// }
 					if(Console.instance?.commandBox != null){
 						if(Console.instance.commandBox?.interp != null) callSingleInterp(func_name,args,'console-hx',Console.instance.commandBox.interp);
 						#if linc_luajit
@@ -765,6 +775,7 @@ class PlayState extends ScriptMusicBeatState
 		#if !debug
 		try{
 		#end
+
 		SEProfiler.qStart('Playstate loading');
 		scriptSubDirectory = "";
 		SELoader.gc();
@@ -1552,12 +1563,12 @@ class PlayState extends ScriptMusicBeatState
 			FlxTween.tween(jumpToText,{alpha:1},0.4);
 			jumpToTimer = FlxTween.tween(jumpToText,{y:jumpToText.y + 40},10,{onUpdate:function(_){
 				if(subState != null || !acceptInput) return;
-				var hasPressed = false;
-				for(key => _ in SEIKeyMap){
-					if(!FlxG.keys.checkStatus(key, PRESSED)) continue;
-					hasPressed = true;
-					break;
-				}
+				// var hasPressed = false;
+				// for(key => _ in SEIKeyMap){
+				// 	if(!FlxG.keys.checkStatus(key, PRESSED)) continue;
+				// 	hasPressed = true;
+				// 	break;
+				// }
 				if(Conductor.songPosition > skipPos) {
 					FlxTween.tween(PlayState.jumpToText,{alpha:0},0.2,{onComplete:function(_){jumpToTimer.cancelChain();PlayState.jumpToText.destroy();}});
 					return;
@@ -2990,7 +3001,7 @@ HXLINE(2565)			return;
 			if(playerStrums == null || !generatedMusic || !generatedArrows) return;
 			SEProfiler.qStart('KeyPress');
 			SEIBlockInput = false;
-			for(i in 0 ... pressArray.length) pressArray[i] = releaseArray[i] = false;
+			for(i in 0 ... pressArray.length) {pressArray[i] = false; releaseArray[i] = false;}
 			callInterp('keyPress',[event.keyCode]);
 			if (!SEIKeyMap.exists(event.keyCode)|| SEIBlockInput || cancelCurrentFunction || !acceptInput || playerCharacter.isStunned || subState != null || paused ) return SEProfiler.qStamp('KeyPress');
 			
@@ -3016,6 +3027,7 @@ HXLINE(2565)			return;
 			
 			// var possibleNotes:Array<Note> = [null,null,null,null]; // notes that can be hit
 			var onScreenNote:Bool = false;
+			final notes = notes;
 			final members = notes.members;
 			var i = members.length;
 			var daNote:Note;
@@ -3097,12 +3109,20 @@ HXLINE(2565)			return;
 			// 		SEIKeyHeld[key] = false;
 			// 	}
 			// }
-			for(id => bool in holdArray){
-				if(bool) continue;
-				final strum = playerStrums.members[id];
-				if(strum == null) break;
-				strum.playStatic();
+			untyped __cpp__('
+			{
+				::Array<bool> arr = this->holdArray;
+				::Array<::StrumArrow> strumArray = this->playerStrums->members;
+				int i = arr->length;
+				while (i > 0){
+					i--;
+					if(arr->__get(i)) continue;
+					::StrumArrow strum = strumArray->__get(i);
+					if(::hx::IsNull(strum)) continue;
+					strum->playStatic(false);
+				}
 			}
+			');
 			SEProfiler.qStamp('KeyRelease');
 		}catch(e){
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, SEIKeyPress);
@@ -3501,6 +3521,7 @@ HXLINE(2565)			return;
 	}
 	
 	public function restartSong(){
+		handleTimes = acceptInput = false;
 		if(!allowQuickReload) FlxG.resetState();
 		callInterp('restartSong',[]);
 
