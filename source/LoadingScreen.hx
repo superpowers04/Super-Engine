@@ -304,7 +304,7 @@ import se.SEProfiler;
 			object.alpha = 0;
 			return;
 		}
-		if(profiling) trace(SEProfiler.getString());
+		if(profiling) trace(SEProfiler.getStringMaxes());
 		profiling = false;
 		if(tween != null){tween.cancel();}
 		object.funni = false;

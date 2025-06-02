@@ -44,7 +44,6 @@ class PauseSubState extends MusicBeatSubstate {
 	var levelInfo:FlxText;
 	var levelDifficulty:FlxText;
 	var restarts:FlxText;
-	var startTimer:FlxTimer;
 	var quitHeld:Int = 0;
 	var quitHeldBar:FlxBar;
 	var quitHeldBG:FlxSprite;
@@ -453,10 +452,6 @@ class PauseSubState extends MusicBeatSubstate {
 			return;
 		}
 		ready = false;
-		try{
-			_tween = FlxTween.tween(FlxG.sound.music,{volume:0},0.5);
-		}catch(e){}
-		if(perSongOffset != null)perSongOffset.destroy();
 		for (i in [levelDifficulty,levelInfo,restarts]) {
 			if(i == null) continue;
 			FlxTween.tween(i,{x:FlxG.width + 10},0.3,{ease:FlxEase.quartIn});
@@ -470,30 +465,42 @@ class PauseSubState extends MusicBeatSubstate {
 
 
 
-		var introGraphics:Array<Dynamic> = PlayState.introGraphics.copy() ;
-		var introAudio:Array<Dynamic> = PlayState.introAudio.copy() ;
-		if(introGraphics == null || introGraphics.length == 0){
-			introGraphics = [
+		// var introGraphics:Array<Dynamic> = PlayState.introGraphics.copy() ;
+		// var introAudio:Array<Dynamic> = PlayState.introAudio.copy() ;
+		// if(introGraphics == null || introGraphics.length == 0){
+		// 	introGraphics = [
+		// 		"",
+		// 		SELoader.loadGraphic('assets:shared/images/ready.png'),
+		// 		SELoader.loadGraphic("assets:shared/images/set.png"),
+		// 		SELoader.loadGraphic("assets:shared/images/go.png"),
+		// 	];
+		// }
+		// if(introAudio == null || introAudio.length == 0){
+		// 	introAudio = [
+		// 		SELoader.loadSound('assets:shared/sounds/intro3.ogg'),
+		// 		SELoader.loadSound('assets:shared/sounds/intro2.ogg'),
+		// 		SELoader.loadSound('assets:shared/sounds/intro1.ogg'),
+		// 		SELoader.loadSound('assets:shared/sounds/introGo.ogg'),
+		// 	];
+		// }
+		var introGraphics:Array<Dynamic> = [
 				"",
 				SELoader.loadGraphic('assets:shared/images/ready.png'),
 				SELoader.loadGraphic("assets:shared/images/set.png"),
 				SELoader.loadGraphic("assets:shared/images/go.png"),
 			];
-		}
-		if(introAudio == null || introAudio.length == 0){
-			introAudio = [
+		var introAudio:Array<Dynamic> = [
 				SELoader.loadSound('assets:shared/sounds/intro3.ogg'),
 				SELoader.loadSound('assets:shared/sounds/intro2.ogg'),
 				SELoader.loadSound('assets:shared/sounds/intro1.ogg'),
 				SELoader.loadSound('assets:shared/sounds/introGo.ogg'),
 			];
-		}
 		var c = introAudio.length;
 		var swagCounter = 0;
-		startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer){
+		new FlxTimer().start(0.5, function(tmr:FlxTimer){
 			if(swagCounter == c){
-				
 				backToPlaystate();
+				tmr.cancel();
 				return;
 			}
 			if(introGraphics[swagCounter] is FlxGraphic){
@@ -527,9 +534,8 @@ class PauseSubState extends MusicBeatSubstate {
 					}
 				}
 			}
-			swagCounter++;
 			
-
+			swagCounter++;
 			// generateSong('fresh');
 		}, c+1);
 		// startTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer) {
@@ -590,8 +596,11 @@ class PauseSubState extends MusicBeatSubstate {
 	}
 	
 	override function destroy() {
-		if (pauseMusic != null){pauseMusic.destroy();}
-		FlxG.cameras.remove(cam);
+		try{
+			if (pauseMusic != null){pauseMusic.destroy();}
+
+			FlxG.cameras.remove(cam);
+		}catch(e){}
 		super.destroy();
 	}
 	function backToPlaystate(){

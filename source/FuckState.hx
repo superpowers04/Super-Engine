@@ -17,6 +17,7 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.events.UncaughtErrorEvent;
 import openfl.events.KeyboardEvent;
+import haxe.Exception;
 
 import openfl.Lib;
 using StringTools;
@@ -35,8 +36,10 @@ class FuckState extends FlxUIState {
 	public static var errorCount = 0;
 	public static var quip = "";
 	public static var lastState:Class<FlxState>;
-	public static function generateReport(error:String = "UNKNOWN ERROR?",type:String = "CRASH"):Bool{
-		var callstack = CallStack.exceptionStack(true) ?? CallStack.callStack() ?? [];
+	public static function generateReport(error:String = "UNKNOWN ERROR?",type:String = "CRASH",?callstack:CallStack):Bool{
+		if(callstack == null || callstack.length == 0){
+			callstack = CallStack.exceptionStack(true) ?? CallStack.callStack() ?? [];
+		}
 		var dateNow:String = "";
 		var err = "";
 		errorCount++;
@@ -163,19 +166,22 @@ class FuckState extends FlxUIState {
 	}
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
-	@:keep inline public static function FUCK(e:Dynamic,?info:String = "unknown",_forced:Bool = false,_FATAL:Bool = false,_rawError:Bool=false){
-		if(e is FakeException) return;
+	public static function FUCK(_e:Dynamic,?info:String = "unknown",_forced:Bool = false,_FATAL:Bool = false,_rawError:Bool=false){
+		if(_e is FakeException) return;
+		var e:Exception = (_e is Exception ? cast _e : new Exception('$_e\nException Type:${Type.typeof(_e)}'));
+		@:privateAccess(haxe.Exception) var callStack:CallStack = e.get_stack() ?? CallStack.exceptionStack(true);
+
 		LoadingScreen.forceHide();
 		LoadingScreen.loadingText = 'ERROR!';
 		if(forced && !_forced && !_FATAL) return;
-		if(_forced) forced = _forced;
+		if (callStack == null) [];
+ 		if(_forced) forced = _forced;
 		if(_FATAL){
 			forced = true;
 			FATAL=true;
 		}
 		var _stack:String = "";
 		try{
-			var callStack:Array<StackItem> = CallStack.exceptionStack(true);
 
 			var errMsg:String = "";
 			if(callStack.length > 0){
@@ -214,7 +220,7 @@ class FuckState extends FlxUIState {
 		if(lastERROR != exception && allowLogWrite){
 			lastERROR = exception;
 
-			saved = generateReport('${exception}\nThis happened in ${info}','CRASH');
+			saved = generateReport('${exception}\n\nThis happened in ${info}','CRASH',callStack);
 
 		}
 
@@ -281,7 +287,7 @@ class FuckState extends FlxUIState {
 		Main.game.forceStateSwitch(new FuckState(exception,info,saved));
 	}
 	public static function FUCK_OPENFL(E:UncaughtErrorEvent){
-		FUCK(E);
+		FUCK(E.error ?? E);
 	}
 	public static function OPENFLKEYPRESS(E:KeyboardEvent){
 		if(E.keyCode == 13 || E.keyCode==27) Sys.exit(-1);
