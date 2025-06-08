@@ -524,7 +524,8 @@ class TitleState extends MusicBeatState
 		}
 		return currentstage;
 	}
-	@:deprecated inline public static function checkStages() return SELoader.registerStages();
+	@:deprecated 
+	inline public static function checkStages() return SELoader.registerStages();
 
 	override public function create():Void
 	{
@@ -1114,21 +1115,30 @@ class TitleState extends MusicBeatState
 	var beatAmounts:Map<Int,Float> = [0=>0.05,1=>0.05,31=>0.07,32=>0.08,64=>0.12,65=>0.05,66=>0.03,67=>0.02,68=>0.005,69=>0];
 	var beatIntensity:Float = 0.05;
 	var finishedThing:Bool =false;
+	var LOGOANGLE = {angle:2};
 	override function beatHit() {
 		super.beatHit();
 		if(beatAmounts.exists(curBeat)) beatIntensity = beatAmounts[curBeat];
 		if (logoBl != null){
-			
-			if(tweensy != null)tweensy.cancel();
-			if(tweeny != null)tweeny.cancel();
-			if(tweenr != null)tweenr.cancel();
 			final amount = 0.9 + beatIntensity;
 			logoBl.scale.set(amount,amount);
-			// FlxTween.tween(logoBl.scale,{x:1,y:1},0.1);
+			
+			if(tweensy != null) {
+				tweensy.cancel();
+			}
 			tweensy = FlxTween.tween(logoBl.scale,{x:0.9,y:0.9},(120 / Conductor.bpm),{ease:FlxEase.expoOut});
-			tweenr = FlxTween.tween(logoBl,{angle:curBeat % 2 == 0 ? 2 : -2},(120 / Conductor.bpm),{ease:FlxEase.expoOut});
-			if(ttBounce != null)ttBounce.cancel();
+			if(tweeny != null) {tweeny.cancel();
+			}
+			if(tweenr != null) {
+				tweenr.cancel();
+			}
+			LOGOANGLE.angle = curBeat % 2 == 0 ? 2 : -2;
+			tweenr = FlxTween.tween(logoBl,LOGOANGLE,(120 / Conductor.bpm),{ease:FlxEase.expoOut});
+			// FlxTween.tween(logoBl.scale,{x:1,y:1},0.1);
 			titleText.scale.set(0.1 + amount,0.1 + amount);
+			if(ttBounce != null){
+				ttBounce.cancel();
+			}
 			ttBounce = FlxTween.tween(titleText.scale,{x:1,y:1},(120 / Conductor.bpm),{ease:FlxEase.expoOut});
 		} 
 		// logoBl.animation.play('bump');

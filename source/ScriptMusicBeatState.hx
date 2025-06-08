@@ -63,7 +63,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 		var ISMENU = true;
 		public override function errorHandle(?error:String = "",?forced:Bool = false){
 			try{
-				if(currentInterp.args[0] == this) currentInterp.args.shift();
+				// if(currentInterp.args[0] == this) currentInterp.args.shift();
 				if(error == "") error = 'No error passed!\nInterp info: ${currentInterp}';
 				if(error == "Null Object Reference") error = 'Null Object Reference;\nInterp info: ${currentInterp}';
 				trace(error);
@@ -134,7 +134,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 				if(::hx::IsNotNull(args)){
 					cpp::VirtualArray interpArgs = currentInterp->args;
 					int i = args->__length();
-					while (i > 0){ interpArgs->set(--i,args->__get(i)); }
+					while (i > 0){i--;interpArgs->set(i,args->__get(i)); }
 				}
 				');
 

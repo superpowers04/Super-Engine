@@ -110,6 +110,9 @@
 	<haxedef name="FLX_NO_DEBUG"/>
 
 
+	<!-- <haxelib name="hxtelemetry"/> -->
+
+
 	<!-- <haxedef name="HXCPP_DEBUGGER"/> -->
 	<!-- This is to hopefully increase preformance on x64 systems, if it's not compiling to them already for some reason -->
 	<section if="cpp">
@@ -119,10 +122,11 @@
 		<haxedef name="HXCPP_CHECK_POINTER"/>
 		<haxedef name="HXCPP_STACK_LINE"/>
 		<haxedef name="HXCPP_STACK_TRACE"/>
-		<haxedef name="HXCPP_TELEMETRY"/>
+		<!-- <haxedef name="HXCPP_TELEMETRY" unless="ghaction"/> -->
+		<!-- <def name="TELEMETRY" unless="ghaction"/> -->
 		<haxedef name="HXCPP_CATCH_SEGV"/>
 		<haxedef name="HXCPP_CPP11"/>
-		<haxedef name='HXCPP_DEBUG_LINK' if='desktop'/>
+		<haxedef name='HXCPP_DEBUG_LINK' if='desktop' unless="ghaction"/>
 	</section>
 	<!-- <haxedef name="HXCPP_DEBUGGER"/> -->
 	<haxedef name="NO_PRECOMPILED_HEADERS"/>

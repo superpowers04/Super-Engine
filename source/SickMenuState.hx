@@ -277,21 +277,20 @@ class SickMenuState extends ScriptMusicBeatState
 	var beatTween:FlxTween;
 	override function beatHit(){
 		super.beatHit();
-		if(grpControls.members[curSelected] != null && !isEpicTween){
-			
-			grpControls.members[curSelected].scale.set(1.1,1.1);
-			if(curTween != null){
-				curTween.cancel();
-			}
-			curTween = FlxTween.tween(grpControls.members[curSelected].scale,{x:1,y:1},Conductor.stepCrochet * 0.003,{ease:FlxEase.circOut});
-		}
 		if(SESave.data.beatBouncing){
+			var member = grpControls.members[curSelected];
+			if(member != null && !isEpicTween){
+				member.scale.set(1.1,1.1);
+				if(curTween != null){
+					curTween.cancel();curTween.destroy();
+				}
+				curTween = FlxTween.tween(member.scale,{x:1,y:1},Conductor.stepCrochet * 0.003,{ease:FlxEase.circOut});
+			}
 			if(beatTween != null){
 				beatTween.cancel();
 				beatTween.destroy();
-			}else{
-				beatTween = FlxTween.tween(bg.scale.set(1.01,1.01),{x:1,y:1},Conductor.stepCrochet * 0.003);
 			}
+			beatTween = FlxTween.tween(bg.scale.set(1.01,1.01),{x:1,y:1},Conductor.stepCrochet * 0.003);
 		}
 	}
 	function select(sel:Int){ trace("Why wasn't this replaced?"); }

@@ -275,7 +275,8 @@ class OnlinePlayState extends PlayState
 			Chat.OutputChatMessage(error);
 			FlxG.switchState(new OnlineLobbyState());
 		}catch(e){
-			trace('${e.message}\n${e.stack}');MainMenuState.handleError(error);
+			trace('${e.message}\n${e.stack}');
+			MainMenuState.handleError(error);
 		}
 	}
 	override function beatHit(){

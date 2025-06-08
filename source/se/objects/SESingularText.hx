@@ -127,8 +127,10 @@ using StringTools;
 		if(xAlign != 0) x+=(newLineWidths[0] * xAlign);
 		for (curChar => char in textFrames){
 			frame = char.frame;
+
 			x=baseX+(xAlign == 0 ? 0 : (newLineWidths[char.line] ?? w) * xAlign)+char.x;
 			y=baseY+char.y;
+
 			// updateHitbox();
 			draw_frame();
 		}

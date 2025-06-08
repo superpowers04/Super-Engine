@@ -276,6 +276,7 @@ class PlayState extends ScriptMusicBeatState
 		var updateTime:Bool = false;
 		var lastMusicUpdate:Float = 0;
 
+
 	/* Objects */
 
 		/*Cams*/
@@ -373,7 +374,6 @@ class PlayState extends ScriptMusicBeatState
 		public var lastPressArray:Array<Bool> = [false,false,false,false];
 
 
-
 	// API stuff
 
 		public function addEvent(id:Int,name:String,check:Int,value:Int,func:Dynamic->Void,?variable:String = "def",?type:String="equals"):IfStatement{
@@ -443,7 +443,7 @@ class PlayState extends ScriptMusicBeatState
 			if(e is FakeException) throw e;
 			return e;
 		}
-		public override function callInterp(func_name:String, ?args:Array<Dynamic>,?id:String = "") { // Modified from Modding Plus, I am too dumb to figure this out myself
+		public override function callInterp(func_name:String, ?args:Array<Dynamic>,?id:String) { // Modified from Modding Plus, I am too dumb to figure this out myself
 			
 			try{
 				switch(func_name){
@@ -467,8 +467,9 @@ class PlayState extends ScriptMusicBeatState
 				}
 			}catch(e){return MainMenuState.handleError('${func_name} for "${id}":\n $e');}
 			try{
+				// args = (cast([this],Array<Dynamic>)).concat(args);
 				args.insert(0,this);
-				if (id == "") {
+				if (untyped __cpp__(' id != HX_("",00,00,00,00) || ::hx::IsNull( id ) ')) {
 					untyped __cpp__('
 						::Dynamic interps = this->interps;
 						::Dynamic interps_keys = ::haxe::IMap_obj::keys(interps);
@@ -775,6 +776,8 @@ class PlayState extends ScriptMusicBeatState
 		#if !debug
 		try{
 		#end
+		instance?.destroy();
+		instance=this;
 
 		SEProfiler.qStart('Playstate loading');
 		scriptSubDirectory = "";
@@ -782,12 +785,8 @@ class PlayState extends ScriptMusicBeatState
 		LoadingScreen.profiling=SESave.data.profiler;
 		LoadingScreen.loadingText = 'Loading playstate variables';
 		parseMoreInterps = (QuickOptionsSubState.getSetting("Song hscripts") || isStoryMode);
-		instance?.destroy();
-		ScriptMusicBeatState.instance=cast(this);
-		instance=this;
 		downscroll = SESave.data.downscroll;
 		middlescroll = SESave.data.middleScroll;
-		instance = this;
 		clearVariables();
 		hasStarted = true;
 		logGameplay = SESave.data.logGameplay;
@@ -2002,9 +2001,7 @@ class PlayState extends ScriptMusicBeatState
 		}
 	}
 
-	@:keep inline function tweenCamIn():Void{
-		FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
-	}
+
 
 	override function openSubState(SubState:FlxSubState) {
 		if (!paused) return super.openSubState(SubState);
@@ -3547,7 +3544,8 @@ HXLINE(2565)			return;
 		Conductor.songPosition = -5000;
 		vocals.time = FlxG.sound.music.time = 0;
 		vocals.volume = SESave.data.voicesVol;
-		songStarted = startedCountdown = finished=false;
+		// songStarted = true;
+		startedCountdown = finished=false;
 		startingSong = handleHealth = true;
 		for (i=>v in notes.members){
 			if(v == null) continue;
@@ -3753,6 +3751,8 @@ HXLINE(2565)			return;
 	override public function consoleCommand(text:String,args:Array<String>):Dynamic{
 		return null;
 	}
+
+
 
 }
 

@@ -300,6 +300,7 @@ class Note extends FlxSprite
 
 		if(Std.isOfType(_type,String)) _type = _type.toLowerCase();
 		callInterp("noteCheckType",[this,rawNote]);
+		if(killNote){return;}
 
 
 		this.noteData = _noteData % getKeyCount(); 
@@ -414,6 +415,7 @@ class Note extends FlxSprite
 		}
 		visible = false;
 		callInterp("noteAdd",[this,rawNote]);
+		if(killNote){return;}
 		if(!eventNote){
 	
 			updateHitbox();
