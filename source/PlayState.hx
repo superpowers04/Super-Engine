@@ -518,6 +518,7 @@ class PlayState extends ScriptMusicBeatState
 			// if(currentInterp.isActive) trace('Current Interpeter: ${currentInterp}');
 			resetInterps();
 			parseMoreInterps = false;
+			FlxG.sound.music.onComplete = null;
 			if(!songStarted && !forced && playCountdown){
 				if(errorMsg == "") errorMsg = error; 
 				startedCountdown = true;
@@ -732,8 +733,9 @@ class PlayState extends ScriptMusicBeatState
 		if(stageInfo.scriptPath == null){
 
 			for (i in SELoader.readDirectoryOrdered(stagePath)) {
-				if(i.endsWith(".hscript")){
+				if(i.endsWith(".hscript") ){
 					final interp = parseHScript(SELoader.getContent('$stagePath/$i'),brTool,"STAGE/" + i,'$stagePath/$i');
+					
 					stage.interps.push(interp);
 					if(stage != null) interp.variables.set('stage',stage);
 				}
@@ -1200,7 +1202,7 @@ class PlayState extends ScriptMusicBeatState
 		if(dad.lonely) iconP2.visible = false;
 		kadeEngineWatermark.cameras = hudCamera.copy();
 
-		if(SESave.data.hitSound && hitSoundEff == null) 
+		if(hitSound && hitSoundEff == null) 
 			hitSoundEff = (SELoader.exists('mods/hitSound.ogg') ? SELoader.loadSound('mods/hitSound.ogg') : SELoader.loadSound('assets/shared/sounds/Normal_hit.ogg',true));
 
 		if(hurtSoundEff == null) hurtSoundEff = ((SELoader.exists('mods/hurtSound.ogg') ? SELoader.loadSound('mods/hurtSound.ogg') : SELoader.loadSound('assets/shared/sounds/ANGRY.ogg',true)));
@@ -2943,11 +2945,12 @@ HXLINE(2565)			return;
 		untyped __cpp__("
 		::QueuedNote queuedNote;
 		while(::hx::IsNotNull(queuedNote = this->queuedNotes->pop().StaticCast<::QueuedNote >() )){
+			::Note note = queuedNote->note;
 			if (queuedNote->hitState) {
-				this->goodNoteHit(queuedNote->note,null(),queuedNote->time);
+				if(::hx::IsNotNull(note)) this->goodNoteHit(note,null(),queuedNote->time);
 				continue;
 			}
-			this->noteMiss(queuedNote->direction,queuedNote->note,null(),null());
+			this->noteMiss(queuedNote->direction,note,null(),null());
 		}
 		");
 		final player = playerCharacter;
@@ -3447,7 +3450,7 @@ HXLINE(2565)			return;
 		SEProfiler.qStart('StepHit');
 		super.stepHit();
 		// lastStep = curStep;
-		if (SESave.data.resyncVoices && handleTimes && Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 100 && generatedMusic)
+		if (SESave.data.resyncVoices && handleTimes && Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 50 && generatedMusic)
 			resyncVocals();
 		
 
@@ -3580,7 +3583,7 @@ HXLINE(2565)			return;
 		hasDied=false;
 		FlxG.sound.music.pause();
 		vocals.pause();
-		SELoader.gc();
+		// SELoader.gc();
 		callInterp('restartSongAfter',[]);
 		startCountdownFirst();
 		resetScore();

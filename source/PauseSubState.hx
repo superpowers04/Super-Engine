@@ -99,15 +99,15 @@ class PauseSubState extends MusicBeatSubstate {
 		FlxG.sound.music.onComplete = null;
 		FlxG.sound.music.looped = true;
 		// FlxG.sound.list.add(pauseMusic);
-		if(SESave.data.transparentPause){
+		// if(SESave.data.transparentPause){
 			bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 			bg.alpha = 0;
-		}else{
-			var bit=new BitmapData(FlxG.width,FlxG.height,true);
-			bit.draw(FlxG.stage);
-			bg = new FlxSprite().loadGraphic(FlxGraphic.fromBitmapData(bit));
-			bg.alpha = 1;
-		}
+		// }
+		// else{
+		// 	var bit=new BitmapData(FlxG.width,FlxG.height,true);
+		// 	bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		// 	bg.alpha = 1;
+		// }
 		bg.scrollFactor.set();
 		add(bg);
 

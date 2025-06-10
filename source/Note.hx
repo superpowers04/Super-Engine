@@ -450,11 +450,7 @@ class Note extends FlxSprite
 		if(ntText != null){ntText.x = this.x;ntText.y = this.y;ntText.draw();}
 	}
 	override function destroy(){
-		if(PlayState.instance != null){
-			callInterp('noteDestroy',[this]);
-			if(PlayState.instance.cancelCurrentFunction) return;
-			
-		}
+		callInterp('noteDestroy',[this]);
 		super.destroy();
 	}
 
