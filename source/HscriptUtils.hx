@@ -84,9 +84,7 @@ class HscriptUtils {
 	 * @return Interp
 	 */
 	public static function createSimpleInterp():Interp {
-		var reterp = new InterpSE();
-		reterp = addVarsToInterp(reterp);
-		return reterp;
+		return addVarsToInterp(new InterpSE());
 	}
 	public static function createSimpleParser():Parser {
 		var parser = new Parser();

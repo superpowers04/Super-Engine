@@ -133,6 +133,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption('Distractions',"Toggle stage distractions that can hinder your gameplay(Handled by the stage, not the game)",'distractions'),
 			new HCBoolOption('Camera Movement',"Toggle the camera zooming and moving to current singer",'camMovement'),
 			// new NPSDisplayOption("Shows your current Notes Per Second."),
+			new ScalingModeOption("Menu/State change might be required"),
 			new HCBoolOption('Show Accuracy',"Display accuracy information.",'accuracyDisplay'),
 			new HCBoolOption('Show Song Position',"Show the songs current position, name and length",'songPosition'),
 			new HCBoolOption('CPU Strum lighting',"Light up the corrosponding CPU strum when a note is hit",'cpuStrums',"Animated CPU Strums","Static CPU Strums"),
@@ -185,6 +186,8 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption("Pause screen transparency","Toggle the pause screen using transparency. Can help with lag on some machines","transparentPause"),
 			new HCBoolOption("Hard Drive Mode","Changes some loading routines to work better with slower drives.\nMay increase ram usage, disables stuff like pack asset replacing and disables hot reloading","HDDMode"),
 			new HCBoolOption("Write to CMD","Disables trace from writing to CMD/Terminal. The console(F10) will still be printed to if it has been opened.","allowTracing",()->{Console.toggleTracing();}),
+			// new HCArrayOption("Flash Stage Quality","The quality of the Flash 'stage'","flashStageQuality",
+			// 				[["BEST",openfl.display.StageQuality.BEST],["HIGH",openfl.display.StageQuality.HIGH],["MEDIUM",openfl.display.StageQuality.MEDIUM],["LOW",openfl.display.StageQuality.LOW]]),
 
 			// new HCBoolOption("Doesn't destroy the opponent when you exit a song. Makes loading quicker but uses more ram and might cause issues","Persistant Opponent","persistOpp"),
 			// new UnloadSongOption("Unload the song when exiting the game"),

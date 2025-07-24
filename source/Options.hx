@@ -8,6 +8,7 @@ import flixel.FlxG;
 import openfl.display.FPS;
 import openfl.Lib;
 import hscript.Interp;
+import flixel.system.scaleModes.*;
 
 import QuickOptionsSubState;
 
@@ -699,6 +700,46 @@ class BoolOption extends Option{
 }
 
 
+class HCArrayOption extends Option{
+	var id:String;
+	var name:String;
+	var inc:Int = 0;
+	var arr:Array<Dynamic>;
+	var callback:()->Void;
+
+	public function new(name:String,desc:String,id:String,options:Array<Array<Dynamic>>,?callback:()->Void){
+		acceptValues = true;
+		this.name = name;
+		this.id = id;
+		this.callback = callback;
+		super();
+		acceptValues = true;
+		description = desc;
+		inc = options.indexOf(Reflect.getProperty(SESave.data,id));
+		if(inc == -1) inc = 0;
+
+	}
+	override function getValue():String return '${arr == null ? 'null' : arr[inc][0]}';
+	inline function inRange(){
+		if(inc < 0) inc = arr.length-1;
+		if(inc >= arr.length) inc = 0;
+	}
+	public override function left():Bool{
+		inc--;
+		inRange();
+		Reflect.setProperty(SESave.data,id,arr[inc][1] ?? arr[inc][0]);
+		display = updateDisplay();
+		return true;
+	}
+	public override function right():Bool{
+		inc++;
+		inRange();
+		Reflect.setProperty(SESave.data,id,arr[inc][1] ?? arr[inc][0]);
+		display = updateDisplay();
+		return true;
+	}
+	override function updateDisplay():String return name + ": " + getValue();
+}
 class HCIntOption extends Option{
 	var id:String;
 	var name:String;
@@ -1057,4 +1098,84 @@ class QuickOption extends Option{
 		return '${name}: ${val}';
 	}
 }
+/*
+..	
+BaseScaleMode	
+The base class from which all other scale modes extend from. You can implement your own scale mode by extending this class and overriding the appropriate methods.
 
+FillScaleMode	
+FillScaleMode is a scaling mode which stretches and squashes the game to exactly fit the provided window. This may result in the graphics of your game being distorted if the user resizes their game window.
+
+FixedScaleAdjustSizeScaleMode	
+FixedScaleAdjustSizeScaleMode is a scaling mode which maintains the game's scene at a fixed size. This will clip off the edges of the scene for dimensions which are too small. However, unlike FixedScaleMode, this mode will extend the width of the current scene to match the window scale. The result is that objects that would be offscreen on smaller window sizes will be visible in larger ones.
+
+FixedScaleMode	
+FixedScaleMode is a scaling mode which maintains the game's scene at a fixed size. This will clip off the edges of the scene for dimensions which are too small, and leave black margins on the sides for dimensions which are too large.
+
+PixelPerfectScaleMode	
+PixelPerfectScaleMode is a scaling mode which maintains the game's aspect ratio. When you shrink or grow the window, the width and height of the game will adjust, either scaling the game or adding black bars as needed.
+
+RatioScaleMode	
+RatioScaleMode is a scaling mode which maintains the game's aspect ratio. When you shrink or grow the window, the width and height of the game will adjust, either scaling the game or adding black bars as needed.
+
+RelativeScaleMode	
+RelativeScaleMode is a scaling mode which stretches and squashes the game to exactly fit the provided window. It acts similar to the FillScaleMode, however there is one major difference. RelativeScaleMode takes two parameters, which represent the width scale and height scale.
+
+StageSizeScaleMode	
+StageSizeScaleMode is a scaling mode which maintains the game's scene at a fixed size. This will clip off the edges of the scene for dimensions which are too small. However, unlike FixedScaleMode, this mode will extend the width of the current scene to match the window scale. The result is that objects that would be offscreen on smaller window sizes will be visible in larger ones.
+
+*/
+
+class ScalingModeOption extends Option
+{
+	public static var scales = [
+		new BaseScaleMode(),
+		new FillScaleMode(),
+		new FixedScaleAdjustSizeScaleMode(),
+		new FixedScaleMode(),
+		new PixelPerfectScaleMode(),
+		new RatioScaleMode(),
+		new StageSizeScaleMode()
+	];
+	public static function setScale(){
+		FlxG.scaleMode = scales[SESave.data.scalingMode];
+	}
+	var ies:Array<String> = ["Base","Fill","Adjust Size","Forced 720p","Pixel Perfect Scale","Closest Ratio","No Scaling"];
+	var iesDesc:Array<String> = [
+		"Default scaling",
+		"Stretches/Squashes the screen from 720p to the window size",
+		"Adjusts the game's cameras to use the window size",
+		"Adds black bars to the sides of the screen and keeps the game at 720p",
+		"Scales the game to a multiple of 720p",
+		"Scales up to the closest size that can keep the same aspect ratio as 720p",
+		"Applies no scaling",
+
+
+		];
+	public function new(desc:String)
+	{
+		if (SESave.data.scalingMode >= ies.length) SESave.data.scalingMode = 0;
+		super();
+		description = desc;
+		acceptValues = true;
+	}
+
+	override function updateDisplay():String return 'Scaling mode:' + ies[SESave.data.scalingMode];
+	override function getValue():String return iesDesc[SESave.data.scalingMode];
+
+	override function right():Bool {
+		SESave.data.scalingMode += 1;
+		if (SESave.data.scalingMode >= ies.length) SESave.data.scalingMode = 0;
+		setScale();
+		display = updateDisplay();
+		return true;
+	}
+	override function left():Bool {
+		SESave.data.scalingMode -= 1;
+		if (SESave.data.scalingMode < 0) SESave.data.scalingMode = ies.length - 1;
+		setScale();
+		display = updateDisplay();
+		return true;
+	}
+
+}

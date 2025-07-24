@@ -832,7 +832,7 @@ class TitleState extends MusicBeatState
 		Main.instance.toggleFPS(SESave.data.fps);
 		SEProfiler.enabled = SESave.data.profiler;
 		SEProfiler.getProfiler('patience',true).start();
-
+		Options.ScalingModeOption.setScale();
 		if(initialized)
 			skipIntro();
 		else{
