@@ -21,7 +21,7 @@ import flixel.FlxG;
 	@:keep inline function get_length(){
 		return sounds.length;
 	}
-
+	var autoSync:Bool = true;
 	var syncVolume:Bool = false;
 	var syncTime:Bool = true;
 	var maxTimeDifference:Int=5;
@@ -35,7 +35,7 @@ import flixel.FlxG;
 		}
 	}
 	override function update(e:Float){
-		sync();
+		if(autoSync) sync();
 		super.update(e);
 	}
 	override function draw(){}
@@ -81,7 +81,7 @@ import flixel.FlxG;
 
 		}
 	}
-	function syncToSound(sound:FlxSound){
+	function syncToSound(sound:FlxSound,?force:Bool = false){
 		final s = syncedSound ?? this.sound;
 		if(s == null) return;
 		if(syncVolume) s.volume = sound.volume;
@@ -89,7 +89,7 @@ import flixel.FlxG;
 			if(sound.playing) s.play();
 			else s.pause();
 		}
-		if(s.playing && syncTime && sound.time <= s.length  && Math.abs(s.time-sound.time) > maxTimeDifference) s.time = sound.time;
+		if(force || s.playing && syncTime && sound.time <= s.length  && Math.abs(s.time-sound.time) > maxTimeDifference) s.time = sound.time;
 		sync();
 	}
 	@:keep inline function load(path:String):FlxSound{

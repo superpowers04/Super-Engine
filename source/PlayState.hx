@@ -1816,6 +1816,7 @@ class PlayState extends ScriptMusicBeatState
 		// 	if(SONG.needsVoices) trace("Song needs voices but none found! Automatically disabled");
 
 		SONG.needsVoices = (vocals.sounds.length > 0);
+		vocals.autoSync = false;
 		// vocals = vocals ?? new FlxSound();
 		// vocals.looped = false;
 		// FlxG.sound.list.add(vocals);
@@ -2038,9 +2039,9 @@ class PlayState extends ScriptMusicBeatState
 	function resyncVocals():Void {
 		FlxG.sound.music.time = Conductor.songPosition;
 		FlxG.sound.music.play();
-		vocals.syncedSound = FlxG.sound.music;
+		// vocals.syncedSound = FlxG.sound.music;
 		if(!vocals.playing) vocals.play();
-		vocals.sync();
+		vocals.syncToSound(FlxG.sound.music);
 		// FlxG.sound.music
 		resyncCount++;
 	}
@@ -2561,11 +2562,12 @@ class PlayState extends ScriptMusicBeatState
 		
 		songScore += Math.round(score);
 		songScoreDef += Math.round(Ratings.convertScore(noteDiff));
-		untyped __cpp__("
+		untyped __cpp__('
 			if(!::se::SESave_obj::data->noterating && !::se::SESave_obj::data->showTimings && !::se::SESave_obj::data->showCombo) return;
-		");
+		');
 		// if(!SESave.data.noterating && !SESave.data.showTimings && !SESave.data.showCombo) return;
 	// WHAT THE FUCK IS THIS HXCPP?
+ 
 /*HXLINE(2565)		bool _hx_tmp17;
 HXDLIN(2565)		bool _hx_tmp18;
 HXDLIN(2565)		if (!(::se::SESave_obj::data->noterating)) {
@@ -3450,7 +3452,7 @@ HXLINE(2565)			return;
 		SEProfiler.qStart('StepHit');
 		super.stepHit();
 		// lastStep = curStep;
-		if (SESave.data.resyncVoices && handleTimes && Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 50 && generatedMusic)
+		if (SESave.data.resyncVoices && handleTimes && Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 30 && generatedMusic)
 			resyncVocals();
 		
 

@@ -1010,7 +1010,8 @@ class TitleState extends MusicBeatState
 				Thread.create(function(){
 				#end
 					// Get current version of FNFBR, Uses kade's update checker 
-	
+				try{
+
 					var http = new haxe.Http("https://raw.githubusercontent.com/superpowers04/Super-Engine/" + (MainMenuState.nightly == "" ?  "master" : "nightly") + "/version.downloadMe"); // It's recommended to change this if forking
 					var returnedData:Array<String> = [];
 					
@@ -1038,6 +1039,14 @@ class TitleState extends MusicBeatState
 					}
 					
 					http.request();
+				}catch(e){
+					if(!skipMM){
+						skipMM = true;
+						FuckState.generateReport(e.details(),'UPDATE_ERROR');
+						MainMenuState.handleError('Unable to check for updates!\nError report saved to ');
+					}
+
+				}
 				#if (target.threaded)
 				});
 				#end

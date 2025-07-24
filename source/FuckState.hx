@@ -36,7 +36,7 @@ class FuckState extends FlxUIState {
 	public static var errorCount = 0;
 	public static var quip = "";
 	public static var lastState:Class<FlxState>;
-	public static function generateReport(error:String = "UNKNOWN ERROR?",type:String = "CRASH",?callstack:CallStack):Bool{
+	public static function generateReport(error:String = "UNKNOWN ERROR?",type:String = "CRASH",?callstack:CallStack):String{
 		if(callstack == null || callstack.length == 0){
 			callstack = CallStack.exceptionStack(true) ?? CallStack.callStack() ?? [];
 		}
@@ -144,17 +144,19 @@ class FuckState extends FlxUIState {
 			}catch(e){
 				trace('Unable to get system information! ${e.message}');
 			}
+			var path = SELoader.getPath('crashReports/SUPERENGINE_${type}-${dateNow}.log');
 			try{
-				SELoader.saveContent('crashReports/SUPERENGINE_${type}-${dateNow}.log',err);
+				SELoader.saveContent(path,err);
 			}catch(e){
-				sys.io.File.saveContent('crashReports/SUPERENGINE_${type}-${dateNow}.log',err);
+				path = './crashReports/SUPERENGINE_${type}-${dateNow}.log';
+				sys.io.File.saveContent(path,err);
 
 			}
 			
 			
-			trace('Wrote a crash report to ./crashReports/SUPERENGINE_${type}-${dateNow}.log!');
-			trace('Crash Report:\n$err');
-			return true;
+			trace('Wrote a $type report to $path');
+			trace('$type Report:\n$err');
+			return path;
 		}catch(e){
 			trace('Unable to write a crash report!');
 			if(err != null && err.indexOf('SYSTEM INFORMATION') != -1){
@@ -162,7 +164,7 @@ class FuckState extends FlxUIState {
 
 			}
 		}
-		return false;
+		return "";
 	}
 	// This function has a lot of try statements.
 	// The game just crashed, we need as many failsafes as possible to prevent the game from closing or crash looping
@@ -212,7 +214,7 @@ class FuckState extends FlxUIState {
 				exception = '${e}';
 			}catch(e){}
 		}
-		var saved = false;
+		var saved = "";
 		var err = "";
 		exception += _stack;
 
@@ -261,9 +263,8 @@ class FuckState extends FlxUIState {
 					textFieldBot.width = 1280;
 					textFieldBot.text = "Please take a screenshot and report this.\nPress enter or escape to close";
 					textFieldBot.y = 720 * 0.8;
-					if(saved){
-						var dateNow:String = StringTools.replace(StringTools.replace(Date.now().toString(), " ", "_"), ":", ".");
-						textFieldBot.text = 'Saved crashreport to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\nPlease send this file when reporting this crash.';
+					if(saved != ""){
+						textFieldBot.text = 'Saved crashreport to $saved.\nPlease send this file when reporting this crash.';
 					}
 
 					// textField.x = (1280 * 0.5);
@@ -301,8 +302,8 @@ class FuckState extends FlxUIState {
 		untyped __global__.__hxcpp_set_critical_error_handler(FUCK);
 		#end
 	}
-	var saved:Bool = false;
-	override function new(e:String,info:String,saved:Bool = false){
+	var saved:String = "";
+	override function new(e:String,info:String,saved:String = ""){
 		err = '${e}\nThis happened in ${info}';
 		this.saved = saved;
 		// LoadingScreen.hide();
@@ -349,13 +350,9 @@ class FuckState extends FlxUIState {
 		txt.borderStyle = FlxTextBorderStyle.OUTLINE;
 		// txt.screenCenter(X);
 		add(txt);
-		if(saved) {
+		if(saved != "") {
 			txt.y -= 30;
-			var dateNow:String = Date.now().toString();
-
-			dateNow = StringTools.replace(dateNow, " ", "_");
-			dateNow = StringTools.replace(dateNow, ":", ".");
-			txt.text = 'Crash report saved to "crashReports/SUPERENGINE_CRASH-${dateNow}.log".\nPlease send this file when reporting this crash.\n' + txt.text.substring(41);
+			txt.text = 'Crash report saved to "$saved".\nPlease send this file when reporting this crash.\n' + txt.text.substring(41);
 		}
 		useOpenFL = true;
 		try{
