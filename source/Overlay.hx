@@ -95,7 +95,7 @@ class Overlay extends TextField {
 			#end
 			;
 		if(SESave.data.showDebugInfo){
-			text+=debugText + SEProfiler.getString();
+			text+=debugVar + SEProfiler.getString();
 		}
 		// }
 
