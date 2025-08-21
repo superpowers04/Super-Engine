@@ -39,13 +39,13 @@ class Overlay extends TextField {
 
 		this.x = x;
 		this.y = y;
-		width = 1280;
+		width  = 1280;
 		height = 720;
-		// alpha = 0;
 
-		currentFPS = 0;
-		selectable = false;
-		mouseEnabled = false;
+		currentFPS    = 0;
+		selectable    = false;
+		mouseEnabled  = false;
+		cacheAsBitmap = false;
 		defaultTextFormat = new TextFormat("_sans", 12, color);
 		text = "FPS: ";
 
@@ -57,47 +57,33 @@ class Overlay extends TextField {
 		addEventListener(Event.ENTER_FRAME, __enterFrame);
 		#end
 	}
-	var memPeak:Float = 0;
+	var memPeak:Int = 0;
 	// Event Handlers
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
 		if(!visible) return;
-		// #if sys
 		final ct = currentTime;
 		currentTime = Sys.time();
 		final timeDiff = currentTime-ct;
 		times.push(currentTime);
 
 		while (times[0] < currentTime - 1) times.shift();
-		// #else
-		// 	currentTime += flixel.FlxG.elapsed;
-		// 	times.push(currentTime);
-
-		// 	while (times[0] < currentTime - 1) times.shift();
-		// #end
-
 
 		scaleX = lime.app.Application.current.window.width / 1280;
 		scaleY = lime.app.Application.current.window.height / 720;
 		currentFPS = times.length;
 
-		final mem:Float = (
-			#if cpp
-			cpp.NativeGc.memInfo(0)
-			#else
-			System.totalMemory
-			#end);
+		final mem:Int = Math.floor(( #if cpp cpp.NativeGc.memInfo(0) #else System.totalMemory #end)/1024/1024);
 		if (mem > memPeak) memPeak = mem;
-		text = '$currentFPS FPS/$deltaTime MS/FrameDiff: ${(timeDiff > 1 ? Math.floor(timeDiff) : timeDiff)}\nMemory Usage/Peak: ${mem/1024/1024}mb/${memPeak/1024/1024}mb'
+		text = '$currentFPS FPS/$deltaTime MS/FrameDiff: ${(timeDiff > 1 ? Math.floor(timeDiff) : timeDiff)}\nMemory Usage/Peak: ${mem}mb/${memPeak}mb'
 			#if cpp
-			+'\nMemory Reserved/Current: ${cpp.NativeGc.memInfo(3)/1024/1024}mb/${cpp.NativeGc.memInfo(2)/1024/1024} mb'
+			+'\nMemory Reserved/Current: ${Math.floor(cpp.NativeGc.memInfo(3)/1024/1024)}mb/${Math.floor(cpp.NativeGc.memInfo(2)/1024/1024)} mb'
 			#end
 			;
 		if(SESave.data.showDebugInfo){
 			text+=debugVar + SEProfiler.getString();
 		}
-		// }
 
 		cacheCount = currentFPS;
 	}
