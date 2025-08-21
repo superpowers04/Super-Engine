@@ -30,7 +30,7 @@ class Overlay extends TextField {
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
-	public static var debugText:String = "";
+	public static var debugVar:String = "";
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
 	{
