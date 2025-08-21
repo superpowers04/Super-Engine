@@ -69,6 +69,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 				trace(error);
 				resetInterps();
 				parseMoreInterps = false;
+				
 				if(!created && !forced){
 				// 	if(errorMsg == "") errorMsg = error; 
 				// 	// else trace(error);

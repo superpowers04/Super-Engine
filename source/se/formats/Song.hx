@@ -287,6 +287,9 @@ class Song
 			if(_json.indexOf('"version"') > 0 && _json.indexOf('"playData"') > 0){
 				return fromVSlice(_json);
 			}
+			// if(_json.indexOf('"codenameChart"') > 0 ){
+				// return CNEChart.fromCNE(_json);
+			// }
 			var rawJson:Dynamic = Json.parse(rawJson.substr(0, rawJson.lastIndexOf("}") + 1));
 
 			var swagShit:SwagSong = null;

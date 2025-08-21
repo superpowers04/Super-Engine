@@ -455,7 +455,7 @@ class Note extends FlxSprite
 	}
 
 	public function updateCanHit(?comparisonTime:Null<Float>):Bool{
-		untyped __cpp__("
+		untyped __cpp__('
             ::Float _comparisonTime;
 			if (::hx::IsNull(comparisonTime)) _comparisonTime = ::Conductor_obj::songPosition;
 			else _comparisonTime = (Float) comparisonTime;
@@ -466,7 +466,7 @@ class Note extends FlxSprite
 			}
 			::Float safeZone = ::Conductor_obj::safeZoneOffset;
 			this->canBeHit = (diff < (safeZone * timeScale));
-		");
+		');
 		return canBeHit;
 		// return canBeHit = ((isSustainNote && (strumTime > comparisonTime - Conductor.safeZoneOffset && strumTime < comparisonTime + ((Conductor.safeZoneOffset * 0.5) * Conductor.timeScale)) ) ||
 		// 		strumTime > comparisonTime - (Conductor.safeZoneOffset * Conductor.timeScale) && strumTime < comparisonTime + Conductor.safeZoneOffset  );
@@ -492,25 +492,21 @@ class Note extends FlxSprite
 		visible = showNote;
 		if (mustPress) {
 			updateCanHit();
-			if (!shouldntBeHit) { 
-				updateCanHit();
-
-				if (!wasGoodHit && strumTime < Conductor.songPosition - (Conductor.safeZoneOffset * Conductor.timeScale)){
-					canBeHit = false;
-					tooLate = true;
-					if (!shouldntBeHit && !isSustainNoteEnd) {
-						PlayState.instance.health += PlayState.SONG.noteMetadata.tooLateHealth;
-						PlayState.instance.vocals.setVolume(0,0);
-						PlayState.instance.noteMiss(noteData, this);
-					}
-					PlayState.instance.notes.remove(this, true);
-					destroy();
+			if (!shouldntBeHit && !wasGoodHit && strumTime < Conductor.songPosition - (Conductor.safeZoneOffset * Conductor.timeScale)){
+				canBeHit = false;
+				tooLate = true;
+				if (!shouldntBeHit && !isSustainNoteEnd) {
+					PlayState.instance.health += PlayState.SONG.noteMetadata.tooLateHealth;
+					PlayState.instance.vocals.setVolume(0,0);
+					PlayState.instance.noteMiss(noteData, this);
 				}
+				PlayState.instance.notes.remove(this, true);
+				destroy();
+				
 			}
 		}else{
 			final dad = PlayState.opponentCharacter;
-			if (aiShouldPress && (dad == null || !dad.isStunned) 
-		          && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition) {
+			if (aiShouldPress && (dad == null || !dad.isStunned) && PlayState.dadShow && !PlayState.p2canplay && strumTime <= Conductor.songPosition) {
 				dadNotePress();
 			}
 		}

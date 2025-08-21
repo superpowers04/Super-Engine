@@ -71,7 +71,7 @@ import flixel.FlxG;
 		while(i > 0){
 			final s = sounds[i];
 			i--;
-			if(syncVolume) s.volume = sound.volume;
+			if(syncVolume && s.volume != sound.volume) s.volume = sound.volume;
 			if(syncPlaying && s.playing != sound.playing){
 				if(sound.playing) s.play();
 				else s.pause();
@@ -112,7 +112,9 @@ import flixel.FlxG;
 	}
 	function setVolume(index:Int,volume:Float):Float{
 		if(length == 0) return 0;
-		return (sounds[index] is FlxSound ? sounds[index] : sound).volume = volume;
+		var sound = (sounds[index] is FlxSound ? sounds[index] : sound);
+		if(sound.volume != volume) sound.volume = volume;
+		return sound.volume;
 	}
 
 	function getVolume(index:Int):Float{

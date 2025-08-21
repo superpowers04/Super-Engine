@@ -529,6 +529,7 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		// trace(se.utilities.LuaUtils.matchSingle('Meow','e.'));
 
 		forceQuit = false; // You can't force quit to something that hasn't been loaded
 
@@ -1350,8 +1351,8 @@ class TitleState extends MusicBeatState
 		
 		if(_sprite.filters[0] != null) cast(_sprite.filters[0],flash.filters.GlowFilter).color = _colors[_curPart];
 		if(_sprite != null){
-			_sprite.x = (FlxG.width * 0.5);
-			_sprite.y = (FlxG.height * 0.60) - 20 * FlxG.game.scaleY;
+			_sprite.x = (FlxG.game.width * 0.5);
+			_sprite.y = (FlxG.game.height * 0.60);
 			_sprite.scaleX = FlxG.game.scaleX;
 			_sprite.scaleY = FlxG.game.scaleY;
 		}

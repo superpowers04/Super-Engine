@@ -234,11 +234,13 @@ class MusicBeatState extends FlxUIState {
 					FlxG.mouse.visible = false;
 				}
 			}
-			if(FlxG.mouse.wheel != 0 || FlxG.mouse.screenX != lastUpdateMouseX || FlxG.mouse.screenY != lastUpdateMouseY || FlxG.mouse.pressed || FlxG.mouse.pressedRight){
+			final mx = Std.int(Main.instance.mouseX);
+			final my = Std.int(Main.instance.mouseY);
+			if(FlxG.mouse.wheel != 0 || mx != lastUpdateMouseX || my != lastUpdateMouseY || FlxG.mouse.pressed || FlxG.mouse.pressedRight){
 				lastCursorMove=0;
 				FlxG.mouse.visible = true;
-				lastUpdateMouseX = FlxG.mouse.screenX;
-				lastUpdateMouseY = FlxG.mouse.screenY;
+				lastUpdateMouseX = mx;
+				lastUpdateMouseY = my;
 
 			}
 		}

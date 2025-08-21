@@ -87,10 +87,6 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 	}
 	override function switchTo(nextState:FlxState):Bool {
 		FlxG.autoPause = true;
-		if(voices != null){
-			voices.destroy();
-			voices = null;
-		}
 		return super.switchTo(nextState);
 	}
 	override function create(){try{
@@ -133,8 +129,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		shouldDraw = true;
 		super.onFocus();
 		CoolUtil.setFramerate(0,false,false);
-		bg.alpha = 0;
-		inTween = FlxTween.tween(bg,{alpha:1},0.7);
+		if(bg.alpha == 0) inTween = FlxTween.tween(bg,{alpha:1},0.7);
 	}
 	override function onFocusLost(){
 		shouldDraw = false;
@@ -939,22 +934,13 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 		// if (modes[curSelected].indexOf('${songNames[curSelected]}.json') != -1) changeDiff(0,modes[curSelected].indexOf('${songNames[curSelected]}.json')); else changeDiff(0,0);
 	}
 	@:keep inline public static function findFileFromAssets(path:String,name:String,file:String):String{
-		if(FileSystem.exists('${path}/songs/${name}/$file')){
-			return '${path}/songs/${name}/$file';
-		}
-		if(FileSystem.exists('${path}/music/${name}-${file}')){
-			return '${path}/music/${name}-${file}';
-		}
-		if(FileSystem.exists('${path}/${name}/${file}')){
-			return '${path}/${name}/${file}';
-		}
-		if(FileSystem.exists('${path}/${name}-${file}')){
-			return '${path}/${name}-${file}';
-		}
-		if(FileSystem.exists('${path}/${file}')){
-			return '${path}/${file}';
-		}
-		return '';
+		return SELoader.absFileExists('${path}/${file}')
+			?? SELoader.absFileExists('${path}/songs/${name}/$file')
+			?? SELoader.absFileExists('${path}/music/${name}-${file}')
+			?? SELoader.absFileExists('${path}/${name}/${file}')
+			?? SELoader.absFileExists('${path}/${name}-${file}')
+			?? SELoader.absFileExists('${path}/songs/${name}/song/$file')
+			?? "";
 	}
 	@:keep inline static function upToString(str:String,ending:String){
 		return str.substr(0,str.lastIndexOf(ending) + ending.length);
@@ -1001,18 +987,19 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 			if(dir.indexOf('/assets/') != -1){
 				var _dir = dir.substr(0,dir.lastIndexOf('/assets/')+8);
 				for (song in SELoader.getSongsFromFolder(_dir,json)){
-					if(song.name == name){
-						importedSong = true;
-						{
-							var diffList:Array<String> = PlayState.songDifficulties = [];
-							for(i => v in song.charts){
-								diffList.push(dir + "/" + v);
-							}
+					if(song.name != name) untyped __cpp__('continue; ');
+					importedSong = true;
+					{
+						var diffList:Array<String> = PlayState.songDifficulties = [];
+						for(i => v in song.charts){
+							diffList.push(dir + "/" + v);
 						}
-						PlayState.songInfo = song;
-						gotoSong(dir,song.charts[0],song.name,song.voices,song.inst);
-						return;
 					}
+					PlayState.songInfo = song;
+					trace('Loaded from a valid assets folder');
+					gotoSong(dir,song.charts[0],song.name,song.voices,song.inst);
+					return;
+					
 				}
 			}
 			var chartName = "";
@@ -1027,14 +1014,27 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 				}
 				chartName = songName;
 			}
-
-			var attempts = 0;
 			if(FileSystem.exists('${dir}/Inst.ogg')){ 
 				inst = '${dir}/Inst.ogg';
 				if(FileSystem.exists('${dir}/Voices.ogg')){
 					voices = '${dir}/Voices.ogg';
 				}
+			}else{
+				var indexOfCharts = dir.lastIndexOf('/charts');
+
+				if(indexOfCharts > 0){
+					var _dir = dir.substring(0,indexOfCharts);
+					var vdir = _dir+'/song/';
+					if(FileSystem.exists('${vdir}/Inst.ogg')){ 
+						dir = _dir;
+						inst = '${vdir}/Inst.ogg';
+						if(FileSystem.exists('${vdir}/Voices.ogg')){
+							voices = '${vdir}/Voices.ogg';
+						}
+					}
+				}
 			}
+			var attempts = 0;
 			while(inst == "" && attempts < 99){ // If this reaches 99 attempts, fucking run
 				// why did it take me several months to remember to break if the inst is found :sob:
 				attempts++;

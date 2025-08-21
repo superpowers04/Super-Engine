@@ -1528,26 +1528,26 @@ class PlayState extends ScriptMusicBeatState
 			jumpTo = 0;
 		}else{
 			for (_ => n in notes.members) {
-				if(n.eventNote) continue;
+				if(n.eventNote) untyped __cpp__('continue;');
 				if(n.strumTime >= 10000){
 					_validUnspawn = n.strumTime;
 					_validNote = false;
-					break;
+					untyped __cpp__('break;');
 				}
 				_validNote = true;
 
-				break;
+				untyped __cpp__('break;');
 			}
 			if(!_validNote){
 				for (_ => n in unspawnNotes) {
-					if(n.eventNote) continue;
+					if(n.eventNote) untyped __cpp__('continue;');
 					if(n.strumTime >= 10000){
 						_validUnspawn = n.strumTime;
 						_validNote = false;
-						break;
+						untyped __cpp__('break;');
 					}
 					_validNote = true;
-					break;
+					untyped __cpp__('break;');
 					
 				}
 			}
@@ -1566,7 +1566,7 @@ class PlayState extends ScriptMusicBeatState
 				if(subState != null || !acceptInput) return;
 				// var hasPressed = false;
 				// for(key => _ in SEIKeyMap){
-				// 	if(!FlxG.keys.checkStatus(key, PRESSED)) continue;
+				// 	if(!FlxG.keys.checkStatus(key, PRESSED)) untyped __cpp__('continue;');
 				// 	hasPressed = true;
 				// 	break;
 				// }
@@ -1578,7 +1578,8 @@ class PlayState extends ScriptMusicBeatState
 				for(i in strumLineNotes.members ) {
 					if(i.animation.name != "static"){
 						skip = true;
-						break;
+						untyped __cpp__('break;');
+
 					}
 				}
 				if(!skip) return;
@@ -1586,7 +1587,7 @@ class PlayState extends ScriptMusicBeatState
 					var arrowList:Array<Note> = [];
 					for (n in unspawnNotes) {
 						if(n.strumTime > _validUnspawn){
-							break;
+							untyped __cpp__('break;');
 						}
 						arrowList.push(n);
 					}
@@ -1676,7 +1677,7 @@ class PlayState extends ScriptMusicBeatState
 			while(i < events.length) {
 				i++;
 				var event = events[i];
-				if(event == null) continue;
+				if(event == null) untyped __cpp__('continue;');
 				if(event[1] is Array){
 					for (e in cast (event[1],Array<Dynamic>)) {
 						eventNotes.push(new Note(event[0], -1, null,false,false,e[0],e,false));
@@ -1722,7 +1723,7 @@ class PlayState extends ScriptMusicBeatState
 			section = noteData[daBeats];
 			if(section == null || section.sectionNotes == null || section.sectionNotes[0] == null) {
 				daBeats += 1;
-				continue;
+				untyped __cpp__('continue;');
 			}
 			if(section.changeBPM) Conductor.changeBPM(section.bpm);
 
@@ -1731,7 +1732,7 @@ class PlayState extends ScriptMusicBeatState
 			for (songNotes in section.sectionNotes){
 				daStrumTime = songNotes[0] + SESave.data.offset;
 				if (daStrumTime < 0) daStrumTime = 0;
-				if(daStrumTime < Conductor.songPosition) continue;
+				if(daStrumTime < Conductor.songPosition) untyped __cpp__('continue;');
 
 				var daNoteData:Int = songNotes[1];
 
@@ -1739,9 +1740,9 @@ class PlayState extends ScriptMusicBeatState
 				var gottaHitNote:Bool = ((daNoteData % halfCount > songData.keyCount - 1) ?  !section.mustHitSection : section.mustHitSection);
 				if(chartIsInverted) gottaHitNote = !gottaHitNote;
 				var oldNote:Note = (unspawnNotes.length > 0 ? unspawnNotes[Std.int(unspawnNotes.length - 1)] : null);
-				if(!opponentNotes && !gottaHitNote) continue;
+				if(!opponentNotes && !gottaHitNote) untyped __cpp__('continue;');
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,songNotes[3],songNotes,gottaHitNote);
-				if(swagNote.killNote){swagNote.destroy();continue;}
+				if(swagNote.killNote){swagNote.destroy();untyped __cpp__('continue;');}
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 				if(swagNote.eventNote){ // This is done so noteCreate doesn't get broken
@@ -1749,7 +1750,7 @@ class PlayState extends ScriptMusicBeatState
 					// if(e.killNote) e.destroy(); else eventNotes.push(e);
 					eventNotes.push(swagNote);
 					// swagNote.destroy();
-					continue;
+					untyped __cpp__('continue;');
 				}
 				(showOpponentNotes || swagNote.mustPress ? unspawnNotes : eventNotes).push(swagNote);
 
@@ -1764,7 +1765,7 @@ class PlayState extends ScriptMusicBeatState
 					for (susNote in 0...Math.floor(susLength)){
 
 						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,false,songNotes[3],songNotes,gottaHitNote);
-						if(sustainNote.killNote){sustainNote.destroy();continue;}
+						if(sustainNote.killNote){sustainNote.destroy();untyped __cpp__('continue;');}
 						sustainNote.scrollFactor.set();
 						sustainNote.sustainLength = susLength;
 						unspawnNotes.push(sustainNote);
@@ -1875,7 +1876,7 @@ class PlayState extends ScriptMusicBeatState
 
 			charCall("strumNoteLoad",[babyArrow,player],player == 1 ? 0 :  1,true);
 			callInterp("strumNoteLoad",[babyArrow,player == 1]);
-			if(cancelCurrentFunction) continue;
+			if(cancelCurrentFunction) untyped __cpp__('continue;');
 			babyArrow.init();
 
 
@@ -2129,7 +2130,7 @@ class PlayState extends ScriptMusicBeatState
 			while (leg >= 0){
 				var funni:Null<Float> = notesHitArray[leg];
 				if (funni != null && funni + 1000 < curTime) notesHitArray.pop();
-				else break;
+				else untyped __cpp__('break;');
 				leg--;
 			}
 			nps = notesHitArray.length;
@@ -2259,7 +2260,7 @@ class PlayState extends ScriptMusicBeatState
 				// var daNote:Note = notes.members[0];
 				while (notes.members[0] != null){
 					var daNote = notes.members[0];
-					if (daNote.skipNote || daNote.mustPress || !daNote.wasGoodHit) break;
+					if (daNote.skipNote || daNote.mustPress || !daNote.wasGoodHit) untyped __cpp__('break;');
 					daNote.active = false;
 					vocals.setVolume(1,0);
 					notes.members.shift();
@@ -2322,7 +2323,7 @@ class PlayState extends ScriptMusicBeatState
 				var dunceNote:Note = unspawnNotes.shift();
 				if(dunceNote.strumTime - Conductor.songPosition < -100){ // Fucking don't load notes that are 100 ms before the current time
 					dunceNote.destroy();
-					continue;
+					untyped __cpp__('continue;');
 				}// we add note lmao
 					callInterp('noteSpawn',[dunceNote]);
 					notes.add(dunceNote);
@@ -2566,25 +2567,26 @@ class PlayState extends ScriptMusicBeatState
 			if(!::se::SESave_obj::data->noterating && !::se::SESave_obj::data->showTimings && !::se::SESave_obj::data->showCombo) return;
 		');
 		// if(!SESave.data.noterating && !SESave.data.showTimings && !SESave.data.showCombo) return;
-	// WHAT THE FUCK IS THIS HXCPP?
+		// WHAT THE FUCK IS THIS HXCPP?
  
-/*HXLINE(2565)		bool _hx_tmp17;
-HXDLIN(2565)		bool _hx_tmp18;
-HXDLIN(2565)		if (!(::se::SESave_obj::data->noterating)) {
-HXLINE(2565)			_hx_tmp18 = !(::se::SESave_obj::data->showTimings);
-            		}
-            		else {
-HXLINE(2565)			_hx_tmp18 = false;
-            		}
-HXDLIN(2565)		if (_hx_tmp18) {
-HXLINE(2565)			_hx_tmp17 = !(::se::SESave_obj::data->showCombo);
-            		}
-            		else {
-HXLINE(2565)			_hx_tmp17 = false;
-            		}
-HXDLIN(2565)		if (_hx_tmp17) {
-HXLINE(2565)			return;
-            		}*/
+	/*HXLINE(2565)			bool _hx_tmp17;
+		HXDLIN(2565)		bool _hx_tmp18;
+		HXDLIN(2565)		if (!(::se::SESave_obj::data->noterating)) {
+		HXLINE(2565)			_hx_tmp18 = !(::se::SESave_obj::data->showTimings);
+		            		}
+		            		else {
+		HXLINE(2565)			_hx_tmp18 = false;
+		            		}
+		HXDLIN(2565)		if (_hx_tmp18) {
+		HXLINE(2565)			_hx_tmp17 = !(::se::SESave_obj::data->showCombo);
+		            		}
+		            		else {
+		HXLINE(2565)			_hx_tmp17 = false;
+		            		}
+		HXDLIN(2565)		if (_hx_tmp17) {
+		HXLINE(2565)			return;
+		            		}
+		*/
 
 
 
@@ -2630,30 +2632,14 @@ HXLINE(2565)			return;
 				comboSplit = ((_dist == 0) ? HX_CSTRING("=") :((this->downscroll && _dist < 0 || !this->downscroll && _dist > 0) ? HX_CSTRING("^") : HX_CSTRING("v")))+comboSplit;
 			'); 
 
-			var comboPixelSize = (40 * (1-(comboSplit.length * 0.1)));
-			// var offsetX = strum.x;
-			// for (i in 0...comboSplit.length) {
-				// var numScore:FlxSprite = comboRecycler.get().loadGraphic(SELoader.cache.loadGraphic('assets/images/num${comboSplit[i]}.png'));
-			var numScore:SESingularText = new SESingularText(strum.x,daNote.y + (daNote.height * 0.5),comboSplit,comboPixelSize);
+			var numScore:SESingularText = new SESingularText(strum.x,daNote.y + (daNote.height * 0.5),comboSplit,(40 * (1-(comboSplit.length * 0.1))));
 			numScore.yAlign=0.5;
-				// numScore.screenCenter();
-			// numScore.x = offsetX;
-				// offsetX+=(numScore.width+2) * comboSize;
-			// numScore.y = daNote.y + (daNote.height * 0.5);
 			numScore.cameras = [cameraUsed];
 			numScore.antialiasing = true;
-			// numScore.setGraphicSize(Std.int((numScore.width * comboSize)));
-
-			// numScore.alpha=1;
 
 			numScore.updateHitbox();
 	
-				// numScore.acceleration.y = 0;
-				// numScore.velocity.y = 0;
-				// numScore.velocity.x = 0;
-				// numScore.angularVelocity =0;
 			add(numScore);
-				// scoreObjs.push(numScore);
 			FlxTween.tween(numScore, {alpha: 0,y:numScore.y - 60}, 0.8, {
 				onComplete: function(tween:FlxTween) {remove(numScore,true);},
 				startDelay: Conductor.crochet * 0.001
@@ -2806,29 +2792,29 @@ HXLINE(2565)			return;
 		if (!generatedMusic) return;
 		SEProfiler.qStart('note updating');
 		final _scrollSpeed = (Math.floor((SESave.data.scrollSpeed == 1 ? SONG.speed : SESave.data.scrollSpeed)*1000)*0.001) / (currentSpeed); // Probably better to calculate this beforehand
-		var i = notes.members.length - 1;
 		final songPosition = Conductor.songPosition;
 		final swagWidth = (Note.swagWidth * 0.5);
+		var i = notes.members.length - 1;
 		while (i > -1){
 			final daNote:Note = notes.members[i];
 			i--;
-			if(daNote == null || !daNote.alive) continue;
+			if(daNote == null || !daNote.alive) untyped __cpp__('continue;');
 
 			if (daNote.tooLate){
 				daNote.active = false;
 				daNote.visible = false;
 				daNote.kill();
 				notes.remove(daNote, true);
-				continue;
+				untyped __cpp__('continue;');
 			}
 			daNote.visible = true;
 			daNote.active = true;
 			
-			final strumNote:FlxSprite = (
-						(daNote.parentSprite != null) ? daNote.parentSprite :
-						(daNote.mustPress ? playerStrums.members[daNote.noteData] :
-						 strumLineNotes.members[daNote.noteData])
-					);
+			var strumNote:FlxSprite = null;
+			if(daNote.parentSprite != null) strumNote = daNote.parentSprite;
+			else if (daNote.mustPress) strumNote = playerStrums.members[daNote.noteData];
+			else strumNote = strumLineNotes.members[daNote.noteData];
+
 			daNote.distanceToSprite = 0.45 * (songPosition - daNote.strumTime) * _scrollSpeed;
 			
 			if(daNote.updateY){
@@ -2844,7 +2830,7 @@ HXLINE(2565)			return;
 						// Only clip sustain notes when properly hit
 						if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote)){
 							// Clip to strumline
-							if(daNote.mustPress && songPosition > daNote.strumTime) {goodNoteHit(daNote);continue;}
+							if(daNote.mustPress && songPosition > daNote.strumTime) {goodNoteHit(daNote);untyped __cpp__('continue;');}
 							var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
 							swagRect.height = (strumNote.y + swagWidth - daNote.y) / daNote.scale.y;
 							swagRect.y = (daNote.height / daNote.scale.y) - swagRect.height;
@@ -2855,17 +2841,16 @@ HXLINE(2565)			return;
 						}
 					}
 				}else{ // upscroll
-					daNote.y = strumNote.y - daNote.distanceToSprite;
 					if(daNote.isSustainNote) {
 						// if(daNote.isSustainNoteEnd && daNote.parentNote != null){
 						// 	daNote.y = daNote.prevNote.y + Math.ceil(daNote.frameHeight * daNote.scale.y);
 						// }else
-						daNote.y -= swagWidth;
+						daNote.y = strumNote.y - daNote.distanceToSprite - swagWidth;
 						// (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) &&
 						if(daNote.clipSustain && (daNote.isPressed || !daNote.mustPress) && (daNote.mustPress || _dadShow && daNote.aiShouldPress) && FlxG.overlap(daNote,strumNote))
 						{
 							// Clip to strumline
-							if(daNote.mustPress && songPosition > daNote.strumTime) {goodNoteHit(daNote);continue;}
+							if(daNote.mustPress && songPosition > daNote.strumTime) {goodNoteHit(daNote);untyped __cpp__('continue;');}
 							var swagRect = daNote.clipRect ?? new FlxRect(0, 0, 0, 0);
 							swagRect.height = daNote.height / daNote.scale.y;
 							swagRect.width = daNote.width / daNote.scale.x;
@@ -2883,12 +2868,15 @@ HXLINE(2565)			return;
 							swagRect.height = Math.abs(daNote.y - daNote.childNotes[0].y);
 							daNote.clipRect = swagRect;
 						}
+					}else{
+						daNote.y = strumNote.y - daNote.distanceToSprite;
+
 					}
 					
 				
 				}
 			}
-			if (daNote.skipNote) continue;
+			if (daNote.skipNote) untyped __cpp__('continue;');
 
 			updateNotePosition(daNote,strumNote);
 
@@ -2910,9 +2898,9 @@ HXLINE(2565)			return;
 		if ((daNote.mustPress || !daNote.wasGoodHit) && daNote.lockToStrum){
 			daNote.visible = strumNote.visible;
 			if(daNote.updateX) daNote.x = strumNote.x + (strumNote.width * 0.5);
-			if(!daNote.isSustainNote && daNote.updateAngle) daNote.angle = strumNote.angle;
-			if(daNote.updateAlpha) daNote.alpha = strumNote.alpha;
-			if(daNote.updateScrollFactor) daNote.scrollFactor.set(strumNote.scrollFactor.x,strumNote.scrollFactor.y);
+			if(!daNote.isSustainNote && daNote.updateAngle && daNote.angle != strumNote.angle) daNote.angle = strumNote.angle;
+			if(daNote.updateAlpha && daNote.alpha != strumNote.alpha) daNote.alpha = strumNote.alpha;
+			if(daNote.updateScrollFactor && daNote.scrollFactor.y != strumNote.scrollFactor.y && daNote.scrollFactor.x != strumNote.scrollFactor.x) daNote.scrollFactor.set(strumNote.scrollFactor.x,strumNote.scrollFactor.y);
 			if(daNote.updateCam && daNote.cameras[0] != strumNote.cameras[0]) daNote.cameras = strumNote.cameras.copy();
 		}
 	}
@@ -2926,16 +2914,16 @@ HXLINE(2565)			return;
 		if (acceptInput && !boyfriend.isStunned && holdArray.contains(true)) {
 
  			var daNote:Note;
- 			var i:Int = 0;
+ 			var i:Int = notes.members.length;
 			
  			boyfriend.holdTimer = 0;
 			boyfriend.isPressingNote = true;
-			while(i < notes.members.length){
+			while(i >= 0){
 				daNote = notes.members[i];
-				i++;
-				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.updateCanHit()) continue;
+				i--;
+				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.updateCanHit()) untyped __cpp__('continue;');
 				if(!SESave.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition - 50) // Only destroy the note when properly hit
-					{goodNoteHit(daNote);continue;}
+					{goodNoteHit(daNote);untyped __cpp__('continue;');}
 				// Tell note to be clipped to strumline
 				daNote.isPressed = true;
 				
@@ -3037,18 +3025,18 @@ HXLINE(2565)			return;
 			while (i >= 0) {
 				daNote = members[i];
 				i--;
-				if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) continue;
+				if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) untyped __cpp__('continue;');
 				
 				if (!onScreenNote) onScreenNote = true;
-				if (daNote.isSustainNote || !pressArray[daNote.noteData] || !daNote.updateCanHit(TIME) || daNote.tooLate || daNote.wasGoodHit) continue;
+				if (daNote.isSustainNote || !pressArray[daNote.noteData] || !daNote.updateCanHit(TIME) || daNote.tooLate || daNote.wasGoodHit) untyped __cpp__('continue;');
 				final coolNote = possibleNotes[daNote.noteData];
 				if (coolNote != null){
 					if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7)){
 						notes.remove(daNote);
 						daNote.destroy();
-						continue;
+						untyped __cpp__('continue;');
 					}
-					if(daNote.strumTime > coolNote.strumTime) continue;
+					if(daNote.strumTime > coolNote.strumTime) untyped __cpp__('continue;');
 				}
 				possibleNotes[daNote.noteData] = daNote;
 			}
@@ -3069,9 +3057,9 @@ HXLINE(2565)			return;
 							hitState:false
 						});
 					}
-					continue;
+					untyped __cpp__('continue;');
 				}
-				if(daNote == null) continue;
+				if(daNote == null) untyped __cpp__('continue;');
 				hitArray[daNote.noteData] = true;
 				queuedNotes.push({
 					time:TIME,
@@ -3104,13 +3092,6 @@ HXLINE(2565)			return;
 
 			SEIKeyHeld[event.keyCode] = false;
 			holdArray[SEIKeyMap[event.keyCode]] = false;
-			// for(key => data in SEIKeyMap){
-			// 	if(FlxG.keys.checkStatus(key, PRESSED) && acceptInput && !playerCharacter.isStunned){
-			// 		holdArray[data] = true;
-			// 	}else{
-			// 		SEIKeyHeld[key] = false;
-			// 	}
-			// }
 			untyped __cpp__('
 			{
 				::Array<bool> arr = this->holdArray;
@@ -3148,15 +3129,15 @@ HXLINE(2565)			return;
 		while(i < notes.members.length){
 			daNote = notes.members[i];
 			i++;
-			if(daNote == null || !daNote.mustPress || !daNote.updateCanHit() || daNote.shouldntBeHit || !daNote.aiShouldPress) continue;
+			if(daNote == null || !daNote.mustPress || !daNote.updateCanHit() || daNote.shouldntBeHit || !daNote.aiShouldPress) untyped __cpp__('continue;');
 			
 			if(daNote.strumTime <= Conductor.songPosition){
 				playerCharacter.holdTimer = 0;
 				pressArray[daNote.noteData] = true;
 				goodNoteHit(daNote);
-				continue;
+				untyped __cpp__('continue;');
 			}
-			if(!daNote.isSustainNote) continue;
+			if(!daNote.isSustainNote) untyped __cpp__('continue;');
 			playerCharacter.holdTimer = 0;
 			// hitArray[daNote.noteData] = true;
 			// Tell note to be clipped to strumline
@@ -3175,7 +3156,7 @@ HXLINE(2565)			return;
 		while (i >= 0){
 			spr = playerStrums.members[i];
 			i--;
-			if(spr == null) continue;
+			if(spr == null) untyped __cpp__('continue;');
 			if(!holdArray[spr.ID] && spr.animation.finished) spr.playStatic();
 		}
 		SEProfiler.qStamp('BotPlay');
@@ -3237,9 +3218,9 @@ HXLINE(2565)			return;
 			while(i < notes.members.length){
 				daNote = notes.members[i];
 				i++;
-				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.updateCanHit()) continue;
+				if(daNote == null || !holdArray[daNote.noteData] || !daNote.mustPress || !daNote.isSustainNote || !daNote.updateCanHit()) untyped __cpp__('continue;');
 				if(!SESave.data.accurateNoteSustain || daNote.strumTime <= Conductor.songPosition - 50 || daNote.isSustainNoteEnd) // Only destroy the note when properly hit
-					{goodNoteHit(daNote);continue;}
+					{goodNoteHit(daNote);untyped __cpp__('continue;');}
 				hitArray[daNote.noteData] = true;
 				// Tell note to be clipped to strumline
 				daNote.isPressed = true;
@@ -3261,14 +3242,14 @@ HXLINE(2565)			return;
  			while (i >= 0) {
 				daNote = notes.members[i];
 				i--;
-				if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) continue;
+				if (daNote == null || !daNote.alive || daNote.skipNote || !daNote.mustPress) untyped __cpp__('continue;');
 
 				if (!onScreenNote) onScreenNote = true;
-				if (!pressArray[daNote.noteData] || !daNote.canBeHit || daNote.tooLate || daNote.wasGoodHit) continue;
+				if (!pressArray[daNote.noteData] || !daNote.canBeHit || daNote.tooLate || daNote.wasGoodHit) untyped __cpp__('continue;');
 				final coolNote = possibleNotes[daNote.noteData];
 				if (coolNote != null) {
-					if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7)){notes.remove(daNote);daNote.destroy();continue;}
-					if((daNote.strumTime > coolNote.strumTime)) continue;
+					if((Math.abs(daNote.strumTime - coolNote.strumTime) < 7)){notes.remove(daNote);daNote.destroy();untyped __cpp__('continue;');}
+					if((daNote.strumTime > coolNote.strumTime)) untyped __cpp__('continue;');
 				}
 				possibleNotes[daNote.noteData] = daNote;
 			}
@@ -3283,9 +3264,9 @@ HXLINE(2565)			return;
 					if(!SESave.data.ghost){
 						noteMiss(i, null);
 					}
-					continue;
+					untyped __cpp__('continue;');
 				}
-				if(daNote == null) continue;
+				if(daNote == null) untyped __cpp__('continue;');
 				hitArray[daNote.noteData] = true;
 				goodNoteHit(daNote);
 			}
@@ -3304,7 +3285,7 @@ HXLINE(2565)			return;
 		while (i >= 0){
 			spr = playerStrums.members[i];
 			i--;
-			if(spr == null) continue;
+			if(spr == null) untyped __cpp__('continue;');
 			if(pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm') spr.press(); 
 			else if(!holdArray[spr.ID]) spr.playStatic();
 		}
@@ -3552,21 +3533,20 @@ HXLINE(2565)			return;
 		// songStarted = true;
 		startedCountdown = finished=false;
 		startingSong = handleHealth = true;
-		for (i=>v in notes.members){
-			if(v == null) continue;
-			v.acceleration.y = FlxG.random.int(200, 300);
-			v.velocity.y -= FlxG.random.int(140, 160);
-			v.velocity.x = FlxG.random.float(-5, 5);
-			v.angularVelocity = v.velocity.x*0.5;
-			v.skipNote=true;
-			v.doUpdate=true;
-			add(v);
-			
-			FlxTween.tween(v, {alpha:0}, FlxG.random.float(0.3, 0.6), {
-				onComplete: function(tween:FlxTween) {v.destroy();}});
-		}
 		var n:Note = null;
-		while((n = notes.members.pop()) != null){n?.destroy();}
+		while((n = notes.members.pop()) != null){
+			n.acceleration.y = FlxG.random.int(200, 300);
+			n.velocity.y -= FlxG.random.int(140, 160);
+			n.velocity.x = FlxG.random.float(-5, 5);
+			n.angularVelocity = n.velocity.x*0.5;
+			n.skipNote=true;
+			n.doUpdate=true;
+			add(n);
+			
+			FlxTween.tween(n, {alpha:0}, FlxG.random.float(0.3, 0.6), {
+				onComplete: function(tween:FlxTween) {n.destroy();}});
+		}
+		// while((n = notes.members.pop()) != null){n?.destroy();}
 		while((n = unspawnNotes.pop()) != null){n?.destroy();}
 		if(inputMode == 1){
 		// 	for(key => data in SEIKeyMap){

@@ -93,7 +93,6 @@ class PauseSubState extends MusicBeatSubstate {
 		cam.bgColor=0x00000000;
 		// FlxG.cameras.setDefaultDrawTarget(cam,true);
 		cameras = [cam];
-
 		finishCallback = FlxG.sound.music.onComplete;
 
 		FlxG.sound.music.onComplete = null;

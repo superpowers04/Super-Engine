@@ -95,7 +95,9 @@ class SEProfiler{
 		ticksSinceUpdate=0;
 		_end = Math.floor((Sys.time()-_start) * 1000)*0.001;
 		if(_end > max) max=_end;
-		if(_end > peak) peak = _end;
+		if(_end > peak) {
+			peak = _end;
+		};
 		// average = Math.floor(FlxMath.lerp(average,_end,0.5)*10000)*0.0001;
 	}
 

@@ -356,6 +356,9 @@ class SELoader {
 		gc();
 	}
 	@:keep inline public static function getContent(textPath:String):String{return loadText(textPath,false);}
+
+
+
 	public static function getChart(textPath:String,?difficulty:String="normal"):SwagSong{
 		// return Song.parseJSONshit(loadText(textPath,false));
 
@@ -365,10 +368,13 @@ class SELoader {
 			difficulty = textPath.substring(colonIndex+1);
 			textPath = textPath.substring(0,colonIndex);
 		}
-		if(!(textPath.lastIndexOf('-metadata') != -1 || textPath.lastIndexOf('-chart') != -1)){
+		var chartType = (textPath.lastIndexOf('-metadata') != -1 || textPath.lastIndexOf('-chart') != -1) ? 1 : // VSlice
+					(textPath.lastIndexOf('meta.json') != -1 ) ? 2 : // CNE :DIFF
+					(textPath.lastIndexOf('/charts/') != -1 && textPath.lastIndexOf('/songs/') != -1) ? 3 : // CNE DIFF.json
+					0;
+		if(chartType == 0){
 			final s:SwagSong = Song.parseJSONshit(loadText(oldPath,false));
 			try{
-
 				if(SESave.data.loadPsychEvents){
 					final events = oldPath.substring(0,oldPath.lastIndexOf('/'))+'/events.json';
 					if(exists(events)){
@@ -379,13 +385,30 @@ class SELoader {
 				trace('Unable to load events: $e');
 			}
 			return s;
+		}else if(chartType == 1){
+			textPath = textPath.replace('-metadata','_FILE_').replace('-chart','_FILE_');
+			final rawJson = loadText(textPath.replace('_FILE_','-chart'),false);
+			final metaJson = loadText(textPath.replace('_FILE_','-chart'),false);
+			return Song.fromVSlice('{"meta":$metaJson,'+rawJson.substring(rawJson.indexOf('{')+1,rawJson.lastIndexOf('}'))+'}',difficulty);
+		}else if(chartType == 2 || chartType == 3){ // cne why you have like 3 different chart formats stop it pleaseee
+			var rawJsonPath:String = "";
+			var metaJsonPath:String = "";
+			if(chartType == 2){
+				rawJsonPath = textPath;
+				metaJsonPath = textPath.substring(textPath.lastIndexOf('/charts/'))+"/meta.json";
+			}else if (chartType == 3){
+				rawJsonPath = textPath.substring(textPath.lastIndexOf('/meta.json'))+'/charts/${difficulty}.json';
+				metaJsonPath = textPath;
+			}
+			if(exists(rawJsonPath) && !exists(metaJsonPath)){
+				return Song.parseJSONshit(loadText(oldPath,false));
+			}
+
+
+			return se.formats.CNEChart.fromCNE(loadText(rawJsonPath,false),loadText(metaJsonPath,false));
 		}
 
-		textPath = textPath.replace('-metadata','_FILE_').replace('-chart','_FILE_');
-		final rawJson = loadText(textPath.replace('_FILE_','-chart'),false);
-		final metaJson = loadText(textPath.replace('_FILE_','-metadata'),false);
-		return Song.fromVSlice('{"meta":$metaJson,'+rawJson.substring(rawJson.indexOf('{')+1,rawJson.lastIndexOf('}'))+'}',difficulty);
-
+		return Song.getEmptySong();
 
 		// if(textPath.lastIndexOf('-metadata.json') != -1){
 		// 	if(colonIndex != -1){
@@ -737,6 +760,10 @@ class SELoader {
 		try{
 			return FileSystem.exists(getPath(path));
 		}catch(e){trace('$path is an invalid path!');return false;}
+	}
+
+	@:keep inline public static function absFileExists(str):Null<String>{
+		return FileSystem.exists(str) ? str : null;
 	}
 	@:keep inline public static function readDirectoryOrdered(path:String):Array<String>{
 		return inline CoolUtil.orderList(readDirectory(path));

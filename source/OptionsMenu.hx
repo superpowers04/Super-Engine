@@ -133,7 +133,7 @@ class OptionsMenu extends MusicBeatState
 			new HCBoolOption('Distractions',"Toggle stage distractions that can hinder your gameplay(Handled by the stage, not the game)",'distractions'),
 			new HCBoolOption('Camera Movement',"Toggle the camera zooming and moving to current singer",'camMovement'),
 			// new NPSDisplayOption("Shows your current Notes Per Second."),
-			new ScalingModeOption("Menu/State change might be required"),
+			new ScalingModeOption("\nMenu change, state change or restart might be required to apply correctly"),
 			new HCBoolOption('Show Accuracy',"Display accuracy information.",'accuracyDisplay'),
 			new HCBoolOption('Show Song Position',"Show the songs current position, name and length",'songPosition'),
 			new HCBoolOption('CPU Strum lighting',"Light up the corrosponding CPU strum when a note is hit",'cpuStrums',"Animated CPU Strums","Static CPU Strums"),

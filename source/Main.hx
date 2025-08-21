@@ -1,4 +1,7 @@
 package;
+#if !cpp
+#error('Super Engine only supports CPP!')
+#end
 import openfl.display.BlendMode;
 import openfl.text.TextFormat;
 import openfl.display.Application;
@@ -97,6 +100,7 @@ import sys.io.File;
 			
 			funniSprite = new Sprite();
 			game = new FlxGameEnhanced(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
+			
 			FlxG.mouse.enabled = false;
 			addChild(funniSprite);
 			funniSprite.addChild(game);
