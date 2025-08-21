@@ -30,7 +30,7 @@ class Overlay extends TextField {
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
-	public static var debugVar:String = "";
+	public static var debugText:String = "";
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
 	{
@@ -93,7 +93,10 @@ class Overlay extends TextField {
 			#if cpp
 			+'\nMemory Reserved/Current: ${FlxStringUtil.formatBytes(cpp.NativeGc.memInfo(3))}/${FlxStringUtil.formatBytes(cpp.NativeGc.memInfo(2))}'
 			#end
-			+ debugVar + SEProfiler.getString();
+			;
+		if(SESave.data.showDebugInfo){
+			text+=debugText + SEProfiler.getString();
+		}
 		// }
 
 		cacheCount = currentFPS;

@@ -587,7 +587,7 @@ class OnlinePlayState extends PlayState
 			if (waitMusic.volume < 0.75)
 				waitMusic.volume += 0.01 * elapsed;
 		}
-		if(SESave.data.animDebug){
+		if(SESave.data.showDebugInfo){
 			Overlay.debugVar += '\nClient count:${clientCount}\nLast Packet: ${lastPacketID};${lastPacket}';
 		}
 	}

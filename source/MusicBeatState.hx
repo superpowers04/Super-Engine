@@ -46,6 +46,8 @@ class MusicBeatState extends FlxUIState {
 	public static var lastClassList:Array<Class<Dynamic>> = [];
 	public static var returningFromClass:Bool = false;
 	private var doUpdate:Bool = true;
+	public var debugText:Array<String> = [];
+	public var debugTextObj:SESingularText = new SESingularText(); 
 
 	public function goToLastClass(?avoidType:Class<Any> = null){
 		try{
@@ -308,7 +310,7 @@ class MusicBeatState extends FlxUIState {
 
 			}
 		}
-		if(SESave.data.animDebug){
+		if(SESave.data.showDebugInfo){
 			Overlay.debugVar = '\nBPM:${Conductor.bpm}/${CoolUtil.truncateFloat(Conductor.crochet,2)}MS(S:${CoolUtil.truncateFloat(Conductor.stepCrochet,2)}MS)\nBeat/Step/Time:${curBeat},${curStep},${CoolUtil.truncateFloat(Conductor.songPosition,2)}';
 		}
 

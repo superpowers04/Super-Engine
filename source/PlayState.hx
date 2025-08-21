@@ -182,9 +182,7 @@ class PlayState extends ScriptMusicBeatState
 		public var hasDied:Bool = false;
 		public var canSaveScore(default,set):Bool = true; // Controls the ability for the game to save your score. Can be disabled but not re-enabled to prevent cheating
 		public function set_canSaveScore(val){ // Prevents being able to enable this if it's already been disabled.
-			if(!val){
-				canSaveScore = false;
-			}
+			if(!val) canSaveScore = false;
 			return canSaveScore;
 		}
 		public var botPlay(default,set):Bool = false;
@@ -1286,19 +1284,12 @@ class PlayState extends ScriptMusicBeatState
 	var generatedArrows = false;
 	public var swappedChars = false;
 	public function swapChars(?what:Bool = false){
-		// if(settings && !) return;
 		callInterp('swapChars',[playerCharacter,opponentCharacter]);
 		swappedChars = !swappedChars;
 		playerCharacter.isPlayer = true;
 		opponentCharacter.isPlayer = false;
 		healthBar.fillDirection = (swappedChars ? LEFT_TO_RIGHT : RIGHT_TO_LEFT);
-		// if(swappedChars){
-		// 	healthBar.createFilledBar(boyfriend.definingColor, dad.definingColor);
-		// }else{
 		healthBar.createFilledBar(dad.definingColor, boyfriend.definingColor);
-		// }
-		// boyfriend.camX = -boyfriend.camX;
-		// dad.camX = -dad.camX;
 		if(useNoteCameras){
 			if(!middlescroll){
 				var x1 = playerNoteCamera.x;
@@ -2138,7 +2129,6 @@ class PlayState extends ScriptMusicBeatState
 		}
 		
 
-
 		super.update(elapsed);
 		lastMusicUpdate = Sys.time() * 1000;
 		callInterp("update",[elapsed]);
@@ -2203,7 +2193,7 @@ class PlayState extends ScriptMusicBeatState
 		vocals.update(elapsed);
 
 		var e = getDefaultCamPos();
-		if(SESave.data.animDebug && updateOverlay){
+		if(updateOverlay && SESave.data.showDebugInfo){
 			var sp = Std.int(Conductor.songPosition);
 			var vt = (vocals == null) ? 0 : Std.int(vocals.time);
 			Overlay.debugVar += '\nResync count:${resyncCount}'
@@ -3736,9 +3726,6 @@ class PlayState extends ScriptMusicBeatState
 	override public function consoleCommand(text:String,args:Array<String>):Dynamic{
 		return null;
 	}
-
-
-
 }
 
 

@@ -157,6 +157,7 @@ class OptionsMenu extends MusicBeatState
 			#end
 			// new HCBoolOption("Allows you to use the legacy chart editor","Lecacy chart editor","legacyCharter"),
 			// new LogGameplayOption("Logs your game to a text file"),
+			new HCBoolOption("Debug Information","Show extra debug information","showDebugInfo"),
 			new HCBoolOption("Profiler","Adds a basic profiler to the FPS display","profiler"),
 			new EraseOption("Backs up your options to SESETTINGS-BACK.json and then resets them"),
 			// new ImportOption("Import your options from SEOPTIONS.json"),
