@@ -89,9 +89,9 @@ class Overlay extends TextField {
 			System.totalMemory
 			#end);
 		if (mem > memPeak) memPeak = mem;
-		text = '$currentFPS FPS/$deltaTime MS/FrameDiff: ${(timeDiff > 1 ? Math.floor(timeDiff) : timeDiff)}\nMemory Usage/Peak: ${FlxStringUtil.formatBytes(mem)}/${FlxStringUtil.formatBytes(memPeak)}'
+		text = '$currentFPS FPS/$deltaTime MS/FrameDiff: ${(timeDiff > 1 ? Math.floor(timeDiff) : timeDiff)}\nMemory Usage/Peak: ${mem/1024/1024}mb/${memPeak/1024/1024}mb'
 			#if cpp
-			+'\nMemory Reserved/Current: ${FlxStringUtil.formatBytes(cpp.NativeGc.memInfo(3))}/${FlxStringUtil.formatBytes(cpp.NativeGc.memInfo(2))}'
+			+'\nMemory Reserved/Current: ${cpp.NativeGc.memInfo(3)/1024/1024}mb/${cpp.NativeGc.memInfo(2)/1024/1024} mb'
 			#end
 			;
 		if(SESave.data.showDebugInfo){

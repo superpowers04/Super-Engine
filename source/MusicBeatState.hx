@@ -46,8 +46,6 @@ class MusicBeatState extends FlxUIState {
 	public static var lastClassList:Array<Class<Dynamic>> = [];
 	public static var returningFromClass:Bool = false;
 	private var doUpdate:Bool = true;
-	public var debugText:Array<String> = [];
-	public var debugTextObj:SESingularText = new SESingularText(); 
 
 	public function goToLastClass(?avoidType:Class<Any> = null){
 		try{
