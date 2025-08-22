@@ -116,7 +116,7 @@
 	<!-- <haxedef name="HXCPP_DEBUGGER"/> -->
 	<!-- This is to hopefully increase preformance on x64 systems, if it's not compiling to them already for some reason -->
 	<section if="cpp">
-		<haxedef name="HXCPP_VERBOSE"/>
+		<!-- <haxedef name="HXCPP_VERBOSE"/> -->
 
 		<haxedef name="HXCPP_M64"/> 
 		<haxedef name="HXCPP_CHECK_POINTER"/>
@@ -126,7 +126,7 @@
 		<!-- <def name="TELEMETRY" unless="ghaction"/> -->
 		<haxedef name="HXCPP_CATCH_SEGV"/>
 		<haxedef name="HXCPP_CPP11"/>
-		<haxedef name='HXCPP_DEBUG_LINK' if='desktop' unless="ghaction"/>
+		<!-- <haxedef name='HXCPP_DEBUG_LINK' if='desktop' unless="ghaction"/> -->
 	</section>
 	<!-- <haxedef name="HXCPP_DEBUGGER"/> -->
 	<haxedef name="NO_PRECOMPILED_HEADERS"/>
