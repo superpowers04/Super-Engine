@@ -43,6 +43,11 @@ using StringTools;
 		recalculate();
 		return s;
 	}
+	function updateText(s):String{
+		if(s == text) return text;
+
+		return text = s;
+	}
 	@:noCompletion private var seperatedText:Array<String> = [];
 	@:noCompletion private var textFrames:Array<SESTLetter> = [];
 	@:noCompletion private var newLineWidths:Array<Float> = [];

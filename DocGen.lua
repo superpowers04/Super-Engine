@@ -32,4 +32,6 @@ for i in findContents:gmatch('[^\n]+') do
 end
 
 local output = table.concat(functions, "\n")
-io.open("example_mods/autogen_docs.md","w"):write(output);
+f = io.open("example_mods/autogen_docs.md","w")
+f:write(output);
+f:close();
