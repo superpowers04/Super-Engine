@@ -176,6 +176,7 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Performance", [
 			new FPSCapOption("Cap your Frames Per Second.\nThis controls how fast the game will update your screen. The FPS counter will read FPS*1.03"),
 			// new UPSCapOption("Cap your Updates Per Second, This controls how responsive the game is"),
+			new HCBoolOption("VSync","Attempts to sync the game to your monitors refresh rate.\nCan cause input latency","vSync",function(){CoolUtil.setFramerate();}),
 			new HCBoolOption("Hurt note texture","Use custom arrow texture instead of coloring normal notes black","useBadArrowTex"),
 
 			new HCBoolOption('Performance mode',"Disables many effects to make the game run better",'performance'),

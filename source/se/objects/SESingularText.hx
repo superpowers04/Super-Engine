@@ -17,6 +17,7 @@ using StringTools;
 /* TODO - MAKE LESS DEPENDANT ON ALPHABET AND BOLD TEXT*/
 /* TODO - ADD PROPER ANGLE SUPPORT*/
 /* TODO - ADD MIN CHARACTER COUNT TO ALLOW LETTTER CACHING FOR LESS RAM FLUCTUATION*/
+/* TODO - TEXT BACKGROUND*/
 /* FIXME - X,Y VALUES ARE INCORRECT WHEN ACTUALLY RENDERING*/
 @:structInit @:publicFields class SESTLetter {
 	var frame:FlxFrame;
@@ -28,6 +29,7 @@ using StringTools;
 
 @:structInit @:publicFields class SESingularText extends FlxSprite{
 	static inline var LETTERSIZE = 70;
+	var attachedValue:Dynamic = null;
 	var spacing:Float = 2;
 	var bold:Bool=false;
 

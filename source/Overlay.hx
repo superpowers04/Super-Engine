@@ -63,9 +63,7 @@ class Overlay extends TextField {
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
 		if(!visible) return;
-		final ct = currentTime;
 		currentTime = Sys.time();
-		final timeDiff = currentTime-ct;
 		times.push(currentTime);
 
 		while (times[0] < currentTime - 1) times.shift();
@@ -76,13 +74,16 @@ class Overlay extends TextField {
 
 		final mem:Int = Math.floor(( #if cpp cpp.NativeGc.memInfo(0) #else System.totalMemory #end)/1024/1024);
 		if (mem > memPeak) memPeak = mem;
-		text = '$currentFPS FPS/$deltaTime MS/FrameDiff: ${(timeDiff > 1 ? Math.floor(timeDiff) : timeDiff)}\nMemory Usage/Peak: ${mem}mb/${memPeak}mb'
+		var _text = '$currentFPS FPS\nMemory Usage/Peak: ${mem}mb/${memPeak}mb'
 			#if cpp
 			+'\nMemory Reserved/Current: ${Math.floor(cpp.NativeGc.memInfo(3)/1024/1024)}mb/${Math.floor(cpp.NativeGc.memInfo(2)/1024/1024)} mb'
 			#end
 			;
 		if(SESave.data.showDebugInfo){
-			text+=debugVar + SEProfiler.getString();
+			_text+=debugVar + SEProfiler.getString();
+		}
+		if(text != _text){
+			text = _text;
 		}
 
 		cacheCount = currentFPS;
@@ -140,13 +141,6 @@ class Console extends TextField
 		commandBox = new ConsoleInput();
 		commandBox.defFormat = commandBox.defaultTextFormat = defaultTextFormat = new TextFormat("_sans", 18, color);
 		commandBox._parent = this;
-
-		#if flash
-		addEventListener(Event.ENTER_FRAME, function(e)
-		{
-			__enterFrame(e);
-		});
-		#end
 	}
 	var lineCount:Int = 0;
 	var lines:Array<String> = [];

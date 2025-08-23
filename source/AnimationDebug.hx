@@ -1395,34 +1395,32 @@ class AnimationDebug extends MusicBeatState
 				if (rPress && !pressArray.contains(true)) spawnChar(true);
 				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
 				if(!FlxG.mouse.overlaps(animDropDown)){
+					var mY = Std.int(Main.instance.mouseY);
+					var mX = Std.int(Main.instance.mouseX);
 					if(FlxG.mouse.justPressed){
-						lastMouseX = Std.int(FlxG.mouse.x);
-						lastMouseY = Std.int(FlxG.mouse.y);
+						lastMouseX = mX;
+						lastMouseY = mY;
 					}
 					if(FlxG.mouse.justPressedRight){
-						lastRMouseX = Std.int(FlxG.mouse.screenX);
-						lastRMouseY = Std.int(FlxG.mouse.screenY);
+						lastRMouseX = mX;
+						lastRMouseY = mY;
 					}
 
 					if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
 
-						var mx = Std.int(FlxG.mouse.screenX);
-						var my = Std.int(FlxG.mouse.screenY);
-						camFollow.x+=lastRMouseX - mx;
-						camFollow.y+=lastRMouseY - my;
-						lastRMouseX = mx;
-						lastRMouseY = my;
+						camFollow.x += lastRMouseX - mX;
+						camFollow.y += lastRMouseY - mY;
+						lastRMouseX = mX;
+						lastRMouseY = mY;
 					}
 					if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
-						var mx = Std.int(FlxG.mouse.x);
-						var my = Std.int(FlxG.mouse.y);
 						if(shiftPress){
-							updateCharPos(-(lastMouseX - mx),(lastMouseY - my),false,false);
+							updateCharPos(-(lastMouseX - mX),(lastMouseY - mY),false,false);
 						}else{
-							moveOffset(lastMouseX - mx,lastMouseY - my,false,false);
+							moveOffset(lastMouseX - mX,lastMouseY - mY,false,false);
 						}
-						lastMouseX = mx;
-						lastMouseY = my;
+						lastMouseX = mX;
+						lastMouseY = mY;
 
 					}
 				}
@@ -1492,12 +1490,12 @@ class AnimationDebug extends MusicBeatState
 			case 1:{
 
 				if(FlxG.mouse.justPressed){
-					lastRMouseX = Std.int(FlxG.mouse.screenX);
-					lastRMouseY = Std.int(FlxG.mouse.screenY);
+					lastRMouseX = Std.int(Main.instance.mouseX);
+					lastRMouseY = Std.int(Main.instance.mouseY);
 				}
 				if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
-					var mx = Std.int(FlxG.mouse.screenX);
-					var my = Std.int(FlxG.mouse.screenY);
+					var mx = Std.int(Main.instance.mouseX);
+					var my = Std.int(Main.instance.mouseY);
 
 					updateCameraPos(true,lastRMouseX - mx,lastRMouseY - my,false,false);
 					lastRMouseX = mx;
@@ -1523,14 +1521,14 @@ class AnimationDebug extends MusicBeatState
 			}
 			case 2:{
 				if(FlxG.mouse.justPressedRight){
-					lastRMouseX = Std.int(FlxG.mouse.screenX);
-					lastRMouseY = Std.int(FlxG.mouse.screenY);
+					lastRMouseX = Std.int(Main.instance.mouseX);
+					lastRMouseY = Std.int(Main.instance.mouseY);
 				}
 
 				if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
 
-					var mx = Std.int(FlxG.mouse.screenX);
-					var my = Std.int(FlxG.mouse.screenY);
+					var mx = Std.int(Main.instance.mouseX);
+					var my = Std.int(Main.instance.mouseY);
 
 					camFollow.x+=lastRMouseX - mx;
 					camFollow.y+=lastRMouseY - my;
@@ -1562,19 +1560,19 @@ class AnimationDebug extends MusicBeatState
 				if (rPress && !pressArray.contains(true)) spawnChar(true);
 				if (FlxG.keys.justPressed.B) {toggleOffsetText(!showOffsets);}
 				if(FlxG.mouse.justPressed){
-					lastMouseX = Std.int(FlxG.mouse.x);
-					lastMouseY = Std.int(FlxG.mouse.y);
+					lastMouseX = Std.int(Main.instance.mouseX);
+					lastMouseY = Std.int(Main.instance.mouseY);
 				}
 				if(FlxG.mouse.justPressedRight){
-					lastRMouseX = Std.int(FlxG.mouse.screenX);
-					lastRMouseY = Std.int(FlxG.mouse.screenY);
+					lastRMouseX = Std.int(Main.instance.mouseX);
+					lastRMouseY = Std.int(Main.instance.mouseY);
 				}
 				var ox = 0;
 				var oy = 0;
 				if(FlxG.mouse.pressedRight && FlxG.mouse.justMoved){
 
-					var mx = Std.int(FlxG.mouse.screenX);
-					var my = Std.int(FlxG.mouse.screenY);
+					var mx = Std.int(Main.instance.mouseX);
+					var my = Std.int(Main.instance.mouseY);
 
 					camFollow.x+=lastRMouseX - mx;
 					camFollow.y+=lastRMouseY - my;
@@ -1582,8 +1580,8 @@ class AnimationDebug extends MusicBeatState
 					lastRMouseY = my;
 				}
 				if(FlxG.mouse.pressed && FlxG.mouse.justMoved){
-					var mx = Std.int(FlxG.mouse.x);
-					var my = Std.int(FlxG.mouse.y);
+					var mx = Std.int(Main.instance.mouseX);
+					var my = Std.int(Main.instance.mouseY);
 					ox = lastMouseX - mx;
 					oy = lastMouseY - my;
 					lastMouseX = mx;

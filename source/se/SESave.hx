@@ -182,6 +182,7 @@ typedef YourMother = Dynamic;
 	var gpuCaching:Bool=false;
 	var allowTracing:Bool=true;
 	var showDebugInfo:Bool=false;
+	var vSync:Bool=false;
 	// var flashStageQuality:openfl.display.StageQuality=openfl.display.StageQuality.BEST;
 	// function set_flashStageQuality(f){
 	// 	return flashStageQuality = flixel.FlxG.stage.quality = f;

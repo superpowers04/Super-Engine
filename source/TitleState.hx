@@ -1351,8 +1351,8 @@ class TitleState extends MusicBeatState
 		
 		if(_sprite.filters[0] != null) cast(_sprite.filters[0],flash.filters.GlowFilter).color = _colors[_curPart];
 		if(_sprite != null){
-			_sprite.x = (FlxG.game.width * 0.5);
-			_sprite.y = (FlxG.game.height * 0.60);
+			_sprite.x = ((FlxG.game.width * 0.5)-_sprite.width)*FlxG.game.scaleX;
+			_sprite.y = ((FlxG.game.height * 0.60)-_sprite.height)*FlxG.game.scaleY;
 			_sprite.scaleX = FlxG.game.scaleX;
 			_sprite.scaleY = FlxG.game.scaleY;
 		}

@@ -30,19 +30,26 @@ class CoolUtil {
 	}
 	public static function setFramerate(?fps:Float = 0,?update:Bool = false,?temp:Bool = false){
 		if(!temp){
-			if(fps != 0 && !update){
-				updateRate = (Framerate = SESave.data.fpsCap = fps) * 2;
-			}
-			if(Framerate == 0 || update){
-				Framerate = cast SESave.data.fpsCap;
-			}
-			if(Framerate < 30){
+			if(SESave.data.vSync){
 				var rf = Application.current.window.displayMode.refreshRate;
 				var fr = Application.current.window.frameRate;
 				Framerate = SESave.data.fpsCap = (rf > 30 ? rf : (fr > 30 ? fr : 30 ));
-			}
-			if(Framerate > 999){
-				Framerate = SESave.data.fpsCap = 999;
+			}else{
+
+				if(fps != 0 && !update){
+					updateRate = (Framerate = SESave.data.fpsCap = fps) * 2;
+				}
+				if(Framerate == 0 || update){
+					Framerate = cast SESave.data.fpsCap;
+				}
+				if(Framerate < 30){
+					var rf = Application.current.window.displayMode.refreshRate;
+					var fr = Application.current.window.frameRate;
+					Framerate = SESave.data.fpsCap = (rf > 30 ? rf : (fr > 30 ? fr : 30 ));
+				}
+				if(Framerate > 999){
+					Framerate = SESave.data.fpsCap = 999;
+				}
 			}
 		}
 		Main.instance.setFPSCap(Framerate);

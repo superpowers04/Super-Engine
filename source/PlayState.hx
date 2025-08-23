@@ -2329,11 +2329,8 @@ class PlayState extends ScriptMusicBeatState
 		return (a < b) ? Order : (a > b) ? -Order : 0;
 	}
 	override function draw(){
-		try{noteShit();}catch(e){handleError('Error during noteShit: ${e.message}\n ${e.stack}}');}
 		callInterp("draw",[]);
-		try{
-			if(!SESave.data.preformance) notes.sort(byTime,(FlxSort.ASCENDING));
-		}catch(e){}
+		try{noteShit();}catch(e){handleError('Error during noteShit: ${e.message}\n ${e.stack}}');}
 		super.draw();
 		callInterp("drawAfter",[]);
 	}
@@ -2860,7 +2857,6 @@ class PlayState extends ScriptMusicBeatState
 						}
 					}else{
 						daNote.y = strumNote.y - daNote.distanceToSprite;
-
 					}
 					
 				
@@ -3536,8 +3532,8 @@ class PlayState extends ScriptMusicBeatState
 			FlxTween.tween(n, {alpha:0}, FlxG.random.float(0.3, 0.6), {
 				onComplete: function(tween:FlxTween) {n.destroy();}});
 		}
-		// while((n = notes.members.pop()) != null){n?.destroy();}
-		while((n = unspawnNotes.pop()) != null){n?.destroy();}
+		// while((n = notes.members.pop()) != null){n.destroy();}
+		while((n = unspawnNotes.pop()) != null){n.destroy();}
 		if(inputMode == 1){
 		// 	for(key => data in SEIKeyMap){
 		// 		if(SEIKeyHeld[key]) SEIKeyRelease(key);
@@ -3551,12 +3547,12 @@ class PlayState extends ScriptMusicBeatState
 		generateSong();
 		generateNotes();
 		addNotes();
-		handleTimes = acceptInput = true;
 		hasDied=false;
 		FlxG.sound.music.pause();
 		vocals.pause();
 		// SELoader.gc();
 		callInterp('restartSongAfter',[]);
+		handleTimes = acceptInput = true;
 		startCountdownFirst();
 		resetScore();
 	}
