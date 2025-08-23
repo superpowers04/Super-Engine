@@ -30,7 +30,7 @@ Read the [mods/readme.txt](https://github.com/superpowers04/Super-Engine/blob/ni
 ## Compiling
 - Follow the guide on the Funkin github page [here](https://github.com/ninjamuffin99/Funkin#build-instructions), this should be completely compatible with that guide. 
   Although you will also need to use the installDeps.bat file. While it is a bat file, it works on Windows, Mac and Linux. I only named it .bat so it can work properly on Windows machines or whatever
-  **Do note this file installs dependancies globally.** Super Engine specifically tells Lime/Haxe what versions of libraries to use so no global settings should need to be changed
+  **Do note this file installs dependancies globally.** Super Engine specifically tells Lime/Haxe what versions of libraries to use or tries to aim for support with the latest libraries so no global settings should need to be changed
 
 # Information
 ## Friday Night Funkin'

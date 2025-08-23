@@ -232,7 +232,6 @@ class Note extends FlxSprite
 			frames = Paths.getSparrowAtlas("EVENTNOTE");
 		}
 		addAnimations();
-
 	}
 	dynamic public function hit(?charID:Int = 0,note:Note){
 		switch (charID) {
