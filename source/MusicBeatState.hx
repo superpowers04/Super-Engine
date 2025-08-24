@@ -374,7 +374,7 @@ class MusicBeatState extends FlxUIState {
 	
 	@:keep inline public function fancyOpenURL(schmancy:String) FlxG.openURL(schmancy);
 	
-	@:haxe.warning('-WDeprecated')
+	// @:haxe.warning('-WDeprecated')
 	override function switchTo(nextState:FlxState):Bool{
 		tranOut();
 		FlxG.mouse.visible = false;

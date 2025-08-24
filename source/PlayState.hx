@@ -1552,13 +1552,15 @@ class PlayState extends ScriptMusicBeatState
 			skipPos = _validUnspawn - 5000; // -5000 is to make sure all of the notes actually appear and don't blindside the player
 			// jumpToText = new FlxText(0,0,1000,"Press a note button to skip to " + Math.floor(skipPos * 0.001) + " seconds");
 			// jumpToText.setFormat(CoolUtil.font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-			jumpToText = new SESingularText(0,0,"Press a note button to skip to " + Math.floor(skipPos * 0.001) + " seconds",40);
-			jumpToText.cameras = [camHUD];
-			jumpToText.screenCenter(XY);
-			jumpToText.y -= 20;
-			add(jumpToText);
-			FlxTween.tween(jumpToText,{alpha:1},0.4);
-			jumpToTimer = FlxTween.tween(jumpToText,{y:jumpToText.y + 40},10,{onUpdate:function(_){
+			
+			var jumpText = jumpToText = new SESingularText(0,0,"Press a note button to skip to " + Math.floor(skipPos * 0.001) + " seconds",40);
+			jumpText.cameras = [camHUD];
+			jumpText.screenCenter(XY);
+			jumpText.y -= 20;
+			add(jumpText);
+			FlxTween.tween(jumpText,{alpha:1},0.4);
+			var jumpToTween:FlxTween;
+			jumpToTween = jumpToTimer = FlxTween.tween(jumpText,{y:jumpToText.y + 40},10,{onUpdate:function(tween){
 				if(subState != null || !acceptInput) return;
 				// var hasPressed = false;
 				// for(key => _ in SEIKeyMap){
@@ -1566,8 +1568,9 @@ class PlayState extends ScriptMusicBeatState
 				// 	hasPressed = true;
 				// 	break;
 				// }
-				if(Conductor.songPosition > skipPos) {
-					FlxTween.tween(PlayState.jumpToText,{alpha:0},0.2,{onComplete:function(_){jumpToTimer.cancelChain();PlayState.jumpToText.destroy();}});
+				if(Conductor.songPosition > 10000 || Conductor.songPosition < 0) {
+					tween.cancelChain();
+					FlxTween.tween(jumpText,{alpha:0},0.2,{onComplete:function(_){jumpText.destroy();}});
 					return;
 				}
 				var skip = false;
@@ -1594,9 +1597,9 @@ class PlayState extends ScriptMusicBeatState
 				}
 				FlxG.sound.music.time = Conductor.songPosition = skipPos;
 				if(vocals != null) vocals.time = FlxG.sound.music.time;
-				FlxTween.tween(PlayState.jumpToText,{alpha:0},0.2,{onComplete:function(_){jumpToTimer.cancelChain();PlayState.jumpToText.destroy();}});
+				FlxTween.tween(jumpText,{alpha:0},0.2,{onComplete:function(_){tween.cancelChain();jumpText.destroy();}});
 			}});
-			jumpToTimer.then(FlxTween.tween(PlayState.jumpToText,{alpha:0,y:jumpToText.y + 5},0.4,{onComplete:function(_){PlayState.jumpToText.destroy();}}));
+			jumpToTween.then(FlxTween.tween(jumpText,{alpha:0,y:jumpToText.y + 5},0.4,{onComplete:function(_){jumpText.destroy();}}));
 		}
 		
 
@@ -3495,17 +3498,24 @@ class PlayState extends ScriptMusicBeatState
 		Conductor.songPosition = vocals.time = FlxG.sound.music.time = -5000;
 		vocals.volume = SESave.data.voicesVol;
 		var n:Note = null;
-		while((n = notes.members.pop()) != null){
-			n.acceleration.y = FlxG.random.int(200, 300);
-			n.velocity.y -= FlxG.random.int(140, 160);
-			n.velocity.x = FlxG.random.float(-5, 5);
-			n.angularVelocity = n.velocity.x*0.5;
-			n.skipNote=true;
-			// n.doUpdate=true;
-			add(n);
-			
-			FlxTween.tween(n, {alpha:0}, FlxG.random.float(0.3, 0.6), {
-				onComplete: function(tween:FlxTween) {n.destroy();}});
+		if(notes.members.length > 0){
+			var noteArr:Array<Note> = [];
+			new FlxTimer().start(1,function(_){
+				var n:Note;
+				while((n = noteArr.pop()) != null) { remove(n); n.destroy();}
+			});
+			while((n = notes.members.pop()) != null){
+				n.acceleration.y = FlxG.random.int(200, 300);
+				n.velocity.y -= FlxG.random.int(140, 160);
+				n.velocity.x = FlxG.random.float(-5, 5);
+				n.angularVelocity = n.velocity.x*0.5;
+				n.skipNote=true;
+				// n.doUpdate=true;
+				add(n);
+				noteArr.push(n);
+				
+				FlxTween.tween(n, {alpha:0}, FlxG.random.float(0.3, 0.6));
+			}
 		}
 		while((n = unspawnNotes.pop()) != null){n.destroy();}
 		if(inputMode == 1){
