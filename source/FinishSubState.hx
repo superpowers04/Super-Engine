@@ -131,8 +131,7 @@ class FinishSubState extends MusicBeatSubstate
 		cameras[0].scroll.y = FlxG.camera.scroll.y;
 
 
-		if(boyfriend.playAnimAvailable(bfAnims,true) || forceBFAnim) 
-			boyfriend.animation.finishCallback = this.finishNew; 
+		if(boyfriend.playAnimAvailable(bfAnims,true) || forceBFAnim) boyfriend.animation.finishCallback = this.finishNew; 
 		else finishNew();
 		forceBFAnim = false;
 		

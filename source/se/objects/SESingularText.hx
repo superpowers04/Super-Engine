@@ -138,7 +138,6 @@ using StringTools;
 			x=baseX+(xAlign == 0 ? 0 : (newLineWidths[char.line] ?? w) * xAlign)+char.x;
 			y=baseY+char.y;
 
-			// updateHitbox();
 			draw_frame();
 		}
 		width = w;

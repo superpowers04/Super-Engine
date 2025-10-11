@@ -2,10 +2,49 @@
 # In songs, PlayState will pass itself as the first argument for backwards compatibility reasons
 # Proper UP TO DATE documentation IS planned. Just bear with me for now
 #LINE | CALL
-# ScriptableState.hx
-    32: callInterp("new",[]);
-    49: callInterp("update",[e]);
-    51: callInterp("updateAfter",[e]);
+# MainMenuState.hx
+   182: callInterp('firstStart',[]);
+   222: callInterp('createAfter',[]);
+   302: callInterp('openExitPrompt',[]);
+   321: callInterp('otherSwitch',[]);
+   353: callInterp('mmSwitch',[]);
+   466: callInterp('select',[sel,daChoice]);
+   470: callInterp('addToList',[i,options[i]]);
+   480: callInterp('addToListAfter',[controlLabel,i,options[i]]);
+# ScriptMusicBeatState.hx
+   282: callInterp("initScript",[],id);
+   319: callInterp("initScript",[],id);
+   482: callInterp('reload',[false]);
+   483: callInterp('unload',[]);
+   488: callInterp('reloadDone',[]);
+   506: callInterp('reloadDone',[]);
+   507: callInterp('createAfter',[]);
+   511: callInterp('draw',[]);
+   518: callInterp('destroy',[]);
+   524: callInterp('onFileDrop',[file]);
+   530: callInterp('beatHit',[]);
+   537: callInterp('stepHit',[]);
+   546: callInterp('unload',[]);
+   547: callInterp('reload',[true]);
+   554: callInterp('unload',[]);
+   559: callInterp('update',[e]);
+   567: callInterp('openSubState',[s]);
+   574: callInterp('add',[obj]);
+   581: callInterp('remove',[Object,Splice]);
+   588: callInterp('switchTo',[s]);
+   596: callInterp('startOutro',[func]);
+# Character.hx
+   549: callInterp("initCharacter",[]);
+   777: callInterp("initScript",[]);
+   894: callInterp("new",[]);
+   898: callInterp("animFinish",[animation.curAnim]);
+   901: callInterp("animFrame",[animation.curAnim,frameNumber,frameIndex]);
+   941: callInterp("update",[elapsed]);
+  1033: callInterp("draw",[]);
+  1042: callInterp("playAnim",[AnimName]);
+  1045: callInterp("playAnim",[AnimName,this]);
+  1083: callInterp("playAnimBefore",[AnimName]);
+  1106: callInterp("playAnimAfter",[AnimName,animation.curAnim]);
 # PlayState.hx
    583: callInterp('reload',[false]);
    584: callInterp('unload',[]);
@@ -70,119 +109,19 @@
   3199: callInterp("beatHit",[]);
   3256: callInterp("beatHitAfter",[]);
   3301: callInterp("destroy",[]);
-# OptionsMenu.hx
-   623: callInterp("initScript",[],id);
-# onlinemod/OnlinePlayState.hx
-   306: callInterp("packetRecieve",[packetId,data]);
-# onlinemod/OfflineMenuState.hx
-    31: callInterp('chartOptions',[]);
-   115: callInterp('extraKeys',[]);
-   130: callInterp('select',[sel]);
-# onlinemod/OnlineLobbyState.hx
-   206: callInterp("packetRecieve",[packetId,data]);
-# ChartingState.hx
-  2016: callInterp('updateNote',[note,i]);
-  2023: callInterp('updateGrid',[updateNotes]);
-  2088: callInterp('updateGridAfter',[]);
-  2098: callInterp('addSection',[sec]);
-  2138: callInterp('selectNote',[currentNoteObj]);
-  2163: callInterp('clearSection',[sect]);
-  2174: callInterp('clearSong',[currentNoteObj]);
-  2268: callInterp('addNote',[thingy]);
-  2348: callInterp('autosaveChart',[path]);
-  2381: callInterp('loadChart',[_song]);
-  2415: callInterp('saveChart',[path]);
-  2427: callInterp('saveChart',[onlinemod.OfflinePlayState.chartFile]);
-# PauseSubState.hx
-    85: callInterp("pauseCreate",[this]);
-   182: callInterp("pause",[this]);
-   247: callInterp("pauseUpdate",[]);
-   444: callInterp("pauseSelect",[sel]);
-   461: callInterp("pauseResume",[]);
-   606: callInterp("pauseExit",[]);
-# MainMenuState.hx
-   182: callInterp('firstStart',[]);
-   222: callInterp('createAfter',[]);
-   302: callInterp('openExitPrompt',[]);
-   321: callInterp('otherSwitch',[]);
-   353: callInterp('mmSwitch',[]);
-   466: callInterp('select',[sel,daChoice]);
-   470: callInterp('addToList',[i,options[i]]);
-   480: callInterp('addToListAfter',[controlLabel,i,options[i]]);
-# SickMenuState.hx
-    70: callInterp('generateList',[]);
-    73: callInterp('generateListAfter',[grpControls]);
-    76: callInterp('addToList',[i,options[i]]);
-    84: callInterp('addToListAfter',[controlLabel,i,options[i]]);
-   200: callInterp('handleInput',[]);
-   266: callInterp('changeSelection',[change]);
-   286: callInterp('changeSelectionAfter',[change]);
-# SearchMenuState.hx
-   201: callInterp('addToList',[char,i]);
-   210: callInterp('addToListAfter',[controlLabel,char,i]);
-   222: callInterp('reloadList',[query]);
-   281: callInterp('handleInput',[]);
-   367: callInterp('changeSelection',[change]);
-   391: callInterp('changeSelectionAfter',[change]);
-# Character.hx
-   549: callInterp("initCharacter",[]);
-   777: callInterp("initScript",[]);
-   894: callInterp("new",[]);
-   898: callInterp("animFinish",[animation.curAnim]);
-   901: callInterp("animFrame",[animation.curAnim,frameNumber,frameIndex]);
-   941: callInterp("update",[elapsed]);
-  1033: callInterp("draw",[]);
-  1042: callInterp("playAnim",[AnimName]);
-  1045: callInterp("playAnim",[AnimName,this]);
-  1083: callInterp("playAnimBefore",[AnimName]);
-  1106: callInterp("playAnimAfter",[AnimName,animation.curAnim]);
-# se/objects/EventNote.hx
-    20: callInterp('eventNoteCreate',[this,rawData]);
-# Note.hx
-   301: callInterp("noteCheckType",[this,rawNote]);
-   362: callInterp("noteCreate",[this,rawNote]); 
-   416: callInterp("noteAdd",[this,rawNote]);
-   452: callInterp('noteDestroy',[this]);
-   489: callInterp("noteUpdate",[this]);
-   512: callInterp("noteUpdateAfter",[this]);
-   517: callInterp("noteHitDad",[dad,this]);
-# NoteSplash.hx
-    18: callInterp("newNoteSplash",[this]);
-    43: callInterp("newNoteSplashAfter",[this]);
-    55: callInterp("setupNoteSplash",[this]);
-   105: callInterp("setupNoteSplashAfter",[this]);
-# EventNote.hx
-    27: callInterp("eventNoteCheckType",[note,rawNote]);
-   113: callInterp('changeChar',[_oldChar]); // Allows the character to play an animation or something upon change
-   114: callInterp('changeChar',[_char,_oldChar,id]);
-   305: callInterp("eventNoteAdd",[this,rawNote]);
-# ScriptMusicBeatState.hx
-   282: callInterp("initScript",[],id);
-   319: callInterp("initScript",[],id);
-   482: callInterp('reload',[false]);
-   483: callInterp('unload',[]);
-   488: callInterp('reloadDone',[]);
-   506: callInterp('reloadDone',[]);
-   507: callInterp('createAfter',[]);
-   511: callInterp('draw',[]);
-   518: callInterp('destroy',[]);
-   524: callInterp('onFileDrop',[file]);
-   530: callInterp('beatHit',[]);
-   537: callInterp('stepHit',[]);
-   546: callInterp('unload',[]);
-   547: callInterp('reload',[true]);
-   554: callInterp('unload',[]);
-   559: callInterp('update',[e]);
-   567: callInterp('openSubState',[s]);
-   574: callInterp('add',[obj]);
-   581: callInterp('remove',[Object,Splice]);
-   588: callInterp('switchTo',[s]);
-   596: callInterp('startOutro',[func]);
-# HoldNote.hx
-    51: callInterp("noteCreate",[this,rawNote]); 
-    91: callInterp("noteAdd",[this,rawNote]);
-   103: callInterp("noteUpdate",[this]);
-   145: callInterp("noteUpdateAfter",[this]);
+# multi/MultiMenuState.hx
+   135: callInterp('addListing',[name,i]);
+   145: callInterp('addListingAfter',[controlLabel,name,i]);
+   165: callInterp('addCategory',[name,i]);
+   181: callInterp('addCategoryAfter',[controlLabel,name,i]);
+   244: callInterp('reloadList',[reload,search,query]);
+   269: callInterp('generateList',[reload,search,query]);
+# SearchMenuSubstate.hx
+   204: callInterp('addToList',[char,i]);
+   213: callInterp('addToListAfter',[controlLabel,char,i]);
+   282: callInterp('handleInput',[]);
+   364: callInterp('changeSelection',[change]);
+   390: callInterp('changeSelectionAfter',[change]);
 # ScriptableStates.hx
     12: callInterp('openSubState',[state]);
     19: callInterp('openSubStateAfter',[state]);
@@ -247,16 +186,77 @@
    442: callInterp('switchTo',[state]);
    453: callInterp('startOutro',[func]);
    466: callInterp('newAfter',[]);
-# multi/MultiMenuState.hx
-   135: callInterp('addListing',[name,i]);
-   145: callInterp('addListingAfter',[controlLabel,name,i]);
-   165: callInterp('addCategory',[name,i]);
-   181: callInterp('addCategoryAfter',[controlLabel,name,i]);
-   244: callInterp('reloadList',[reload,search,query]);
-   269: callInterp('generateList',[reload,search,query]);
-# SearchMenuSubstate.hx
-   204: callInterp('addToList',[char,i]);
-   213: callInterp('addToListAfter',[controlLabel,char,i]);
-   282: callInterp('handleInput',[]);
-   364: callInterp('changeSelection',[change]);
-   390: callInterp('changeSelectionAfter',[change]);
+# SickMenuState.hx
+    70: callInterp('generateList',[]);
+    73: callInterp('generateListAfter',[grpControls]);
+    76: callInterp('addToList',[i,options[i]]);
+    84: callInterp('addToListAfter',[controlLabel,i,options[i]]);
+   200: callInterp('handleInput',[]);
+   266: callInterp('changeSelection',[change]);
+   286: callInterp('changeSelectionAfter',[change]);
+# PauseSubState.hx
+    85: callInterp("pauseCreate",[this]);
+   182: callInterp("pause",[this]);
+   247: callInterp("pauseUpdate",[]);
+   444: callInterp("pauseSelect",[sel]);
+   461: callInterp("pauseResume",[]);
+   606: callInterp("pauseExit",[]);
+# se/objects/EventNote.hx
+    20: callInterp('eventNoteCreate',[this,rawData]);
+# HoldNote.hx
+    51: callInterp("noteCreate",[this,rawNote]); 
+    91: callInterp("noteAdd",[this,rawNote]);
+   103: callInterp("noteUpdate",[this]);
+   145: callInterp("noteUpdateAfter",[this]);
+# SearchMenuState.hx
+   201: callInterp('addToList',[char,i]);
+   210: callInterp('addToListAfter',[controlLabel,char,i]);
+   222: callInterp('reloadList',[query]);
+   281: callInterp('handleInput',[]);
+   367: callInterp('changeSelection',[change]);
+   391: callInterp('changeSelectionAfter',[change]);
+# EventNote.hx
+    27: callInterp("eventNoteCheckType",[note,rawNote]);
+   113: callInterp('changeChar',[_oldChar]); // Allows the character to play an animation or something upon change
+   114: callInterp('changeChar',[_char,_oldChar,id]);
+   305: callInterp("eventNoteAdd",[this,rawNote]);
+# Note.hx
+   301: callInterp("noteCheckType",[this,rawNote]);
+   362: callInterp("noteCreate",[this,rawNote]); 
+   416: callInterp("noteAdd",[this,rawNote]);
+   452: callInterp('noteDestroy',[this]);
+   489: callInterp("noteUpdate",[this]);
+   512: callInterp("noteUpdateAfter",[this]);
+   517: callInterp("noteHitDad",[dad,this]);
+# ChartingState.hx
+  2016: callInterp('updateNote',[note,i]);
+  2023: callInterp('updateGrid',[updateNotes]);
+  2088: callInterp('updateGridAfter',[]);
+  2098: callInterp('addSection',[sec]);
+  2138: callInterp('selectNote',[currentNoteObj]);
+  2163: callInterp('clearSection',[sect]);
+  2174: callInterp('clearSong',[currentNoteObj]);
+  2268: callInterp('addNote',[thingy]);
+  2348: callInterp('autosaveChart',[path]);
+  2381: callInterp('loadChart',[_song]);
+  2415: callInterp('saveChart',[path]);
+  2427: callInterp('saveChart',[onlinemod.OfflinePlayState.chartFile]);
+# NoteSplash.hx
+    18: callInterp("newNoteSplash",[this]);
+    43: callInterp("newNoteSplashAfter",[this]);
+    55: callInterp("setupNoteSplash",[this]);
+   105: callInterp("setupNoteSplashAfter",[this]);
+# OptionsMenu.hx
+   623: callInterp("initScript",[],id);
+# onlinemod/OnlinePlayState.hx
+   306: callInterp("packetRecieve",[packetId,data]);
+# onlinemod/OnlineLobbyState.hx
+   206: callInterp("packetRecieve",[packetId,data]);
+# onlinemod/OfflineMenuState.hx
+    31: callInterp('chartOptions',[]);
+   115: callInterp('extraKeys',[]);
+   130: callInterp('select',[sel]);
+# ScriptableState.hx
+    32: callInterp("new",[]);
+    49: callInterp("update",[e]);
+    51: callInterp("updateAfter",[e]);

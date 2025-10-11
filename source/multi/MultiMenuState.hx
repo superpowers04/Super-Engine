@@ -1064,7 +1064,7 @@ class MultiMenuState extends onlinemod.OfflineMenuState {
 			}
 			importedSong = true;
 			gotoSong(dir,
-					json,
+					file.substring(dir.length),
 					name,
 					voices ?? "",
 					inst

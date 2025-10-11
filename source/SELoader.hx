@@ -393,14 +393,14 @@ class SELoader {
 		}else if(chartType == 2 || chartType == 3){ // cne why you have like 3 different chart formats stop it pleaseee
 			var rawJsonPath:String = "";
 			var metaJsonPath:String = "";
-			if(chartType == 2){
+			if(chartType == 3){
 				rawJsonPath = textPath;
-				metaJsonPath = textPath.substring(textPath.lastIndexOf('/charts/'))+"/meta.json";
-			}else if (chartType == 3){
-				rawJsonPath = textPath.substring(textPath.lastIndexOf('/meta.json'))+'/charts/${difficulty}.json';
+				metaJsonPath = textPath.substring(0,textPath.lastIndexOf('/charts/'))+"/meta.json";
+			}else if (chartType == 2){
+				rawJsonPath = textPath.substring(0,textPath.lastIndexOf('/meta.json'))+'/charts/${difficulty}.json';
 				metaJsonPath = textPath;
 			}
-			if(exists(rawJsonPath) && !exists(metaJsonPath)){
+			if(!exists(rawJsonPath) && !exists(metaJsonPath)){
 				return Song.parseJSONshit(loadText(oldPath,false));
 			}
 
