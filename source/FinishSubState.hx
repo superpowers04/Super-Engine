@@ -102,7 +102,7 @@ class FinishSubState extends MusicBeatSubstate
 			finishNew();
 			return;
 		}
-		var bfAnims = [];
+		var bfAnims:Array<String> = null;
 
 		if(win){
 			bfAnims = ['win','hey','Idle','danceLeft','singUp'];
@@ -131,8 +131,10 @@ class FinishSubState extends MusicBeatSubstate
 		cameras[0].scroll.y = FlxG.camera.scroll.y;
 
 
-		if(boyfriend.playAnimAvailable(bfAnims,true) || forceBFAnim) boyfriend.animation.finishCallback = this.finishNew; 
-		else finishNew();
+		// if(boyfriend.playAnimAvailable(bfAnims,true) || forceBFAnim) 
+			// boyfriend.animation.finishCallback = this.finishNew; 
+		// else finishNew();
+		if(!boyfriend.playAnimAvailable(bfAnims,true) && !forceBFAnim) finishNew();
 		forceBFAnim = false;
 		
 	}
@@ -506,8 +508,8 @@ class FinishSubState extends MusicBeatSubstate
 			}
 			if(PlayState.instance != null)PlayState.instance.testanimdebug();
 		}else if (!shownResults){
-			if(FlxG.keys.justPressed.ANY){
-				PlayState.playerCharacter.animation.finishCallback = null;
+			if(FlxG.keys.justPressed.ANY || PlayState.playerCharacter.isDonePlayingAnim()){
+				// PlayState.playerCharacter.animation.finishCallback = null;
 				finishNew();
 			}
 		}else{
