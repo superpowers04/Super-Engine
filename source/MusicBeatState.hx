@@ -51,7 +51,7 @@ class MusicBeatState extends FlxUIState {
 		try{
 			returningFromClass = true;
 			if(avoidType != null){
-				while(Std.isOfType(lastClassList[lastClassList.length - 1],avoidType) ){
+				while(lastClassList[lastClassList.length - 1] == avoidType ){
 					lastClassList.pop();
 				}
 			}
