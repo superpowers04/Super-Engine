@@ -144,6 +144,7 @@ class MusicBeatState extends FlxUIState {
 		CoolUtil.updateActiveObject(null);
 		instance = this;
 		super.create();
+		Options.ScalingModeOption.setScale();
 
 		tranIn();
 	}

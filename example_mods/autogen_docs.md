@@ -23,16 +23,16 @@
    518: callInterp('destroy',[]);
    524: callInterp('onFileDrop',[file]);
    530: callInterp('beatHit',[]);
-   537: callInterp('stepHit',[]);
-   546: callInterp('unload',[]);
-   547: callInterp('reload',[true]);
-   554: callInterp('unload',[]);
-   559: callInterp('update',[e]);
-   567: callInterp('openSubState',[s]);
-   574: callInterp('add',[obj]);
-   581: callInterp('remove',[Object,Splice]);
-   588: callInterp('switchTo',[s]);
-   596: callInterp('startOutro',[func]);
+   538: callInterp('stepHit',[]);
+   548: callInterp('unload',[]);
+   549: callInterp('reload',[true]);
+   556: callInterp('unload',[]);
+   561: callInterp('update',[e]);
+   569: callInterp('openSubState',[s]);
+   576: callInterp('add',[obj]);
+   583: callInterp('remove',[Object,Splice]);
+   590: callInterp('switchTo',[s]);
+   598: callInterp('startOutro',[func]);
 # Character.hx
    549: callInterp("initCharacter",[]);
    777: callInterp("initScript",[]);

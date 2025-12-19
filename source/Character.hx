@@ -1104,6 +1104,7 @@ class CharAnimController extends FlxAnimationController{
 
 	@:keep inline public function getBaseCameraPosition(?id:Null<Int> = null){
 		final vec:Vector<Float> = new Vector(3);
+		vec[3] = id ?? charType;
 		if(useMidpoint){
 			vec[0] = getMidpoint().x + (switch(id ?? charType){case 2: 0;case 1: 150;default:-100;});
 			vec[1] = getMidpoint().y - 100;
@@ -1111,7 +1112,6 @@ class CharAnimController extends FlxAnimationController{
 			vec[0]=x;
 			vec[1]=y;
 		}
-		vec[3] = id ?? charType;
 
 		return vec.copy();
 	}

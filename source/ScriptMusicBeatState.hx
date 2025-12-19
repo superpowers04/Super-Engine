@@ -553,7 +553,6 @@ class ScriptMusicBeatState extends MusicBeatState{
 			}
 			override public function destroy(){
 				if(useNormalCallbacks){
-
 					callInterp('destroy',[]);
 					instance = null;
 				}
@@ -573,9 +572,11 @@ class ScriptMusicBeatState extends MusicBeatState{
 				super.beatHit();
 			}
 			override public function stepHit(){
-				callInterp('stepHit',[]);
-				
-				if(cancelCurrentFunction) return;
+				if(useNormalCallbacks){
+					callInterp('stepHit',[]);
+					
+					if(cancelCurrentFunction) return;
+				)
 				super.stepHit();
 			}
 
