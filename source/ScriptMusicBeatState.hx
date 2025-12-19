@@ -576,7 +576,7 @@ class ScriptMusicBeatState extends MusicBeatState{
 					callInterp('stepHit',[]);
 					
 					if(cancelCurrentFunction) return;
-				)
+				}
 				super.stepHit();
 			}
 
