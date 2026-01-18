@@ -4,13 +4,12 @@ package se.objects;
 import hxcodec.flixel.FlxVideoSprite;
 import flixel.FlxG;
 
-
 class SEFlixelVideoSprite extends FlxVideoSprite{
-	public var checkAutoPause:Bool = false;
+	public var autoPause:Bool = true;
 	// Methods
 	override public function play(location:String, shouldLoop:Bool = false):Int
 	{
-		if(checkAutoPause) return super.play(location,shouldLoop);
+		if(this.autoPause) return super.play(location,shouldLoop);
 		var autoPause = FlxG.autoPause;
 		FlxG.autoPause = false;
 		
