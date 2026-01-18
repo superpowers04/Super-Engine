@@ -1,3 +1,6 @@
+rem ;apt install libvlc-dev -y
+rem ;pacman -Syy libvlc
+
 haxelib update haxelib
 haxelib install hxcpp
 haxelib install lime

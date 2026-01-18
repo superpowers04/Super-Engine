@@ -87,7 +87,7 @@
 	<haxelib name="flixel-addons" version="3.2.3"/>
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" version="2.6.3" />
-	<haxelib name="hxCodec" if="desktop || android" unless="ghaction && linux" /> <!-- TODO, MAKE WORK ON LINUX BETTER -->
+	<haxelib name="hxCodec" if="desktop || android" /> <!-- TODO, MAKE WORK ON LINUX BETTER -->
 
 
 	<!-- <haxedef name='FLXRUNTIMESHADER' if='desktop'> -->
