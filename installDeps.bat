@@ -1,5 +1,5 @@
-rem ;apt install libvlc-dev -y
-rem ;pacman -Syy libvlc
+rem ;sudo apt install libvlc-dev -y
+rem ;sudo pacman -Syy libvlc
 
 haxelib update haxelib
 haxelib install hxcpp
