@@ -2,6 +2,8 @@
 ## To download: 
 * Using Nightly.link: Click [here](https://nightly.link/superpowers04/Super-Engine/workflows/main/nightly), then download the zip corrosponding to your platform and extract it to a new folder or over your older version of Super Engine
 * Using Github: Click on [Actions](https://github.com/superpowers04/Super-Engine/actions), select a commit and go to the artifacts to download, you need a github account to download artifacts
+* On Linux: You will need to install LuaJIT and libVLC from your package manager, `sudo apt install luajit libvlc` for debian/ubuntu and `sudo pacman -Sy luajit libvlc` for Arch
+
 
 # Super Engine (Unstable) [![Build](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml/badge.svg)](https://github.com/superpowers04/FunkinBattleRoyale-Mod/actions/workflows/main.yml)
 A custom engine based on [Funkin Battle Royale](https://github.com/XieneDev/FunkinBattleRoyale/) and very loosely based on [Kade Engine](https://github.com/KadeDev/Kade-Engine) to add a whole bunch of features such as
