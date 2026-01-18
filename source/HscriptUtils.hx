@@ -62,7 +62,7 @@ import flxanimate.FlxAnimate;
 import flxanimate.frames.FlxAnimateFrames;
 
 #if hxCodec
-import hxcodec.flixel.FlxVideoSprite; // from naytoon https://discord.com/channels/862505756845932566/862516958561959957/1459902012555792465
+import se.objects.SEFlixelVideoSprite as FlxVideoSprite; // from naytoon https://discord.com/channels/862505756845932566/862516958561959957/1459902012555792465
 #end
 
 
