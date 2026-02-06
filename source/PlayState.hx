@@ -73,6 +73,8 @@ import se.utilities.FlxSpriteRecycler;
 import se.objects.SEJoinedSound;
 import se.objects.SESingularText;
 import se.formats.SongInfo;
+import se.formats.CharInfo;
+import se.stores.CharacterStore;
 
 
 
@@ -3593,7 +3595,7 @@ class PlayState extends ScriptMusicBeatState
 
 
 		// Zoooooooom
-		if (SESave.data.camMovement && controlCamera && camBeat && camZooming && curBeat % camBeatFreq == 0){
+		if (curBeat % camBeatFreq == 0 && SESave.data.camMovement && controlCamera && camBeat && camZooming){
 			FlxG.camera.zoom += camZoomAmount;
 			camHUD.zoom -= camZoomAmount;
 		}

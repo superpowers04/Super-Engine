@@ -2398,51 +2398,57 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __onLimeRender(context:RenderContext):Void
 	{
 		if (__rendering) return;
-		__rendering = true;
+		try{
 
-		#if hxtelemetry
-		Telemetry.__advanceFrame();
-		#end
+			__rendering = true;
 
-		#if gl_stats
-		Context3DStats.resetDrawCalls();
-		#end
+			#if hxtelemetry
+			Telemetry.__advanceFrame();
+			#end
 
-		var event:Event = null;
+			#if gl_stats
+			Context3DStats.resetDrawCalls();
+			#end
 
-		#if openfl_pool_events
-		event = Event.__pool.get();
-		event.type = Event.ENTER_FRAME;
+			var event:Event = null;
 
-		__broadcastEvent(event);
+			#if openfl_pool_events
+			event = Event.__pool.get();
+			event.type = Event.ENTER_FRAME;
 
-		Event.__pool.release(event);
-		event = Event.__pool.get();
-		event.type = Event.FRAME_CONSTRUCTED;
+			__broadcastEvent(event);
 
-		__broadcastEvent(event);
+			Event.__pool.release(event);
+			event = Event.__pool.get();
+			event.type = Event.FRAME_CONSTRUCTED;
 
-		Event.__pool.release(event);
-		event = Event.__pool.get();
-		event.type = Event.EXIT_FRAME;
+			__broadcastEvent(event);
 
-		__broadcastEvent(event);
+			Event.__pool.release(event);
+			event = Event.__pool.get();
+			event.type = Event.EXIT_FRAME;
 
-		Event.__pool.release(event);
-		#else
-		__broadcastEvent(new Event(Event.ENTER_FRAME));
-		__broadcastEvent(new Event(Event.FRAME_CONSTRUCTED));
-		__broadcastEvent(new Event(Event.EXIT_FRAME));
-		#end
+			__broadcastEvent(event);
 
-		__renderable = true;
-		__enterFrame(__deltaTime);
-		__deltaTime = 0;
+			Event.__pool.release(event);
+			#else
+			__broadcastEvent(new Event(Event.ENTER_FRAME));
+			__broadcastEvent(new Event(Event.FRAME_CONSTRUCTED));
+			__broadcastEvent(new Event(Event.EXIT_FRAME));
+			#end
 
-		var cancelled = __render(context);
-		if (cancelled)
-		{
-			window.onRender.cancel();
+			__renderable = true;
+			__enterFrame(__deltaTime);
+			__deltaTime = 0;
+
+			var cancelled = __render(context);
+			if (cancelled)
+			{
+				window.onRender.cancel();
+			}
+		}catch(e){
+			trace(e);
+			__deltaTime = 0;
 		}
 
 		__rendering = false;

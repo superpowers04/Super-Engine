@@ -27,6 +27,8 @@ import openfl.Assets;
 import sys.io.File;
 import sys.FileSystem;
 import flixel.math.FlxMath;
+import se.stores.CharacterStore;
+import se.formats.CharInfo;
 
 import flash.display.Graphics;
 import flash.display.Sprite;
@@ -49,50 +51,7 @@ using StringTools;
 	var songs:Array<String>;
 	var funniNumber:Float;
 }
-@:structInit @:publicFields class CharInfo{
-	public var id:String = "";
-	public var path(get,default):String = null;
-	public function get_path(){
-		return ((path == "" || path == null) ? "mods/characters/" : path);
-	}
-	public var folderName:String = "";
-	public var description(get,default):String = null;
-	public function get_description(){
-		return description ??(
-		 psychChar ? "Psych Engine character\nIf edited and saved, a copy of the character's Psych Engine json file will be created beside it with a -SE suffix and that will be loaded by Super Engine from now on.\nThe Psych Engine version of the character should still work in Psych engine"
-		: null);
-	}
-	public var nameSpace:String = null;
-	public var nameSpaceType:Int = 0; // 0: mods/characters, 1: mods/weeks, 2: mods/packs 
-	public var internal:Bool = false;
-	public var psychChar:Bool = false;
-	public var internalAtlas:String = "";
-	public var internalJSON:String = "";
-	public var imageLocation(get,default):String = null;
-	public function get_imageLocation(){
-		if(imageLocation == "" || imageLocation == null) return path+"character";
-		return imageLocation;
-	}
-	public var jsonLocation(get,default):String = null;
-	public function get_jsonLocation(){
-		if(jsonLocation == "" || jsonLocation == null) return path+"config.json";
-		return jsonLocation;
-	}
-	public var iconLocation(get,default):String = null;
-	public function get_iconLocation(){
-		if(iconLocation == "" || iconLocation == null) return path+folderName+"/healthicon.png";
-		return iconLocation;
-	}
-	public var type:Int = 0x0; // 0: PNG/XML based, 1: Script based
-	public var hidden = false;
 
-	public function toString(){
-		return 'Character $nameSpace/$id, Raw folder name:$folderName, path:$path';
-	}
-	public function getNamespacedName(){
-		return (nameSpace == null ? id : '$nameSpace|$id');
-	}
-}
 @:structInit class StageInfo{
 	public var id:String = "";
 	public var path(get,default):String = null;
@@ -126,8 +85,8 @@ class TitleState extends MusicBeatState
 	var superLogo:FlxSprite;
 	public static var p2canplay = true;
 
-	public static var characters:Array<CharInfo> = [];
-	static var defaultChar:CharInfo;
+
+
 	public static var stages:Array<StageInfo> = [];
 
 
@@ -136,7 +95,6 @@ class TitleState extends MusicBeatState
 		return (SESave.data.easterEggs) ? easterEgg = val : 0x00;
 	}
 
-	public static var invalidCharacters:Array<CharInfo> = []; // This is a seperate array because the character doesn't need metadata beyond it being invalid
 
 
 	// Var's I have because I'm to stupid to get them to properly transfer between certain functions
@@ -161,10 +119,12 @@ class TitleState extends MusicBeatState
 			new NoteAssets(SESave.data.noteAsset,forced2);
 		}
 	}
+	// TODO DEPRECATE
+	@:deprecated
 	public static function findChar(char:String,?retBF:Bool = true,?ignoreNSCheck:Bool = false,?fuzzySearch:Bool = true):Null<CharInfo>{
 		if(char == ""){
 			trace('Empty character search, returning BF');
-			if(retBF) return defaultChar;
+			if(retBF) return CharacterStore.defaultChar;
 			return null;
 		}
 		if(char.startsWith('NULL|')) char = char.replace('NULL|','');
@@ -179,147 +139,26 @@ class TitleState extends MusicBeatState
 			// var _e = char.split('|');
 			return findCharNS(char,SELoader.namespace,-1,retBF,fuzzySearch);
 		}
-		if(char == "" || char == "automatic"){
-			trace('Tried to get a blank character!');
-			if(retBF) return defaultChar;
-			return null;
-		}
-		final charID = Std.parseInt(char);
-		if(charID != null && !Math.isNaN(charID)){
-			var char = characters[charID];
-			if(char != null){
-				trace('Found char with ID of $charID');
-				return char;
-			}
-			trace('Invalid ID $charID, out of range 0-${characters.length}');
-			if(retBF) return defaultChar;
-			return null;
-		}
-		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
-		
-		if(char.contains("-") && fuzzySearch){
-			final splitChar = char.split('-');
-			final splitCharMap:Map<String,Int> = [];
-			var curStr = "";
-			for(index => split in splitChar){
-				curStr +=(index == 0 ? split : '-$split');
-				splitCharMap[curStr] = index;
-			}
-			var curProbability = -1;
-			var probableChar:CharInfo = null;
-			for (i in characters){
-				if(i.id == char){
-					if(!i.psychChar) return i;
-					probableChar = i;
-
-				}else if(splitCharMap.exists(i.id)){
-					curProbability = splitCharMap[i.id];
-					probableChar = i;
-				}
-			}
-			if(curProbability >= 0){
-				trace('Found character with substring ${probableChar.id}');
-				return probableChar;
-			}
-
-		}else{
-			var probableChar:CharInfo = null;
-			for (i in characters){
-				if(i.id == char) {
-					if(!i.psychChar) return i;
-					probableChar = i;
-				}
-
-			}
-			if(probableChar != null) return probableChar;
-		}
-		trace('Unable to find $char!');
-		if(retBF) return defaultChar;
-		return null;
+		return CharacterStore.getCharacterSplitNamespace(char) ?? (retBF ? CharacterStore.defaultChar : null);
 	}
 	public static function findInvalidChar(char:String):CharInfo{
-		char = char.replace('INVALID|',"");
-		var ID=Std.parseInt(char);
-		if(ID != null && !Math.isNaN(ID)){
-			if(invalidCharacters[ID] != null){
-				return invalidCharacters[ID];
-			}else{
-				return null;
-			}
-		}
-		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
-		for (i in invalidCharacters){
-			if(i.id == char) return i;
-		}
-		
-		return findChar(char);
+		return CharacterStore.findInvalidChar(char);
 	}
 	// This prioritises characters from a specific namespace, if it finds one outside of the namespace, then they'll be used instead
-	public static function findCharNS(char,?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true,?fuzzySearch:Bool = true){
+	@:deprecated
+	public static function findCharNS(char,?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true,?fuzzySearch:Bool = true):Null<CharInfo>{
 		if(namespace == "INVALID"){
 			return findInvalidChar(char);
 		}
-		if(char == "" || char == "automatic"){
-			trace('Tried to get a blank character!');
-			if(retBF) return defaultChar;
-			return null;
-		}
-		var currentChar:CharInfo = null;
-		char = char.replace(' ',"-").replace('_',"-").toLowerCase();
-		
-		if(char.contains("-") && fuzzySearch){
-			var splitChar = char.split('-');
-			var splitCharMap:Map<String,Int> = [];
-			var curStr = "";
-			for(index => split in splitChar){
-				splitCharMap[curStr += (index == 0 ? split : '-$split')] = index;
-			}
-			var curProbability = -1;
-			var probableChar:CharInfo = null;
-			for (i in characters){
-				if(i.id == char){
-					if((i.nameSpace == namespace && i.nameSpaceType == nameSpaceType) || nameSpaceType == -1){
-						return i;
-					}
-					currentChar = i;
-				}else if(currentChar == null && splitCharMap.exists(i.id)){
-					curProbability = splitCharMap[i.id];
-					probableChar = i;
-				}
-			}
-			if(currentChar == null && curProbability >= 0){
-				if(probableChar.id == "bf"){
-					trace('Unable to find $char, returning normal bf!');
-					if(retBF) return defaultChar;
-					return null;
-				}
-				trace('Found character with substring ${probableChar.id}');
-				return probableChar;
-			}
-
-		}else{
-			for (i in characters){
-				if(i.id == char.toLowerCase()){
-					if((i.nameSpace == namespace && i.nameSpaceType == nameSpaceType) || nameSpaceType == -1){
-						return i;
-					}
-					currentChar = i;
-				}
-			}
-		}
-
-
-		if(currentChar == null){
-			trace('Unable to find $char!');
-			if(retBF) return defaultChar;
-			return null;
-		}
-		return currentChar;
+		var char = CharacterStore.getCharacterSplitNamespace(char,namespace);
+		if (char != null) return char;
+		return retBF ? CharacterStore.defaultChar : null;
 	}
+	@:deprecated
 	public static function findCharByNamespace(char:String = "",?namespace:String = "",?nameSpaceType:Int = -1,?retBF:Bool = true):Null<CharInfo>{ 
 		if(char == ""){
-			trace('Empty character search, returning $defaultChar');
-			if(retBF) return defaultChar;
+			trace('Empty character search, returning ${CharacterStore.defaultChar}');
+			if(retBF) return CharacterStore.defaultChar;
 			return null;
 		}
 		if(char.contains('|')){
@@ -330,10 +169,12 @@ class TitleState extends MusicBeatState
 		if(namespace == "" || namespace.toLowerCase() == "null") return findChar(char,retBF,true);
 		return findCharNS(char,namespace,nameSpaceType,retBF);
 	}
+	@:deprecated
 	public static function retChar(char:String,fuzzySearch:Bool = true):String{
 		var char = findChar(char,false,false,fuzzySearch);
 		return ((char == null) ? "" : char.id);
 	}
+
 	public static function getCharFromList(list:Array<String>,nameSpace:String = ""):CharInfo{
 		trace(list);
 		while (list.length > 0){
@@ -342,99 +183,22 @@ class TitleState extends MusicBeatState
 			var charInfo = findCharByNamespace(char,nameSpace,false);
 			if(charInfo != null) return charInfo;
 		}
-		trace('Unable to find anyone in $list, returning $defaultChar');
-		return defaultChar;
+		trace('Unable to find anyone in $list, returning ${CharacterStore.defaultChar}');
+		return CharacterStore.defaultChar;
 	}
 	@:keep inline public static function retCharPath(char:String):String{
 		var path = findChar(char,false);
 		return (path == null || path.path == null) ? "" : path.path;
 	}
-	@:keep inline public static function checkCharacters(){
-		LoadingScreen.loadingText = 'Updating character list';
-		characters = [
-			{id:"bf",folderName:"bf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/BOYFRIEND",iconLocation:"assets/images/healthicons/bf.png",internalJSON:Character.BFJSON,description:"The funny rap guy"},
-			{id:"gf",folderName:"gf",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"characters/GF_assets",iconLocation:"assets/images/healthicons/gf.png",internalJSON:Character.GFJSON,description:"The funny boombox girl"},
-			{id:"lonely",folderName:"lonely",path:"assets/",nameSpace:"INTERNAL",internal:true,internalAtlas:"onlinemod/lonely",internalJSON:Character.BFJSON,description:"Not much is known about them besides their ability to mimic any voice, they're invisible and very shy"},
-		];
-		defaultChar = characters[0];
-		invalidCharacters = [];
-		#if sys
-		// Loading like this is probably not a good idea
-		
-		final customCharacters:Array<String> = [];
 
-		// TODO: MOVE TO SELOADER
-		if (SELoader.exists("mods/characters/")){
-			var path = new SEDirectory("mods/characters/");
-			for (directory in path.readDirectory()) {
-				if (!path.isDirectory(directory)){continue;}
-				var charPath=path.newDirectory(directory);
-				if (charPath.exists("config.json")) {
-					var desc = null;
-					if (charPath.exists("/description.txt"))
-						desc = SELoader.getContent('${charPath}/description.txt');
 
-					characters.push({
-						id:directory.replace(' ','-').replace('_','-').toLowerCase(),
-						folderName:directory,
-						nameSpace:"SECharactersFolder",
-						description:desc
-					});
-				}else if (charPath.exists("script.hscript")) {
-					var desc = charPath.exists("description.txt") ? charPath.getContent('${charPath}/description.txt') : null;
 
-					characters.push({
-						id:directory.replace(' ','-').replace('_','-').toLowerCase(),
-						folderName:directory,
-						description:desc,
-						nameSpace:"SECharactersFolder",
-						type:1
-					});
-				}else if (charPath.exists("character.png") && (charPath.exists("character.xml") || charPath.exists("config.json"))){
-					// invalidCharacters.push([directory,'mods/characters']);
-					invalidCharacters.push({
-						id:directory.replace(' ','-').replace('_','-').toLowerCase(),
-						folderName:directory,
-						nameSpace:"SECharactersFolder",
-						path:'mods/characters'
-					});
-				}
-			}
-		}
 
-		
-		// final ADDPE=SESave.data.PECharSeperate;
-		final LOADPE=SESave.data.PECharLoading;
-		for (ID => dataDir in ['mods/weeks/','mods/packs/']) {
-			final dir = new SEDirectory(dataDir);
-			if (dir.exists()) {
-				for(pack in dir.readDirectory()){
-					SELoader.registerCharactersInFolder(ID,dir.appendPath(pack),pack,LOADPE);
-				}
-			}
-		}
-		if(easterEgg == 0x1){
-			characters[0] = defaultChar = findChar('bf-girlfriendmode');
-			trace('${characters[0]} lesbian mode hopefully?');
-		}
-		trace('Found ${characters.length} characters');
-		// try{
+	public static function registerCustomContent(){
+		CharacterStore.registerCharacters();
 
-		// 	var rawJson = File.getContent('assets/data/characterMetadata.json');
-		// 	// trace('Char Json: \n${rawJson}');
-		// 	TitleState.defCharJson = haxe.Json.parse(CoolUtil.cleanJSON(rawJson));
-		// 	if (defCharJson == null || TitleState.defCharJson.characters == null || TitleState.defCharJson.aliases == null) {defCharJson = {
-		// 		characters:[],
-		// 		aliases:[]
-		// 	};trace("Character characterMetadata is null!");}
-		// }catch(e){
-		// 	MainMenuState.errorMessage = 'An error occurred when trying to parse Character Metadata:\n ${e.message}.\n You can reload this using Reload Char/Stage List';
-		// 	if (defCharJson == null || TitleState.defCharJson.characters == null || TitleState.defCharJson.aliases == null) {defCharJson = {
-		// 		characters:[],
 
-		#end
-		checkStages();
-
+		checkStages(); // TODO MOVE TO SEPERATE CLASS
 
 		if(SESave.data.scripts != null){
 			final scripts:Array<String> = [];
@@ -447,6 +211,7 @@ class TitleState extends MusicBeatState
 			}
 			SESave.data.scripts = scripts;
 		}
+
 	}
 
 	public static function retStage(char:String):String{
@@ -559,7 +324,7 @@ class TitleState extends MusicBeatState
 		#if !android
 			KadeEngineData.initSave();
 			Highscore.load();
-			checkCharacters();
+			registerCustomContent();
 		#end
 
 		#if discord_rpc
@@ -663,7 +428,7 @@ class TitleState extends MusicBeatState
 				// Moved the init to here since settings aren't accessable yet
 				KadeEngineData.initSave();
 				Highscore.load();
-				checkCharacters();
+				registerCustomContent();
 				Alphabet.Frames = null;
 				LoadingScreen.forceHide();
 				LoadingScreen.initScreen();

@@ -10,6 +10,7 @@ import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxInputText;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
+import se.stores.CharacterStore;
 
 import sys.io.File;
 import TitleState;
@@ -77,7 +78,7 @@ class CharSelection extends SearchMenuState
 
 	override function create()
 	{try{
-		TitleState.checkCharacters();
+		CharacterStore.registerCharacters();
 		scriptSubDirectory = "/charselect/";
 		switch (Options.PlayerOption.playerEdit){
 			case 0: curChar = SESave.data.playerChar;
@@ -98,12 +99,12 @@ class CharSelection extends SearchMenuState
 			chars.push(['automatic',-1,'Automatically choose whatever BF is suitable for the chart']);
 		}
 		searchList = [];
-		if(TitleState.invalidCharacters.length > 0 && onlinemod.OnlinePlayMenuState.socket == null){
-			for (i => v in TitleState.invalidCharacters) {
+		if(CharacterStore.invalidCharacters.length > 0 && onlinemod.OnlinePlayMenuState.socket == null){
+			for (i => v in CharacterStore.invalidCharacters) {
 				chars.push([v.id,1,i,null,v]);
 			}
 		}
-		for (i => v in TitleState.characters) {
+		for (i => v in CharacterStore.characters) {
 			if(!v.hidden){
 				chars.push([v.id,0,i,v.description,v]);
 			}

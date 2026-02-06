@@ -9,6 +9,7 @@ import openfl.display.FPS;
 import openfl.Lib;
 import hscript.Interp;
 import flixel.system.scaleModes.*;
+import se.stores.CharacterStore;
 
 import QuickOptionsSubState;
 
@@ -391,7 +392,7 @@ class ReloadCharlist extends Option
 	}
 	public static function RELOAD(){
 		SELoader.AssetPathCache = [];
-		TitleState.checkCharacters();
+		TitleState.registerCustomContent();
 		TitleState.loadNoteAssets(true,true);
 	}
 	public override function press():Bool
@@ -403,7 +404,7 @@ class ReloadCharlist extends Option
 	}
 
 	override function getValue():String {
-		return '${TitleState.characters.length} char${CoolUtil.multiInt(TitleState.characters.length)}, and ${TitleState.stages.length} stage${CoolUtil.multiInt(TitleState.stages.length)} recognized';
+		return '${CharacterStore.characters.length} char${CoolUtil.multiInt(CharacterStore.characters.length)}, and ${TitleState.stages.length} stage${CoolUtil.multiInt(TitleState.stages.length)} recognized';
 	}
 
 }
@@ -1135,7 +1136,7 @@ class ScalingModeOption extends Option
 		new FixedScaleMode(),
 		new PixelPerfectScaleMode(),
 		new RatioScaleMode(),
-		new StageSizeScaleMode()
+		new StageSizeScaleMode(),
 	];
 	public static function setScale(){
 		FlxG.scaleMode = scales[SESave.data.scalingMode];

@@ -4,7 +4,9 @@ import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flash.display.BitmapData;
 import flixel.tweens.FlxTween;
-import TitleState.CharInfo;
+import se.formats.CharInfo;
+import se.stores.CharacterStore;
+
 using StringTools;
 
 class HealthIcon extends FlxSprite
@@ -46,7 +48,7 @@ class HealthIcon extends FlxSprite
 	}
 	var imgPath:String = "mods/characters/";
 	public function fromCharInfo(char:Dynamic) {
-		var charInfo:CharInfo = ( (char is String) ? TitleState.findChar(char) : ((char is CharInfo) ? cast(char) : null) );
+		var charInfo:CharInfo = ( (char is String) ? CharacterStore.getCharacterSplitNamespace(char) : ((char is CharInfo) ? cast(char) : null) );
 		if(char == hichar) return;
 		if(charInfo == null || char == null || charInfo.id == "lonely" || char == "lonely" || char == "face"){
 			// if(charInfo.id == "lonely" || char == "lonely") visible = false;
@@ -60,7 +62,7 @@ class HealthIcon extends FlxSprite
 			imgPath = '${charInfo.path}/healthicon.png';
 			if(!SELoader.exists(imgPath)){
 				if(charInfo.id.startsWith('bf-')) {
-					fromCharInfo(TitleState.findChar("bf"));
+					fromCharInfo(CharacterStore.getCharacterByID("bf"));
 					return;
 				}
 				loadBlankIcon();

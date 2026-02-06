@@ -49,6 +49,8 @@ import flixel.addons.plugin.screengrab.FlxScreenGrab;
 import ImportMod;
 
 import se.utilities.SEUIUtilities;
+import se.stores.CharacterStore;
+import se.formats.CharInfo;
 
 import CharacterJson;
 
@@ -190,7 +192,7 @@ class AnimationDebug extends MusicBeatState
 			SELoader.importFile(validFile,'mods/packs/imported/characters/$name/character.$ending2');
 			LoadingScreen.loadAndSwitchState(new AnimationDebug("INVALID|" + name,false,1,false,true));
 
-		},[file,validFile,ending1,ending2],"Type a name for the character\n",name,function(name:String){return (if(TitleState.retChar(name,false) != "") "This character already exists! Please use a different name" else "");}));
+		},[file,validFile,ending1,ending2],"Type a name for the character\n",name,function(name:String){return ((CharacterStore.getCharacterByID(name) != null) ? "This character already exists! Please use a different name" : "");}));
 	} 
 
 	override public function onFileDrop(file){
@@ -397,7 +399,7 @@ class AnimationDebug extends MusicBeatState
 	}
 	function spawnChar(?reload:Bool = false,?resetOffsets = true,?charProp:CharacterJson = null){
 		try{
-			TitleState.checkCharacters();
+			CharacterStore.registerCharacters();
 			reloadChar = false;
 			if (reload) {
 				// Destroy, otherwise there will be 4 characters

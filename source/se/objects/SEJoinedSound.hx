@@ -48,6 +48,7 @@ import flixel.FlxG;
 	}
 	override function destroy(){
 		for(song in sounds){
+			song.stop();
 			song.destroy();
 		}
 		super.destroy();

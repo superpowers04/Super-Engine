@@ -283,8 +283,8 @@ class SearchMenuState extends ScriptMusicBeatState {
 				var sel = Math.round((LENGTH * ((scrollBar.y - sbBGYOffset) / (sbBGHeight - sbBGYOffset)) ));
 
 				if(curSelected != sel && sel > 0 && sel < LENGTH){
-					curSelected = 0;
-					changeSelection(sel);
+					curSelected = sel;
+					changeSelection(0);
 				}
 			}else{
 				scrollPressed = false;

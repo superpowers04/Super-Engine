@@ -28,6 +28,7 @@ import sys.FileSystem;
 import haxe.Json;
 import haxe.format.JsonParser;
 import haxe.io.Bytes;
+import se.stores.CharacterStore;
 
 using StringTools;
 
@@ -187,7 +188,7 @@ class RepoState extends SickMenuState
 	}
 	function updateText(){
 		installingText.text = 'Installing ${installing} mod${(installing == 1) ? '' : 's' }';
-		installedText.text = TitleState.retChar(repoArray.characters[curSelected].name) == "" ? "Not Installed" : "Installed";
+		installedText.text = CharacterStore.getCharacterByID(repoArray.characters[curSelected].name, "") == null ? "Not Installed" : "Installed";
 	}
 	function finishDownload(data:Bytes,char:RepoCharsJSON,sel:Int){
 		File.saveBytes(Sys.getCwd() + 'mods/characters/${char.name}.zip',data);
@@ -195,7 +196,7 @@ class RepoState extends SickMenuState
 		var instDir = Sys.getCwd() + 'mods/characters/${char.name}/';
 		if(char.subFolder){ instDir = Sys.getCwd() + 'mods/characters/';}
 		unzip(Sys.getCwd() + 'mods/characters/${char.name}.zip',instDir);
-		TitleState.checkCharacters();
+		CharacterStore.registerCharacters();
 		installingList.remove(char.name);
 		installing-=1;
 		updateText();

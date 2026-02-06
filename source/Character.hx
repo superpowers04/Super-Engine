@@ -32,6 +32,8 @@ import hscript.Expr;
 import hscript.Interp;
 import hscriptfork.InterpSE;
 
+import se.formats.CharInfo;
+import se.stores.CharacterStore;
 
 
 
@@ -586,7 +588,11 @@ class CharAnimController extends FlxAnimationController{
 		}
 	}
 	public function loadCustomChar(){
-		if(charInfo == null) charInfo = TitleState.findCharByNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
+		if(charInfo == null) charInfo = CharacterStore.getCharacterByIDSplitNamespace(curCharacter,namespace); // Make sure you're grabbing the right character
+		if(charInfo == null){
+			charInfo=CharacterStore.defaultChar;
+			trace('Unable to find $namespace/$curCharacter! Defaulting to ${charInfo.id}');
+		}
 		curCharacter = charInfo.folderName;
 		charLoc = charInfo.path;
 		namespace = charInfo.nameSpace;
@@ -601,17 +607,6 @@ class CharAnimController extends FlxAnimationController{
 				return;
 			}
 		}
-		// }
-		// if(charLoc == "mods/characters"){
-
-		// 	if(TitleState.weekChars[curCharacter] != null && TitleState.weekChars[curCharacter].contains(onlinemod.OfflinePlayState.nameSpace) && TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter] != null){
-		// 		charLoc = TitleState.characterPaths[onlinemod.OfflinePlayState.nameSpace + "|" + curCharacter];
-		// 		trace('$curCharacter is loading from $charLoc');
-		// 	}else if(TitleState.characterPaths[curCharacter] != null){
-		// 		charLoc = TitleState.characterPaths[curCharacter];
-		// 		trace('$curCharacter is loading from $charLoc');
-		// 	}
-		// }
 		isCustom = true;
 		var charPropJson:String = "";
 		if(charInfo.internal){
@@ -929,7 +924,10 @@ class CharAnimController extends FlxAnimationController{
 		if(charPath != "") charLoc = charPath;
 
 
-		if(curCharacter == "automatic" || curCharacter == "" || curCharacter == "bfHC" ) curCharacter = "INTERNAL|bf";
+		if(curCharacter == "automatic" || curCharacter == "" || curCharacter == "bfHC" ){
+			trace('$curCharacter -> INTERNAL|bf');
+			curCharacter = "INTERNAL|bf";
+		}
 
 		animation = new CharAnimController(this);
 
@@ -1325,7 +1323,7 @@ class CharAnimController extends FlxAnimationController{
 		return toJson();
 	}
 	public static function hasCharacter(char:String):Bool{
-		return (TitleState.retChar(char) != "");
+		return (CharacterStore.getCharacterByID(char) != null);
 	}
 
 	public static final BFJSON:String = CoolUtil.cleanJSON('{

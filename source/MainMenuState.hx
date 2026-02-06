@@ -15,6 +15,7 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import sys.io.File;
 import ScriptableState;
+import se.stores.CharacterStore;
 
 // For Title Screen GF
 import flixel.graphics.FlxGraphic;
@@ -153,15 +154,15 @@ class MainMenuState extends SickMenuState {
 				add(outdatedLMAO);
 			}
 			//  Whole bunch of checks to prevent crashing
-			if (TitleState.retChar(SESave.data.playerChar) == "" && SESave.data.playerChar != "automatic"){
+			if (SESave.data.playerChar != "automatic" && CharacterStore.getCharacterByIDSplitNamespace(SESave.data.playerChar) == null){
 				errorMessage += '\n${SESave.data.playerChar} is an invalid player! Reset back to BF!';
 				SESave.data.playerChar = "bf";
 			}
-			if (TitleState.retChar(SESave.data.opponent) == null){
+			if (CharacterStore.getCharacterByIDSplitNamespace(SESave.data.opponent) == null){
 				errorMessage += '\n${SESave.data.opponent} is an invalid opponent! Reset back to BF!';
 				SESave.data.opponent = "bf";
 			}
-			if (TitleState.retChar(SESave.data.gfChar) == null){
+			if (CharacterStore.getCharacterByIDSplitNamespace(SESave.data.gfChar) == null){
 				errorMessage += '\n${SESave.data.gfChar} is an invalid GF! Reset back to GF!';
 				SESave.data.gfChar = "gf";
 			}

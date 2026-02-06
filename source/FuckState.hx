@@ -19,6 +19,8 @@ import openfl.events.UncaughtErrorEvent;
 import openfl.events.KeyboardEvent;
 import haxe.Exception;
 
+import se.stores.CharacterStore;
+
 import openfl.Lib;
 using StringTools;
 
@@ -136,7 +138,7 @@ class FuckState extends FlxUIState {
 					+'\n Version: ${MainMenuState.ver}'
 					+'\n Buildtype: ${MainMenuState.compileType}'
 					+'\n Debug: ${SESave.data.animDebug}'
-					+'\n Registered character count: ${TitleState.characters.length}'
+					+'\n Registered character count: ${CharacterStore.characters.length}'
 					+'\n Scripts: ${SESave.data.scripts}'
 					+'\n State: ${currentStateName}'
 					+'\n # --------------------------------------';

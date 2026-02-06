@@ -24,6 +24,8 @@ import haxe.io.Bytes;
 import se.formats.SongInfo;
 import se.formats.Song.SwagSong;
 import se.formats.VSliceSongMeta;
+import se.stores.CharacterStore;
+import se.formats.CharInfo;
 // import vlc.VLCSound;
 using StringTools;
 
@@ -572,7 +574,7 @@ class SELoader {
 		for (char in _dir.readDirectory()) {
 			if (LOADPE && !_dir.isDirectory(char)){
 				if (char.substring(char.length-5) == ".json"){ // Psych characters
-					TitleState.characters.push({
+					CharacterStore.characters.push({
 						id:char.substring(0,char.length-5).replace(' ',"-").replace('_',"-").toLowerCase()+(ADDPE?"-pe":""),
 						folderName:char,
 						jsonLocation:_dir.appendPath(char),
@@ -586,7 +588,7 @@ class SELoader {
 			}
 			final charPath = _dir.newDirectory(char);
 			if (charPath.exists("config.json")) {
-				TitleState.characters.push({
+				CharacterStore.characters.push({
 					id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
 					folderName:char,
 					description:(charPath.exists('description.txt') ? ';${SELoader.getContent('${charPath}/description.txt')}' : null),
@@ -598,7 +600,7 @@ class SELoader {
 
 			}
 			if (charPath.exists("script.hscript")) {
-				TitleState.characters.push({
+				CharacterStore.characters.push({
 					id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
 					folderName:char,
 					description:(charPath.exists('description.txt') ? ';${SELoader.getContent('${charPath}/description.txt')}' : null),
@@ -610,7 +612,7 @@ class SELoader {
 				continue;
 			}
 			if (charPath.exists("character.png") && (charPath.exists("character.xml") || charPath.exists("config.json"))){
-				TitleState.invalidCharacters.push({
+				CharacterStore.invalidCharacters.push({
 					id:char.replace(' ',"-").replace('_',"-").toLowerCase(),
 					folderName:char,
 					path:'${_dir}',

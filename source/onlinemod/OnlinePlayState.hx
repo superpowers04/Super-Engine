@@ -16,6 +16,8 @@ import flixel.sound.FlxSound;
 import flash.media.Sound;
 import onlinemod.Packets;
 import onlinemod.Player;
+import se.stores.CharacterStore;
+import se.formats.CharInfo;
 
 import Section.SwagSection;
 
@@ -73,9 +75,9 @@ class OnlinePlayState extends PlayState
 		OnlinePlayMenuState.SetVolumeControls(true); // Make sure volume is enabled
 		if (customSong){
 			if (useSongChar[0] != "") PlayState.SONG.player1 = SESave.data.playerChar;
-			
-			if ((SESave.data.charAuto || useSongChar[1] != "") && TitleState.retChar(PlayState.player2) != ""){ // Check is second player is a valid character
-				PlayState.player2 = TitleState.retChar(PlayState.player2);
+			var p2:CharInfo = CharacterStore.getCharacter(PlayState.player2);
+			if ((SESave.data.charAuto || useSongChar[1] != "") && p2 != null){ // Check is second player is a valid character
+				PlayState.player2 = p2.id;
 			}else{
 				PlayState.player2 = SESave.data.opponent;
 			}
