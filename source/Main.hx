@@ -30,6 +30,17 @@ import sys.io.File;
 	public static var errorMessage = "";
 	public static var instance:Main;
 	public static var funniSprite:Sprite;
+	#if linux
+	private static var _FORCE_X11:Bool = {
+		var bool = false;
+		if(Sys.getEnv('SDL_VIDEODRIVER') == "wayland" || Sys.getEnv('WAYLAND-DISPLAY') != null){
+			trace("Wayland detected, forcing x11 SDL driver. Lime+SDL2 doesn't work with native wayland!");
+			bool=true;
+		}
+		Sys.putEnv('SDL_VIDEODRIVER','x11');
+		bool;
+	};
+	#end
 	public static var ALSOFTCONF:String = {Sys.putEnv("ALSOFT_CONF", SELoader.absoluteRawPath(#if windows 'assets/alsoft.ini' #else "assets/alsoft.conf" #end)); trace(Sys.getEnv("ALSOFT_CONF"));Sys.getEnv("ALSOFT_CONF");};
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
