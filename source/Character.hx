@@ -908,6 +908,7 @@ class CharAnimController extends FlxAnimationController{
 		#end
 		super(x, y);
 		if(lonely || character == "lonely") return;
+		
 		if(charInfo != null) character = (this.charInfo = charInfo).folderName;
 		trace('Loading ${character} ');
 		animOffsets = ["all" => [0,0] ];

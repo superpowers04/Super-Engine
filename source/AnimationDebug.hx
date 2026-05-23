@@ -79,7 +79,7 @@ class AnimationDebug extends MusicBeatState
 	var animList:Array<String> = [];
 	var curAnim:Int = 0;
 	var isPlayer:Bool = false;
-	var daAnim:String = 'bf';
+	var characterInfo:CharInfo = CharacterStore.defaultChar;
 	var charType:Int = 0;
 
 	var camFollow:FlxObject;
@@ -211,11 +211,14 @@ class AnimationDebug extends MusicBeatState
 		return null;
 	}
 	// #end
-	public function new(?daAnim:String = 'bf',?isPlayer=false,?charType_:Int=1,?charSel:Bool = false,?dragDrop:Bool = false)
+	public function new(characterInfo:Dynamic,?isPlayer=false,?charType_:Int=1,?charSel:Bool = false,?dragDrop:Bool = false)
 	{
 		super();
 		dragdrop = dragDrop;
-		this.daAnim = daAnim;
+		if (Std.isOfType(characterInfo,String)){
+			characterInfo = CharacterStore.getCharacterUnknownNS(cast(characterInfo, String));
+		}
+		this.characterInfo = cast(characterInfo, CharInfo);
 		this.isPlayer = isPlayer;
 		charType = charType_;
 		this.charSel = charSel;
@@ -229,8 +232,7 @@ class AnimationDebug extends MusicBeatState
 			}
 			Conductor.changeBPM(137);
 		}
-		trace('Animation debug with ${daAnim},${isPlayer ?  "true" : "false"},${charType}');
-
+		trace('Animation debug with ${characterInfo},${isPlayer ?  "true" : "false"},${charType}');
 	}
 	var dragdrop = false;
 	override function beatHit(){
@@ -394,7 +396,7 @@ class AnimationDebug extends MusicBeatState
 			add(quitHeldBar);
 			updateTxt();
 
-			if(dragdrop)showTempmessage('Imported character $daAnim');
+			if(dragdrop)showTempmessage('Imported character $characterInfo');
 		}catch(e) {MainMenuState.handleError('Error occurred, while loading Animation Debug. Current phase:${phases[phase]}; ${e.message}');}
 	}
 	function spawnChar(?reload:Bool = false,?resetOffsets = true,?charProp:CharacterJson = null){
@@ -429,7 +431,7 @@ class AnimationDebug extends MusicBeatState
 			};
 			try{
 
-				chara = new Character(characterX, characterY, daAnim,flipX,charType,true,null,charProp);
+				chara = new Character(characterX, characterY,flipX,charType,true,null,charProp, characterInfo);
 			}catch(e){
 				throw('Error while loading character $e');
 			}
@@ -439,7 +441,7 @@ class AnimationDebug extends MusicBeatState
 			chara.cameras = [camGame];
 
 			try{
-				charaBG = new Character(characterX, characterY, daAnim,flipX,charType,true,chara.tex,charProp);
+				charaBG = new Character(characterX, characterY,flipX,charType,true,chara.tex,charProp, characterInfo);
 			// charaBG.screenCenter();
 			}catch(e){
 				throw('Error while loading bg character $e');
@@ -550,7 +552,7 @@ class AnimationDebug extends MusicBeatState
 			case 2: 1;
 			default: 0;
 		};
-		var e= new AnimationDebug(daAnim,side == 0,side,charSel);
+		var e= new AnimationDebug(characterInfo,side == 0,side,charSel);
 		MusicBeatState.lastClassList.pop();
 		FlxG.switchState(e);
 	}

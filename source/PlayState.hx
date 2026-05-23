@@ -895,10 +895,12 @@ class PlayState extends ScriptMusicBeatState
 		var player2CharInfo:CharInfo = null;
 		var player3CharInfo:CharInfo = null;
 		{
-			final p1List:Array<String> = [SESave.data.playerChar];
-			final p2List:Array<String> = [SESave.data.opponent];
+			final p1List:Array<String> = [];
+			final p2List:Array<String> = [];
 			for(id in PlayState.player1.split('/')) p1List.push(id);
 			for(id in PlayState.player2.split('/')) p2List.push(id);
+
+
 
 			player1CharInfo = TitleState.getCharFromList(p1List,onlinemod.OfflinePlayState.nameSpace);
 			player2CharInfo = TitleState.getCharFromList(p2List,onlinemod.OfflinePlayState.nameSpace);
@@ -1394,20 +1396,20 @@ class PlayState extends ScriptMusicBeatState
 				}else{
 					introSpr.visible=true;
 					try{ /*FIXME THIS SHOULD NOT ERROR WHEN RESTARTING A SONG*/
-						var go:FlxSprite = introSpr.loadGraphic(introGraphics[swagCounter]);
-						go.scrollFactor.set();
-						go.updateHitbox();
-						go.screenCenter();
-						go.alpha = 1;
-						FlxTween.tween(go, {y: go.y -= 50}, 0.1, {
+						introSpr.loadGraphic(introGraphics[swagCounter]);
+						introSpr.scrollFactor.set();
+						introSpr.updateHitbox();
+						introSpr.screenCenter();
+						introSpr.alpha = 1;
+						FlxTween.tween(introSpr, {y: introSpr.y -= 50}, 0.1, {
 							ease: FlxEase.cubeOut,
 						});
-						FlxTween.tween(go, {y: go.y += 100, alpha: 0}, 0.25, {
+						FlxTween.tween(introSpr, {y: introSpr.y += 100, alpha: 0}, 0.25, {
 							ease: FlxEase.cubeIn,
 							startDelay:0.2
 						});
 					}catch(e){
-						trace(e);
+						trace('Error with introGraphics[${swagCounter}]: $e');
 					}
 				}
 				var sound:Dynamic = introAudio[swagCounter];
@@ -3659,14 +3661,14 @@ class PlayState extends ScriptMusicBeatState
 	public function testanimdebug(){
 		if (SESave.data.animDebug && onlinemod.OnlinePlayMenuState.socket == null) {
 			if (FlxG.keys.justPressed.ONE && boyfriend != null && !boyfriend.lonely){
-				FlxG.switchState(new AnimationDebug(boyfriend.charInfo?.getNamespacedName() ?? boyfriend.curCharacter,true,0));
+				FlxG.switchState(new AnimationDebug(boyfriend.charInfo!=null ? boyfriend.charInfo : boyfriend.curCharacter,true,0));
 			}
 			if (FlxG.keys.justPressed.TWO && dad != null && !dad.lonely){
-				FlxG.switchState(new AnimationDebug(dad.charInfo?.getNamespacedName() ?? dad.curCharacter,false,1));
+				FlxG.switchState(new AnimationDebug(dad.charInfo!=null ? dad.charInfo : dad.curCharacter,false,1));
 			}
 
 			if (FlxG.keys.justPressed.THREE && gf != null && !gf.lonely){
-				FlxG.switchState(new AnimationDebug(gf.charInfo?.getNamespacedName() ?? gf.curCharacter,false,2));
+				FlxG.switchState(new AnimationDebug(gf.charInfo!=null ? gf.charInfo : gf.curCharacter,false,2));
 			}
 			if (FlxG.keys.justPressed.FIVE)
 			{

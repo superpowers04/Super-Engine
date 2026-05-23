@@ -56,11 +56,9 @@ class MainMenuState extends SickMenuState {
 	public static var triedChar:Bool = false;
 	public static var lastError = "";
 	// The fatal error handler is actually better since you can return to the state that caused an issue. 
-	//  This isn't fully deprecated since some areas should just boot you to the main menu
-	@:deprecated 
+	//  This isn't fully deprecated since some areas should just boot you to the main menu 
 	public static function handleError(?exception:haxe.Exception = null,?error:String = "An error occurred",?details:String="",?forced:Bool = true,?pos:haxe.PosInfos):Void{
 		trace('Refer to below:\n${pos.fileName}:${pos.lineNumber}: MainMenuState.HandleError called');
-		// 
 		ScriptableStateManager.lastState = "";
 		ScriptableStateManager.goToLastState = false;
 		if(MainMenuState.errorMessage == error || lastError == error) return; // Prevents the same error from showing twice

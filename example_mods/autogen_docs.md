@@ -3,14 +3,14 @@
 # Proper UP TO DATE documentation IS planned. Just bear with me for now
 #LINE | CALL
 # MainMenuState.hx
-   183: callInterp('firstStart',[]);
-   223: callInterp('createAfter',[]);
-   303: callInterp('openExitPrompt',[]);
-   322: callInterp('otherSwitch',[]);
-   354: callInterp('mmSwitch',[]);
-   467: callInterp('select',[sel,daChoice]);
-   471: callInterp('addToList',[i,options[i]]);
-   481: callInterp('addToListAfter',[controlLabel,i,options[i]]);
+   181: callInterp('firstStart',[]);
+   221: callInterp('createAfter',[]);
+   301: callInterp('openExitPrompt',[]);
+   320: callInterp('otherSwitch',[]);
+   352: callInterp('mmSwitch',[]);
+   465: callInterp('select',[sel,daChoice]);
+   469: callInterp('addToList',[i,options[i]]);
+   479: callInterp('addToListAfter',[controlLabel,i,options[i]]);
 # ScriptMusicBeatState.hx
    282: callInterp("initScript",[],id);
    319: callInterp("initScript",[],id);
@@ -36,15 +36,15 @@
 # Character.hx
    555: callInterp("initCharacter",[]);
    773: callInterp("initScript",[]);
-   893: callInterp("new",[]);
-   897: callInterp("animFinish",[animation.curAnim]);
-   900: callInterp("animFrame",[animation.curAnim,frameNumber,frameIndex]);
-   940: callInterp("update",[elapsed]);
-  1032: callInterp("draw",[]);
-  1041: callInterp("playAnim",[AnimName]);
-  1044: callInterp("playAnim",[AnimName,this]);
-  1082: callInterp("playAnimBefore",[AnimName]);
-  1105: callInterp("playAnimAfter",[AnimName,animation.curAnim]);
+   894: callInterp("new",[]);
+   898: callInterp("animFinish",[animation.curAnim]);
+   901: callInterp("animFrame",[animation.curAnim,frameNumber,frameIndex]);
+   941: callInterp("update",[elapsed]);
+  1033: callInterp("draw",[]);
+  1042: callInterp("playAnim",[AnimName]);
+  1045: callInterp("playAnim",[AnimName,this]);
+  1083: callInterp("playAnimBefore",[AnimName]);
+  1106: callInterp("playAnimAfter",[AnimName,animation.curAnim]);
 # PlayState.hx
    585: callInterp('reload',[false]);
    586: callInterp('unload',[]);

@@ -34,6 +34,9 @@ class CharacterStore{
 		return getCharacter(char);
 	}
 
+	public static function getCharacterUnknownNS(id:String):Null<CharInfo>{
+		return id.contains('|') ? getCharacterSplitNamespace(id) : getCharacter(id);
+	}
 	public static function getCharacterSplitNamespace(id:String, ?nameSpace:String):Null<CharInfo>{
 		if (nameSpace != null && nameSpace != "") return getCharacter(id,nameSpace);
 		var split = id.indexOf('|');
@@ -95,9 +98,10 @@ class CharacterStore{
 		while (id != ""){
 			for(char in characters){
 				var current_possibility:Int = 0;
-				if(char.id == id) current_possibility = 3;
-				else if(char.id.startsWith(id)) current_possibility = 2;
-				else if(char.id.contains(id)) current_possibility = 1;
+				var char_id = char.id.toLowerCase();
+				if(char_id == id) current_possibility = 3;
+				else if(char_id.startsWith(id)) current_possibility = 2;
+				else if(char_id.contains(id)) current_possibility = 1;
 
 				if(current_possibility == 0) continue;
 
@@ -114,14 +118,15 @@ class CharacterStore{
 			id = id.substring(0,id.lastIndexOf('-'));
 		}
 		if (possibleCharacter == null){ // It's possible the character name from the chart uses something like bfGreen, try grabbing the character that way
-			var id = (~/([A-Z])/g).replace(oldId,"-$1").toLowerCase();
+			var id = (~/([^A-Z])([A-Z])/g).replace(oldId,"$1-$2").toLowerCase();
 			trace('Searching for $id');
 			while (id != ""){
 				for(char in characters){
 					var current_possibility:Int = 0;
-					if(char.id == id) current_possibility = 3;
-					else if(char.id.startsWith(id)) current_possibility = 2;
-					else if(char.id.contains(id)) current_possibility = 1;
+					var char_id = char.id.toLowerCase();
+					if(char_id == id) current_possibility = 3;
+					else if(char_id.startsWith(id)) current_possibility = 2;
+					else if(char_id.contains(id)) current_possibility = 1;
 
 					if(current_possibility == 0) continue;
 
