@@ -161,7 +161,7 @@ class Console extends TextField
 
 	}
 	var firstOpen:Bool = true;
-
+	var consumedF10:Bool = false;
 	// Event Handlers
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
@@ -172,11 +172,16 @@ class Console extends TextField
 			requestUpdate = false;
 			scrollV = 1000;
 		}
-		if(FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F10){
-			lines = [];
-			trace("Cleared log");
-		}else if(FlxG.keys != null && FlxG.keys.justPressed.F10 && SESave.data != null){
-			showConsole = !showConsole;
+		if(consumedF10 != FlxG.keys.pressed.F10){
+			consumedF10 = FlxG.keys.pressed.F10;
+			if (consumedF10){
+				if(FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.CONTROL){
+					lines = [];
+					trace("Cleared log");
+				}else if(SESave.data != null){
+					showConsole = !showConsole;
+				}
+			}
 		}
 		if(isShowingConsole != showConsole){
 			updateConsoleVisibility();

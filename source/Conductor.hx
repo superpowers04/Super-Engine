@@ -56,7 +56,23 @@ class Conductor {
 		Conductor.safeZoneOffset = Math.floor((Conductor.safeFrames / 60) * 1000);
 		Conductor.timeScale = Conductor.safeZoneOffset / 166;
 	}
+	public static function resolveSectionFromTime(?song:SwagSong, time:Float):Int{
 
+
+		var curBPM:Float = song.bpm; 
+		var totalSteps:Int = 0;
+		var totalPos:Float = 0;
+		var deltaSteps:Int = 0;
+		for (i in 0...song.notes.length) {
+			var v = song.notes[i];
+			if(v.changeBPM && v.bpm != curBPM) curBPM = Math.abs(v.bpm);
+
+			deltaSteps = Math.isNaN(v.lengthInSteps) ? v.lengthInSteps : 16;
+			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
+			if(totalPos >= time) return i;
+		}
+		return Std.int(song.notes.length+((totalPos-time)/deltaSteps));
+	}
 	public static function mapBPMChanges(?song:SwagSong) {
 		bpmChangeMap = [];
 		bpmChangeMapSteps = [];
@@ -64,7 +80,7 @@ class Conductor {
 		if(song == null) return;
 		offset = song.offset;
 
-		var curBPM:Float = 120;
+		var curBPM:Float = song.bpm;
 		var totalSteps:Int = 0;
 		var totalPos:Float = 0;
 		for (i in 0...song.notes.length) {
