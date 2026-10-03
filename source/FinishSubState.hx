@@ -124,7 +124,8 @@ class FinishSubState extends MusicBeatSubstate
 		FlxG.cameras.add(cam,false);
 		PlayState.instance.replace(boyfriend,bfReplacement);
 		add(boyfriend);
-		FlxG.state.persistentUpdate = FlxG.state.persistentDraw = !pauseGame;
+		FlxG.state.persistentDraw = win;
+		FlxG.state.persistentUpdate = !pauseGame;
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]]; 
 		cameras[0].scroll.x = FlxG.camera.scroll.x;

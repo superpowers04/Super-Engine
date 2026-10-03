@@ -1155,6 +1155,7 @@ class ChartingState extends ScriptMusicBeatState
 	public static var lastInst:String = "";
 	public static var lastVoices:String = "";
 	public static var lastChart:String = "";
+	var queuedReload:Bool = false;
 
 	function loadSong():Void
 	{
@@ -1271,8 +1272,9 @@ class ChartingState extends ScriptMusicBeatState
 				case 'section_bpm':
 				
 					if (nums.value <= 0.1)
-						nums.value = 0.1;
+						nums.value = 10;
 					_song.notes[curSection].bpm = Std.int(nums.value);
+
 					updateGrid();
 				case 'song_vocalvol':
 				
@@ -1410,7 +1412,7 @@ class ChartingState extends ScriptMusicBeatState
 		doSnapShit = (!FlxG.keys.pressed.SHIFT || FlxG.keys.pressed.CONTROL);
 
 		
-		gridBGAbove.alpha = (curSection == 0 ? 0.3 : 0.7);
+		
 
 
 
@@ -1858,12 +1860,23 @@ class ChartingState extends ScriptMusicBeatState
 	}
 	var requestMusicPlay = false;
 	inline function updateSection(){
-		if (curStep >= 16 * (curSection + 1)) {
-			while(curStep >= 16 * (curSection + 1)) increaseSection();
+		var sect = Conductor.resolveSectionFromTime(_song, Conductor.songPosition);
+		if (sect < 0) sect = 0;
+		if (sect != curSection){
+			while (curSection < sect){
+				increaseSection();
+			}
+			while (curSection > sect && _song.notes[curSection - 1] != null){
+				changeSection(curSection-1, false);
+			}
 		}
-		if (curStep <= (16 * curSection) - 1 && _song.notes[curSection - 1] != null) {
-			while(curStep <= (16 * curSection) - 1 && _song.notes[curSection - 1] != null) changeSection(curSection - 1, false);
-		}
+		// changeSection(sect, false);
+		// if (curStep >= 16 * (curSection + 1)) {
+		// 	while(curStep >= 16 * (curSection + 1)) increaseSection();
+		// }
+		// if (curStep <= (16 * curSection) - 1 && _song.notes[curSection - 1] != null) {
+		// 	while(curStep <= (16 * curSection) - 1 && _song.notes[curSection - 1] != null) changeSection(curSection - 1, false);
+		// }
 	}
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
@@ -1871,13 +1884,13 @@ class ChartingState extends ScriptMusicBeatState
 			sec = 0;
 			if(FlxG.sound.music.playing){
 				FlxG.sound.music.pause();
-				vocals.pause();
+				if(vocals != null) vocals.pause();
 				claps.resize(0);
 				requestMusicPlay = true;
 			}
 			Conductor.songPosition = 0;
 			FlxG.sound.music.time = Conductor.songPosition;
-			vocals.time = FlxG.sound.music.time;
+			if(vocals != null) vocals.time = FlxG.sound.music.time;
 			updateCurStep();
 			curSection = 0;
 			return;
@@ -2019,7 +2032,6 @@ class ChartingState extends ScriptMusicBeatState
 	}
 	function updateGrid(?updateNotes:Bool = true):Void
 	{
-
 		callInterp('updateGrid',[updateNotes]);
 		if(updateNotes){
 			rawToNote = [];
@@ -2029,6 +2041,10 @@ class ChartingState extends ScriptMusicBeatState
 
 		
 		CoolUtil.clearFlxGroup(curRenderedSustains);
+		var daBPM:Float = _song.bpm;
+		for (i in 0...curSection) if (_song.notes[i].changeBPM) daBPM = _song.notes[i].bpm;
+		Conductor.changeBPM(daBPM);
+
 		var section = _song.notes[curSection];
 		if(section == null) trace('$curSection doesn\'t fucking exist??');
 		var sectionInfo:Array<Dynamic> = section?.sectionNotes ?? [];
@@ -2041,19 +2057,14 @@ class ChartingState extends ScriptMusicBeatState
 		if (_song.notes[curSection + 1] != null)
 			nextSectionInfo = _song.notes[curSection + 1].sectionNotes;
 
-		if (_song.notes[curSection].changeBPM && _song.notes[curSection].bpm > 0)
-		{
-			Conductor.changeBPM(_song.notes[curSection].bpm);
-		}
-		else
-		{
+		// if (_song.notes[curSection].changeBPM && _song.notes[curSection].bpm > 0)
+		// {
+		// 	Conductor.changeBPM(_song.notes[curSection].bpm);
+		// }
+		// else
+		// {
 			// get last bpm
-			var daBPM:Float = _song.bpm;
-			for (i in 0...curSection)
-				if (_song.notes[i].changeBPM)
-					daBPM = _song.notes[i].bpm;
-			Conductor.changeBPM(daBPM);
-		}
+		// }
 
 		for (secID => sectionInfo in [lastSectionInfo,sectionInfo,nextSectionInfo]){
 			// secID += 1;
@@ -2086,6 +2097,7 @@ class ChartingState extends ScriptMusicBeatState
 			}
 		}
 		callInterp('updateGridAfter',[]);
+		gridBGAbove.alpha = (curSection == 0 ? 0.3 : 0.7);
 		updateSelected();
 	}
 

@@ -195,17 +195,16 @@ class Alphabet extends FlxSpriteGroup
 		}
 		if(finalText == "") finalText = _finalText;
 		splitWords = finalText.split("");
-		var _X = -xOffset;
 		var _Y = y;
 		x = y = 0;
 
 		for (character in splitWords) {addLetter(character,bounce);}
 
-		x=_X;
+		x=-xOffset;
 		y=_Y;
 		try{
 			border = new FlxSpriteLockScale(-10,-10);
-			border.makeGraphic(1,1,FlxColor.BLACK);
+			border.frames = FlxG.bitmap.create(1, 1, FlxColor.BLACK, false, 'alphabet_background').imageFrame;
 			border.lockGraphicSize((Std.int(width) + 20),Std.int(height) + 20);
 			border.alpha = SESave.data.useTouch ? 0.1 : 0.001;
 			insert(0,border);
@@ -278,11 +277,19 @@ class Alphabet extends FlxSpriteGroup
 	public var personTalking:String = 'gf';
 	public var screenCentX:Bool = false;
 	public var screenCentY:Bool = false;
+	var cached_y:Float = 0;
+	var cached_x:Float = 0;
+	var cached_ty:Float = -1.312313241;
+
 
 	override function update(elapsed:Float)
 	{
+		if (cached_ty != targetY){
+			cached_ty = targetY;
+			cached_y = (targetY * (120 * scale.x)) + (FlxG.height * 0.48) + yOffset;
+		}
 		if (isMenuItem){
-			if(moveY) y = FlxMath.lerp(y, (targetY * (120 * scale.x)) + (FlxG.height * 0.48) + yOffset,10 * elapsed);
+			if(moveY && cached_y != y) y = FlxMath.lerp(y, cached_y,10 * elapsed);
 			if(moveX) x = FlxMath.lerp(x, xOffset, 10 * elapsed);
 		}
 		if(visible) super.update(elapsed);
